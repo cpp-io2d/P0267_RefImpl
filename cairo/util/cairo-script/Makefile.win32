@@ -1,0 +1,10 @@
+top_srcdir = ../../
+include $(top_srcdir)/build/Makefile.win32.common
+include $(top_srcdir)/util/cairo-script/Makefile.sources
+
+all: inform $(CFG)/libcairo-script-interpreter.lib
+
+libcairo_script_interpreter_OBJECTS = $(patsubst %.c, $(CFG)/%-static.obj, $(libcairo_script_interpreter_sources))
+
+$(CFG)/libcairo-script-interpreter.lib: $(libcairo_script_interpreter_OBJECTS)
+	@$(AR) $(CAIRO_ARFLAGS) -OUT:$@ $(libcairo_script_interpreter_OBJECTS)

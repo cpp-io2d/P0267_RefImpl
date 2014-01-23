@@ -1,0 +1,10 @@
+top_srcdir = ../../
+include $(top_srcdir)/build/Makefile.win32.common
+include $(top_srcdir)/util/cairo-missing/Makefile.sources
+
+all: inform $(CFG)/libcairo-missing.lib
+
+libcairo_missing_OBJECTS = $(patsubst %.c, $(CFG)/%-static.obj, $(libcairo_missing_sources))
+
+$(CFG)/libcairo-missing.lib: $(libcairo_missing_OBJECTS)
+	@$(AR) $(CAIRO_ARFLAGS) -OUT:$@ $^

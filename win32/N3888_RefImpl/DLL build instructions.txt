@@ -1,0 +1,81 @@
+DLL build instructions. These are provided "AS IS" with no warranties or guarantees of any kind, express or implied, and confer no rights. 
+ 
+1. If you do not already have a version of Visual Studio 2013 installed, install one (Visual Studio 2013 Express for Windows Desktop is fine - see: http://www.visualstudio.com/downloads/download-visual-studio-vs ).
+
+2. Install mozilla-build (see: https://wiki.mozilla.org/MozillaBuild ).
+
+3. In the mozilla-build directory, create a start-msvc12.bat and start-msvc12-x64.bat by adapting the msvc11 versions (if necessary). The version I installed (1.8.0) did not have these .bat files.
+
+4. Acquire zlib 1.2.8 (or latest), libpng 1.6 (latest), pixman (I used the master branch as of 2013-11-22 21:01:09 which include the patch from 2013-11-18 but not the one from 2013-11-24 (see: http://cgit.freedesktop.org/pixman/ )), and cairo (I used 1.12.16). Note: Libpng, pixman, and cairo can all be acquired with git. IMPORANT: Make sure all 4 are cloned/unzipped in the same folder (the "Root" folder). (When all is done you should have a folder that contains a "cairo" subfolder, a "pixman" subfolder, a "libpng16" subfolder, and a "zlib-1.2.8" subfolder).
+	- For cairo I used the following git bash commands:
+		git clone git://git.cairographics.org/git/cairo
+		cd cairo
+		git checkout -b build 1.12.16
+		cd ..
+	- For pixman I used the following git bash command:
+		git clone git://git.cairographics.org/git/pixman
+	- For libpng I used the following git bash command:
+		git clone -b libpng16 git://git.code.sf.net/p/libpng/code libpng16
+	- For zlib, I acquired the zip file from 
+
+5. Open a command prompt in the Root folder. Use mklink to create NTFS junction points that alias "zlib" for "zlib-1.2.8" and "libpng" for "libpng16" (or appropriate). Example:
+	mklink /J zlib zlib-1.2.8
+	mklink /J libpng libpng16
+	
+6. Close the command prompt window.
+
+7. Open a Visual Studio 2013 command prompt (use the x64 native tools version if you're building 64-bit binaries; I am going to assume that you will continue to use either the 32-bit or the 64-bit versions of any tools for the remainder of the instructions since you should not mix 32-bit and 64-bit).
+
+8. In the VS 2013 command prompt window, cd to the zlib directory (e.g. if zlib was in C:\Repos, you would use "cd C:\Repos\zlib" to change to the directory).
+
+9. In the VS 2013 command prompt window, build zlib using the following commands:
+	nmake -f win32\Makefile.msc clean
+	nmake -f win32\Makefile.msc
+	
+10. In the VS 2013 command prompt window, cd to the libpng directory.
+
+11. In the VS 2013 command prompt window, build libpng using the following commands:
+	nmake -f scripts\makefile.vcwin32 clean
+	nmake -f scripts\makefile.vcwin32
+	
+12. Close the VS 2013 command prompt window.
+
+13. Open a Windows Explorer window and navigate to the pixman folder.
+
+14. Navigate to the pixman subfolder. (So if the pixman folder was in C:\Repos, you would now be in C:\Repos\pixman\pixman).
+
+15. Copy the "pixman-version.h.in" file to "pixman-version.h".
+
+16. Open "pixman-version.h" in your preferred text editor.
+
+17. Find the following lines (they are consecutive; for me they are lines 34-36):
+
+#define PIXMAN_VERSION_MAJOR @PIXMAN_VERSION_MAJOR@
+#define PIXMAN_VERSION_MINOR @PIXMAN_VERSION_MINOR@
+#define PIXMAN_VERSION_MICRO @PIXMAN_VERSION_MICRO@
+
+18. Change them to reflect the version number of pixman that you are working with. You can find the values in configure.ac in the main pixman directory (lines 55-57). I used 0, 33, 1, giving me:
+
+#define PIXMAN_VERSION_MAJOR 0
+#define PIXMAN_VERSION_MINOR 33
+#define PIXMAN_VERSION_MICRO 1
+
+19. Save and close pixman-version.h and any other files you opened.
+
+20. Run the correct .bat file from the mozilla-build install directory (start-msvc12.bat or start-msvc12-x64.bat). This will open a MinGW32 command prompt window.
+
+21. In the MinGW32 command prompt window, cd to the pixman directory (note that in this window, directories are separated by a forward slash ("/") rather than a backslash ("\") and that file and folder names are case sensitive. Also your C: drive will be at "/c" and D: at "/d", etc. So if the pixman directory was in C:\Repos, you would use "cd /c/Repos/pixman" to change to the directory).
+
+22. In the MinGW32 command prompt window, build pixman using the following commands (replace "debug" with "release" when building a release DLL of Cairo):
+	make -f Makefile.win32 MMX=off SSE2=on SSSE3=off CFG=debug clean
+	make -f Makefile.win32 MMX=off SSE2=on SSSE3=off CFG=debug
+
+23. In the MinGW32 command prompt window, cd to the cairo directory.
+
+24. In the MinGW32 command prompt window, build cairo using the following commands (replace "debug" with "release" when building a release DLL of Cairo):
+	make -f Makefile.win32 CFG=debug clean
+	make -f Makefile.win32 CFG=debug
+
+25. If you get linker errors with messages about trying to link x86 and x64 files when trying to build cairo, go into the "cairo/src/debug/win32" folder (replace "debug" with "release" if you are creating a release build) and delete all of the .obj files in that folder. Then run the make command again (the last one without the clean) and it should work fine and finish building.
+
+25. When cairo finishes building, it will list various files for you to copy. Copy those files to the correct place (it's up to you to decide where that should be). You will also need cairo.lib and zlib.lib in order to link against their respective DLLs. The .lib files should be added as linker inputs in your project's project properties in Visual Studio and the DLL files will need to be copied to the same directory as your program executable after it is built and before it runs in order to ensure that it can run correctly.

@@ -1,0 +1,12 @@
+compile
+config.guess
+config.sub
+depcomp
+install-sh
+ltmain.sh
+missing
+mkinstalldirs
+#Makefile.win32.features
+#Makefile.win32.features-h
+libtool.m4
+lt*.m4

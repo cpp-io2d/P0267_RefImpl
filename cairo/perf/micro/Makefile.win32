@@ -1,0 +1,12 @@
+top_srcdir = ../..
+include $(top_srcdir)/build/Makefile.win32.common
+include $(top_srcdir)/perf/micro/Makefile.sources
+
+CFLAGS += -I$(top_srcdir)/perf -I$(top_srcdir)/boilerplate/
+
+OBJECTS = $(patsubst %.c, $(CFG)/%-static.obj, $(libcairo_perf_micro_sources))
+
+all: inform $(CFG)/libcairo-perf-micro.lib
+
+$(CFG)/libcairo-perf-micro.lib: $(OBJECTS)
+	@$(AR) $(CAIRO_ARFLAGS) -OUT:$@ $(OBJECTS)
