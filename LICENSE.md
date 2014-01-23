@@ -83,3 +83,4 @@ link with:
 The files in `/win32/N3888_RefImpl/DLLs` are executable code versions of
 cairo and zlib in the form of DLL files. These files were built in accordance
 with the instructions provided at `/win32/N3888_RefImpl/DLL build instructions.txt`.
+Their licensing is as described above for the .lib files.
