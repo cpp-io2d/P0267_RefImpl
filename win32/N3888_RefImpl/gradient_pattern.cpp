@@ -18,6 +18,9 @@ gradient_pattern& gradient_pattern::operator=(gradient_pattern&& other) {
 	return *this;
 }
 
+gradient_pattern::~gradient_pattern() {
+}
+
 void gradient_pattern::add_color_stop_rgb(double offset, double red, double green, double blue) {
 	cairo_pattern_add_color_stop_rgb(_Pattern.get(), offset, red, green, blue);
 }

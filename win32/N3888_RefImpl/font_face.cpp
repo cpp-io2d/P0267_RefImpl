@@ -24,3 +24,6 @@ font_face& font_face::operator=(font_face&& other) {
 font_face::font_face(font_face::native_handle_type nh) {
 	_Font_face = shared_ptr<cairo_font_face_t>(nh, &cairo_font_face_destroy);
 }
+
+font_face::~font_face() {
+}

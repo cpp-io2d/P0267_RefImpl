@@ -31,6 +31,9 @@ pattern& pattern::operator=(pattern&& other) {
 	return *this;
 }
 
+pattern::~pattern() {
+}
+
 status pattern::status() {
 	return _Cairo_status_t_to_status(cairo_pattern_status(_Pattern.get()));
 }

@@ -439,6 +439,8 @@ namespace std {
 				font_face& operator=(font_face&& other);
 
 				explicit font_face(native_handle_type nh);
+
+				virtual ~font_face();
 			};
 
 			class scaled_font {
@@ -581,6 +583,8 @@ namespace std {
 				pattern(pattern&& other);
 				pattern& operator=(pattern&& other);
 
+				virtual ~pattern();
+
 				status status();
 				void set_extend(extend extend);
 				extend get_extend();
@@ -616,6 +620,8 @@ namespace std {
 				gradient_pattern& operator=(const gradient_pattern&) = default;
 				gradient_pattern(gradient_pattern&& other);
 				gradient_pattern& operator=(gradient_pattern&& other);
+				virtual ~gradient_pattern();
+
 				void add_color_stop_rgb(double offset, double red, double green, double blue);
 				void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
 				void get_color_stop_count(int& count);
