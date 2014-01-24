@@ -542,6 +542,7 @@ namespace std {
 			protected:
 				::std::shared_ptr<::std::function<void(void* closure, ::std::vector<unsigned char>& data)>> _Create_from_png_fn;
 				void* _Create_from_png_closure;
+				::std::shared_ptr<::std::vector<unsigned char>> _Data;
 			public:
 				image_surface(const image_surface&) = default;
 				image_surface& operator=(const image_surface&) = default;

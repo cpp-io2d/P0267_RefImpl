@@ -55,6 +55,45 @@ void Draw(surface& surface) {
 	context.paint();
 
 	context.save();
+	const int width = 100;
+	const int height = 100;
+	const format fmt = format::rgb24;
+	const int stride = format_stride_for_width(fmt, width);
+	vector<unsigned char> data;
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < stride; x++) {
+			auto byte = x % 4;
+			switch (byte)
+			{
+			case 0:
+				data.push_back(0x7Fui8);
+				break;
+			case 1:
+				data.push_back(0xFFui8);
+				break;
+			case 2:
+				data.push_back(0ui8);
+				break;
+			case 3:
+				data.push_back(0ui8);
+				break;
+			default:
+				throw logic_error("We're MODing by 4, how do we have a value outside of [0,3]?");
+			}
+		}
+	}
+	auto imageSurfaceFromData = image_surface(data, fmt, width, height, stride);
+	context.set_source_surface(imageSurfaceFromData, 400.0, 400.0);
+	context.move_to(400.0, 400.0);
+	context.rel_line_to(100.0, 0.0);
+	context.rel_line_to(0.0, 100.0);
+	context.rel_line_to(-100.0, 0.0);
+	context.close_path();
+	context.fill();
+	imageSurfaceFromData.finish();
+	context.restore();
+
+	context.save();
 	matrix m;
 	m.init_translate(300.0, 400.0);
 	const double two_pi = 3.1415926535897932 * 2.0;
@@ -79,7 +118,7 @@ void Draw(surface& surface) {
 	context.set_source_rgb(0.0, 0.0, 0.0);
 	context.stroke();
 	context.restore();
-	
+
 	context.set_source_rgb(1.0, 1.0, 1.0);
 	context.move_to(100.0, 100.0);
 	context.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
@@ -99,53 +138,19 @@ void OnPaint(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 
 	hdc = BeginPaint(hWnd, &ps);
 
-	//// GDI double-buffering. Adapted from the Python example here: http://cairographics.org/cookbook/win32quickstart/ .
-	//RECT clientRect;
-	//if (!GetClientRect(hWnd, &clientRect)) {
-	//	throw_get_last_error<logic_error>("Failed GetClientRect call.");
-	//}
-	//auto width = clientRect.right - clientRect.left;
-	//auto height = clientRect.bottom - clientRect.top;
-
-	//// Create the off-screen buffer.
-
-	//// First create a compatible GDI drawing context.
-	//auto bufferDC = CreateCompatibleDC(hdc);
-	//throw_if_null<logic_error>(bufferDC, "Failed CreateCompatibleDC call.");
-
-	//// Then create a compatible bitmap. This is the off-screen buffer.
-	//auto hBitmap = CreateCompatibleBitmap(hdc, width, height);
-	//throw_if_null<logic_error>(hBitmap, "Failed CreateCompatibleBitmap call.");
-
-	//// Set the compatible bitmap as the object to draw to.
-	//auto hOldBitmap = SelectObject(bufferDC, hBitmap);
-	//throw_if_null<logic_error>(hOldBitmap, "Failed SelectObject call.");
-
-	// We always start by creating a surface. Typically the surface would be a member of a class and would not be repeatedly created.
-	// Note that per the proposal, make_surface's parameters are implementation-defined.
+	// To enable screenshot saving, we are using a global unique_ptr surface. I did not rewrite the boilerplate
+	// Win32 code so that it'd be a class, hence the globals. Note that this would not work without using CS_OWNDC
+	// when registering the window class since we could get a different HDC each time without that flag.
 	if (g_psurface == nullptr) {
-		g_psurface = unique_ptr<surface>(new surface(move(make_surface(cairo_win32_surface_create(/*bufferDC*/hdc)))));
+		g_psurface = unique_ptr<surface>(new surface(move(make_surface(cairo_win32_surface_create(hdc)))));
 	}
 
 	// Draw to the off-screen buffer.
 	Draw(*g_psurface);
-	g_psurface->flush();
-	//if (!BitBlt(hdc, 0, 0, width, height, bufferDC, clientRect.left, clientRect.top, SRCCOPY)) {
-	//	throw_get_last_error<logic_error>("Failed BitBlt call.");
-	//}
-	//// Blit the off-screen buffer to the screen.
-	//if (!BitBlt(hdc, 0, 0, width, height, bufferDC, clientRect.left, clientRect.top, SRCCOPY)) {
-	//	throw_get_last_error<logic_error>("Failed BitBlt call.");
-	//}
 
-	//// Restore the original bitmap. 
-	//throw_if_null<logic_error>(SelectObject(bufferDC, hOldBitmap), "Failed SelectObject call.");
-	//if (!DeleteObject(hBitmap)) {
-	//	throw logic_error("Failed DeleteObject call.");
-	//}
-	//if (!DeleteDC(bufferDC)) {
-	//	throw logic_error("Failed DeleteDC call.");
-	//}
+	// Flush to ensure that it is drawn to the window.
+	g_psurface->flush();
+
 	EndPaint(hWnd, &ps);
 }
 
@@ -270,7 +275,7 @@ void ShowSaveAsPNGDialog() {
 		fsd->SetFileTypeIndex(1U), "Failed call to IFileDialog::SetFileTypeIndex.");
 	throw_if_failed_hresult<logic_error>(
 		fsd->SetDefaultExtension(L"png"), "Failed call to IFileDialog::SetDefaultExtension.");
-	
+
 	ComPtr<IKnownFolderManager> kfm;
 	throw_if_failed_hresult<logic_error>(
 		CoCreateInstance(CLSID_KnownFolderManager, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&kfm)), "Failed call to CoCreateInstance for IKnownFolderManager.");
