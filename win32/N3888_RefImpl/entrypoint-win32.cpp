@@ -308,9 +308,9 @@ void ShowSaveAsPNGDialog() {
 			CoTaskMemFree(pwstrFilename);
 			throw;
 		}
-		HANDLE hFile = CreateFile2(wfilename.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, CREATE_ALWAYS, nullptr);
+		HANDLE hFile = CreateFileW(wfilename.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 		if (hFile == INVALID_HANDLE_VALUE) {
-			throw_get_last_error<runtime_error>("Failed call to CreateFile2.");
+			throw_get_last_error<runtime_error>("Failed call to CreateFileW.");
 		}
 		if (CloseHandle(hFile) == 0) {
 			throw_get_last_error<runtime_error>("Failed call to CloseHandle.");

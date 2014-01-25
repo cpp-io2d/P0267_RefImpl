@@ -30,7 +30,7 @@ DLL build instructions. These are provided "AS IS" with no warranties or guarant
 
 9. In the VS 2013 command prompt window, build zlib using the following commands:
 	nmake -f win32\Makefile.msc clean
-	nmake -f win32\Makefile.msc
+	nmake -f win32\Makefile.msc LOC=-D_INC_WINAPIFAMILY
 	
 10. In the VS 2013 command prompt window, cd to the libpng directory.
 
@@ -76,6 +76,6 @@ DLL build instructions. These are provided "AS IS" with no warranties or guarant
 	make -f Makefile.win32 CFG=debug clean
 	make -f Makefile.win32 CFG=debug
 
-25. If you get linker errors with messages about trying to link x86 and x64 files when trying to build cairo, go into the "cairo/src/debug/win32" folder (replace "debug" with "release" if you are creating a release build) and delete all of the .obj files in that folder. Then run the make command again (the last one without the clean) and it should work fine and finish building.
+25. If you get "fatal error LNK1112: module machine type '???' conflicts with target machine type '???'" (with the ??? being either X86 or x64), go into the "cairo/src/debug/win32" folder (replace "debug" with "release" if you are creating a release build) and delete all of the .obj files in that folder. Then run the make command again (the last one without the clean) and it should work fine and finish building.
 
 25. When cairo finishes building, it will list various files for you to copy. Copy those files to the correct place (it's up to you to decide where that should be). You will also need cairo.lib and zlib.lib in order to link against their respective DLLs. The .lib files should be added as linker inputs in your project's project properties in Visual Studio and the DLL files will need to be copied to the same directory as your program executable after it is built and before it runs in order to ensure that it can run correctly.
