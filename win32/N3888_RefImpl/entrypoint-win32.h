@@ -9,6 +9,7 @@
 #include <Unknwn.h>
 #include <ShObjIdl.h>
 #include <KnownFolders.h>
+#include <shellapi.h>
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);

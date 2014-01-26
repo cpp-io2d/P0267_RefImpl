@@ -91,7 +91,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;user32.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib</AdditionalDependencies>
+      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
@@ -113,7 +113,7 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pdb" "$(
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;user32.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib</AdditionalDependencies>
+      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
@@ -140,7 +140,7 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pdb" "$(
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;user32.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib</AdditionalDependencies>
+      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
@@ -165,7 +165,7 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;user32.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib</AdditionalDependencies>
+      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"

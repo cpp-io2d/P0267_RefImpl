@@ -12,6 +12,10 @@
 #include "throw_helpers.h"
 #include "drawing.h"
 
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
 using namespace Microsoft::WRL;
 using namespace std;
 using namespace std::experimental;
@@ -239,6 +243,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND& hWnd) {
 	//HWND hWnd;
+	INITCOMMONCONTROLSEX initCommonControlsEx{ };
+	initCommonControlsEx.dwSize = sizeof(initCommonControlsEx);
+	initCommonControlsEx.dwICC = ICC_LINK_CLASS;
+	if (InitCommonControlsEx(&initCommonControlsEx) == FALSE) {
+		throw runtime_error("Failed call to InitCommonControlsEx.");
+	}
 
 	hInst = hInstance; // Store instance handle in our global variable
 
@@ -366,7 +376,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		// Parse the menu selections:
 		switch (wmId) {
 		case IDM_ABOUT:
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+		{
+			auto aboutResult = DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			if (aboutResult <= 0) {
+				throw_get_last_error<logic_error>("Failed call to DialogBox.");
+			}
+		}
 			break;
 		case ID_EDIT_SCREENCAPTURE:
 			ShowSaveAsPNGDialog();
@@ -402,6 +417,28 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
 			EndDialog(hDlg, LOWORD(wParam));
 			return (INT_PTR)TRUE;
 		}
+		break;
+	case WM_NOTIFY:
+	{
+		PNMLINK pnmLink = reinterpret_cast<PNMLINK>(lParam);
+		if ((pnmLink->hdr.idFrom == IDC_SYSLINK1) || (pnmLink->hdr.idFrom == IDC_SYSLINK2)) {
+			switch (pnmLink->hdr.code)
+			{
+			case NM_CLICK:
+				// Intentional fall-through.
+			case NM_RETURN:
+			{
+				auto shExecResult = reinterpret_cast<int>(ShellExecute(nullptr, L"open", pnmLink->item.szUrl, nullptr, nullptr, SW_SHOW));
+				if (shExecResult <= 32) {
+					wstringstream err;
+					err << L"Error calling ShellExecute while trying to open the link. Return code: " << to_wstring(shExecResult) << "." << endl;
+					MessageBox(hDlg, err.str().c_str(), L"Error opening link", MB_OK | MB_ICONEXCLAMATION);
+				}
+			}
+				return (INT_PTR)TRUE;
+			}
+		}
+	}
 		break;
 	}
 	return (INT_PTR)FALSE;
