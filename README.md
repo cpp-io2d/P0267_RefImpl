@@ -3,7 +3,7 @@ N3888 Reference Implementation
 
 Please read the [LICENSE](https://github.com/mikebmcl/N3888_RefImpl/blob/master/LICENSE.md) before cloning or forking the code as there is important information there!
 
-Please see the wiki for links to forks which provide alternate implementations!
+Please see the [wiki](https://github.com/mikebmcl/N3888_RefImpl/wiki) for links to forks which provide alternate implementations!
 
 Overview
 -------------
