@@ -14,7 +14,7 @@ LRESULT CALLBACK InternalWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 
 
-Win32RenderWindow::Win32RenderWindow( unsigned int width, unsigned int height ) :
+Win32RenderWindow::Win32RenderWindow(unsigned int width, unsigned int height, const std::wstring& caption) :
 	handle( 0 )
 {
 	WNDCLASSEX wc;
@@ -32,14 +32,14 @@ Win32RenderWindow::Win32RenderWindow( unsigned int width, unsigned int height ) 
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wc.lpszMenuName = NULL;
-	wc.lpszClassName = L"HieroglyphWin32";
-	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	wc.lpszClassName = L"N3888_RefImpl";
+	wc.hIconSm = LoadIcon(NULL, IDI_ASTERISK);
 	
 
 	// Register the window class
 	RegisterClassEx(&wc);
 
-	// Record the desired device size
+	// Record the desired client window size
 	RECT rc;
 	rc.top = rc.left = 0;
 	rc.right = width;
@@ -59,7 +59,7 @@ Win32RenderWindow::Win32RenderWindow( unsigned int width, unsigned int height ) 
 	handle = CreateWindowEx(
 		NULL,								// extended style
 		wc.lpszClassName, 					// class name
-		L"N3888_RefImpl",					// instance title
+		caption.c_str(),					// instance title
 		(WS_OVERLAPPEDWINDOW | WS_VISIBLE),	// window style
 		lleft, ltop,						// initial x, y
 		lwidth,								// initial width

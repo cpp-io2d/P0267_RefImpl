@@ -188,7 +188,8 @@ int WINAPI wWinMain(
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_N3888_REFIMPL));
 
-	Win32RenderWindow window( 320, 240 );
+	Win32RenderWindow window( 320, 240, L"N3888_RefImpl rocks!" );
+	Win32RenderWindow window2(320, 240, L"N3888_RefImpl rocks two times!");
 
 	// Main message loop:
 	while (msg.message != WM_QUIT) {
