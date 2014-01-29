@@ -181,6 +181,7 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="throw_helpers.h" />
+    <ClInclude Include="Win32RenderWindow.h" />
     <ClInclude Include="xcairoenumhelpers.h" />
     <ClInclude Include="xdrawing.h" />
     <ClInclude Include="xdrawinghelpers.h" />
@@ -208,6 +209,7 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(
     <ClCompile Include="surface_pattern.cpp" />
     <ClCompile Include="toy_font_face.cpp" />
     <ClCompile Include="user_data_key.cpp" />
+    <ClCompile Include="Win32RenderWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="N3888_RefImpl.rc" />

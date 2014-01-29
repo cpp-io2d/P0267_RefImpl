@@ -11,6 +11,7 @@
 #include <wrl.h>
 #include "throw_helpers.h"
 #include "drawing.h"
+#include "Win32RenderWindow.h"
 
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
@@ -186,6 +187,8 @@ int WINAPI wWinMain(
 	}
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_N3888_REFIMPL));
+
+	Win32RenderWindow window( 320, 240 );
 
 	// Main message loop:
 	while (msg.message != WM_QUIT) {
