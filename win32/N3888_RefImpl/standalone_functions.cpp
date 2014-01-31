@@ -30,6 +30,10 @@ namespace std {
 				return surface(nh);
 			}
 
+			surface make_surface(format fmt, int width, int height) {
+				return image_surface(fmt, width, height);
+			}
+
 			int format_stride_for_width(format format, int width) {
 				return cairo_format_stride_for_width(_Format_to_cairo_format_t(format), width);
 			}
