@@ -51,9 +51,9 @@ public:
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
-unique_ptr<surface> g_psurface;
-RECT g_previousClientRect;
-ref_counted_bool g_doNotPaint;
+//unique_ptr<surface> g_psurface;
+//RECT g_previousClientRect;
+//ref_counted_bool g_doNotPaint;
 
 // Everything in the Draw function should be portable C++ code.
 void Draw(surface& surface) {
@@ -199,59 +199,59 @@ void Draw(surface& surface) {
 	context.show_text("Hello C++!");
 }
 
-void OnPaint(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	UNREFERENCED_PARAMETER(message);
-	UNREFERENCED_PARAMETER(wParam);
-	UNREFERENCED_PARAMETER(lParam);
-
-	PAINTSTRUCT ps;
-	HDC hdc;
-	RECT updateRect{ };
-	auto getUpdateRectResult = GetUpdateRect(hWnd, &updateRect, FALSE);
-
-	// There's a bug somewhere (possibly cairo?) where if you run this code without the check to make sure that
-	// updateRect.left and .top are both 0, it crashes and does so in the cairo DLL such that it's immune to
-	// being caught. Specifically in a Win32/Debug config it throws well inside cairo on the ctxt.paint() call
-	// on an illegal memory access (actually in pixman-sse2.c in a call to "void save_128_aligned(__m128i*, __m128i);").
-	if (getUpdateRectResult != FALSE && updateRect.left == 0 && updateRect.top == 0) {
-		hdc = BeginPaint(hWnd, &ps);
-
-		RECT clientRect;
-		if (!GetClientRect(hWnd, &clientRect)) {
-			throw_get_last_error<logic_error>("Failed GetClientRect call.");
-		}
-		auto width = clientRect.right - clientRect.left;
-		auto height = clientRect.bottom - clientRect.top;
-		auto previousWidth = g_previousClientRect.right - g_previousClientRect.left;
-		auto previousHeight = g_previousClientRect.bottom - g_previousClientRect.top;
-
-		// To enable screenshot saving, we are using a global unique_ptr surface. I did not rewrite the boilerplate
-		// Win32 code so that it'd be a class, hence the globals.
-		if ((g_psurface == nullptr) || (width != previousWidth) || (height != previousHeight)) {
-			g_psurface = unique_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
-			g_previousClientRect = clientRect;
-		}
-
-		// Draw to the off-screen buffer.
-		Draw(*g_psurface);
-
-		// Flush to ensure that it is drawn to the window.
-		g_psurface->flush();
-
-		auto surface = make_surface(cairo_win32_surface_create(hdc));
-		auto ctxt = context(surface);
-		ctxt.set_source_surface(*g_psurface, 0.0, 0.0);
-		ctxt.paint();
-		surface.flush();
-		EndPaint(hWnd, &ps);
-	}
-	else {
-		if (getUpdateRectResult != FALSE) {
-			hdc = BeginPaint(hWnd, &ps);
-			EndPaint(hWnd, &ps);
-		}
-	}
-}
+//void OnPaint(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+//	UNREFERENCED_PARAMETER(message);
+//	UNREFERENCED_PARAMETER(wParam);
+//	UNREFERENCED_PARAMETER(lParam);
+//
+//	PAINTSTRUCT ps;
+//	HDC hdc;
+//	RECT updateRect{ };
+//	auto getUpdateRectResult = GetUpdateRect(hWnd, &updateRect, FALSE);
+//
+//	// There's a bug somewhere (possibly cairo?) where if you run this code without the check to make sure that
+//	// updateRect.left and .top are both 0, it crashes and does so in the cairo DLL such that it's immune to
+//	// being caught. Specifically in a Win32/Debug config it throws well inside cairo on the ctxt.paint() call
+//	// on an illegal memory access (actually in pixman-sse2.c in a call to "void save_128_aligned(__m128i*, __m128i);").
+//	if (getUpdateRectResult != FALSE && updateRect.left == 0 && updateRect.top == 0) {
+//		hdc = BeginPaint(hWnd, &ps);
+//
+//		RECT clientRect;
+//		if (!GetClientRect(hWnd, &clientRect)) {
+//			throw_get_last_error<logic_error>("Failed GetClientRect call.");
+//		}
+//		auto width = clientRect.right - clientRect.left;
+//		auto height = clientRect.bottom - clientRect.top;
+//		auto previousWidth = g_previousClientRect.right - g_previousClientRect.left;
+//		auto previousHeight = g_previousClientRect.bottom - g_previousClientRect.top;
+//
+//		// To enable screenshot saving, we are using a global unique_ptr surface. I did not rewrite the boilerplate
+//		// Win32 code so that it'd be a class, hence the globals.
+//		if ((g_psurface == nullptr) || (width != previousWidth) || (height != previousHeight)) {
+//			g_psurface = unique_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
+//			g_previousClientRect = clientRect;
+//		}
+//
+//		// Draw to the off-screen buffer.
+//		Draw(*g_psurface);
+//
+//		// Flush to ensure that it is drawn to the window.
+//		g_psurface->flush();
+//
+//		auto surface = make_surface(cairo_win32_surface_create(hdc));
+//		auto ctxt = context(surface);
+//		ctxt.set_source_surface(*g_psurface, 0.0, 0.0);
+//		ctxt.paint();
+//		surface.flush();
+//		EndPaint(hWnd, &ps);
+//	}
+//	else {
+//		if (getUpdateRectResult != FALSE) {
+//			hdc = BeginPaint(hWnd, &ps);
+//			EndPaint(hWnd, &ps);
+//		}
+//	}
+//}
 
 int WINAPI wWinMain(
 	_In_ HINSTANCE hInstance,
@@ -261,7 +261,7 @@ int WINAPI wWinMain(
 	) {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
-	g_previousClientRect = { }; // Zero out previous client rect.
+	//g_previousClientRect = { }; // Zero out previous client rect.
 	throw_if_failed_hresult<runtime_error>(
 		CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED), "Failed call to CoInitializeEx."
 		);
@@ -274,56 +274,39 @@ int WINAPI wWinMain(
 	LoadString(hInstance, IDC_N3888_REFIMPL, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
 
-	HWND hWnd;
+	//HWND hWnd;
 	// Perform application initialization:
-	if (!InitInstance(hInstance, nCmdShow, hWnd)) {
-		CoUninitialize();
-		return FALSE;
-	}
+	//if (!InitInstance(hInstance, nCmdShow, hWnd)) {
+	//	CoUninitialize();
+	//	return FALSE;
+	//}
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_N3888_REFIMPL));
 
-	Win32RenderWindow window( 320, 240, L"N3888_RefImpl rocks!" );
-	Win32RenderWindow window2(320, 240, L"N3888_RefImpl rocks two times!");
+	Win32RenderWindow window( 320, 240, L"N3888_RefImpl Main Window" );
 
 	// Main message loop:
-	while (msg.message != WM_QUIT) {
+	while (msg.message != WM_QUIT) 
+	{
 		if (!PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
-			// No message so redraw the window.
-			if (g_psurface != nullptr && !g_doNotPaint) {
-				RECT clientRect;
-				if (!GetClientRect(hWnd, &clientRect)) {
-					throw_get_last_error<logic_error>("Failed GetClientRect call.");
-				}
-				auto width = clientRect.right - clientRect.left;
-				auto height = clientRect.bottom - clientRect.top;
-				auto previousWidth = g_previousClientRect.right - g_previousClientRect.left;
-				auto previousHeight = g_previousClientRect.bottom - g_previousClientRect.top;
 
-				// To enable screenshot saving, we are using a global unique_ptr surface. I did not rewrite the boilerplate
-				// Win32 code so that it'd be a class, hence the globals.
-				if ((width != previousWidth) || (height != previousHeight)) {
-					g_psurface = unique_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
-					g_previousClientRect = clientRect;
-				}
+			// Draw to the off-screen buffer.
+			Draw(*window.g_psurface);
 
-				// Draw to the off-screen buffer.
-				Draw(*g_psurface);
-
-				// Flush to ensure that it is drawn to the window.
-				g_psurface->flush();
-				auto hdc = GetDC(hWnd);
-				{
-					auto surface = make_surface(cairo_win32_surface_create(hdc));
-					auto ctxt = context(surface);
-					ctxt.set_source_surface(*g_psurface, 0.0, 0.0);
-					ctxt.paint();
-					surface.flush();
-				}
-				ReleaseDC(hWnd, hdc);
+			// Flush to ensure that it is drawn to the window.
+			window.g_psurface->flush();
+			auto hdc = GetDC(window.GetHandle());
+			{
+				auto surface = make_surface(cairo_win32_surface_create(hdc));
+				auto ctxt = context(surface);
+				ctxt.set_source_surface(*window.g_psurface, 0.0, 0.0);
+				ctxt.paint();
+				surface.flush();
 			}
+			ReleaseDC(window.GetHandle(), hdc);
 		}
-		else {
+		else
+		{
 			if (msg.message != WM_QUIT) {
 				if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
 					TranslateMessage(&msg);
@@ -337,6 +320,25 @@ int WINAPI wWinMain(
 }
 
 //
+// FUNCTION: CommonWindowProc
+//
+// PURPOSE: Provides a simple message processor which attempts to call the handler member
+//          of the Win32RenderWindow class.
+//
+
+LRESULT CALLBACK CommonWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	LONG_PTR ObjPtr = GetWindowLongPtr(hwnd, 0);
+
+	if (ObjPtr == 0) {
+		return(DefWindowProc(hwnd, msg, wparam, lparam));
+	}
+	else {
+		return(reinterpret_cast<Win32RenderWindow*>(ObjPtr)->WindowProc(hwnd, msg, wparam, lparam));
+	}
+}
+
+//
 //  FUNCTION: MyRegisterClass()
 //
 //  PURPOSE: Registers the window class.
@@ -347,9 +349,9 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
 	wcex.style = 0;
-	wcex.lpfnWndProc = WndProc;
+	wcex.lpfnWndProc = CommonWindowProc;
 	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
+	wcex.cbWndExtra = sizeof(Win32RenderWindow*);
 	wcex.hInstance = hInstance;
 	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_N3888_REFIMPL));
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -395,96 +397,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND& hWnd) {
 	return TRUE;
 }
 
-void ShowSaveAsPNGDialog() {
-	ComPtr<IFileSaveDialog> fsd;
-	throw_if_failed_hresult<logic_error>(
-		CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&fsd)), "Failed call to CoCreateInstance for IFileSaveDialog.");
-
-	FILEOPENDIALOGOPTIONS fodOptions{ };
-	throw_if_failed_hresult<logic_error>(
-		fsd->GetOptions(&fodOptions), "Failed call to IFileDialog::GetOptions.");
-	throw_if_failed_hresult<logic_error>(
-		fsd->SetOptions(fodOptions | FOS_FORCEFILESYSTEM | FOS_OVERWRITEPROMPT | FOS_PATHMUSTEXIST), "Failed call to IFileDialog::SetOptions.");
-
-	const COMDLG_FILTERSPEC filterSpec[] = {
-		{ L"PNG", L".png" }
-	};
-	throw_if_failed_hresult<logic_error>(
-		fsd->SetFileTypes(ARRAYSIZE(filterSpec), filterSpec), "Failed call to IFileDialog::SetFileTypes.");
-	throw_if_failed_hresult<logic_error>(
-		fsd->SetFileTypeIndex(1U), "Failed call to IFileDialog::SetFileTypeIndex.");
-	throw_if_failed_hresult<logic_error>(
-		fsd->SetDefaultExtension(L"png"), "Failed call to IFileDialog::SetDefaultExtension.");
-
-	ComPtr<IKnownFolderManager> kfm;
-	throw_if_failed_hresult<logic_error>(
-		CoCreateInstance(CLSID_KnownFolderManager, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&kfm)), "Failed call to CoCreateInstance for IKnownFolderManager.");
-	ComPtr<IKnownFolder> picturesKnownFolder;
-	throw_if_failed_hresult<logic_error>(
-		kfm->GetFolder(FOLDERID_Pictures, &picturesKnownFolder), "Failed call to IKnownFolderManager::GetFolder.");
-	ComPtr<IShellItem> picturesShellItem;
-	throw_if_failed_hresult<logic_error>(
-		picturesKnownFolder->GetShellItem(0, IID_PPV_ARGS(&picturesShellItem)), "Failed call to IKnownFolder::GetShellItem.");
-
-	throw_if_failed_hresult<logic_error>(
-		fsd->SetDefaultFolder(picturesShellItem.Get()), "Failed call to IFileDialog::SetDefaultFolder.");
-
-	HRESULT hr;
-	hr = fsd->Show(nullptr);
-	if (SUCCEEDED(hr)) {
-		// The user picked a file.
-		ComPtr<IShellItem> result;
-		throw_if_failed_hresult<logic_error>(
-			fsd->GetResult(&result), "Failed call to IFileDialog::GetResult.");
-		wstring wfilename;
-		PWSTR pwstrFilename = nullptr;
-		throw_if_failed_hresult<logic_error>(
-			result->GetDisplayName(SIGDN_FILESYSPATH, &pwstrFilename), "Failed call to IShellItem::GetDisplayName.");
-		try {
-			wfilename = pwstrFilename;
-			CoTaskMemFree(pwstrFilename);
-		}
-		catch (...) {
-			CoTaskMemFree(pwstrFilename);
-			throw;
-		}
-		HANDLE hFile = CreateFileW(wfilename.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if (hFile == INVALID_HANDLE_VALUE) {
-			throw_get_last_error<runtime_error>("Failed call to CreateFileW.");
-		}
-		if (CloseHandle(hFile) == 0) {
-			throw_get_last_error<runtime_error>("Failed call to CloseHandle.");
-		}
-		auto bufferSize = GetShortPathNameW(wfilename.c_str(), nullptr, 0);
-		wstring wshortfilename;
-		wshortfilename.resize(bufferSize);
-		if (GetShortPathNameW(wfilename.c_str(), &wshortfilename[0], bufferSize) == 0) {
-			throw_get_last_error<runtime_error>("Failed call to GetShortPathNameW.");
-		}
-		char defaultChar = '*';
-		BOOL usedDefault = FALSE;
-		auto mbBufferSize = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wshortfilename.c_str(), -1, nullptr, 0, &defaultChar, &usedDefault);
-		string mbFileName;
-		usedDefault = FALSE;
-		mbFileName.resize(mbBufferSize);
-		if (WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wshortfilename.c_str(), -1, &mbFileName[0], mbBufferSize, &defaultChar, &usedDefault) == 0) {
-			throw_get_last_error<runtime_error>("Failed call to WideCharToMultiByte.");
-		}
-		if (usedDefault != FALSE) {
-			throw runtime_error("Could not convert short filename string to multibyte from wide character.");
-		}
-		g_psurface->write_to_png(mbFileName);
-	}
-	else {
-		if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
-			// Do nothing. The user clicked cancel.
-		}
-		else {
-			throw_if_failed_hresult<logic_error>(hr, "Failed call to IModalWindow::Show.");
-		}
-	}
-
-}
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -496,96 +408,96 @@ void ShowSaveAsPNGDialog() {
 //  WM_DESTROY	- post a quit message and return
 //
 //
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	int wmId, wmEvent;
-
-#if defined(DEBUG_WNDPROC)
-	wstringstream str;
-	str << L"Message: 0x" << hex << uppercase << message << nouppercase
-		<< L". WPARAM: 0x" << hex << uppercase << static_cast<UINT>(wParam) << nouppercase
-		<< L". LPARAM: 0x" << hex << uppercase << static_cast<UINT>(lParam) << endl;
-	OutputDebugStringW(str.str().c_str());
-#endif
-
-	switch (message) {
-	case WM_COMMAND:
-		wmId = LOWORD(wParam);
-		wmEvent = HIWORD(wParam);
-		// Parse the menu selections:
-		switch (wmId) {
-		case IDM_ABOUT:
-		{
-			auto aboutResult = DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-			if (aboutResult <= 0) {
-				throw_get_last_error<logic_error>("Failed call to DialogBox.");
-			}
-		}
-			break;
-		case ID_EDIT_SCREENCAPTURE:
-			ShowSaveAsPNGDialog();
-			break;
-		case IDM_EXIT:
-			DestroyWindow(hWnd);
-			break;
-		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
-		}
-		break;
-	case WM_ENTERSIZEMOVE:
-		g_doNotPaint = true; // Don't paint while resizing to avoid flicker.
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	case WM_EXITSIZEMOVE:
-		g_doNotPaint = false;
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	case WM_PAINT:
-		if (!g_doNotPaint) {
-			OnPaint(hWnd, message, wParam, lParam);
-		}
-		break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-	return 0;
-}
+//LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+//	int wmId, wmEvent;
+//
+//#if defined(DEBUG_WNDPROC)
+//	wstringstream str;
+//	str << L"Message: 0x" << hex << uppercase << message << nouppercase
+//		<< L". WPARAM: 0x" << hex << uppercase << static_cast<UINT>(wParam) << nouppercase
+//		<< L". LPARAM: 0x" << hex << uppercase << static_cast<UINT>(lParam) << endl;
+//	OutputDebugStringW(str.str().c_str());
+//#endif
+//
+//	switch (message) {
+//	case WM_COMMAND:
+//		wmId = LOWORD(wParam);
+//		wmEvent = HIWORD(wParam);
+//		// Parse the menu selections:
+//		switch (wmId) {
+//		case IDM_ABOUT:
+//		{
+//			auto aboutResult = DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+//			if (aboutResult <= 0) {
+//				throw_get_last_error<logic_error>("Failed call to DialogBox.");
+//			}
+//		}
+//			break;
+//		case ID_EDIT_SCREENCAPTURE:
+//			ShowSaveAsPNGDialog();
+//			break;
+//		case IDM_EXIT:
+//			DestroyWindow(hWnd);
+//			break;
+//		default:
+//			return DefWindowProc(hWnd, message, wParam, lParam);
+//		}
+//		break;
+//	case WM_ENTERSIZEMOVE:
+//		g_doNotPaint = true; // Don't paint while resizing to avoid flicker.
+//		return DefWindowProc(hWnd, message, wParam, lParam);
+//	case WM_EXITSIZEMOVE:
+//		g_doNotPaint = false;
+//		return DefWindowProc(hWnd, message, wParam, lParam);
+//	case WM_PAINT:
+//		if (!g_doNotPaint) {
+//			OnPaint(hWnd, message, wParam, lParam);
+//		}
+//		break;
+//	case WM_DESTROY:
+//		PostQuitMessage(0);
+//		break;
+//	default:
+//		return DefWindowProc(hWnd, message, wParam, lParam);
+//	}
+//	return 0;
+//}
 
 // Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
-	UNREFERENCED_PARAMETER(lParam);
-	switch (message) {
-	case WM_INITDIALOG:
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
-			EndDialog(hDlg, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		break;
-	case WM_NOTIFY:
-	{
-		PNMLINK pnmLink = reinterpret_cast<PNMLINK>(lParam);
-		if ((pnmLink->hdr.idFrom == IDC_SYSLINK1) || (pnmLink->hdr.idFrom == IDC_SYSLINK2)) {
-			switch (pnmLink->hdr.code)
-			{
-			case NM_CLICK:
-				// Intentional fall-through.
-			case NM_RETURN:
-			{
-				auto shExecResult = reinterpret_cast<int>(ShellExecute(nullptr, L"open", pnmLink->item.szUrl, nullptr, nullptr, SW_SHOW));
-				if (shExecResult <= 32) {
-					wstringstream err;
-					err << L"Error calling ShellExecute while trying to open the link. Return code: " << to_wstring(shExecResult) << "." << endl;
-					MessageBox(hDlg, err.str().c_str(), L"Error opening link", MB_OK | MB_ICONEXCLAMATION);
-				}
-			}
-				return (INT_PTR)TRUE;
-			}
-		}
-	}
-		break;
-	}
-	return (INT_PTR)FALSE;
-}
+//INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
+//	UNREFERENCED_PARAMETER(lParam);
+//	switch (message) {
+//	case WM_INITDIALOG:
+//		return (INT_PTR)TRUE;
+//
+//	case WM_COMMAND:
+//		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
+//			EndDialog(hDlg, LOWORD(wParam));
+//			return (INT_PTR)TRUE;
+//		}
+//		break;
+//	case WM_NOTIFY:
+//	{
+//		PNMLINK pnmLink = reinterpret_cast<PNMLINK>(lParam);
+//		if ((pnmLink->hdr.idFrom == IDC_SYSLINK1) || (pnmLink->hdr.idFrom == IDC_SYSLINK2)) {
+//			switch (pnmLink->hdr.code)
+//			{
+//			case NM_CLICK:
+//				// Intentional fall-through.
+//			case NM_RETURN:
+//			{
+//				auto shExecResult = reinterpret_cast<int>(ShellExecute(nullptr, L"open", pnmLink->item.szUrl, nullptr, nullptr, SW_SHOW));
+//				if (shExecResult <= 32) {
+//					wstringstream err;
+//					err << L"Error calling ShellExecute while trying to open the link. Return code: " << to_wstring(shExecResult) << "." << endl;
+//					MessageBox(hDlg, err.str().c_str(), L"Error opening link", MB_OK | MB_ICONEXCLAMATION);
+//				}
+//			}
+//				return (INT_PTR)TRUE;
+//			}
+//		}
+//	}
+//		break;
+//	}
+//	return (INT_PTR)FALSE;
+//}
