@@ -61,6 +61,7 @@ Win32RenderWindow::Win32RenderWindow(unsigned int width, unsigned int height, co
 		UpdateWindow(handle);
 	}
 
+	// Create the initial surface for drawing to.
 	g_psurface = unique_ptr<surface>(new surface(move(make_surface(format::argb32, lwidth, lheight))));
 }
 

@@ -17,7 +17,6 @@ public:
 
 	HWND GetHandle();
 
-
 	LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	void ShowSaveAsPNGDialog();
 
@@ -25,9 +24,6 @@ public:
 
 private:
 	HWND handle;
-	
-	RECT g_previousClientRect;
-	//ref_counted_bool g_doNotPaint;
 };
 
 #endif // _WIN32RENDERWINDOW_
