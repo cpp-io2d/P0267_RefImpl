@@ -19,7 +19,7 @@ using namespace std::experimental::drawing;
 using namespace Microsoft::WRL;
 
 Win32RenderWindow::Win32RenderWindow(unsigned int width, unsigned int height, const std::wstring& caption) :
-	handle( 0 )
+handle(0)
 {
 	// Record the desired client window size
 	RECT rc;
@@ -51,18 +51,20 @@ Win32RenderWindow::Win32RenderWindow(unsigned int width, unsigned int height, co
 		NULL,								// instance of this application
 		NULL);								// extra creation parms
 
-	if ( handle != 0 ) {
-		// Set in the "extra" bytes the pointer to the 'this' pointer
-		// so it can handle messages for itself.
-		SetWindowLongPtr( handle, 0, (LONG_PTR)this);
-
-		// Initially display the window
-		ShowWindow(handle, SW_SHOWNORMAL);
-		UpdateWindow(handle);
+	if (handle == nullptr) {
+		throw_get_last_error<logic_error>("Failed call to CreateWindowEx.");
 	}
 
 	// Create the initial surface for drawing to.
-	g_psurface = unique_ptr<surface>(new surface(move(make_surface(format::argb32, lwidth, lheight))));
+	g_psurface = shared_ptr<surface>(new surface(move(make_surface(format::argb32, lwidth, lheight))));
+
+	// Set in the "extra" bytes the pointer to the 'this' pointer
+	// so it can handle messages for itself.
+	SetWindowLongPtr(handle, 0, (LONG_PTR)this);
+
+	// Initially display the window
+	ShowWindow(handle, SW_SHOWNORMAL);
+	UpdateWindow(handle);
 }
 
 Win32RenderWindow::~Win32RenderWindow()
@@ -125,96 +127,96 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 {
 	switch (msg)
 	{
-		case WM_CREATE:
+	case WM_CREATE:
+	{
+		// Automatically return 0 to allow the window to proceed in the
+		// creation process.
+		return(0);
+	} break;
+
+	case WM_CLOSE:
+	{
+		// This message is sent when a window or an application should
+		// terminate.
+	} break;
+
+	case WM_DESTROY:
+	{
+		// This message is sent when a window has been destroyed.
+		PostQuitMessage(0);
+		return(0);
+	} break;
+
+	case WM_SIZE:
+	{
+		auto width = lparam & 0xFFFF;
+		auto height = (lparam & 0xFFFF0000) >> 16;
+
+		g_psurface = unique_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
+
+	} break;
+
+	case WM_COMMAND:
+	{
+		int wmId, wmEvent;
+
+		wmId = LOWORD(wparam);
+		wmEvent = HIWORD(wparam);
+		// Parse the menu selections:
+		switch (wmId)
 		{
-			// Automatically return 0 to allow the window to proceed in the
-			// creation process.
-			return(0);
+		case IDM_ABOUT:
+		{
+			auto aboutResult = DialogBox(0, MAKEINTRESOURCE(IDD_ABOUTBOX), handle, About);
+			if (aboutResult <= 0) {
+				throw_get_last_error<logic_error>("Failed call to DialogBox.");
+			}
 		} break;
 
-		case WM_CLOSE:
-		{
-			// This message is sent when a window or an application should
-			// terminate.
-		} break;
+		case ID_EDIT_SCREENCAPTURE:
+			ShowSaveAsPNGDialog();
+			break;
 
-		case WM_DESTROY:
-		{
-			// This message is sent when a window has been destroyed.
-			PostQuitMessage(0);
-			return(0);
-		} break;
+		case IDM_EXIT:
+			DestroyWindow(handle);
+			break;
 
-		case WM_SIZE:
-		{
-			auto width = lparam & 0xFFFF;
-			auto height = (lparam & 0xFFFF0000) >> 16;
-
-			g_psurface = unique_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
-
-		} break;
-
-		case WM_COMMAND:
-		{
-			int wmId, wmEvent;
-
-			wmId = LOWORD(wparam);
-			wmEvent = HIWORD(wparam);
-			// Parse the menu selections:
-			switch (wmId)
-			{
-			case IDM_ABOUT:
-			{
-				auto aboutResult = DialogBox(0, MAKEINTRESOURCE(IDD_ABOUTBOX), handle, About);
-				if (aboutResult <= 0) {
-					throw_get_last_error<logic_error>("Failed call to DialogBox.");
-				}
-			} break;
-
-			case ID_EDIT_SCREENCAPTURE:
-				ShowSaveAsPNGDialog();
-				break;
-
-			case IDM_EXIT:
-				DestroyWindow(handle);
-				break;
-
-			default:
-				return DefWindowProc(handle, msg, wparam, lparam);
-			} break;
-		} break;
-
-		case WM_ENTERSIZEMOVE:
-		{
-			//g_doNotPaint = true; // Don't paint while resizing to avoid flicker.
+		default:
 			return DefWindowProc(handle, msg, wparam, lparam);
 		} break;
+	} break;
 
-		case WM_EXITSIZEMOVE:
-		{
-			//g_doNotPaint = false;
-			return DefWindowProc(handle, msg, wparam, lparam);
-		} break;
+	case WM_ENTERSIZEMOVE:
+	{
+		//g_doNotPaint = true; // Don't paint while resizing to avoid flicker.
+		return DefWindowProc(handle, msg, wparam, lparam);
+	} break;
 
-		case WM_PAINT:
-		{
-			//if (!g_doNotPaint) {
-			//	OnPaint(handle, msg, wparam, lparam);
-			//}
-			PAINTSTRUCT ps;
-			HDC hdc;
+	case WM_EXITSIZEMOVE:
+	{
+		//g_doNotPaint = false;
+		return DefWindowProc(handle, msg, wparam, lparam);
+	} break;
 
-			// Flush to ensure that it is drawn to the window.
-			hdc = BeginPaint(handle, &ps); 
-			g_psurface->flush();
+	case WM_PAINT:
+	{
+		//if (!g_doNotPaint) {
+		//	OnPaint(handle, msg, wparam, lparam);
+		//}
+		PAINTSTRUCT ps;
+		HDC hdc;
 
-			auto surface = make_surface(cairo_win32_surface_create(hdc));
-			auto ctxt = context(surface);
-			ctxt.set_source_surface(*g_psurface, 0.0, 0.0);
-			ctxt.paint();
-			surface.flush();
-			EndPaint(handle, &ps);
-		} break;
+		// Flush to ensure that it is drawn to the window.
+		hdc = BeginPaint(handle, &ps);
+		g_psurface->flush();
+
+		auto surface = make_surface(cairo_win32_surface_create(hdc));
+		auto ctxt = context(surface);
+		ctxt.set_source_surface(*g_psurface, 0.0, 0.0);
+		ctxt.paint();
+		surface.flush();
+		EndPaint(handle, &ps);
+	} break;
 	}
 
 	return(DefWindowProc(hwnd, msg, wparam, lparam));
@@ -227,7 +229,7 @@ void Win32RenderWindow::ShowSaveAsPNGDialog() {
 	throw_if_failed_hresult<logic_error>(
 		CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&fsd)), "Failed call to CoCreateInstance for IFileSaveDialog.");
 
-	FILEOPENDIALOGOPTIONS fodOptions{};
+	FILEOPENDIALOGOPTIONS fodOptions{ };
 	throw_if_failed_hresult<logic_error>(
 		fsd->GetOptions(&fodOptions), "Failed call to IFileDialog::GetOptions.");
 	throw_if_failed_hresult<logic_error>(
@@ -311,4 +313,8 @@ void Win32RenderWindow::ShowSaveAsPNGDialog() {
 		}
 	}
 
+}
+
+const shared_ptr<surface>& Win32RenderWindow::GetSurface() {
+	return g_psurface;
 }

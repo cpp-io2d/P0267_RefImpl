@@ -179,6 +179,7 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(
     <ClInclude Include="drawing.h" />
     <ClInclude Include="entrypoint-win32.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="sample_draw.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="throw_helpers.h" />
     <ClInclude Include="Win32RenderWindow.h" />
@@ -202,6 +203,7 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(
     <ClCompile Include="radial_pattern.cpp" />
     <ClCompile Include="raster_source_pattern.cpp" />
     <ClCompile Include="region.cpp" />
+    <ClCompile Include="sample_draw.cpp" />
     <ClCompile Include="scaled_font.cpp" />
     <ClCompile Include="solid_color_pattern.cpp" />
     <ClCompile Include="standalone_functions.cpp" />
