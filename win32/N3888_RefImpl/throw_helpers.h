@@ -1,4 +1,6 @@
 #pragma once
+#ifndef THROW_HELPERS_H
+#define THROW_HELPERS_H
 
 #include <sstream>
 #include <string>
@@ -20,9 +22,10 @@ inline void throw_if_null(void* ptr, const char* msg) {
 	}
 }
 
-template <class exception_type>
-inline void throw_get_last_error(const char* backupMessage) {
-	auto errorCode = GetLastError();
+#if defined(_WIN32_WINNT)
+
+// Returns the system error message as a string or, if there is no message, the result of calling ::std::to_string on errorCode.
+inline ::std::string get_last_error_string(DWORD errorCode = GetLastError(), bool* foundSystemMessage = nullptr) {
 	const auto strCount = 0xFFFF;
 	::std::unique_ptr<char[]> str(new char[strCount]);
 	ZeroMemory(str.get(), strCount * sizeof(char));
@@ -39,12 +42,33 @@ inline void throw_get_last_error(const char* backupMessage) {
 		);
 
 	if (char_count == 0) {
-		std::stringstream error_str;
-		error_str << backupMessage << " Error code: " << errorCode;
-		throw exception_type(error_str.str());
+		if (foundSystemMessage != nullptr) {
+			*foundSystemMessage = false;
+		}
+		return ::std::to_string(errorCode);
 	}
 	else {
-		throw exception_type(std::string(str.get()));
+		if (foundSystemMessage != nullptr) {
+			*foundSystemMessage = true;
+		}
+		return ::std::string(str.get());
 	}
 }
 
+template <class exception_type>
+inline void throw_get_last_error(const char* backupMessage, DWORD errorCode = GetLastError()) {
+	bool foundMessage;
+	auto error_message = get_last_error_string(errorCode, &foundMessage);
+	if (foundMessage) {
+		throw exception_type(error_message);
+	}
+	else {
+		::std::stringstream error_str;
+		error_str << backupMessage << " Error code: " << error_message;
+		throw exception_type(error_str.str());
+	}
+}
+
+#endif
+
+#endif

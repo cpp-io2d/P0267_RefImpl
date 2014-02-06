@@ -29,6 +29,9 @@ void sample_draw::operator()(::std::experimental::drawing::context& ctxt, double
 	//context.set_source(pattern);
 	//context.paint();
 
+	static double timer = 0.0;
+	timer += elapsedTimeInMilliseconds;
+
 	ctxt.save();
 	auto scp = solid_color_pattern(0.0, 0.0, 1.0);
 	ctxt.set_source(scp);
@@ -116,7 +119,7 @@ void sample_draw::operator()(::std::experimental::drawing::context& ctxt, double
 	matrix m;
 	m.init_translate(300.0, 400.0);
 	const double two_pi = 3.1415926535897932 * 2.0;
-	m.rotate(two_pi * (fmod(elapsedTimeInMilliseconds, 4000.0) / 4000.0));
+	m.rotate(two_pi * (fmod(timer, 4000.0) / 4000.0));
 	ctxt.set_matrix(m);
 	ctxt.new_path();
 	ctxt.move_to(-100.0, 0.0);

@@ -59,15 +59,18 @@ int WINAPI wWinMain(
 
 	Win32RenderWindow window(800, 600, L"N3888_RefImpl Main Window");
 
+	not_proposed::timer timer;
+
 	// Main message loop:
 	while (msg.message != WM_QUIT) 
 	{
 		if (!PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
 			// Draw to the off-screen buffer.
+			timer.update();
 			sample_draw sampleDraw;
 			auto& renderTarget = *window.GetSurface();
 			auto rtCtxt = context(renderTarget);
-			sampleDraw(rtCtxt, static_cast<double>(GetTickCount64()));
+			sampleDraw(rtCtxt, timer.get_elapsed_time());
 
 			// Flush to ensure that it is drawn to the window.
 			window.GetSurface()->flush();
