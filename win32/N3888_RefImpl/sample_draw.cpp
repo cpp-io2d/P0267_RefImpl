@@ -69,7 +69,7 @@ void sample_draw::operator()(context& ctxt, double elapsedTimeInMilliseconds) {
 			ctxt.arc(trunc((x2r - x1r) * adjustment + x1r), trunc(yr), radius - 3.0, 0.0, two_pi);
 		}
 		else {
-			ctxt.arc(radius * i * 2.0 + radius + beginX + (4.0 * i), y, radius, 0.0, two_pi);
+			ctxt.arc(radius * i * 2.0 + radius + beginX, y, radius - 3.0, 0.0, two_pi);
 		}
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
 		ctxt.set_source_rgb(greyColor, greyColor, greyColor);
