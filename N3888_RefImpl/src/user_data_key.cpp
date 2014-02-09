@@ -3,7 +3,7 @@
 using namespace std;
 using namespace std::experimental::drawing;
 
-atomic<int_fast64_t> user_data_key::_Cnt = 0;
+atomic<user_data_key::key_type> user_data_key::_Cnt {0};
 
 user_data_key::user_data_key() : _Val(++_Cnt) { }
 
@@ -20,6 +20,6 @@ user_data_key& user_data_key::operator=(user_data_key&& other) {
 	return *this;
 }
 
-int_fast64_t user_data_key::_Get_value() const {
+user_data_key::key_type user_data_key::_Get_value() const {
 	return _Val;
 }

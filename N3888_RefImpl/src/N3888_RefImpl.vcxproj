@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -85,19 +85,19 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)win32\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
-cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.pdb" "$(OutputPath)"
-cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(OutputPath)"
-cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pdb" "$(OutputPath)"</Command>
+      <Command>cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
+cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.pdb" "$(OutputPath)"
+cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(OutputPath)"
+cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pdb" "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -107,19 +107,19 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pdb" "$(
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)win32\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
-cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.pdb" "$(OutputPath)"
-cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(OutputPath)"
-cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pdb" "$(OutputPath)"</Command>
+      <Command>cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
+cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.pdb" "$(OutputPath)"
+cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(OutputPath)"
+cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pdb" "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -132,7 +132,7 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pdb" "$(
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions> /Qvec-report:2</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)win32\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -140,11 +140,11 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pdb" "$(
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
-cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(OutputPath)"</Command>
+      <Command>cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
+cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -157,7 +157,7 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions> /Qvec-report:2</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)win32\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -165,15 +165,15 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
-cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(OutputPath)"</Command>
+      <Command>cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
+cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="DLL build instructions.txt" />
+    <Text Include="win32\DLL build instructions.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="drawing.h" />
@@ -221,30 +221,30 @@ cmd /c copy "$(ProjectDir)DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dll" "$(
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DLLs\x64\Debug\cairo.dll" />
-    <None Include="DLLs\x64\Debug\cairo.pdb" />
-    <None Include="DLLs\x64\Debug\zlib1.dll" />
-    <None Include="DLLs\x64\Debug\zlib1.pdb" />
-    <None Include="DLLs\x64\Release\cairo.dll" />
-    <None Include="DLLs\x64\Release\zlib1.dll" />
-    <None Include="DLLs\x86\Debug\cairo.dll">
+    <None Include="win32\DLLs\x64\Debug\cairo.dll" />
+    <None Include="win32\DLLs\x64\Debug\cairo.pdb" />
+    <None Include="win32\DLLs\x64\Debug\zlib1.dll" />
+    <None Include="win32\DLLs\x64\Debug\zlib1.pdb" />
+    <None Include="win32\DLLs\x64\Release\cairo.dll" />
+    <None Include="win32\DLLs\x64\Release\zlib1.dll" />
+    <None Include="win32\DLLs\x86\Debug\cairo.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
     </None>
-    <None Include="DLLs\x86\Debug\cairo.pdb">
+    <None Include="win32\DLLs\x86\Debug\cairo.pdb">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
     </None>
-    <None Include="DLLs\x86\Debug\zlib1.dll">
+    <None Include="win32\DLLs\x86\Debug\zlib1.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
     </None>
-    <None Include="DLLs\x86\Debug\zlib1.pdb">
+    <None Include="win32\DLLs\x86\Debug\zlib1.pdb">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
     </None>
-    <None Include="DLLs\x86\Release\cairo.dll" />
-    <None Include="DLLs\x86\Release\zlib1.dll" />
+    <None Include="win32\DLLs\x86\Release\cairo.dll" />
+    <None Include="win32\DLLs\x86\Release\zlib1.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

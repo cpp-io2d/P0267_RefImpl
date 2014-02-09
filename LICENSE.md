@@ -40,9 +40,9 @@ win32
 --------------
 
 With the exception of the files contained in the directories
-`/win32/N3888_RefImpl/DLLs`, `/win32/N3888_RefImpl/include`, and 
-`/win32/N3888_RefImpl/libs`, the following license applies to the files contained
-in the `/win32` directory.
+`/N3888_RefImpl/src/win32/DLLs`, `/N3888_RefImpl/src/win32/include`, and 
+`/N3888_RefImpl/src/win32/libs`, the following license applies to the files contained
+in the `/N3888_RefImpl` directory.
 
 
 `The MIT License (MIT)
@@ -67,11 +67,11 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.`
 
 
-The files in `/win32/N3888_RefImpl/include` are header files used to interface
+The files in `/N3888_RefImpl/src/win32/include` are header files used to interface
 with the cairo graphics library. Their license is described above under the **cairo**
 section.
 
-The files in `/win32/N3888_RefImpl/libs` are .lib files used to dynamically
+The files in `/N3888_RefImpl/src/win32/libs` are .lib files used to dynamically
 link with:
 
   * The cairo graphics library in accordance with the terms of the Mozilla
@@ -80,7 +80,7 @@ link with:
   * The zlib general purpose compression library in accordance with the terms
     of its license, which can be found at `/zlib-1.2.8/zlib.h`.
 
-The files in `/win32/N3888_RefImpl/DLLs` are executable code versions of
+The files in `/N3888_RefImpl/src/win32/DLLs` are executable code versions of
 cairo and zlib in the form of DLL files. These files were built in accordance
-with the instructions provided at `/win32/N3888_RefImpl/DLL build instructions.txt`.
+with the instructions provided at `/N3888_RefImpl/src/win32/DLL build instructions.txt`.
 Their licensing is as described above for the .lib files.

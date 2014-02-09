@@ -36,6 +36,12 @@ context::context(surface& s)
 	_Context = shared_ptr<cairo_t>(cairo_create(s.native_handle()), &cairo_destroy);
 }
 
+context::context(context::native_handle_type nh)
+: _Surface(new surface(cairo_surface_reference(cairo_get_target(nh))))
+, _User_data_map(new ::std::map<user_data_key, ::std::shared_ptr<void>>) {
+	_Context = shared_ptr<cairo_t>(nh, &cairo_destroy);
+}
+
 status context::status() {
 	return _Cairo_status_t_to_status(cairo_status(_Context.get()));
 }

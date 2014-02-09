@@ -42,3 +42,5 @@
 /N3888_RefImpl/x64/Debug/N3888_RefImpl.pch
 /N3888_RefImpl/x64/Debug/N3888_RefImpl.res
 /N3888_RefImpl/x64/Debug/vc120.idb
+Makefile
+Makefile.in

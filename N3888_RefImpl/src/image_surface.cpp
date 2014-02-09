@@ -1,6 +1,7 @@
 #include "drawing.h"
 #include "xdrawinghelpers.h"
 #include "xcairoenumhelpers.h"
+#include <cstring>
 
 using namespace std;
 using namespace std::experimental::drawing;
@@ -90,16 +91,16 @@ image_surface::image_surface(::std::function<void(void* closure, vector<unsigned
 void image_surface::set_data(vector<unsigned char>& data) {
 	auto expected_size = static_cast<size_t>(get_stride() * get_height());
 	if (data.size() != static_cast<uint64_t>(expected_size)) {
-		throw drawing_exception(status::invalid_stride);
+		throw drawing_exception(::std::experimental::drawing::status::invalid_stride);
 	}
 	if (_Surface.get() == nullptr) {
-		throw drawing_exception(status::null_pointer);
+		throw drawing_exception(::std::experimental::drawing::status::null_pointer);
 	}
 	auto imageData = cairo_image_surface_get_data(_Surface.get());
 	if (imageData == nullptr) {
-		throw drawing_exception(status::null_pointer);
+		throw drawing_exception(::std::experimental::drawing::status::null_pointer);
 	}
-	memcpy(imageData, data.data(), expected_size);
+	::std::memcpy(imageData, data.data(), expected_size);
 }
 
 vector<unsigned char> image_surface::get_data() {

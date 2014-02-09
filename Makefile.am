@@ -1,0 +1,2 @@
+SUBDIRS	= 		N3888_RefImpl
+ACLOCAL_AMFLAGS =	-I m4

@@ -228,7 +228,7 @@ namespace std {
 			};
 
 			struct rectangle_list {
-				status status;
+				::std::experimental::drawing::status status;
 				::std::vector<rectangle> rectangles;
 			};
 
@@ -301,18 +301,18 @@ namespace std {
 			};
 
 			class drawing_exception : public exception {
-				status _Status = status::last_status;
+				::std::experimental::drawing::status _Status = ::std::experimental::drawing::status::last_status;
 			public:
 				drawing_exception() noexcept;
-				explicit drawing_exception(status s) noexcept;
+				explicit drawing_exception(::std::experimental::drawing::status s) noexcept;
 
-				virtual ~drawing_exception();
+				virtual ~drawing_exception() noexcept;
 
 				drawing_exception(const drawing_exception& rhs) noexcept = default;
 				drawing_exception& operator=(const drawing_exception& rhs) noexcept = default;
 
 				virtual const char* what() const noexcept;
-				status status() const noexcept;
+				::std::experimental::drawing::status status() const noexcept;
 			};
 
 			class region {
@@ -331,7 +331,7 @@ namespace std {
 				explicit region(const ::std::vector<rectangle_int>& rectangles);
 				region copy();
 
-				status status();
+				::std::experimental::drawing::status status();
 
 				void get_extents(rectangle_int& extents);
 				int num_rectangles();
@@ -353,15 +353,18 @@ namespace std {
 			};
 
 			class user_data_key {
-				static ::std::atomic<::std::int_fast64_t> _Cnt;
-				::std::int_fast64_t _Val;
+			public:
+				typedef ::std::int_fast32_t key_type;
+			private:
+				static ::std::atomic<key_type> _Cnt;
+				key_type _Val;
 			public:
 				user_data_key();
 				user_data_key(const user_data_key&) = default;
 				user_data_key& operator=(const user_data_key&) = default;
 				user_data_key(user_data_key&& other);
 				user_data_key& operator=(user_data_key&& other);
-				::std::int_fast64_t _Get_value() const;
+				key_type _Get_value() const;
 
 				bool operator<(const user_data_key& other) const { return _Val < other._Val; }
 				bool operator>(const user_data_key& other) const { return _Val > other._Val; }
@@ -383,7 +386,7 @@ namespace std {
 				device(device&& other);
 				device& operator=(device&& other);
 				explicit device(native_handle_type nh);
-				status status();
+				::std::experimental::drawing::status status();
 				void finish();
 				void flush();
 				void set_user_data(const user_data_key& key, ::std::shared_ptr<void>& value);
@@ -409,7 +412,7 @@ namespace std {
 
 				font_options& operator=(native_handle_type nh);
 
-				status status();
+				::std::experimental::drawing::status status();
 
 				void merge(const font_options& other);
 				unsigned long hash();
@@ -505,7 +508,7 @@ namespace std {
 				surface(surface& target, double x, double y, double width, double height);
 				virtual ~surface();
 
-				status status();
+				::std::experimental::drawing::status status();
 				void finish();
 				void flush();
 
@@ -586,7 +589,7 @@ namespace std {
 
 				virtual ~pattern();
 
-				status status();
+				::std::experimental::drawing::status status();
 				void set_extend(extend extend);
 				extend get_extend();
 				void set_filter(filter filter);
@@ -745,9 +748,10 @@ namespace std {
 				context& operator=(const context&) = default;
 				context(context&& other);
 				context& operator=(context&& other);
+				explicit context(native_handle_type nh);
 				explicit context(surface& s);
 
-				status status();
+				::std::experimental::drawing::status status();
 				void save();
 				void restore();
 				surface get_target();

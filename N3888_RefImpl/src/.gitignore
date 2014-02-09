@@ -1,0 +1,5 @@
+/.deps/*
+/Makefile.in
+/N3888_RefImpl
+/N3888_RefImpl-*.o
+/Makefile
