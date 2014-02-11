@@ -30,7 +30,6 @@ library is available for download at:</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area1">
             <property name="can_focus">False</property>
-            <property name="baseline_position">bottom</property>
             <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="about_ok_button">

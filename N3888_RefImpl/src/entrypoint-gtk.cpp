@@ -3,6 +3,7 @@
 #include <gtk/gtk.h>
 #include "N3888_RefImpl.ui.h"
 #include <assert.h>
+#include <stdexcept>
 
 GtkBuilder* g_builder;
 GtkWidget* g_main_window;
@@ -18,8 +19,13 @@ gboolean redraw_callback(gpointer user_data) {
 int main(int argc, char** argv) {
     gtk_init(&argc, &argv);
 
-    g_builder = gtk_builder_new_from_string(
-	g_n3888_ui_as_string, -1);
+    g_builder = gtk_builder_new();
+
+    auto result = gtk_builder_add_from_string(g_builder, g_n3888_ui_as_string, -1, nullptr);
+    if (result == 0) {
+      throw ::std::runtime_error("Failed call to gtk_builder_add_from_string.");
+    }
+
     g_main_window = GTK_WIDGET(gtk_builder_get_object(g_builder, "window"));
     assert(g_main_window != nullptr);
     g_drawingarea = GTK_WIDGET(gtk_builder_get_object(g_builder, "drawingarea"));

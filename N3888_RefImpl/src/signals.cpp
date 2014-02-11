@@ -1,5 +1,4 @@
 #include "signals.h"
-//#include <memory>
 #include <string>
 #include "drawing.h"
 #include <cairo.h>
@@ -93,5 +92,5 @@ G_MODULE_EXPORT void on_edit_screencapture_menuitem_activate(GtkMenuItem* menuit
 }
 
 G_MODULE_EXPORT void on_file_exit_menuitem_activate(GtkMenuItem* menuitem, gpointer user_data) {
-    gtk_window_close(GTK_WINDOW(g_main_window));
+    gtk_widget_destroy(GTK_WIDGET(g_main_window));
 }
