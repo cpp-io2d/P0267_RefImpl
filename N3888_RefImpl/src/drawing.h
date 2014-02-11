@@ -354,7 +354,11 @@ namespace std {
 
 			class user_data_key {
 			public:
+#ifdef __clang__ // Workaround for Clang 3.3 not supporting 64-bit atomics on 32-bit GNU/Linux
 				typedef ::std::int_fast32_t key_type;
+#else
+				typedef ::std::int_fast64_t key_type;
+#endif
 			private:
 				static ::std::atomic<key_type> _Cnt;
 				key_type _Val;
