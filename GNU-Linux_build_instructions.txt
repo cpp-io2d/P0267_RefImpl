@@ -1,0 +1,17 @@
+﻿You will need a relatively recent build of GNU autotools. Any recent distro
+should have a reasonably new version available which will fit the needs here.
+You will also need cairo, GTK+3, and related libraries; as long as you have
+autotools, if you should be able to generate a configure script and it will
+tell you if you are missing any other dependencies.
+
+To build the project, from this directory run the command 'autoreconf -i'. It
+should run for a bit then complete silently. If so, you should then run the
+generated './configure' script. This should notify you if you are missing any
+pre-reqs or have an older version that wouldn't work. If configure completes
+successfully, you should be able to run the 'make' command and then execute
+the resulting executable by calling './N3888_RefImpl/src/N3888_RefImpl'.
+
+The drawing portion is the same code as in the Windows version. The entry
+point uses GTK+3 and is quite rough currently (very C-like complete with
+*shudder* global variables). It is meant as a demonstration only and will
+improve as time allows.
