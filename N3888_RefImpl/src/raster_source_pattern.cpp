@@ -8,18 +8,18 @@ using namespace std::placeholders;
 
 cairo_surface_t* raster_source_pattern::_Cairo_acquire(cairo_pattern_t*, void* this_ptr, cairo_surface_t* target, const cairo_rectangle_int_t* extents) {
 	auto rsp = static_cast<raster_source_pattern*>(this_ptr);
-	rectangle_int ri_extents{ };
+	rectangle ri_extents{ };
 	if (extents == nullptr) {
-		ri_extents.x = 0;
-		ri_extents.y = 0;
-		ri_extents.width = rsp->_Width;
-		ri_extents.height = rsp->_Height;
+		ri_extents.x = 0.0;
+		ri_extents.y = 0.0;
+        ri_extents.width = static_cast<double>(rsp->_Width);
+        ri_extents.height = static_cast<double>(rsp->_Height);
 	}
 	else {
-		ri_extents.x = extents->x;
-		ri_extents.y = extents->y;
-		ri_extents.width = extents->width;
-		ri_extents.height = extents->height;
+        ri_extents.x = static_cast<double>(extents->x);
+        ri_extents.y = static_cast<double>(extents->y);
+        ri_extents.width = static_cast<double>(extents->width);
+        ri_extents.height = static_cast<double>(extents->height);
 	}
 	auto acqTarget = surface(target);
 	// Increment the reference count of target to avoid its destruction when acqTarget is destroyed.
@@ -127,7 +127,7 @@ raster_source_pattern::raster_source_pattern(void* user_data, content content, i
 , _User_callback_data(user_data)
 , _Width(width)
 , _Height(height)
-, _Acquire_fn(new function<surface(void* callback_data, surface& target, const rectangle_int& extents)>)
+, _Acquire_fn(new function<surface(void* callback_data, surface& target, const rectangle& extents)>)
 , _Release_fn(new function<void(void* callback_data, surface& surface)>)
 , _Snapshot_fn(new function<experimental::drawing::status(void* callback_data)>)
 , _Copy_fn(new function<experimental::drawing::status(void* callback, const pattern& other)>)
@@ -145,7 +145,7 @@ void* raster_source_pattern::get_callback_data() {
 }
 
 void raster_source_pattern::set_acquire(
-	function<surface(void* callback_data, surface& target, const rectangle_int& extents)> acquire_fn,
+	function<surface(void* callback_data, surface& target, const rectangle& extents)> acquire_fn,
 	function<void(void* callback_data, surface& surface)> release_fn
 	) {
 	*_Acquire_fn = acquire_fn;
@@ -158,7 +158,7 @@ void raster_source_pattern::set_acquire(
 }
 
 void raster_source_pattern::get_acquire(
-	function<surface(void* callback_data, surface& target, const rectangle_int& extents)>& acquire_fn,
+	function<surface(void* callback_data, surface& target, const rectangle& extents)>& acquire_fn,
 	function<void(void* callback_data, surface& surface)>& release_fn
 	) {
 	acquire_fn = *_Acquire_fn;

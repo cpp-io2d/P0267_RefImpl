@@ -219,12 +219,8 @@ bool surface::supports_mime_type(const ::std::string& mime_type) {
 	return cairo_surface_supports_mime_type(_Surface.get(), mime_type.c_str()) != 0;
 }
 
-image_surface surface::map_to_image(const rectangle_int& extents) {
-	cairo_rectangle_int_t cextents;
-	cextents.x = extents.x;
-	cextents.y = extents.y;
-	cextents.width = extents.width;
-	cextents.height = extents.height;
+image_surface surface::map_to_image(const rectangle& extents) {
+    cairo_rectangle_int_t cextents{ _Double_to_int(extents.x), _Double_to_int(extents.y), _Double_to_int(extents.width), _Double_to_int(extents.height) };
 
 	return image_surface(cairo_surface_map_to_image(_Surface.get(), (extents.x == 0 && extents.y == 0 && extents.width == 0 && extents.height == 0) ? nullptr : &cextents), _Surface.get());
 }

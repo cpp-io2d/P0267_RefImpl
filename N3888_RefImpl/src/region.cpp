@@ -37,15 +37,15 @@ region::region(region::native_handle_type nh) {
 	_Region = shared_ptr<cairo_region_t>(nh, &cairo_region_destroy);
 }
 
-region::region(const rectangle_int& rectangle) {
-	cairo_rectangle_int_t rect { rectangle.x, rectangle.y, rectangle.width, rectangle.height };
-	_Region = shared_ptr<cairo_region_t>(cairo_region_create_rectangle(&rect), &cairo_region_destroy);
+region::region(const rectangle& rect) {
+    cairo_rectangle_int_t cRectInt{ _Double_to_int(rect.x), _Double_to_int(rect.y), _Double_to_int(rect.width), _Double_to_int(rect.height) };
+	_Region = shared_ptr<cairo_region_t>(cairo_region_create_rectangle(&cRectInt), &cairo_region_destroy);
 }
 
-region::region(const vector<rectangle_int>& rectangles) {
+region::region(const vector<rectangle>& rectangles) {
 	vector<cairo_rectangle_int_t> vec;
-	for (const auto& rectangle : rectangles) {
-		vec.push_back({ rectangle.x, rectangle.y, rectangle.width, rectangle.height });
+	for (const auto& rect : rectangles) {
+        vec.push_back({ _Double_to_int(rect.x), _Double_to_int(rect.y), _Double_to_int(rect.width), _Double_to_int(rect.height) });
 	}
 	_Region = shared_ptr<cairo_region_t>(cairo_region_create_rectangles(vec.data(), static_cast<int>(vec.size())), &cairo_region_destroy);
 }
@@ -58,10 +58,10 @@ status region::status() {
 	return _Cairo_status_t_to_status(cairo_region_status(_Region.get()));
 }
 
-void region::get_extents(rectangle_int& extents) {
+void region::get_extents(rectangle& extents) {
 	cairo_rectangle_int_t cr;
 	cairo_region_get_extents(_Region.get(), &cr);
-	rectangle_int result = { cr.x, cr.y, cr.width, cr.height };
+	rectangle result = { static_cast<double>(cr.x), static_cast<double>(cr.y), static_cast<double>(cr.width), static_cast<double>(cr.height) };
 	extents = result;
 }
 
@@ -69,10 +69,10 @@ int region::num_rectangles() {
 	return cairo_region_num_rectangles(_Region.get());
 }
 
-void region::get_rectangle(int nth, rectangle_int& rectangle) {
+void region::get_rectangle(int nth, rectangle& rectangle) {
 	cairo_rectangle_int_t cr;
 	cairo_region_get_rectangle(_Region.get(), nth, &cr);
-	rectangle = { cr.x, cr.y, cr.width, cr.height };
+    rectangle = { static_cast<double>(cr.x), static_cast<double>(cr.y), static_cast<double>(cr.width), static_cast<double>(cr.height) };
 }
 
 bool region::is_empty() {
@@ -83,8 +83,8 @@ bool region::contains_point(int x, int y) {
 	return cairo_region_contains_point(_Region.get(), x, y) != 0;
 }
 
-region_overlap region::contains_rectangle(const rectangle_int& rectangle) {
-	cairo_rectangle_int_t cr = { rectangle.x, rectangle.y, rectangle.width, rectangle.height };
+region_overlap region::contains_rectangle(const rectangle& rect) {
+    cairo_rectangle_int_t cr = { _Double_to_int(rect.x), _Double_to_int(rect.y), _Double_to_int(rect.width), _Double_to_int(rect.height) };
 	return _Cairo_region_overlap_t_to_region_overlap(cairo_region_contains_rectangle(_Region.get(), &cr));
 }
 
@@ -100,8 +100,8 @@ void region::intersect_region(const region& other) {
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_region_intersect(_Region.get(), other._Region.get())));
 }
 
-void region::intersect_rectangle(const rectangle_int& rectangle) {
-	cairo_rectangle_int_t cr = { rectangle.x, rectangle.y, rectangle.width, rectangle.height };
+void region::intersect_rectangle(const rectangle& rect) {
+    cairo_rectangle_int_t cr = { _Double_to_int(rect.x), _Double_to_int(rect.y), _Double_to_int(rect.width), _Double_to_int(rect.height) };
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_region_intersect_rectangle(_Region.get(), &cr)));
 }
 
@@ -109,8 +109,8 @@ void region::subtract_region(const region& other) {
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_region_subtract(_Region.get(), other._Region.get())));
 }
 
-void region::subtract_rectangle(const rectangle_int& rectangle) {
-	cairo_rectangle_int_t cr = { rectangle.x, rectangle.y, rectangle.width, rectangle.height };
+void region::subtract_rectangle(const rectangle& rect) {
+    cairo_rectangle_int_t cr = { _Double_to_int(rect.x), _Double_to_int(rect.y), _Double_to_int(rect.width), _Double_to_int(rect.height) };
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_region_subtract_rectangle(_Region.get(), &cr)));
 }
 
@@ -118,8 +118,8 @@ void region::union_region(const region& other) {
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_region_union(_Region.get(), other._Region.get())));
 }
 
-void region::union_rectangle(const rectangle_int& rectangle) {
-	cairo_rectangle_int_t cr = { rectangle.x, rectangle.y, rectangle.width, rectangle.height };
+void region::union_rectangle(const rectangle& rect) {
+    cairo_rectangle_int_t cr = { _Double_to_int(rect.x), _Double_to_int(rect.y), _Double_to_int(rect.width), _Double_to_int(rect.height) };
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_region_union_rectangle(_Region.get(), &cr)));
 }
 
@@ -127,7 +127,7 @@ void region::xor_region(const region& other) {
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_region_xor(_Region.get(), other._Region.get())));
 }
 
-void region::xor_rectangle(const rectangle_int& rectangle) {
-	cairo_rectangle_int_t cr = { rectangle.x, rectangle.y, rectangle.width, rectangle.height };
+void region::xor_rectangle(const rectangle& rect) {
+    cairo_rectangle_int_t cr = { _Double_to_int(rect.x), _Double_to_int(rect.y), _Double_to_int(rect.width), _Double_to_int(rect.height) };
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_region_xor_rectangle(_Region.get(), &cr)));
 }

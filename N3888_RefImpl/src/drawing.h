@@ -213,13 +213,6 @@ namespace std {
 				};
 			};
 
-			struct rectangle_int {
-				int x;
-				int y;
-				int width;
-				int height;
-			};
-
 			struct rectangle {
 				double x;
 				double y;
@@ -327,29 +320,29 @@ namespace std {
 				region(region&& other);
 				region& operator=(region&& other);
 				explicit region(native_handle_type nh);
-				explicit region(const rectangle_int& rectangle);
-				explicit region(const ::std::vector<rectangle_int>& rectangles);
+				explicit region(const rectangle& rectangle);
+				explicit region(const ::std::vector<rectangle>& rectangles);
 				region copy();
 
 				::std::experimental::drawing::status status();
 
-				void get_extents(rectangle_int& extents);
+				void get_extents(rectangle& extents);
 				int num_rectangles();
-				void get_rectangle(int nth, rectangle_int& rectangle);
+				void get_rectangle(int nth, rectangle& rectangle);
 				bool is_empty();
 				bool contains_point(int x, int y);
-				region_overlap contains_rectangle(const rectangle_int& rectangle);
+				region_overlap contains_rectangle(const rectangle& rectangle);
 
 				bool equal(const region& other);
 				void translate(int dx, int dy);
 				void intersect_region(const region& other);
-				void intersect_rectangle(const rectangle_int& rectangle);
+				void intersect_rectangle(const rectangle& rectangle);
 				void subtract_region(const region& other);
-				void subtract_rectangle(const rectangle_int& rectangle);
+				void subtract_rectangle(const rectangle& rectangle);
 				void union_region(const region& other);
-				void union_rectangle(const rectangle_int& rectangle);
+				void union_rectangle(const rectangle& rectangle);
 				void xor_region(const region& other);
-				void xor_rectangle(const rectangle_int& rectangle);
+				void xor_rectangle(const rectangle& rectangle);
 			};
 
 			class user_data_key {
@@ -537,7 +530,7 @@ namespace std {
 				void set_mime_data(const ::std::string& mime_type, const ::std::vector<unsigned char>& data, ::std::function<void(void* data)> destroy, void* closure);
 				void get_mime_data(const ::std::string& mime_type, ::std::vector<unsigned char>& data);
 				bool supports_mime_type(const ::std::string& mime_type);
-				image_surface map_to_image(const rectangle_int& extents);
+				image_surface map_to_image(const rectangle& extents);
 				void unmap_image(image_surface& image);
 			protected:
 				static cairo_status_t _Cairo_write_to_png_stream(void* this_ptr, const unsigned char* data, unsigned int length);
@@ -693,7 +686,7 @@ namespace std {
 				void* _User_callback_data;
 				int _Width;
 				int _Height;
-				::std::shared_ptr<::std::function<surface(void* callback_data, surface& target, const rectangle_int& extents)>> _Acquire_fn;
+				::std::shared_ptr<::std::function<surface(void* callback_data, surface& target, const rectangle& extents)>> _Acquire_fn;
 				::std::shared_ptr<::std::function<void(void* callback_data, surface& surface)>> _Release_fn;
 				::std::shared_ptr<::std::function<experimental::drawing::status(void* callback_data)>> _Snapshot_fn;
 				::std::shared_ptr<::std::function<experimental::drawing::status(void* callback_data, const pattern& other)>> _Copy_fn;
@@ -715,11 +708,11 @@ namespace std {
 				void set_callback_data(void* data);
 				void* get_callback_data();
 				void set_acquire(
-					::std::function<surface(void* callback_data, surface& target, const rectangle_int& extents)> acquire_fn,
+					::std::function<surface(void* callback_data, surface& target, const rectangle& extents)> acquire_fn,
 					::std::function<void(void* callback_data, surface& surface)> release_fn
 					);
 				void get_acquire(
-					::std::function<surface(void* callback_data, surface& target, const rectangle_int& extents)>& acquire_fn,
+					::std::function<surface(void* callback_data, surface& target, const rectangle& extents)>& acquire_fn,
 					::std::function<void(void* callback_data, surface& surface)>& release_fn
 					);
 				void set_snapshot(
