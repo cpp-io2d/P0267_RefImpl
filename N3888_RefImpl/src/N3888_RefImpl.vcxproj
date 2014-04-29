@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -210,7 +210,6 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="surface_pattern.cpp" />
     <ClCompile Include="toy_font_face.cpp" />
-    <ClCompile Include="user_data_key.cpp" />
     <ClCompile Include="Win32RenderWindow.cpp" />
   </ItemGroup>
   <ItemGroup>

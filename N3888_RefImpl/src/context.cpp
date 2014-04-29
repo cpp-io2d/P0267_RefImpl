@@ -12,33 +12,27 @@ context::native_handle_type context::native_handle() const {
 context::context(context&& other) {
 	_Surface = move(other._Surface);
 	_Context = move(other._Context);
-	_User_data_map = move(other._User_data_map);
 	other._Surface = nullptr;
 	other._Context = nullptr;
-	other._User_data_map = nullptr;
 }
 
 context& context::operator=(context&& other) {
 	if (this != &other) {
 		_Surface = move(other._Surface);
 		_Context = move(other._Context);
-		_User_data_map = move(other._User_data_map);
 		other._Surface = nullptr;
 		other._Context = nullptr;
-		other._User_data_map = nullptr;
 	}
 	return *this;
 }
 
 context::context(surface& s)
-: _Surface(new surface(s))
-, _User_data_map(new ::std::map<user_data_key, ::std::shared_ptr<void>>) {
+: _Surface(new surface(s)) {
 	_Context = shared_ptr<cairo_t>(cairo_create(s.native_handle()), &cairo_destroy);
 }
 
 context::context(context::native_handle_type nh)
-: _Surface(new surface(cairo_surface_reference(cairo_get_target(nh))))
-, _User_data_map(new ::std::map<user_data_key, ::std::shared_ptr<void>>) {
+: _Surface(new surface(cairo_surface_reference(cairo_get_target(nh)))) {
 	_Context = shared_ptr<cairo_t>(nh, &cairo_destroy);
 }
 
@@ -258,16 +252,6 @@ void context::copy_page() {
 
 void context::show_page() {
 	cairo_show_page(_Context.get());
-}
-
-void context::set_user_data(const user_data_key& key, shared_ptr<void>& value) {
-	assert((sizeof(void *) >= sizeof(int_fast64_t)) || ((sizeof(void *) == 4) && (key._Get_value() <= INT32_MAX)));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_set_user_data(_Context.get(), reinterpret_cast<cairo_user_data_key_t*>(key._Get_value()), value.get(), nullptr)));
-	(*_User_data_map)[key] = value;
-}
-
-shared_ptr<void>& context::get_user_data(const user_data_key& key) {
-	return (*_User_data_map)[key];
 }
 
 path context::copy_path() {

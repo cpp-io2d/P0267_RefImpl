@@ -11,7 +11,6 @@ surface::native_handle_type surface::native_handle() const {
 
 surface::surface(surface::native_handle_type native_handle)
 : _Surface()
-, _User_data_map(new ::std::map<user_data_key, ::std::shared_ptr<void>>)
 , _Write_to_png_fn(new ::std::function<void(void* closure, const ::std::vector<unsigned char>& data)>)
 , _Write_to_png_closure()
 , _Mime_data_destroy_fn_map(new ::std::map<::std::string, ::std::function<void(void* data)>>)
@@ -21,13 +20,11 @@ surface::surface(surface::native_handle_type native_handle)
 
 surface::surface(surface&& other) {
 	_Surface = move(other._Surface);
-	_User_data_map = move(other._User_data_map);
 	_Write_to_png_fn = move(other._Write_to_png_fn);
 	_Write_to_png_closure = move(other._Write_to_png_closure);
 	_Mime_data_destroy_fn_map = move(other._Mime_data_destroy_fn_map);
 	_Mime_data_destroy_closure_map = move(other._Mime_data_destroy_closure_map);
 	other._Surface = nullptr;
-	other._User_data_map = nullptr;
 	other._Write_to_png_fn = nullptr;
 	other._Write_to_png_closure = nullptr;
 	other._Mime_data_destroy_fn_map = nullptr;
@@ -37,13 +34,11 @@ surface::surface(surface&& other) {
 surface& surface::operator=(surface&& other) {
 	if (this != &other) {
 		_Surface = move(other._Surface);
-		_User_data_map = move(other._User_data_map);
 		_Write_to_png_fn = move(other._Write_to_png_fn);
 		_Write_to_png_closure = move(other._Write_to_png_closure);
 		_Mime_data_destroy_fn_map = move(other._Mime_data_destroy_fn_map);
 		_Mime_data_destroy_closure_map = move(other._Mime_data_destroy_closure_map);
 		other._Surface = nullptr;
-		other._User_data_map = nullptr;
 		other._Write_to_png_fn = nullptr;
 		other._Write_to_png_closure = nullptr;
 		other._Mime_data_destroy_fn_map = nullptr;
@@ -157,16 +152,6 @@ cairo_status_t surface::_Cairo_write_to_png_stream(void* this_ptr, const unsigne
 	write_to_png_fn(sp->_Write_to_png_closure, vec);
 
 	return CAIRO_STATUS_SUCCESS;
-}
-
-void surface::set_user_data(const user_data_key& key, shared_ptr<void>& value) {
-	assert((sizeof(void *) >= sizeof(int_fast64_t)) || ((sizeof(void *) == 4) && (key._Get_value() <= INT32_MAX)));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_set_user_data(_Surface.get(), reinterpret_cast<cairo_user_data_key_t*>(key._Get_value()), value.get(), nullptr)));
-	(*_User_data_map)[key] = value;
-}
-
-shared_ptr<void>& surface::get_user_data(const user_data_key& key) {
-	return (*_User_data_map)[key];
 }
 
 void surface::copy_page() {

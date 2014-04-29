@@ -56,9 +56,6 @@
     <ClCompile Include="entrypoint-win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="user_data_key.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
