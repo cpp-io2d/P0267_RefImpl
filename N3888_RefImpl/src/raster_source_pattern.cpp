@@ -48,36 +48,20 @@ void raster_source_pattern::_Cairo_release(cairo_pattern_t*, void* this_ptr, cai
 
 cairo_status_t raster_source_pattern::_Cairo_snapshot(cairo_pattern_t* pattern, void* this_ptr) {
 	(void)pattern; // Unused parameter.
-	auto rsp = static_cast<raster_source_pattern*>(this_ptr);
-	auto& snapshot_fn = *rsp->_Snapshot_fn;
-	if (snapshot_fn != nullptr) {
-		return _Status_to_cairo_status_t(snapshot_fn(rsp->_User_callback_data));
-	}
+    (void)this_ptr; // Unused parameter.
 	return CAIRO_STATUS_SUCCESS;
 }
 
 cairo_status_t raster_source_pattern::_Cairo_copy(cairo_pattern_t* pattern, void* this_ptr, const cairo_pattern_t* other) {
-	(void)other;
-	// This is a copy of a raster_source_pattern to a raster_source_pattern. Both have identical memcpy'd data.
-	// The one that is the "other" is the original, but for these purposes it doesn't much matter.
-	auto rsp = static_cast<raster_source_pattern*>(this_ptr);
-	auto& copy_fn = *rsp->_Copy_fn;
-	if (copy_fn != nullptr) {
-		auto ptrn = *rsp;
-		// Use the new pattern. Note that cairo is managing this thing so we arent involved in destroying it.
-		ptrn._Pattern = shared_ptr<cairo_pattern_t>(pattern, [](void *) { });
-		return _Status_to_cairo_status_t(copy_fn(rsp->_User_callback_data, ptrn));
-	}
+    (void)pattern; // Unused parameter.
+    (void)other; // Unused parameter.
+    (void)this_ptr; // Unused parameter.
 	return CAIRO_STATUS_SUCCESS;
 }
 
 void raster_source_pattern::_Cairo_finish(cairo_pattern_t* pattern, void* this_ptr) {
 	(void)pattern; // Unused parameter.
-	auto rsp = static_cast<raster_source_pattern*>(this_ptr);
-	auto& finish_fn = *rsp->_Finish_fn;
-	if (finish_fn != nullptr) {
-		finish_fn(rsp->_User_callback_data);
-	}
+    (void)this_ptr; // Unused parameter.
 }
 
 raster_source_pattern::raster_source_pattern(raster_source_pattern&& other) : pattern(move(other)) {
@@ -86,17 +70,11 @@ raster_source_pattern::raster_source_pattern(raster_source_pattern&& other) : pa
 	_Height = other._Height;
 	_Acquire_fn = move(other._Acquire_fn);
 	_Release_fn = move(other._Release_fn);
-	_Snapshot_fn = move(other._Snapshot_fn);
-	_Copy_fn = move(other._Copy_fn);
-	_Finish_fn = move(other._Finish_fn);
 	other._User_callback_data = nullptr;
 	other._Width = { };
 	other._Height = { };
 	other._Acquire_fn = nullptr;
 	other._Release_fn = nullptr;
-	other._Snapshot_fn = nullptr;
-	other._Copy_fn = nullptr;
-	other._Finish_fn = nullptr;
 }
 
 raster_source_pattern& raster_source_pattern::operator=(raster_source_pattern&& other) {
@@ -107,17 +85,11 @@ raster_source_pattern& raster_source_pattern::operator=(raster_source_pattern&& 
 		_Height = other._Height;
 		_Acquire_fn = move(other._Acquire_fn);
 		_Release_fn = move(other._Release_fn);
-		_Snapshot_fn = move(other._Snapshot_fn);
-		_Copy_fn = move(other._Copy_fn);
-		_Finish_fn = move(other._Finish_fn);
 		other._User_callback_data = nullptr;
 		other._Width = { };
 		other._Height = { };
 		other._Acquire_fn = nullptr;
 		other._Release_fn = nullptr;
-		other._Snapshot_fn = nullptr;
-		other._Copy_fn = nullptr;
-		other._Finish_fn = nullptr;
 	}
 	return *this;
 }
@@ -128,10 +100,7 @@ raster_source_pattern::raster_source_pattern(void* user_data, content content, i
 , _Width(width)
 , _Height(height)
 , _Acquire_fn(new function<surface(void* callback_data, surface& target, const rectangle& extents)>)
-, _Release_fn(new function<void(void* callback_data, surface& surface)>)
-, _Snapshot_fn(new function<experimental::drawing::status(void* callback_data)>)
-, _Copy_fn(new function<experimental::drawing::status(void* callback, const pattern& other)>)
-, _Finish_fn(new function<void(void* callback_data)>) {
+, _Release_fn(new function<void(void* callback_data, surface& surface)>) {
 	_Pattern = shared_ptr<cairo_pattern_t>(cairo_pattern_create_raster_source(this, _Content_to_cairo_content_t(content), width, height), &cairo_pattern_destroy);
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(_Pattern.get())));
 }
@@ -164,40 +133,3 @@ void raster_source_pattern::get_acquire(
 	acquire_fn = *_Acquire_fn;
 	release_fn = *_Release_fn;
 }
-
-void raster_source_pattern::set_snapshot(
-	function<experimental::drawing::status(void* callback_data)> snapshot_fn
-	) {
-	*_Snapshot_fn = snapshot_fn;
-	cairo_raster_source_pattern_set_snapshot(_Pattern.get(), &raster_source_pattern::_Cairo_snapshot);
-}
-void raster_source_pattern::get_snapshot(
-	function<experimental::drawing::status(void* callback_data)>& snapshot_fn
-	) {
-	snapshot_fn = *_Snapshot_fn;
-}
-
-void raster_source_pattern::set_copy(
-	function<experimental::drawing::status(void* callback_data, const pattern& other)> copy_fn
-	) {
-	*_Copy_fn = copy_fn;
-	cairo_raster_source_pattern_set_copy(_Pattern.get(), &raster_source_pattern::_Cairo_copy);
-}
-
-void raster_source_pattern::get_copy(
-	function<experimental::drawing::status(void* callback_data, const pattern& other)>& copy_fn
-	) {
-	copy_fn = *_Copy_fn;
-}
-
-void raster_source_pattern::set_finish(function<void(void* callback_data)> finish_fn) {
-	*_Finish_fn = finish_fn;
-	cairo_raster_source_pattern_set_finish(_Pattern.get(), &raster_source_pattern::_Cairo_finish);
-}
-
-void raster_source_pattern::get_finish(function<void(void* callback_data)>& finish_fn) {
-	finish_fn = *_Finish_fn;
-	// Not implemented.
-	terminate();
-}
-

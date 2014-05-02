@@ -654,9 +654,6 @@ namespace std {
 				int _Height;
 				::std::shared_ptr<::std::function<surface(void* callback_data, surface& target, const rectangle& extents)>> _Acquire_fn;
 				::std::shared_ptr<::std::function<void(void* callback_data, surface& surface)>> _Release_fn;
-				::std::shared_ptr<::std::function<experimental::drawing::status(void* callback_data)>> _Snapshot_fn;
-				::std::shared_ptr<::std::function<experimental::drawing::status(void* callback_data, const pattern& other)>> _Copy_fn;
-				::std::shared_ptr<::std::function<void(void* callback_data)>> _Finish_fn;
 				
 				static cairo_surface_t* _Cairo_acquire(cairo_pattern_t* pattern, void* this_ptr, cairo_surface_t* target, const cairo_rectangle_int_t* extents);
 				static void _Cairo_release(cairo_pattern_t* pattern, void* this_ptr, cairo_surface_t* surface);
@@ -681,20 +678,6 @@ namespace std {
 					::std::function<surface(void* callback_data, surface& target, const rectangle& extents)>& acquire_fn,
 					::std::function<void(void* callback_data, surface& surface)>& release_fn
 					);
-				void set_snapshot(
-					::std::function<experimental::drawing::status(void* callback_data)> snapshot_fn
-					);
-				void get_snapshot(
-					::std::function<experimental::drawing::status(void* callback_data)>& snapshot_fn
-					);
-				void set_copy(
-					::std::function<experimental::drawing::status(void* callback_data, const pattern& other)> copy_fn
-					);
-				void get_copy(
-					::std::function<experimental::drawing::status(void* callback_data, const pattern& other)>& copy_fn
-					);
-				void set_finish(::std::function<void(void* callback_data)> finish_fn);
-				void get_finish(::std::function<void(void* callback_data)>& finish_fn);
 			};
 
 			class context {
