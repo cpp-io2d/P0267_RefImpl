@@ -451,14 +451,11 @@ namespace std {
 
 			class surface {
 				surface() = delete;
-
 			protected:
 				::std::shared_ptr<cairo_surface_t> _Surface;
 
 				::std::shared_ptr<::std::function<void(void* closure, const ::std::vector<unsigned char>& data)>> _Write_to_png_fn;
 				void* _Write_to_png_closure;
-				::std::shared_ptr<::std::map<::std::string, ::std::function<void(void* data)>>> _Mime_data_destroy_fn_map;
-				::std::shared_ptr<::std::map<::std::string, void*>> _Mime_data_destroy_closure_map;
 			public:
 				typedef cairo_surface_t* native_handle_type;
 				native_handle_type native_handle() const;
@@ -497,9 +494,6 @@ namespace std {
 				void copy_page();
 				void show_page();
 				bool has_show_text_glyphs();
-				void set_mime_data(const ::std::string& mime_type, const ::std::vector<unsigned char>& data, ::std::function<void(void* data)> destroy, void* closure);
-				void get_mime_data(const ::std::string& mime_type, ::std::vector<unsigned char>& data);
-				bool supports_mime_type(const ::std::string& mime_type);
 				image_surface map_to_image(const rectangle& extents);
 				void unmap_image(image_surface& image);
 			protected:

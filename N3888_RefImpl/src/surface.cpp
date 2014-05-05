@@ -12,9 +12,7 @@ surface::native_handle_type surface::native_handle() const {
 surface::surface(surface::native_handle_type native_handle)
 : _Surface()
 , _Write_to_png_fn(new ::std::function<void(void* closure, const ::std::vector<unsigned char>& data)>)
-, _Write_to_png_closure()
-, _Mime_data_destroy_fn_map(new ::std::map<::std::string, ::std::function<void(void* data)>>)
-, _Mime_data_destroy_closure_map(new ::std::map<::std::string, void*>) {
+, _Write_to_png_closure() {
 	_Surface = shared_ptr<cairo_surface_t>(native_handle, &cairo_surface_destroy);
 }
 
@@ -22,13 +20,9 @@ surface::surface(surface&& other) {
 	_Surface = move(other._Surface);
 	_Write_to_png_fn = move(other._Write_to_png_fn);
 	_Write_to_png_closure = move(other._Write_to_png_closure);
-	_Mime_data_destroy_fn_map = move(other._Mime_data_destroy_fn_map);
-	_Mime_data_destroy_closure_map = move(other._Mime_data_destroy_closure_map);
 	other._Surface = nullptr;
 	other._Write_to_png_fn = nullptr;
 	other._Write_to_png_closure = nullptr;
-	other._Mime_data_destroy_fn_map = nullptr;
-	other._Mime_data_destroy_closure_map = nullptr;
 }
 
 surface& surface::operator=(surface&& other) {
@@ -36,13 +30,9 @@ surface& surface::operator=(surface&& other) {
 		_Surface = move(other._Surface);
 		_Write_to_png_fn = move(other._Write_to_png_fn);
 		_Write_to_png_closure = move(other._Write_to_png_closure);
-		_Mime_data_destroy_fn_map = move(other._Mime_data_destroy_fn_map);
-		_Mime_data_destroy_closure_map = move(other._Mime_data_destroy_closure_map);
 		other._Surface = nullptr;
 		other._Write_to_png_fn = nullptr;
 		other._Write_to_png_closure = nullptr;
-		other._Mime_data_destroy_fn_map = nullptr;
-		other._Mime_data_destroy_closure_map = nullptr;
 	}
 	return *this;
 }
@@ -67,18 +57,6 @@ surface::surface(surface& target, double x, double y, double width, double heigh
 }
 
 surface::~surface() {
-	if (_Mime_data_destroy_fn_map != nullptr) {
-		// Note that we are by-passing cairo's mime data destruction and doing it ourselves.
-		for (auto& kv : *_Mime_data_destroy_fn_map) {
-			auto& mimetype = kv.first;
-			auto& destroy_fn = kv.second;
-			if (destroy_fn != nullptr) {
-				destroy_fn((*_Mime_data_destroy_closure_map)[mimetype]);
-				destroy_fn = nullptr;
-			}
-		}
-		(*_Mime_data_destroy_fn_map).clear();
-	}
 }
 
 status surface::status() {
@@ -164,44 +142,6 @@ void surface::show_page() {
 
 bool surface::has_show_text_glyphs() {
 	return cairo_surface_has_show_text_glyphs(_Surface.get()) != 0;
-}
-
-void surface::set_mime_data(const ::std::string& mime_type, const ::std::vector<unsigned char>& data, ::std::function<void(void* data)> destroy, void* closure) {
-	// Destroy the old mime data, if any.
-	auto previous_destroy = (*_Mime_data_destroy_fn_map).find(mime_type);
-	if (previous_destroy != (*_Mime_data_destroy_fn_map).end()) {
-		auto& pd_fn = (*previous_destroy).second;
-		pd_fn((*_Mime_data_destroy_closure_map)[mime_type]);
-	}
-	(*_Mime_data_destroy_fn_map)[mime_type] = destroy;
-	(*_Mime_data_destroy_closure_map)[mime_type] = closure;
-
-	// Note that we are by-passing cairo's mime data destruction and doing it ourselves.
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_set_mime_data(
-		_Surface.get(),
-		mime_type.c_str(),
-		data.size() == 0 ? nullptr : data.data(),
-		static_cast<unsigned long>(data.size()),
-		nullptr,
-		nullptr
-		)));
-}
-
-void surface::get_mime_data(const ::std::string& mime_type, ::std::vector<unsigned char>& data) {
-	const unsigned char* data_ptr = nullptr;
-	unsigned long length = 0;
-	// Note: We do not need to free data_ptr since it is just an alias, not a copy.
-	cairo_surface_get_mime_data(_Surface.get(), mime_type.c_str(), &data_ptr, &length);
-	if (data_ptr == nullptr) {
-		data.clear();
-	}
-	else {
-		data.assign(data_ptr, data_ptr + length);
-	}
-}
-
-bool surface::supports_mime_type(const ::std::string& mime_type) {
-	return cairo_surface_supports_mime_type(_Surface.get(), mime_type.c_str()) != 0;
 }
 
 image_surface surface::map_to_image(const rectangle& extents) {
