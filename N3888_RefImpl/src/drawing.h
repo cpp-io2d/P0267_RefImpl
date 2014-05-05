@@ -504,8 +504,6 @@ namespace std {
 				friend surface;
 				image_surface() = delete;
 			protected:
-				::std::shared_ptr<::std::function<void(void* closure, ::std::vector<unsigned char>& data)>> _Create_from_png_fn;
-				void* _Create_from_png_closure;
 				::std::shared_ptr<::std::vector<unsigned char>> _Data;
 			public:
 				image_surface(const image_surface&) = default;
@@ -519,8 +517,6 @@ namespace std {
 				image_surface(surface& other, format format, int width, int height);
 				// create_from_png
 				image_surface(const ::std::string& filename);
-				// create_from_png_stream
-				image_surface(::std::function<void(void* closure, ::std::vector<unsigned char>& data)> read_fn, void* closure);
 
 				void set_data(::std::vector<unsigned char>& data);
 				::std::vector<unsigned char> get_data();
@@ -528,8 +524,6 @@ namespace std {
 				int get_width();
 				int get_height();
 				int get_stride();
-			protected:
-				static cairo_status_t _Cairo_create_from_png_stream(void* this_ptr, unsigned char* data, unsigned int length);
 			};
 
 			class pattern {
