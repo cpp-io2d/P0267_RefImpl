@@ -293,7 +293,28 @@ namespace std {
 				void transform_point(double& x, double& y);
 			};
 
-			class drawing_exception : public exception {
+            struct point {
+                double x;
+                double y;
+
+                point operator+=(const point& rhs);
+                point operator-=(const point& rhs);
+                point operator*=(const point& rhs);
+                point operator*=(double rhs);
+                point operator/=(const point& rhs);
+                point operator/=(double rhs);
+            };
+
+            point operator+(const point& lhs);
+            point operator+(const point& lhs, const point& rhs);
+            point operator-(const point& lhs);
+            point operator-(const point& lhs, const point& rhs);
+            point operator*(const point& lhs, const point& rhs);
+            point operator*(const point& lhs, double rhs);
+            point operator/(const point& lhs, const point& rhs);
+            point operator/(const point& lhs, double rhs);
+
+            class drawing_exception : public exception {
 				::std::experimental::drawing::status _Status = ::std::experimental::drawing::status::last_status;
 			public:
 				drawing_exception() noexcept;
