@@ -288,10 +288,13 @@ namespace std {
 				void scale(double sx, double sy);
 				void rotate(double radians);
 				void invert();
-				static matrix multiply(const matrix& a, const matrix& b);
 				void transform_distance(double& dx, double& dy);
 				void transform_point(double& x, double& y);
+
+                matrix operator*=(const matrix& rhs);
 			};
+
+            matrix operator*(const matrix& lhs, const matrix& rhs);
 
             struct point {
                 double x;

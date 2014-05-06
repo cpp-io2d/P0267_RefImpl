@@ -41,34 +41,40 @@ point point::operator/=(double rhs) {
     return *this;
 }
 
-point std::experimental::drawing::operator+(const point& lhs) {
-    return lhs;
-}
+namespace std {
+    namespace experimental {
+        namespace drawing {
+            point operator+(const point& lhs) {
+                return lhs;
+            }
 
-point std::experimental::drawing::operator+(const point& lhs, const point& rhs) {
-    return point{ lhs.x + rhs.x, lhs.y + rhs.y };
-}
+            point operator+(const point& lhs, const point& rhs) {
+                return point{ lhs.x + rhs.x, lhs.y + rhs.y };
+            }
 
-point std::experimental::drawing::operator-(const point& lhs) {
-    return point{ -lhs.x, -lhs.y };
-}
+            point operator-(const point& lhs) {
+                return point{ -lhs.x, -lhs.y };
+            }
 
-point std::experimental::drawing::operator-(const point& lhs, const point& rhs) {
-    return point{ lhs.x - rhs.x, lhs.y - rhs.y };
-}
+            point operator-(const point& lhs, const point& rhs) {
+                return point{ lhs.x - rhs.x, lhs.y - rhs.y };
+            }
 
-point std::experimental::drawing::operator*(const point& lhs, const point& rhs) {
-    return point{ lhs.x * rhs.x, lhs.y * rhs.y };
-}
+            point operator*(const point& lhs, const point& rhs) {
+                return point{ lhs.x * rhs.x, lhs.y * rhs.y };
+            }
 
-point std::experimental::drawing::operator*(const point& lhs, double rhs) {
-    return point{ lhs.x * rhs, lhs.y * rhs };
-}
+            point operator*(const point& lhs, double rhs) {
+                return point{ lhs.x * rhs, lhs.y * rhs };
+            }
 
-point std::experimental::drawing::operator/(const point& lhs, const point& rhs) {
-    return point{ lhs.x / rhs.x, lhs.y / rhs.y };
-}
+            point operator/(const point& lhs, const point& rhs) {
+                return point{ lhs.x / rhs.x, lhs.y / rhs.y };
+            }
 
-point std::experimental::drawing::operator/(const point& lhs, double rhs) {
-    return point{ lhs.x / rhs, lhs.y / rhs };
+            point operator/(const point& lhs, double rhs) {
+                return point{ lhs.x / rhs, lhs.y / rhs };
+            }
+        }
+    }
 }
