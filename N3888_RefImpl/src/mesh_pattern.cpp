@@ -28,20 +28,20 @@ void mesh_pattern::end_patch() {
 	cairo_mesh_pattern_end_patch(_Pattern.get());
 }
 
-void mesh_pattern::move_to(double x, double y) {
-	cairo_mesh_pattern_move_to(_Pattern.get(), x, y);
+void mesh_pattern::move_to(const point& pt) {
+	cairo_mesh_pattern_move_to(_Pattern.get(), pt.x, pt.y);
 }
 
-void mesh_pattern::line_to(double x, double y) {
-	cairo_mesh_pattern_line_to(_Pattern.get(), x, y);
+void mesh_pattern::line_to(const point& pt) {
+	cairo_mesh_pattern_line_to(_Pattern.get(), pt.x, pt.y);
 }
 
-void mesh_pattern::curve_to(double x1, double y1, double x2, double y2, double x3, double y3) {
-	cairo_mesh_pattern_curve_to(_Pattern.get(), x1, y1, x2, y2, x3, y3);
+void mesh_pattern::curve_to(const point& pt0, const point& pt1, const point& pt2) {
+	cairo_mesh_pattern_curve_to(_Pattern.get(), pt0.x, pt0.y, pt1.x, pt1.y, pt2.x, pt2.y);
 }
 
-void mesh_pattern::set_control_point(unsigned int point_num, double x, double y) {
-	cairo_mesh_pattern_set_control_point(_Pattern.get(), point_num, x, y);
+void mesh_pattern::set_control_point(unsigned int point_num, const point& pt) {
+	cairo_mesh_pattern_set_control_point(_Pattern.get(), point_num, pt.x, pt.y);
 }
 
 void mesh_pattern::set_corner_color_rgb(unsigned int corner_num, double red, double green, double blue) {
@@ -62,8 +62,8 @@ path mesh_pattern::get_path(unsigned int patch_num) {
 	return _Make_path(sp_path.get());
 }
 
-void mesh_pattern::get_control_point(unsigned int patch_num, unsigned int point_num, double& x, double& y) {
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_mesh_pattern_get_control_point(_Pattern.get(), patch_num, point_num, &x, &y)));
+void mesh_pattern::get_control_point(unsigned int patch_num, unsigned int point_num, point& pt) {
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_mesh_pattern_get_control_point(_Pattern.get(), patch_num, point_num, &pt.x, &pt.y)));
 }
 
 void mesh_pattern::get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num, double& red, double& green, double& blue, double& alpha) {

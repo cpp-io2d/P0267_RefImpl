@@ -85,8 +85,8 @@ void context::set_source(const pattern& source) {
 	cairo_set_source(_Context.get(), source.native_handle());
 }
 
-void context::set_source_surface(const surface& s, double x, double y) {
-	cairo_set_source_surface(_Context.get(), s.native_handle(), x, y);
+void context::set_source_surface(const surface& s, const point& origin) {
+	cairo_set_source_surface(_Context.get(), s.native_handle(), origin.x, origin.y);
 }
 
 void context::set_antialias(antialias a) {
@@ -174,12 +174,12 @@ void context::clip_preserve() {
 	cairo_clip_preserve(_Context.get());
 }
 
-void context::clip_extents(double& x1, double& y1, double& x2, double& y2) {
-	cairo_clip_extents(_Context.get(), &x1, &y1, &x2, &y2);
+void context::clip_extents(point& pt0, point& pt1) {
+	cairo_clip_extents(_Context.get(), &pt0.x, &pt0.y, &pt1.x, &pt1.y);
 }
 
-bool context::in_clip(double x, double y) {
-	return cairo_in_clip(_Context.get(), x, y) != 0;
+bool context::in_clip(const point& pt) {
+	return cairo_in_clip(_Context.get(), pt.x, pt.y) != 0;
 }
 
 void context::reset_clip() {
@@ -206,20 +206,20 @@ void context::fill_preserve() {
 	cairo_fill_preserve(_Context.get());
 }
 
-void context::fill_extents(double& x1, double& y1, double& x2, double& y2) {
-	cairo_fill_extents(_Context.get(), &x1, &y1, &x2, &y2);
+void context::fill_extents(point& pt0, point& pt1) {
+	cairo_fill_extents(_Context.get(), &pt0.x, &pt0.y, &pt1.x, &pt1.y);
 }
 
-bool context::in_fill(double x, double y) {
-	return cairo_in_fill(_Context.get(), x, y) != 0;
+bool context::in_fill(const point& pt) {
+	return cairo_in_fill(_Context.get(), pt.x, pt.y) != 0;
 }
 
 void context::mask(pattern& pattern) {
 	cairo_mask(_Context.get(), pattern.native_handle());
 }
 
-void context::mask_surface(surface& surface, double surface_x, double surface_y) {
-	cairo_mask_surface(_Context.get(), surface.native_handle(), surface_x, surface_y);
+void context::mask_surface(surface& surface, const point& origin) {
+	cairo_mask_surface(_Context.get(), surface.native_handle(), origin.x, origin.y);
 }
 
 void context::paint() {
@@ -238,12 +238,12 @@ void context::stroke_preserve() {
 	cairo_stroke_preserve(_Context.get());
 }
 
-void context::stroke_extents(double& x1, double& y1, double& x2, double& y2) {
-	cairo_stroke_extents(_Context.get(), &x1, &y1, &x2, &y2);
+void context::stroke_extents(point& pt0, point& pt1) {
+	cairo_stroke_extents(_Context.get(), &pt0.x, &pt0.y, &pt1.x, &pt1.y);
 }
 
-bool context::in_stroke(double x, double y) {
-	return cairo_in_stroke(_Context.get(), x, y) != 0;
+bool context::in_stroke(const point& pt) {
+	return cairo_in_stroke(_Context.get(), pt.x, pt.y) != 0;
 }
 
 void context::copy_page() {
@@ -299,8 +299,8 @@ bool context::has_current_point() {
 	return cairo_has_current_point(_Context.get()) != 0;
 }
 
-void context::get_current_point(double& x, double& y) {
-	cairo_get_current_point(_Context.get(), &x, &y);
+void context::get_current_point(point& pt) {
+	cairo_get_current_point(_Context.get(), &pt.x, &pt.y);
 }
 
 void context::new_path() {
@@ -315,28 +315,28 @@ void context::close_path() {
 	cairo_close_path(_Context.get());
 }
 
-void context::arc(double xc, double yc, double radius, double angle1, double angle2) {
-	cairo_arc(_Context.get(), xc, yc, radius, angle1, angle2);
+void context::arc(const point& center, double radius, double angle1, double angle2) {
+	cairo_arc(_Context.get(), center.x, center.y, radius, angle1, angle2);
 }
 
-void context::arc_negative(double xc, double yc, double radius, double angle1, double angle2) {
-	cairo_arc_negative(_Context.get(), xc, yc, radius, angle1, angle2);
+void context::arc_negative(const point& center, double radius, double angle1, double angle2) {
+	cairo_arc_negative(_Context.get(), center.x, center.y, radius, angle1, angle2);
 }
 
-void  context::curve_to(double x1, double y1, double x2, double y2, double x3, double y3) {
-	cairo_curve_to(_Context.get(), x1, y1, x2, y2, x3, y3);
+void  context::curve_to(const point& pt0, const point& pt1, const point& pt2) {
+	cairo_curve_to(_Context.get(), pt0.x, pt0.y, pt1.x, pt1.y, pt2.x, pt2.y);
 }
 
-void context::line_to(double x, double y) {
-	cairo_line_to(_Context.get(), x, y);
+void context::line_to(const point& pt) {
+	cairo_line_to(_Context.get(), pt.x, pt.y);
 }
 
-void context::move_to(double x, double y) {
-	cairo_move_to(_Context.get(), x, y);
+void context::move_to(const point& pt) {
+	cairo_move_to(_Context.get(), pt.x, pt.y);
 }
 
-void context::rectangle(double x, double y, double width, double height) {
-	cairo_rectangle(_Context.get(), x, y, width, height);
+void context::rectangle(const experimental::drawing::rectangle& rect) {
+	cairo_rectangle(_Context.get(), rect.x, rect.y, rect.width, rect.height);
 }
 
 void context::glyph_path(const vector<glyph>& glyphs) {
@@ -351,28 +351,28 @@ void context::text_path(const string& utf8) {
 	cairo_text_path(_Context.get(), utf8.c_str());
 }
 
-void context::rel_curve_to(double dx1, double dy1, double dx2, double dy2, double dx3, double dy3) {
-	cairo_rel_curve_to(_Context.get(), dx1, dy1, dx2, dy2, dx3, dy3);
+void context::rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2) {
+	cairo_rel_curve_to(_Context.get(), dpt0.x, dpt0.y, dpt1.x, dpt1.y, dpt2.x, dpt2.y);
 }
 
-void context::rel_line_to(double dx, double dy) {
-	cairo_rel_line_to(_Context.get(), dx, dy);
+void context::rel_line_to(const point& dpt) {
+	cairo_rel_line_to(_Context.get(), dpt.x, dpt.y);
 }
 
-void context::rel_move_to(double dx, double dy) {
-	cairo_rel_move_to(_Context.get(), dx, dy);
+void context::rel_move_to(const point& dpt) {
+	cairo_rel_move_to(_Context.get(), dpt.x, dpt.y);
 }
 
-void context::path_extents(double& x1, double& y1, double& x2, double& y2) {
-	cairo_path_extents(_Context.get(), &x1, &y1, &x2, &y2);
+void context::path_extents(point& pt0, point& pt1) {
+	cairo_path_extents(_Context.get(), &pt0.x, &pt0.y, &pt1.x, &pt1.y);
 }
 
-void context::translate(double tx, double ty) {
-	cairo_translate(_Context.get(), tx, ty);
+void context::translate(const point& value) {
+	cairo_translate(_Context.get(), value.x, value.y);
 }
 
-void context::scale(double sx, double sy) {
-	cairo_scale(_Context.get(), sx, sy);
+void context::scale(const point& value) {
+	cairo_scale(_Context.get(), value.x, value.y);
 }
 
 void context::rotate(double angle) {
@@ -399,20 +399,20 @@ void context::identity_matrix() {
 	cairo_identity_matrix(_Context.get());
 }
 
-void context::user_to_device(double& x, double& y) {
-	cairo_user_to_device(_Context.get(), &x, &y);
+void context::user_to_device(point& pt) {
+	cairo_user_to_device(_Context.get(), &pt.x, &pt.y);
 }
 
-void context::user_to_device_distance(double& dx, double& dy) {
-	cairo_user_to_device_distance(_Context.get(), &dx, &dy);
+void context::user_to_device_distance(point& dpt) {
+	cairo_user_to_device_distance(_Context.get(), &dpt.x, &dpt.y);
 }
 
-void context::device_to_user(double& x, double& y) {
-	cairo_device_to_user(_Context.get(), &x, &y);
+void context::device_to_user(point& pt) {
+	cairo_device_to_user(_Context.get(), &pt.x, &pt.y);
 }
 
-void context::device_to_user_distance(double& dx, double& dy) {
-	cairo_device_to_user_distance(_Context.get(), &dx, &dy);
+void context::device_to_user_distance(point& dpt) {
+	cairo_device_to_user_distance(_Context.get(), &dpt.x, &dpt.y);
 }
 
 void context::select_font_face(const string& family, font_slant slant, font_weight weight) {

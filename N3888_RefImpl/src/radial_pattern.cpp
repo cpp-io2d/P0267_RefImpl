@@ -15,11 +15,11 @@ radial_pattern& radial_pattern::operator=(radial_pattern&& other) {
 	return *this;
 }
 
-radial_pattern::radial_pattern(double cx0, double cy0, double radius0, double cx1, double cy1, double radius1) : gradient_pattern(nullptr) {
-	_Pattern = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(cx0, cy0, radius0, cx1, cy1, radius1), &cairo_pattern_destroy);
+radial_pattern::radial_pattern(const point& center0, double radius0, const point& center1, double radius1) : gradient_pattern(nullptr) {
+	_Pattern = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(center0.x, center0.y, radius0, center1.x, center1.y, radius1), &cairo_pattern_destroy);
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(_Pattern.get())));
 }
 
-void radial_pattern::get_radial_circles(double& x0, double& y0, double& radius0, double& x1, double& y1, double& radius1) {
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_get_radial_circles(_Pattern.get(), &x0, &y0, &radius0, &x1, &y1, &radius1)));
+void radial_pattern::get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) {
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_get_radial_circles(_Pattern.get(), &center0.x, &center0.y, &radius0, &center1.x, &center1.y, &radius1)));
 }

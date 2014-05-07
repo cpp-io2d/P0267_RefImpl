@@ -42,18 +42,18 @@ surface& surface::operator=(surface::native_handle_type nh) {
 	return *this;
 }
 
-surface::surface(surface& other, content content, int width, int height)
+surface::surface(surface& other, content content, double width, double height)
 : _Surface()
 , _Write_to_png_fn()
 , _Write_to_png_closure() {
-	_Surface = shared_ptr<cairo_surface_t>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), width, height), &cairo_surface_destroy);
+	_Surface = shared_ptr<cairo_surface_t>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), _Double_to_int(width, false), _Double_to_int(height, false)), &cairo_surface_destroy);
 }
 
-surface::surface(surface& target, double x, double y, double width, double height)
+surface::surface(surface& target, const rectangle& rect)
 : _Surface()
 , _Write_to_png_fn()
 , _Write_to_png_closure() {
-	_Surface = shared_ptr<cairo_surface_t>(cairo_surface_create_for_rectangle(target._Surface.get(), x, y, width, height), &cairo_surface_destroy);
+	_Surface = shared_ptr<cairo_surface_t>(cairo_surface_create_for_rectangle(target._Surface.get(), _Double_to_int(rect.x, false), _Double_to_int(rect.y, false), _Double_to_int(rect.width, false), _Double_to_int(rect.height, false)), &cairo_surface_destroy);
 }
 
 surface::~surface() {
@@ -93,20 +93,20 @@ void surface::mark_dirty_rectangle(int x, int y, int width, int height) {
 	cairo_surface_mark_dirty_rectangle(_Surface.get(), x, y, width, height);
 }
 
-void surface::set_device_offset(double x_offset, double y_offset) {
-	cairo_surface_set_device_offset(_Surface.get(), x_offset, y_offset);
+void surface::set_device_offset(const point& offset) {
+	cairo_surface_set_device_offset(_Surface.get(), offset.x, offset.y);
 }
 
-void surface::get_device_offset(double& x_offset, double& y_offset) {
-	cairo_surface_get_device_offset(_Surface.get(), &x_offset, &y_offset);
+void surface::get_device_offset(point& offset) {
+	cairo_surface_get_device_offset(_Surface.get(), &offset.x, &offset.y);
 }
 
-void surface::set_fallback_resolution(double x_pixels_per_inch, double y_pixels_per_inch) {
-	cairo_surface_set_fallback_resolution(_Surface.get(), x_pixels_per_inch, y_pixels_per_inch);
+void surface::set_fallback_resolution(const point& ppi) {
+	cairo_surface_set_fallback_resolution(_Surface.get(), ppi.x, ppi.y);
 }
 
-void surface::get_fallback_resolution(double& x_pixels_per_inch, double& y_pixels_per_inch) {
-	cairo_surface_get_fallback_resolution(_Surface.get(), &x_pixels_per_inch, &y_pixels_per_inch);
+void surface::get_fallback_resolution(point& ppi) {
+	cairo_surface_get_fallback_resolution(_Surface.get(), &ppi.x, &ppi.y);
 }
 
 void surface::write_to_png(const string& filename) {

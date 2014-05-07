@@ -270,32 +270,6 @@ namespace std {
 				double y_advance;
 			};
 
-			struct matrix {
-				double xx;
-				double yx;
-				double xy;
-				double yy;
-				double x0;
-				double y0;
-
-				void init(double xx, double yx, double xy, double yy, double x0, double y0);
-				void init_identity();
-				void init_translate(double tx, double ty);
-				void init_scale(double sx, double sy);
-				void init_rotate(double radians);
-
-				void translate(double tx, double ty);
-				void scale(double sx, double sy);
-				void rotate(double radians);
-				void invert();
-				void transform_distance(double& dx, double& dy);
-				void transform_point(double& x, double& y);
-
-                matrix operator*=(const matrix& rhs);
-			};
-
-            matrix operator*(const matrix& lhs, const matrix& rhs);
-
             struct point {
                 double x;
                 double y;
@@ -316,6 +290,32 @@ namespace std {
             point operator*(const point& lhs, double rhs);
             point operator/(const point& lhs, const point& rhs);
             point operator/(const point& lhs, double rhs);
+
+            struct matrix {
+				double xx;
+				double yx;
+				double xy;
+				double yy;
+				double x0;
+				double y0;
+
+				void init(double xx, double yx, double xy, double yy, double x0, double y0);
+				void init_identity();
+				void init_translate(const point& value);
+				void init_scale(const point& value);
+				void init_rotate(double radians);
+
+				void translate(const point& value);
+				void scale(const point& value);
+				void rotate(double radians);
+				void invert();
+				void transform_distance(point& dist);
+				void transform_point(point& pt);
+
+                matrix operator*=(const matrix& rhs);
+			};
+
+            matrix operator*(const matrix& lhs, const matrix& rhs);
 
             class drawing_exception : public exception {
 				::std::experimental::drawing::status _Status = ::std::experimental::drawing::status::last_status;
@@ -354,11 +354,11 @@ namespace std {
 				int num_rectangles();
 				void get_rectangle(int nth, rectangle& rectangle);
 				bool is_empty();
-				bool contains_point(int x, int y);
+				bool contains_point(const point& pt);
 				region_overlap contains_rectangle(const rectangle& rectangle);
 
 				bool equal(const region& other);
-				void translate(int dx, int dy);
+				void translate(const point& pt);
 				void intersect_region(const region& other);
 				void intersect_rectangle(const rectangle& rectangle);
 				void subtract_region(const region& other);
@@ -493,9 +493,9 @@ namespace std {
 				surface& operator=(surface&& other);
 
 				// create_similar
-				surface(surface& other, content content, int width, int height);
+				surface(surface& other, content content, double width, double height);
 				// create_for_rectangle
-				surface(surface& target, double x, double y, double width, double height);
+				surface(surface& target, const rectangle& rect);
 				virtual ~surface();
 
 				::std::experimental::drawing::status status();
@@ -509,10 +509,10 @@ namespace std {
 				void mark_dirty();
 				void mark_dirty_rectangle(int x, int y, int width, int height);
 
-				void set_device_offset(double x_offset, double y_offset);
-				void get_device_offset(double& x_offset, double& y_offset);
-				void set_fallback_resolution(double x_pixels_per_inch, double y_pixels_per_inch);
-				void get_fallback_resolution(double& x_pixels_per_inch, double& y_pixels_per_inch);
+				void set_device_offset(const point& offset);
+				void get_device_offset(point& offset);
+				void set_fallback_resolution(const point& ppi);
+				void get_fallback_resolution(point& ppi);
 				void write_to_png(const ::std::string& filename);
 				void write_to_png_stream(::std::function<void(void* closure, const ::std::vector<unsigned char>& data)> write_fn, void* closure);
 				void copy_page();
@@ -614,8 +614,8 @@ namespace std {
 				linear_pattern& operator=(const linear_pattern&) = default;
 				linear_pattern(linear_pattern&& other);
 				linear_pattern& operator=(linear_pattern&& other);
-				linear_pattern(double x0, double y0, double x1, double y1);
-				void get_linear_points(double& x0, double& y0, double& x1, double& y1);
+				linear_pattern(const point& pt0, const point& pt1);
+				void get_linear_points(point& pt0, point& pt1);
 			};
 
 			class radial_pattern : public gradient_pattern {
@@ -624,8 +624,8 @@ namespace std {
 				radial_pattern& operator=(const radial_pattern&) = default;
 				radial_pattern(radial_pattern&& other);
 				radial_pattern& operator=(radial_pattern&& other);
-				radial_pattern(double cx0, double cy0, double radius0, double cx1, double cy1, double radius1);
-				void get_radial_circles(double& x0, double& y0, double& radius0, double& x1, double& y1, double& radius1);
+				radial_pattern(const point& center0, double radius0, const point& center1, double radius1);
+				void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1);
 			};
 
 			class surface_pattern : public pattern {
@@ -648,15 +648,15 @@ namespace std {
 				mesh_pattern& operator=(mesh_pattern&& other);
 				void begin_patch();
 				void end_patch();
-				void move_to(double x, double y);
-				void line_to(double x, double y);
-				void curve_to(double x1, double y1, double x2, double y2, double x3, double y3);
-				void set_control_point(unsigned int point_num, double x, double y);
+				void move_to(const point& pt);
+				void line_to(const point& pt);
+				void curve_to(const point& pt0, const point& pt1, const point& pt2);
+				void set_control_point(unsigned int point_num, const point& pt);
 				void set_corner_color_rgb(unsigned int corner_num, double red, double green, double blue);
 				void set_corner_color_rgba(unsigned int corner_num, double red, double green, double blue, double alpha);
 				void get_patch_count(unsigned int& count);
 				path get_path(unsigned int patch_num);
-				void get_control_point(unsigned int patch_num, unsigned int point_num, double& x, double& y);
+				void get_control_point(unsigned int patch_num, unsigned int point_num, point& pt);
 				void get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num, double& red, double& green, double& blue, double& alpha);
 			};
 
@@ -721,7 +721,7 @@ namespace std {
 				void set_source_rgb(double red, double green, double blue);
 				void set_source_rgba(double red, double green, double blue, double alpha);
 				void set_source(const pattern& source);
-				void set_source_surface(const surface& s, double x, double y);
+				void set_source_surface(const surface& s, const point& origin);
 				pattern get_source();
 
 				void set_antialias(antialias a);
@@ -754,27 +754,27 @@ namespace std {
 
 				void clip();
 				void clip_preserve();
-				void clip_extents(double& x1, double& y1, double& x2, double& y2);
-				bool in_clip(double x, double y);
+				void clip_extents(point& pt0, point& pt1);
+				bool in_clip(const point& pt);
 				void reset_clip();
 
 				rectangle_list copy_clip_rectangle_list();
 
 				void fill();
 				void fill_preserve();
-				void fill_extents(double& x1, double& y1, double& x2, double& y2);
-				bool in_fill(double x, double y);
+				void fill_extents(point& pt0, point& pt1);
+				bool in_fill(const point& pt);
 
 				void mask(pattern& pattern);
-				void mask_surface(surface& surface, double surface_x, double surface_y);
+				void mask_surface(surface& surface, const point& origin);
 
 				void paint();
 				void paint_with_alpha(double alpha);
 
 				void stroke();
 				void stroke_preserve();
-				void stroke_extents(double& x1, double& y1, double& x2, double& y2);
-				bool in_stroke(double x, double y);
+				void stroke_extents(point& pt0, point& pt1);
+				bool in_stroke(const point& pt);
 
 				void copy_page();
 				void show_page();
@@ -784,35 +784,35 @@ namespace std {
 				path copy_path_flat();
 				void append_path(const path& p);
 				bool has_current_point();
-				void get_current_point(double& x, double& y);
+				void get_current_point(point& pt);
 				void new_path();
 				void new_sub_path();
 				void close_path();
-				void arc(double xc, double yc, double radius, double angle1, double angle2);
-				void arc_negative(double xc, double yc, double radius, double angle1, double angle2);
-				void curve_to(double x1, double y1, double x2, double y2, double x3, double y3);
-				void line_to(double x, double y);
-				void move_to(double x, double y);
-				void rectangle(double x, double y, double width, double height);
+				void arc(const point& center, double radius, double angle1, double angle2);
+				void arc_negative(const point& center, double radius, double angle1, double angle2);
+				void curve_to(const point& pt0, const point& pt1, const point& pt2);
+				void line_to(const point& pt);
+				void move_to(const point& pt);
+				void rectangle(const rectangle& rect);
 				void glyph_path(const ::std::vector<glyph>& glyphs);
 				void text_path(const ::std::string& utf8);
-				void rel_curve_to(double dx1, double dy1, double dx2, double dy2, double dx3, double dy3);
-				void rel_line_to(double dx, double dy);
-				void rel_move_to(double dx, double dy);
-				void path_extents(double& x1, double& y1, double& x2, double& y2);
+                void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
+				void rel_line_to(const point& dpt);
+				void rel_move_to(const point& dpt);
+				void path_extents(point& pt0, point& pt1);
 
 				// Transformations
-				void translate(double tx, double ty);
-				void scale(double sx, double sy);
+				void translate(const point& value);
+				void scale(const point& value);
 				void rotate(double angle);
 				void transform(const matrix& matrix);
 				void set_matrix(const matrix& matrix);
 				void get_matrix(matrix& matrix);
 				void identity_matrix();
-				void user_to_device(double& x, double& y);
-				void user_to_device_distance(double& dx, double& dy);
-				void device_to_user(double& x, double& y);
-				void device_to_user_distance(double& dx, double& dy);
+				void user_to_device(point& pt);
+				void user_to_device_distance(point& dpt);
+				void device_to_user(point& pt);
+				void device_to_user_distance(point& dpt);
 
 				// Text
 				void select_font_face(const ::std::string& family, font_slant slant, font_weight weight);

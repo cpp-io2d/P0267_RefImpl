@@ -79,8 +79,8 @@ bool region::is_empty() {
 	return cairo_region_is_empty(_Region.get()) != 0;
 }
 
-bool region::contains_point(int x, int y) {
-	return cairo_region_contains_point(_Region.get(), x, y) != 0;
+bool region::contains_point(const point& pt) {
+	return cairo_region_contains_point(_Region.get(), _Double_to_int(pt.x, true), _Double_to_int(pt.y, true)) != 0;
 }
 
 region_overlap region::contains_rectangle(const rectangle& rect) {
@@ -92,8 +92,8 @@ bool region::equal(const region& other) {
 	return cairo_region_equal(_Region.get(), other._Region.get()) != 0;
 }
 
-void region::translate(int dx, int dy) {
-	cairo_region_translate(_Region.get(), dx, dy);
+void region::translate(const point& pt) {
+	cairo_region_translate(_Region.get(), _Double_to_int(pt.x, true), _Double_to_int(pt.y, true));
 }
 
 void region::intersect_region(const region& other) {

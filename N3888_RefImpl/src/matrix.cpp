@@ -10,41 +10,46 @@ void matrix::init(double xx, double yx, double xy, double yy, double x0, double 
 }
 
 void matrix::init_identity() {
-	cairo_matrix_t cm{ };
-	cairo_matrix_init_identity(&cm);
-	xx = cm.xx;
-	yx = cm.yx;
-	xy = cm.xy;
-	yy = cm.yy;
-	x0 = cm.x0;
-	y0 = cm.y0;
+	xx = 1.0;
+	yx = 0.0;
+	xy = 0.0;
+	yy = 1.0;
+	x0 = 0.0;
+	y0 = 0.0;
 }
 
-void matrix::init_translate(double tx, double ty) {
-	cairo_matrix_t cm{ };
-	cairo_matrix_init_translate(&cm, tx, ty);
-	xx = cm.xx;
-	yx = cm.yx;
-	xy = cm.xy;
-	yy = cm.yy;
-	x0 = cm.x0;
-	y0 = cm.y0;
+void matrix::init_translate(const point& value) {
+	xx = 1.0;
+	yx = 0.0;
+	xy = 0.0;
+	yy = 1.0;
+	x0 = value.x;
+	y0 = value.y;
 }
 
-void matrix::init_scale(double sx, double sy) {
-	cairo_matrix_t cm{ };
-	cairo_matrix_init_scale(&cm, sx, sy);
-	xx = cm.xx;
-	yx = cm.yx;
-	xy = cm.xy;
-	yy = cm.yy;
-	x0 = cm.x0;
-	y0 = cm.y0;
+void matrix::init_scale(const point& value) {
+    xx = value.x;
+	yx = 0.0;
+	xy = 0.0;
+	yy = value.y;
+	x0 = 0.0;
+	y0 = 0.0;
 }
 
 void matrix::init_rotate(double radians) {
-	cairo_matrix_t cm{ };
-	cairo_matrix_init_rotate(&cm, radians);
+    auto sine = sin(radians);
+    auto cosine = cos(radians);
+	xx = cosine;
+	yx = sine;
+	xy = -sine;
+	yy = cosine;
+	x0 = 0.0;
+	y0 = 0.0;
+}
+
+void matrix::translate(const point& value) {
+	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
+	cairo_matrix_translate(&cm, value.x, value.y);
 	xx = cm.xx;
 	yx = cm.yx;
 	xy = cm.xy;
@@ -53,20 +58,9 @@ void matrix::init_rotate(double radians) {
 	y0 = cm.y0;
 }
 
-void matrix::translate(double tx, double ty) {
+void matrix::scale(const point& value) {
 	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	cairo_matrix_translate(&cm, tx, ty);
-	xx = cm.xx;
-	yx = cm.yx;
-	xy = cm.xy;
-	yy = cm.yy;
-	x0 = cm.x0;
-	y0 = cm.y0;
-}
-
-void matrix::scale(double sx, double sy) {
-	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	cairo_matrix_scale(&cm, sx, sy);
+	cairo_matrix_scale(&cm, value.x, value.y);
 	xx = cm.xx;
 	yx = cm.yx;
 	xy = cm.xy;
@@ -130,12 +124,12 @@ namespace std {
     }
 }
 
-void matrix::transform_distance(double& dx, double& dy) {
+void matrix::transform_distance(point& dist) {
 	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	cairo_matrix_transform_distance(&cm, &dx, &dy);
+	cairo_matrix_transform_distance(&cm, &dist.x, &dist.y);
 }
 
-void matrix::transform_point(double& x, double& y) {
+void matrix::transform_point(point& pt) {
 	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	cairo_matrix_transform_point(&cm, &x, &y);
+	cairo_matrix_transform_point(&cm, &pt.x, &pt.y);
 }
