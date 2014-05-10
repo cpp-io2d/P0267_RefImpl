@@ -1,6 +1,8 @@
 #pragma once
 #include "drawing.h"
 
+#define _PI 3.1415926535897932384626433832795
+
 inline void _Throw_if_failed_status(::std::experimental::drawing::status s) {
 	if (s != ::std::experimental::drawing::status::success) {
 		throw ::std::experimental::drawing::drawing_exception(s);

@@ -59,23 +59,27 @@ void sample_draw::operator()(context& ctxt, double elapsedTimeInMilliseconds) {
     bottom = rb.y;
 	const double radius = trunc(min((right - left) * 0.8 / elementCount, (bottom - top) + 120.0) / 2.0);
 	const double beginX = trunc((right - left) * 0.1), y = trunc((bottom - top) * 0.5);
-    ctxt.move_to({ beginX, 50.0 });
+    path_builder pb;
+    pb.move_to({ beginX, 50.0 });
+    ctxt.set_path(pb.get_path());
 	ctxt.set_source_rgb(1.0, 1.0, 1.0);
 	ctxt.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	ctxt.set_font_size(40.0);
 	ctxt.show_text(string("Phase ").append(to_string(x + 1)).c_str());
-	for (int i = 0; i < elementCount; ++i) {
-		const auto currVal = vec[x][i];
+    for (int i = 0; i < elementCount; ++i) {
+        path_builder pb;
+        const auto currVal = vec[x][i];
 		if (x < phaseCount - 1) {
 			const auto i2 = find(begin(vec[x + 1]), end(vec[x + 1]), currVal) - begin(vec[x + 1]);
 			const auto x1r = radius * i * 2.0 + radius + beginX, x2r = radius * i2 * 2.0 + radius + beginX;
 			const auto yr = y - ((i2 == i ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 				* (i % 2 == 1 ? 1.0 : -1.0));
-            ctxt.arc({ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) }, radius - 3.0, 0.0, two_pi);
+            pb.arc({ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) }, radius - 3.0, 0.0, two_pi);
 		}
 		else {
-            ctxt.arc({ radius * i * 2.0 + radius + beginX, y }, radius - 3.0, 0.0, two_pi);
+            pb.arc({ radius * i * 2.0 + radius + beginX, y }, radius - 3.0, 0.0, two_pi);
 		}
+        ctxt.set_path(pb.get_path());
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
 		ctxt.set_source_rgb(greyColor, greyColor, greyColor);
 		ctxt.fill();

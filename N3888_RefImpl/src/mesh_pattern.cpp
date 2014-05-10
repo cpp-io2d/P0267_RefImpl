@@ -59,7 +59,7 @@ void mesh_pattern::get_patch_count(unsigned int& count) {
 path mesh_pattern::get_path(unsigned int patch_num) {
 	unique_ptr<cairo_path_t, function<void(cairo_path_t*)>> sp_path(cairo_mesh_pattern_get_path(_Pattern.get(), patch_num), &cairo_path_destroy);
 	_Throw_if_failed_status(_Cairo_status_t_to_status(sp_path->status));
-	return _Make_path(sp_path.get());
+	return _Make_path_from_native_handle(sp_path.get());
 }
 
 void mesh_pattern::get_control_point(unsigned int patch_num, unsigned int point_num, point& pt) {

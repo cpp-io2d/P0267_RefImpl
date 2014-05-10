@@ -146,7 +146,10 @@ namespace std {
 				move_to,
 				line_to,
 				curve_to,
-				close_path
+                arc,
+                arc_negative,
+                new_sub_path,
+                close_path
 			};
 
 			enum class extend {
@@ -220,56 +223,6 @@ namespace std {
 				double height;
 			};
 
-			struct rectangle_list {
-				::std::experimental::drawing::status status;
-				::std::vector<rectangle> rectangles;
-			};
-
-			union path_data
-			{
-				struct {
-					path_data_type type;
-					int length;
-				} header;
-				struct {
-					double x;
-					double y;
-				} point;
-			};
-
-			struct path {
-				::std::vector<path_data> data;
-				typedef cairo_path_t* native_handle_type;
-			};
-
-			struct glyph {
-				unsigned long index;
-				double x;
-				double y;
-			};
-
-			struct text_cluster {
-				int num_bytes;
-				int num_glyphs;
-			};
-
-			struct font_extents {
-				double ascent;
-				double descent;
-				double height;
-				double max_x_advance;
-				double max_y_advance;
-			};
-
-			struct text_extents {
-				double x_bearing;
-				double y_bearing;
-				double width;
-				double height;
-				double x_advance;
-				double y_advance;
-			};
-
             struct point {
                 double x;
                 double y;
@@ -290,6 +243,109 @@ namespace std {
             point operator*(const point& lhs, double rhs);
             point operator/(const point& lhs, const point& rhs);
             point operator/(const point& lhs, double rhs);
+
+            struct rectangle_list {
+				::std::experimental::drawing::status status;
+				::std::vector<rectangle> rectangles;
+			};
+
+            struct glyph {
+                unsigned long index;
+                double x;
+                double y;
+            };
+
+            struct text_cluster {
+                int num_bytes;
+                int num_glyphs;
+            };
+
+            struct font_extents {
+                double ascent;
+                double descent;
+                double height;
+                double max_x_advance;
+                double max_y_advance;
+            };
+
+            struct text_extents {
+                double x_bearing;
+                double y_bearing;
+                double width;
+                double height;
+                double x_advance;
+                double y_advance;
+            };
+
+            union path_data
+			{
+				struct {
+					path_data_type type;
+					int length;
+				} header;
+                point point;
+                double value;
+			};
+
+            // Forward declaration.
+            class path_builder;
+
+			class path {
+				::std::vector<path_data> _Data;
+                bool _Has_current_point;
+                point _Current_point;
+                point _Extents_pt0;
+                point _Extents_pt1;
+            public:
+                typedef cairo_path_t* native_handle_type;
+
+                path(const path_builder& pb);
+                path(const path& other) = default;
+                path& operator=(const path& other) = default;
+                path(path&& other);
+                path& operator=(path&& other);
+
+                ::std::vector<path_data> get_data() const;
+                const ::std::vector<path_data>& get_data_ref() const;
+                void get_path_extents(point& pt0, point& pt1) const;
+			};
+
+            class path_builder {
+                friend class path;
+                ::std::vector<path_data> _Data;
+                bool _Has_current_point;
+                point _Current_point;
+                point _Extents_pt0;
+                point _Extents_pt1;
+
+            public:
+                path_builder() = default;
+                path_builder(const path_builder& other) = default;
+                path_builder& operator=(const path_builder& other) = default;
+                path_builder(path_builder&& other);
+                path_builder& operator=(path_builder&& other);
+
+                path get_path() const;
+                path get_path_flat() const;
+
+                void append_path(const path& p);
+                void append_path(const path_builder& p);
+                bool has_current_point();
+                point get_current_point();
+                void new_sub_path();
+                void close_path();
+                void arc(const point& center, double radius, double angle1, double angle2);
+                void arc_negative(const point& center, double radius, double angle1, double angle2);
+                void curve_to(const point& pt0, const point& pt1, const point& pt2);
+                void line_to(const point& pt);
+                void move_to(const point& pt);
+                void rectangle(const rectangle& rect);
+                void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
+                void rel_line_to(const point& dpt);
+                void rel_move_to(const point& dpt);
+
+                void get_path_extents(point& pt0, point& pt1) const;
+            };
 
             struct matrix {
 				double xx;
@@ -779,27 +835,7 @@ namespace std {
 				void copy_page();
 				void show_page();
 
-				// Paths
-				path copy_path();
-				path copy_path_flat();
-				void append_path(const path& p);
-				bool has_current_point();
-				void get_current_point(point& pt);
-				void new_path();
-				void new_sub_path();
-				void close_path();
-				void arc(const point& center, double radius, double angle1, double angle2);
-				void arc_negative(const point& center, double radius, double angle1, double angle2);
-				void curve_to(const point& pt0, const point& pt1, const point& pt2);
-				void line_to(const point& pt);
-				void move_to(const point& pt);
-				void rectangle(const rectangle& rect);
-				void glyph_path(const ::std::vector<glyph>& glyphs);
-				void text_path(const ::std::string& utf8);
-                void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
-				void rel_line_to(const point& dpt);
-				void rel_move_to(const point& dpt);
-				void path_extents(point& pt0, point& pt1);
+                void set_path(const path& p);
 
 				// Transformations
 				void translate(const point& value);
@@ -836,7 +872,7 @@ namespace std {
 			int format_stride_for_width(format format, int width);
 			surface make_surface(surface::native_handle_type nh);
 			surface make_surface(format format, int width, int height);
-			path _Make_path(path::native_handle_type nh);
+			path _Make_path_from_native_handle(path::native_handle_type nh);
 		}
 	}
 }
