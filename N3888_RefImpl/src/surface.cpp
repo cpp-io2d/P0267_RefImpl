@@ -10,29 +10,19 @@ surface::native_handle_type surface::native_handle() const {
 }
 
 surface::surface(surface::native_handle_type native_handle)
-: _Surface()
-, _Write_to_png_fn(new ::std::function<void(void* closure, const ::std::vector<unsigned char>& data)>)
-, _Write_to_png_closure() {
+: _Surface() {
 	_Surface = shared_ptr<cairo_surface_t>(native_handle, &cairo_surface_destroy);
 }
 
-surface::surface(surface&& other) {
-	_Surface = move(other._Surface);
-	_Write_to_png_fn = move(other._Write_to_png_fn);
-	_Write_to_png_closure = move(other._Write_to_png_closure);
-	other._Surface = nullptr;
-	other._Write_to_png_fn = nullptr;
-	other._Write_to_png_closure = nullptr;
+surface::surface(surface&& other)
+: _Surface(move(other._Surface)) {
+    other._Surface = nullptr;
 }
 
 surface& surface::operator=(surface&& other) {
 	if (this != &other) {
 		_Surface = move(other._Surface);
-		_Write_to_png_fn = move(other._Write_to_png_fn);
-		_Write_to_png_closure = move(other._Write_to_png_closure);
 		other._Surface = nullptr;
-		other._Write_to_png_fn = nullptr;
-		other._Write_to_png_closure = nullptr;
 	}
 	return *this;
 }
@@ -43,16 +33,12 @@ surface& surface::operator=(surface::native_handle_type nh) {
 }
 
 surface::surface(surface& other, content content, double width, double height)
-: _Surface()
-, _Write_to_png_fn()
-, _Write_to_png_closure() {
+: _Surface() {
 	_Surface = shared_ptr<cairo_surface_t>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), _Double_to_int(width, false), _Double_to_int(height, false)), &cairo_surface_destroy);
 }
 
 surface::surface(surface& target, const rectangle& rect)
-: _Surface()
-, _Write_to_png_fn()
-, _Write_to_png_closure() {
+: _Surface() {
 	_Surface = shared_ptr<cairo_surface_t>(cairo_surface_create_for_rectangle(target._Surface.get(), _Double_to_int(rect.x, false), _Double_to_int(rect.y, false), _Double_to_int(rect.width, false), _Double_to_int(rect.height, false)), &cairo_surface_destroy);
 }
 
@@ -111,25 +97,6 @@ void surface::get_fallback_resolution(point& ppi) {
 
 void surface::write_to_png(const string& filename) {
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_write_to_png(_Surface.get(), filename.c_str())));
-}
-
-void surface::write_to_png_stream(function<void(void* closure, const vector<unsigned char>& data)> write_fn, void* closure) {
-	assert((_Write_to_png_closure == nullptr) && (_Write_to_png_fn == nullptr));
-	_Write_to_png_closure = closure;
-	*_Write_to_png_fn = write_fn;
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_write_to_png_stream(_Surface.get(), &surface::_Cairo_write_to_png_stream, this)));
-	_Write_to_png_closure = nullptr;
-	*_Write_to_png_fn = nullptr;
-}
-
-cairo_status_t surface::_Cairo_write_to_png_stream(void* this_ptr, const unsigned char* data, unsigned int length) {
-	shared_ptr<int> a; unique_ptr<int> b;
-	auto sp = static_cast<surface*>(this_ptr);
-	vector<unsigned char> vec(data, data + length);
-	auto& write_to_png_fn = *sp->_Write_to_png_fn;
-	write_to_png_fn(sp->_Write_to_png_closure, vec);
-
-	return CAIRO_STATUS_SUCCESS;
 }
 
 void surface::copy_page() {

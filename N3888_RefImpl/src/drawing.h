@@ -538,8 +538,6 @@ namespace std {
 			protected:
 				::std::shared_ptr<cairo_surface_t> _Surface;
 
-				::std::shared_ptr<::std::function<void(void* closure, const ::std::vector<unsigned char>& data)>> _Write_to_png_fn;
-				void* _Write_to_png_closure;
 			public:
 				typedef cairo_surface_t* native_handle_type;
 				native_handle_type native_handle() const;
@@ -574,14 +572,11 @@ namespace std {
 				void set_fallback_resolution(const point& ppi);
 				void get_fallback_resolution(point& ppi);
 				void write_to_png(const ::std::string& filename);
-				void write_to_png_stream(::std::function<void(void* closure, const ::std::vector<unsigned char>& data)> write_fn, void* closure);
 				void copy_page();
 				void show_page();
 				bool has_show_text_glyphs();
 				image_surface map_to_image(const rectangle& extents);
 				void unmap_image(image_surface& image);
-			protected:
-				static cairo_status_t _Cairo_write_to_png_stream(void* this_ptr, const unsigned char* data, unsigned int length);
 			};
 
 			class image_surface : public surface {
