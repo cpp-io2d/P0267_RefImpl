@@ -622,7 +622,7 @@ namespace std {
 
 			inline cairo_pattern_type_t _Pattern_type_to_cairo_pattern_type_t(::std::experimental::drawing::pattern_type pt) {
 				switch (pt) {
-				case ::std::experimental::drawing::pattern_type::solid:
+				case ::std::experimental::drawing::pattern_type::solid_color:
 					return CAIRO_PATTERN_TYPE_SOLID;
 				case ::std::experimental::drawing::pattern_type::surface:
 					return CAIRO_PATTERN_TYPE_SURFACE;
@@ -642,7 +642,7 @@ namespace std {
 			inline ::std::experimental::drawing::pattern_type _Cairo_pattern_type_t_to_pattern_type(cairo_pattern_type_t cpt) {
 				switch (cpt) {
 				case CAIRO_PATTERN_TYPE_SOLID:
-					return ::std::experimental::drawing::pattern_type::solid;
+					return ::std::experimental::drawing::pattern_type::solid_color;
 				case CAIRO_PATTERN_TYPE_SURFACE:
 					return ::std::experimental::drawing::pattern_type::surface;
 				case CAIRO_PATTERN_TYPE_LINEAR:

@@ -14,5 +14,6 @@
 #include <cassert>
 #include <atomic>
 #include <cstdint>
+#include <tuple>
 
 #endif

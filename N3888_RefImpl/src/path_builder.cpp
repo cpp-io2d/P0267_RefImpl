@@ -171,6 +171,18 @@ void path_builder::rel_move_to(const point& dpt) {
     move_to(dpt + _Current_point);
 }
 
+vector<path_data> path_builder::get_data() const {
+    return vector<path_data>(_Data);
+}
+
+const vector<path_data>& path_builder::get_data_ref() const {
+    return _Data;
+}
+
+vector<path_data>& path_builder::get_data_ref() {
+    return _Data;
+}
+
 void path_builder::get_path_extents(point& pt0, point& pt1) const {
     throw runtime_error("Not implemented yet.");
 }

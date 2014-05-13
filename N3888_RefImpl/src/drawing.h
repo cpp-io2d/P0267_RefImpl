@@ -156,8 +156,9 @@ namespace std {
 				none,
 				repeat,
 				reflect,
-				pad
-			};
+				pad,
+                default_extend = none
+            };
 
 			enum class filter {
 				fast,
@@ -165,11 +166,12 @@ namespace std {
 				best,
 				nearest,
 				bilinear,
-				gaussian
+				gaussian,
+                default_filter = good
 			};
 
 			enum class pattern_type {
-				solid,
+				solid_color,
 				surface,
 				linear,
 				radial,
@@ -344,6 +346,9 @@ namespace std {
                 void rel_line_to(const point& dpt);
                 void rel_move_to(const point& dpt);
 
+                ::std::vector<path_data> get_data() const;
+                const ::std::vector<path_data>& get_data_ref() const;
+                ::std::vector<path_data>& get_data_ref();
                 void get_path_extents(point& pt0, point& pt1) const;
             };
 
@@ -355,11 +360,10 @@ namespace std {
 				double x0;
 				double y0;
 
-				void init(double xx, double yx, double xy, double yy, double x0, double y0);
-				void init_identity();
-				void init_translate(const point& value);
-				void init_scale(const point& value);
-				void init_rotate(double radians);
+				static matrix init_identity();
+                static matrix init_translate(const point& value);
+                static matrix init_scale(const point& value);
+                static matrix init_rotate(double radians);
 
 				void translate(const point& value);
 				void scale(const point& value);
@@ -606,103 +610,203 @@ namespace std {
 				int get_stride();
 			};
 
-			class pattern {
-				pattern() = delete;
-			protected:
-				::std::shared_ptr<cairo_pattern_t> _Pattern;
-			public:
-				typedef cairo_pattern_t* native_handle_type;
-				native_handle_type native_handle() const;
+            // Forward declaration.
+            class linear_pattern_builder;
+            class mesh_pattern_builder;
+            class radial_pattern_builder;
+            class raster_source_pattern_builder;
+            class solid_color_pattern_builder;
+            class surface_pattern_builder;
+            class context;
 
-				explicit pattern(native_handle_type nh);
+            class pattern {
+            public:
+                typedef cairo_pattern_t* native_handle_type;
 
-				pattern(const pattern&) = default;
-				pattern& operator=(const pattern&) = default;
-				pattern(pattern&& other);
-				pattern& operator=(pattern&& other);
+            private:
+                friend class linear_pattern_builder;
+                friend class mesh_pattern_builder;
+                friend class radial_pattern_builder;
+                friend class raster_source_pattern_builder;
+                friend class solid_color_pattern_builder;
+                friend class surface_pattern_builder;
+                friend class context;
 
-				virtual ~pattern();
+                pattern() = delete;
+                pattern(native_handle_type nh);
 
-				::std::experimental::drawing::status status();
-				void set_extend(extend extend);
-				extend get_extend();
-				void set_filter(filter filter);
-				filter get_filter();
-				void set_matrix(const matrix& matrix);
-				void get_matrix(matrix& matrix);
+                cairo_pattern_t* _Pattern;
+                pattern_type _Pattern_type;
 
-				pattern_type get_type();
+            public:
+                native_handle_type native_handle() const;
+
+                pattern(const pattern&) = default;
+                pattern& operator=(const pattern&) = default;
+                pattern(pattern&& other);
+                pattern& operator=(pattern&& other);
+
+                ~pattern();
+
+                pattern_type get_type() const;
+            };
+
+			class solid_color_pattern_builder {
+                pattern_type _Pattern_type;
+                extend _Extend;
+                filter _Filter;
+                matrix _Matrix;
+                double _Red;
+                double _Green;
+                double _Blue;
+                double _Alpha;
+
+            public:
+				solid_color_pattern_builder(const solid_color_pattern_builder&) = default;
+				solid_color_pattern_builder& operator=(const solid_color_pattern_builder&) = default;
+				solid_color_pattern_builder(solid_color_pattern_builder&& other);
+				solid_color_pattern_builder& operator=(solid_color_pattern_builder&& other);
+				solid_color_pattern_builder(double red, double green, double blue);
+				solid_color_pattern_builder(double red, double green, double blue, double alpha);
+
+                pattern get_pattern();
+                void set_extend(extend e);
+                extend get_extend();
+                void set_filter(filter f);
+                filter get_filter();
+                void set_matrix(const matrix& m);
+                matrix get_matrix();
+                
+                void get_rgba(double& red, double& green, double& blue, double& alpha);
 			};
 
-			class solid_color_pattern : public pattern {
-			public:
-				solid_color_pattern(const solid_color_pattern&) = default;
-				solid_color_pattern& operator=(const solid_color_pattern&) = default;
-				solid_color_pattern(solid_color_pattern&& other);
-				solid_color_pattern& operator=(solid_color_pattern&& other);
-				solid_color_pattern(double red, double green, double blue);
-				solid_color_pattern(double red, double green, double blue, double alpha);
+			class linear_pattern_builder {
+                pattern_type _Pattern_type;
+                extend _Extend;
+                filter _Filter;
+                matrix _Matrix;
 
-				void get_rgba(double& red, double& green, double& blue, double& alpha);
+                point _Point0;
+                point _Point1;
+                ::std::vector<::std::tuple<double, double, double, double, double>> _Color_stops;
+
+                linear_pattern_builder() = delete;
+			public:
+				linear_pattern_builder(const linear_pattern_builder&) = default;
+				linear_pattern_builder& operator=(const linear_pattern_builder&) = default;
+				linear_pattern_builder(linear_pattern_builder&& other);
+				linear_pattern_builder& operator=(linear_pattern_builder&& other);
+				linear_pattern_builder(const point& pt0, const point& pt1);
+
+                pattern get_pattern();
+                void set_extend(extend extend);
+                extend get_extend();
+                void set_filter(filter filter);
+                filter get_filter();
+                void set_matrix(const matrix& matrix);
+                matrix get_matrix();
+                
+                void add_color_stop_rgb(double offset, double red, double green, double blue);
+                void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
+                void get_color_stop_count(int& count);
+                void get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha);
+
+                void get_linear_points(point& pt0, point& pt1);
 			};
 
-			class gradient_pattern : public pattern {
-				gradient_pattern() = delete;
-			protected:
-				gradient_pattern(native_handle_type nh);
-			public:
-				gradient_pattern(const gradient_pattern&) = default;
-				gradient_pattern& operator=(const gradient_pattern&) = default;
-				gradient_pattern(gradient_pattern&& other);
-				gradient_pattern& operator=(gradient_pattern&& other);
-				virtual ~gradient_pattern();
+			class radial_pattern_builder {
+                pattern_type _Pattern_type;
+                extend _Extend;
+                filter _Filter;
+                matrix _Matrix;
 
-				void add_color_stop_rgb(double offset, double red, double green, double blue);
-				void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
-				void get_color_stop_count(int& count);
-				void get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha);
+                point _Center0;
+                double _Radius0;
+                point _Center1;
+                double _Radius1;
+                ::std::vector<::std::tuple<double, double, double, double, double>> _Color_stops;
+
+                radial_pattern_builder() = delete;
+            public:
+				radial_pattern_builder(const radial_pattern_builder&) = default;
+				radial_pattern_builder& operator=(const radial_pattern_builder&) = default;
+				radial_pattern_builder(radial_pattern_builder&& other);
+				radial_pattern_builder& operator=(radial_pattern_builder&& other);
+				radial_pattern_builder(const point& center0, double radius0, const point& center1, double radius1);
+
+                pattern get_pattern();
+                void set_extend(extend extend);
+                extend get_extend();
+                void set_filter(filter filter);
+                filter get_filter();
+                void set_matrix(const matrix& matrix);
+                matrix get_matrix();
+
+                void add_color_stop_rgb(double offset, double red, double green, double blue);
+                void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
+                void get_color_stop_count(int& count);
+                void get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha);
+
+                void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1);
 			};
 
-			class linear_pattern : public gradient_pattern {
-				linear_pattern() = delete;
+			class surface_pattern_builder {
+                pattern_type _Pattern_type;
+                extend _Extend;
+                filter _Filter;
+                matrix _Matrix;
+
+                surface _Surface;
+
+                surface_pattern_builder() = delete;
 			public:
-				linear_pattern(const linear_pattern&) = default;
-				linear_pattern& operator=(const linear_pattern&) = default;
-				linear_pattern(linear_pattern&& other);
-				linear_pattern& operator=(linear_pattern&& other);
-				linear_pattern(const point& pt0, const point& pt1);
-				void get_linear_points(point& pt0, point& pt1);
+				surface_pattern_builder(const surface_pattern_builder&) = default;
+				surface_pattern_builder& operator=(const surface_pattern_builder&) = default;
+				surface_pattern_builder(surface_pattern_builder&& other);
+				surface_pattern_builder& operator=(surface_pattern_builder&& other);
+				explicit surface_pattern_builder(const surface& s);
+
+                pattern get_pattern();
+                void set_extend(extend extend);
+                extend get_extend();
+                void set_filter(filter filter);
+                filter get_filter();
+                void set_matrix(const matrix& matrix);
+                matrix get_matrix();
+
+                void get_surface(surface& s);
 			};
 
-			class radial_pattern : public gradient_pattern {
-			public:
-				radial_pattern(const radial_pattern&) = default;
-				radial_pattern& operator=(const radial_pattern&) = default;
-				radial_pattern(radial_pattern&& other);
-				radial_pattern& operator=(radial_pattern&& other);
-				radial_pattern(const point& center0, double radius0, const point& center1, double radius1);
-				void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1);
-			};
+			class mesh_pattern_builder {
+                pattern_type _Pattern_type;
+                extend _Extend;
+                filter _Filter;
+                matrix _Matrix;
 
-			class surface_pattern : public pattern {
-				surface_pattern() = delete;
-			public:
-				surface_pattern(const surface_pattern&) = default;
-				surface_pattern& operator=(const surface_pattern&) = default;
-				surface_pattern(surface_pattern&& other);
-				surface_pattern& operator=(surface_pattern&& other);
-				explicit surface_pattern(surface& surface);
-				void get_surface(surface& s);
-			};
+                bool _Has_current_patch;
+                int _Current_patch_side_count;
+                point _Current_patch_initial_point;
+                // <Patch data, control points, corner colors>
+                typedef ::std::map<unsigned int, point> _Control_points;
+                typedef ::std::map<unsigned int, ::std::tuple<double, double, double, double>> _Corner_colors;
+                typedef ::std::tuple<path_builder, _Control_points, _Corner_colors> _Patch;
+                ::std::vector<_Patch> _Patches;
+            public:
+				mesh_pattern_builder();
+				mesh_pattern_builder(const mesh_pattern_builder&) = default;
+				mesh_pattern_builder& operator=(const mesh_pattern_builder&) = default;
+				mesh_pattern_builder(mesh_pattern_builder&& other);
+				mesh_pattern_builder& operator=(mesh_pattern_builder&& other);
 
-			class mesh_pattern : public pattern {
-			public:
-				mesh_pattern();
-				mesh_pattern(const mesh_pattern&) = default;
-				mesh_pattern& operator=(const mesh_pattern&) = default;
-				mesh_pattern(mesh_pattern&& other);
-				mesh_pattern& operator=(mesh_pattern&& other);
-				void begin_patch();
+                pattern get_pattern();
+                void set_extend(extend extend);
+                extend get_extend();
+                void set_filter(filter filter);
+                filter get_filter();
+                void set_matrix(const matrix& matrix);
+                matrix get_matrix();
+
+                void begin_patch();
 				void end_patch();
 				void move_to(const point& pt);
 				void line_to(const point& pt);
@@ -712,31 +816,44 @@ namespace std {
 				void set_corner_color_rgba(unsigned int corner_num, double red, double green, double blue, double alpha);
 				void get_patch_count(unsigned int& count);
 				path get_path(unsigned int patch_num);
-				void get_control_point(unsigned int patch_num, unsigned int point_num, point& pt);
+                path_builder get_path_builder(unsigned int patch_num);
+				point get_control_point(unsigned int patch_num, unsigned int point_num);
 				void get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num, double& red, double& green, double& blue, double& alpha);
 			};
 
-			class raster_source_pattern : public pattern {
-				void* _User_callback_data;
+			class raster_source_pattern_builder {
+                pattern_type _Pattern_type;
+                extend _Extend;
+                filter _Filter;
+                matrix _Matrix;
+
+                void* _User_callback_data;
 				int _Width;
 				int _Height;
+                content _Content;
 				::std::shared_ptr<::std::function<surface(void* callback_data, surface& target, const rectangle& extents)>> _Acquire_fn;
 				::std::shared_ptr<::std::function<void(void* callback_data, surface& surface)>> _Release_fn;
 				
-				static cairo_surface_t* _Cairo_acquire(cairo_pattern_t* pattern, void* this_ptr, cairo_surface_t* target, const cairo_rectangle_int_t* extents);
-				static void _Cairo_release(cairo_pattern_t* pattern, void* this_ptr, cairo_surface_t* surface);
-				static cairo_status_t _Cairo_snapshot(cairo_pattern_t* pattern, void* this_ptr);
-				static cairo_status_t _Cairo_copy(cairo_pattern_t* pattern, void* this_ptr, const cairo_pattern_t* other);
-				static void _Cairo_finish(cairo_pattern_t* pattern, void* this_ptr);
+				static cairo_surface_t* _Cairo_acquire(cairo_pattern_t* pattern_builder, void* this_ptr, cairo_surface_t* target, const cairo_rectangle_int_t* extents);
+				static void _Cairo_release(cairo_pattern_t* pattern_builder, void* this_ptr, cairo_surface_t* surface);
 
-				raster_source_pattern() = delete;
+				raster_source_pattern_builder() = delete;
 			public:
-				raster_source_pattern(const raster_source_pattern&) = default;
-				raster_source_pattern& operator=(const raster_source_pattern&) = default;
-				raster_source_pattern(raster_source_pattern&& other);
-				raster_source_pattern& operator=(raster_source_pattern&& other);
-				raster_source_pattern(void* user_data, content content, int width, int height);
-				void set_callback_data(void* data);
+				raster_source_pattern_builder(const raster_source_pattern_builder&) = default;
+				raster_source_pattern_builder& operator=(const raster_source_pattern_builder&) = default;
+				raster_source_pattern_builder(raster_source_pattern_builder&& other);
+				raster_source_pattern_builder& operator=(raster_source_pattern_builder&& other);
+				raster_source_pattern_builder(void* user_data, content content, int width, int height);
+
+                pattern get_pattern();
+                void set_extend(extend extend);
+                extend get_extend();
+                void set_filter(filter filter);
+                filter get_filter();
+                void set_matrix(const matrix& matrix);
+                matrix get_matrix();
+                
+                void set_callback_data(void* data);
 				void* get_callback_data();
 				void set_acquire(
 					::std::function<surface(void* callback_data, surface& target, const rectangle& extents)> acquire_fn,
@@ -774,10 +891,7 @@ namespace std {
 				void pop_group_to_source();
 				surface get_group_target();
 
-				void set_source_rgb(double red, double green, double blue);
-				void set_source_rgba(double red, double green, double blue, double alpha);
-				void set_source(const pattern& source);
-				void set_source_surface(const surface& s, const point& origin);
+				void set_pattern(const pattern& source);
 				pattern get_source();
 
 				void set_antialias(antialias a);
@@ -821,7 +935,7 @@ namespace std {
 				void fill_extents(point& pt0, point& pt1);
 				bool in_fill(const point& pt);
 
-				void mask(pattern& pattern);
+				void mask(pattern& pttn);
 				void mask_surface(surface& surface, const point& origin);
 
 				void paint();

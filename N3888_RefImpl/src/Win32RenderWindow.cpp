@@ -212,7 +212,7 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 		auto surface = make_surface(cairo_win32_surface_create(hdc));
 		auto ctxt = context(surface);
-        ctxt.set_source_surface(*g_psurface, { 0.0, 0.0 });
+        ctxt.set_pattern(surface_pattern_builder(*g_psurface).get_pattern());
 		ctxt.paint();
 		surface.flush();
 		EndPaint(handle, &ps);

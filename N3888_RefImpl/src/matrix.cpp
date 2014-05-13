@@ -5,46 +5,22 @@
 using namespace std;
 using namespace std::experimental::drawing;
 
-void matrix::init(double xx, double yx, double xy, double yy, double x0, double y0) {
-	*this = { xx, yx, xy, yy, x0, y0 };
+matrix matrix::init_identity() {
+    return { 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
 }
 
-void matrix::init_identity() {
-	xx = 1.0;
-	yx = 0.0;
-	xy = 0.0;
-	yy = 1.0;
-	x0 = 0.0;
-	y0 = 0.0;
+matrix matrix::init_translate(const point& value) {
+    return{ 1.0, 0.0, 0.0, 1.0, value.x, value.y };
 }
 
-void matrix::init_translate(const point& value) {
-	xx = 1.0;
-	yx = 0.0;
-	xy = 0.0;
-	yy = 1.0;
-	x0 = value.x;
-	y0 = value.y;
+matrix matrix::init_scale(const point& value) {
+    return{ value.x, 0.0, 0.0, value.y, 0.0, 0.0 };
 }
 
-void matrix::init_scale(const point& value) {
-    xx = value.x;
-	yx = 0.0;
-	xy = 0.0;
-	yy = value.y;
-	x0 = 0.0;
-	y0 = 0.0;
-}
-
-void matrix::init_rotate(double radians) {
+matrix matrix::init_rotate(double radians) {
     auto sine = sin(radians);
     auto cosine = cos(radians);
-	xx = cosine;
-	yx = sine;
-	xy = -sine;
-	yy = cosine;
-	x0 = 0.0;
-	y0 = 0.0;
+    return{ cosine, sine, -sine, cosine, 0.0, 0.0 };
 }
 
 void matrix::translate(const point& value) {

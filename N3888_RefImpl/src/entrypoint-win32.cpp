@@ -78,7 +78,7 @@ int WINAPI wWinMain(
 			{
 				auto surface = make_surface(cairo_win32_surface_create(hdc));
 				auto ctxt = context(surface);
-                ctxt.set_source_surface(*window.GetSurface(), { 0.0, 0.0 });
+                ctxt.set_pattern(surface_pattern_builder(*window.GetSurface()).get_pattern());
 				ctxt.paint();
 				surface.flush();
 			}

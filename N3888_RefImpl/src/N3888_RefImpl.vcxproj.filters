@@ -68,25 +68,10 @@
     <ClCompile Include="font_options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="drawing_exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="matrix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="solid_color_pattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gradient_pattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="surface_pattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mesh_pattern.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="region.cpp">
@@ -104,16 +89,7 @@
     <ClCompile Include="image_surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="raster_source_pattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="standalone_functions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="linear_pattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="radial_pattern.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Win32RenderWindow.cpp">
@@ -132,6 +108,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="path_builder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="linear_pattern_builder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh_pattern_builder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="radial_pattern_builder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="raster_source_pattern_builder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="solid_color_pattern_builder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="surface_pattern_builder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pattern.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -48,7 +48,8 @@ void sample_draw::operator()(context& ctxt, double elapsedTimeInMilliseconds) {
 	const int elementCount = 12;
 	const static auto vec = init_sort_steps(elementCount);
 	const int phaseCount = static_cast<int>(vec.size()), x = min(static_cast<int>(timer / phaseTime), phaseCount - 1);
-	ctxt.set_source_rgb(0.392156899, 0.5843137503, 0.9294118285);
+    auto cornflowerBluePattern = solid_color_pattern_builder(0.392156899, 0.5843137503, 0.9294118285).get_pattern();
+    ctxt.set_pattern(cornflowerBluePattern);
 	ctxt.paint(); // Paint background.
 	double left, top, right, bottom;
     point lt, rb;
@@ -62,7 +63,8 @@ void sample_draw::operator()(context& ctxt, double elapsedTimeInMilliseconds) {
     path_builder pb;
     pb.move_to({ beginX, 50.0 });
     ctxt.set_path(pb.get_path());
-	ctxt.set_source_rgb(1.0, 1.0, 1.0);
+    auto whitePattern = solid_color_pattern_builder(1.0, 1.0, 1.0).get_pattern();
+    ctxt.set_pattern(whitePattern);
 	ctxt.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	ctxt.set_font_size(40.0);
 	ctxt.show_text(string("Phase ").append(to_string(x + 1)).c_str());
@@ -81,7 +83,8 @@ void sample_draw::operator()(context& ctxt, double elapsedTimeInMilliseconds) {
 		}
         ctxt.set_path(pb.get_path());
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
-		ctxt.set_source_rgb(greyColor, greyColor, greyColor);
+        auto greyPattern = solid_color_pattern_builder(greyColor, greyColor, greyColor).get_pattern();
+        ctxt.set_pattern(greyPattern);
 		ctxt.fill();
 	}
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;

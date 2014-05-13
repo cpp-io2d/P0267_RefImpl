@@ -73,20 +73,8 @@ surface context::get_group_target() {
     return surface(cairo_surface_reference(cairo_get_group_target(_Context.get())));
 }
 
-void context::set_source_rgb(double red, double green, double blue) {
-    cairo_set_source_rgb(_Context.get(), red, green, blue);
-}
-
-void context::set_source_rgba(double red, double green, double blue, double alpha) {
-    cairo_set_source_rgba(_Context.get(), red, green, blue, alpha);
-}
-
-void context::set_source(const pattern& source) {
+void context::set_pattern(const pattern& source) {
     cairo_set_source(_Context.get(), source.native_handle());
-}
-
-void context::set_source_surface(const surface& s, const point& origin) {
-    cairo_set_source_surface(_Context.get(), s.native_handle(), origin.x, origin.y);
 }
 
 void context::set_antialias(antialias a) {
@@ -214,8 +202,8 @@ bool context::in_fill(const point& pt) {
     return cairo_in_fill(_Context.get(), pt.x, pt.y) != 0;
 }
 
-void context::mask(pattern& pattern) {
-    cairo_mask(_Context.get(), pattern.native_handle());
+void context::mask(pattern& pttn) {
+    cairo_mask(_Context.get(), pttn.native_handle());
 }
 
 void context::mask_surface(surface& surface, const point& origin) {
