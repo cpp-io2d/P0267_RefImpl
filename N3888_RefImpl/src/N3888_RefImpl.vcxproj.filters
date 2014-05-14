@@ -59,9 +59,6 @@
     <ClCompile Include="surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
