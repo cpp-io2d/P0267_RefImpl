@@ -10,8 +10,7 @@ surface::native_handle_type surface::native_handle() const {
 }
 
 surface::surface(surface::native_handle_type native_handle)
-: _Surface() {
-	_Surface = shared_ptr<cairo_surface_t>(native_handle, &cairo_surface_destroy);
+: _Surface(unique_ptr<cairo_surface_t, void(*)(cairo_surface_t*)>(native_handle, &cairo_surface_destroy)) {
 }
 
 surface::surface(surface&& other)
@@ -28,18 +27,16 @@ surface& surface::operator=(surface&& other) {
 }
 
 surface& surface::operator=(surface::native_handle_type nh) {
-	_Surface = shared_ptr<cairo_surface_t>(nh, &cairo_surface_destroy);
+    _Surface = unique_ptr<cairo_surface_t, void(*)(cairo_surface_t*)>(nh, &cairo_surface_destroy);
 	return *this;
 }
 
-surface::surface(surface& other, content content, double width, double height)
-: _Surface() {
-	_Surface = shared_ptr<cairo_surface_t>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), _Double_to_int(width, false), _Double_to_int(height, false)), &cairo_surface_destroy);
+surface::surface(const surface& other, content content, double width, double height)
+: _Surface(unique_ptr<cairo_surface_t, void(*)(cairo_surface_t*)>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), _Double_to_int(width, false), _Double_to_int(height, false)), &cairo_surface_destroy)) {
 }
 
-surface::surface(surface& target, const rectangle& rect)
-: _Surface() {
-	_Surface = shared_ptr<cairo_surface_t>(cairo_surface_create_for_rectangle(target._Surface.get(), _Double_to_int(rect.x, false), _Double_to_int(rect.y, false), _Double_to_int(rect.width, false), _Double_to_int(rect.height, false)), &cairo_surface_destroy);
+surface::surface(const surface& target, const rectangle& rect)
+: _Surface(unique_ptr<cairo_surface_t, void(*)(cairo_surface_t*)>(cairo_surface_create_for_rectangle(target._Surface.get(), _Double_to_int(rect.x, false), _Double_to_int(rect.y, false), _Double_to_int(rect.width, false), _Double_to_int(rect.height, false)), &cairo_surface_destroy)) {
 }
 
 surface::~surface() {
@@ -75,8 +72,8 @@ void surface::mark_dirty() {
 	cairo_surface_mark_dirty(_Surface.get());
 }
 
-void surface::mark_dirty_rectangle(int x, int y, int width, int height) {
-	cairo_surface_mark_dirty_rectangle(_Surface.get(), x, y, width, height);
+void surface::mark_dirty_rectangle(const rectangle& rect) {
+	cairo_surface_mark_dirty_rectangle(_Surface.get(), static_cast<int>(rect.x), static_cast<int>(rect.y), static_cast<int>(rect.width), static_cast<int>(rect.height));
 }
 
 void surface::set_device_offset(const point& offset) {
@@ -87,28 +84,8 @@ void surface::get_device_offset(point& offset) {
 	cairo_surface_get_device_offset(_Surface.get(), &offset.x, &offset.y);
 }
 
-void surface::set_fallback_resolution(const point& ppi) {
-	cairo_surface_set_fallback_resolution(_Surface.get(), ppi.x, ppi.y);
-}
-
-void surface::get_fallback_resolution(point& ppi) {
-	cairo_surface_get_fallback_resolution(_Surface.get(), &ppi.x, &ppi.y);
-}
-
 void surface::write_to_png(const string& filename) {
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_write_to_png(_Surface.get(), filename.c_str())));
-}
-
-void surface::copy_page() {
-	cairo_surface_copy_page(_Surface.get());
-}
-
-void surface::show_page() {
-	cairo_surface_show_page(_Surface.get());
-}
-
-bool surface::has_show_text_glyphs() {
-	return cairo_surface_has_show_text_glyphs(_Surface.get()) != 0;
 }
 
 image_surface surface::map_to_image(const rectangle& extents) {
@@ -118,5 +95,9 @@ image_surface surface::map_to_image(const rectangle& extents) {
 }
 
 void surface::unmap_image(image_surface& image) {
-	image._Surface = shared_ptr<cairo_surface_t>(cairo_image_surface_create(CAIRO_FORMAT_INVALID, 0, 0), &cairo_surface_destroy);
+    image._Surface = unique_ptr<cairo_surface_t, void(*)(cairo_surface_t*)>(cairo_image_surface_create(CAIRO_FORMAT_INVALID, 0, 0), &cairo_surface_destroy);
+}
+
+bool surface::has_surface_resource() const {
+    return _Surface != nullptr;
 }

@@ -133,7 +133,6 @@ void mesh_pattern_builder::end_patch() {
     if (!_Has_current_patch) {
         _Throw_if_failed_status(status::invalid_mesh_construction);
     }
-    auto& patch = _Patches.back();
     if (_Current_patch_side_count < 4) {
         line_to(_Current_patch_initial_point);
     }
@@ -212,7 +211,7 @@ void mesh_pattern_builder::set_corner_color_rgba(unsigned int corner_num, double
 }
 
 void mesh_pattern_builder::get_patch_count(unsigned int& count) {
-    count = _Patches.size();
+    count = static_cast<unsigned int>(_Patches.size());
 }
 
 path mesh_pattern_builder::get_path(unsigned int patch_num) {

@@ -15,5 +15,6 @@
 #include <atomic>
 #include <cstdint>
 #include <tuple>
+#include <mutex>
 
 #endif

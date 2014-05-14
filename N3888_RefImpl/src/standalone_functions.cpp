@@ -37,12 +37,12 @@ namespace std {
 				return result.get_path();
 			}
 
-			surface make_surface(surface::native_handle_type nh) {
-				return surface(nh);
+			render_surface make_surface(surface::native_handle_type nh) {
+				return render_surface(nh);
 			}
 
-			surface make_surface(format fmt, int width, int height) {
-				return image_surface(fmt, width, height);
+			render_surface make_surface(format fmt, int width, int height) {
+				return render_surface(fmt, width, height);
 			}
 
 			int format_stride_for_width(format format, int width) {

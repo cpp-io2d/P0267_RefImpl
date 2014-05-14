@@ -536,14 +536,14 @@ namespace std {
 			class surface {
 				surface() = delete;
 			protected:
-				::std::shared_ptr<cairo_surface_t> _Surface;
+                ::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
 
 			public:
 				typedef cairo_surface_t* native_handle_type;
 				native_handle_type native_handle() const;
 
-				surface(const surface&) = default;
-				surface& operator=(const surface&) = default;
+				surface(const surface&) = delete;
+				surface& operator=(const surface&) = delete;
 
 				explicit surface(native_handle_type nh);
 				surface& operator=(native_handle_type nh);
@@ -551,9 +551,9 @@ namespace std {
 				surface& operator=(surface&& other);
 
 				// create_similar
-				surface(surface& other, content content, double width, double height);
+				surface(const surface& other, content content, double width, double height);
 				// create_for_rectangle
-				surface(surface& target, const rectangle& rect);
+				surface(const surface& target, const rectangle& rect);
 				virtual ~surface();
 
 				::std::experimental::drawing::status status();
@@ -565,18 +565,14 @@ namespace std {
 
 				content get_content();
 				void mark_dirty();
-				void mark_dirty_rectangle(int x, int y, int width, int height);
+				void mark_dirty_rectangle(const rectangle& rect);
 
 				void set_device_offset(const point& offset);
 				void get_device_offset(point& offset);
-				void set_fallback_resolution(const point& ppi);
-				void get_fallback_resolution(point& ppi);
 				void write_to_png(const ::std::string& filename);
-				void copy_page();
-				void show_page();
-				bool has_show_text_glyphs();
 				image_surface map_to_image(const rectangle& extents);
 				void unmap_image(image_surface& image);
+                bool has_surface_resource() const;
 			};
 
 			class image_surface : public surface {
@@ -585,8 +581,8 @@ namespace std {
 			protected:
 				::std::shared_ptr<::std::vector<unsigned char>> _Data;
 			public:
-				image_surface(const image_surface&) = default;
-				image_surface& operator=(const image_surface&) = default;
+				image_surface(const image_surface&) = delete;
+				image_surface& operator=(const image_surface&) = delete;
 				image_surface(image_surface&& other);
 				image_surface& operator=(image_surface&& other);
 				image_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
@@ -612,7 +608,7 @@ namespace std {
             class raster_source_pattern_builder;
             class solid_color_pattern_builder;
             class surface_pattern_builder;
-            class context;
+            class render_surface;
 
             class pattern {
             public:
@@ -625,7 +621,7 @@ namespace std {
                 friend class raster_source_pattern_builder;
                 friend class solid_color_pattern_builder;
                 friend class surface_pattern_builder;
-                friend class context;
+                friend class render_surface;
 
                 pattern() = delete;
                 pattern(native_handle_type nh);
@@ -755,11 +751,11 @@ namespace std {
 
                 surface_pattern_builder() = delete;
 			public:
-				surface_pattern_builder(const surface_pattern_builder&) = default;
-				surface_pattern_builder& operator=(const surface_pattern_builder&) = default;
+				surface_pattern_builder(const surface_pattern_builder&) = delete;
+				surface_pattern_builder& operator=(const surface_pattern_builder&) = delete;
 				surface_pattern_builder(surface_pattern_builder&& other);
 				surface_pattern_builder& operator=(surface_pattern_builder&& other);
-				explicit surface_pattern_builder(const surface& s);
+				explicit surface_pattern_builder(surface&& s);
 
                 pattern get_pattern();
                 void set_extend(extend extend);
@@ -769,7 +765,7 @@ namespace std {
                 void set_matrix(const matrix& matrix);
                 matrix get_matrix();
 
-                void get_surface(surface& s);
+                surface& get_surface();
 			};
 
 			class mesh_pattern_builder {
@@ -860,26 +856,22 @@ namespace std {
 					);
 			};
 
-			class context {
-				::std::shared_ptr<surface> _Surface;
+			class render_surface : public surface {
 				::std::shared_ptr<cairo_t> _Context;
 
-				context() = delete;
+                render_surface() = delete;
 			public:
-				typedef cairo_t* native_handle_type;
-				native_handle_type native_handle() const;
-
-				context(const context&) = default;
-				context& operator=(const context&) = default;
-				context(context&& other);
-				context& operator=(context&& other);
-				explicit context(native_handle_type nh);
-				explicit context(surface& s);
+                render_surface(const render_surface&) = delete;
+                render_surface& operator=(const render_surface&) = delete;
+                render_surface(render_surface&& other);
+                render_surface& operator=(render_surface&& other);
+                explicit render_surface(native_handle_type nh);
+                render_surface(format fmt, int width, int height);
 
 				::std::experimental::drawing::status status();
 				void save();
 				void restore();
-				surface get_target();
+				//surface get_target();
 				void push_group();
 				void push_group_with_content(content c);
 				pattern pop_group();
@@ -931,10 +923,12 @@ namespace std {
 				bool in_fill(const point& pt);
 
 				void mask(pattern& pttn);
-				void mask_surface(surface& surface, const point& origin);
+				void mask_surface(const surface& surface, const point& origin);
 
 				void paint();
+                void paint(const surface& s);
 				void paint_with_alpha(double alpha);
+                void paint_with_alpha(const surface& s, double alpha);
 
 				void stroke();
 				void stroke_preserve();
@@ -979,8 +973,8 @@ namespace std {
 			};
 
 			int format_stride_for_width(format format, int width);
-			surface make_surface(surface::native_handle_type nh);
-			surface make_surface(format format, int width, int height);
+			render_surface make_surface(surface::native_handle_type nh);
+			render_surface make_surface(format format, int width, int height);
 			path _Make_path_from_native_handle(path::native_handle_type nh);
 		}
 	}

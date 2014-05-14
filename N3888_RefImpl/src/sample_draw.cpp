@@ -39,7 +39,7 @@ vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL) {
 	return result;
 }
 
-void sample_draw::operator()(context& ctxt, double elapsedTimeInMilliseconds) {
+void sample_draw::operator()(render_surface& rs, double elapsedTimeInMilliseconds) {
 	static double timer = 0.0;
 	const double power = 3.0, lerpTime = 1250.0, phaseTime = lerpTime + 500.0, two_pi = 6.2831853071795864;
 	const double normalizedTime = min(fmod(timer, phaseTime) / lerpTime, 1.0);
@@ -49,11 +49,11 @@ void sample_draw::operator()(context& ctxt, double elapsedTimeInMilliseconds) {
 	const static auto vec = init_sort_steps(elementCount);
 	const int phaseCount = static_cast<int>(vec.size()), x = min(static_cast<int>(timer / phaseTime), phaseCount - 1);
     auto cornflowerBluePattern = solid_color_pattern_builder(0.392156899, 0.5843137503, 0.9294118285).get_pattern();
-    ctxt.set_pattern(cornflowerBluePattern);
-	ctxt.paint(); // Paint background.
+    rs.set_pattern(cornflowerBluePattern);
+	rs.paint(); // Paint background.
 	double left, top, right, bottom;
     point lt, rb;
-    ctxt.clip_extents(lt, rb);
+    rs.clip_extents(lt, rb);
     left = lt.x;
     top = lt.y;
     right = rb.x;
@@ -62,12 +62,12 @@ void sample_draw::operator()(context& ctxt, double elapsedTimeInMilliseconds) {
 	const double beginX = trunc((right - left) * 0.1), y = trunc((bottom - top) * 0.5);
     path_builder pb;
     pb.move_to({ beginX, 50.0 });
-    ctxt.set_path(pb.get_path());
+    rs.set_path(pb.get_path());
     auto whitePattern = solid_color_pattern_builder(1.0, 1.0, 1.0).get_pattern();
-    ctxt.set_pattern(whitePattern);
-	ctxt.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
-	ctxt.set_font_size(40.0);
-	ctxt.show_text(string("Phase ").append(to_string(x + 1)).c_str());
+    rs.set_pattern(whitePattern);
+	rs.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
+	rs.set_font_size(40.0);
+	rs.show_text(string("Phase ").append(to_string(x + 1)).c_str());
     for (int i = 0; i < elementCount; ++i) {
         path_builder pb;
         const auto currVal = vec[x][i];
@@ -81,11 +81,11 @@ void sample_draw::operator()(context& ctxt, double elapsedTimeInMilliseconds) {
 		else {
             pb.arc({ radius * i * 2.0 + radius + beginX, y }, radius - 3.0, 0.0, two_pi);
 		}
-        ctxt.set_path(pb.get_path());
+        rs.set_path(pb.get_path());
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
         auto greyPattern = solid_color_pattern_builder(greyColor, greyColor, greyColor).get_pattern();
-        ctxt.set_pattern(greyPattern);
-		ctxt.fill();
+        rs.set_pattern(greyPattern);
+		rs.fill();
 	}
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }

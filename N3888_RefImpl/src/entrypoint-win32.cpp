@@ -69,18 +69,15 @@ int WINAPI wWinMain(
 			timer.update();
 			sample_draw sampleDraw;
 			auto& renderTarget = *window.GetSurface();
-			auto rtCtxt = context(renderTarget);
-			sampleDraw(rtCtxt, timer.get_elapsed_time());
+			sampleDraw(renderTarget, timer.get_elapsed_time());
 
 			// Flush to ensure that it is drawn to the window.
 			window.GetSurface()->flush();
 			auto hdc = GetDC(window.GetHandle());
 			{
-				auto surface = make_surface(cairo_win32_surface_create(hdc));
-				auto ctxt = context(surface);
-                ctxt.set_pattern(surface_pattern_builder(*window.GetSurface()).get_pattern());
-				ctxt.paint();
-				surface.flush();
+				auto rs = make_surface(cairo_win32_surface_create(hdc));
+                rs.paint(*window.GetSurface());
+				rs.flush();
 			}
 			ReleaseDC(window.GetHandle(), hdc);
 		}

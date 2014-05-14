@@ -24,15 +24,18 @@ surface_pattern_builder& surface_pattern_builder::operator=(surface_pattern_buil
     return *this;
 }
 
-surface_pattern_builder::surface_pattern_builder(const surface& s)
+surface_pattern_builder::surface_pattern_builder(surface&& s)
 : _Pattern_type(pattern_type::surface)
 , _Extend(extend::default_extend)
 , _Filter(filter::default_filter)
 , _Matrix(matrix::init_identity())
-, _Surface(s) {
+, _Surface(move(s)) {
 }
 
 pattern surface_pattern_builder::get_pattern() {
+    if (!_Surface.has_surface_resource()) {
+        _Throw_if_failed_status(status::null_pointer);
+    }
     auto pat = cairo_pattern_create_for_surface(_Surface.native_handle());
     _Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
 
@@ -71,6 +74,6 @@ matrix surface_pattern_builder::get_matrix() {
     return _Matrix;
 }
 
-void surface_pattern_builder::get_surface(surface& s) {
-    s = _Surface;
+surface& surface_pattern_builder::get_surface() {
+    return _Surface;
 }
