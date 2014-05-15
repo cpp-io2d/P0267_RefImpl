@@ -20,12 +20,12 @@ public:
 	LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	void ShowSaveAsPNGDialog();
 
-	::std::shared_ptr<::std::experimental::drawing::render_surface>& GetSurface();
+	::std::shared_ptr<::std::experimental::drawing::surface>& GetSurface();
 
 private:
 	HWND handle;
 
-	::std::shared_ptr<::std::experimental::drawing::render_surface> g_psurface;
+	::std::shared_ptr<::std::experimental::drawing::surface> g_psurface;
 };
 
 #endif // _WIN32RENDERWINDOW_

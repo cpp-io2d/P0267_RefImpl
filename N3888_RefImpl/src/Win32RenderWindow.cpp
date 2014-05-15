@@ -56,7 +56,7 @@ handle(0)
 	}
 
 	// Create the initial surface for drawing to.
-	g_psurface = shared_ptr<render_surface>(new render_surface(move(make_surface(format::argb32, width, height))));
+	g_psurface = shared_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
 
 	// Set in the "extra" bytes the pointer to the 'this' pointer
 	// so it can handle messages for itself.
@@ -152,7 +152,7 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		int width = LOWORD(lparam);//lparam & 0xFFFF;
 		int height = HIWORD(lparam);//(lparam & 0xFFFF0000) >> 16;
 
-		g_psurface = shared_ptr<render_surface>(new render_surface(move(make_surface(format::argb32, width, height))));
+		g_psurface = shared_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
 
 	} break;
 
@@ -313,6 +313,6 @@ void Win32RenderWindow::ShowSaveAsPNGDialog() {
 
 }
 
-shared_ptr<render_surface>& Win32RenderWindow::GetSurface() {
+shared_ptr<surface>& Win32RenderWindow::GetSurface() {
 	return g_psurface;
 }

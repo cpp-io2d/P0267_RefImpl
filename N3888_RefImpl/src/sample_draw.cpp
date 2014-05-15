@@ -39,7 +39,7 @@ vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL) {
 	return result;
 }
 
-void sample_draw::operator()(render_surface& rs, double elapsedTimeInMilliseconds) {
+void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	static double timer = 0.0;
 	const double power = 3.0, lerpTime = 1250.0, phaseTime = lerpTime + 500.0, two_pi = 6.2831853071795864;
 	const double normalizedTime = min(fmod(timer, phaseTime) / lerpTime, 1.0);
