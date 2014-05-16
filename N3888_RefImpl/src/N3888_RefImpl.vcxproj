@@ -193,6 +193,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="entrypoint-win32.cpp" />
     <ClCompile Include="font_face.cpp" />
     <ClCompile Include="font_options.cpp" />
+    <ClCompile Include="font_options_builder.cpp" />
     <ClCompile Include="image_surface.cpp" />
     <ClCompile Include="linear_pattern_builder.cpp" />
     <ClCompile Include="matrix.cpp" />

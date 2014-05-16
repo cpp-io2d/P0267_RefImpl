@@ -425,8 +425,21 @@ void surface::set_font_options(const font_options& options) {
     cairo_set_font_options(_Context.get(), options.native_handle());
 }
 
-void surface::get_font_options(font_options& options) {
-    cairo_get_font_options(_Context.get(), options.native_handle());
+font_options surface::get_font_options() {
+    font_options fo(antialias::default_antialias, subpixel_order::default_subpixel_order, hint_style::default_hint_style, hint_metrics::default_hint_metrics);
+    cairo_get_font_options(_Context.get(), fo.native_handle());
+    auto ca = fo.get_antialias();
+    auto cso = fo.get_subpixel_order();
+    auto chs = fo.get_hint_style();
+    auto chm = fo.get_hint_metrics();
+    cairo_surface_get_font_options(_Surface.get(), fo.native_handle());
+
+    return font_options(
+        (ca == antialias::default_antialias) ? fo.get_antialias() : ca,
+        (cso == subpixel_order::default_subpixel_order) ? fo.get_subpixel_order() : cso,
+        (chs == hint_style::default_hint_style) ? fo.get_hint_style() : chs,
+        (chm == hint_metrics::default_hint_metrics) ? fo.get_hint_metrics() : chm
+        );
 }
 
 void surface::set_font_face(font_face& font_face) {

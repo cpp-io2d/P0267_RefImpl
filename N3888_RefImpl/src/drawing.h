@@ -437,8 +437,8 @@ namespace std {
 				typedef cairo_device_t* native_handle_type;
 				native_handle_type native_handle() const;
 
-				device(const device&) = default;
-				device& operator=(const device&) = default;
+				device(const device&) = delete;
+				device& operator=(const device&) = delete;
 				device(device&& other);
 				device& operator=(device&& other);
 				explicit device(native_handle_type nh);
@@ -449,39 +449,53 @@ namespace std {
 				void release();
 			};
 
-			class font_options {
-				::std::shared_ptr<cairo_font_options_t> _Font_options;
+            // Forward declaration.
+            class font_options;
 
-				font_options() = delete;
+			class font_options_builder {
+                antialias _Antialias = antialias::default_antialias;
+                subpixel_order _Subpixel_order = subpixel_order::default_subpixel_order;
+                hint_style _Hint_style = hint_style::default_hint_style;
+                hint_metrics _Hint_metrics = hint_metrics::default_hint_metrics;
+
 			public:
-				typedef cairo_font_options_t* native_handle_type;
-				native_handle_type native_handle() const;
+                font_options_builder() = default;
+                font_options_builder(const font_options_builder&) = default;
+                font_options_builder& operator=(const font_options_builder&) = default;
+                font_options_builder(font_options_builder&& other);
+                font_options_builder& operator=(font_options_builder&& other);
 
-				font_options(const font_options&) = default;
-				font_options& operator=(const font_options&) = default;
-				font_options(font_options&& other);
-				font_options& operator=(font_options&& other);
-
-				explicit font_options(native_handle_type nh);
-
-				font_options& operator=(native_handle_type nh);
-
-				::std::experimental::drawing::status status();
-
-				void merge(const font_options& other);
-				unsigned long hash();
-				bool equal(const font_options& other);
-				void set_antialias(antialias antialias);
-				antialias get_antialias();
-				void set_subpixel_order(subpixel_order subpixel_order);
-				subpixel_order get_subpixel_order();
-				void set_hint_style(hint_style hint_style);
-				hint_style get_hint_style();
-				void set_hint_metrics(hint_metrics hint_metrics);
-				hint_metrics get_hint_metrics();
+                font_options get_font_options() const;
+                void set_antialias(antialias a);
+				antialias get_antialias() const;
+				void set_subpixel_order(subpixel_order so);
+				subpixel_order get_subpixel_order() const;
+				void set_hint_style(hint_style hs);
+				hint_style get_hint_style() const;
+				void set_hint_metrics(hint_metrics hm);
+				hint_metrics get_hint_metrics() const;
 			};
 
-			class font_face {
+            class font_options {
+                ::std::shared_ptr<cairo_font_options_t> _Font_options;
+            public:
+                typedef cairo_font_options_t* native_handle_type;
+                native_handle_type native_handle() const;
+
+                font_options(const font_options&) = default;
+                font_options& operator=(const font_options&) = default;
+                font_options(font_options&& other);
+                font_options& operator=(font_options&& other);
+                font_options(antialias a, subpixel_order so, hint_style hs, hint_metrics hm);
+                explicit font_options(native_handle_type nh);
+
+                antialias get_antialias() const;
+                subpixel_order get_subpixel_order() const;
+                hint_style get_hint_style() const;
+                hint_metrics get_hint_metrics() const;
+            };
+
+            class font_face {
 			protected:
 				::std::shared_ptr<cairo_font_face_t> _Font_face;
 			private:
@@ -921,7 +935,7 @@ namespace std {
 				void set_font_matrix(const matrix& matrix);
 				void get_font_matrix(matrix& matrix);
 				void set_font_options(const font_options& options);
-				void get_font_options(font_options& options);
+				font_options get_font_options();
 				void set_font_face(font_face& font_face);
 				font_face get_font_face();
 				void set_scaled_font(const scaled_font& scaled_font);
