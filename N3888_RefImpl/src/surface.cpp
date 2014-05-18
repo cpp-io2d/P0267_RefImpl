@@ -425,6 +425,7 @@ void surface::set_font_options(const font_options& options) {
     cairo_set_font_options(_Context.get(), options.native_handle());
 }
 
+// Note: This deviates from cairo in that we return the values that will actually wind up being used.
 font_options surface::get_font_options() {
     font_options fo(antialias::default_antialias, subpixel_order::default_subpixel_order, hint_style::default_hint_style, hint_metrics::default_hint_metrics);
     cairo_get_font_options(_Context.get(), fo.native_handle());

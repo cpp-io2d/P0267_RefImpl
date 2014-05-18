@@ -214,6 +214,7 @@ namespace std {
 
 			namespace text_cluster_flags {
 				enum text_cluster_flags : int {
+                    none = 0x0,
 					backward = 0x1
 				};
 			};
@@ -528,7 +529,14 @@ namespace std {
 				scaled_font& operator=(scaled_font&& other);
 
 				explicit scaled_font(native_handle_type nh);
-			};
+                scaled_font(const font_face& ff, const matrix& fm, const matrix& ctm, const font_options& fo);
+
+                font_extents get_extents() const;
+                text_extents get_text_extents(const ::std::string& utf8) const;
+                text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
+                ::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8) const;
+                ::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8, ::std::vector<text_cluster>& clusters, text_cluster_flags::text_cluster_flags& clFlags) const;
+            };
 
 			class toy_font_face : public font_face {
 				toy_font_face() = delete;
