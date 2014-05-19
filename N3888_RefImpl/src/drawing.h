@@ -443,8 +443,6 @@ namespace std {
 				device(device&& other);
 				device& operator=(device&& other);
 				explicit device(native_handle_type nh);
-				::std::experimental::drawing::status status();
-				void finish();
 				void flush();
 				void acquire();
 				void release();
@@ -855,7 +853,6 @@ namespace std {
                 
 				void save();
 				void restore();
-				//surface get_target();
 				void push_group();
 				void push_group_with_content(content c);
 				pattern pop_group();

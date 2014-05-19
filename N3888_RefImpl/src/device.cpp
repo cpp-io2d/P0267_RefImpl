@@ -27,14 +27,6 @@ device& device::operator=(device&& other) {
 	return *this;
 }
 
-status device::status() {
-	return _Cairo_status_t_to_status(cairo_device_status(_Device.get()));
-}
-
-void device::finish() {
-	cairo_device_finish(_Device.get());
-}
-
 void device::flush() {
 	cairo_device_flush(_Device.get());
 }
