@@ -61,12 +61,6 @@ namespace std {
 				last_status
 			};
 
-			enum class region_overlap {
-				in,
-				out,
-				part
-			};
-
 			enum class antialias {
 				default_antialias,
 				none,
@@ -393,43 +387,6 @@ namespace std {
 				::std::experimental::drawing::status status() const noexcept;
 			};
 
-			class region {
-				::std::shared_ptr<cairo_region_t> _Region;
-			public:
-				typedef cairo_region_t* native_handle_type;
-				native_handle_type native_handle() const;
-
-				region();
-				region(const region& other);
-				region& operator=(const region& other);
-				region(region&& other);
-				region& operator=(region&& other);
-				explicit region(native_handle_type nh);
-				explicit region(const rectangle& rectangle);
-				explicit region(const ::std::vector<rectangle>& rectangles);
-				region copy();
-
-				::std::experimental::drawing::status status();
-
-				void get_extents(rectangle& extents);
-				int num_rectangles();
-				void get_rectangle(int nth, rectangle& rectangle);
-				bool is_empty();
-				bool contains_point(const point& pt);
-				region_overlap contains_rectangle(const rectangle& rectangle);
-
-				bool equal(const region& other);
-				void translate(const point& pt);
-				void intersect_region(const region& other);
-				void intersect_rectangle(const rectangle& rectangle);
-				void subtract_region(const region& other);
-				void subtract_rectangle(const rectangle& rectangle);
-				void union_region(const region& other);
-				void union_rectangle(const rectangle& rectangle);
-				void xor_region(const region& other);
-				void xor_rectangle(const rectangle& rectangle);
-			};
-
 			class device {
 				device() = delete;
 			protected:
@@ -693,33 +650,6 @@ namespace std {
                 void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1);
 			};
 
-			//class surface_pattern_builder {
-   //             pattern_type _Pattern_type;
-   //             extend _Extend;
-   //             filter _Filter;
-   //             matrix _Matrix;
-
-   //             surface _Surface;
-
-   //             surface_pattern_builder() = delete;
-			//public:
-			//	surface_pattern_builder(const surface_pattern_builder&) = delete;
-			//	surface_pattern_builder& operator=(const surface_pattern_builder&) = delete;
-			//	surface_pattern_builder(surface_pattern_builder&& other);
-			//	surface_pattern_builder& operator=(surface_pattern_builder&& other);
-			//	explicit surface_pattern_builder(surface&& s);
-
-   //             pattern get_pattern();
-   //             void set_extend(extend extend);
-   //             extend get_extend();
-   //             void set_filter(filter filter);
-   //             filter get_filter();
-   //             void set_matrix(const matrix& matrix);
-   //             matrix get_matrix();
-
-   //             surface& get_surface();
-			//};
-
 			class mesh_pattern_builder {
                 pattern_type _Pattern_type;
                 extend _Extend;
@@ -729,10 +659,10 @@ namespace std {
                 bool _Has_current_patch;
                 int _Current_patch_side_count;
                 point _Current_patch_initial_point;
-                // <Patch data, control points, corner colors>
                 typedef ::std::map<unsigned int, point> _Control_points;
                 typedef ::std::map<unsigned int, ::std::tuple<double, double, double, double>> _Corner_colors;
-                typedef ::std::tuple<path_builder, _Control_points, _Corner_colors> _Patch;
+				// <Patch data, control points, corner colors>
+				typedef ::std::tuple<path_builder, _Control_points, _Corner_colors> _Patch;
                 ::std::vector<_Patch> _Patches;
             public:
 				mesh_pattern_builder();

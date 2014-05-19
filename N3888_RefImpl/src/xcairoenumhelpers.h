@@ -180,32 +180,6 @@ namespace std {
 				}
 			}
 
-			inline cairo_region_overlap_t _Region_overlap_to_cairo_region_overlap_t(::std::experimental::drawing::region_overlap ro) {
-				switch (ro) {
-				case ::std::experimental::drawing::region_overlap::in:
-					return CAIRO_REGION_OVERLAP_IN;
-				case ::std::experimental::drawing::region_overlap::out:
-					return CAIRO_REGION_OVERLAP_OUT;
-				case ::std::experimental::drawing::region_overlap::part:
-					return CAIRO_REGION_OVERLAP_PART;
-				default:
-					throw ::std::runtime_error("Unknown region_overlap value.");
-				}
-			}
-
-			inline ::std::experimental::drawing::region_overlap _Cairo_region_overlap_t_to_region_overlap(cairo_region_overlap_t cro) {
-				switch (cro) {
-				case CAIRO_REGION_OVERLAP_IN:
-					return ::std::experimental::drawing::region_overlap::in;
-				case CAIRO_REGION_OVERLAP_OUT:
-					return ::std::experimental::drawing::region_overlap::out;
-				case CAIRO_REGION_OVERLAP_PART:
-					return ::std::experimental::drawing::region_overlap::part;
-				default:
-					throw ::std::runtime_error("Unknown cairo_region_overlap_t value.");
-				}
-			}
-
 			inline cairo_antialias_t _Antialias_to_cairo_antialias_t(::std::experimental::drawing::antialias aa) {
 				switch (aa) {
 				case ::std::experimental::drawing::antialias::default_antialias:

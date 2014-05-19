@@ -71,9 +71,6 @@
     <ClCompile Include="matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="region.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="font_face.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,9 +90,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sample_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render_surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="point.cpp">
@@ -120,9 +114,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="solid_color_pattern_builder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="surface_pattern_builder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pattern.cpp">
