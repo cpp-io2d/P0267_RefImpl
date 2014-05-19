@@ -122,21 +122,28 @@ void surface::push_group_with_content(content c) {
     cairo_push_group_with_content(_Context.get(), _Content_to_cairo_content_t(c));
 }
 
-pattern surface::pop_group() {
-    return pattern(cairo_pop_group(_Context.get()));
+surface surface::pop_group() {
+	cairo_surface_t* sfce = nullptr;
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pttn(cairo_pop_group(_Context.get()), &cairo_pattern_destroy);
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pttn.get())));
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_get_surface(pttn.get(), &sfce)));
+	return surface(cairo_surface_reference(sfce));
 }
 
 void surface::pop_group_to_source() {
     cairo_pop_group_to_source(_Context.get());
 }
 
-surface surface::get_group_target() {
-    // Since we have no idea which surface we're getting back we must use cairo's referencing to ensure proper lifetime.
-    return surface(cairo_surface_reference(cairo_get_group_target(_Context.get())));
+void surface::set_pattern() {
+	cairo_set_source_rgb(_Context.get(), 0.0, 0.0, 0.0);
 }
 
 void surface::set_pattern(const pattern& source) {
     cairo_set_source(_Context.get(), source.native_handle());
+}
+
+pattern surface::get_pattern() {
+	return pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
 }
 
 void surface::set_antialias(antialias a) {
@@ -145,6 +152,10 @@ void surface::set_antialias(antialias a) {
 
 antialias surface::get_antialias() {
     return _Cairo_antialias_t_to_antialias(cairo_get_antialias(_Context.get()));
+}
+
+void surface::set_dash() {
+	cairo_set_dash(_Context.get(), nullptr, 0, 0.0);
 }
 
 void surface::set_dash(const vector<double>& dashes, double offset) {
@@ -217,10 +228,6 @@ double surface::get_tolerance() {
 }
 
 void surface::clip() {
-    cairo_clip(_Context.get());
-}
-
-void surface::clip_preserve() {
     cairo_clip_preserve(_Context.get());
 }
 
@@ -249,11 +256,15 @@ rectangle_list surface::copy_clip_rectangle_list() {
 }
 
 void surface::fill() {
-    cairo_fill(_Context.get());
+    cairo_fill_preserve(_Context.get());
 }
 
-void surface::fill_preserve() {
-    cairo_fill_preserve(_Context.get());
+void surface::fill(const surface& s) {
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+	cairo_set_source_surface(_Context.get(), s.native_handle(), 0.0, 0.0);
+	cairo_fill_preserve(_Context.get());
+	cairo_surface_flush(_Surface.get());
+	cairo_set_source(_Context.get(), pat.get());
 }
 
 void surface::fill_extents(point& pt0, point& pt1) {
@@ -264,11 +275,15 @@ bool surface::in_fill(const point& pt) {
     return cairo_in_fill(_Context.get(), pt.x, pt.y) != 0;
 }
 
-void surface::mask(pattern& pttn) {
+void surface::mask(const pattern& pttn) {
     cairo_mask(_Context.get(), pttn.native_handle());
 }
 
-void surface::mask_surface(const surface& surface, const point& origin) {
+void surface::mask(const surface& surface) {
+	cairo_mask_surface(_Context.get(), surface.native_handle(), 0.0, 0.0);
+}
+
+void surface::mask(const surface& surface, const point& origin) {
     cairo_mask_surface(_Context.get(), surface.native_handle(), origin.x, origin.y);
 }
 
@@ -277,11 +292,11 @@ void surface::paint() {
 }
 
 void surface::paint(const surface& s) {
-    auto pat = cairo_get_source(_Context.get());
-    cairo_set_source_surface(_Context.get(), s.native_handle(), 0.0, 0.0);
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+	cairo_set_source_surface(_Context.get(), s.native_handle(), 0.0, 0.0);
     cairo_paint(_Context.get());
     cairo_surface_flush(_Surface.get());
-    cairo_set_source(_Context.get(), pat);
+    cairo_set_source(_Context.get(), pat.get());
 }
 
 void surface::paint_with_alpha(double alpha) {
@@ -297,11 +312,15 @@ void surface::paint_with_alpha(const surface& s, double alpha) {
 }
 
 void surface::stroke() {
-    cairo_stroke(_Context.get());
+    cairo_stroke_preserve(_Context.get());
 }
 
-void surface::stroke_preserve() {
-    cairo_stroke_preserve(_Context.get());
+void surface::stroke(const surface& s) {
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+	cairo_set_source_surface(_Context.get(), s.native_handle(), 0.0, 0.0);
+	cairo_stroke_preserve(_Context.get());
+	cairo_surface_flush(_Surface.get());
+	cairo_set_source(_Context.get(), pat.get());
 }
 
 void surface::stroke_extents(point& pt0, point& pt1) {
@@ -312,12 +331,8 @@ bool surface::in_stroke(const point& pt) {
     return cairo_in_stroke(_Context.get(), pt.x, pt.y) != 0;
 }
 
-void surface::copy_page() {
-    cairo_copy_page(_Context.get());
-}
-
-void surface::show_page() {
-    cairo_show_page(_Context.get());
+void surface::set_path() {
+	cairo_new_path(_Context.get());
 }
 
 void surface::set_path(const path& p) {

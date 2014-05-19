@@ -785,16 +785,17 @@ namespace std {
 				void restore();
 				void push_group();
 				void push_group_with_content(content c);
-				pattern pop_group();
+				surface pop_group();
 				void pop_group_to_source();
-				surface get_group_target();
 
+				void set_pattern();
 				void set_pattern(const pattern& source);
-				pattern get_source();
+				pattern get_pattern();
 
 				void set_antialias(antialias a);
 				antialias get_antialias();
 
+				void set_dash();
 				void set_dash(const ::std::vector<double>& dashes, double offset);
 				int get_dash_count();
 				void get_dash(::std::vector<double>& dashes, double& offset);
@@ -821,7 +822,6 @@ namespace std {
 				double get_tolerance();
 
 				void clip();
-				void clip_preserve();
 				void clip_extents(point& pt0, point& pt1);
 				bool in_clip(const point& pt);
 				void reset_clip();
@@ -829,12 +829,13 @@ namespace std {
 				rectangle_list copy_clip_rectangle_list();
 
 				void fill();
-				void fill_preserve();
+				void fill(const surface& s);
 				void fill_extents(point& pt0, point& pt1);
 				bool in_fill(const point& pt);
 
-				void mask(pattern& pttn);
-				void mask_surface(const surface& surface, const point& origin);
+				void mask(const pattern& pttn);
+				void mask(const surface& surface);
+				void mask(const surface& surface, const point& origin);
 
 				void paint();
                 void paint(const surface& s);
@@ -842,13 +843,11 @@ namespace std {
                 void paint_with_alpha(const surface& s, double alpha);
 
 				void stroke();
-				void stroke_preserve();
+				void stroke(const surface& s);
 				void stroke_extents(point& pt0, point& pt1);
 				bool in_stroke(const point& pt);
 
-				void copy_page();
-				void show_page();
-
+				void set_path();
                 void set_path(const path& p);
 
 				// Transformations
