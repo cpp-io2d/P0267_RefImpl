@@ -255,13 +255,12 @@ void surface::reset_clip() {
     cairo_reset_clip(_Context.get());
 }
 
-rectangle_list surface::copy_clip_rectangle_list() {
-    rectangle_list results;
+vector<rectangle> surface::copy_clip_rectangle_list() {
+    vector<rectangle> results;
     std::unique_ptr<cairo_rectangle_list_t, function<void(cairo_rectangle_list_t*)>> sp_rects(cairo_copy_clip_rectangle_list(_Context.get()), &cairo_rectangle_list_destroy);
-    results.status = _Cairo_status_t_to_status(sp_rects->status);
-    _Throw_if_failed_status(results.status);
+    _Throw_if_failed_status(_Cairo_status_t_to_status(sp_rects->status));
     for (auto i = 0; i < sp_rects->num_rectangles; ++i) {
-        results.rectangles.push_back({ sp_rects->rectangles[i].x, sp_rects->rectangles[i].y, sp_rects->rectangles[i].width, sp_rects->rectangles[i].height });
+        results.push_back({ sp_rects->rectangles[i].x, sp_rects->rectangles[i].y, sp_rects->rectangles[i].width, sp_rects->rectangles[i].height });
     }
 
     return results;

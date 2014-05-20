@@ -241,11 +241,6 @@ namespace std {
             point operator/(const point& lhs, const point& rhs);
             point operator/(const point& lhs, double rhs);
 
-            struct rectangle_list {
-				::std::experimental::drawing::status status;
-				::std::vector<rectangle> rectangles;
-			};
-
             struct glyph {
                 unsigned long index;
                 double x;
@@ -826,7 +821,7 @@ namespace std {
 				bool in_clip(const point& pt);
 				void reset_clip();
 
-				rectangle_list copy_clip_rectangle_list();
+				::std::vector<rectangle> copy_clip_rectangle_list();
 
 				void fill();
 				void fill(const surface& s);
