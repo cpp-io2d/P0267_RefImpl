@@ -22,14 +22,14 @@ toy_font_face& toy_font_face::operator=(toy_font_face&& other) {
 	return *this;
 }
 
-string toy_font_face::get_family() {
+string toy_font_face::get_family() const {
 	return string(cairo_toy_font_face_get_family(_Font_face.get()));
 }
 
-font_slant toy_font_face::get_slant() {
+font_slant toy_font_face::get_slant() const {
 	return _Cairo_font_slant_t_to_font_slant(cairo_toy_font_face_get_slant(_Font_face.get()));
 }
 
-font_weight toy_font_face::get_weight() {
+font_weight toy_font_face::get_weight() const {
 	return _Cairo_font_weight_t_to_font_weight(cairo_toy_font_face_get_weight(_Font_face.get()));
 }
