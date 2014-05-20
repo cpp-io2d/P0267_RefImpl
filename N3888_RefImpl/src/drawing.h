@@ -516,7 +516,6 @@ namespace std {
             class radial_pattern_builder;
             class raster_source_pattern_builder;
             class solid_color_pattern_builder;
-            class surface_pattern_builder;
             class surface;
 
             class pattern {
@@ -529,7 +528,6 @@ namespace std {
                 friend class radial_pattern_builder;
                 friend class raster_source_pattern_builder;
                 friend class solid_color_pattern_builder;
-                friend class surface_pattern_builder;
                 friend class surface;
 
                 pattern() = delete;
