@@ -10,12 +10,16 @@ surface::native_handle_type surface::native_handle() const {
 }
 
 surface::surface(surface::native_handle_type nh)
-: _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh, &cairo_surface_destroy))
+: _Lock_for_device()
+, _Device()
+, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh, &cairo_surface_destroy))
 , _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh == nullptr) ? nullptr : cairo_create(nh)), &cairo_destroy)) {
 }
 
 surface::surface(surface&& other)
-: _Surface(move(other._Surface))
+: _Lock_for_device()
+, _Device(move(other._Device))
+, _Surface(move(other._Surface))
 , _Context(move(other._Context)) {
     other._Surface = nullptr;
     other._Context = nullptr;
@@ -23,6 +27,7 @@ surface::surface(surface&& other)
 
 surface& surface::operator=(surface&& other) {
 	if (this != &other) {
+		_Device = move(other._Device);
 		_Surface = move(other._Surface);
         _Context = move(other._Context);
 		other._Surface = nullptr;
@@ -32,17 +37,23 @@ surface& surface::operator=(surface&& other) {
 }
 
 surface::surface(const surface& other, content content, double width, double height)
-: _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), _Double_to_int(width, false), _Double_to_int(height, false)), &cairo_surface_destroy))
+: _Lock_for_device()
+, _Device()
+, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), _Double_to_int(width, false), _Double_to_int(height, false)), &cairo_surface_destroy))
 , _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
 surface::surface(const surface& target, const rectangle& rect)
-: _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_for_rectangle(target._Surface.get(), _Double_to_int(rect.x, false), _Double_to_int(rect.y, false), _Double_to_int(rect.width, false), _Double_to_int(rect.height, false)), &cairo_surface_destroy))
+: _Lock_for_device()
+, _Device()
+, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_for_rectangle(target._Surface.get(), _Double_to_int(rect.x, false), _Double_to_int(rect.y, false), _Double_to_int(rect.width, false), _Double_to_int(rect.height, false)), &cairo_surface_destroy))
 , _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
 surface::surface(format fmt, double width, double height)
-: _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), static_cast<int>(width), static_cast<int>(height)), &cairo_surface_destroy))
+: _Lock_for_device()
+, _Device()
+, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), static_cast<int>(width), static_cast<int>(height)), &cairo_surface_destroy))
 , _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
@@ -57,16 +68,17 @@ void surface::flush() {
 	cairo_surface_flush(_Surface.get());
 }
 
-device surface::get_device() {
-	return device(cairo_surface_get_device(_Surface.get()));
+shared_ptr<device> surface::get_device() {
+	lock_guard<mutex> lg(_Lock_for_device);
+	auto dvc = _Device.lock();
+	if (dvc != nullptr) {
+		return dvc;
+	}
+	dvc = shared_ptr<device>(new device(cairo_surface_get_device(_Surface.get())));
+	_Device = weak_ptr<device>(dvc);
+	return dvc;
 }
 
-//void surface::get_font_options(font_options& options) {
-//	unique_ptr<cairo_font_options_t, function<void(cairo_font_options_t*)>> value(cairo_font_options_create(), &cairo_font_options_destroy);
-//	cairo_surface_get_font_options(_Surface.get(), value.get());
-//	options = value.release();
-//}
-//
 content surface::get_content() {
 	return _Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get()));
 }

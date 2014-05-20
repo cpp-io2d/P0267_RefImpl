@@ -739,6 +739,8 @@ namespace std {
 			};
 
 			class surface {
+				::std::mutex _Lock_for_device;
+				::std::weak_ptr<device> _Device;
             protected:
                 ::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
                 ::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
@@ -768,7 +770,7 @@ namespace std {
                 void finish();
                 void flush();
 
-                device get_device();
+                ::std::shared_ptr<device> get_device();
 
                 content get_content();
                 void mark_dirty();
