@@ -140,10 +140,10 @@ namespace std {
 				move_to,
 				line_to,
 				curve_to,
-                arc,
-                arc_negative,
-                new_sub_path,
-                close_path
+				arc,
+				arc_negative,
+				new_sub_path,
+				close_path
 			};
 
 			enum class extend {
@@ -151,8 +151,8 @@ namespace std {
 				repeat,
 				reflect,
 				pad,
-                default_extend = none
-            };
+				default_extend = none
+			};
 
 			enum class filter {
 				fast,
@@ -161,7 +161,7 @@ namespace std {
 				nearest,
 				bilinear,
 				gaussian,
-                default_filter = good
+				default_filter = good
 			};
 
 			enum class pattern_type {
@@ -208,7 +208,7 @@ namespace std {
 
 			namespace text_cluster_flags {
 				enum text_cluster_flags : int {
-                    none = 0x0,
+					none = 0x0,
 					backward = 0x1
 				};
 			};
@@ -220,129 +220,129 @@ namespace std {
 				double height;
 			};
 
-            struct point {
-                double x;
-                double y;
+			struct point {
+				double x;
+				double y;
 
-                point operator+=(const point& rhs);
-                point operator-=(const point& rhs);
-                point operator*=(const point& rhs);
-                point operator*=(double rhs);
-                point operator/=(const point& rhs);
-                point operator/=(double rhs);
-            };
+				point operator+=(const point& rhs);
+				point operator-=(const point& rhs);
+				point operator*=(const point& rhs);
+				point operator*=(double rhs);
+				point operator/=(const point& rhs);
+				point operator/=(double rhs);
+			};
 
-            point operator+(const point& lhs);
-            point operator+(const point& lhs, const point& rhs);
-            point operator-(const point& lhs);
-            point operator-(const point& lhs, const point& rhs);
-            point operator*(const point& lhs, const point& rhs);
-            point operator*(const point& lhs, double rhs);
-            point operator/(const point& lhs, const point& rhs);
-            point operator/(const point& lhs, double rhs);
+			point operator+(const point& lhs);
+			point operator+(const point& lhs, const point& rhs);
+			point operator-(const point& lhs);
+			point operator-(const point& lhs, const point& rhs);
+			point operator*(const point& lhs, const point& rhs);
+			point operator*(const point& lhs, double rhs);
+			point operator/(const point& lhs, const point& rhs);
+			point operator/(const point& lhs, double rhs);
 
-            struct glyph {
-                unsigned long index;
-                double x;
-                double y;
-            };
+			struct glyph {
+				unsigned long index;
+				double x;
+				double y;
+			};
 
-            struct text_cluster {
-                int num_bytes;
-                int num_glyphs;
-            };
+			struct text_cluster {
+				int num_bytes;
+				int num_glyphs;
+			};
 
-            struct font_extents {
-                double ascent;
-                double descent;
-                double height;
-                double max_x_advance;
-                double max_y_advance;
-            };
+			struct font_extents {
+				double ascent;
+				double descent;
+				double height;
+				double max_x_advance;
+				double max_y_advance;
+			};
 
-            struct text_extents {
-                double x_bearing;
-                double y_bearing;
-                double width;
-                double height;
-                double x_advance;
-                double y_advance;
-            };
+			struct text_extents {
+				double x_bearing;
+				double y_bearing;
+				double width;
+				double height;
+				double x_advance;
+				double y_advance;
+			};
 
-            union path_data
+			union path_data
 			{
 				struct {
 					path_data_type type;
 					int length;
 				} header;
-                point point;
-                double value;
+				point point;
+				double value;
 			};
 
-            // Forward declaration.
-            class path_builder;
+			// Forward declaration.
+			class path_builder;
 
 			class path {
 				::std::vector<path_data> _Data;
-                bool _Has_current_point;
-                point _Current_point;
-                point _Extents_pt0;
-                point _Extents_pt1;
-            public:
-                typedef cairo_path_t* native_handle_type;
+				bool _Has_current_point;
+				point _Current_point;
+				point _Extents_pt0;
+				point _Extents_pt1;
+			public:
+				typedef cairo_path_t* native_handle_type;
 
-                path(const path_builder& pb);
-                path(const path& other) = default;
-                path& operator=(const path& other) = default;
-                path(path&& other);
-                path& operator=(path&& other);
+				path(const path_builder& pb);
+				path(const path& other) = default;
+				path& operator=(const path& other) = default;
+				path(path&& other);
+				path& operator=(path&& other);
 
-                ::std::vector<path_data> get_data() const;
-                const ::std::vector<path_data>& get_data_ref() const;
-                void get_path_extents(point& pt0, point& pt1) const;
+				::std::vector<path_data> get_data() const;
+				const ::std::vector<path_data>& get_data_ref() const;
+				void get_path_extents(point& pt0, point& pt1) const;
 			};
 
-            class path_builder {
-                friend class path;
-                ::std::vector<path_data> _Data;
-                bool _Has_current_point;
-                point _Current_point;
-                point _Extents_pt0;
-                point _Extents_pt1;
+			class path_builder {
+				friend class path;
+				::std::vector<path_data> _Data;
+				bool _Has_current_point;
+				point _Current_point;
+				point _Extents_pt0;
+				point _Extents_pt1;
 
-            public:
-                path_builder() = default;
-                path_builder(const path_builder& other) = default;
-                path_builder& operator=(const path_builder& other) = default;
-                path_builder(path_builder&& other);
-                path_builder& operator=(path_builder&& other);
+			public:
+				path_builder() = default;
+				path_builder(const path_builder& other) = default;
+				path_builder& operator=(const path_builder& other) = default;
+				path_builder(path_builder&& other);
+				path_builder& operator=(path_builder&& other);
 
-                path get_path() const;
-                path get_path_flat() const;
+				path get_path() const;
+				path get_path_flat() const;
 
-                void append_path(const path& p);
-                void append_path(const path_builder& p);
-                bool has_current_point();
-                point get_current_point();
-                void new_sub_path();
-                void close_path();
-                void arc(const point& center, double radius, double angle1, double angle2);
-                void arc_negative(const point& center, double radius, double angle1, double angle2);
-                void curve_to(const point& pt0, const point& pt1, const point& pt2);
-                void line_to(const point& pt);
-                void move_to(const point& pt);
-                void rectangle(const rectangle& rect);
-                void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
-                void rel_line_to(const point& dpt);
-                void rel_move_to(const point& dpt);
+				void append_path(const path& p);
+				void append_path(const path_builder& p);
+				bool has_current_point();
+				point get_current_point();
+				void new_sub_path();
+				void close_path();
+				void arc(const point& center, double radius, double angle1, double angle2);
+				void arc_negative(const point& center, double radius, double angle1, double angle2);
+				void curve_to(const point& pt0, const point& pt1, const point& pt2);
+				void line_to(const point& pt);
+				void move_to(const point& pt);
+				void rectangle(const rectangle& rect);
+				void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
+				void rel_line_to(const point& dpt);
+				void rel_move_to(const point& dpt);
 
-                ::std::vector<path_data> get_data() const;
-                const ::std::vector<path_data>& get_data_ref() const;
-                ::std::vector<path_data>& get_data_ref();
-                void get_path_extents(point& pt0, point& pt1) const;
-            };
+				::std::vector<path_data> get_data() const;
+				const ::std::vector<path_data>& get_data_ref() const;
+				::std::vector<path_data>& get_data_ref();
+				void get_path_extents(point& pt0, point& pt1) const;
+			};
 
-            struct matrix {
+			struct matrix {
 				double xx;
 				double yx;
 				double xy;
@@ -351,9 +351,9 @@ namespace std {
 				double y0;
 
 				static matrix init_identity();
-                static matrix init_translate(const point& value);
-                static matrix init_scale(const point& value);
-                static matrix init_rotate(double radians);
+				static matrix init_translate(const point& value);
+				static matrix init_scale(const point& value);
+				static matrix init_rotate(double radians);
 
 				void translate(const point& value);
 				void scale(const point& value);
@@ -362,12 +362,12 @@ namespace std {
 				void transform_distance(point& dist);
 				void transform_point(point& pt);
 
-                matrix operator*=(const matrix& rhs);
+				matrix operator*=(const matrix& rhs);
 			};
 
-            matrix operator*(const matrix& lhs, const matrix& rhs);
+			matrix operator*(const matrix& lhs, const matrix& rhs);
 
-            class drawing_exception : public exception {
+			class drawing_exception : public exception {
 				::std::experimental::drawing::status _Status = ::std::experimental::drawing::status::last_status;
 			public:
 				drawing_exception() noexcept;
@@ -400,24 +400,24 @@ namespace std {
 				void release();
 			};
 
-            // Forward declaration.
-            class font_options;
+			// Forward declaration.
+			class font_options;
 
 			class font_options_builder {
-                antialias _Antialias = antialias::default_antialias;
-                subpixel_order _Subpixel_order = subpixel_order::default_subpixel_order;
-                hint_style _Hint_style = hint_style::default_hint_style;
-                hint_metrics _Hint_metrics = hint_metrics::default_hint_metrics;
+				antialias _Antialias = antialias::default_antialias;
+				subpixel_order _Subpixel_order = subpixel_order::default_subpixel_order;
+				hint_style _Hint_style = hint_style::default_hint_style;
+				hint_metrics _Hint_metrics = hint_metrics::default_hint_metrics;
 
 			public:
-                font_options_builder() = default;
-                font_options_builder(const font_options_builder&) = default;
-                font_options_builder& operator=(const font_options_builder&) = default;
-                font_options_builder(font_options_builder&& other);
-                font_options_builder& operator=(font_options_builder&& other);
+				font_options_builder() = default;
+				font_options_builder(const font_options_builder&) = default;
+				font_options_builder& operator=(const font_options_builder&) = default;
+				font_options_builder(font_options_builder&& other);
+				font_options_builder& operator=(font_options_builder&& other);
 
-                font_options get_font_options() const;
-                void set_antialias(antialias a);
+				font_options get_font_options() const;
+				void set_antialias(antialias a);
 				antialias get_antialias() const;
 				void set_subpixel_order(subpixel_order so);
 				subpixel_order get_subpixel_order() const;
@@ -427,26 +427,26 @@ namespace std {
 				hint_metrics get_hint_metrics() const;
 			};
 
-            class font_options {
-                ::std::shared_ptr<cairo_font_options_t> _Font_options;
-            public:
-                typedef cairo_font_options_t* native_handle_type;
-                native_handle_type native_handle() const;
+			class font_options {
+				::std::shared_ptr<cairo_font_options_t> _Font_options;
+			public:
+				typedef cairo_font_options_t* native_handle_type;
+				native_handle_type native_handle() const;
 
-                font_options(const font_options&) = default;
-                font_options& operator=(const font_options&) = default;
-                font_options(font_options&& other);
-                font_options& operator=(font_options&& other);
-                font_options(antialias a, subpixel_order so, hint_style hs, hint_metrics hm);
-                explicit font_options(native_handle_type nh);
+				font_options(const font_options&) = default;
+				font_options& operator=(const font_options&) = default;
+				font_options(font_options&& other);
+				font_options& operator=(font_options&& other);
+				font_options(antialias a, subpixel_order so, hint_style hs, hint_metrics hm);
+				explicit font_options(native_handle_type nh);
 
-                antialias get_antialias() const;
-                subpixel_order get_subpixel_order() const;
-                hint_style get_hint_style() const;
-                hint_metrics get_hint_metrics() const;
-            };
+				antialias get_antialias() const;
+				subpixel_order get_subpixel_order() const;
+				hint_style get_hint_style() const;
+				hint_metrics get_hint_metrics() const;
+			};
 
-            class font_face {
+			class font_face {
 			protected:
 				::std::shared_ptr<cairo_font_face_t> _Font_face;
 			private:
@@ -479,14 +479,14 @@ namespace std {
 				scaled_font& operator=(scaled_font&& other);
 
 				explicit scaled_font(native_handle_type nh);
-                scaled_font(const font_face& ff, const matrix& fm, const matrix& ctm, const font_options& fo);
+				scaled_font(const font_face& ff, const matrix& fm, const matrix& ctm, const font_options& fo);
 
-                font_extents get_extents() const;
-                text_extents get_text_extents(const ::std::string& utf8) const;
-                text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
-                ::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8) const;
-                ::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8, ::std::vector<text_cluster>& clusters, text_cluster_flags::text_cluster_flags& clFlags) const;
-            };
+				font_extents get_extents() const;
+				text_extents get_text_extents(const ::std::string& utf8) const;
+				text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
+				::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8) const;
+				::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8, ::std::vector<text_cluster>& clusters, text_cluster_flags::text_cluster_flags& clFlags) const;
+			};
 
 			class toy_font_face : public font_face {
 				toy_font_face() = delete;
@@ -505,56 +505,56 @@ namespace std {
 			// Forward declaration.
 			class image_surface;
 
-            // Forward declaration.
-            class linear_pattern_builder;
-            class mesh_pattern_builder;
-            class radial_pattern_builder;
-            class raster_source_pattern_builder;
-            class solid_color_pattern_builder;
-            class surface;
+			// Forward declaration.
+			class linear_pattern_builder;
+			class mesh_pattern_builder;
+			class radial_pattern_builder;
+			class raster_source_pattern_builder;
+			class solid_color_pattern_builder;
+			class surface;
 
-            class pattern {
-            public:
-                typedef cairo_pattern_t* native_handle_type;
+			class pattern {
+			public:
+				typedef cairo_pattern_t* native_handle_type;
 
-            private:
-                friend class linear_pattern_builder;
-                friend class mesh_pattern_builder;
-                friend class radial_pattern_builder;
-                friend class raster_source_pattern_builder;
-                friend class solid_color_pattern_builder;
-                friend class surface;
+			private:
+				friend class linear_pattern_builder;
+				friend class mesh_pattern_builder;
+				friend class radial_pattern_builder;
+				friend class raster_source_pattern_builder;
+				friend class solid_color_pattern_builder;
+				friend class surface;
 
-                pattern() = delete;
-                pattern(native_handle_type nh);
+				pattern() = delete;
+				pattern(native_handle_type nh);
 
-                cairo_pattern_t* _Pattern;
-                pattern_type _Pattern_type;
+				cairo_pattern_t* _Pattern;
+				pattern_type _Pattern_type;
 
-            public:
-                native_handle_type native_handle() const;
+			public:
+				native_handle_type native_handle() const;
 
-                pattern(const pattern&) = default;
-                pattern& operator=(const pattern&) = default;
-                pattern(pattern&& other);
-                pattern& operator=(pattern&& other);
+				pattern(const pattern&) = default;
+				pattern& operator=(const pattern&) = default;
+				pattern(pattern&& other);
+				pattern& operator=(pattern&& other);
 
-                ~pattern();
+				~pattern();
 
-                pattern_type get_type() const;
-            };
+				pattern_type get_type() const;
+			};
 
 			class solid_color_pattern_builder {
-                pattern_type _Pattern_type;
-                extend _Extend;
-                filter _Filter;
-                matrix _Matrix;
-                double _Red;
-                double _Green;
-                double _Blue;
-                double _Alpha;
+				pattern_type _Pattern_type;
+				extend _Extend;
+				filter _Filter;
+				matrix _Matrix;
+				double _Red;
+				double _Green;
+				double _Blue;
+				double _Alpha;
 
-            public:
+			public:
 				solid_color_pattern_builder(const solid_color_pattern_builder&) = default;
 				solid_color_pattern_builder& operator=(const solid_color_pattern_builder&) = default;
 				solid_color_pattern_builder(solid_color_pattern_builder&& other);
@@ -562,28 +562,28 @@ namespace std {
 				solid_color_pattern_builder(double red, double green, double blue);
 				solid_color_pattern_builder(double red, double green, double blue, double alpha);
 
-                pattern get_pattern();
-                void set_extend(extend e);
-                extend get_extend();
-                void set_filter(filter f);
-                filter get_filter();
-                void set_matrix(const matrix& m);
-                matrix get_matrix();
-                
-                void get_rgba(double& red, double& green, double& blue, double& alpha);
+				pattern get_pattern();
+				void set_extend(extend e);
+				extend get_extend();
+				void set_filter(filter f);
+				filter get_filter();
+				void set_matrix(const matrix& m);
+				matrix get_matrix();
+				
+				void get_rgba(double& red, double& green, double& blue, double& alpha);
 			};
 
 			class linear_pattern_builder {
-                pattern_type _Pattern_type;
-                extend _Extend;
-                filter _Filter;
-                matrix _Matrix;
+				pattern_type _Pattern_type;
+				extend _Extend;
+				filter _Filter;
+				matrix _Matrix;
 
-                point _Point0;
-                point _Point1;
-                ::std::vector<::std::tuple<double, double, double, double, double>> _Color_stops;
+				point _Point0;
+				point _Point1;
+				::std::vector<::std::tuple<double, double, double, double, double>> _Color_stops;
 
-                linear_pattern_builder() = delete;
+				linear_pattern_builder() = delete;
 			public:
 				linear_pattern_builder(const linear_pattern_builder&) = default;
 				linear_pattern_builder& operator=(const linear_pattern_builder&) = default;
@@ -591,88 +591,88 @@ namespace std {
 				linear_pattern_builder& operator=(linear_pattern_builder&& other);
 				linear_pattern_builder(const point& pt0, const point& pt1);
 
-                pattern get_pattern();
-                void set_extend(extend extend);
-                extend get_extend();
-                void set_filter(filter filter);
-                filter get_filter();
-                void set_matrix(const matrix& matrix);
-                matrix get_matrix();
-                
-                void add_color_stop_rgb(double offset, double red, double green, double blue);
-                void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
-                void get_color_stop_count(int& count);
-                void get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha);
+				pattern get_pattern();
+				void set_extend(extend extend);
+				extend get_extend();
+				void set_filter(filter filter);
+				filter get_filter();
+				void set_matrix(const matrix& matrix);
+				matrix get_matrix();
+				
+				void add_color_stop_rgb(double offset, double red, double green, double blue);
+				void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
+				void get_color_stop_count(int& count);
+				void get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha);
 
-                void get_linear_points(point& pt0, point& pt1);
+				void get_linear_points(point& pt0, point& pt1);
 			};
 
 			class radial_pattern_builder {
-                pattern_type _Pattern_type;
-                extend _Extend;
-                filter _Filter;
-                matrix _Matrix;
+				pattern_type _Pattern_type;
+				extend _Extend;
+				filter _Filter;
+				matrix _Matrix;
 
-                point _Center0;
-                double _Radius0;
-                point _Center1;
-                double _Radius1;
-                ::std::vector<::std::tuple<double, double, double, double, double>> _Color_stops;
+				point _Center0;
+				double _Radius0;
+				point _Center1;
+				double _Radius1;
+				::std::vector<::std::tuple<double, double, double, double, double>> _Color_stops;
 
-                radial_pattern_builder() = delete;
-            public:
+				radial_pattern_builder() = delete;
+			public:
 				radial_pattern_builder(const radial_pattern_builder&) = default;
 				radial_pattern_builder& operator=(const radial_pattern_builder&) = default;
 				radial_pattern_builder(radial_pattern_builder&& other);
 				radial_pattern_builder& operator=(radial_pattern_builder&& other);
 				radial_pattern_builder(const point& center0, double radius0, const point& center1, double radius1);
 
-                pattern get_pattern();
-                void set_extend(extend extend);
-                extend get_extend();
-                void set_filter(filter filter);
-                filter get_filter();
-                void set_matrix(const matrix& matrix);
-                matrix get_matrix();
+				pattern get_pattern();
+				void set_extend(extend extend);
+				extend get_extend();
+				void set_filter(filter filter);
+				filter get_filter();
+				void set_matrix(const matrix& matrix);
+				matrix get_matrix();
 
-                void add_color_stop_rgb(double offset, double red, double green, double blue);
-                void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
-                void get_color_stop_count(int& count);
-                void get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha);
+				void add_color_stop_rgb(double offset, double red, double green, double blue);
+				void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
+				void get_color_stop_count(int& count);
+				void get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha);
 
-                void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1);
+				void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1);
 			};
 
 			class mesh_pattern_builder {
-                pattern_type _Pattern_type;
-                extend _Extend;
-                filter _Filter;
-                matrix _Matrix;
+				pattern_type _Pattern_type;
+				extend _Extend;
+				filter _Filter;
+				matrix _Matrix;
 
-                bool _Has_current_patch;
-                int _Current_patch_side_count;
-                point _Current_patch_initial_point;
-                typedef ::std::map<unsigned int, point> _Control_points;
-                typedef ::std::map<unsigned int, ::std::tuple<double, double, double, double>> _Corner_colors;
+				bool _Has_current_patch;
+				int _Current_patch_side_count;
+				point _Current_patch_initial_point;
+				typedef ::std::map<unsigned int, point> _Control_points;
+				typedef ::std::map<unsigned int, ::std::tuple<double, double, double, double>> _Corner_colors;
 				// <Patch data, control points, corner colors>
 				typedef ::std::tuple<path_builder, _Control_points, _Corner_colors> _Patch;
-                ::std::vector<_Patch> _Patches;
-            public:
+				::std::vector<_Patch> _Patches;
+			public:
 				mesh_pattern_builder();
 				mesh_pattern_builder(const mesh_pattern_builder&) = default;
 				mesh_pattern_builder& operator=(const mesh_pattern_builder&) = default;
 				mesh_pattern_builder(mesh_pattern_builder&& other);
 				mesh_pattern_builder& operator=(mesh_pattern_builder&& other);
 
-                pattern get_pattern();
-                void set_extend(extend extend);
-                extend get_extend();
-                void set_filter(filter filter);
-                filter get_filter();
-                void set_matrix(const matrix& matrix);
-                matrix get_matrix();
+				pattern get_pattern();
+				void set_extend(extend extend);
+				extend get_extend();
+				void set_filter(filter filter);
+				filter get_filter();
+				void set_matrix(const matrix& matrix);
+				matrix get_matrix();
 
-                void begin_patch();
+				void begin_patch();
 				void end_patch();
 				void move_to(const point& pt);
 				void line_to(const point& pt);
@@ -682,21 +682,21 @@ namespace std {
 				void set_corner_color_rgba(unsigned int corner_num, double red, double green, double blue, double alpha);
 				void get_patch_count(unsigned int& count);
 				path get_path(unsigned int patch_num);
-                path_builder get_path_builder(unsigned int patch_num);
+				path_builder get_path_builder(unsigned int patch_num);
 				point get_control_point(unsigned int patch_num, unsigned int point_num);
 				void get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num, double& red, double& green, double& blue, double& alpha);
 			};
 
 			class raster_source_pattern_builder {
-                pattern_type _Pattern_type;
-                extend _Extend;
-                filter _Filter;
-                matrix _Matrix;
+				pattern_type _Pattern_type;
+				extend _Extend;
+				filter _Filter;
+				matrix _Matrix;
 
-                void* _User_callback_data;
+				void* _User_callback_data;
 				int _Width;
 				int _Height;
-                content _Content;
+				content _Content;
 				::std::shared_ptr<::std::function<surface(void* callback_data, surface& target, const rectangle& extents)>> _Acquire_fn;
 				::std::shared_ptr<::std::function<void(void* callback_data, surface& surface)>> _Release_fn;
 				
@@ -711,15 +711,15 @@ namespace std {
 				raster_source_pattern_builder& operator=(raster_source_pattern_builder&& other);
 				raster_source_pattern_builder(void* user_data, content content, int width, int height);
 
-                pattern get_pattern();
-                void set_extend(extend extend);
-                extend get_extend();
-                void set_filter(filter filter);
-                filter get_filter();
-                void set_matrix(const matrix& matrix);
-                matrix get_matrix();
-                
-                void set_callback_data(void* data);
+				pattern get_pattern();
+				void set_extend(extend extend);
+				extend get_extend();
+				void set_filter(filter filter);
+				filter get_filter();
+				void set_matrix(const matrix& matrix);
+				matrix get_matrix();
+				
+				void set_callback_data(void* data);
 				void* get_callback_data();
 				void set_acquire(
 					::std::function<surface(void* callback_data, surface& target, const rectangle& extents)> acquire_fn,
@@ -734,48 +734,48 @@ namespace std {
 			class surface {
 				::std::mutex _Lock_for_device;
 				::std::weak_ptr<device> _Device;
-            protected:
-                ::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
-                ::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
+			protected:
+				::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
+				::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
 
 			public:
-                surface() = delete;
+				surface() = delete;
 
-                typedef cairo_surface_t* native_handle_type;
-                native_handle_type native_handle() const;
+				typedef cairo_surface_t* native_handle_type;
+				native_handle_type native_handle() const;
 
-                surface(const surface&) = delete;
-                surface& operator=(const surface&) = delete;
+				surface(const surface&) = delete;
+				surface& operator=(const surface&) = delete;
 
-                surface(surface&& other);
-                surface& operator=(surface&& other);
+				surface(surface&& other);
+				surface& operator=(surface&& other);
 
-                explicit surface(native_handle_type nh);
+				explicit surface(native_handle_type nh);
 
-                surface(format fmt, double width, double height);
-                // create_similar
-                surface(const surface& other, content content, double width, double height);
-                // create_for_rectangle
-                surface(const surface& target, const rectangle& rect);
+				surface(format fmt, double width, double height);
+				// create_similar
+				surface(const surface& other, content content, double width, double height);
+				// create_for_rectangle
+				surface(const surface& target, const rectangle& rect);
 
-                virtual ~surface();
+				virtual ~surface();
 
-                void finish();
-                void flush();
+				void finish();
+				void flush();
 
-                ::std::shared_ptr<device> get_device();
+				::std::shared_ptr<device> get_device();
 
-                content get_content();
-                void mark_dirty();
-                void mark_dirty_rectangle(const rectangle& rect);
+				content get_content();
+				void mark_dirty();
+				void mark_dirty_rectangle(const rectangle& rect);
 
-                void set_device_offset(const point& offset);
-                void get_device_offset(point& offset);
-                void write_to_png(const ::std::string& filename);
-                image_surface map_to_image(const rectangle& extents);
-                void unmap_image(image_surface& image);
-                bool has_surface_resource() const;
-                
+				void set_device_offset(const point& offset);
+				void get_device_offset(point& offset);
+				void write_to_png(const ::std::string& filename);
+				image_surface map_to_image(const rectangle& extents);
+				void unmap_image(image_surface& image);
+				bool has_surface_resource() const;
+				
 				void save();
 				void restore();
 				void push_group();
@@ -833,9 +833,9 @@ namespace std {
 				void mask(const surface& surface, const point& origin);
 
 				void paint();
-                void paint(const surface& s);
+				void paint(const surface& s);
 				void paint_with_alpha(double alpha);
-                void paint_with_alpha(const surface& s, double alpha);
+				void paint_with_alpha(const surface& s, double alpha);
 
 				void stroke();
 				void stroke(const surface& s);
@@ -843,7 +843,7 @@ namespace std {
 				bool in_stroke(const point& pt);
 
 				void set_path();
-                void set_path(const path& p);
+				void set_path(const path& p);
 
 				// Transformations
 				void translate(const point& value);
@@ -877,35 +877,35 @@ namespace std {
 				void glyph_extents(const ::std::vector<glyph>& glyphs, ::std::experimental::drawing::text_extents& extents);
 			};
 
-            class image_surface : public surface {
-                friend surface;
-                image_surface() = delete;
-            protected:
-                ::std::shared_ptr<::std::vector<unsigned char>> _Data;
-            public:
-                image_surface(const image_surface&) = delete;
-                image_surface& operator=(const image_surface&) = delete;
-                image_surface(image_surface&& other);
-                image_surface& operator=(image_surface&& other);
-                image_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
-                image_surface(format format, int width, int height);
-                image_surface(vector<unsigned char>& data, format format, int width, int height, int stride);
-                // create_similar_image
-                image_surface(surface& other, format format, int width, int height);
-                // create_from_png
-                image_surface(const ::std::string& filename);
+			class image_surface : public surface {
+				friend surface;
+				image_surface() = delete;
+			protected:
+				::std::shared_ptr<::std::vector<unsigned char>> _Data;
+			public:
+				image_surface(const image_surface&) = delete;
+				image_surface& operator=(const image_surface&) = delete;
+				image_surface(image_surface&& other);
+				image_surface& operator=(image_surface&& other);
+				image_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
+				image_surface(format format, int width, int height);
+				image_surface(vector<unsigned char>& data, format format, int width, int height, int stride);
+				// create_similar_image
+				image_surface(surface& other, format format, int width, int height);
+				// create_from_png
+				image_surface(const ::std::string& filename);
 
-                void set_data(::std::vector<unsigned char>& data);
-                ::std::vector<unsigned char> get_data();
-                format get_format();
-                int get_width();
-                int get_height();
-                int get_stride();
-            };
+				void set_data(::std::vector<unsigned char>& data);
+				::std::vector<unsigned char> get_data();
+				format get_format();
+				int get_width();
+				int get_height();
+				int get_stride();
+			};
 
-            int format_stride_for_width(format format, int width);
-			surface make_surface(surface::native_handle_type nh);
-			surface make_surface(format format, int width, int height);
+			int format_stride_for_width(format format, int width);
+			surface make_surface(surface::native_handle_type nh); // parameters are exposition only.
+			surface make_surface(format format, int width, int height); // parameters are exposition only.
 		}
 	}
 }

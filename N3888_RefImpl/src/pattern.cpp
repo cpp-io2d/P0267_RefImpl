@@ -6,7 +6,7 @@ using namespace std;
 using namespace std::experimental::drawing;
 
 pattern::native_handle_type pattern::native_handle() const {
-    return _Pattern;
+	return _Pattern;
 }
 
 pattern::pattern(pattern::native_handle_type nh)
@@ -15,28 +15,28 @@ pattern::pattern(pattern::native_handle_type nh)
 }
 
 pattern::~pattern() {
-    if (_Pattern != nullptr) {
-        cairo_pattern_destroy(_Pattern);
-        _Pattern = nullptr;
-    }
+	if (_Pattern != nullptr) {
+		cairo_pattern_destroy(_Pattern);
+		_Pattern = nullptr;
+	}
 }
 
 pattern::pattern(pattern&& other)
 : _Pattern(move(other._Pattern))
 , _Pattern_type(move(other._Pattern_type)) {
-    other._Pattern = nullptr;
+	other._Pattern = nullptr;
 }
 
 pattern& pattern::operator=(pattern&& other) {
-    if (this != &other) {
-        _Pattern = move(other._Pattern);
-        _Pattern_type = move(other._Pattern_type);
-        other._Pattern = nullptr;
-    }
+	if (this != &other) {
+		_Pattern = move(other._Pattern);
+		_Pattern_type = move(other._Pattern_type);
+		other._Pattern = nullptr;
+	}
 
-    return *this;
+	return *this;
 }
 
 pattern_type pattern::get_type() const {
-    return _Pattern_type;
+	return _Pattern_type;
 }

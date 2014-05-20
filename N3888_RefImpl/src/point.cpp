@@ -6,75 +6,75 @@ using namespace std;
 using namespace std::experimental::drawing;
 
 point point::operator+=(const point& rhs) {
-    x += rhs.x;
-    y += rhs.y;
-    return *this;
+	x += rhs.x;
+	y += rhs.y;
+	return *this;
 }
 
 point point::operator-=(const point& rhs) {
-    x -= rhs.x;
-    y -= rhs.y;
-    return *this;
+	x -= rhs.x;
+	y -= rhs.y;
+	return *this;
 }
 
 point point::operator*=(const point& rhs) {
-    x *= rhs.x;
-    y *= rhs.y;
-    return *this;
+	x *= rhs.x;
+	y *= rhs.y;
+	return *this;
 }
 
 point point::operator*=(double rhs) {
-    x *= rhs;
-    y *= rhs;
-    return *this;
+	x *= rhs;
+	y *= rhs;
+	return *this;
 }
 
 point point::operator/=(const point& rhs) {
-    x /= rhs.x;
-    y /= rhs.y;
-    return *this;
+	x /= rhs.x;
+	y /= rhs.y;
+	return *this;
 }
 
 point point::operator/=(double rhs) {
-    x /= rhs;
-    y /= rhs;
-    return *this;
+	x /= rhs;
+	y /= rhs;
+	return *this;
 }
 
 namespace std {
-    namespace experimental {
-        namespace drawing {
-            point operator+(const point& lhs) {
-                return lhs;
-            }
+	namespace experimental {
+		namespace drawing {
+			point operator+(const point& lhs) {
+				return lhs;
+			}
 
-            point operator+(const point& lhs, const point& rhs) {
-                return point{ lhs.x + rhs.x, lhs.y + rhs.y };
-            }
+			point operator+(const point& lhs, const point& rhs) {
+				return point{ lhs.x + rhs.x, lhs.y + rhs.y };
+			}
 
-            point operator-(const point& lhs) {
-                return point{ -lhs.x, -lhs.y };
-            }
+			point operator-(const point& lhs) {
+				return point{ -lhs.x, -lhs.y };
+			}
 
-            point operator-(const point& lhs, const point& rhs) {
-                return point{ lhs.x - rhs.x, lhs.y - rhs.y };
-            }
+			point operator-(const point& lhs, const point& rhs) {
+				return point{ lhs.x - rhs.x, lhs.y - rhs.y };
+			}
 
-            point operator*(const point& lhs, const point& rhs) {
-                return point{ lhs.x * rhs.x, lhs.y * rhs.y };
-            }
+			point operator*(const point& lhs, const point& rhs) {
+				return point{ lhs.x * rhs.x, lhs.y * rhs.y };
+			}
 
-            point operator*(const point& lhs, double rhs) {
-                return point{ lhs.x * rhs, lhs.y * rhs };
-            }
+			point operator*(const point& lhs, double rhs) {
+				return point{ lhs.x * rhs, lhs.y * rhs };
+			}
 
-            point operator/(const point& lhs, const point& rhs) {
-                return point{ lhs.x / rhs.x, lhs.y / rhs.y };
-            }
+			point operator/(const point& lhs, const point& rhs) {
+				return point{ lhs.x / rhs.x, lhs.y / rhs.y };
+			}
 
-            point operator/(const point& lhs, double rhs) {
-                return point{ lhs.x / rhs, lhs.y / rhs };
-            }
-        }
-    }
+			point operator/(const point& lhs, double rhs) {
+				return point{ lhs.x / rhs, lhs.y / rhs };
+			}
+		}
+	}
 }

@@ -76,7 +76,7 @@ int WINAPI wWinMain(
 			auto hdc = GetDC(window.GetHandle());
 			{
 				auto rs = make_surface(cairo_win32_surface_create(hdc));
-                rs.paint(*window.GetSurface());
+				rs.paint(*window.GetSurface());
 				rs.flush();
 			}
 			ReleaseDC(window.GetHandle(), hdc);
@@ -99,7 +99,7 @@ int WINAPI wWinMain(
 // FUNCTION: CommonWindowProc
 //
 // PURPOSE: Provides a simple message processor which attempts to call the handler member
-//          of the Win32RenderWindow class.
+//		  of the Win32RenderWindow class.
 //
 
 LRESULT CALLBACK CommonWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)

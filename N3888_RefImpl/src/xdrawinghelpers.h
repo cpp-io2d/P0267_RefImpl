@@ -11,11 +11,11 @@ inline void _Throw_if_failed_status(::std::experimental::drawing::status s) {
 
 // Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'. 
 inline int _Double_to_int(double value, bool nearestNeighbor = true) {
-    if (nearestNeighbor) {
-        // Round to the nearest neighbor.
-        return static_cast<int>(round(value));
-    }
-    // Otherwise truncate.
-    return static_cast<int>(trunc(value));
+	if (nearestNeighbor) {
+		// Round to the nearest neighbor.
+		return static_cast<int>(round(value));
+	}
+	// Otherwise truncate.
+	return static_cast<int>(trunc(value));
 }
 

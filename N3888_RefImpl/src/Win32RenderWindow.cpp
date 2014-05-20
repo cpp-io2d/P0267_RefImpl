@@ -211,7 +211,7 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		g_psurface->flush();
 
 		auto rs = make_surface(cairo_win32_surface_create(hdc));
-        rs.paint(*g_psurface);
+		rs.paint(*g_psurface);
 		rs.flush();
 		EndPaint(handle, &ps);
 	} break;

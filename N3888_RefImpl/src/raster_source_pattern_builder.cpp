@@ -12,14 +12,14 @@ cairo_surface_t* raster_source_pattern_builder::_Cairo_acquire(cairo_pattern_t*,
 	if (extents == nullptr) {
 		ri_extents.x = 0.0;
 		ri_extents.y = 0.0;
-        ri_extents.width = static_cast<double>(rsp->_Width);
-        ri_extents.height = static_cast<double>(rsp->_Height);
+		ri_extents.width = static_cast<double>(rsp->_Width);
+		ri_extents.height = static_cast<double>(rsp->_Height);
 	}
 	else {
-        ri_extents.x = static_cast<double>(extents->x);
-        ri_extents.y = static_cast<double>(extents->y);
-        ri_extents.width = static_cast<double>(extents->width);
-        ri_extents.height = static_cast<double>(extents->height);
+		ri_extents.x = static_cast<double>(extents->x);
+		ri_extents.y = static_cast<double>(extents->y);
+		ri_extents.width = static_cast<double>(extents->width);
+		ri_extents.height = static_cast<double>(extents->height);
 	}
 	auto acqTarget = surface(target);
 	// Increment the reference count of target to avoid its destruction when acqTarget is destroyed.
@@ -61,14 +61,14 @@ raster_source_pattern_builder::raster_source_pattern_builder(raster_source_patte
 
 raster_source_pattern_builder& raster_source_pattern_builder::operator=(raster_source_pattern_builder&& other) {
 	if (this != &other) {
-        _Pattern_type = move(other._Pattern_type);
-        _Extend = move(other._Extend);
-        _Filter = move(other._Filter);
-        _Matrix = move(other._Matrix);
-        _User_callback_data = move(other._User_callback_data);
+		_Pattern_type = move(other._Pattern_type);
+		_Extend = move(other._Extend);
+		_Filter = move(other._Filter);
+		_Matrix = move(other._Matrix);
+		_User_callback_data = move(other._User_callback_data);
 		_Width = move(other._Width);
 		_Height = move(other._Height);
-        _Content = move(other._Content);
+		_Content = move(other._Content);
 		_Acquire_fn = move(other._Acquire_fn);
 		_Release_fn = move(other._Release_fn);
 		other._User_callback_data = nullptr;
@@ -94,46 +94,46 @@ raster_source_pattern_builder::raster_source_pattern_builder(void* user_data, co
 }
 
 pattern raster_source_pattern_builder::get_pattern() {
-    auto pat = cairo_pattern_create_raster_source(_User_callback_data, _Content_to_cairo_content_t(_Content), _Width, _Height);
-    _Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	auto pat = cairo_pattern_create_raster_source(_User_callback_data, _Content_to_cairo_content_t(_Content), _Width, _Height);
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
 
-    cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(_Extend));
-    _Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
-    cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(_Filter));
-    _Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
-    cairo_matrix_t mtrx{ _Matrix.xx, _Matrix.yx, _Matrix.xy, _Matrix.yy, _Matrix.x0, _Matrix.y0 };
-    cairo_pattern_set_matrix(pat, &mtrx);
-    _Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(_Extend));
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(_Filter));
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	cairo_matrix_t mtrx{ _Matrix.xx, _Matrix.yx, _Matrix.xy, _Matrix.yy, _Matrix.x0, _Matrix.y0 };
+	cairo_pattern_set_matrix(pat, &mtrx);
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
 
-    cairo_raster_source_pattern_set_acquire(pat, (_Acquire_fn == nullptr) ? nullptr : &raster_source_pattern_builder::_Cairo_acquire,
-        &raster_source_pattern_builder::_Cairo_release
-        );
-    _Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
-    return pattern(pat);
+	cairo_raster_source_pattern_set_acquire(pat, (_Acquire_fn == nullptr) ? nullptr : &raster_source_pattern_builder::_Cairo_acquire,
+		&raster_source_pattern_builder::_Cairo_release
+		);
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	return pattern(pat);
 }
 
 void raster_source_pattern_builder::set_extend(extend e) {
-    _Extend = e;
+	_Extend = e;
 }
 
 extend raster_source_pattern_builder::get_extend() {
-    return _Extend;
+	return _Extend;
 }
 
 void raster_source_pattern_builder::set_filter(filter f) {
-    _Filter = f;
+	_Filter = f;
 }
 
 filter raster_source_pattern_builder::get_filter() {
-    return _Filter;
+	return _Filter;
 }
 
 void raster_source_pattern_builder::set_matrix(const matrix& m) {
-    _Matrix = m;
+	_Matrix = m;
 }
 
 matrix raster_source_pattern_builder::get_matrix() {
-    return _Matrix;
+	return _Matrix;
 }
 
 void raster_source_pattern_builder::set_callback_data(void* data) {
