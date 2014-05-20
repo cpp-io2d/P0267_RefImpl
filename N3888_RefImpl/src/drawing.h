@@ -911,7 +911,6 @@ namespace std {
             int format_stride_for_width(format format, int width);
 			surface make_surface(surface::native_handle_type nh);
 			surface make_surface(format format, int width, int height);
-			path _Make_path_from_native_handle(path::native_handle_type nh);
 		}
 	}
 }
