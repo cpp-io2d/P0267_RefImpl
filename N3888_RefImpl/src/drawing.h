@@ -325,6 +325,7 @@ namespace std {
 				public:
 					typedef cairo_path_t* native_handle_type;
 
+					path() = delete;
 					path(const path_builder& pb);
 					path(const path& other) = default;
 					path& operator=(const path& other) = default;
@@ -377,7 +378,7 @@ namespace std {
 				};
 
 				class drawing_exception : public exception {
-					::std::experimental::drawing::status _Status = ::std::experimental::drawing::status::last_status;
+					status _Status = status::last_status;
 				public:
 					drawing_exception() noexcept;
 					explicit drawing_exception(::std::experimental::drawing::status s) noexcept;
@@ -388,7 +389,7 @@ namespace std {
 					drawing_exception& operator=(const drawing_exception& rhs) noexcept = default;
 
 					virtual const char* what() const noexcept;
-					::std::experimental::drawing::status status() const noexcept;
+					status get_status() const noexcept;
 				};
 
 				class device {
@@ -442,6 +443,7 @@ namespace std {
 					typedef cairo_font_options_t* native_handle_type;
 					native_handle_type native_handle() const;
 
+					font_options() = delete;
 					font_options(const font_options&) = default;
 					font_options& operator=(const font_options&) = default;
 					font_options(font_options&& other);
@@ -533,7 +535,6 @@ namespace std {
 					friend class solid_color_pattern_builder;
 					friend class surface;
 
-					pattern() = delete;
 					pattern(native_handle_type nh);
 
 					cairo_pattern_t* _Pattern;
@@ -542,6 +543,7 @@ namespace std {
 				public:
 					native_handle_type native_handle() const;
 
+					pattern() = delete;
 					pattern(const pattern&) = default;
 					pattern& operator=(const pattern&) = default;
 					pattern(pattern&& other);
