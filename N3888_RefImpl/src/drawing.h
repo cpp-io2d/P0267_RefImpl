@@ -771,9 +771,9 @@ namespace std {
 
 					explicit surface(native_handle_type nh);
 
-					surface(format fmt, double width, double height);
+					surface(format fmt, int width, int height);
 					// create_similar
-					surface(const surface& other, content content, double width, double height);
+					surface(const surface& other, content content, int width, int height);
 					// create_for_rectangle
 					surface(const surface& target, const rectangle& rect);
 

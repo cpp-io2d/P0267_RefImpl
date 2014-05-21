@@ -36,10 +36,10 @@ surface& surface::operator=(surface&& other) {
 	return *this;
 }
 
-surface::surface(const surface& other, content content, double width, double height)
+surface::surface(const surface& other, content content, int width, int height)
 : _Lock_for_device()
 , _Device()
-, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), _Double_to_int(width, false), _Double_to_int(height, false)), &cairo_surface_destroy))
+, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), width, height), &cairo_surface_destroy))
 , _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
@@ -50,10 +50,10 @@ surface::surface(const surface& target, const rectangle& rect)
 , _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
-surface::surface(format fmt, double width, double height)
+surface::surface(format fmt, int width, int height)
 : _Lock_for_device()
 , _Device()
-, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), static_cast<int>(width), static_cast<int>(height)), &cairo_surface_destroy))
+, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
 , _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
