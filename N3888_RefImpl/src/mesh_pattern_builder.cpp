@@ -11,7 +11,9 @@ mesh_pattern_builder::mesh_pattern_builder()
 , _Filter(filter::default_filter)
 , _Matrix(matrix::init_identity())
 , _Has_current_patch()
+, _Current_patch_index()
 , _Current_patch_side_count()
+, _Current_patch_initial_point()
 , _Patches() {
 }
 
@@ -21,7 +23,9 @@ mesh_pattern_builder::mesh_pattern_builder(mesh_pattern_builder&& other)
 , _Filter(move(other._Filter))
 , _Matrix(move(other._Matrix))
 , _Has_current_patch(move(other._Has_current_patch))
+, _Current_patch_index(move(other._Current_patch_index))
 , _Current_patch_side_count(move(other._Current_patch_side_count))
+, _Current_patch_initial_point(move(other._Current_patch_initial_point))
 , _Patches(move(other._Patches)) {
 }
 
@@ -32,7 +36,9 @@ mesh_pattern_builder& mesh_pattern_builder::operator=(mesh_pattern_builder&& oth
 		_Filter = move(other._Filter);
 		_Matrix = move(other._Matrix);
 		_Has_current_patch = move(other._Has_current_patch);
+		_Current_patch_index = move(other._Current_patch_index);
 		_Current_patch_side_count = move(other._Current_patch_side_count);
+		_Current_patch_initial_point = move(other._Current_patch_initial_point);
 		_Patches = move(other._Patches);
 	}
 	return *this;
@@ -127,6 +133,24 @@ void mesh_pattern_builder::begin_patch() {
 	_Current_patch_side_count = 0;
 	_Current_patch_initial_point = { };
 	_Patches.push_back(_Patch());
+	_Current_patch_index = static_cast<unsigned int>(_Patches.size()) - 1U;
+}
+
+void mesh_pattern_builder::begin_edit_patch(unsigned int patch_num) {
+	if (_Has_current_patch) {
+		_Throw_if_failed_status(status::invalid_mesh_construction);
+	}
+
+	if (patch_num >= _Patches.size()) {
+		_Throw_if_failed_status(status::invalid_index);
+	}
+
+	_Has_current_patch = true;
+	_Current_patch_side_count = 0;
+	_Current_patch_initial_point = { };
+	_Patch p;
+	_Patches[patch_num] = p;
+	_Current_patch_index = patch_num;
 }
 
 void mesh_pattern_builder::end_patch() {
@@ -144,7 +168,7 @@ void mesh_pattern_builder::move_to(const point& pt) {
 		_Throw_if_failed_status(status::invalid_mesh_construction);
 	}
 	_Current_patch_initial_point = pt;
-	auto& patch = _Patches.back();
+	auto& patch = _Patches.at(_Current_patch_index);
 	get<0>(patch).move_to(pt);
 }
 
@@ -158,7 +182,7 @@ void mesh_pattern_builder::line_to(const point& pt) {
 	}
 	else {
 		_Current_patch_side_count++;
-		auto& patch = _Patches.back();
+		auto& patch = _Patches.at(_Current_patch_index);
 		get<0>(patch).line_to(pt);
 	}
 }
@@ -173,7 +197,7 @@ void mesh_pattern_builder::curve_to(const point& pt0, const point& pt1, const po
 	}
 
 	_Current_patch_side_count++;
-	auto& patch = _Patches.back();
+	auto& patch = _Patches.at(_Current_patch_index);
 	get<0>(patch).curve_to(pt0, pt1, pt2);
 }
 
@@ -184,7 +208,7 @@ void mesh_pattern_builder::set_control_point(unsigned int point_num, const point
 	if (point_num > 3) {
 		_Throw_if_failed_status(status::invalid_index);
 	}
-	auto& patch = _Patches.back();
+	auto& patch = _Patches.at(_Current_patch_index);
 	get<1>(patch)[point_num] = pt;
 }
 
@@ -195,7 +219,7 @@ void mesh_pattern_builder::set_corner_color_rgba(unsigned int corner_num, const 
 	if (corner_num > 3) {
 		_Throw_if_failed_status(status::invalid_index);
 	}
-	auto& patch = _Patches.back();
+	auto& patch = _Patches.at(_Current_patch_index);
 	get<2>(patch)[corner_num] = color;
 }
 

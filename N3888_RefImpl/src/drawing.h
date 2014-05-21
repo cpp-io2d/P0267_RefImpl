@@ -666,6 +666,7 @@ namespace std {
 					matrix _Matrix;
 
 					bool _Has_current_patch;
+					unsigned int _Current_patch_index;
 					int _Current_patch_side_count;
 					point _Current_patch_initial_point;
 					typedef ::std::map<unsigned int, point> _Control_points;
@@ -689,6 +690,7 @@ namespace std {
 					matrix get_matrix();
 
 					void begin_patch();
+					void begin_edit_patch(unsigned int patch_num);
 					void end_patch();
 					void move_to(const point& pt);
 					void line_to(const point& pt);
