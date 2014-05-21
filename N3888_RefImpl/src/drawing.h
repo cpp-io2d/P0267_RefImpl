@@ -222,6 +222,13 @@ namespace std {
 					double height;
 				};
 
+				struct rgba_color {
+					double r;
+					double g;
+					double b;
+					double a;
+				};
+
 				struct point {
 					double x;
 					double y;
@@ -550,18 +557,14 @@ namespace std {
 					extend _Extend;
 					filter _Filter;
 					matrix _Matrix;
-					double _Red;
-					double _Green;
-					double _Blue;
-					double _Alpha;
+					rgba_color _Color;
 
 				public:
 					solid_color_pattern_builder(const solid_color_pattern_builder&) = default;
 					solid_color_pattern_builder& operator=(const solid_color_pattern_builder&) = default;
 					solid_color_pattern_builder(solid_color_pattern_builder&& other);
 					solid_color_pattern_builder& operator=(solid_color_pattern_builder&& other);
-					solid_color_pattern_builder(double red, double green, double blue);
-					solid_color_pattern_builder(double red, double green, double blue, double alpha);
+					solid_color_pattern_builder(const rgba_color& color);
 
 					pattern get_pattern();
 					void set_extend(extend e);
@@ -571,7 +574,16 @@ namespace std {
 					void set_matrix(const matrix& m);
 					matrix get_matrix();
 
-					void get_rgba(double& red, double& green, double& blue, double& alpha);
+					rgba_color get_rgba();
+					void set_rgba(const rgba_color& color);
+					double get_red();
+					void set_red(double red);
+					double get_green();
+					void set_green(double green);
+					double get_blue();
+					void set_blue(double blue);
+					double get_alpha();
+					void set_alpha(double alpha);
 				};
 
 				class linear_pattern_builder {
@@ -582,7 +594,7 @@ namespace std {
 
 					point _Point0;
 					point _Point1;
-					::std::vector<::std::tuple<double, double, double, double, double>> _Color_stops;
+					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
 					linear_pattern_builder() = delete;
@@ -600,12 +612,13 @@ namespace std {
 					void set_matrix(const matrix& matrix);
 					matrix get_matrix();
 
-					void add_color_stop_rgb(double offset, double red, double green, double blue);
-					void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
-					void get_color_stop_count(int& count);
-					void get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha);
+					void add_color_stop_rgba(double offset, const rgba_color& color);
+					int get_color_stop_count();
 
+					void get_color_stop_rgba(int index, double& offset, rgba_color& color);
+					void set_color_stop_rgba(int index, double offset, const rgba_color& color);
 					void get_linear_points(point& pt0, point& pt1);
+					void set_linear_points(const point& pt0, const point& pt1);
 				};
 
 				class radial_pattern_builder {
@@ -618,7 +631,7 @@ namespace std {
 					double _Radius0;
 					point _Center1;
 					double _Radius1;
-					::std::vector<::std::tuple<double, double, double, double, double>> _Color_stops;
+					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
 					radial_pattern_builder() = delete;
@@ -636,12 +649,14 @@ namespace std {
 					void set_matrix(const matrix& matrix);
 					matrix get_matrix();
 
-					void add_color_stop_rgb(double offset, double red, double green, double blue);
-					void add_color_stop_rgba(double offset, double red, double green, double blue, double alpha);
-					void get_color_stop_count(int& count);
-					void get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha);
+					void add_color_stop_rgba(double offset, const rgba_color& color);
+					int get_color_stop_count();
+
+					void get_color_stop_rgba(int index, double& offset, rgba_color& color);
+					void set_color_stop_rgba(int index, double offset, const rgba_color& color);
 
 					void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1);
+					void set_radial_circles(const point& center0, double radius0, const point& center1, double radius1);
 				};
 
 				class mesh_pattern_builder {
@@ -654,7 +669,7 @@ namespace std {
 					int _Current_patch_side_count;
 					point _Current_patch_initial_point;
 					typedef ::std::map<unsigned int, point> _Control_points;
-					typedef ::std::map<unsigned int, ::std::tuple<double, double, double, double>> _Corner_colors;
+					typedef ::std::map<unsigned int, rgba_color> _Corner_colors;
 					// <Patch data, control points, corner colors>
 					typedef ::std::tuple<path_builder, _Control_points, _Corner_colors> _Patch;
 					::std::vector<_Patch> _Patches;
@@ -679,13 +694,12 @@ namespace std {
 					void line_to(const point& pt);
 					void curve_to(const point& pt0, const point& pt1, const point& pt2);
 					void set_control_point(unsigned int point_num, const point& pt);
-					void set_corner_color_rgb(unsigned int corner_num, double red, double green, double blue);
-					void set_corner_color_rgba(unsigned int corner_num, double red, double green, double blue, double alpha);
+					void set_corner_color_rgba(unsigned int corner_num, const rgba_color& color);
 					void get_patch_count(unsigned int& count);
 					path get_path(unsigned int patch_num);
 					path_builder get_path_builder(unsigned int patch_num);
 					point get_control_point(unsigned int patch_num, unsigned int point_num);
-					void get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num, double& red, double& green, double& blue, double& alpha);
+					rgba_color get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num);
 				};
 
 				class raster_source_pattern_builder {

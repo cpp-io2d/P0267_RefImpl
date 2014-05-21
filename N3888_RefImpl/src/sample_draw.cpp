@@ -48,7 +48,7 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	const int elementCount = 12;
 	const static auto vec = init_sort_steps(elementCount);
 	const int phaseCount = static_cast<int>(vec.size()), x = min(static_cast<int>(timer / phaseTime), phaseCount - 1);
-	auto cornflowerBluePattern = solid_color_pattern_builder(0.392156899, 0.5843137503, 0.9294118285).get_pattern();
+	auto cornflowerBluePattern = solid_color_pattern_builder({ 0.392156899, 0.5843137503, 0.9294118285, 1.0 }).get_pattern();
 	rs.set_pattern(cornflowerBluePattern);
 	rs.paint(); // Paint background.
 	double left, top, right, bottom;
@@ -63,7 +63,7 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	path_builder pb;
 	pb.move_to({ beginX, 50.0 });
 	rs.set_path(pb.get_path());
-	auto whitePattern = solid_color_pattern_builder(1.0, 1.0, 1.0).get_pattern();
+	auto whitePattern = solid_color_pattern_builder({ 1.0, 1.0, 1.0, 1.0 }).get_pattern();
 	rs.set_pattern(whitePattern);
 	rs.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.set_font_size(40.0);
@@ -83,7 +83,7 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 		}
 		rs.set_path(pb.get_path());
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
-		auto greyPattern = solid_color_pattern_builder(greyColor, greyColor, greyColor).get_pattern();
+		auto greyPattern = solid_color_pattern_builder({ greyColor, greyColor, greyColor, 1.0 }).get_pattern();
 		rs.set_pattern(greyPattern);
 		rs.fill();
 	}

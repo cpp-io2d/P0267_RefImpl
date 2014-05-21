@@ -88,7 +88,7 @@ pattern mesh_pattern_builder::get_pattern() {
 		}
 		const auto& cornerColors = get<2>(patch);
 		for (const auto& cc : cornerColors) {
-			cairo_mesh_pattern_set_corner_color_rgba(pat, cc.first, get<0>(cc.second), get<1>(cc.second), get<2>(cc.second), get<3>(cc.second));
+			cairo_mesh_pattern_set_corner_color_rgba(pat, cc.first, cc.second.r, cc.second.g, cc.second.b, cc.second.a);
 		}
 		cairo_mesh_pattern_end_patch(pat);
 	}
@@ -188,7 +188,7 @@ void mesh_pattern_builder::set_control_point(unsigned int point_num, const point
 	get<1>(patch)[point_num] = pt;
 }
 
-void mesh_pattern_builder::set_corner_color_rgb(unsigned int corner_num, double red, double green, double blue) {
+void mesh_pattern_builder::set_corner_color_rgba(unsigned int corner_num, const rgba_color& color) {
 	if (!_Has_current_patch) {
 		_Throw_if_failed_status(status::invalid_mesh_construction);
 	}
@@ -196,18 +196,7 @@ void mesh_pattern_builder::set_corner_color_rgb(unsigned int corner_num, double 
 		_Throw_if_failed_status(status::invalid_index);
 	}
 	auto& patch = _Patches.back();
-	get<2>(patch)[corner_num] = make_tuple(red, green, blue, 1.0);
-}
-
-void mesh_pattern_builder::set_corner_color_rgba(unsigned int corner_num, double red, double green, double blue, double alpha) {
-	if (!_Has_current_patch) {
-		_Throw_if_failed_status(status::invalid_mesh_construction);
-	}
-	if (corner_num > 3) {
-		_Throw_if_failed_status(status::invalid_index);
-	}
-	auto& patch = _Patches.back();
-	get<2>(patch)[corner_num] = make_tuple(red, green, blue, alpha);
+	get<2>(patch)[corner_num] = color;
 }
 
 void mesh_pattern_builder::get_patch_count(unsigned int& count) {
@@ -243,7 +232,7 @@ point mesh_pattern_builder::get_control_point(unsigned int patch_num, unsigned i
 	return (*iter).second;
 }
 
-void mesh_pattern_builder::get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num, double& red, double& green, double& blue, double& alpha) {
+rgba_color mesh_pattern_builder::get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num) {
 	if (patch_num >= _Patches.size()) {
 		_Throw_if_failed_status(status::invalid_index);
 	}
@@ -253,8 +242,5 @@ void mesh_pattern_builder::get_corner_color_rgba(unsigned int patch_num, unsigne
 	if (iter == cornerColors.cend()) {
 		_Throw_if_failed_status(status::invalid_index);
 	}
-	red = get<0>((*iter).second);
-	green = get<1>((*iter).second);
-	blue = get<2>((*iter).second);
-	alpha = get<3>((*iter).second);
+	return (*iter).second;
 }

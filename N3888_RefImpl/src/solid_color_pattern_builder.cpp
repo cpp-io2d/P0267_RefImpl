@@ -10,10 +10,7 @@ solid_color_pattern_builder::solid_color_pattern_builder(solid_color_pattern_bui
 , _Extend(move(other._Extend))
 , _Filter(move(other._Filter))
 , _Matrix(move(other._Matrix))
-, _Red(move(other._Red))
-, _Green(move(other._Green))
-, _Blue(move(other._Blue))
-, _Alpha(move(other._Alpha)) {
+, _Color(move(other._Color)) {
 }
 
 solid_color_pattern_builder& solid_color_pattern_builder::operator=(solid_color_pattern_builder&& other) {
@@ -22,38 +19,25 @@ solid_color_pattern_builder& solid_color_pattern_builder::operator=(solid_color_
 		_Extend = move(other._Extend);
 		_Filter = move(other._Filter);
 		_Matrix = move(other._Matrix);
-		_Red = move(other._Red);
-		_Green = move(other._Green);
-		_Blue = move(other._Blue);
-		_Alpha = move(other._Alpha);
+		_Color = move(other._Color);
 	}
 	return *this;
 }
 
-solid_color_pattern_builder::solid_color_pattern_builder(double red, double green, double blue)
+solid_color_pattern_builder::solid_color_pattern_builder(const rgba_color& color)
 : _Pattern_type(pattern_type::solid_color)
 , _Extend(extend::default_extend)
 , _Filter(filter::default_filter)
 , _Matrix(matrix::init_identity())
-, _Red(red)
-, _Green(green)
-, _Blue(blue)
-, _Alpha(1.0) {
-}
-
-solid_color_pattern_builder::solid_color_pattern_builder(double red, double green, double blue, double alpha)
-: _Pattern_type(pattern_type::solid_color)
-, _Extend(extend::default_extend)
-, _Filter(filter::default_filter)
-, _Matrix(matrix::init_identity())
-, _Red(red)
-, _Green(green)
-, _Blue(blue)
-, _Alpha(alpha) {
+, _Color(color){
+	assert(color.r >= 0.0 && color.r <= 1.0);
+	assert(color.g >= 0.0 && color.g <= 1.0);
+	assert(color.b >= 0.0 && color.b <= 1.0);
+	assert(color.a >= 0.0 && color.a <= 1.0);
 }
 
 pattern solid_color_pattern_builder::get_pattern() {
-	auto pat = cairo_pattern_create_rgba(_Red, _Green, _Blue, _Alpha);
+	auto pat = cairo_pattern_create_rgba(_Color.r, _Color.g, _Color.b, _Color.a);
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
 
 	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(_Extend));
@@ -91,9 +75,50 @@ matrix solid_color_pattern_builder::get_matrix() {
 	return _Matrix;
 }
 
-void solid_color_pattern_builder::get_rgba(double& red, double& green, double& blue, double& alpha) {
-	red = _Red;
-	green = _Green;
-	blue = _Blue;
-	alpha = _Alpha;
+rgba_color solid_color_pattern_builder::get_rgba() {
+	return _Color;
+}
+
+void solid_color_pattern_builder::set_rgba(const rgba_color& color) {
+	assert(color.r >= 0.0 && color.r <= 1.0);
+	assert(color.g >= 0.0 && color.g <= 1.0);
+	assert(color.b >= 0.0 && color.b <= 1.0);
+	assert(color.a >= 0.0 && color.a <= 1.0);
+	_Color = color;
+}
+
+double solid_color_pattern_builder::get_red() {
+	return _Color.r;
+}
+
+void solid_color_pattern_builder::set_red(double red) {
+	assert(red >= 0.0 && red <= 1.0);
+	_Color.r = red;
+}
+
+double solid_color_pattern_builder::get_green() {
+	return _Color.g;
+}
+
+void solid_color_pattern_builder::set_green(double green) {
+	assert(green >= 0.0 && green <= 1.0);
+	_Color.g = green;
+}
+
+double solid_color_pattern_builder::get_blue() {
+	return _Color.b;
+}
+
+void solid_color_pattern_builder::set_blue(double blue) {
+	assert(blue >= 0.0 && blue <= 1.0);
+	_Color.b = blue;
+}
+
+double solid_color_pattern_builder::get_alpha() {
+	return _Color.a;
+}
+
+void solid_color_pattern_builder::set_alpha(double alpha) {
+	assert(alpha >= 0.0 && alpha <= 1.0);
+	_Color.a = alpha;
 }

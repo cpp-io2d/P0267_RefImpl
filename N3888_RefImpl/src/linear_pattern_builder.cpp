@@ -50,7 +50,7 @@ pattern linear_pattern_builder::get_pattern() {
 	cairo_pattern_set_matrix(pat, &mtrx);
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
 	for (const auto& stop : _Color_stops) {
-		cairo_pattern_add_color_stop_rgba(pat, get<0>(stop), get<1>(stop), get<2>(stop), get<3>(stop), get<4>(stop));
+		cairo_pattern_add_color_stop_rgba(pat, get<0>(stop), get<1>(stop).r, get<1>(stop).g, get<1>(stop).b, get<1>(stop).a);
 	}
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
 
@@ -81,30 +81,49 @@ matrix linear_pattern_builder::get_matrix() {
 	return _Matrix;
 }
 
-void linear_pattern_builder::add_color_stop_rgb(double offset, double red, double green, double blue) {
+void linear_pattern_builder::add_color_stop_rgba(double offset, const rgba_color& color) {
 	assert(offset >= 0.0 && offset <= 1.0);
-	_Color_stops.push_back(make_tuple(offset, red, green, blue, 1.0));
+	assert(color.r >= 0.0 && color.r <= 1.0);
+	assert(color.g >= 0.0 && color.g <= 1.0);
+	assert(color.b >= 0.0 && color.b <= 1.0);
+	assert(color.a >= 0.0 && color.a <= 1.0);
+	_Color_stops.push_back(make_tuple(offset, color));
 }
 
-void linear_pattern_builder::add_color_stop_rgba(double offset, double red, double green, double blue, double alpha) {
-	assert(offset >= 0.0 && offset <= 1.0);
-	_Color_stops.push_back(make_tuple(offset, red, green, blue, alpha));
+int linear_pattern_builder::get_color_stop_count() {
+	return static_cast<int>(_Color_stops.size());
 }
 
-void linear_pattern_builder::get_color_stop_count(int& count) {
-	count = static_cast<int>(_Color_stops.size());
-}
+void linear_pattern_builder::get_color_stop_rgba(int index, double& offset, rgba_color& color) {
+	if (index >= _Color_stops.size() || index < 0) {
+		_Throw_if_failed_status(status::invalid_index);
+	}
 
-void linear_pattern_builder::get_color_stop_rgba(int index, double& offset, double& red, double& green, double& blue, double& alpha) {
 	const auto& stop = _Color_stops.at(index);
 	offset = get<0>(stop);
-	red = get<1>(stop);
-	green = get<2>(stop);
-	blue = get<3>(stop);
-	alpha = get<4>(stop);
+	color = get<1>(stop);
+}
+
+void linear_pattern_builder::set_color_stop_rgba(int index, double offset, const rgba_color& color) {
+	assert(offset >= 0.0 && offset <= 1.0);
+	assert(color.r >= 0.0 && color.r <= 1.0);
+	assert(color.g >= 0.0 && color.g <= 1.0);
+	assert(color.b >= 0.0 && color.b <= 1.0);
+	assert(color.a >= 0.0 && color.a <= 1.0);
+
+	if (index >= _Color_stops.size() || index < 0) {
+		_Throw_if_failed_status(status::invalid_index);
+	}
+
+	_Color_stops[index] = make_tuple(offset, color);
 }
 
 void linear_pattern_builder::get_linear_points(point& pt0, point& pt1) {
 	pt0 = _Point0;
 	pt1 = _Point1;
+}
+
+void linear_pattern_builder::set_linear_points(const point& pt0, const point& pt1) {
+	_Point0 = pt0;
+	_Point1 = pt1;
 }
