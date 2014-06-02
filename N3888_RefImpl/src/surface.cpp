@@ -365,12 +365,6 @@ void surface::set_path(const path& p) {
 		case ::std::experimental::drawing::path_data_type::new_sub_path:
 			cairo_new_sub_path(ctx);
 			break;
-		case ::std::experimental::drawing::path_data_type::arc:
-			cairo_arc(ctx, pathData[i + 1].point.x, pathData[i + 1].point.y, pathData[i + 2].value, pathData[i + 3].value, pathData[i + 4].value);
-			break;
-		case std::experimental::drawing::path_data_type::arc_negative:
-			cairo_arc_negative(ctx, pathData[i + 1].point.x, pathData[i + 1].point.y, pathData[i + 2].value, pathData[i + 3].value, pathData[i + 4].value);
-			break;
 		case std::experimental::drawing::path_data_type::close_path:
 			cairo_close_path(ctx);
 			break;

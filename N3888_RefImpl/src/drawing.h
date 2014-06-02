@@ -142,8 +142,6 @@ namespace std {
 					move_to,
 					line_to,
 					curve_to,
-					arc,
-					arc_negative,
 					new_sub_path,
 					close_path
 				};
@@ -234,7 +232,9 @@ namespace std {
 					double y;
 
 					point operator+=(const point& rhs);
+					point operator+=(double rhs);
 					point operator-=(const point& rhs);
+					point operator-=(double rhs);
 					point operator*=(const point& rhs);
 					point operator*=(double rhs);
 					point operator/=(const point& rhs);
@@ -243,8 +243,10 @@ namespace std {
 
 				point operator+(const point& lhs);
 				point operator+(const point& lhs, const point& rhs);
+				point operator+(const point& lhs, double rhs);
 				point operator-(const point& lhs);
 				point operator-(const point& lhs, const point& rhs);
+				point operator-(const point& lhs, double rhs);
 				point operator*(const point& lhs, const point& rhs);
 				point operator*(const point& lhs, double rhs);
 				point operator/(const point& lhs, const point& rhs);
@@ -295,8 +297,8 @@ namespace std {
 					void scale(const point& value);
 					void rotate(double radians);
 					void invert();
-					void transform_distance(point& dist);
-					void transform_point(point& pt);
+					point transform_distance(const point& dist) const;
+					point transform_point(const point& pt) const;
 
 					matrix operator*=(const matrix& rhs);
 				};
@@ -344,9 +346,10 @@ namespace std {
 					point _Current_point;
 					point _Extents_pt0;
 					point _Extents_pt1;
+					matrix _Transform_matrix;
 
 				public:
-					path_builder() = default;
+					path_builder();
 					path_builder(const path_builder& other) = default;
 					path_builder& operator=(const path_builder& other) = default;
 					path_builder(path_builder&& other);
@@ -371,10 +374,15 @@ namespace std {
 					void rel_line_to(const point& dpt);
 					void rel_move_to(const point& dpt);
 
+					void set_transform_matrix(const matrix& m);
+					matrix get_transform_matrix() const;
+
 					::std::vector<path_data> get_data() const;
 					const ::std::vector<path_data>& get_data_ref() const;
 					::std::vector<path_data>& get_data_ref();
 					void get_path_extents(point& pt0, point& pt1) const;
+
+					void clear();
 				};
 
 				class drawing_exception : public exception {

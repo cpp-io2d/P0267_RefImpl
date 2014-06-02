@@ -6,7 +6,7 @@ using namespace std;
 using namespace std::experimental::drawing;
 
 matrix matrix::init_identity() {
-	return { 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
+	return{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
 }
 
 matrix matrix::init_translate(const point& value) {
@@ -82,11 +82,6 @@ namespace std {
 	namespace experimental {
 		namespace drawing {
 			matrix operator*(const matrix& lhs, const matrix& rhs) {
-				//cairo_matrix_t cr = { },
-				//	ca{ a.xx, a.yx, a.xy, a.yy, a.x0, a.y0 },
-				//	cb{ b.xx, b.yx, b.xy, b.yy, b.x0, b.y0 };
-				//cairo_matrix_multiply(&cr, &ca, &cb);
-				//return matrix{ cr.xx, cr.yx, cr.xy, cr.yy, cr.x0, cr.y0 };
 				return matrix{
 					(lhs.xx * rhs.xx) + (lhs.yx * rhs.xy),
 					(lhs.xx * rhs.yx) + (lhs.yx * rhs.yy),
@@ -100,12 +95,10 @@ namespace std {
 	}
 }
 
-void matrix::transform_distance(point& dist) {
-	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	cairo_matrix_transform_distance(&cm, &dist.x, &dist.y);
+point matrix::transform_distance(const point& dist) const {
+	return{ xx * dist.x + xy * dist.y, yx * dist.x + yy * dist.y };
 }
 
-void matrix::transform_point(point& pt) {
-	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	cairo_matrix_transform_point(&cm, &pt.x, &pt.y);
+point matrix::transform_point(const point& pt) const {
+	return transform_distance(pt) + point{ x0, y0 };
 }

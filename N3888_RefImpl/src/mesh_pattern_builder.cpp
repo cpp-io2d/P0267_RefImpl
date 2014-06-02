@@ -71,12 +71,6 @@ pattern mesh_pattern_builder::get_pattern() {
 			case std::experimental::drawing::path_data_type::curve_to:
 				cairo_mesh_pattern_curve_to(pat, pathData[i + 1].point.x, pathData[i + 1].point.y, pathData[i + 2].point.x, pathData[i + 2].point.y, pathData[i + 3].point.x, pathData[i + 3].point.y);
 				break;
-			case std::experimental::drawing::path_data_type::arc:
-				_Throw_if_failed_status(status::invalid_mesh_construction);
-				break;
-			case std::experimental::drawing::path_data_type::arc_negative:
-				_Throw_if_failed_status(status::invalid_mesh_construction);
-				break;
 			case std::experimental::drawing::path_data_type::new_sub_path:
 				_Throw_if_failed_status(status::invalid_mesh_construction);
 				break;

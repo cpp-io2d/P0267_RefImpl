@@ -8,13 +8,17 @@ using namespace std::experimental::drawing;
 path::path(const path_builder& pb)
 : _Data(pb._Data)
 , _Has_current_point(pb._Has_current_point)
-, _Current_point(pb._Current_point) {
+, _Current_point(pb._Current_point)
+, _Extents_pt0(pb._Extents_pt0)
+, _Extents_pt1(pb._Extents_pt1) {
 }
 
 path::path(path&& other)
 : _Data(move(other._Data))
 , _Has_current_point(move(other._Has_current_point))
-, _Current_point(move(other._Current_point)) {
+, _Current_point(move(other._Current_point))
+, _Extents_pt0(move(other._Extents_pt0))
+, _Extents_pt1(move(other._Extents_pt0)) {
 }
 
 path& path::operator=(path&& other) {
@@ -22,6 +26,8 @@ path& path::operator=(path&& other) {
 		_Data = move(other._Data);
 		_Has_current_point = move(other._Has_current_point);
 		_Current_point = move(other._Current_point);
+		_Extents_pt0 = move(other._Extents_pt0);
+		_Extents_pt1 = move(other._Extents_pt1);
 	}
 	return *this;
 }
@@ -35,5 +41,6 @@ const vector<path_data>& path::get_data_ref() const {
 }
 
 void path::get_path_extents(point& pt0, point& pt1) const {
-	throw runtime_error("Not implemented yet.");
+	pt0 = _Extents_pt0;
+	pt1 = _Extents_pt1;
 }
