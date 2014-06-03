@@ -149,8 +149,8 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 	case WM_SIZE:
 	{
-		int width = LOWORD(lparam);//lparam & 0xFFFF;
-		int height = HIWORD(lparam);//(lparam & 0xFFFF0000) >> 16;
+		int width = LOWORD(lparam);
+		int height = HIWORD(lparam);
 
 		g_psurface = shared_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
 
@@ -188,21 +188,16 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 	case WM_ENTERSIZEMOVE:
 	{
-		//g_doNotPaint = true; // Don't paint while resizing to avoid flicker.
 		return DefWindowProc(handle, msg, wparam, lparam);
 	} break;
 
 	case WM_EXITSIZEMOVE:
 	{
-		//g_doNotPaint = false;
 		return DefWindowProc(handle, msg, wparam, lparam);
 	} break;
 
 	case WM_PAINT:
 	{
-		//if (!g_doNotPaint) {
-		//	OnPaint(handle, msg, wparam, lparam);
-		//}
 		PAINTSTRUCT ps;
 		HDC hdc;
 

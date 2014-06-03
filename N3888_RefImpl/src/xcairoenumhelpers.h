@@ -496,21 +496,6 @@ namespace std {
 				}
 			}
 
-			//inline cairo_path_data_type_t _Path_data_type_to_cairo_path_data_type_t(::std::experimental::drawing::path_data_type pdt) {
-			//	switch (pdt) {
-			//	case ::std::experimental::drawing::path_data_type::move_to:
-			//		return CAIRO_PATH_MOVE_TO;
-			//	case ::std::experimental::drawing::path_data_type::line_to:
-			//		return CAIRO_PATH_LINE_TO;
-			//	case ::std::experimental::drawing::path_data_type::curve_to:
-			//		return CAIRO_PATH_CURVE_TO;
-			//	case ::std::experimental::drawing::path_data_type::close_path:
-			//		return CAIRO_PATH_CLOSE_PATH;
-			//	default:
-			//		throw ::std::runtime_error("Unknown path_data_type value.");
-			//	}
-			//}
-
 			inline ::std::experimental::drawing::path_data_type _Cairo_path_data_type_t_to_path_data_type(cairo_path_data_type_t cpdt) {
 				switch (cpdt) {
 				case CAIRO_PATH_MOVE_TO:

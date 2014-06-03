@@ -12,7 +12,8 @@ path_builder::path_builder()
 	, _Current_point()
 	, _Extents_pt0()
 	, _Extents_pt1()
-	, _Transform_matrix(matrix::init_identity()) {
+	, _Transform_matrix(matrix::init_identity())
+	, _Origin() {
 }
 
 path_builder::path_builder(path_builder&& other)
@@ -21,7 +22,8 @@ path_builder::path_builder(path_builder&& other)
 	, _Current_point(move(other._Current_point))
 	, _Extents_pt0(move(other._Extents_pt0))
 	, _Extents_pt1(move(other._Extents_pt1))
-	, _Transform_matrix(move(other._Transform_matrix)) {
+	, _Transform_matrix(move(other._Transform_matrix))
+	, _Origin(move(other._Origin)) {
 }
 
 path_builder& path_builder::operator=(path_builder&& other) {
@@ -32,6 +34,7 @@ path_builder& path_builder::operator=(path_builder&& other) {
 		_Extents_pt0 = move(other._Extents_pt0);
 		_Extents_pt1 = move(other._Extents_pt1);
 		_Transform_matrix = move(other._Transform_matrix);
+		_Origin = move(other._Origin);
 	}
 	return *this;
 }
@@ -187,27 +190,11 @@ void _Add_arc_as_beziers_to_path_builder(const point& center, double radius, dou
 }
 
 void path_builder::arc(const point& center, double radius, double angle1, double angle2) {
-	//auto startPt = _Rotate_point({ radius, 0.0 }, angle1) + center;
-	//if (_Has_current_point) {
-	//	line_to(startPt);
-	//}
-	//else {
-	//	//new_sub_path();
-	//	move_to(startPt);
-	//}
 	_Add_arc_as_beziers_to_path_builder(center, radius, angle1, angle2, *this, false);
 	close_path();
 }
 
 void path_builder::arc_negative(const point& center, double radius, double angle1, double angle2) {
-	//auto startPt = _Rotate_point({ radius, 0.0 }, angle1) + center;
-	//if (_Has_current_point) {
-	//	line_to(startPt);
-	//}
-	//else {
-	//	//new_sub_path();
-	//	move_to(startPt);
-	//}
 	_Add_arc_as_beziers_to_path_builder(center, radius, angle1, angle2, *this, true);
 	close_path();
 }
@@ -221,14 +208,14 @@ void path_builder::curve_to(const point& pt0, const point& pt1, const point& pt2
 	pd.header.length = 4;
 	_Data.push_back(pd);
 	pd = { };
-	pd.point = _Transform_matrix.transform_point(pt0);
+	pd.point = _Transform_matrix.transform_point(pt0 - _Origin) + _Origin;
 	_Data.push_back(pd);
-	pd.point = _Transform_matrix.transform_point(pt1);
+	pd.point = _Transform_matrix.transform_point(pt1 - _Origin) + _Origin;
 	_Data.push_back(pd);
-	pd.point = _Transform_matrix.transform_point(pt2);
+	pd.point = _Transform_matrix.transform_point(pt2 - _Origin) + _Origin;
 	_Data.push_back(pd);
 	_Has_current_point = true;
-	_Current_point = _Transform_matrix.transform_point(pt2);
+	_Current_point = pd.point;
 }
 
 void path_builder::line_to(const point& pt) {
@@ -241,10 +228,10 @@ void path_builder::line_to(const point& pt) {
 	pd.header.length = 2;
 	_Data.push_back(pd);
 	pd = { };
-	pd.point = _Transform_matrix.transform_point(pt);
+	pd.point = _Transform_matrix.transform_point(pt - _Origin) + _Origin;
 	_Data.push_back(pd);
 	_Has_current_point = true;
-	_Current_point = _Transform_matrix.transform_point(pt);
+	_Current_point = pd.point;
 }
 
 void path_builder::move_to(const point& pt) {
@@ -253,10 +240,10 @@ void path_builder::move_to(const point& pt) {
 	pd.header.length = 2;
 	_Data.push_back(pd);
 	pd = { };
-	pd.point = _Transform_matrix.transform_point(pt);
+	pd.point = _Transform_matrix.transform_point(pt - _Origin) + _Origin;
 	_Data.push_back(pd);
 	_Has_current_point = true;
-	_Current_point = _Transform_matrix.transform_point(pt);
+	_Current_point = pd.point;
 }
 
 void path_builder::rectangle(const experimental::drawing::rectangle& rect) {
@@ -296,6 +283,14 @@ matrix path_builder::get_transform_matrix() const {
 	return _Transform_matrix;
 }
 
+void path_builder::set_origin(const point& pt) {
+	_Origin = pt;
+}
+
+point path_builder::get_origin() const {
+	return _Origin;
+}
+
 vector<path_data> path_builder::get_data() const {
 	return vector<path_data>(_Data);
 }
@@ -318,7 +313,6 @@ bool _Almost_equal_relative(double a, double b, double epsilon) {
 	a = abs(a);
 	b = abs(b);
 	auto largest = (b > a) ? b : a;
-	//wcout << diff << L" : " << a << L" : " << b << L" : " << epsilon << L" : " << largest << L" : " << largest * epsilon << endl;
 	if (diff <= largest * epsilon) {
 		return true;
 	}
@@ -326,7 +320,6 @@ bool _Almost_equal_relative(double a, double b, double epsilon) {
 }
 
 double _Curve_value_for_t(double a, double b, double c, double d, double t) {
-	//double result{};
 	return pow(1.0 - t, 3.0) * a + 3.0 * pow(1.0 - t, 2.0) * t * b + 3.0 * (1.0 - t) * pow(t, 2.0) * c + pow(t, 3.0) * d;
 }
 
@@ -599,142 +592,40 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 		}
 	}
 	if (!foundLowY) {
-		assert(!_Same_sign(dt0.y, dt1.y));
-		auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.0, 0.5, true);
-		auto yval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, t);
-		extents0.y = min(extents0.y, yval);
-		extents1.y = max(extents1.y, yval);
-		foundLowY = true;
-		numPoints++;
-		numYs++;
+		if (_Same_sign(dt0.y, dt1.y)) {
+			// There is no critical point between dt0.y and dt1.y so the lowY point is pt0.y, which we already assigned.
+			foundLowY = true;
+			numPoints++;
+			numYs++;
+		}
+		else {
+			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.0, 0.5, false);
+			auto yval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, t);
+			extents0.y = min(extents0.y, yval);
+			extents1.y = max(extents1.y, yval);
+			foundLowY = true;
+			numPoints++;
+			numYs++;
+		}
 	}
 	if (!foundHighY) {
-		assert(!_Same_sign(dt1.y, dt2.y));
-		auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.5, 1.0, true);
-		auto yval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, t);
-		extents0.y = min(extents0.y, yval);
-		extents1.y = max(extents1.y, yval);
-		foundHighY = true;
-		numPoints++;
-		numYs++;
+		if (_Same_sign(dt1.y, dt2.y)) {
+			// There is no critical point between dt1.y and dt2.y so the lowY point is pt3.y, which we already assigned.
+			foundHighY = true;
+			numPoints++;
+			numYs++;
+		}
+		else {
+			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.5, 1.0, false);
+			auto yval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, t);
+			extents0.y = min(extents0.y, yval);
+			extents1.y = max(extents1.y, yval);
+			foundHighY = true;
+			numPoints++;
+			numYs++;
+		}
 	}
 	assert(foundLowX && foundLowY && foundHighX && foundHighY && numPoints == 4 && numXs == 2 && numYs == 2);
-	/*
-	double tx0 = 0.0, tx1 = 0.0, ty0 = 0.0, ty1 = 0.0, deltaX0 = 1.0, deltaX1 = 1.0, deltaY0 = 1.0, deltaY1 = 1.0;
-
-	if (numXs < 2) {
-		// Find the t values where we get either -,+,- or +,-,+ since we're looking for derivative values that are zero in order to find the critical points.
-		while (tx1 == 0.0) {
-			auto origTx = tx0;
-			auto dtx0 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, tx0);
-			tx0 = origTx + (deltaX0 / 2.0);
-			auto dtx1 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, tx0);
-			tx0 = deltaX0;
-			auto dtx2 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, tx0);
-			if (!_Same_sign(dtx0.x, dtx1.x) && !(_Same_sign(dtx1.x, dtx2.x))) {
-				tx0 = origTx;
-				tx1 = deltaX0 / 2.0;
-			}
-			else {
-				if (_Same_sign(dtx0.x, dtx1.x)) {
-					// If low and middle have the same sign, the sign crossover is between middle and high so up the base.
-					tx0 = deltaX0 / 2.0;
-				}
-				else {
-					// The sign crossover is between low and middle so up the delta (effectively lowering the high).
-					deltaX0 -= deltaX0 / 2.0;
-				}
-			}
-			deltaX0 /= 2.0;
-			deltaX1 /= 2.0;
-		}
-		// We now have values such that the critical points are between (tx#, tx# + delta# / 2.0) and (tx# + delta# / 2.0, tx# + delta#). Now we just need to find them.
-		while (numXs < 2) {
-			// zeroing in algorithm is wrong. needs to take account of sign of dtxs on previous run to ensure that the two values stay on the correct sides of the positive-negative divide as we zero in.
-			auto& tx = (numXs == 0) ? tx0 : tx1;
-			//				auto origTx = tx;
-			auto& deltaX = (numXs == 0) ? deltaX0 : deltaX1;
-			auto dtx0 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, tx);
-			auto dtx1 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, tx + deltaX);
-			while ((deltaX != 0.0) && (!_Almost_equal_relative(dtx0.x, 0.0, epsilon))) {
-				tx += deltaX / 2.0;
-				dtx0 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, tx);
-				if (!_Almost_equal_relative(dtx0.x, 0.0, epsilon)) {
-					if (_Same_sign(dtx0.x, dtx1.x)) {
-						tx -= deltaX / 2.0;
-					}
-					deltaX /= 2.0;
-					if (deltaX == 0.0) {
-						break;
-					}
-				}
-				else {
-					break;
-				}
-			}
-
-			auto xval = _Curve_value_for_t(pt0.x, pt1.x, pt2.x, pt3.x, tx);
-			auto& extents = (numXs == 0) ? extents0 : extents1;
-			extents.x = xval;
-			numXs++;
-			numPoints++;
-		}
-	}
-	if (numYs < 2) {
-		while (ty1 == 0.0) {
-			auto origTy = ty0;
-			auto dty0 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, ty0);
-			ty0 = origTy + (deltaY0 / 2.0);
-			auto dty1 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, ty0);
-			ty0 = deltaY0;
-			auto dty2 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, ty0);
-			if (!_Same_sign(dty0.y, dty1.y) && !(_Same_sign(dty1.y, dty2.y))) {
-				ty0 = origTy;
-				ty1 = deltaY0 / 2.0;
-			}
-			else {
-				if (_Same_sign(dty0.y, dty1.y)) {
-					ty0 += deltaY0 / 2.0;
-				}
-				else {
-					deltaY0 -= deltaY0 / 2.0;
-				}
-			}
-			deltaY0 /= 2.0;
-			deltaY1 /= 2.0;
-		}
-		// We now have values such that the critical points are between (ty#, ty# + delta# / 2.0) and (ty# + delta# / 2.0, ty# + delta#). Now we just need to find them.
-		while (numYs < 2) {
-			auto& ty = (numYs == 0) ? ty0 : ty1;
-			//				auto origTx = tx;
-			auto& deltaY = (numYs == 0) ? deltaY0 : deltaY1;
-			auto dty0 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, ty);
-			auto dty1 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, ty + deltaY);
-			while ((deltaY != 0) && (!_Almost_equal_relative(dty0.y, 0.0, epsilon))) {
-				ty += deltaY / 2.0;
-				dty0 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, ty);
-				if (!_Almost_equal_relative(dty0.y, 0.0, epsilon)) {
-					if (_Same_sign(dty0.y, dty1.y)) {
-						ty -= deltaY / 2.0;
-					}
-					deltaY /= 2.0;
-					if (deltaY == 0.0) {
-						break;
-					}
-				}
-				else {
-					break;
-				}
-			}
-
-			auto yval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, ty);
-			auto& extents = (numYs == 0) ? extents0 : extents1;
-			extents.y = yval;
-			numYs++;
-			numPoints++;
-		}
-	}
-	*/
 }
 
 void path_builder::get_path_extents(point& pt0, point& pt1) const {

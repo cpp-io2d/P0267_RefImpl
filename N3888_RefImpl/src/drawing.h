@@ -347,6 +347,7 @@ namespace std {
 					point _Extents_pt0;
 					point _Extents_pt1;
 					matrix _Transform_matrix;
+					point _Origin;
 
 				public:
 					path_builder();
@@ -376,6 +377,8 @@ namespace std {
 
 					void set_transform_matrix(const matrix& m);
 					matrix get_transform_matrix() const;
+					void set_origin(const point& pt);
+					point get_origin() const;
 
 					::std::vector<path_data> get_data() const;
 					const ::std::vector<path_data>& get_data_ref() const;
