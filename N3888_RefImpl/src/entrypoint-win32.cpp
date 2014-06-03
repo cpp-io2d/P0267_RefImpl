@@ -75,8 +75,9 @@ int WINAPI wWinMain(
 			window.GetSurface()->flush();
 			auto hdc = GetDC(window.GetHandle());
 			{
-				auto rs = make_surface(cairo_win32_surface_create(hdc));
-				rs.paint(*window.GetSurface());
+				auto rs = make_surface({ cairo_win32_surface_create(hdc), nullptr });
+				const auto& sfce = *window.GetSurface();
+				rs.paint(sfce);
 				rs.flush();
 			}
 			ReleaseDC(window.GetHandle(), hdc);

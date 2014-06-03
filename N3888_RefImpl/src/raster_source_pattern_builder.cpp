@@ -21,14 +21,14 @@ cairo_surface_t* raster_source_pattern_builder::_Cairo_acquire(cairo_pattern_t*,
 		ri_extents.width = static_cast<double>(extents->width);
 		ri_extents.height = static_cast<double>(extents->height);
 	}
-	auto acqTarget = surface(target);
+	auto acqTarget = surface({ target, nullptr });
 	// Increment the reference count of target to avoid its destruction when acqTarget is destroyed.
 	cairo_surface_reference(target);
 	auto& acquire_fn = *rsp->_Acquire_fn;
 	auto result = acquire_fn(rsp->_User_callback_data, acqTarget, ri_extents);
 	// Increment the reference count of result to avoid its destruction when we return it.
-	cairo_surface_reference(result.native_handle());
-	return result.native_handle();
+	cairo_surface_reference(result.native_handle().csfce);
+	return result.native_handle().csfce;
 }
 
 void raster_source_pattern_builder::_Cairo_release(cairo_pattern_t*, void* this_ptr, cairo_surface_t* surface) {
@@ -36,7 +36,7 @@ void raster_source_pattern_builder::_Cairo_release(cairo_pattern_t*, void* this_
 	if (*rsp->_Release_fn != nullptr) {
 		// If the user has an explicit release function, increment the reference count since it's the user's responsibility to destroy the surface (e.g. by calling cairo_surface_destroy(surface.native_handle()); ).
 		cairo_surface_reference(surface);
-		auto relSurface = experimental::drawing::surface(surface);
+		auto relSurface = experimental::drawing::surface({ surface, nullptr });
 		auto& release_fn = *rsp->_Release_fn;
 		release_fn(rsp->_User_callback_data, relSurface);
 	}

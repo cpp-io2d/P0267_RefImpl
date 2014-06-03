@@ -758,6 +758,11 @@ namespace std {
 						);
 				};
 
+				struct _Surface_native_handles {
+					::cairo_surface_t* csfce;
+					::cairo_t* cctxt;
+				};
+
 				class surface {
 					::std::mutex _Lock_for_device;
 					::std::weak_ptr<device> _Device;
@@ -768,7 +773,7 @@ namespace std {
 				public:
 					surface() = delete;
 
-					typedef cairo_surface_t* native_handle_type;
+					typedef _Surface_native_handles native_handle_type;
 					native_handle_type native_handle() const;
 
 					surface(const surface&) = delete;

@@ -210,7 +210,7 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		hdc = BeginPaint(handle, &ps);
 		g_psurface->flush();
 
-		auto rs = make_surface(cairo_win32_surface_create(hdc));
+		auto rs = make_surface({ cairo_win32_surface_create(hdc), nullptr });
 		rs.paint(*g_psurface);
 		rs.flush();
 		EndPaint(handle, &ps);

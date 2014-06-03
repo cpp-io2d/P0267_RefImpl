@@ -6,14 +6,14 @@ using namespace std;
 using namespace std::experimental::drawing;
 
 surface::native_handle_type surface::native_handle() const {
-	return _Surface.get();
+	return{ _Surface.get(), _Context.get() };
 }
 
 surface::surface(surface::native_handle_type nh)
 : _Lock_for_device()
 , _Device()
-, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh, &cairo_surface_destroy))
-, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh == nullptr) ? nullptr : cairo_create(nh)), &cairo_destroy)) {
+, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
+, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy)) {
 }
 
 surface::surface(surface&& other)
@@ -106,7 +106,7 @@ void surface::write_to_png(const string& filename) {
 image_surface surface::map_to_image(const rectangle& extents) {
 	cairo_rectangle_int_t cextents{ _Double_to_int(extents.x), _Double_to_int(extents.y), _Double_to_int(extents.width), _Double_to_int(extents.height) };
 
-	return image_surface(cairo_surface_map_to_image(_Surface.get(), (extents.x == 0 && extents.y == 0 && extents.width == 0 && extents.height == 0) ? nullptr : &cextents), _Surface.get());
+	return image_surface({ cairo_surface_map_to_image(_Surface.get(), (extents.x == 0 && extents.y == 0 && extents.width == 0 && extents.height == 0) ? nullptr : &cextents), nullptr }, { _Surface.get(), nullptr });
 }
 
 void surface::unmap_image(image_surface& image) {
@@ -139,7 +139,9 @@ surface surface::pop_group() {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pttn(cairo_pop_group(_Context.get()), &cairo_pattern_destroy);
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pttn.get())));
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_get_surface(pttn.get(), &sfce)));
-	return surface(cairo_surface_reference(sfce));
+	// This next line would not create a resource leak if it threw because until we reference the surface we don't own it.
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_status(sfce)));
+	return surface({ cairo_surface_reference(sfce), nullptr });
 }
 
 void surface::pop_group_to_source() {
@@ -272,7 +274,7 @@ void surface::fill() {
 
 void surface::fill(const surface& s) {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
-	cairo_set_source_surface(_Context.get(), s.native_handle(), 0.0, 0.0);
+	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	cairo_fill_preserve(_Context.get());
 	cairo_surface_flush(_Surface.get());
 	cairo_set_source(_Context.get(), pat.get());
@@ -291,11 +293,11 @@ void surface::mask(const pattern& pttn) {
 }
 
 void surface::mask(const surface& surface) {
-	cairo_mask_surface(_Context.get(), surface.native_handle(), 0.0, 0.0);
+	cairo_mask_surface(_Context.get(), surface.native_handle().csfce, 0.0, 0.0);
 }
 
 void surface::mask(const surface& surface, const point& origin) {
-	cairo_mask_surface(_Context.get(), surface.native_handle(), origin.x, origin.y);
+	cairo_mask_surface(_Context.get(), surface.native_handle().csfce, origin.x, origin.y);
 }
 
 void surface::paint() {
@@ -304,7 +306,7 @@ void surface::paint() {
 
 void surface::paint(const surface& s) {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
-	cairo_set_source_surface(_Context.get(), s.native_handle(), 0.0, 0.0);
+	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	cairo_paint(_Context.get());
 	cairo_surface_flush(_Surface.get());
 	cairo_set_source(_Context.get(), pat.get());
@@ -316,7 +318,7 @@ void surface::paint_with_alpha(double alpha) {
 
 void surface::paint_with_alpha(const surface& s, double alpha) {
 	auto pat = cairo_get_source(_Context.get());
-	cairo_set_source_surface(_Context.get(), s.native_handle(), 0.0, 0.0);
+	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	cairo_paint_with_alpha(_Context.get(), alpha);
 	cairo_surface_flush(_Surface.get());
 	cairo_set_source(_Context.get(), pat);
@@ -328,7 +330,7 @@ void surface::stroke() {
 
 void surface::stroke(const surface& s) {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
-	cairo_set_source_surface(_Context.get(), s.native_handle(), 0.0, 0.0);
+	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	cairo_stroke_preserve(_Context.get());
 	cairo_surface_flush(_Surface.get());
 	cairo_set_source(_Context.get(), pat.get());
