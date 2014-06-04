@@ -55,7 +55,7 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	const int elementCount = 12;
 	const static auto vec = init_sort_steps(elementCount);
 	const int phaseCount = static_cast<int>(vec.size()), x = min(static_cast<int>(timer / phaseTime), phaseCount - 1);
-	auto cornflowerBluePattern = solid_color_pattern_builder({ 0.392156899, 0.5843137503, 0.9294118285, 1.0 }).get_pattern();
+	auto cornflowerBluePattern = solid_color_pattern_builder(rgba_color::cornflower_blue).get_pattern();
 	rs.set_pattern(cornflowerBluePattern);
 	rs.paint(); // Paint background.
 	double left, top, right, bottom;
@@ -70,7 +70,7 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	path_builder pb;
 	pb.move_to({ beginX, 50.0 });
 	rs.set_path(pb.get_path());
-	auto whitePattern = solid_color_pattern_builder({ 1.0, 1.0, 1.0, 1.0 }).get_pattern();
+	auto whitePattern = solid_color_pattern_builder(rgba_color::white).get_pattern();
 	rs.set_pattern(whitePattern);
 	rs.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.set_font_size(40.0);
@@ -88,11 +88,6 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 			pb.set_transform_matrix(matrix::init_scale({ 1.0, 1.5 }) * matrix::init_rotate(pi / 4.0) * matrix::init_translate({ 0.0, 50.0 }));
 			pb.set_origin(center);
 			pb.arc_negative(center, radius - 3.0, pi / 2.0, 3.0 * pi / 2.0);
-			point extnt0, extnt1;
-			pb.get_path_extents(extnt0, extnt1);
-			wstringstream tempStr;
-			tempStr << L"(" << extnt0.x << L"," << extnt0.y << L") (" << extnt1.x << L"," << extnt1.y << L")" << endl;
-			OutputDebugStringW(tempStr.str().c_str());
 		}
 		else {
 			const point center{ radius * i * 2.0 + radius + beginX, y };
