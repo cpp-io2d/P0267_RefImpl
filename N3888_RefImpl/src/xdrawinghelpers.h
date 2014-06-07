@@ -19,3 +19,7 @@ inline int _Double_to_int(double value, bool nearestNeighbor = true) {
 	return static_cast<int>(trunc(value));
 }
 
+template <typename T>
+T _Degrees_to_radians(T degrees) {
+	return degrees * static_cast<T>(3.1415926535897932384626433832795L) / static_cast<T>(180.0L);
+}

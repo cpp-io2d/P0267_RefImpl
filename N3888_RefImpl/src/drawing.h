@@ -442,10 +442,15 @@ namespace std {
 					static matrix init_translate(const point& value);
 					static matrix init_scale(const point& value);
 					static matrix init_rotate(double radians);
+					static matrix init_shear_x(double factor);
+					static matrix init_shear_y(double factor);
 
-					void translate(const point& value);
-					void scale(const point& value);
-					void rotate(double radians);
+					matrix& translate(const point& value);
+					matrix& scale(const point& value);
+					matrix& rotate(double radians);
+					matrix& shear_x(double factor);
+					matrix& shear_y(double factor);
+					double determinant();
 					void invert();
 					point transform_distance(const point& dist) const;
 					point transform_point(const point& pt) const;
@@ -535,7 +540,7 @@ namespace std {
 					::std::vector<path_data>& get_data_ref();
 					void get_path_extents(point& pt0, point& pt1) const;
 
-					void clear();
+					void reset();
 				};
 
 				class drawing_exception : public exception {

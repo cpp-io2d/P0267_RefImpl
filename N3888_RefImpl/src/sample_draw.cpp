@@ -77,7 +77,7 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.show_text(string("Phase ").append(to_string(x + 1)).c_str());
 
 	for (int i = 0; i < elementCount; ++i) {
-		path_builder pb;
+		pb.reset();
 		const auto currVal = vec[x][i];
 		if (x < phaseCount - 1) {
 			const auto i2 = find(begin(vec[x + 1]), end(vec[x + 1]), currVal) - begin(vec[x + 1]);
@@ -87,13 +87,13 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 			const auto center = point{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
 			pb.set_transform_matrix(matrix::init_scale({ 1.0, 1.5 }) * matrix::init_rotate(pi / 4.0) * matrix::init_translate({ 0.0, 50.0 }));
 			pb.set_origin(center);
-			pb.arc_negative(center, radius - 3.0, pi / 2.0, 3.0 * pi / 2.0);
+			pb.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
 		else {
 			const point center{ radius * i * 2.0 + radius + beginX, y };
 			pb.set_transform_matrix(matrix::init_scale({ 1.0, 1.5 }) * matrix::init_rotate(pi / 4.0));
 			pb.set_origin(center);
-			pb.arc_negative(center, radius - 3.0, pi / 2.0, 3.0 * pi / 2.0);
+			pb.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
 		rs.set_path(pb.get_path());
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
@@ -102,5 +102,14 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 		rs.fill();
 	}
 
+	pb.reset();
+	pb.set_origin({ 250.0, 450.0 });
+	pb.set_transform_matrix(matrix::init_shear_x(0.5).scale({ 2.0, 1.0 }));
+	pb.rectangle({ 200.0, 400.0, 100.0, 100.0 });
+	rs.set_path(pb.get_path());
+	auto redPattern = solid_color_pattern_builder(rgba_color::red).get_pattern();
+	rs.set_pattern(redPattern);
+	rs.set_line_width(3.0);
+	rs.stroke();
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }

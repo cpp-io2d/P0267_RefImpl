@@ -163,13 +163,17 @@ void _Add_arc_as_beziers_to_path_builder(const point& center, double radius, dou
 
 	auto currentTheta = angle1;
 
+	const auto startPoint = center + _Rotate_point(pt0 * radius, currentTheta);
 	if (pb.has_current_point()) {
 		pb.line_to(center + _Rotate_point(pt0 * radius, currentTheta));
 	}
 	else {
 		pb.new_sub_path();
-		pb.move_to(center + _Rotate_point(pt0 * radius, currentTheta));
 	}
+
+	pb.move_to(center);
+	pb.line_to(startPoint);
+
 	// We start at the point derived from angle1 and continue adding beziers until the count reaches zero.
 	// The point we have is already rotated by half of theta.
 	for (; bezierCount > 0; bezierCount--) {
@@ -186,6 +190,7 @@ void _Add_arc_as_beziers_to_path_builder(const point& center, double radius, dou
 			currentTheta += theta;
 		}
 	}
+	pb.line_to(center);
 	pb.close_path();
 }
 
@@ -248,9 +253,9 @@ void path_builder::move_to(const point& pt) {
 
 void path_builder::rectangle(const experimental::drawing::rectangle& rect) {
 	move_to({ rect.x, rect.y });
-	rel_line_to({ rect.width, 0.0 });
-	rel_line_to({ 0.0, rect.height });
-	rel_line_to({ -rect.width, 0.0 });
+	line_to({ rect.x + rect.width, rect.y });
+	line_to({ rect.x + rect.width, rect.y + rect.height });
+	line_to({ rect.x, rect.y + rect.height });
 	close_path();
 }
 
@@ -691,6 +696,6 @@ void path_builder::get_path_extents(point& pt0, point& pt1) const {
 	}
 }
 
-void path_builder::clear() {
+void path_builder::reset() {
 	*this = path_builder();
 }

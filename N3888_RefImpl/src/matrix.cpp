@@ -23,37 +23,44 @@ matrix matrix::init_rotate(double radians) {
 	return{ cosine, sine, -sine, cosine, 0.0, 0.0 };
 }
 
-void matrix::translate(const point& value) {
-	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	cairo_matrix_translate(&cm, value.x, value.y);
-	xx = cm.xx;
-	yx = cm.yx;
-	xy = cm.xy;
-	yy = cm.yy;
-	x0 = cm.x0;
-	y0 = cm.y0;
+matrix matrix::init_shear_x(double factor) {
+	return{ 1.0, 0.0, factor, 1.0, 0.0, 0.0 };
 }
 
-void matrix::scale(const point& value) {
-	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	cairo_matrix_scale(&cm, value.x, value.y);
-	xx = cm.xx;
-	yx = cm.yx;
-	xy = cm.xy;
-	yy = cm.yy;
-	x0 = cm.x0;
-	y0 = cm.y0;
+matrix matrix::init_shear_y(double factor) {
+	return{ 1.0, factor, 0.0, 1.0, 0.0, 0.0 };
 }
 
-void matrix::rotate(double radians) {
-	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	cairo_matrix_rotate(&cm, radians);
-	xx = cm.xx;
-	yx = cm.yx;
-	xy = cm.xy;
-	yy = cm.yy;
-	x0 = cm.x0;
-	y0 = cm.y0;
+matrix& matrix::translate(const point& value) {
+	*this = init_translate(value) * (*this);
+	return *this;
+}
+
+matrix& matrix::scale(const point& value) {
+	*this *= init_scale(value);
+	return *this;
+}
+
+matrix& matrix::rotate(double radians) {
+	*this *= init_rotate(radians);
+	return *this;
+}
+
+matrix& matrix::shear_x(double factor) {
+	*this *= init_shear_x(factor);
+	return *this;
+}
+
+matrix& matrix::shear_y(double factor) {
+	*this *= init_shear_y(factor);
+	return *this;
+}
+
+double matrix::determinant() {
+	if (isnan(x0) || isnan(y0)) {
+		throw drawing_exception(status::invalid_matrix);
+	}
+	return xx * yy - yx * xy;
 }
 
 void matrix::invert() {
