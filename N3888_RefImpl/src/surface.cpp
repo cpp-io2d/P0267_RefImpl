@@ -10,17 +10,17 @@ surface::native_handle_type surface::native_handle() const {
 }
 
 surface::surface(surface::native_handle_type nh)
-: _Lock_for_device()
-, _Device()
-, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
-, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy)) {
+	: _Lock_for_device()
+	, _Device()
+	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
+	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy)) {
 }
 
 surface::surface(surface&& other)
-: _Lock_for_device()
-, _Device(move(other._Device))
-, _Surface(move(other._Surface))
-, _Context(move(other._Context)) {
+	: _Lock_for_device()
+	, _Device(move(other._Device))
+	, _Surface(move(other._Surface))
+	, _Context(move(other._Context)) {
 	other._Surface = nullptr;
 	other._Context = nullptr;
 }
@@ -37,24 +37,24 @@ surface& surface::operator=(surface&& other) {
 }
 
 surface::surface(const surface& other, content content, int width, int height)
-: _Lock_for_device()
-, _Device()
-, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), width, height), &cairo_surface_destroy))
-, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
+	: _Lock_for_device()
+	, _Device()
+	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), width, height), &cairo_surface_destroy))
+	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
 surface::surface(const surface& target, const rectangle& rect)
-: _Lock_for_device()
-, _Device()
-, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_for_rectangle(target._Surface.get(), _Double_to_int(rect.x, false), _Double_to_int(rect.y, false), _Double_to_int(rect.width, false), _Double_to_int(rect.height, false)), &cairo_surface_destroy))
-, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
+	: _Lock_for_device()
+	, _Device()
+	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_for_rectangle(target._Surface.get(), _Double_to_int(rect.x, false), _Double_to_int(rect.y, false), _Double_to_int(rect.width, false), _Double_to_int(rect.height, false)), &cairo_surface_destroy))
+	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
 surface::surface(format fmt, int width, int height)
-: _Lock_for_device()
-, _Device()
-, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
-, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
+	: _Lock_for_device()
+	, _Device()
+	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
+	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
 surface::~surface() {
@@ -95,8 +95,10 @@ void surface::set_device_offset(const point& offset) {
 	cairo_surface_set_device_offset(_Surface.get(), offset.x, offset.y);
 }
 
-void surface::get_device_offset(point& offset) {
-	cairo_surface_get_device_offset(_Surface.get(), &offset.x, &offset.y);
+point surface::get_device_offset() const {
+	point result{ };
+	cairo_surface_get_device_offset(_Surface.get(), &result.x, &result.y);
+	return result;
 }
 
 void surface::write_to_png(const string& filename) {
@@ -398,30 +400,34 @@ void surface::set_matrix(const matrix_2d& m) {
 	cairo_set_matrix(_Context.get(), &cm);
 }
 
-void surface::get_matrix(matrix_2d& matrix) {
+matrix_2d surface::get_matrix() const {
 	cairo_matrix_t cm{ };
 	cairo_get_matrix(_Context.get(), &cm);
-	matrix = { cm.xx, cm.yx, cm.xy, cm.yy, cm.x0, cm.y0 };
+	return{ cm.xx, cm.yx, cm.xy, cm.yy, cm.x0, cm.y0 };
 }
 
-void surface::identity_matrix() {
-	cairo_identity_matrix(_Context.get());
+point surface::user_to_device() const {
+	point result{ };
+	cairo_user_to_device(_Context.get(), &result.x, &result.y);
+	return result;
 }
 
-void surface::user_to_device(point& pt) {
-	cairo_user_to_device(_Context.get(), &pt.x, &pt.y);
+point surface::user_to_device_distance() const {
+	point result{ };
+	cairo_user_to_device_distance(_Context.get(), &result.x, &result.y);
+	return result;
 }
 
-void surface::user_to_device_distance(point& dpt) {
-	cairo_user_to_device_distance(_Context.get(), &dpt.x, &dpt.y);
+point surface::device_to_user() const {
+	point result{ };
+	cairo_device_to_user(_Context.get(), &result.x, &result.y);
+	return result;
 }
 
-void surface::device_to_user(point& pt) {
-	cairo_device_to_user(_Context.get(), &pt.x, &pt.y);
-}
-
-void surface::device_to_user_distance(point& dpt) {
-	cairo_device_to_user_distance(_Context.get(), &dpt.x, &dpt.y);
+point surface::device_to_user_distance() const {
+	point result{ };
+	cairo_device_to_user_distance(_Context.get(), &result.x, &result.y);
+	return result;
 }
 
 void surface::select_font_face(const string& family, font_slant slant, font_weight weight) {
@@ -437,10 +443,10 @@ void surface::set_font_matrix(const matrix_2d& m) {
 	cairo_set_font_matrix(_Context.get(), &cm);
 }
 
-void surface::get_font_matrix(matrix_2d& matrix) {
+matrix_2d surface::get_font_matrix() const {
 	cairo_matrix_t cm{ };
 	cairo_get_font_matrix(_Context.get(), &cm);
-	matrix = { cm.xx, cm.yx, cm.xy, cm.yy, cm.x0, cm.y0 };
+	return{ cm.xx, cm.yx, cm.xy, cm.yy, cm.x0, cm.y0 };
 }
 
 void surface::set_font_options(const font_options& options) {

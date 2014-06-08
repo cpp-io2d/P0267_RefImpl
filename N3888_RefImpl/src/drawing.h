@@ -477,8 +477,7 @@ namespace std {
 					::std::vector<path_data> _Data;
 					bool _Has_current_point;
 					point _Current_point;
-					point _Extents_pt0;
-					point _Extents_pt1;
+					rectangle _Extents;
 				public:
 					typedef cairo_path_t* native_handle_type;
 
@@ -491,7 +490,7 @@ namespace std {
 
 					::std::vector<path_data> get_data() const;
 					const ::std::vector<path_data>& get_data_ref() const;
-					void get_path_extents(point& pt0, point& pt1) const;
+					rectangle get_path_extents() const;
 				};
 
 				class path_builder {
@@ -538,7 +537,7 @@ namespace std {
 					::std::vector<path_data> get_data() const;
 					const ::std::vector<path_data>& get_data_ref() const;
 					::std::vector<path_data>& get_data_ref();
-					void get_path_extents(point& pt0, point& pt1) const;
+					::std::experimental::drawing::rectangle get_path_extents() const;
 
 					void reset();
 				};
@@ -960,7 +959,7 @@ namespace std {
 					void mark_dirty_rectangle(const rectangle& rect);
 
 					void set_device_offset(const point& offset);
-					void get_device_offset(point& offset);
+					point get_device_offset() const;
 					void write_to_png(const ::std::string& filename);
 					image_surface map_to_image(const rectangle& extents);
 					void unmap_image(image_surface& image);
@@ -1041,18 +1040,17 @@ namespace std {
 					void rotate(double angle);
 					void transform(const matrix_2d& matrix);
 					void set_matrix(const matrix_2d& matrix);
-					void get_matrix(matrix_2d& matrix);
-					void identity_matrix();
-					void user_to_device(point& pt);
-					void user_to_device_distance(point& dpt);
-					void device_to_user(point& pt);
-					void device_to_user_distance(point& dpt);
+					matrix_2d get_matrix() const;
+					point user_to_device() const;
+					point user_to_device_distance() const;
+					point device_to_user() const;
+					point device_to_user_distance() const;
 
 					// Text
 					void select_font_face(const ::std::string& family, font_slant slant, font_weight weight);
 					void set_font_size(double size);
 					void set_font_matrix(const matrix_2d& matrix);
-					void get_font_matrix(matrix_2d& matrix);
+					matrix_2d get_font_matrix() const;
 					void set_font_options(const font_options& options);
 					font_options get_font_options();
 					void set_font_face(font_face& font_face);
@@ -1081,7 +1079,7 @@ namespace std {
 					image_surface(format format, int width, int height);
 					image_surface(vector<unsigned char>& data, format format, int width, int height, int stride);
 					// create_similar_image
-					image_surface(surface& other, format format, int width, int height);
+					image_surface(const surface& other, format format, int width, int height);
 					// create_from_png
 					image_surface(const ::std::string& filename);
 

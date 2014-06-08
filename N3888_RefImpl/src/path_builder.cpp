@@ -633,7 +633,9 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 	assert(foundLowX && foundLowY && foundHighX && foundHighY && numPoints == 4 && numXs == 2 && numYs == 2);
 }
 
-void path_builder::get_path_extents(point& pt0, point& pt1) const {
+rectangle path_builder::get_path_extents() const {
+	point pt0{ };
+	point pt1{ };
 	bool hasLastPoint = false;
 	bool hasExtents = false;
 	point lastPoint{ };
@@ -694,6 +696,7 @@ void path_builder::get_path_extents(point& pt0, point& pt1) const {
 			throw drawing_exception(status::invalid_path_data);
 		}
 	}
+	return{ pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y };
 }
 
 void path_builder::reset() {
