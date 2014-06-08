@@ -9,7 +9,7 @@ mesh_pattern_builder::mesh_pattern_builder()
 : _Pattern_type(pattern_type::mesh)
 , _Extend(extend::default_extend)
 , _Filter(filter::default_filter)
-, _Matrix(matrix::init_identity())
+, _Matrix(matrix_2d::init_identity())
 , _Has_current_patch()
 , _Current_patch_index()
 , _Current_patch_side_count()
@@ -111,11 +111,11 @@ filter mesh_pattern_builder::get_filter() {
 	return _Filter;
 }
 
-void mesh_pattern_builder::set_matrix(const matrix& m) {
+void mesh_pattern_builder::set_matrix(const matrix_2d& m) {
 	_Matrix = m;
 }
-
-matrix mesh_pattern_builder::get_matrix() {
+
+matrix_2d mesh_pattern_builder::get_matrix() {
 	return _Matrix;
 }
 

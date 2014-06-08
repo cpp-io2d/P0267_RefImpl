@@ -430,7 +430,7 @@ namespace std {
 					double y_advance;
 				};
 
-				struct matrix {
+				struct matrix_2d {
 					double xx;
 					double yx;
 					double xy;
@@ -438,27 +438,27 @@ namespace std {
 					double x0;
 					double y0;
 
-					static matrix init_identity();
-					static matrix init_translate(const point& value);
-					static matrix init_scale(const point& value);
-					static matrix init_rotate(double radians);
-					static matrix init_shear_x(double factor);
-					static matrix init_shear_y(double factor);
+					static matrix_2d init_identity();
+					static matrix_2d init_translate(const point& value);
+					static matrix_2d init_scale(const point& value);
+					static matrix_2d init_rotate(double radians);
+					static matrix_2d init_shear_x(double factor);
+					static matrix_2d init_shear_y(double factor);
 
-					matrix& translate(const point& value);
-					matrix& scale(const point& value);
-					matrix& rotate(double radians);
-					matrix& shear_x(double factor);
-					matrix& shear_y(double factor);
-					double determinant();
+					matrix_2d& translate(const point& value);
+					matrix_2d& scale(const point& value);
+					matrix_2d& rotate(double radians);
+					matrix_2d& shear_x(double factor);
+					matrix_2d& shear_y(double factor);
+					double determinant() const;
 					void invert();
 					point transform_distance(const point& dist) const;
 					point transform_point(const point& pt) const;
 
-					matrix operator*=(const matrix& rhs);
+					matrix_2d operator*=(const matrix_2d& rhs);
 				};
 
-				matrix operator*(const matrix& lhs, const matrix& rhs);
+				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs);
 
 				union path_data
 				{
@@ -501,7 +501,7 @@ namespace std {
 					point _Current_point;
 					point _Extents_pt0;
 					point _Extents_pt1;
-					matrix _Transform_matrix;
+					matrix_2d _Transform_matrix;
 					point _Origin;
 
 				public:
@@ -530,8 +530,8 @@ namespace std {
 					void rel_line_to(const point& dpt);
 					void rel_move_to(const point& dpt);
 
-					void set_transform_matrix(const matrix& m);
-					matrix get_transform_matrix() const;
+					void set_transform_matrix(const matrix_2d& m);
+					matrix_2d get_transform_matrix() const;
 					void set_origin(const point& pt);
 					point get_origin() const;
 
@@ -655,7 +655,7 @@ namespace std {
 					scaled_font& operator=(scaled_font&& other);
 
 					explicit scaled_font(native_handle_type nh);
-					scaled_font(const font_face& ff, const matrix& fm, const matrix& ctm, const font_options& fo);
+					scaled_font(const font_face& ff, const matrix_2d& fm, const matrix_2d& ctm, const font_options& fo);
 
 					font_extents get_extents() const;
 					text_extents get_text_extents(const ::std::string& utf8) const;
@@ -724,7 +724,7 @@ namespace std {
 					pattern_type _Pattern_type;
 					extend _Extend;
 					filter _Filter;
-					matrix _Matrix;
+					matrix_2d _Matrix;
 					rgba_color _Color;
 
 				public:
@@ -739,8 +739,8 @@ namespace std {
 					extend get_extend();
 					void set_filter(filter f);
 					filter get_filter();
-					void set_matrix(const matrix& m);
-					matrix get_matrix();
+					void set_matrix(const matrix_2d& m);
+					matrix_2d get_matrix();
 
 					rgba_color get_rgba();
 					void set_rgba(const rgba_color& color);
@@ -758,7 +758,7 @@ namespace std {
 					pattern_type _Pattern_type;
 					extend _Extend;
 					filter _Filter;
-					matrix _Matrix;
+					matrix_2d _Matrix;
 
 					point _Point0;
 					point _Point1;
@@ -777,8 +777,8 @@ namespace std {
 					extend get_extend();
 					void set_filter(filter filter);
 					filter get_filter();
-					void set_matrix(const matrix& matrix);
-					matrix get_matrix();
+					void set_matrix(const matrix_2d& matrix);
+					matrix_2d get_matrix();
 
 					void add_color_stop_rgba(double offset, const rgba_color& color);
 					int get_color_stop_count();
@@ -793,7 +793,7 @@ namespace std {
 					pattern_type _Pattern_type;
 					extend _Extend;
 					filter _Filter;
-					matrix _Matrix;
+					matrix_2d _Matrix;
 
 					point _Center0;
 					double _Radius0;
@@ -814,8 +814,8 @@ namespace std {
 					extend get_extend();
 					void set_filter(filter filter);
 					filter get_filter();
-					void set_matrix(const matrix& matrix);
-					matrix get_matrix();
+					void set_matrix(const matrix_2d& matrix);
+					matrix_2d get_matrix();
 
 					void add_color_stop_rgba(double offset, const rgba_color& color);
 					int get_color_stop_count();
@@ -831,7 +831,7 @@ namespace std {
 					pattern_type _Pattern_type;
 					extend _Extend;
 					filter _Filter;
-					matrix _Matrix;
+					matrix_2d _Matrix;
 
 					bool _Has_current_patch;
 					unsigned int _Current_patch_index;
@@ -854,8 +854,8 @@ namespace std {
 					extend get_extend();
 					void set_filter(filter filter);
 					filter get_filter();
-					void set_matrix(const matrix& matrix);
-					matrix get_matrix();
+					void set_matrix(const matrix_2d& matrix);
+					matrix_2d get_matrix();
 
 					void begin_patch();
 					void begin_edit_patch(unsigned int patch_num);
@@ -876,7 +876,7 @@ namespace std {
 					pattern_type _Pattern_type;
 					extend _Extend;
 					filter _Filter;
-					matrix _Matrix;
+					matrix_2d _Matrix;
 
 					void* _User_callback_data;
 					int _Width;
@@ -901,8 +901,8 @@ namespace std {
 					extend get_extend();
 					void set_filter(filter filter);
 					filter get_filter();
-					void set_matrix(const matrix& matrix);
-					matrix get_matrix();
+					void set_matrix(const matrix_2d& matrix);
+					matrix_2d get_matrix();
 
 					void set_callback_data(void* data);
 					void* get_callback_data();
@@ -1039,9 +1039,9 @@ namespace std {
 					void translate(const point& value);
 					void scale(const point& value);
 					void rotate(double angle);
-					void transform(const matrix& matrix);
-					void set_matrix(const matrix& matrix);
-					void get_matrix(matrix& matrix);
+					void transform(const matrix_2d& matrix);
+					void set_matrix(const matrix_2d& matrix);
+					void get_matrix(matrix_2d& matrix);
 					void identity_matrix();
 					void user_to_device(point& pt);
 					void user_to_device_distance(point& dpt);
@@ -1051,8 +1051,8 @@ namespace std {
 					// Text
 					void select_font_face(const ::std::string& family, font_slant slant, font_weight weight);
 					void set_font_size(double size);
-					void set_font_matrix(const matrix& matrix);
-					void get_font_matrix(matrix& matrix);
+					void set_font_matrix(const matrix_2d& matrix);
+					void get_font_matrix(matrix_2d& matrix);
 					void set_font_options(const font_options& options);
 					font_options get_font_options();
 					void set_font_face(font_face& font_face);

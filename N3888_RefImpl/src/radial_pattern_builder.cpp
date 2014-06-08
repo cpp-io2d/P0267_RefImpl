@@ -36,7 +36,7 @@ radial_pattern_builder::radial_pattern_builder(const point& center0, double radi
 : _Pattern_type(pattern_type::radial)
 , _Extend(extend::default_extend)
 , _Filter(filter::default_filter)
-, _Matrix(matrix::init_identity())
+, _Matrix(matrix_2d::init_identity())
 , _Center0(center0)
 , _Radius0(radius0)
 , _Center1(center1)
@@ -79,11 +79,11 @@ filter radial_pattern_builder::get_filter() {
 	return _Filter;
 }
 
-void radial_pattern_builder::set_matrix(const matrix& m) {
+void radial_pattern_builder::set_matrix(const matrix_2d& m) {
 	_Matrix = m;
 }
-
-matrix radial_pattern_builder::get_matrix() {
+
+matrix_2d radial_pattern_builder::get_matrix() {
 	return _Matrix;
 }
 

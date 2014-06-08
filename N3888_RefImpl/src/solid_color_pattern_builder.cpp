@@ -28,7 +28,7 @@ solid_color_pattern_builder::solid_color_pattern_builder(const rgba_color& color
 : _Pattern_type(pattern_type::solid_color)
 , _Extend(extend::default_extend)
 , _Filter(filter::default_filter)
-, _Matrix(matrix::init_identity())
+, _Matrix(matrix_2d::init_identity())
 , _Color(color){
 	assert(color.r >= 0.0 && color.r <= 1.0);
 	assert(color.g >= 0.0 && color.g <= 1.0);
@@ -67,11 +67,11 @@ filter solid_color_pattern_builder::get_filter() {
 	return _Filter;
 }
 
-void solid_color_pattern_builder::set_matrix(const matrix& m) {
+void solid_color_pattern_builder::set_matrix(const matrix_2d& m) {
 	_Matrix = m;
 }
-
-matrix solid_color_pattern_builder::get_matrix() {
+
+matrix_2d solid_color_pattern_builder::get_matrix() {
 	return _Matrix;
 }
 

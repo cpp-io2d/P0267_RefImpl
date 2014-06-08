@@ -388,17 +388,17 @@ void surface::rotate(double angle) {
 	cairo_rotate(_Context.get(), angle);
 }
 
-void surface::transform(const matrix& m) {
+void surface::transform(const matrix_2d& m) {
 	cairo_matrix_t cm{ m.xx, m.yx, m.xy, m.yy, m.x0, m.y0 };
 	cairo_transform(_Context.get(), &cm);
 }
 
-void surface::set_matrix(const matrix& m) {
+void surface::set_matrix(const matrix_2d& m) {
 	cairo_matrix_t cm{ m.xx, m.yx, m.xy, m.yy, m.x0, m.y0 };
 	cairo_set_matrix(_Context.get(), &cm);
 }
 
-void surface::get_matrix(matrix& matrix) {
+void surface::get_matrix(matrix_2d& matrix) {
 	cairo_matrix_t cm{ };
 	cairo_get_matrix(_Context.get(), &cm);
 	matrix = { cm.xx, cm.yx, cm.xy, cm.yy, cm.x0, cm.y0 };
@@ -432,12 +432,12 @@ void surface::set_font_size(double size) {
 	cairo_set_font_size(_Context.get(), size);
 }
 
-void surface::set_font_matrix(const matrix& m) {
+void surface::set_font_matrix(const matrix_2d& m) {
 	cairo_matrix_t cm{ m.xx, m.yx, m.xy, m.yy, m.x0, m.y0 };
 	cairo_set_font_matrix(_Context.get(), &cm);
 }
 
-void surface::get_font_matrix(matrix& matrix) {
+void surface::get_font_matrix(matrix_2d& matrix) {
 	cairo_matrix_t cm{ };
 	cairo_get_font_matrix(_Context.get(), &cm);
 	matrix = { cm.xx, cm.yx, cm.xy, cm.yy, cm.x0, cm.y0 };

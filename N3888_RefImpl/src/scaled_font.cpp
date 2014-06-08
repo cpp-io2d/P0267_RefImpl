@@ -26,7 +26,7 @@ scaled_font::scaled_font(scaled_font::native_handle_type nh) {
 	_Scaled_font = shared_ptr<cairo_scaled_font_t>(nh, &cairo_scaled_font_destroy);
 }
 
-scaled_font::scaled_font(const font_face& ff, const matrix& fm, const matrix& ctm, const font_options& fo)
+scaled_font::scaled_font(const font_face& ff, const matrix_2d& fm, const matrix_2d& ctm, const font_options& fo)
 : _Scaled_font(nullptr) {
 	cairo_matrix_t c_fm{ fm.xx, fm.xy, fm.yx, fm.yy, fm.x0, fm.y0 },
 		c_ctm{ ctm.xx, ctm.xy, ctm.yx, ctm.yy, ctm.x0, ctm.y0 };

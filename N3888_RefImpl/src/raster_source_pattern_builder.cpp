@@ -84,7 +84,7 @@ raster_source_pattern_builder::raster_source_pattern_builder(void* user_data, co
 : _Pattern_type(pattern_type::raster_source)
 , _Extend(extend::default_extend)
 , _Filter(filter::default_filter)
-, _Matrix(matrix::init_identity())
+, _Matrix(matrix_2d::init_identity())
 , _User_callback_data(user_data)
 , _Width(width)
 , _Height(height)
@@ -128,11 +128,11 @@ filter raster_source_pattern_builder::get_filter() {
 	return _Filter;
 }
 
-void raster_source_pattern_builder::set_matrix(const matrix& m) {
+void raster_source_pattern_builder::set_matrix(const matrix_2d& m) {
 	_Matrix = m;
 }
 
-matrix raster_source_pattern_builder::get_matrix() {
+matrix_2d raster_source_pattern_builder::get_matrix() {
 	return _Matrix;
 }
 

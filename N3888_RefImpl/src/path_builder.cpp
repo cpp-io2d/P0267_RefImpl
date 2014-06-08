@@ -12,7 +12,7 @@ path_builder::path_builder()
 	, _Current_point()
 	, _Extents_pt0()
 	, _Extents_pt1()
-	, _Transform_matrix(matrix::init_identity())
+	, _Transform_matrix(matrix_2d::init_identity())
 	, _Origin() {
 }
 
@@ -280,11 +280,11 @@ void path_builder::rel_move_to(const point& dpt) {
 	move_to(dpt + _Current_point);
 }
 
-void path_builder::set_transform_matrix(const matrix& m) {
+void path_builder::set_transform_matrix(const matrix_2d& m) {
 	_Transform_matrix = m;
 }
 
-matrix path_builder::get_transform_matrix() const {
+matrix_2d path_builder::get_transform_matrix() const {
 	return _Transform_matrix;
 }
 

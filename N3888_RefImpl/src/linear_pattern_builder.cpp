@@ -32,7 +32,7 @@ linear_pattern_builder::linear_pattern_builder(const point& pt0, const point& pt
 : _Pattern_type(pattern_type::linear)
 , _Extend(extend::default_extend)
 , _Filter(filter::default_filter)
-, _Matrix(matrix::init_identity())
+, _Matrix(matrix_2d::init_identity())
 , _Point0(pt0)
 , _Point1(pt1)
 , _Color_stops() {
@@ -73,11 +73,11 @@ filter linear_pattern_builder::get_filter() {
 	return _Filter;
 }
 
-void linear_pattern_builder::set_matrix(const matrix& m) {
+void linear_pattern_builder::set_matrix(const matrix_2d& m) {
 	_Matrix = m;
 }
-
-matrix linear_pattern_builder::get_matrix() {
+
+matrix_2d linear_pattern_builder::get_matrix() {
 	return _Matrix;
 }
 
