@@ -81,7 +81,7 @@ void image_surface::set_data(vector<unsigned char>& data) {
 	::std::memcpy(imageData, data.data(), expected_size);
 }
 
-vector<unsigned char> image_surface::get_data() {
+vector<unsigned char> image_surface::get_data() const {
 	auto required_size = get_stride() * get_height();
 	vector<unsigned char> data;
 	auto imageData = cairo_image_surface_get_data(_Surface.get());
@@ -94,18 +94,18 @@ vector<unsigned char> image_surface::get_data() {
 	return data;
 }
 
-format image_surface::get_format() {
+format image_surface::get_format() const {
 	return _Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get()));
 }
 
-int image_surface::get_width() {
+int image_surface::get_width() const {
 	return cairo_image_surface_get_width(_Surface.get());
 }
 
-int image_surface::get_height() {
+int image_surface::get_height() const {
 	return cairo_image_surface_get_height(_Surface.get());
 }
 
-int image_surface::get_stride() {
+int image_surface::get_stride() const {
 	return cairo_image_surface_get_stride(_Surface.get());
 }

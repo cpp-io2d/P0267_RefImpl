@@ -512,6 +512,7 @@ namespace std {
 
 					path get_path() const;
 					path get_path_flat() const;
+					rectangle get_path_extents() const;
 
 					void append_path(const path& p);
 					void append_path(const path_builder& p);
@@ -537,7 +538,6 @@ namespace std {
 					::std::vector<path_data> get_data() const;
 					const ::std::vector<path_data>& get_data_ref() const;
 					::std::vector<path_data>& get_data_ref();
-					::std::experimental::drawing::rectangle get_path_extents() const;
 
 					void reset();
 				};
@@ -954,7 +954,7 @@ namespace std {
 
 					::std::shared_ptr<device> get_device();
 
-					content get_content();
+					content get_content() const;
 					void mark_dirty();
 					void mark_dirty_rectangle(const rectangle& rect);
 
@@ -974,48 +974,51 @@ namespace std {
 
 					void set_pattern();
 					void set_pattern(const pattern& source);
-					pattern get_pattern();
+					pattern get_pattern() const;
 
 					void set_antialias(antialias a);
-					antialias get_antialias();
+					antialias get_antialias() const;
 
-					void set_dash();
-					void set_dash(const ::std::vector<double>& dashes, double offset);
-					int get_dash_count();
-					void get_dash(::std::vector<double>& dashes, double& offset);
+					// tuple<dashes, offset>
+					typedef ::std::tuple<::std::vector<double>, double> dashes;
+
+					void set_dashes();
+					void set_dashes(const dashes& d);
+					int get_dashes_count() const;
+					dashes get_dashes() const;
 
 					void set_fill_rule(fill_rule fr);
-					fill_rule get_fill_rule();
+					fill_rule get_fill_rule() const;
 
 					void set_line_cap(line_cap lc);
-					line_cap get_line_cap();
+					line_cap get_line_cap() const;
 
 					void set_line_join(line_join lj);
-					line_join get_line_join();
+					line_join get_line_join() const;
 
 					void set_line_width(double width);
-					double get_line_width();
+					double get_line_width() const;
 
 					void set_miter_limit(double limit);
-					double get_miter_limit();
+					double get_miter_limit() const;
 
 					void set_compositing_operator(compositing_operator co);
-					compositing_operator get_compositing_operator();
+					compositing_operator get_compositing_operator() const;
 
 					void set_tolerance(double tolerance);
-					double get_tolerance();
+					double get_tolerance() const;
 
 					void clip();
-					void clip_extents(point& pt0, point& pt1);
-					bool in_clip(const point& pt);
+					rectangle get_clip_extents() const;
+					bool in_clip(const point& pt) const;
 					void reset_clip();
 
-					::std::vector<rectangle> copy_clip_rectangle_list();
+					::std::vector<rectangle> copy_clip_rectangle_list() const;
 
 					void fill();
 					void fill(const surface& s);
-					void fill_extents(point& pt0, point& pt1);
-					bool in_fill(const point& pt);
+					rectangle get_fill_extents() const;
+					bool in_fill(const point& pt) const;
 
 					void mask(const pattern& pttn);
 					void mask(const surface& surface);
@@ -1028,8 +1031,8 @@ namespace std {
 
 					void stroke();
 					void stroke(const surface& s);
-					void stroke_extents(point& pt0, point& pt1);
-					bool in_stroke(const point& pt);
+					rectangle get_stroke_extents() const;
+					bool in_stroke(const point& pt) const;
 
 					void set_path();
 					void set_path(const path& p);
@@ -1052,17 +1055,17 @@ namespace std {
 					void set_font_matrix(const matrix_2d& matrix);
 					matrix_2d get_font_matrix() const;
 					void set_font_options(const font_options& options);
-					font_options get_font_options();
+					font_options get_font_options() const;
 					void set_font_face(font_face& font_face);
-					font_face get_font_face();
+					font_face get_font_face() const;
 					void set_scaled_font(const scaled_font& scaled_font);
-					scaled_font get_scaled_font();
+					scaled_font get_scaled_font() const;
 					void show_text(const ::std::string& utf8);
 					void show_glyphs(const ::std::vector<glyph>& glyphs);
 					void show_text_glyphs(const ::std::string& utf8, const ::std::vector<glyph>& glyphs, const ::std::vector<text_cluster>& clusters, text_cluster_flags::text_cluster_flags cluster_flags);
-					void font_extents(font_extents& extents);
-					void text_extents(const ::std::string& utf8, text_extents& extents);
-					void glyph_extents(const ::std::vector<glyph>& glyphs, ::std::experimental::drawing::text_extents& extents);
+					font_extents get_font_extents() const;
+					text_extents get_text_extents(const ::std::string& utf8) const;
+					text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
 				};
 
 				class image_surface : public surface {
@@ -1084,11 +1087,11 @@ namespace std {
 					image_surface(const ::std::string& filename);
 
 					void set_data(::std::vector<unsigned char>& data);
-					::std::vector<unsigned char> get_data();
-					format get_format();
-					int get_width();
-					int get_height();
-					int get_stride();
+					::std::vector<unsigned char> get_data() const;
+					format get_format() const;
+					int get_width() const;
+					int get_height() const;
+					int get_stride() const;
 				};
 
 				int format_stride_for_width(format format, int width);

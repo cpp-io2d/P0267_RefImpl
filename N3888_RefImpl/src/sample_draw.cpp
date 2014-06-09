@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <string>
 #include <sstream>
-#include <Windows.h>
 
 using namespace std;
 using namespace std::experimental::drawing;
@@ -58,15 +57,9 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	auto cornflowerBluePattern = solid_color_pattern_builder(rgba_color::cornflower_blue).get_pattern();
 	rs.set_pattern(cornflowerBluePattern);
 	rs.paint(); // Paint background.
-	double left, top, right, bottom;
-	point lt, rb;
-	rs.clip_extents(lt, rb);
-	left = lt.x;
-	top = lt.y;
-	right = rb.x;
-	bottom = rb.y;
-	const double radius = trunc(min((right - left) * 0.8 / elementCount, (bottom - top) + 120.0) / 2.0);
-	const double beginX = trunc((right - left) * 0.1), y = trunc((bottom - top) * 0.5);
+	auto clextents = rs.get_clip_extents();
+	const double radius = trunc(min(clextents.width * 0.8 / elementCount, clextents.height + 120.0) / 2.0);
+	const double beginX = trunc(clextents.width * 0.1), y = trunc(clextents.height * 0.5);
 	path_builder pb;
 	pb.move_to({ beginX, 50.0 });
 	rs.set_path(pb.get_path());
