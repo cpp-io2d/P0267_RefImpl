@@ -392,23 +392,6 @@ void surface::set_path(const path& p) {
 	}
 }
 
-void surface::translate(const point& value) {
-	cairo_translate(_Context.get(), value.x, value.y);
-}
-
-void surface::scale(const point& value) {
-	cairo_scale(_Context.get(), value.x, value.y);
-}
-
-void surface::rotate(double angle) {
-	cairo_rotate(_Context.get(), angle);
-}
-
-void surface::transform(const matrix_2d& m) {
-	cairo_matrix_t cm{ m.xx, m.yx, m.xy, m.yy, m.x0, m.y0 };
-	cairo_transform(_Context.get(), &cm);
-}
-
 void surface::set_matrix(const matrix_2d& m) {
 	cairo_matrix_t cm{ m.xx, m.yx, m.xy, m.yy, m.x0, m.y0 };
 	cairo_set_matrix(_Context.get(), &cm);
@@ -485,7 +468,7 @@ font_options surface::get_font_options() const {
 		);
 }
 
-void surface::set_font_face(font_face& font_face) {
+void surface::set_font_face(const font_face& font_face) {
 	cairo_set_font_face(_Context.get(), font_face.native_handle());
 }
 

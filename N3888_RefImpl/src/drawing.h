@@ -1038,10 +1038,6 @@ namespace std {
 					void set_path(const path& p);
 
 					// Transformations
-					void translate(const point& value);
-					void scale(const point& value);
-					void rotate(double angle);
-					void transform(const matrix_2d& matrix);
 					void set_matrix(const matrix_2d& matrix);
 					matrix_2d get_matrix() const;
 					point user_to_device() const;
@@ -1056,7 +1052,7 @@ namespace std {
 					matrix_2d get_font_matrix() const;
 					void set_font_options(const font_options& options);
 					font_options get_font_options() const;
-					void set_font_face(font_face& font_face);
+					void set_font_face(const font_face& font_face);
 					font_face get_font_face() const;
 					void set_scaled_font(const scaled_font& scaled_font);
 					scaled_font get_scaled_font() const;
