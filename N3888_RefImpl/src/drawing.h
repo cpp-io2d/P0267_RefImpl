@@ -467,7 +467,6 @@ namespace std {
 						int length;
 					} header;
 					point point;
-					double value;
 				};
 
 				// Forward declaration.
