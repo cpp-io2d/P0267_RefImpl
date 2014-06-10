@@ -104,5 +104,14 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.set_pattern(redPattern);
 	rs.set_line_width(3.0);
 	rs.stroke();
+	auto radialPattern = radial_pattern_builder({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
+	radialPattern.add_color_stop_rgba(0.0, rgba_color::black);
+	radialPattern.add_color_stop_rgba(0.25, rgba_color::red);
+	radialPattern.add_color_stop_rgba(0.5, rgba_color::green);
+	radialPattern.add_color_stop_rgba(0.75, rgba_color::blue);
+	radialPattern.add_color_stop_rgba(1.0, rgba_color::white);
+	radialPattern.set_extend(extend::reflect);
+	rs.set_pattern(radialPattern.get_pattern());
+	rs.fill();
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }

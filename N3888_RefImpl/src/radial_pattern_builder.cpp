@@ -45,22 +45,24 @@ radial_pattern_builder::radial_pattern_builder(const point& center0, double radi
 }
 
 pattern radial_pattern_builder::get_pattern() {
-	auto pat = cairo_pattern_create_radial(_Center0.x, _Center0.y, _Radius0, _Center1.x, _Center1.y, _Radius1);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_radial(_Center0.x, _Center0.y, _Radius0, _Center1.x, _Center1.y, _Radius1), &cairo_pattern_destroy);
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
 
-	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(_Extend));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
-	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(_Filter));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(_Extend));
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
+	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(_Filter));
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
 	cairo_matrix_t mtrx{ _Matrix.xx, _Matrix.yx, _Matrix.xy, _Matrix.yy, _Matrix.x0, _Matrix.y0 };
-	cairo_pattern_set_matrix(pat, &mtrx);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	cairo_pattern_set_matrix(pat.get(), &mtrx);
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
 	for (const auto& stop : _Color_stops) {
-		cairo_pattern_add_color_stop_rgba(pat, get<0>(stop), get<1>(stop).r, get<1>(stop).g, get<1>(stop).b, get<1>(stop).a);
+		cairo_pattern_add_color_stop_rgba(pat.get(), get<0>(stop), get<1>(stop).r, get<1>(stop).g, get<1>(stop).b, get<1>(stop).a);
 	}
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
 
-	return pattern(pat);
+	auto pttn = pattern(pat.get());
+	pat.release();
+	return pttn;
 }
 
 void radial_pattern_builder::set_extend(extend e) {

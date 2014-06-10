@@ -45,31 +45,31 @@ mesh_pattern_builder& mesh_pattern_builder::operator=(mesh_pattern_builder&& oth
 }
 
 pattern mesh_pattern_builder::get_pattern() {
-	auto pat = cairo_pattern_create_mesh();
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
 
-	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(_Extend));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
-	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(_Filter));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(_Extend));
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
+	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(_Filter));
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
 	cairo_matrix_t mtrx{ _Matrix.xx, _Matrix.yx, _Matrix.xy, _Matrix.yy, _Matrix.x0, _Matrix.y0 };
-	cairo_pattern_set_matrix(pat, &mtrx);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat)));
+	cairo_pattern_set_matrix(pat.get(), &mtrx);
+	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
 
 	for (const auto& patch : _Patches) {
-		cairo_mesh_pattern_begin_patch(pat);
+		cairo_mesh_pattern_begin_patch(pat.get());
 		const auto& pathData = get<0>(patch).get_data_ref();
 		for (int i = 0; i < pathData.size(); i += pathData[i].header.length) {
 			auto type = pathData[i].header.type;
 			switch (type) {
 			case std::experimental::drawing::path_data_type::move_to:
-				cairo_mesh_pattern_move_to(pat, pathData[i + 1].point.x, pathData[i + 1].point.y);
+				cairo_mesh_pattern_move_to(pat.get(), pathData[i + 1].point.x, pathData[i + 1].point.y);
 				break;
 			case std::experimental::drawing::path_data_type::line_to:
-				cairo_mesh_pattern_line_to(pat, pathData[i + 1].point.x, pathData[i + 1].point.y);
+				cairo_mesh_pattern_line_to(pat.get(), pathData[i + 1].point.x, pathData[i + 1].point.y);
 				break;
 			case std::experimental::drawing::path_data_type::curve_to:
-				cairo_mesh_pattern_curve_to(pat, pathData[i + 1].point.x, pathData[i + 1].point.y, pathData[i + 2].point.x, pathData[i + 2].point.y, pathData[i + 3].point.x, pathData[i + 3].point.y);
+				cairo_mesh_pattern_curve_to(pat.get(), pathData[i + 1].point.x, pathData[i + 1].point.y, pathData[i + 2].point.x, pathData[i + 2].point.y, pathData[i + 3].point.x, pathData[i + 3].point.y);
 				break;
 			case std::experimental::drawing::path_data_type::new_sub_path:
 				_Throw_if_failed_status(status::invalid_mesh_construction);
@@ -84,15 +84,17 @@ pattern mesh_pattern_builder::get_pattern() {
 		}
 		const auto& controlPoints = get<1>(patch);
 		for (const auto& pt : controlPoints) {
-			cairo_mesh_pattern_set_control_point(pat, pt.first, pt.second.x, pt.second.y);
+			cairo_mesh_pattern_set_control_point(pat.get(), pt.first, pt.second.x, pt.second.y);
 		}
 		const auto& cornerColors = get<2>(patch);
 		for (const auto& cc : cornerColors) {
-			cairo_mesh_pattern_set_corner_color_rgba(pat, cc.first, cc.second.r, cc.second.g, cc.second.b, cc.second.a);
+			cairo_mesh_pattern_set_corner_color_rgba(pat.get(), cc.first, cc.second.r, cc.second.g, cc.second.b, cc.second.a);
 		}
-		cairo_mesh_pattern_end_patch(pat);
+		cairo_mesh_pattern_end_patch(pat.get());
 	}
-	return pattern(pat);
+	auto pttn = pattern(pat.get());
+	pat.release();
+	return pttn;
 }
 
 void mesh_pattern_builder::set_extend(extend e) {
