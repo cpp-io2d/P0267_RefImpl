@@ -226,7 +226,7 @@ namespace std {
 					double b;
 					double a;
 
-					static rgba_color from_byte_values(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255ui8);
+					static rgba_color from_byte_values(unsigned char r, unsigned char g, unsigned char b, unsigned char a = static_cast<unsigned char>(255));
 
 					const static rgba_color alice_blue;
 					const static rgba_color antique_white;
