@@ -368,7 +368,7 @@ void surface::set_path(const path& p) {
 	auto ctx = _Context.get();
 	cairo_new_path(ctx);
 	const auto& pathData = p.get_data_ref();
-	for (int i = 0; i < pathData.size(); i += pathData[i].header.length) {
+	for (unsigned int i = 0; i < pathData.size(); i += pathData[i].header.length) {
 		auto pdt = pathData[i].header.type;
 		switch (pdt) {
 		case ::std::experimental::drawing::path_data_type::move_to:

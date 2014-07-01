@@ -10,6 +10,7 @@
 #include <exception>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1800)
 #define noexcept
@@ -18,7 +19,7 @@
 namespace std {
 	namespace experimental {
 		namespace drawing {
-#if __cplusplus >= 201103L
+#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
 			inline namespace v1 {
 #endif
 				enum class status {
@@ -226,8 +227,6 @@ namespace std {
 					double b;
 					double a;
 
-					static rgba_color from_byte_values(unsigned char r, unsigned char g, unsigned char b, unsigned char a = static_cast<unsigned char>(255));
-
 					const static rgba_color alice_blue;
 					const static rgba_color antique_white;
 					const static rgba_color aqua;
@@ -377,6 +376,15 @@ namespace std {
 					const static rgba_color yellow_green;
 				};
 
+#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+				inline namespace literals {
+#endif
+					inline double operator""_ubyte(unsigned long long value) {
+						return ::std::max(0.0, ::std::min(1.0, static_cast<double>(value) / 255.0));
+					}
+#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+				}
+#endif
 				struct point {
 					double x;
 					double y;
@@ -545,12 +553,12 @@ namespace std {
 					status _Status = status::last_status;
 				public:
 					drawing_exception() noexcept;
-					explicit drawing_exception(::std::experimental::drawing::status s) noexcept;
+					explicit drawing_exception(status s) noexcept;
 
 					virtual ~drawing_exception() noexcept;
 
-					drawing_exception(const drawing_exception& rhs) noexcept = default;
-					drawing_exception& operator=(const drawing_exception& rhs) noexcept = default;
+					drawing_exception(const drawing_exception& rhs) = default;
+					drawing_exception& operator=(const drawing_exception& rhs) = default;
 
 					virtual const char* what() const noexcept;
 					status get_status() const noexcept;
@@ -781,8 +789,8 @@ namespace std {
 					void add_color_stop_rgba(double offset, const rgba_color& color);
 					int get_color_stop_count();
 
-					void get_color_stop_rgba(int index, double& offset, rgba_color& color);
-					void set_color_stop_rgba(int index, double offset, const rgba_color& color);
+					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color);
+					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
 					void get_linear_points(point& pt0, point& pt1);
 					void set_linear_points(const point& pt0, const point& pt1);
 				};
@@ -818,8 +826,8 @@ namespace std {
 					void add_color_stop_rgba(double offset, const rgba_color& color);
 					int get_color_stop_count();
 
-					void get_color_stop_rgba(int index, double& offset, rgba_color& color);
-					void set_color_stop_rgba(int index, double offset, const rgba_color& color);
+					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color);
+					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
 
 					void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1);
 					void set_radial_circles(const point& center0, double radius0, const point& center1, double radius1);
@@ -1092,7 +1100,7 @@ namespace std {
 				int format_stride_for_width(format format, int width);
 				surface make_surface(surface::native_handle_type nh); // parameters are exposition only.
 				surface make_surface(format format, int width, int height); // parameters are exposition only.
-#if __cplusplus >= 201103L
+#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510) 
 			}
 #endif
 		}

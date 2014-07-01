@@ -59,7 +59,7 @@ pattern mesh_pattern_builder::get_pattern() {
 	for (const auto& patch : _Patches) {
 		cairo_mesh_pattern_begin_patch(pat.get());
 		const auto& pathData = get<0>(patch).get_data_ref();
-		for (int i = 0; i < pathData.size(); i += pathData[i].header.length) {
+		for (unsigned int i = 0; i < pathData.size(); i += pathData[i].header.length) {
 			auto type = pathData[i].header.type;
 			switch (type) {
 			case std::experimental::drawing::path_data_type::move_to:
@@ -116,7 +116,8 @@ filter mesh_pattern_builder::get_filter() {
 void mesh_pattern_builder::set_matrix(const matrix_2d& m) {
 	_Matrix = m;
 }
-
+
+
 matrix_2d mesh_pattern_builder::get_matrix() {
 	return _Matrix;
 }

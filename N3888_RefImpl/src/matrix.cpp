@@ -88,16 +88,22 @@ matrix_2d matrix_2d::operator*=(const matrix_2d& rhs) {
 namespace std {
 	namespace experimental {
 		namespace drawing {
-			matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) {
-				return matrix_2d{
-					(lhs.xx * rhs.xx) + (lhs.yx * rhs.xy),
-					(lhs.xx * rhs.yx) + (lhs.yx * rhs.yy),
-					(lhs.xy * rhs.xx) + (lhs.yy * rhs.xy),
-					(lhs.xy * rhs.yx) + (lhs.yy * rhs.yy),
-					(lhs.x0 * rhs.xx) + (lhs.y0 * rhs.xy) + lhs.x0,
-					(lhs.x0 * rhs.yx) + (lhs.y0 * rhs.yy) + lhs.y0
-				};
+#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+			inline namespace v1 {
+#endif
+				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) {
+					return matrix_2d{
+						(lhs.xx * rhs.xx) + (lhs.yx * rhs.xy),
+						(lhs.xx * rhs.yx) + (lhs.yx * rhs.yy),
+						(lhs.xy * rhs.xx) + (lhs.yy * rhs.xy),
+						(lhs.xy * rhs.yx) + (lhs.yy * rhs.yy),
+						(lhs.x0 * rhs.xx) + (lhs.y0 * rhs.xy) + lhs.x0,
+						(lhs.x0 * rhs.yx) + (lhs.y0 * rhs.yy) + lhs.y0
+					};
+				}
+#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
 			}
+#endif
 		}
 	}
 }

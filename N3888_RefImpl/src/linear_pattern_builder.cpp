@@ -96,7 +96,7 @@ int linear_pattern_builder::get_color_stop_count() {
 	return static_cast<int>(_Color_stops.size());
 }
 
-void linear_pattern_builder::get_color_stop_rgba(int index, double& offset, rgba_color& color) {
+void linear_pattern_builder::get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) {
 	if (index >= _Color_stops.size() || index < 0) {
 		_Throw_if_failed_status(status::invalid_index);
 	}
@@ -106,14 +106,14 @@ void linear_pattern_builder::get_color_stop_rgba(int index, double& offset, rgba
 	color = get<1>(stop);
 }
 
-void linear_pattern_builder::set_color_stop_rgba(int index, double offset, const rgba_color& color) {
+void linear_pattern_builder::set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r >= 0.0 && color.r <= 1.0);
 	assert(color.g >= 0.0 && color.g <= 1.0);
 	assert(color.b >= 0.0 && color.b <= 1.0);
 	assert(color.a >= 0.0 && color.a <= 1.0);
 
-	if (index >= _Color_stops.size() || index < 0) {
+	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_status(status::invalid_index);
 	}
 
