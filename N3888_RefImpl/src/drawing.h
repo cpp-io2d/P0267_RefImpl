@@ -378,11 +378,9 @@ namespace std {
 
 #if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
 				inline namespace literals {
-#endif
 					inline double operator""_ubyte(unsigned long long value) {
 						return ::std::max(0.0, ::std::min(1.0, static_cast<double>(value) / 255.0));
 					}
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
 				}
 #endif
 				struct point {
