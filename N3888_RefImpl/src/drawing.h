@@ -383,7 +383,7 @@ namespace std {
 					}
 
 					inline double operator "" _unorm(long double value) {
-						return ::std::max(0.0, ::std::min(1.0, value));
+						return ::std::max(0.0, ::std::min(1.0, static_cast<double>(value)));
 					}
 				}
 #endif
