@@ -383,7 +383,9 @@ namespace std {
 					}
 
 					inline double operator "" _unorm(long double value) {
-						return ::std::max(0.0, ::std::min(1.0, static_cast<double>(value)));
+						auto result = ::std::max(0.0, ::std::min(1.0, static_cast<double>(value)));
+						result = ::std::nearbyint(result * 255.0); // We need to ensure it is one of the discrete values between 0 and 255.
+						return result / 255.0;
 					}
 				}
 #endif

@@ -15,5 +15,6 @@
 #include <cstdint>
 #include <tuple>
 #include <mutex>
+#include <cmath>
 
 #endif
