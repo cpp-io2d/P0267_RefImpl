@@ -98,7 +98,7 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	pb.reset();
 	pb.set_origin({ 250.0, 450.0 });
 	pb.set_transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
-	pb.rectangle({ 200.0, 400.0, 100.0, 100.0 });
+	pb.rect({ 200.0, 400.0, 100.0, 100.0 });
 	rs.set_path(pb.get_path());
 	auto redPattern = solid_color_pattern_builder(rgba_color::red).get_pattern();
 	rs.set_pattern(redPattern);

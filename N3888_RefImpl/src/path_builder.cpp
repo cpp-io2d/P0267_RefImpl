@@ -2,6 +2,7 @@
 #include "xdrawinghelpers.h"
 #include "xcairoenumhelpers.h"
 #include <algorithm>
+#include <limits>
 
 using namespace std;
 using namespace std::experimental::drawing;
@@ -56,17 +57,21 @@ void path_builder::append_path(const path& p) {
 	for (const auto& item : data) {
 		_Data.push_back(item);
 	}
+	_Has_current_point = p._Has_current_point;
+	_Current_point = p._Current_point;
 }
 
 void path_builder::append_path(const path_builder& p) {
 	for (const auto& item : p._Data) {
 		_Data.push_back(item);
 	}
+	_Has_current_point = p._Has_current_point;
+	_Current_point = p._Current_point;
 }
 
 point path_builder::get_current_point() {
 	assert(has_current_point());
-	return point((*_Data.crend()).point);
+	return point((*_Data.crend()).pt);
 }
 
 void path_builder::new_sub_path() {
@@ -213,14 +218,14 @@ void path_builder::curve_to(const point& pt0, const point& pt1, const point& pt2
 	pd.header.length = 4;
 	_Data.push_back(pd);
 	pd = { };
-	pd.point = _Transform_matrix.transform_point(pt0 - _Origin) + _Origin;
+	pd.pt = _Transform_matrix.transform_point(pt0 - _Origin) + _Origin;
 	_Data.push_back(pd);
-	pd.point = _Transform_matrix.transform_point(pt1 - _Origin) + _Origin;
+	pd.pt = _Transform_matrix.transform_point(pt1 - _Origin) + _Origin;
 	_Data.push_back(pd);
-	pd.point = _Transform_matrix.transform_point(pt2 - _Origin) + _Origin;
+	pd.pt = _Transform_matrix.transform_point(pt2 - _Origin) + _Origin;
 	_Data.push_back(pd);
 	_Has_current_point = true;
-	_Current_point = pd.point;
+	_Current_point = pd.pt;
 }
 
 void path_builder::line_to(const point& pt) {
@@ -233,10 +238,10 @@ void path_builder::line_to(const point& pt) {
 	pd.header.length = 2;
 	_Data.push_back(pd);
 	pd = { };
-	pd.point = _Transform_matrix.transform_point(pt - _Origin) + _Origin;
+	pd.pt = _Transform_matrix.transform_point(pt - _Origin) + _Origin;
 	_Data.push_back(pd);
 	_Has_current_point = true;
-	_Current_point = pd.point;
+	_Current_point = pd.pt;
 }
 
 void path_builder::move_to(const point& pt) {
@@ -245,17 +250,17 @@ void path_builder::move_to(const point& pt) {
 	pd.header.length = 2;
 	_Data.push_back(pd);
 	pd = { };
-	pd.point = _Transform_matrix.transform_point(pt - _Origin) + _Origin;
+	pd.pt = _Transform_matrix.transform_point(pt - _Origin) + _Origin;
 	_Data.push_back(pd);
 	_Has_current_point = true;
-	_Current_point = pd.point;
+	_Current_point = pd.pt;
 }
 
-void path_builder::rectangle(const experimental::drawing::rectangle& rect) {
-	move_to({ rect.x, rect.y });
-	line_to({ rect.x + rect.width, rect.y });
-	line_to({ rect.x + rect.width, rect.y + rect.height });
-	line_to({ rect.x, rect.y + rect.height });
+void path_builder::rect(const experimental::drawing::rectangle& r) {
+	move_to({ r.x, r.y });
+	line_to({ r.x + r.width, r.y });
+	line_to({ r.x + r.width, r.y + r.height });
+	line_to({ r.x, r.y + r.height });
 	close_path();
 }
 
@@ -336,7 +341,7 @@ inline bool _Same_sign(double lhs, double rhs) {
 	return ((lhs < 0.0) && (rhs < 0.0)) || ((lhs > 0.0) && (rhs > 0.0));
 }
 
-double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t0, double t2, const bool findX, const double epsilon = DBL_EPSILON) {
+double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t0, double t2, const bool findX, const double epsilon = numeric_limits<double>::epsilon()) {
 	// Validate that t0 is the low value, t2 is the high value, t0 is not equal to t2, and that both are in the range [0.0, 1.0].
 	assert(t0 >= 0.0 && t0 < t2 && t2 <= 1.0);
 	// Find the midpoint.
@@ -421,7 +426,7 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 	bool foundLowY = false;
 	bool foundHighY = false;
 
-	const double epsilon = DBL_EPSILON;
+	const double epsilon = numeric_limits<double>::epsilon();
 
 	// X values
 	if (_Almost_equal_relative(dt0.x, 0.0, epsilon)) {
@@ -645,23 +650,23 @@ rectangle path_builder::get_path_extents() const {
 
 		switch (type) {
 		case std::experimental::drawing::path_data_type::move_to:
-			lastPoint = _Data[i + 1].point;
+			lastPoint = _Data[i + 1].pt;
 			hasLastPoint = true;
 			break;
 		case std::experimental::drawing::path_data_type::line_to:
 			if (hasLastPoint) {
 				if (!hasExtents) {
 					hasExtents = true;
-					pt0.x = min(lastPoint.x, _Data[i + 1].point.x);
-					pt1.x = max(lastPoint.x, _Data[i + 1].point.x);
-					pt0.y = min(lastPoint.y, _Data[i + 1].point.y);
-					pt1.y = max(lastPoint.y, _Data[i + 1].point.y);
+					pt0.x = min(lastPoint.x, _Data[i + 1].pt.x);
+					pt1.x = max(lastPoint.x, _Data[i + 1].pt.x);
+					pt0.y = min(lastPoint.y, _Data[i + 1].pt.y);
+					pt1.y = max(lastPoint.y, _Data[i + 1].pt.y);
 				}
 				else {
-					pt0.x = min(min(pt0.x, lastPoint.x), _Data[i + 1].point.x);
-					pt0.y = min(min(pt0.y, lastPoint.y), _Data[i + 1].point.y);
-					pt1.x = max(max(pt1.x, lastPoint.x), _Data[i + 1].point.x);
-					pt1.y = max(max(pt1.y, lastPoint.y), _Data[i + 1].point.y);
+					pt0.x = min(min(pt0.x, lastPoint.x), _Data[i + 1].pt.x);
+					pt0.y = min(min(pt0.y, lastPoint.y), _Data[i + 1].pt.y);
+					pt1.x = max(max(pt1.x, lastPoint.x), _Data[i + 1].pt.x);
+					pt1.y = max(max(pt1.y, lastPoint.y), _Data[i + 1].pt.y);
 				}
 			}
 			else {
@@ -671,7 +676,7 @@ rectangle path_builder::get_path_extents() const {
 		case std::experimental::drawing::path_data_type::curve_to:
 		{
 			point cte0{ }, cte1{ };
-			_Curve_to_extents(lastPoint, _Data[i + 1].point, _Data[i + 2].point, _Data[i + 3].point, cte0, cte1);
+			_Curve_to_extents(lastPoint, _Data[i + 1].pt, _Data[i + 2].pt, _Data[i + 3].pt, cte0, cte1);
 			if (!hasExtents) {
 				pt0.x = min(cte0.x, cte1.x);
 				pt0.y = min(cte0.y, cte1.y);

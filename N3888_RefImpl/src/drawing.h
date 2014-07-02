@@ -472,13 +472,14 @@ namespace std {
 						path_data_type type;
 						int length;
 					} header;
-					point point;
+					point pt;
 				};
 
 				// Forward declaration.
 				class path_builder;
 
 				class path {
+					friend class path_builder;
 					::std::vector<path_data> _Data;
 					bool _Has_current_point;
 					point _Current_point;
@@ -530,7 +531,7 @@ namespace std {
 					void curve_to(const point& pt0, const point& pt1, const point& pt2);
 					void line_to(const point& pt);
 					void move_to(const point& pt);
-					void rectangle(const rectangle& rect);
+					void rect(const rectangle& r);
 					void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
 					void rel_line_to(const point& dpt);
 					void rel_move_to(const point& dpt);

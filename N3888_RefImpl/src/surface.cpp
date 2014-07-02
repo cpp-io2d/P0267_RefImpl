@@ -372,13 +372,13 @@ void surface::set_path(const path& p) {
 		auto pdt = pathData[i].header.type;
 		switch (pdt) {
 		case ::std::experimental::drawing::path_data_type::move_to:
-			cairo_move_to(ctx, pathData[i + 1].point.x, pathData[i + 1].point.y);
+			cairo_move_to(ctx, pathData[i + 1].pt.x, pathData[i + 1].pt.y);
 			break;
 		case ::std::experimental::drawing::path_data_type::line_to:
-			cairo_line_to(ctx, pathData[i + 1].point.x, pathData[i + 1].point.y);
+			cairo_line_to(ctx, pathData[i + 1].pt.x, pathData[i + 1].pt.y);
 			break;
 		case ::std::experimental::drawing::path_data_type::curve_to:
-			cairo_curve_to(ctx, pathData[i + 1].point.x, pathData[i + 1].point.y, pathData[i + 2].point.x, pathData[i + 2].point.y, pathData[i + 3].point.x, pathData[i + 3].point.y);
+			cairo_curve_to(ctx, pathData[i + 1].pt.x, pathData[i + 1].pt.y, pathData[i + 2].pt.x, pathData[i + 2].pt.y, pathData[i + 3].pt.x, pathData[i + 3].pt.y);
 			break;
 		case ::std::experimental::drawing::path_data_type::new_sub_path:
 			cairo_new_sub_path(ctx);

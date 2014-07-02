@@ -22,11 +22,12 @@ G_MODULE_EXPORT void on_window_destroy(GtkWidget* object, gpointer user_data) {
 }
 
 G_MODULE_EXPORT gboolean on_drawingarea_draw(GtkWidget* object, cairo_t* cr, gpointer user_data) {
-    auto ctxt = context(cairo_reference(cr));
+//    auto ctxt = context(cairo_reference(cr));
+    auto gtkSurface = make_surface({cairo_surface_reference(cairo_get_target(cr)), nullptr});
     sample_draw sampleDraw;
     auto& timer = get_timer();
     timer.update();
-    sampleDraw(ctxt, timer.get_elapsed_time());
+    sampleDraw(gtkSurface, timer.get_elapsed_time());
     if (lg_writeToPNG) {
 	// Check to see if the context is in a bad way.
 	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_status(cr)));
