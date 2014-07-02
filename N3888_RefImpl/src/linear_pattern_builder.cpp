@@ -78,7 +78,8 @@ filter linear_pattern_builder::get_filter() {
 void linear_pattern_builder::set_matrix(const matrix_2d& m) {
 	_Matrix = m;
 }
-
+
+
 matrix_2d linear_pattern_builder::get_matrix() {
 	return _Matrix;
 }
@@ -97,7 +98,7 @@ int linear_pattern_builder::get_color_stop_count() {
 }
 
 void linear_pattern_builder::get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) {
-	if (index >= _Color_stops.size() || index < 0) {
+	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_status(status::invalid_index);
 	}
 
