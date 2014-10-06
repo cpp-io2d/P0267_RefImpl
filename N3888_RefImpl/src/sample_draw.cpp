@@ -113,5 +113,20 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	radialPattern.set_extend(extend::reflect);
 	rs.set_pattern(radialPattern.get_pattern());
 	rs.fill();
+
+	auto linearPattern = linear_pattern_builder({ 510.0, 460.0 }, { 530.0, 480.0 });
+	linearPattern.add_color_stop_rgba(0.0, rgba_color::chartreuse);
+	linearPattern.add_color_stop_rgba(1.0, rgba_color::salmon);
+	linearPattern.set_extend(extend::repeat);
+	pb.reset();
+	pb.set_origin({ 500.0, 450.0 });
+	pb.rect({ 500.0, 450.0, 100.0, 100.0 });
+	pb.rect({ 525.0, 425.0, 50.0, 150.0 });
+	rs.set_path(pb.get_path());
+	rs.set_pattern(redPattern);
+	rs.stroke();
+	rs.set_pattern(linearPattern.get_pattern());
+	rs.fill();
+
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }
