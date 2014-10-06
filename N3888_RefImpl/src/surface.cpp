@@ -133,7 +133,7 @@ void surface::push_group() {
 	cairo_push_group(_Context.get());
 }
 
-void surface::push_group(content c) {
+void surface::push_group_with_content(content c) {
 	cairo_push_group_with_content(_Context.get(), _Content_to_cairo_content_t(c));
 }
 
@@ -267,7 +267,7 @@ void surface::reset_clip() {
 	cairo_reset_clip(_Context.get());
 }
 
-vector<rectangle> surface::get_clip_rectangles() const {
+vector<rectangle> surface::copy_clip_rectangle_list() const {
 	vector<rectangle> results;
 	std::unique_ptr<cairo_rectangle_list_t, function<void(cairo_rectangle_list_t*)>> sp_rects(cairo_copy_clip_rectangle_list(_Context.get()), &cairo_rectangle_list_destroy);
 	_Throw_if_failed_status(_Cairo_status_t_to_status(sp_rects->status));
