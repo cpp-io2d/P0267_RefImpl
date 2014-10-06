@@ -10,24 +10,6 @@ path::path(const path_builder& pb)
 , _Has_current_point(pb._Has_current_point)
 , _Current_point(pb._Current_point)
 , _Extents(pb.get_path_extents()) {
-	// Validate path data.
-	for (unsigned int i = 0; i < _Data.size(); i += _Data[i].header.length) {
-		auto pdt = _Data[i].header.type;
-		switch (pdt) {
-		case std::experimental::drawing::path_data_type::move_to:
-			break;
-		case std::experimental::drawing::path_data_type::line_to:
-			break;
-		case std::experimental::drawing::path_data_type::curve_to:
-			break;
-		case std::experimental::drawing::path_data_type::new_sub_path:
-			break;
-		case std::experimental::drawing::path_data_type::close_path:
-			break;
-		default:
-			throw drawing_exception(status::invalid_path_data);
-		}
-	}
 }
 
 path::path(path&& other)
