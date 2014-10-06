@@ -980,7 +980,7 @@ namespace std {
 					void save();
 					void restore();
 					void push_group();
-					void push_group_with_content(content c);
+					void push_group(content c);
 					surface pop_group();
 					void pop_group_to_source();
 
@@ -1025,7 +1025,7 @@ namespace std {
 					bool in_clip(const point& pt) const;
 					void reset_clip();
 
-					::std::vector<rectangle> copy_clip_rectangle_list() const;
+					::std::vector<rectangle> get_clip_rectangles() const;
 
 					void fill();
 					void fill(const surface& s);
