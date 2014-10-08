@@ -10,7 +10,7 @@ const char* io2d_error_category::name() const {
 }
 
 ::std::string io2d_error_category::message(int errVal) const {
-	auto ev = static_cast<io2d_error>(errVal);
+	auto ev = _Cairo_status_t_to_io2d_error(static_cast<cairo_status_t>(errVal));
 	switch (ev) {
 	case io2d_error::success:
 		return "The operation completed successfully.";
