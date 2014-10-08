@@ -95,7 +95,8 @@ namespace std {
 				enum class line_join {
 					miter,
 					round,
-					bevel
+					bevel,
+					miter_or_bevel
 				};
 
 				enum class compositing_operator {
@@ -933,7 +934,9 @@ namespace std {
 				protected:
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
-
+					double _Miter_limit = 10.0;
+					const double _Line_join_miter_miter_limit = 10000.0;
+					line_join _Line_join = line_join::miter;
 				public:
 					surface() = delete;
 

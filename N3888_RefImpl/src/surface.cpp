@@ -15,6 +15,7 @@ surface::surface(surface::native_handle_type nh)
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy)) {
+	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 }
 
 surface::surface(surface&& other)
@@ -209,11 +210,18 @@ line_cap surface::get_line_cap() const {
 }
 
 void surface::set_line_join(line_join lj) {
+	_Line_join = lj;
 	cairo_set_line_join(_Context.get(), _Line_join_to_cairo_line_join_t(lj));
+	if (lj == line_join::miter_or_bevel) {
+		cairo_set_miter_limit(_Context.get(), _Miter_limit);
+	}
+	if (lj == line_join::miter) {
+		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
+	}
 }
 
 line_join surface::get_line_join() const {
-	return _Cairo_line_join_t_to_line_join(cairo_get_line_join(_Context.get()));
+	return _Line_join;
 }
 
 void surface::set_line_width(double width) {
@@ -225,11 +233,14 @@ double surface::get_line_width() const {
 }
 
 void surface::set_miter_limit(double limit) {
-	cairo_set_miter_limit(_Context.get(), limit);
+	_Miter_limit = limit;
+	if (_Line_join == line_join::miter_or_bevel) {
+		cairo_set_miter_limit(_Context.get(), limit);
+	}
 }
 
 double surface::get_miter_limit() const {
-	return cairo_get_miter_limit(_Context.get());
+	return _Miter_limit;
 }
 
 void surface::set_compositing_operator(compositing_operator co) {
