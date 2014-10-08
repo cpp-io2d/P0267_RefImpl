@@ -11,7 +11,7 @@ device::native_handle_type device::native_handle() const {
 
 device::device(device::native_handle_type nh) : _Device() {
 	_Device = shared_ptr<cairo_device_t>(nh, &cairo_device_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_device_status(_Device.get())));
+	_Throw_if_failed_cairo_status_t(cairo_device_status(_Device.get()));
 }
 
 device::device(device&& other) {
@@ -32,7 +32,7 @@ void device::flush() {
 }
 
 void device::acquire() {
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_device_acquire(_Device.get())));
+	_Throw_if_failed_cairo_status_t(cairo_device_acquire(_Device.get()));
 }
 
 void device::release() {

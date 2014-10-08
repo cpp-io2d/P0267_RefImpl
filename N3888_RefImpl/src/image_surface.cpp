@@ -25,15 +25,15 @@ image_surface::image_surface(surface::native_handle_type nh, surface::native_han
 	, _Data(nullptr) {
 	_Surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, [map_of](cairo_surface_t *mapped_surface) { cairo_surface_unmap_image(map_of.csfce, mapped_surface); });
 	_Context = unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_status(_Surface.get())));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_status(_Context.get())));
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 }
 
 image_surface::image_surface(format format, int width, int height)
 	: surface({ cairo_image_surface_create(_Format_to_cairo_format_t(format), width, height), nullptr })
 	, _Data(nullptr) {
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_status(_Surface.get())));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_status(_Context.get())));
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 }
 
 image_surface::image_surface(vector<unsigned char>& data, format format, int width, int height, int stride)
@@ -43,40 +43,40 @@ image_surface::image_surface(vector<unsigned char>& data, format format, int wid
 	_Data->resize(height * stride);
 	_Data->assign(begin(data), end(data));
 	_Surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create_for_data(_Data->data(), _Format_to_cairo_format_t(format), width, height, stride), &cairo_surface_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_status(_Surface.get())));
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Context = unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_status(_Context.get())));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 }
 
 image_surface::image_surface(const surface& other, format format, int width, int height)
 	: surface({ nullptr, nullptr })
 	, _Data(nullptr) {
 	_Surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar_image(other.native_handle().csfce, _Format_to_cairo_format_t(format), width, height), &cairo_surface_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_status(_Surface.get())));
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Context = unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_status(_Context.get())));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 }
 
 image_surface::image_surface(const string& filename)
 	: surface({ nullptr, nullptr })
 	, _Data(nullptr) {
 	_Surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create_from_png(filename.c_str()), &cairo_surface_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_status(_Surface.get())));
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Context = unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_status(_Context.get())));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 }
 
 void image_surface::set_data(vector<unsigned char>& data) {
 	auto expected_size = static_cast<size_t>(get_stride() * get_height());
 	if (data.size() != static_cast<uint64_t>(expected_size)) {
-		throw drawing_exception(::std::experimental::drawing::status::invalid_stride);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STRIDE);
 	}
 	if (_Surface.get() == nullptr) {
-		throw drawing_exception(::std::experimental::drawing::status::null_pointer);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
 	}
 	auto imageData = cairo_image_surface_get_data(_Surface.get());
 	if (imageData == nullptr) {
-		throw drawing_exception(::std::experimental::drawing::status::null_pointer);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
 	}
 	::std::memcpy(imageData, data.data(), expected_size);
 }

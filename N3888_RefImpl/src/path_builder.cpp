@@ -266,21 +266,21 @@ void path_builder::rect(const experimental::drawing::rectangle& r) {
 
 void path_builder::rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2) {
 	if (!_Has_current_point) {
-		throw drawing_exception(status::no_current_point);
+		throw system_error(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
 	curve_to(dpt0 + _Current_point, dpt1 + _Current_point, dpt2 + _Current_point);
 }
 
 void path_builder::rel_line_to(const point& dpt) {
 	if (!_Has_current_point) {
-		throw drawing_exception(status::no_current_point);
+		throw system_error(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
 	line_to(dpt + _Current_point);
 }
 
 void path_builder::rel_move_to(const point& dpt) {
 	if (!_Has_current_point) {
-		throw drawing_exception(status::no_current_point);
+		throw system_error(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
 	move_to(dpt + _Current_point);
 }
@@ -670,7 +670,7 @@ rectangle path_builder::get_path_extents() const {
 				}
 			}
 			else {
-				throw drawing_exception(status::invalid_path_data);
+				throw system_error(CAIRO_STATUS_INVALID_PATH_DATA);
 			}
 			break;
 		case std::experimental::drawing::path_data_type::curve_to:
@@ -698,7 +698,7 @@ rectangle path_builder::get_path_extents() const {
 			hasLastPoint = false;
 			break;
 		default:
-			throw drawing_exception(status::invalid_path_data);
+			throw system_error(CAIRO_STATUS_INVALID_PATH_DATA);
 		}
 	}
 	return{ pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y };

@@ -25,7 +25,7 @@ path::path(const path_builder& pb)
 		case std::experimental::drawing::path_data_type::close_path:
 			break;
 		default:
-			throw drawing_exception(status::invalid_path_data);
+			throw system_error(CAIRO_STATUS_INVALID_PATH_DATA);
 		}
 	}
 }

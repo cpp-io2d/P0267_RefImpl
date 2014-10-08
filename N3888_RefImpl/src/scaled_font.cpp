@@ -61,8 +61,8 @@ vector<glyph> scaled_font::text_to_glyphs(double x, double y, const string& utf8
 	cairo_glyph_t* c_glyphs = nullptr;
 	int num_glyphs;
 	try {
-		_Throw_if_failed_status(_Cairo_status_t_to_status(
-			cairo_scaled_font_text_to_glyphs(_Scaled_font.get(), x, y, utf8.c_str(), static_cast<int>(utf8.size()), &c_glyphs, &num_glyphs, nullptr, nullptr, nullptr)));
+		_Throw_if_failed_cairo_status_t(
+			cairo_scaled_font_text_to_glyphs(_Scaled_font.get(), x, y, utf8.c_str(), static_cast<int>(utf8.size()), &c_glyphs, &num_glyphs, nullptr, nullptr, nullptr));
 		for (int i = 0; i < num_glyphs; i++) {
 			result.push_back({ c_glyphs[i].index, c_glyphs[i].x, c_glyphs[i].y });
 		}
@@ -89,8 +89,8 @@ vector<glyph> scaled_font::text_to_glyphs(double x, double y, const string& utf8
 	int num_clusters;
 	cairo_text_cluster_flags_t c_clFlags;
 	try {
-		_Throw_if_failed_status(_Cairo_status_t_to_status(
-			cairo_scaled_font_text_to_glyphs(_Scaled_font.get(), x, y, utf8.c_str(), static_cast<int>(utf8.size()), &c_glyphs, &num_glyphs, &c_clusters, &num_clusters, &c_clFlags)));
+		_Throw_if_failed_cairo_status_t(
+			cairo_scaled_font_text_to_glyphs(_Scaled_font.get(), x, y, utf8.c_str(), static_cast<int>(utf8.size()), &c_glyphs, &num_glyphs, &c_clusters, &num_clusters, &c_clFlags));
 		for (int i = 0; i < num_glyphs; i++) {
 			result.push_back({ c_glyphs[i].index, c_glyphs[i].x, c_glyphs[i].y });
 		}

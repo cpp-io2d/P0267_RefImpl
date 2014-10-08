@@ -3,9 +3,15 @@
 
 #define _PI 3.1415926535897932384626433832795
 
-inline void _Throw_if_failed_status(::std::experimental::drawing::status s) {
-	if (s != ::std::experimental::drawing::status::success) {
-		throw ::std::experimental::drawing::drawing_exception(s);
+//inline void _Throw_if_failed_io2d_error(::std::experimental::drawing::io2d_error s) {
+//	if (s != ::std::experimental::drawing::io2d_error::success) {
+//		throw ::std::system_error(s);
+//	}
+//}
+
+inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
+	if (s != CAIRO_STATUS_SUCCESS) {
+		throw ::std::system_error(s);
 	}
 }
 

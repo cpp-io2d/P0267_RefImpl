@@ -103,7 +103,7 @@ point surface::get_device_offset() const {
 }
 
 void surface::write_to_png(const string& filename) {
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_write_to_png(_Surface.get(), filename.c_str())));
+	_Throw_if_failed_cairo_status_t(cairo_surface_write_to_png(_Surface.get(), filename.c_str()));
 }
 
 image_surface surface::map_to_image(const rectangle& extents) {
@@ -140,10 +140,10 @@ void surface::push_group(content c) {
 surface surface::pop_group() {
 	cairo_surface_t* sfce = nullptr;
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pttn(cairo_pop_group(_Context.get()), &cairo_pattern_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pttn.get())));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_get_surface(pttn.get(), &sfce)));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pttn.get()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_get_surface(pttn.get(), &sfce));
 	// This next line would not create a resource leak if it threw because until we reference the surface we don't own it.
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_surface_status(sfce)));
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(sfce));
 	return surface({ cairo_surface_reference(sfce), nullptr });
 }
 
@@ -270,7 +270,7 @@ void surface::reset_clip() {
 vector<rectangle> surface::get_clip_rectangles() const {
 	vector<rectangle> results;
 	std::unique_ptr<cairo_rectangle_list_t, function<void(cairo_rectangle_list_t*)>> sp_rects(cairo_copy_clip_rectangle_list(_Context.get()), &cairo_rectangle_list_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(sp_rects->status));
+	_Throw_if_failed_cairo_status_t(sp_rects->status);
 	for (auto i = 0; i < sp_rects->num_rectangles; ++i) {
 		results.push_back({ sp_rects->rectangles[i].x, sp_rects->rectangles[i].y, sp_rects->rectangles[i].width, sp_rects->rectangles[i].height });
 	}
@@ -387,7 +387,7 @@ void surface::set_path(const path& p) {
 			cairo_close_path(ctx);
 			break;
 		default:
-			throw drawing_exception(status::invalid_path_data);
+			throw system_error(CAIRO_STATUS_INVALID_PATH_DATA);
 		}
 	}
 }
@@ -474,7 +474,7 @@ void surface::set_font_face(const font_face& font_face) {
 
 font_face surface::get_font_face() const {
 	auto ff = cairo_get_font_face(_Context.get());
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_font_face_status(ff)));
+	_Throw_if_failed_cairo_status_t(cairo_font_face_status(ff));
 	// Cairo doesn't increase the font face's reference count when you call cairo_get_font_face so we do it manually.
 	return font_face(cairo_font_face_reference(ff));
 }
@@ -485,7 +485,7 @@ void surface::set_scaled_font(const scaled_font& scaled_font) {
 
 scaled_font surface::get_scaled_font() const {
 	auto sf = cairo_get_scaled_font(_Context.get());
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_scaled_font_status(sf)));
+	_Throw_if_failed_cairo_status_t(cairo_scaled_font_status(sf));
 	// Cairo doesn't increase the scaled font's reference count when you call cairo_get_scaled_font so we do it manually.
 	return scaled_font(cairo_scaled_font_reference(sf));
 }

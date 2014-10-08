@@ -58,14 +58,14 @@ matrix_2d& matrix_2d::shear_y(double factor) {
 
 double matrix_2d::determinant() const {
 	if (isnan(x0) || isnan(y0)) {
-		throw drawing_exception(status::invalid_matrix);
+		throw system_error(CAIRO_STATUS_INVALID_MATRIX);
 	}
 	return xx * yy - yx * xy;
 }
 
 void matrix_2d::invert() {
 	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_matrix_invert(&cm)));
+	_Throw_if_failed_cairo_status_t(cairo_matrix_invert(&cm));
 	xx = cm.xx;
 	yx = cm.yx;
 	xy = cm.xy;

@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <system_error>
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1800)
 #define noexcept
@@ -22,8 +23,8 @@ namespace std {
 #if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
 			inline namespace v1 {
 #endif
-				enum class status {
-					success,
+				enum class io2d_error {
+					success = 1,
 					no_memory,
 					invalid_restore,
 					invalid_pop_group,
@@ -61,7 +62,7 @@ namespace std {
 					device_error,
 					invalid_mesh_construction,
 					device_finished,
-					last_status
+					last_value
 				};
 
 				enum class antialias {
@@ -554,20 +555,14 @@ namespace std {
 					void reset();
 				};
 
-				class drawing_exception : public exception {
-					status _Status = status::last_status;
+				class io2d_error_category : public ::std::error_category {
 				public:
-					drawing_exception() noexcept;
-					explicit drawing_exception(status s) noexcept;
-
-					virtual ~drawing_exception() noexcept;
-
-					drawing_exception(const drawing_exception& rhs) = default;
-					drawing_exception& operator=(const drawing_exception& rhs) = default;
-
-					virtual const char* what() const noexcept;
-					status get_status() const noexcept;
+					virtual const char* name() const noexcept;
+					virtual ::std::string message(int errVal) const;
+					virtual bool equivalent(const ::std::error_code& ec, int condition) const noexcept;
 				};
+
+				const ::std::error_category& io2d_category() noexcept;
 
 				class device {
 				protected:
@@ -1110,6 +1105,18 @@ namespace std {
 #endif
 		}
 	}
+
+	template<>
+	struct is_error_condition_enum<::std::experimental::drawing::io2d_error>
+		: public ::std::true_type{ };
+
+	template<>
+	struct is_error_code_enum<::cairo_status_t>
+		: public ::std::true_type{ };
+
+	::std::error_condition make_error_condition(experimental::drawing::io2d_error e) noexcept;
+
+	::std::error_code make_error_code(cairo_status_t e) noexcept;
 }
 
 #endif

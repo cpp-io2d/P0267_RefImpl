@@ -46,15 +46,15 @@ mesh_pattern_builder& mesh_pattern_builder::operator=(mesh_pattern_builder&& oth
 
 pattern mesh_pattern_builder::get_pattern() {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(_Extend));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(_Filter));
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 	cairo_matrix_t mtrx{ _Matrix.xx, _Matrix.yx, _Matrix.xy, _Matrix.yy, _Matrix.x0, _Matrix.y0 };
 	cairo_pattern_set_matrix(pat.get(), &mtrx);
-	_Throw_if_failed_status(_Cairo_status_t_to_status(cairo_pattern_status(pat.get())));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	for (const auto& patch : _Patches) {
 		cairo_mesh_pattern_begin_patch(pat.get());
@@ -72,13 +72,13 @@ pattern mesh_pattern_builder::get_pattern() {
 				cairo_mesh_pattern_curve_to(pat.get(), pathData[i + 1].pt.x, pathData[i + 1].pt.y, pathData[i + 2].pt.x, pathData[i + 2].pt.y, pathData[i + 3].pt.x, pathData[i + 3].pt.y);
 				break;
 			case std::experimental::drawing::path_data_type::new_sub_path:
-				_Throw_if_failed_status(status::invalid_mesh_construction);
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 				break;
 			case std::experimental::drawing::path_data_type::close_path:
-				_Throw_if_failed_status(status::invalid_mesh_construction);
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 				break;
 			default:
-				_Throw_if_failed_status(status::invalid_mesh_construction);
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 				break;
 			}
 		}
@@ -124,7 +124,7 @@ matrix_2d mesh_pattern_builder::get_matrix() {
 
 void mesh_pattern_builder::begin_patch() {
 	if (_Has_current_patch) {
-		_Throw_if_failed_status(status::invalid_mesh_construction);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 	_Has_current_patch = true;
 	_Current_patch_side_count = 0;
@@ -135,11 +135,11 @@ void mesh_pattern_builder::begin_patch() {
 
 void mesh_pattern_builder::begin_edit_patch(unsigned int patch_num) {
 	if (_Has_current_patch) {
-		_Throw_if_failed_status(status::invalid_mesh_construction);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 
 	if (patch_num >= _Patches.size()) {
-		_Throw_if_failed_status(status::invalid_index);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 
 	_Has_current_patch = true;
@@ -152,7 +152,7 @@ void mesh_pattern_builder::begin_edit_patch(unsigned int patch_num) {
 
 void mesh_pattern_builder::end_patch() {
 	if (!_Has_current_patch) {
-		_Throw_if_failed_status(status::invalid_mesh_construction);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 	if (_Current_patch_side_count < 4) {
 		line_to(_Current_patch_initial_point);
@@ -162,7 +162,7 @@ void mesh_pattern_builder::end_patch() {
 
 void mesh_pattern_builder::move_to(const point& pt) {
 	if (!_Has_current_patch || _Current_patch_side_count > 0) {
-		_Throw_if_failed_status(status::invalid_mesh_construction);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 	_Current_patch_initial_point = pt;
 	auto& patch = _Patches.at(_Current_patch_index);
@@ -171,7 +171,7 @@ void mesh_pattern_builder::move_to(const point& pt) {
 
 void mesh_pattern_builder::line_to(const point& pt) {
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
-		_Throw_if_failed_status(status::invalid_mesh_construction);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 
 	if (_Current_patch_side_count == 0) {
@@ -186,7 +186,7 @@ void mesh_pattern_builder::line_to(const point& pt) {
 
 void mesh_pattern_builder::curve_to(const point& pt0, const point& pt1, const point& pt2) {
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
-		_Throw_if_failed_status(status::invalid_mesh_construction);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 
 	if (_Current_patch_side_count == 0) {
@@ -200,10 +200,10 @@ void mesh_pattern_builder::curve_to(const point& pt0, const point& pt1, const po
 
 void mesh_pattern_builder::set_control_point(unsigned int point_num, const point& pt) {
 	if (!_Has_current_patch) {
-		_Throw_if_failed_status(status::invalid_mesh_construction);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 	if (point_num > 3) {
-		_Throw_if_failed_status(status::invalid_index);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	auto& patch = _Patches.at(_Current_patch_index);
 	get<1>(patch)[point_num] = pt;
@@ -211,10 +211,10 @@ void mesh_pattern_builder::set_control_point(unsigned int point_num, const point
 
 void mesh_pattern_builder::set_corner_color_rgba(unsigned int corner_num, const rgba_color& color) {
 	if (!_Has_current_patch) {
-		_Throw_if_failed_status(status::invalid_mesh_construction);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 	if (corner_num > 3) {
-		_Throw_if_failed_status(status::invalid_index);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	auto& patch = _Patches.at(_Current_patch_index);
 	get<2>(patch)[corner_num] = color;
@@ -226,7 +226,7 @@ void mesh_pattern_builder::get_patch_count(unsigned int& count) {
 
 path mesh_pattern_builder::get_path(unsigned int patch_num) {
 	if (patch_num >= _Patches.size()) {
-		_Throw_if_failed_status(status::invalid_index);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	auto& patch = _Patches[patch_num];
 	return get<0>(patch).get_path();
@@ -234,7 +234,7 @@ path mesh_pattern_builder::get_path(unsigned int patch_num) {
 
 path_builder mesh_pattern_builder::get_path_builder(unsigned int patch_num) {
 	if (patch_num >= _Patches.size()) {
-		_Throw_if_failed_status(status::invalid_index);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	const auto& patch = _Patches[patch_num];
 	return get<0>(patch);
@@ -242,26 +242,26 @@ path_builder mesh_pattern_builder::get_path_builder(unsigned int patch_num) {
 
 point mesh_pattern_builder::get_control_point(unsigned int patch_num, unsigned int point_num) {
 	if (patch_num >= _Patches.size()) {
-		_Throw_if_failed_status(status::invalid_index);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	const auto& patch = _Patches[patch_num];
 	const auto& controlPoints = get<1>(patch);
 	const auto& iter = controlPoints.find(point_num);
 	if (iter == controlPoints.cend()) {
-		_Throw_if_failed_status(status::invalid_index);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	return (*iter).second;
 }
 
 rgba_color mesh_pattern_builder::get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num) {
 	if (patch_num >= _Patches.size()) {
-		_Throw_if_failed_status(status::invalid_index);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	const auto& patch = _Patches[patch_num];
 	const auto& cornerColors = get<2>(patch);
 	const auto& iter = cornerColors.find(corner_num);
 	if (iter == cornerColors.cend()) {
-		_Throw_if_failed_status(status::invalid_index);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	return (*iter).second;
 }
