@@ -19,7 +19,10 @@ using namespace std::experimental::drawing;
 using namespace Microsoft::WRL;
 
 Win32RenderWindow::Win32RenderWindow(unsigned int width, unsigned int height, const std::wstring& caption) :
-handle(0)
+handle(nullptr),
+m_width(width),
+m_height(height),
+m_imageSurface(nullptr)
 {
 	// Record the desired client window size
 	RECT rc;
@@ -56,8 +59,7 @@ handle(0)
 	}
 
 	// Create the initial surface for drawing to.
-	g_psurface = shared_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
-
+	m_imageSurface = make_shared<image_surface>(format::argb32, width, height);
 	// Set in the "extra" bytes the pointer to the 'this' pointer
 	// so it can handle messages for itself.
 	SetWindowLongPtr(handle, 0, (LONG_PTR)this);
@@ -122,6 +124,56 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
 	return (INT_PTR)FALSE;
 }
 
+inline void RenderSourceARGB32ToDestRGB24(unsigned int srcWidth, unsigned int srcHeight, unsigned int destWidth, unsigned int destHeight, const vector<unsigned char>& srcData, unsigned int srcStride, vector<unsigned char>& destData, unsigned int destStride) {
+	if (srcWidth == destWidth && srcHeight == destHeight) {
+		for (auto y = 0U; y < destHeight; y++) {
+			for (auto x = 0U; x < destWidth; x++) {
+				auto destIdx = y * destStride + x * 3;
+				auto srcIdx = y * srcStride + x * 4;
+				auto srcAlpha = srcData[srcIdx + 3] / 255.0;
+				//destData[destIdx + 0] = static_cast<unsigned char>(::std::min(1.0, ((srcData[destIdx + 0] / 255.0) + ((destData[srcIdx + 0] / 255.0) * (1.0 - srcAlpha))) / srcAlpha) * 255.0);
+				//destData[destIdx + 1] = static_cast<unsigned char>(::std::min(1.0, ((srcData[destIdx + 1] / 255.0) + ((destData[srcIdx + 1] / 255.0) * (1.0 - srcAlpha))) / srcAlpha) * 255.0);
+				//destData[destIdx + 2] = static_cast<unsigned char>(::std::min(1.0, ((srcData[destIdx + 2] / 255.0) + ((destData[srcIdx + 2] / 255.0) * (1.0 - srcAlpha))) / srcAlpha) * 255.0);
+				destData[destIdx + 0] = static_cast<unsigned char>(::std::min(1.0, (((srcData[destIdx + 0] / 255.0) * srcAlpha) + ((destData[srcIdx + 0] / 255.0) * (1.0 - srcAlpha))) / srcAlpha) * 255.0);
+				destData[destIdx + 1] = static_cast<unsigned char>(::std::min(1.0, (((srcData[destIdx + 1] / 255.0) * srcAlpha) + ((destData[srcIdx + 1] / 255.0) * (1.0 - srcAlpha))) / srcAlpha) * 255.0);
+				destData[destIdx + 2] = static_cast<unsigned char>(::std::min(1.0, (((srcData[destIdx + 2] / 255.0) * srcAlpha) + ((destData[srcIdx + 2] / 255.0) * (1.0 - srcAlpha))) / srcAlpha) * 255.0);
+			}
+		}
+	}
+	else {
+		// We need to perform sampling
+	}
+}
+
+void ResizeWindowToClientArea(HWND hwnd, int width, int height) {
+	RECT clientRect;
+	RECT windowRect;
+	GetWindowRect(hwnd, &windowRect);
+	GetClientRect(hwnd, &clientRect);
+	auto crWidth = clientRect.right - clientRect.left;
+	auto crHeight = clientRect.bottom - clientRect.top;
+	auto wrWidth = windowRect.right - windowRect.left;
+	auto wrHeight = windowRect.bottom - windowRect.top;
+
+	if (crWidth != width || crHeight != height) {
+		// Record the desired client window size
+		RECT rc;
+		rc.top = rc.left = 0;
+		rc.right = width;
+		rc.bottom = height;
+
+		// Adjust the window size for correct device size
+		AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE);
+
+		//LONG lwidth = rc.right - rc.left;
+		LONG lheight = rc.bottom - rc.top;
+
+		width = std::max(200L, (width - crWidth) + wrWidth);
+		height = std::max(lheight - height, (height - crHeight) + wrHeight);
+		SetWindowPos(hwnd, 0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS);
+		PostMessageW(hwnd, WM_PAINT, (WPARAM)0, (LPARAM)0);
+	}
+}
 
 LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -129,6 +181,7 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	{
 	case WM_CREATE:
 	{
+		ResizeWindowToClientArea(hwnd, m_width, m_height);
 		// Automatically return 0 to allow the window to proceed in the
 		// creation process.
 		return(0);
@@ -151,8 +204,9 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	{
 		int width = LOWORD(lparam);
 		int height = HIWORD(lparam);
-
-		g_psurface = shared_ptr<surface>(new surface(move(make_surface(format::argb32, width, height))));
+		m_width = static_cast<unsigned int>(width);
+		m_height = static_cast<unsigned int>(height);
+		m_imageSurface = make_shared<image_surface>(format::argb32, width, height);
 
 	} break;
 
@@ -203,11 +257,66 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 		// Flush to ensure that it is drawn to the window.
 		hdc = BeginPaint(handle, &ps);
-		g_psurface->flush();
+		RECT clientRect;
+		GetClientRect(hwnd, &clientRect);
+		if (clientRect.right - clientRect.left != static_cast<int>(m_width) || clientRect.bottom - clientRect.top != static_cast<int>(m_height)) {
+			EndPaint(hwnd, &ps);
+			ResizeWindowToClientArea(hwnd, m_width, m_height);
+			break;
+		}
+		m_imageSurface->flush();
 
-		auto rs = make_surface({ cairo_win32_surface_create(hdc), nullptr });
-		rs.paint(*g_psurface);
-		rs.flush();
+		// cairo_win32_surface_create always returns an rgb24 surface so we need to manually blend the source to the dest since cairo doesn't.
+		auto destSurf = make_surface({ cairo_win32_surface_create(hdc), nullptr });
+		destSurf.set_pattern(solid_color_pattern_builder(rgba_color::black).get_pattern());
+		destSurf.paint();
+		destSurf.flush();
+
+		auto& srcSurf = *m_imageSurface;
+
+		srcSurf.save();
+		srcSurf.reset_clip();
+		{
+			auto destImgSurf = destSurf.map_to_image();
+			auto srcImgSurf = m_imageSurface->map_to_image();
+			auto destFormat = destImgSurf.get_format();
+			auto srcFormat = srcImgSurf.get_format();
+			if (destFormat != format::rgb24 || srcFormat != format::argb32) {
+				srcSurf.unmap_image(srcImgSurf);
+				destSurf.unmap_image(destImgSurf);
+				int quitCode = 0;
+				if (destFormat == format::rgb24) {
+					MessageBoxW(hwnd, L"Source format was not format::argb32.", L"Source format error", MB_OK);
+					quitCode = 0x10000000 | static_cast<int>(srcFormat);
+				}
+				else {
+					if (srcFormat == format::rgb24) {
+						MessageBoxW(hwnd, L"Destination format was not format::rgb24.", L"Destination format error", MB_OK);
+						quitCode = 0x20000000 | static_cast<int>(destFormat);
+					}
+					else {
+						MessageBoxW(hwnd, L"Source format was not format::argb32 and destination format was not format::rgb24.", L"Source and destination format error", MB_OK);
+						quitCode = 0x40000000 | static_cast<int>(srcFormat) | (static_cast<int>(destFormat) << 4);
+					}
+				}
+				PostQuitMessage(quitCode);
+				break;
+			}
+			auto srcData = srcImgSurf.get_data();
+			auto destData = destImgSurf.get_data();
+			RenderSourceARGB32ToDestRGB24(static_cast<unsigned int>(srcImgSurf.get_width()), static_cast<unsigned int>(srcImgSurf.get_height()),
+				static_cast<unsigned int>(destImgSurf.get_width()), static_cast<unsigned int>(destImgSurf.get_height()),
+				srcData, static_cast<unsigned int>(srcImgSurf.get_stride()), destData, static_cast<unsigned int>(destImgSurf.get_stride()));
+			destImgSurf.set_data(destData);
+			srcSurf.unmap_image(srcImgSurf);
+			destSurf.unmap_image(destImgSurf);
+		}
+		srcSurf.restore();
+		//m_imageSurface->write_to_png("D:\\michael\\00testgrph01.png");
+		//rs.set_pattern(solid_color_pattern_builder(rgba_color::black).get_pattern());
+		//rs.paint();
+		//rs.paint(*m_imageSurface);
+		destSurf.flush();
 		EndPaint(handle, &ps);
 	} break;
 	}
@@ -295,7 +404,7 @@ void Win32RenderWindow::ShowSaveAsPNGDialog() {
 		if (usedDefault != FALSE) {
 			throw runtime_error("Could not convert short filename string to multibyte from wide character.");
 		}
-		g_psurface->write_to_png(mbFileName);
+		m_imageSurface->write_to_png(mbFileName);
 	}
 	else {
 		if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
@@ -308,6 +417,6 @@ void Win32RenderWindow::ShowSaveAsPNGDialog() {
 
 }
 
-shared_ptr<surface>& Win32RenderWindow::GetSurface() {
-	return g_psurface;
+shared_ptr<image_surface>& Win32RenderWindow::GetSurface() {
+	return m_imageSurface;
 }

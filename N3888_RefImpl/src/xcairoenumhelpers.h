@@ -347,7 +347,7 @@ namespace std {
 					return CAIRO_OPERATOR_DEST_OUT;
 				case ::std::experimental::drawing::compositing_operator::dest_atop:
 					return CAIRO_OPERATOR_DEST_ATOP;
-				case ::std::experimental::drawing::compositing_operator::xor_compositing_operator:
+				case ::std::experimental::drawing::compositing_operator::xor_op:
 					return CAIRO_OPERATOR_XOR;
 				case ::std::experimental::drawing::compositing_operator::add:
 					return CAIRO_OPERATOR_ADD;
@@ -414,7 +414,7 @@ namespace std {
 				case CAIRO_OPERATOR_DEST_ATOP:
 					return ::std::experimental::drawing::compositing_operator::dest_atop;
 				case CAIRO_OPERATOR_XOR:
-					return ::std::experimental::drawing::compositing_operator::xor_compositing_operator;
+					return ::std::experimental::drawing::compositing_operator::xor_op;
 				case CAIRO_OPERATOR_ADD:
 					return ::std::experimental::drawing::compositing_operator::add;
 				case CAIRO_OPERATOR_SATURATE:

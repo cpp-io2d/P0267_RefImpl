@@ -15,7 +15,9 @@ surface::surface(surface::native_handle_type nh)
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy)) {
-	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
+	if (_Context.get() != nullptr) {
+		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
+	}
 }
 
 surface::surface(surface&& other)
@@ -107,10 +109,14 @@ void surface::write_to_png(const string& filename) {
 	_Throw_if_failed_cairo_status_t(cairo_surface_write_to_png(_Surface.get(), filename.c_str()));
 }
 
+image_surface surface::map_to_image() {
+	return image_surface({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), _Context.get() });
+}
+
 image_surface surface::map_to_image(const rectangle& extents) {
 	cairo_rectangle_int_t cextents{ _Double_to_int(extents.x), _Double_to_int(extents.y), _Double_to_int(extents.width), _Double_to_int(extents.height) };
 
-	return image_surface({ cairo_surface_map_to_image(_Surface.get(), (extents.x == 0 && extents.y == 0 && extents.width == 0 && extents.height == 0) ? nullptr : &cextents), nullptr }, { _Surface.get(), nullptr });
+	return image_surface({ cairo_surface_map_to_image(_Surface.get(), (extents.x == 0 && extents.y == 0 && extents.width == 0 && extents.height == 0) ? nullptr : &cextents), nullptr }, { _Surface.get(), _Context.get() });
 }
 
 void surface::unmap_image(image_surface& image) {

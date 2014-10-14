@@ -54,7 +54,6 @@ int WINAPI wWinMain(
 	LoadString(hInstance, IDC_N3888_REFIMPL, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
 
-
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_N3888_REFIMPL));
 
 	Win32RenderWindow window(800, 600, L"N3888_RefImpl Main Window");
@@ -132,7 +131,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
 	wcex.hInstance = hInstance;
 	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_N3888_REFIMPL));
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);//(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = MAKEINTRESOURCE(IDC_N3888_REFIMPL);
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));

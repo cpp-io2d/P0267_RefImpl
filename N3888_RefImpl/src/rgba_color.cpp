@@ -149,6 +149,7 @@ const rgba_color rgba_color::tan = _Rgba_color_from_byte_values(static_cast<unsi
 const rgba_color rgba_color::teal = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(128), static_cast<unsigned char>(128));
 const rgba_color rgba_color::thistle = _Rgba_color_from_byte_values(static_cast<unsigned char>(216), static_cast<unsigned char>(191), static_cast<unsigned char>(216));
 const rgba_color rgba_color::tomato = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(99), static_cast<unsigned char>(71));
+const rgba_color rgba_color::transparent_black = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(0), static_cast<unsigned char>(0));
 const rgba_color rgba_color::turquoise = _Rgba_color_from_byte_values(static_cast<unsigned char>(64), static_cast<unsigned char>(244), static_cast<unsigned char>(208));
 const rgba_color rgba_color::violet = _Rgba_color_from_byte_values(static_cast<unsigned char>(238), static_cast<unsigned char>(130), static_cast<unsigned char>(238));
 const rgba_color rgba_color::wheat = _Rgba_color_from_byte_values(static_cast<unsigned char>(245), static_cast<unsigned char>(222), static_cast<unsigned char>(179));
@@ -156,3 +157,25 @@ const rgba_color rgba_color::white = _Rgba_color_from_byte_values(static_cast<un
 const rgba_color rgba_color::white_smoke = _Rgba_color_from_byte_values(static_cast<unsigned char>(245), static_cast<unsigned char>(245), static_cast<unsigned char>(245));
 const rgba_color rgba_color::yellow = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(255), static_cast<unsigned char>(0));
 const rgba_color rgba_color::yellow_green = _Rgba_color_from_byte_values(static_cast<unsigned char>(154), static_cast<unsigned char>(205), static_cast<unsigned char>(50));
+
+namespace std {
+	namespace experimental {
+		namespace drawing {
+#if _Inline_namespace_conditional_support_test
+			inline namespace v1 {
+#endif
+				rgba_color operator*(const rgba_color& lhs, double rhs) {
+					rhs = ::std::max(rhs, 0.0);
+					return{
+						::std::min(lhs.r * rhs, 1.0),
+						::std::min(lhs.g * rhs, 1.0),
+						::std::min(lhs.b * rhs, 1.0),
+						::std::min(lhs.a * rhs, 1.0)
+					};
+				}
+#if _Inline_namespace_conditional_support_test
+			}
+#endif
+		}
+	}
+}

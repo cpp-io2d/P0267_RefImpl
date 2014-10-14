@@ -17,4 +17,7 @@
 #include <mutex>
 #include <cmath>
 
+// Designed to be used to conditionally define an inline namespace using a #if
+#define _Inline_namespace_conditional_support_test (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+
 #endif

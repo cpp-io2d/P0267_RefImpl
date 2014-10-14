@@ -27,6 +27,7 @@ image_surface::image_surface(surface::native_handle_type nh, surface::native_han
 	_Context = unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 }
 
 image_surface::image_surface(format format, int width, int height)
@@ -46,6 +47,7 @@ image_surface::image_surface(vector<unsigned char>& data, format format, int wid
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Context = unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 }
 
 image_surface::image_surface(const surface& other, format format, int width, int height)
@@ -55,6 +57,7 @@ image_surface::image_surface(const surface& other, format format, int width, int
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Context = unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 }
 
 image_surface::image_surface(const string& filename)
@@ -64,6 +67,7 @@ image_surface::image_surface(const string& filename)
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Context = unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 }
 
 void image_surface::set_data(vector<unsigned char>& data) {

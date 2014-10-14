@@ -45,7 +45,103 @@ wostream& operator<<(wostream& os, const point& pt) {
 	return os;
 }
 
+// Declaration
+void draw_test_compositing_operators(surface& rs, double elapsedTimeInMilliseconds, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp = compositing_operator::over, bool strokePaths = false, const rgba_color& backgroundColor = rgba_color::transparent_black, const rgba_color& firstColor = rgba_color::red * 0.8, const rgba_color& secondColor = rgba_color::teal * 0.4, bool clipToRects = false, bool clipToTriangle = false);
+
+// Declaration
+void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds);
+
+// Drawing entry point.
 void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
+	draw_sort_visualization(rs, elapsedTimeInMilliseconds);
+	//draw_test_compositing_operators(rs, elapsedTimeInMilliseconds, compositing_operator::over);
+}
+
+// For testing purposes only.
+void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMilliseconds*/, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp, bool strokePaths, const rgba_color& backgroundColor, const rgba_color& firstColor, const rgba_color& secondColor, bool clipToRects, bool clipToTriangle) {
+	// Parameter validation.
+	if (clipToRects && clipToTriangle) {
+		throw invalid_argument("clipToRects and clipToTriangle cannot both be set to true.");
+	}
+	rs.save();
+
+	auto backgroundPattern = solid_color_pattern_builder(backgroundColor).get_pattern();
+	auto firstPattern = solid_color_pattern_builder(firstColor).get_pattern();
+	auto secondPattern = solid_color_pattern_builder(secondColor).get_pattern();
+
+	auto pb = path_builder();
+
+	pb.rect({ 10.0, 10.0, 120.0, 90.0 });
+	auto firstRectPath = pb.get_path();
+
+	pb.reset();
+	pb.rect({ 50.0, 40.0, 120.0, 90.0 });
+	auto secondRectPath = pb.get_path();
+
+	pb.reset();
+	pb.append_path(firstRectPath);
+	pb.append_path(secondRectPath);
+	auto bothRectsClipPath = pb.get_path();
+
+	pb.reset();
+	pb.move_to({ 85.0, 25.0 });
+	pb.line_to({ 150.0, 115.0 });
+	pb.line_to({ 30.0, 115.0 });
+	pb.close_path();
+	auto triangleClipPath = pb.get_path();
+
+	rs.set_pattern(backgroundPattern);
+	rs.set_compositing_operator(compositing_operator::source);
+	rs.paint();
+
+	rs.set_pattern(firstPattern);
+	rs.set_compositing_operator(firstRectCompOp);
+	rs.set_path(firstRectPath);
+	rs.fill();
+
+
+	if (clipToRects) {
+		rs.set_path(bothRectsClipPath);
+		rs.clip();
+	}
+
+	if (clipToTriangle) {
+		rs.set_path(triangleClipPath);
+		rs.clip();
+	}
+
+	rs.set_path(secondRectPath);
+	rs.set_compositing_operator(secondRectCompOp);
+	rs.set_pattern(secondPattern);
+	rs.fill();
+
+	rs.reset_clip();
+
+	if (strokePaths) {
+		rs.set_compositing_operator(compositing_operator::source);
+		rs.set_line_width(2.0);
+
+		rs.set_path(firstRectPath);
+		rs.set_pattern(solid_color_pattern_builder(rgba_color::teal).get_pattern());
+		rs.stroke();
+
+		rs.set_path(secondRectPath);
+		rs.set_pattern(solid_color_pattern_builder(rgba_color::red).get_pattern());
+		rs.stroke();
+
+		if (clipToTriangle) {
+			rs.set_path(triangleClipPath);
+			rs.set_pattern(solid_color_pattern_builder(rgba_color::yellow).get_pattern());
+			rs.stroke();
+		}
+	}
+	//rs.flush();
+	//rs.write_to_png("D:\\michael\\00test2.png");
+
+	rs.restore();
+}
+
+void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	static double timer = 0.0;
 	const double power = 3.0, lerpTime = 1250.0, phaseTime = lerpTime + 500.0, pi = 3.1415926535897932;
 	const double normalizedTime = min(fmod(timer, phaseTime) / lerpTime, 1.0);
@@ -134,5 +230,19 @@ void sample_draw::operator()(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.set_pattern(linearPattern.get_pattern());
 	rs.fill();
 
+	image_surface imgSurf(format::argb32, 10, 10);
+	auto transparentYellow = solid_color_pattern_builder({ 0.5, 1.0, 0.8, 0.5 }).get_pattern();
+	imgSurf.set_pattern(transparentYellow);
+	imgSurf.paint();
+	auto d1 = imgSurf.get_data();
+	imgSurf.set_pattern(redPattern);
+	pb.reset();
+	pb.rect({ 0.0, 0.0, 2.0, 2.0 });
+	imgSurf.set_path(pb.get_path());
+	imgSurf.set_compositing_operator(compositing_operator::dest_atop);
+	imgSurf.fill();
+	auto d2 = imgSurf.get_data();
+	//imgSurf.set_pattern()
+	imgSurf.write_to_png("D:\\michael\\testpost4307.png");
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }

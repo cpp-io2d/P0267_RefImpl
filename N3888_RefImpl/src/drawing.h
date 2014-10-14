@@ -111,7 +111,7 @@ namespace std {
 					dest_in,
 					dest_out,
 					dest_atop,
-					xor_compositing_operator,
+					xor_op,
 					add,
 					saturate,
 					multiply,
@@ -128,7 +128,8 @@ namespace std {
 					hsl_hue,
 					hsl_saturation,
 					hsl_color,
-					hsl_luminosity
+					hsl_luminosity,
+					default_op = over
 				};
 
 				enum class format {
@@ -369,6 +370,7 @@ namespace std {
 					const static rgba_color teal;
 					const static rgba_color thistle;
 					const static rgba_color tomato;
+					const static rgba_color transparent_black; // Note: Not in CSS3.
 					const static rgba_color turquoise;
 					const static rgba_color violet;
 					const static rgba_color wheat;
@@ -391,6 +393,8 @@ namespace std {
 					}
 				}
 #endif
+				rgba_color operator*(const rgba_color& lhs, double rhs);
+
 				struct point {
 					double x;
 					double y;
@@ -971,6 +975,7 @@ namespace std {
 					void set_device_offset(const point& offset);
 					point get_device_offset() const;
 					void write_to_png(const ::std::string& filename);
+					image_surface map_to_image();
 					image_surface map_to_image(const rectangle& extents);
 					void unmap_image(image_surface& image);
 					bool has_surface_resource() const;
@@ -1102,7 +1107,7 @@ namespace std {
 
 				int format_stride_for_width(format format, int width);
 				surface make_surface(surface::native_handle_type nh); // parameters are exposition only.
-				surface make_surface(format format, int width, int height); // parameters are exposition only.
+				image_surface make_image_surface(format format, int width, int height); // parameters are exposition only.
 #if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510) 
 			}
 #endif
