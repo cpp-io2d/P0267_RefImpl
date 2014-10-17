@@ -56,7 +56,7 @@ point point::operator/=(double rhs) {
 namespace std {
 	namespace experimental {
 		namespace drawing {
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
 				point operator+(const point& lhs) {
@@ -98,7 +98,11 @@ namespace std {
 				point operator/(const point& lhs, double rhs) {
 					return point{ lhs.x / rhs, lhs.y / rhs };
 				}
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+
+				bool operator==(const point& lhs, const point& rhs) {
+					return lhs.x == rhs.x && lhs.y == rhs.y;
+				}
+#if _Inline_namespace_conditional_support_test
 			}
 #endif
 		}

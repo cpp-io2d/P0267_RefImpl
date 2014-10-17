@@ -8,7 +8,8 @@ using namespace std;
 using namespace std::experimental::drawing;
 
 path_builder::path_builder()
-	: _Data()
+	: _Lock()
+	, _Data()
 	, _Has_current_point()
 	, _Current_point()
 	, _Extents_pt0()
@@ -17,18 +18,61 @@ path_builder::path_builder()
 	, _Origin() {
 }
 
+path_builder::path_builder(const path_builder& other)
+	: _Lock()
+	, _Data()
+	, _Has_current_point()
+	, _Current_point()
+	, _Extents_pt0()
+	, _Extents_pt1()
+	, _Transform_matrix()
+	, _Origin() {
+	lock_guard<recursive_mutex> lg(other._Lock); // Can throw system_error if max number of recursions has been reached.
+	_Data = other._Data;
+	_Has_current_point = other._Has_current_point;
+	_Current_point = other._Current_point;
+	_Extents_pt0 = other._Extents_pt0;
+	_Extents_pt1 = other._Extents_pt1;
+	_Transform_matrix = other._Transform_matrix;
+	_Origin = other._Origin;
+}
+
+path_builder& path_builder::operator=(const path_builder& other) {
+	if (this != &other) {
+		lock_guard<recursive_mutex> lg(other._Lock); // Can throw system_error if max number of recursions has been reached.
+		_Data = move(other._Data);
+		_Has_current_point = move(other._Has_current_point);
+		_Current_point = move(other._Current_point);
+		_Extents_pt0 = move(other._Extents_pt0);
+		_Extents_pt1 = move(other._Extents_pt1);
+		_Transform_matrix = move(other._Transform_matrix);
+		_Origin = move(other._Origin);
+	}
+	return *this;
+}
+
 path_builder::path_builder(path_builder&& other)
-	: _Data(move(other._Data))
-	, _Has_current_point(move(other._Has_current_point))
-	, _Current_point(move(other._Current_point))
-	, _Extents_pt0(move(other._Extents_pt0))
-	, _Extents_pt1(move(other._Extents_pt1))
-	, _Transform_matrix(move(other._Transform_matrix))
-	, _Origin(move(other._Origin)) {
+	: _Lock()
+	, _Data()
+	, _Has_current_point()
+	, _Current_point()
+	, _Extents_pt0()
+	, _Extents_pt1()
+	, _Transform_matrix()
+	, _Origin() {
+	lock_guard<recursive_mutex> lg(other._Lock); // Can throw system_error if max number of recursions has been reached.
+	_Data = move(other._Data);
+	_Has_current_point = move(other._Has_current_point);
+	_Current_point = move(other._Current_point);
+	_Extents_pt0 = move(other._Extents_pt0);
+	_Extents_pt1 = move(other._Extents_pt1);
+	_Transform_matrix = move(other._Transform_matrix);
+	_Origin = move(other._Origin);
 }
 
 path_builder& path_builder::operator=(path_builder&& other) {
 	if (this != &other) {
+		lock_guard<recursive_mutex> lg(other._Lock); // Can throw system_error if max number of recursions has been reached.
 		_Data = move(other._Data);
 		_Has_current_point = move(other._Has_current_point);
 		_Current_point = move(other._Current_point);
@@ -41,11 +85,8 @@ path_builder& path_builder::operator=(path_builder&& other) {
 }
 
 path path_builder::get_path() const {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	return path(*this);
-}
-
-path path_builder::get_path_flat() const {
-	throw runtime_error("Not implemented yet.");
 }
 
 bool path_builder::has_current_point() {
@@ -53,38 +94,58 @@ bool path_builder::has_current_point() {
 }
 
 void path_builder::append_path(const path& p) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	const auto& data = p.get_data_ref();
 	for (const auto& item : data) {
 		_Data.push_back(item);
+		if (item.type == path_data_type::change_matrix) {
+			_Transform_matrix = item.data.matrix;
+		}
+		if (item.type == path_data_type::change_origin) {
+			_Origin = item.data.origin;
+		}
 	}
 	_Has_current_point = p._Has_current_point;
 	_Current_point = p._Current_point;
 }
 
 void path_builder::append_path(const path_builder& p) {
+	lock_guard<recursive_mutex> plg(p._Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	for (const auto& item : p._Data) {
 		_Data.push_back(item);
+		if (item.type == path_data_type::change_matrix) {
+			_Transform_matrix = item.data.matrix;
+		}
+		if (item.type == path_data_type::change_origin) {
+			_Origin = item.data.origin;
+		}
 	}
 	_Has_current_point = p._Has_current_point;
 	_Current_point = p._Current_point;
 }
 
 point path_builder::get_current_point() {
-	assert(has_current_point());
-	return point((*_Data.crend()).pt);
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	if (_Has_current_point) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
+	}
+	return _Current_point;
 }
 
 void path_builder::new_sub_path() {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	path_data pd{ };
-	pd.header.type = path_data_type::new_sub_path;
-	pd.header.length = 1;
+	pd.type = path_data_type::new_sub_path;
+	pd.data.unused = 0;
 	_Data.push_back(pd);
 }
 
 void path_builder::close_path() {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	path_data pd{ };
-	pd.header.type = path_data_type::close_path;
-	pd.header.length = 1;
+	pd.type = path_data_type::close_path;
+	pd.data.unused = 0;
 	_Data.push_back(pd);
 }
 
@@ -97,7 +158,8 @@ point _Rotate_point(const point& pt, double angle, bool clockwise = true) {
 	}
 }
 
-void _Add_arc_as_beziers_to_path_builder(const point& center, double radius, double angle1, double angle2, path_builder& pb, bool arcNegative = false) {
+// Returns a path_data composed of 
+vector<path_data> _Get_arc_as_beziers(const point& center, double radius, double angle1, double angle2, bool arcNegative, bool hasCurrentPoint, const point& currentPoint, const point& origin, const matrix_2d& matrix) {
 	if (arcNegative) {
 		while (angle2 > angle1) {
 			angle2 -= _PI * 2.0;
@@ -167,17 +229,25 @@ void _Add_arc_as_beziers_to_path_builder(const point& center, double radius, dou
 	}
 
 	auto currentTheta = angle1;
+	path_builder pb;
+	pb.set_origin(origin);
+	pb.set_transform_matrix(matrix);
+
+	if (hasCurrentPoint) {
+		pb.move_to(currentPoint);
+	}
 
 	const auto startPoint = center + _Rotate_point(pt0 * radius, currentTheta);
 	if (pb.has_current_point()) {
-		pb.line_to(center + _Rotate_point(pt0 * radius, currentTheta));
+		pb.line_to(startPoint);
 	}
 	else {
 		pb.new_sub_path();
+		pb.move_to(startPoint);
 	}
 
-	pb.move_to(center);
-	pb.line_to(startPoint);
+	//pb.move_to(center);
+	//pb.line_to(startPoint);
 
 	// We start at the point derived from angle1 and continue adding beziers until the count reaches zero.
 	// The point we have is already rotated by half of theta.
@@ -195,68 +265,115 @@ void _Add_arc_as_beziers_to_path_builder(const point& center, double radius, dou
 			currentTheta += theta;
 		}
 	}
-	pb.line_to(center);
-	pb.close_path();
+	//pb.line_to(center);
+	return pb.get_data();
 }
 
 void path_builder::arc(const point& center, double radius, double angle1, double angle2) {
-	_Add_arc_as_beziers_to_path_builder(center, radius, angle1, angle2, *this, false);
-	close_path();
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	//_Add_arc_as_beziers_to_path_builder(center, radius, angle1, angle2, *this, false);
+	path_data pd;
+	pd.type = path_data_type::arc;
+	pd.data.arc.center = center;
+	pd.data.arc.radius = radius;
+	pd.data.arc.angle1 = angle1;
+	pd.data.arc.angle2 = angle2;
+	_Data.push_back(pd);
+	auto data = _Get_arc_as_beziers(center, radius, angle1, angle2, false, _Has_current_point, _Current_point);
+	if (data.size() > 0) {
+		const auto& lastItem = *data.crbegin();
+		if (lastItem.type == path_data_type::curve_to) {
+			_Has_current_point = true;
+			_Current_point = lastItem.data.curve.pt3;
+		}
+		else if (lastItem.type == path_data_type::line_to) {
+			_Has_current_point = true;
+			_Current_point = lastItem.data.line;
+		}
+		else if (lastItem.type == path_data_type::move_to) {
+			_Has_current_point = true;
+			_Current_point = lastItem.data.move;
+		}
+		else {
+			assert("_Get_arc_as_beziers returned unexpected path_data value." && false);
+		}
+	}
+	//close_path();
 }
 
 void path_builder::arc_negative(const point& center, double radius, double angle1, double angle2) {
-	_Add_arc_as_beziers_to_path_builder(center, radius, angle1, angle2, *this, true);
-	close_path();
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	//_Add_arc_as_beziers_to_path_builder(center, radius, angle1, angle2, *this, true);
+	path_data pd;
+	pd.type = path_data_type::arc_negative;
+	pd.data.arc.center = center;
+	pd.data.arc.radius = radius;
+	pd.data.arc.angle1 = angle1;
+	pd.data.arc.angle2 = angle2;
+	_Data.push_back(pd);
+	auto data = _Get_arc_as_beziers(center, radius, angle1, angle2, true, _Has_current_point, _Current_point);
+	if (data.size() > 0) {
+		const auto& lastItem = *data.crbegin();
+		if (lastItem.type == path_data_type::curve_to) {
+			_Has_current_point = true;
+			_Current_point = lastItem.data.curve.pt3;
+		}
+		else if (lastItem.type == path_data_type::line_to) {
+			_Has_current_point = true;
+			_Current_point = lastItem.data.line;
+		}
+		else if (lastItem.type == path_data_type::move_to) {
+			_Has_current_point = true;
+			_Current_point = lastItem.data.move;
+		}
+		else {
+			assert("_Get_arc_as_beziers returned unexpected path_data value." && false);
+		}
+	}
+	//close_path();
 }
 
 void path_builder::curve_to(const point& pt0, const point& pt1, const point& pt2) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	if (!_Has_current_point) {
 		move_to(pt0);
 	}
 	path_data pd;
-	pd.header.type = path_data_type::curve_to;
-	pd.header.length = 4;
-	_Data.push_back(pd);
-	pd = { };
-	pd.pt = _Transform_matrix.transform_point(pt0 - _Origin) + _Origin;
-	_Data.push_back(pd);
-	pd.pt = _Transform_matrix.transform_point(pt1 - _Origin) + _Origin;
-	_Data.push_back(pd);
-	pd.pt = _Transform_matrix.transform_point(pt2 - _Origin) + _Origin;
+	pd.type = path_data_type::curve_to;
+	pd.data.curve.pt1 = pt0;//_Transform_matrix.transform_point(pt0 - _Origin) + _Origin;
+	pd.data.curve.pt2 = pt1;//_Transform_matrix.transform_point(pt1 - _Origin) + _Origin;
+	pd.data.curve.pt3 = pt2;//_Transform_matrix.transform_point(pt2 - _Origin) + _Origin;
 	_Data.push_back(pd);
 	_Has_current_point = true;
-	_Current_point = pd.pt;
+	_Current_point = pd.data.curve.pt3;
 }
 
 void path_builder::line_to(const point& pt) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	path_data pd;
 	if (!_Has_current_point) {
 		move_to(pt);
 		return;
 	}
-	pd.header.type = path_data_type::line_to;
-	pd.header.length = 2;
-	_Data.push_back(pd);
-	pd = { };
-	pd.pt = _Transform_matrix.transform_point(pt - _Origin) + _Origin;
+	pd.type = path_data_type::line_to;
+	pd.data.line = pt;//_Transform_matrix.transform_point(pt - _Origin) + _Origin;
 	_Data.push_back(pd);
 	_Has_current_point = true;
-	_Current_point = pd.pt;
+	_Current_point = pd.data.line;
 }
 
 void path_builder::move_to(const point& pt) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	path_data pd;
-	pd.header.type = path_data_type::move_to;
-	pd.header.length = 2;
-	_Data.push_back(pd);
-	pd = { };
-	pd.pt = _Transform_matrix.transform_point(pt - _Origin) + _Origin;
+	pd.type = path_data_type::move_to;
+	pd.data.move = pt;//_Transform_matrix.transform_point(pt - _Origin) + _Origin;
 	_Data.push_back(pd);
 	_Has_current_point = true;
-	_Current_point = pd.pt;
+	_Current_point = pd.data.move;
 }
 
 void path_builder::rect(const experimental::drawing::rectangle& r) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	move_to({ r.x, r.y });
 	line_to({ r.x + r.width, r.y });
 	line_to({ r.x + r.width, r.y + r.height });
@@ -265,51 +382,81 @@ void path_builder::rect(const experimental::drawing::rectangle& r) {
 }
 
 void path_builder::rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	if (!_Has_current_point) {
-		throw system_error(CAIRO_STATUS_NO_CURRENT_POINT);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
-	curve_to(dpt0 + _Current_point, dpt1 + _Current_point, dpt2 + _Current_point);
+	path_data pd;
+	pd.type = path_data_type::rel_curve_to;
+	pd.data.curve.pt1 = dpt0;
+	pd.data.curve.pt2 = dpt1;
+	pd.data.curve.pt3 = dpt2;
+	_Data.push_back(pd);
+	_Has_current_point = true;
+	_Current_point = _Current_point + dpt2;
 }
 
 void path_builder::rel_line_to(const point& dpt) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	if (!_Has_current_point) {
-		throw system_error(CAIRO_STATUS_NO_CURRENT_POINT);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
-	line_to(dpt + _Current_point);
+	path_data pd;
+	pd.type = path_data_type::rel_line_to;
+	pd.data.line = dpt;
+	_Data.push_back(pd);
+	_Has_current_point = true;
+	_Current_point = _Current_point + dpt;
 }
 
 void path_builder::rel_move_to(const point& dpt) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	if (!_Has_current_point) {
 		throw system_error(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
-	move_to(dpt + _Current_point);
+	path_data pd;
+	pd.type = path_data_type::rel_move_to;
+	pd.data.move = dpt;
+	_Data.push_back(pd);
+	_Has_current_point = true;
+	_Current_point = _Current_point + dpt;
 }
 
 void path_builder::set_transform_matrix(const matrix_2d& m) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	_Transform_matrix = m;
+	path_data pd;
+	pd.type = path_data_type::change_matrix;
+	pd.data.matrix = m;
+	_Data.push_back(pd);
 }
 
 matrix_2d path_builder::get_transform_matrix() const {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	return _Transform_matrix;
 }
 
 void path_builder::set_origin(const point& pt) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	_Origin = pt;
+	path_data pd;
+	pd.type = path_data_type::change_origin;
+	pd.data.origin = pt;
+	_Data.push_back(pd);
 }
 
 point path_builder::get_origin() const {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	return _Origin;
 }
 
 vector<path_data> path_builder::get_data() const {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	return vector<path_data>(_Data);
 }
 
 const vector<path_data>& path_builder::get_data_ref() const {
-	return _Data;
-}
-
-vector<path_data>& path_builder::get_data_ref() {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	return _Data;
 }
 
@@ -639,45 +786,61 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 }
 
 rectangle path_builder::get_path_extents() const {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	point pt0{ };
 	point pt1{ };
+
+	matrix_2d currMatrix = matrix_2d::init_identity();
+	point currOrigin{ };
+
 	bool hasLastPoint = false;
 	bool hasExtents = false;
-	point lastPoint{ };
-	// pt0 will hold min values; pt1 will hold max values.
-	for (auto i = 0U; i < _Data.size(); i += _Data[i].header.length) {
-		auto type = _Data[i].header.type;
 
-		switch (type) {
+	point lastPoint{ };
+
+	// pt0 will hold min values; pt1 will hold max values.
+	for (auto i = 0U; i < _Data.size(); i++) {
+		const auto& item = _Data[i];
+		auto type = item.type;
+		switch (type)
+		{
 		case std::experimental::drawing::path_data_type::move_to:
-			lastPoint = _Data[i + 1].pt;
+			lastPoint = currMatrix.transform_point(item.data.move - currOrigin) + currOrigin;
 			hasLastPoint = true;
 			break;
 		case std::experimental::drawing::path_data_type::line_to:
 			if (hasLastPoint) {
+				auto itemPt = currMatrix.transform_point(item.data.line - currOrigin) + currOrigin;
 				if (!hasExtents) {
 					hasExtents = true;
-					pt0.x = min(lastPoint.x, _Data[i + 1].pt.x);
-					pt1.x = max(lastPoint.x, _Data[i + 1].pt.x);
-					pt0.y = min(lastPoint.y, _Data[i + 1].pt.y);
-					pt1.y = max(lastPoint.y, _Data[i + 1].pt.y);
+					pt0.x = min(lastPoint.x, itemPt.x);
+					pt0.y = min(lastPoint.y, itemPt.y);
+					pt1.x = max(lastPoint.x, itemPt.x);
+					pt1.y = max(lastPoint.y, itemPt.y);
 				}
 				else {
-					pt0.x = min(min(pt0.x, lastPoint.x), _Data[i + 1].pt.x);
-					pt0.y = min(min(pt0.y, lastPoint.y), _Data[i + 1].pt.y);
-					pt1.x = max(max(pt1.x, lastPoint.x), _Data[i + 1].pt.x);
-					pt1.y = max(max(pt1.y, lastPoint.y), _Data[i + 1].pt.y);
+					pt0.x = min(min(pt0.x, lastPoint.x), itemPt.x);
+					pt0.y = min(min(pt0.y, lastPoint.y), itemPt.y);
+					pt1.x = max(max(pt1.x, lastPoint.x), itemPt.x);
+					pt1.y = max(max(pt1.y, lastPoint.y), itemPt.y);
 				}
 			}
 			else {
-				throw system_error(CAIRO_STATUS_INVALID_PATH_DATA);
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
 			}
 			break;
 		case std::experimental::drawing::path_data_type::curve_to:
 		{
+			if (!hasLastPoint) {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
+			}
 			point cte0{ }, cte1{ };
-			_Curve_to_extents(lastPoint, _Data[i + 1].pt, _Data[i + 2].pt, _Data[i + 3].pt, cte0, cte1);
+			auto itemPt1 = currMatrix.transform_point(item.data.curve.pt1 - currOrigin) + currOrigin;
+			auto itemPt2 = currMatrix.transform_point(item.data.curve.pt2 - currOrigin) + currOrigin;
+			auto itemPt3 = currMatrix.transform_point(item.data.curve.pt3 - currOrigin) + currOrigin;
+			_Curve_to_extents(lastPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
 			if (!hasExtents) {
+				hasExtents = true;
 				pt0.x = min(cte0.x, cte1.x);
 				pt0.y = min(cte0.y, cte1.y);
 				pt1.x = max(cte0.x, cte1.x);
@@ -697,13 +860,321 @@ rectangle path_builder::get_path_extents() const {
 		case std::experimental::drawing::path_data_type::close_path:
 			hasLastPoint = false;
 			break;
+		case std::experimental::drawing::path_data_type::rel_move_to:
+			if (!hasLastPoint) {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+			}
+			lastPoint = currMatrix.transform_point((item.data.move + lastPoint) - currOrigin) + currOrigin;
+			hasLastPoint = true;
+			break;
+		case std::experimental::drawing::path_data_type::rel_line_to:
+			if (hasLastPoint) {
+				auto itemPt = currMatrix.transform_point((item.data.line + lastPoint) - currOrigin) + currOrigin;
+				if (!hasExtents) {
+					hasExtents = true;
+					pt0.x = min(lastPoint.x, itemPt.x);
+					pt0.y = min(lastPoint.y, itemPt.y);
+					pt1.x = max(lastPoint.x, itemPt.x);
+					pt1.y = max(lastPoint.y, itemPt.y);
+				}
+				else {
+					pt0.x = min(min(pt0.x, lastPoint.x), itemPt.x);
+					pt0.y = min(min(pt0.y, lastPoint.y), itemPt.y);
+					pt1.x = max(max(pt1.x, lastPoint.x), itemPt.x);
+					pt1.y = max(max(pt1.y, lastPoint.y), itemPt.y);
+				}
+			}
+			else {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+			}
+			break;
+		case std::experimental::drawing::path_data_type::rel_curve_to:
+		{
+			if (!hasLastPoint) {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
+			}
+			point cte0{ }, cte1{ };
+			auto itemPt1 = currMatrix.transform_point((item.data.curve.pt1 + lastPoint) - currOrigin) + currOrigin;
+			auto itemPt2 = currMatrix.transform_point((item.data.curve.pt2 + lastPoint) - currOrigin) + currOrigin;
+			auto itemPt3 = currMatrix.transform_point((item.data.curve.pt3 + lastPoint) - currOrigin) + currOrigin;
+			_Curve_to_extents(lastPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
+			if (!hasExtents) {
+				hasExtents = true;
+				pt0.x = min(cte0.x, cte1.x);
+				pt0.y = min(cte0.y, cte1.y);
+				pt1.x = max(cte0.x, cte1.x);
+				pt1.y = max(cte0.y, cte1.y);
+			}
+			else {
+				pt0.x = min(min(pt0.x, cte0.x), cte1.x);
+				pt0.y = min(min(pt0.y, cte0.y), cte1.y);
+				pt1.x = max(max(pt1.x, cte0.x), cte1.x);
+				pt1.y = max(max(pt1.y, cte0.y), cte1.y);
+			}
+		}
+			break;
+		case std::experimental::drawing::path_data_type::arc:
+		{
+			auto data = _Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, false, hasLastPoint, lastPoint, currOrigin, currMatrix);
+			for (const auto& arcItem : data) {
+				switch (arcItem.type) {
+				case std::experimental::drawing::path_data_type::move_to:
+					lastPoint = currMatrix.transform_point(arcItem.data.move - currOrigin) + currOrigin;
+					hasLastPoint = true;
+					break;
+				case std::experimental::drawing::path_data_type::line_to:
+					if (hasLastPoint) {
+						auto itemPt = currMatrix.transform_point(arcItem.data.line - currOrigin) + currOrigin;
+						if (!hasExtents) {
+							hasExtents = true;
+							pt0.x = min(lastPoint.x, itemPt.x);
+							pt0.y = min(lastPoint.y, itemPt.y);
+							pt1.x = max(lastPoint.x, itemPt.x);
+							pt1.y = max(lastPoint.y, itemPt.y);
+						}
+						else {
+							pt0.x = min(min(pt0.x, lastPoint.x), itemPt.x);
+							pt0.y = min(min(pt0.y, lastPoint.y), itemPt.y);
+							pt1.x = max(max(pt1.x, lastPoint.x), itemPt.x);
+							pt1.y = max(max(pt1.y, lastPoint.y), itemPt.y);
+						}
+					}
+					else {
+						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+					}
+					break;
+				case std::experimental::drawing::path_data_type::curve_to:
+				{
+					if (!hasLastPoint) {
+						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
+					}
+					point cte0{ }, cte1{ };
+					auto itemPt1 = currMatrix.transform_point(arcItem.data.curve.pt1 - currOrigin) + currOrigin;
+					auto itemPt2 = currMatrix.transform_point(arcItem.data.curve.pt2 - currOrigin) + currOrigin;
+					auto itemPt3 = currMatrix.transform_point(arcItem.data.curve.pt3 - currOrigin) + currOrigin;
+					_Curve_to_extents(lastPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
+					if (!hasExtents) {
+						hasExtents = true;
+						pt0.x = min(cte0.x, cte1.x);
+						pt0.y = min(cte0.y, cte1.y);
+						pt1.x = max(cte0.x, cte1.x);
+						pt1.y = max(cte0.y, cte1.y);
+					}
+					else {
+						pt0.x = min(min(pt0.x, cte0.x), cte1.x);
+						pt0.y = min(min(pt0.y, cte0.y), cte1.y);
+						pt1.x = max(max(pt1.x, cte0.x), cte1.x);
+						pt1.y = max(max(pt1.y, cte0.y), cte1.y);
+					}
+				}
+					break;
+				case path_data_type::change_origin:
+				{
+					// Ignore, we're already dealing with this.
+				}
+					break;
+
+				case path_data_type::change_matrix:
+				{
+					// Ignore, we're already dealing with this.
+				}
+					break;
+				case path_data_type::new_sub_path:
+				{
+					// Ignore, we don't need this.
+				}
+					break;
+				default:
+					assert("Unexpected path_data_type in arc." && false);
+					break;
+				}
+			}
+		}
+			break;
+		case std::experimental::drawing::path_data_type::arc_negative:
+		{
+			auto data = _Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, true, hasLastPoint, lastPoint, currOrigin, currMatrix);
+			for (const auto& arcItem : data) {
+				switch (arcItem.type) {
+				case std::experimental::drawing::path_data_type::move_to:
+					lastPoint = currMatrix.transform_point(arcItem.data.move - currOrigin) + currOrigin;
+					hasLastPoint = true;
+					break;
+				case std::experimental::drawing::path_data_type::line_to:
+					if (hasLastPoint) {
+						auto itemPt = currMatrix.transform_point(arcItem.data.line - currOrigin) + currOrigin;
+						if (!hasExtents) {
+							hasExtents = true;
+							pt0.x = min(lastPoint.x, itemPt.x);
+							pt0.y = min(lastPoint.y, itemPt.y);
+							pt1.x = max(lastPoint.x, itemPt.x);
+							pt1.y = max(lastPoint.y, itemPt.y);
+						}
+						else {
+							pt0.x = min(min(pt0.x, lastPoint.x), itemPt.x);
+							pt0.y = min(min(pt0.y, lastPoint.y), itemPt.y);
+							pt1.x = max(max(pt1.x, lastPoint.x), itemPt.x);
+							pt1.y = max(max(pt1.y, lastPoint.y), itemPt.y);
+						}
+					}
+					else {
+						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+					}
+					break;
+				case std::experimental::drawing::path_data_type::curve_to:
+				{
+					if (!hasLastPoint) {
+						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
+					}
+					point cte0{ }, cte1{ };
+					auto itemPt1 = currMatrix.transform_point(arcItem.data.curve.pt1 - currOrigin) + currOrigin;
+					auto itemPt2 = currMatrix.transform_point(arcItem.data.curve.pt2 - currOrigin) + currOrigin;
+					auto itemPt3 = currMatrix.transform_point(arcItem.data.curve.pt3 - currOrigin) + currOrigin;
+					_Curve_to_extents(lastPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
+					if (!hasExtents) {
+						hasExtents = true;
+						pt0.x = min(cte0.x, cte1.x);
+						pt0.y = min(cte0.y, cte1.y);
+						pt1.x = max(cte0.x, cte1.x);
+						pt1.y = max(cte0.y, cte1.y);
+					}
+					else {
+						pt0.x = min(min(pt0.x, cte0.x), cte1.x);
+						pt0.y = min(min(pt0.y, cte0.y), cte1.y);
+						pt1.x = max(max(pt1.x, cte0.x), cte1.x);
+						pt1.y = max(max(pt1.y, cte0.y), cte1.y);
+					}
+				}
+					break;
+				case path_data_type::change_origin:
+				{
+					// Ignore, we're already dealing with this.
+				}
+					break;
+
+				case path_data_type::change_matrix:
+				{
+					// Ignore, we're already dealing with this.
+				}
+					break;
+				case path_data_type::new_sub_path:
+				{
+					// Ignore, we don't need this.
+				}
+					break;
+				default:
+					assert("Unexpected path_data_type in arc." && false);
+					break;
+				}
+			}
+		}
+			break;
+		case std::experimental::drawing::path_data_type::change_matrix:
+			currMatrix = item.data.matrix;
+			break;
+		case std::experimental::drawing::path_data_type::change_origin:
+			currOrigin = item.data.origin;
+			break;
 		default:
-			throw system_error(CAIRO_STATUS_INVALID_PATH_DATA);
+			assert("Unknown path_data_type in path_data." && false);
+			break;
 		}
 	}
 	return{ pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y };
 }
 
+void path_builder::insert_path_data(unsigned int index, const path_data& pd) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	if (index > _Data.size()) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
+	}
+	_Data.insert(_Data.cbegin() + index, pd);
+}
+
+path_data path_builder::replace_path_data(unsigned int index, const path_data& pd) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	if (index >= _Data.size()) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
+	}
+	auto oldPd = _Data[index];
+	_Data[index] = pd;
+	return oldPd;
+}
+
+void path_builder::remove_path_data(unsigned int index) {
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	if (index >= _Data.size()) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
+	}
+	_Data.erase(remove(begin(_Data) + index, begin(_Data) + index, _Data[index]), end(_Data));
+}
+
 void path_builder::reset() {
-	*this = path_builder();
+	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	_Data = { };
+	_Has_current_point = { };
+	_Current_point = { };
+	_Extents_pt0 = { };
+	_Extents_pt1 = { };
+	_Transform_matrix = matrix_2d::init_identity();
+	_Origin = { };
+}
+
+namespace std {
+	namespace experimental {
+		namespace drawing {
+#if _Inline_namespace_conditional_support_test
+			inline namespace v1 {
+#endif
+				bool operator==(const path_data& lhs, const path_data& rhs) {
+					if (lhs.type != rhs.type) {
+						return false;
+					}
+					auto type = lhs.type;
+					switch (type)
+					{
+					case std::experimental::drawing::path_data_type::move_to:
+						return lhs.data.move == rhs.data.move;
+					case std::experimental::drawing::path_data_type::line_to:
+						return lhs.data.line == rhs.data.line;
+					case std::experimental::drawing::path_data_type::curve_to:
+						return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
+							lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
+							lhs.data.curve.pt3 == rhs.data.curve.pt3;
+					case std::experimental::drawing::path_data_type::new_sub_path:
+						return true;
+					case std::experimental::drawing::path_data_type::close_path:
+						return true;
+					case std::experimental::drawing::path_data_type::rel_move_to:
+						return lhs.data.move == rhs.data.move;
+					case std::experimental::drawing::path_data_type::rel_line_to:
+						return lhs.data.line == rhs.data.line;
+					case std::experimental::drawing::path_data_type::rel_curve_to:
+						return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
+							lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
+							lhs.data.curve.pt3 == rhs.data.curve.pt3;
+					case std::experimental::drawing::path_data_type::arc:
+						return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
+							lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
+							lhs.data.arc.center == rhs.data.arc.center &&
+							lhs.data.arc.radius == rhs.data.arc.radius;
+					case std::experimental::drawing::path_data_type::arc_negative:
+						return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
+							lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
+							lhs.data.arc.center == rhs.data.arc.center &&
+							lhs.data.arc.radius == rhs.data.arc.radius;
+					case std::experimental::drawing::path_data_type::change_matrix:
+						return lhs.data.matrix == rhs.data.matrix;
+					case std::experimental::drawing::path_data_type::change_origin:
+						return lhs.data.origin == rhs.data.origin;
+					default:
+						assert("Unknown path_data_type!" && false);
+						return false;
+				}
+				}
+#if _Inline_namespace_conditional_support_test
+			}
+#endif
+		}
+	}
 }

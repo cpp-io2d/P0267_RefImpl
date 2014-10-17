@@ -142,14 +142,6 @@ namespace std {
 					rgb30
 				};
 
-				enum class path_data_type {
-					move_to,
-					line_to,
-					curve_to,
-					new_sub_path,
-					close_path
-				};
-
 				enum class extend {
 					none,
 					repeat,
@@ -208,6 +200,21 @@ namespace std {
 					default_hint_metrics,
 					off,
 					on
+				};
+
+				enum class path_data_type {
+					move_to,
+					line_to,
+					curve_to,
+					new_sub_path,
+					close_path,
+					rel_move_to,
+					rel_line_to,
+					rel_curve_to,
+					arc,
+					arc_negative,
+					change_matrix,
+					change_origin
 				};
 
 				namespace text_cluster_flags {
@@ -419,6 +426,7 @@ namespace std {
 				point operator*(const point& lhs, double rhs);
 				point operator/(const point& lhs, const point& rhs);
 				point operator/(const point& lhs, double rhs);
+				bool operator==(const point& lhs, const point& rhs);
 
 				struct glyph {
 					unsigned long index;
@@ -477,15 +485,30 @@ namespace std {
 				};
 
 				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs);
-
-				union path_data
-				{
-					struct {
-						path_data_type type;
-						int length;
-					} header;
-					point pt;
+				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs);
+				struct path_data {
+					path_data_type type;
+					union {
+						point move;
+						point line;
+						struct {
+							point pt1;
+							point pt2;
+							point pt3;
+						} curve;
+						point origin;
+						struct {
+							point center;
+							double radius;
+							double angle1;
+							double angle2;
+						} arc;
+						matrix_2d matrix;
+						int unused;
+					} data;
 				};
+
+				bool operator==(const path_data& lhs, const path_data& rhs);
 
 				// Forward declaration.
 				class path_builder;
@@ -513,6 +536,7 @@ namespace std {
 
 				class path_builder {
 					friend class path;
+					mutable ::std::recursive_mutex _Lock;
 					::std::vector<path_data> _Data;
 					bool _Has_current_point;
 					point _Current_point;
@@ -523,13 +547,12 @@ namespace std {
 
 				public:
 					path_builder();
-					path_builder(const path_builder& other) = default;
-					path_builder& operator=(const path_builder& other) = default;
+					path_builder(const path_builder& other);
+					path_builder& operator=(const path_builder& other);
 					path_builder(path_builder&& other);
 					path_builder& operator=(path_builder&& other);
 
 					path get_path() const;
-					path get_path_flat() const;
 					rectangle get_path_extents() const;
 
 					void append_path(const path& p);
@@ -554,8 +577,12 @@ namespace std {
 					point get_origin() const;
 
 					::std::vector<path_data> get_data() const;
+					path_data get_data(unsigned int index) const;
 					const ::std::vector<path_data>& get_data_ref() const;
-					::std::vector<path_data>& get_data_ref();
+
+					void insert_path_data(unsigned int index, const path_data& pd);
+					path_data replace_path_data(unsigned int index, const path_data& pd);
+					void remove_path_data(unsigned int index);
 
 					void reset();
 				};

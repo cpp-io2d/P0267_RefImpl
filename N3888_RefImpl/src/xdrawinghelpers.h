@@ -29,3 +29,5 @@ template <typename T>
 T _Degrees_to_radians(T degrees) {
 	return degrees * static_cast<T>(3.1415926535897932384626433832795L) / static_cast<T>(180.0L);
 }
+
+::std::vector<::std::experimental::drawing::path_data> _Get_arc_as_beziers(const ::std::experimental::drawing::point& center, double radius, double angle1, double angle2, bool arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::drawing::point& currentPoint = { }, const ::std::experimental::drawing::point& origin = { }, const ::std::experimental::drawing::matrix_2d& matrix = ::std::experimental::drawing::matrix_2d::init_identity());

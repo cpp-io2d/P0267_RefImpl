@@ -45,55 +45,106 @@ mesh_pattern_builder& mesh_pattern_builder::operator=(mesh_pattern_builder&& oth
 }
 
 pattern mesh_pattern_builder::get_pattern() {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> upPat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
+	auto pat = upPat.get();
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
 
-	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(_Extend));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(_Filter));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(_Extend));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(_Filter));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
 	cairo_matrix_t mtrx{ _Matrix.xx, _Matrix.yx, _Matrix.xy, _Matrix.yy, _Matrix.x0, _Matrix.y0 };
-	cairo_pattern_set_matrix(pat.get(), &mtrx);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	cairo_pattern_set_matrix(pat, &mtrx);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
 
 	for (const auto& patch : _Patches) {
-		cairo_mesh_pattern_begin_patch(pat.get());
+		cairo_mesh_pattern_begin_patch(pat);
 		const auto& pathData = get<0>(patch).get_data_ref();
-		for (unsigned int i = 0; i < pathData.size(); i += pathData[i].header.length) {
-			auto type = pathData[i].header.type;
-			switch (type) {
+		auto pdSize = pathData.size();
+		for (unsigned int i = 0; i < pdSize; i++) {
+			const auto& item = pathData[i];
+			auto type = item.type;
+			switch (type)
+			{
 			case std::experimental::drawing::path_data_type::move_to:
-				cairo_mesh_pattern_move_to(pat.get(), pathData[i + 1].pt.x, pathData[i + 1].pt.y);
+			{
+				cairo_mesh_pattern_move_to(pat, item.data.move.x, item.data.move.y);
+			}
 				break;
 			case std::experimental::drawing::path_data_type::line_to:
-				cairo_mesh_pattern_line_to(pat.get(), pathData[i + 1].pt.x, pathData[i + 1].pt.y);
+			{
+				cairo_mesh_pattern_line_to(pat, item.data.line.x, item.data.line.y);
+			}
 				break;
 			case std::experimental::drawing::path_data_type::curve_to:
-				cairo_mesh_pattern_curve_to(pat.get(), pathData[i + 1].pt.x, pathData[i + 1].pt.y, pathData[i + 2].pt.x, pathData[i + 2].pt.y, pathData[i + 3].pt.x, pathData[i + 3].pt.y);
+			{
+				cairo_mesh_pattern_curve_to(pat, item.data.curve.pt1.x, item.data.curve.pt1.y, item.data.curve.pt2.x, item.data.curve.pt2.y, item.data.curve.pt3.x, item.data.curve.pt3.y);
+			}
 				break;
 			case std::experimental::drawing::path_data_type::new_sub_path:
+			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
 				break;
 			case std::experimental::drawing::path_data_type::close_path:
+			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
+				break;
+			case std::experimental::drawing::path_data_type::rel_move_to:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
+				break;
+			case std::experimental::drawing::path_data_type::rel_line_to:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
+				break;
+			case std::experimental::drawing::path_data_type::rel_curve_to:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
+				break;
+			case std::experimental::drawing::path_data_type::arc:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
+				break;
+			case std::experimental::drawing::path_data_type::arc_negative:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
+				break;
+			case std::experimental::drawing::path_data_type::change_matrix:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
+				break;
+			case std::experimental::drawing::path_data_type::change_origin:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
 				break;
 			default:
+			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			}
 				break;
 			}
 		}
 		const auto& controlPoints = get<1>(patch);
 		for (const auto& pt : controlPoints) {
-			cairo_mesh_pattern_set_control_point(pat.get(), pt.first, pt.second.x, pt.second.y);
+			cairo_mesh_pattern_set_control_point(pat, pt.first, pt.second.x, pt.second.y);
 		}
 		const auto& cornerColors = get<2>(patch);
 		for (const auto& cc : cornerColors) {
-			cairo_mesh_pattern_set_corner_color_rgba(pat.get(), cc.first, cc.second.r, cc.second.g, cc.second.b, cc.second.a);
+			cairo_mesh_pattern_set_corner_color_rgba(pat, cc.first, cc.second.r, cc.second.g, cc.second.b, cc.second.a);
 		}
-		cairo_mesh_pattern_end_patch(pat.get());
+		cairo_mesh_pattern_end_patch(pat);
 	}
-	auto pttn = pattern(pat.get());
-	pat.release();
+	auto pttn = pattern(pat);
+	upPat.release(); // Release the pattern only after it has been safely transferred to pttn.
 	return pttn;
 }
 

@@ -88,7 +88,7 @@ matrix_2d matrix_2d::operator*=(const matrix_2d& rhs) {
 namespace std {
 	namespace experimental {
 		namespace drawing {
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
 				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) {
@@ -101,7 +101,17 @@ namespace std {
 						(lhs.x0 * rhs.yx) + (lhs.y0 * rhs.yy) + lhs.y0
 					};
 				}
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+
+				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) {
+					return
+						lhs.xx == rhs.xx &&
+						lhs.yx == rhs.yx &&
+						lhs.xy == rhs.xy &&
+						lhs.yy == rhs.yy &&
+						lhs.x0 == rhs.x0 &&
+						lhs.y0 == rhs.y0;
+				}
+#if _Inline_namespace_conditional_support_test
 			}
 #endif
 		}
