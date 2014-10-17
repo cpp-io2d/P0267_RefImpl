@@ -33,15 +33,6 @@
     <ClInclude Include="throw_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="drawing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="xdrawing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="xdrawinghelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="xcairoenumhelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -49,6 +40,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sample_draw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="io2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xio2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xio2dhelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

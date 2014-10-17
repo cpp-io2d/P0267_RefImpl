@@ -1,9 +1,9 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 mesh_pattern_builder::mesh_pattern_builder()
 : _Pattern_type(pattern_type::mesh)
@@ -66,62 +66,62 @@ pattern mesh_pattern_builder::get_pattern() {
 			auto type = item.type;
 			switch (type)
 			{
-			case std::experimental::drawing::path_data_type::move_to:
+			case std::experimental::io2d::path_data_type::move_to:
 			{
 				cairo_mesh_pattern_move_to(pat, item.data.move.x, item.data.move.y);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::line_to:
+			case std::experimental::io2d::path_data_type::line_to:
 			{
 				cairo_mesh_pattern_line_to(pat, item.data.line.x, item.data.line.y);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::curve_to:
+			case std::experimental::io2d::path_data_type::curve_to:
 			{
 				cairo_mesh_pattern_curve_to(pat, item.data.curve.pt1.x, item.data.curve.pt1.y, item.data.curve.pt2.x, item.data.curve.pt2.y, item.data.curve.pt3.x, item.data.curve.pt3.y);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::new_sub_path:
+			case std::experimental::io2d::path_data_type::new_sub_path:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::close_path:
+			case std::experimental::io2d::path_data_type::close_path:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::rel_move_to:
+			case std::experimental::io2d::path_data_type::rel_move_to:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::rel_line_to:
+			case std::experimental::io2d::path_data_type::rel_line_to:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::rel_curve_to:
+			case std::experimental::io2d::path_data_type::rel_curve_to:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::arc:
+			case std::experimental::io2d::path_data_type::arc:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::arc_negative:
+			case std::experimental::io2d::path_data_type::arc_negative:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::change_matrix:
+			case std::experimental::io2d::path_data_type::change_matrix:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 			}
 				break;
-			case std::experimental::drawing::path_data_type::change_origin:
+			case std::experimental::io2d::path_data_type::change_origin:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 			}

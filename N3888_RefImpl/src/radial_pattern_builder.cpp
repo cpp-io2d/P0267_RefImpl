@@ -1,9 +1,9 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 radial_pattern_builder::radial_pattern_builder(radial_pattern_builder&& other)
 : _Pattern_type(move(other._Pattern_type))

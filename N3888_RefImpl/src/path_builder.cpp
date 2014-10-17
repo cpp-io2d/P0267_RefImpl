@@ -1,11 +1,11 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 #include <algorithm>
 #include <limits>
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 path_builder::path_builder()
 	: _Lock()
@@ -372,7 +372,7 @@ void path_builder::move_to(const point& pt) {
 	_Current_point = pd.data.move;
 }
 
-void path_builder::rect(const experimental::drawing::rectangle& r) {
+void path_builder::rect(const experimental::io2d::rectangle& r) {
 	lock_guard<recursive_mutex> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	move_to({ r.x, r.y });
 	line_to({ r.x + r.width, r.y });
@@ -804,11 +804,11 @@ rectangle path_builder::get_path_extents() const {
 		auto type = item.type;
 		switch (type)
 		{
-		case std::experimental::drawing::path_data_type::move_to:
+		case std::experimental::io2d::path_data_type::move_to:
 			lastPoint = currMatrix.transform_point(item.data.move - currOrigin) + currOrigin;
 			hasLastPoint = true;
 			break;
-		case std::experimental::drawing::path_data_type::line_to:
+		case std::experimental::io2d::path_data_type::line_to:
 			if (hasLastPoint) {
 				auto itemPt = currMatrix.transform_point(item.data.line - currOrigin) + currOrigin;
 				if (!hasExtents) {
@@ -829,7 +829,7 @@ rectangle path_builder::get_path_extents() const {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
 			}
 			break;
-		case std::experimental::drawing::path_data_type::curve_to:
+		case std::experimental::io2d::path_data_type::curve_to:
 		{
 			if (!hasLastPoint) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
@@ -854,20 +854,20 @@ rectangle path_builder::get_path_extents() const {
 			}
 		}
 			break;
-		case std::experimental::drawing::path_data_type::new_sub_path:
+		case std::experimental::io2d::path_data_type::new_sub_path:
 			hasLastPoint = false;
 			break;
-		case std::experimental::drawing::path_data_type::close_path:
+		case std::experimental::io2d::path_data_type::close_path:
 			hasLastPoint = false;
 			break;
-		case std::experimental::drawing::path_data_type::rel_move_to:
+		case std::experimental::io2d::path_data_type::rel_move_to:
 			if (!hasLastPoint) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
 			}
 			lastPoint = currMatrix.transform_point((item.data.move + lastPoint) - currOrigin) + currOrigin;
 			hasLastPoint = true;
 			break;
-		case std::experimental::drawing::path_data_type::rel_line_to:
+		case std::experimental::io2d::path_data_type::rel_line_to:
 			if (hasLastPoint) {
 				auto itemPt = currMatrix.transform_point((item.data.line + lastPoint) - currOrigin) + currOrigin;
 				if (!hasExtents) {
@@ -888,7 +888,7 @@ rectangle path_builder::get_path_extents() const {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
 			}
 			break;
-		case std::experimental::drawing::path_data_type::rel_curve_to:
+		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
 			if (!hasLastPoint) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
@@ -913,16 +913,16 @@ rectangle path_builder::get_path_extents() const {
 			}
 		}
 			break;
-		case std::experimental::drawing::path_data_type::arc:
+		case std::experimental::io2d::path_data_type::arc:
 		{
 			auto data = _Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, false, hasLastPoint, lastPoint, currOrigin, currMatrix);
 			for (const auto& arcItem : data) {
 				switch (arcItem.type) {
-				case std::experimental::drawing::path_data_type::move_to:
+				case std::experimental::io2d::path_data_type::move_to:
 					lastPoint = currMatrix.transform_point(arcItem.data.move - currOrigin) + currOrigin;
 					hasLastPoint = true;
 					break;
-				case std::experimental::drawing::path_data_type::line_to:
+				case std::experimental::io2d::path_data_type::line_to:
 					if (hasLastPoint) {
 						auto itemPt = currMatrix.transform_point(arcItem.data.line - currOrigin) + currOrigin;
 						if (!hasExtents) {
@@ -943,7 +943,7 @@ rectangle path_builder::get_path_extents() const {
 						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
 					}
 					break;
-				case std::experimental::drawing::path_data_type::curve_to:
+				case std::experimental::io2d::path_data_type::curve_to:
 				{
 					if (!hasLastPoint) {
 						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
@@ -991,16 +991,16 @@ rectangle path_builder::get_path_extents() const {
 			}
 		}
 			break;
-		case std::experimental::drawing::path_data_type::arc_negative:
+		case std::experimental::io2d::path_data_type::arc_negative:
 		{
 			auto data = _Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, true, hasLastPoint, lastPoint, currOrigin, currMatrix);
 			for (const auto& arcItem : data) {
 				switch (arcItem.type) {
-				case std::experimental::drawing::path_data_type::move_to:
+				case std::experimental::io2d::path_data_type::move_to:
 					lastPoint = currMatrix.transform_point(arcItem.data.move - currOrigin) + currOrigin;
 					hasLastPoint = true;
 					break;
-				case std::experimental::drawing::path_data_type::line_to:
+				case std::experimental::io2d::path_data_type::line_to:
 					if (hasLastPoint) {
 						auto itemPt = currMatrix.transform_point(arcItem.data.line - currOrigin) + currOrigin;
 						if (!hasExtents) {
@@ -1021,7 +1021,7 @@ rectangle path_builder::get_path_extents() const {
 						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
 					}
 					break;
-				case std::experimental::drawing::path_data_type::curve_to:
+				case std::experimental::io2d::path_data_type::curve_to:
 				{
 					if (!hasLastPoint) {
 						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
@@ -1069,10 +1069,10 @@ rectangle path_builder::get_path_extents() const {
 			}
 		}
 			break;
-		case std::experimental::drawing::path_data_type::change_matrix:
+		case std::experimental::io2d::path_data_type::change_matrix:
 			currMatrix = item.data.matrix;
 			break;
-		case std::experimental::drawing::path_data_type::change_origin:
+		case std::experimental::io2d::path_data_type::change_origin:
 			currOrigin = item.data.origin;
 			break;
 		default:
@@ -1122,7 +1122,7 @@ void path_builder::reset() {
 
 namespace std {
 	namespace experimental {
-		namespace drawing {
+		namespace io2d {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
@@ -1133,39 +1133,39 @@ namespace std {
 					auto type = lhs.type;
 					switch (type)
 					{
-					case std::experimental::drawing::path_data_type::move_to:
+					case std::experimental::io2d::path_data_type::move_to:
 						return lhs.data.move == rhs.data.move;
-					case std::experimental::drawing::path_data_type::line_to:
+					case std::experimental::io2d::path_data_type::line_to:
 						return lhs.data.line == rhs.data.line;
-					case std::experimental::drawing::path_data_type::curve_to:
+					case std::experimental::io2d::path_data_type::curve_to:
 						return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
 							lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
 							lhs.data.curve.pt3 == rhs.data.curve.pt3;
-					case std::experimental::drawing::path_data_type::new_sub_path:
+					case std::experimental::io2d::path_data_type::new_sub_path:
 						return true;
-					case std::experimental::drawing::path_data_type::close_path:
+					case std::experimental::io2d::path_data_type::close_path:
 						return true;
-					case std::experimental::drawing::path_data_type::rel_move_to:
+					case std::experimental::io2d::path_data_type::rel_move_to:
 						return lhs.data.move == rhs.data.move;
-					case std::experimental::drawing::path_data_type::rel_line_to:
+					case std::experimental::io2d::path_data_type::rel_line_to:
 						return lhs.data.line == rhs.data.line;
-					case std::experimental::drawing::path_data_type::rel_curve_to:
+					case std::experimental::io2d::path_data_type::rel_curve_to:
 						return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
 							lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
 							lhs.data.curve.pt3 == rhs.data.curve.pt3;
-					case std::experimental::drawing::path_data_type::arc:
+					case std::experimental::io2d::path_data_type::arc:
 						return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
 							lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
 							lhs.data.arc.center == rhs.data.arc.center &&
 							lhs.data.arc.radius == rhs.data.arc.radius;
-					case std::experimental::drawing::path_data_type::arc_negative:
+					case std::experimental::io2d::path_data_type::arc_negative:
 						return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
 							lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
 							lhs.data.arc.center == rhs.data.arc.center &&
 							lhs.data.arc.radius == rhs.data.arc.radius;
-					case std::experimental::drawing::path_data_type::change_matrix:
+					case std::experimental::io2d::path_data_type::change_matrix:
 						return lhs.data.matrix == rhs.data.matrix;
-					case std::experimental::drawing::path_data_type::change_origin:
+					case std::experimental::io2d::path_data_type::change_origin:
 						return lhs.data.origin == rhs.data.origin;
 					default:
 						assert("Unknown path_data_type!" && false);

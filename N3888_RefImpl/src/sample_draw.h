@@ -1,9 +1,9 @@
 #pragma once
-#include "drawing.h"
+#include "io2d.h"
 
 class sample_draw
 {
 public:
-	void operator()(::std::experimental::drawing::surface& rs, double elapsedTimeInMilliseconds);
+	void operator()(::std::experimental::io2d::surface& rs, double elapsedTimeInMilliseconds);
 };
 

@@ -1,9 +1,9 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 matrix_2d matrix_2d::init_identity() {
 	return{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
@@ -87,7 +87,7 @@ matrix_2d matrix_2d::operator*=(const matrix_2d& rhs) {
 
 namespace std {
 	namespace experimental {
-		namespace drawing {
+		namespace io2d {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif

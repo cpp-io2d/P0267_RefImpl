@@ -11,7 +11,7 @@
 #include <atomic>
 #include <wrl.h>
 #include "throw_helpers.h"
-#include "drawing.h"
+#include "io2d.h"
 #include "Win32RenderWindow.h"
 #include "sample_draw.h"
 
@@ -22,7 +22,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 using namespace Microsoft::WRL;
 using namespace std;
 using namespace std::experimental;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 #define MAX_LOADSTRING 100
 

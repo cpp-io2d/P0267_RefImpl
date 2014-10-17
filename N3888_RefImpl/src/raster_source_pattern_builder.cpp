@@ -1,9 +1,9 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 using namespace std::placeholders;
 
 cairo_surface_t* raster_source_pattern_builder::_Cairo_acquire(cairo_pattern_t*, void* this_ptr, cairo_surface_t* target, const cairo_rectangle_int_t* extents) {
@@ -36,7 +36,7 @@ void raster_source_pattern_builder::_Cairo_release(cairo_pattern_t*, void* this_
 	if (*rsp->_Release_fn != nullptr) {
 		// If the user has an explicit release function, increment the reference count since it's the user's responsibility to destroy the surface (e.g. by calling cairo_surface_destroy(surface.native_handle()); ).
 		cairo_surface_reference(surface);
-		auto relSurface = experimental::drawing::surface({ surface, nullptr });
+		auto relSurface = experimental::io2d::surface({ surface, nullptr });
 		auto& release_fn = *rsp->_Release_fn;
 		release_fn(rsp->_User_callback_data, relSurface);
 	}

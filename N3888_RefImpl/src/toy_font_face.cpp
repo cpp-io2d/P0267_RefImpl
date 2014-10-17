@@ -1,9 +1,9 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 toy_font_face::toy_font_face(const string& family, font_slant slant, font_weight weight) : font_face(nullptr) {
 	_Font_face = shared_ptr<cairo_font_face_t>(cairo_toy_font_face_create(family.c_str(), _Font_slant_to_cairo_font_slant_t(slant), _Font_weight_to_cairo_font_weight_t(weight)), &cairo_font_face_destroy);

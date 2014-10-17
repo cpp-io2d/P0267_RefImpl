@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _XDRAWING_
-#define _XDRAWING_
+#ifndef _XIO2D_
+#define _XIO2D_
 
 #if defined(_WIN32_WINNT)
 // Implementation detail headers

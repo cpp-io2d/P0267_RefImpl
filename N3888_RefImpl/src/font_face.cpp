@@ -1,8 +1,8 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 font_face::native_handle_type font_face::native_handle() const {
 	return _Font_face.get();

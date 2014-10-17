@@ -1,13 +1,13 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 namespace std {
 	namespace experimental {
-		namespace drawing {
+		namespace io2d {
 #if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
 			inline namespace v1 {
 #endif

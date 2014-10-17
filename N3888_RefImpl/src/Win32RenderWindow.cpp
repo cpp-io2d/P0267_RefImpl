@@ -15,7 +15,7 @@
 
 using namespace std;
 using namespace std::experimental;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 using namespace Microsoft::WRL;
 
 Win32RenderWindow::Win32RenderWindow(unsigned int width, unsigned int height, const std::wstring& caption) :

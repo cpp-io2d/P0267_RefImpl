@@ -1,9 +1,9 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 point point::operator+=(const point& rhs) {
 	x += rhs.x;
@@ -55,7 +55,7 @@ point point::operator/=(double rhs) {
 
 namespace std {
 	namespace experimental {
-		namespace drawing {
+		namespace io2d {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif

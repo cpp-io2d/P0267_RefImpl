@@ -176,7 +176,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <Text Include="win32\DLL build instructions.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="drawing.h" />
+    <ClInclude Include="io2d.h" />
     <ClInclude Include="entrypoint-win32.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="sample_draw.h" />
@@ -184,8 +184,8 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClInclude Include="throw_helpers.h" />
     <ClInclude Include="Win32RenderWindow.h" />
     <ClInclude Include="xcairoenumhelpers.h" />
-    <ClInclude Include="xdrawing.h" />
-    <ClInclude Include="xdrawinghelpers.h" />
+    <ClInclude Include="xio2d.h" />
+    <ClInclude Include="xio2dhelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="device.cpp" />

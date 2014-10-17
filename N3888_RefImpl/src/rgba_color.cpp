@@ -1,9 +1,9 @@
-#include "drawing.h"
-#include "xdrawinghelpers.h"
+#include "io2d.h"
+#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 rgba_color _Rgba_color_from_byte_values(unsigned char r, unsigned char g, unsigned char b, unsigned char a = static_cast<unsigned char>(255)) {
 	return{ static_cast<double>(r) / 255.0, static_cast<double>(g) / 255.0, static_cast<double>(b) / 255.0, static_cast<double>(a) / 255.0 };
@@ -160,7 +160,7 @@ const rgba_color rgba_color::yellow_green = _Rgba_color_from_byte_values(static_
 
 namespace std {
 	namespace experimental {
-		namespace drawing {
+		namespace io2d {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif

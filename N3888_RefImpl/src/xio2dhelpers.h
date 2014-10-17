@@ -1,13 +1,11 @@
 #pragma once
-#include "drawing.h"
+
+#ifndef _XIO2DHELPERS_
+#define _XIO2DHELPERS_
+
+#include "io2d.h"
 
 #define _PI 3.1415926535897932384626433832795
-
-//inline void _Throw_if_failed_io2d_error(::std::experimental::drawing::io2d_error s) {
-//	if (s != ::std::experimental::drawing::io2d_error::success) {
-//		throw ::std::system_error(s);
-//	}
-//}
 
 inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 	if (s != CAIRO_STATUS_SUCCESS) {
@@ -30,4 +28,6 @@ T _Degrees_to_radians(T degrees) {
 	return degrees * static_cast<T>(3.1415926535897932384626433832795L) / static_cast<T>(180.0L);
 }
 
-::std::vector<::std::experimental::drawing::path_data> _Get_arc_as_beziers(const ::std::experimental::drawing::point& center, double radius, double angle1, double angle2, bool arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::drawing::point& currentPoint = { }, const ::std::experimental::drawing::point& origin = { }, const ::std::experimental::drawing::matrix_2d& matrix = ::std::experimental::drawing::matrix_2d::init_identity());
+::std::vector<::std::experimental::io2d::path_data> _Get_arc_as_beziers(const ::std::experimental::io2d::point& center, double radius, double angle1, double angle2, bool arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::io2d::point& currentPoint = { }, const ::std::experimental::io2d::point& origin = { }, const ::std::experimental::io2d::matrix_2d& matrix = ::std::experimental::io2d::matrix_2d::init_identity());
+
+#endif
