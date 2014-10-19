@@ -222,7 +222,6 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pb.rel_line_to({ 0.0, 100.0 });
 	pb.rel_line_to({ 10.0, -100.0 });
 	rs.set_line_join(line_join::miter);
-	//rs.set_miter_limit(10000.0);
 	rs.set_path(pb.get_path());
 	rs.set_line_width(10.0);
 	rs.set_pattern(redPattern);
@@ -230,19 +229,14 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.set_pattern(linearPattern.get_pattern());
 	rs.fill();
 
-	image_surface imgSurf(format::argb32, 10, 10);
-	auto transparentYellow = solid_color_pattern_builder({ 0.5, 1.0, 0.8, 0.5 }).get_pattern();
-	imgSurf.set_pattern(transparentYellow);
-	imgSurf.paint();
-	auto d1 = imgSurf.get_data();
-	imgSurf.set_pattern(redPattern);
 	pb.reset();
-	pb.rect({ 0.0, 0.0, 2.0, 2.0 });
-	imgSurf.set_path(pb.get_path());
-	imgSurf.set_compositing_operator(compositing_operator::dest_atop);
-	imgSurf.fill();
-	auto d2 = imgSurf.get_data();
-	//imgSurf.set_pattern()
-	imgSurf.write_to_png("D:\\michael\\testpost4307.png");
+	pb.new_sub_path();
+	pb.arc({ 500.0, 60.0 }, 30.0, 0.0, pi);
+	pb.new_sub_path();
+	rs.set_path(pb.get_path());
+	rs.set_line_width(2.0);
+	rs.set_pattern(redPattern);
+	rs.stroke();
+
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }

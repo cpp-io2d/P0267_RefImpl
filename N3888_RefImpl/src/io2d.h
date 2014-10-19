@@ -618,15 +618,16 @@ namespace std {
 				class font_options;
 
 				class font_options_builder {
+					mutable ::std::recursive_mutex _Lock;
 					antialias _Antialias = antialias::default_antialias;
 					subpixel_order _Subpixel_order = subpixel_order::default_subpixel_order;
 					hint_style _Hint_style = hint_style::default_hint_style;
 					hint_metrics _Hint_metrics = hint_metrics::default_hint_metrics;
 
 				public:
-					font_options_builder() = default;
-					font_options_builder(const font_options_builder&) = default;
-					font_options_builder& operator=(const font_options_builder&) = default;
+					font_options_builder();
+					font_options_builder(const font_options_builder&);
+					font_options_builder& operator=(const font_options_builder&);
 					font_options_builder(font_options_builder&& other);
 					font_options_builder& operator=(font_options_builder&& other);
 
@@ -759,6 +760,7 @@ namespace std {
 				};
 
 				class solid_color_pattern_builder {
+					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 					extend _Extend;
 					filter _Filter;
@@ -766,33 +768,35 @@ namespace std {
 					rgba_color _Color;
 
 				public:
-					solid_color_pattern_builder(const solid_color_pattern_builder&) = default;
-					solid_color_pattern_builder& operator=(const solid_color_pattern_builder&) = default;
+					solid_color_pattern_builder();
+					solid_color_pattern_builder(const solid_color_pattern_builder&);
+					solid_color_pattern_builder& operator=(const solid_color_pattern_builder&);
 					solid_color_pattern_builder(solid_color_pattern_builder&& other);
 					solid_color_pattern_builder& operator=(solid_color_pattern_builder&& other);
 					solid_color_pattern_builder(const rgba_color& color);
 
-					pattern get_pattern();
+					pattern get_pattern() const;
 					void set_extend(extend e);
-					extend get_extend();
+					extend get_extend() const;
 					void set_filter(filter f);
-					filter get_filter();
+					filter get_filter() const;
 					void set_matrix(const matrix_2d& m);
-					matrix_2d get_matrix();
+					matrix_2d get_matrix() const;
 
-					rgba_color get_rgba();
+					rgba_color get_rgba() const;
 					void set_rgba(const rgba_color& color);
-					double get_red();
+					double get_red() const;
 					void set_red(double red);
-					double get_green();
+					double get_green() const;
 					void set_green(double green);
-					double get_blue();
+					double get_blue() const;
 					void set_blue(double blue);
-					double get_alpha();
+					double get_alpha() const;
 					void set_alpha(double alpha);
 				};
 
 				class linear_pattern_builder {
+					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 					extend _Extend;
 					filter _Filter;
@@ -803,31 +807,32 @@ namespace std {
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
-					linear_pattern_builder() = delete;
-					linear_pattern_builder(const linear_pattern_builder&) = default;
-					linear_pattern_builder& operator=(const linear_pattern_builder&) = default;
+					linear_pattern_builder();
+					linear_pattern_builder(const linear_pattern_builder&);
+					linear_pattern_builder& operator=(const linear_pattern_builder&);
 					linear_pattern_builder(linear_pattern_builder&& other);
 					linear_pattern_builder& operator=(linear_pattern_builder&& other);
 					linear_pattern_builder(const point& pt0, const point& pt1);
 
-					pattern get_pattern();
+					pattern get_pattern() const;
 					void set_extend(extend extend);
-					extend get_extend();
+					extend get_extend() const;
 					void set_filter(filter filter);
-					filter get_filter();
+					filter get_filter() const;
 					void set_matrix(const matrix_2d& matrix);
-					matrix_2d get_matrix();
+					matrix_2d get_matrix() const;
 
 					void add_color_stop_rgba(double offset, const rgba_color& color);
-					int get_color_stop_count();
+					int get_color_stop_count() const;
 
-					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color);
+					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
 					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
-					void get_linear_points(point& pt0, point& pt1);
+					void get_linear_points(point& pt0, point& pt1) const;
 					void set_linear_points(const point& pt0, const point& pt1);
 				};
 
 				class radial_pattern_builder {
+					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 					extend _Extend;
 					filter _Filter;
@@ -840,32 +845,33 @@ namespace std {
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
-					radial_pattern_builder() = delete;
-					radial_pattern_builder(const radial_pattern_builder&) = default;
-					radial_pattern_builder& operator=(const radial_pattern_builder&) = default;
+					radial_pattern_builder();
+					radial_pattern_builder(const radial_pattern_builder&);
+					radial_pattern_builder& operator=(const radial_pattern_builder&);
 					radial_pattern_builder(radial_pattern_builder&& other);
 					radial_pattern_builder& operator=(radial_pattern_builder&& other);
 					radial_pattern_builder(const point& center0, double radius0, const point& center1, double radius1);
 
-					pattern get_pattern();
+					pattern get_pattern() const;
 					void set_extend(extend extend);
-					extend get_extend();
+					extend get_extend() const;
 					void set_filter(filter filter);
-					filter get_filter();
+					filter get_filter() const;
 					void set_matrix(const matrix_2d& matrix);
-					matrix_2d get_matrix();
+					matrix_2d get_matrix() const;
 
 					void add_color_stop_rgba(double offset, const rgba_color& color);
-					int get_color_stop_count();
+					int get_color_stop_count() const;
 
-					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color);
+					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
 					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
 
-					void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1);
+					void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) const;
 					void set_radial_circles(const point& center0, double radius0, const point& center1, double radius1);
 				};
 
 				class mesh_pattern_builder {
+					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 					extend _Extend;
 					filter _Filter;
@@ -882,18 +888,18 @@ namespace std {
 					::std::vector<_Patch> _Patches;
 				public:
 					mesh_pattern_builder();
-					mesh_pattern_builder(const mesh_pattern_builder&) = default;
-					mesh_pattern_builder& operator=(const mesh_pattern_builder&) = default;
+					mesh_pattern_builder(const mesh_pattern_builder&);
+					mesh_pattern_builder& operator=(const mesh_pattern_builder&);
 					mesh_pattern_builder(mesh_pattern_builder&& other);
 					mesh_pattern_builder& operator=(mesh_pattern_builder&& other);
 
-					pattern get_pattern();
+					pattern get_pattern() const;
 					void set_extend(extend extend);
-					extend get_extend();
+					extend get_extend() const;
 					void set_filter(filter filter);
-					filter get_filter();
+					filter get_filter() const;
 					void set_matrix(const matrix_2d& matrix);
-					matrix_2d get_matrix();
+					matrix_2d get_matrix() const;
 
 					void begin_patch();
 					void begin_edit_patch(unsigned int patch_num);
@@ -903,55 +909,11 @@ namespace std {
 					void curve_to(const point& pt0, const point& pt1, const point& pt2);
 					void set_control_point(unsigned int point_num, const point& pt);
 					void set_corner_color_rgba(unsigned int corner_num, const rgba_color& color);
-					void get_patch_count(unsigned int& count);
-					path get_path(unsigned int patch_num);
-					path_builder get_path_builder(unsigned int patch_num);
-					point get_control_point(unsigned int patch_num, unsigned int point_num);
-					rgba_color get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num);
-				};
-
-				class raster_source_pattern_builder {
-					pattern_type _Pattern_type;
-					extend _Extend;
-					filter _Filter;
-					matrix_2d _Matrix;
-
-					void* _User_callback_data;
-					int _Width;
-					int _Height;
-					content _Content;
-					::std::shared_ptr<::std::function<surface(void* callback_data, surface& target, const rectangle& extents)>> _Acquire_fn;
-					::std::shared_ptr<::std::function<void(void* callback_data, surface& surface)>> _Release_fn;
-
-					static cairo_surface_t* _Cairo_acquire(cairo_pattern_t* pattern_builder, void* this_ptr, cairo_surface_t* target, const cairo_rectangle_int_t* extents);
-					static void _Cairo_release(cairo_pattern_t* pattern_builder, void* this_ptr, cairo_surface_t* surface);
-
-				public:
-					raster_source_pattern_builder() = delete;
-					raster_source_pattern_builder(const raster_source_pattern_builder&) = default;
-					raster_source_pattern_builder& operator=(const raster_source_pattern_builder&) = default;
-					raster_source_pattern_builder(raster_source_pattern_builder&& other);
-					raster_source_pattern_builder& operator=(raster_source_pattern_builder&& other);
-					raster_source_pattern_builder(void* user_data, content content, int width, int height);
-
-					pattern get_pattern();
-					void set_extend(extend extend);
-					extend get_extend();
-					void set_filter(filter filter);
-					filter get_filter();
-					void set_matrix(const matrix_2d& matrix);
-					matrix_2d get_matrix();
-
-					void set_callback_data(void* data);
-					void* get_callback_data();
-					void set_acquire(
-						::std::function<surface(void* callback_data, surface& target, const rectangle& extents)> acquire_fn,
-						::std::function<void(void* callback_data, surface& surface)> release_fn
-						);
-					void get_acquire(
-						::std::function<surface(void* callback_data, surface& target, const rectangle& extents)>& acquire_fn,
-						::std::function<void(void* callback_data, surface& surface)>& release_fn
-						);
+					unsigned int get_patch_count() const;
+					path get_path(unsigned int patch_num) const;
+					path_builder get_path_builder(unsigned int patch_num) const;
+					point get_control_point(unsigned int patch_num, unsigned int point_num) const;
+					rgba_color get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num) const;
 				};
 
 				struct _Surface_native_handles {

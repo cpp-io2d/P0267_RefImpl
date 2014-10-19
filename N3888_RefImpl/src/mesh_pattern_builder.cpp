@@ -6,31 +6,85 @@ using namespace std;
 using namespace std::experimental::io2d;
 
 mesh_pattern_builder::mesh_pattern_builder()
-: _Pattern_type(pattern_type::mesh)
-, _Extend(extend::default_extend)
-, _Filter(filter::default_filter)
-, _Matrix(matrix_2d::init_identity())
-, _Has_current_patch()
-, _Current_patch_index()
-, _Current_patch_side_count()
-, _Current_patch_initial_point()
-, _Patches() {
+	: _Lock()
+	, _Pattern_type(pattern_type::mesh)
+	, _Extend(extend::default_extend)
+	, _Filter(filter::default_filter)
+	, _Matrix(matrix_2d::init_identity())
+	, _Has_current_patch()
+	, _Current_patch_index()
+	, _Current_patch_side_count()
+	, _Current_patch_initial_point()
+	, _Patches() {
+}
+
+mesh_pattern_builder::mesh_pattern_builder(const mesh_pattern_builder& other)
+	: _Lock()
+	, _Pattern_type()
+	, _Extend()
+	, _Filter()
+	, _Matrix()
+	, _Has_current_patch()
+	, _Current_patch_index()
+	, _Current_patch_side_count()
+	, _Current_patch_initial_point()
+	, _Patches() {
+	lock_guard<decltype(other._Lock)> olg(other._Lock);
+	_Pattern_type = other._Pattern_type;
+	_Extend = other._Extend;
+	_Filter = other._Filter;
+	_Matrix = other._Matrix;
+	_Has_current_patch = other._Has_current_patch;
+	_Current_patch_index = other._Current_patch_index;
+	_Current_patch_side_count = other._Current_patch_side_count;
+	_Current_patch_initial_point = other._Current_patch_initial_point;
+	_Patches = other._Patches;
+}
+
+mesh_pattern_builder& mesh_pattern_builder::operator=(const mesh_pattern_builder& other) {
+	if (this != &other) {
+		lock_guard<decltype(other._Lock)> olg(other._Lock);
+		lock_guard<decltype(_Lock)> lg(_Lock);
+		_Pattern_type = other._Pattern_type;
+		_Extend = other._Extend;
+		_Filter = other._Filter;
+		_Matrix = other._Matrix;
+		_Has_current_patch = other._Has_current_patch;
+		_Current_patch_index = other._Current_patch_index;
+		_Current_patch_side_count = other._Current_patch_side_count;
+		_Current_patch_initial_point = other._Current_patch_initial_point;
+		_Patches = other._Patches;
+	}
+	return *this;
 }
 
 mesh_pattern_builder::mesh_pattern_builder(mesh_pattern_builder&& other)
-: _Pattern_type(move(other._Pattern_type))
-, _Extend(move(other._Extend))
-, _Filter(move(other._Filter))
-, _Matrix(move(other._Matrix))
-, _Has_current_patch(move(other._Has_current_patch))
-, _Current_patch_index(move(other._Current_patch_index))
-, _Current_patch_side_count(move(other._Current_patch_side_count))
-, _Current_patch_initial_point(move(other._Current_patch_initial_point))
-, _Patches(move(other._Patches)) {
+	: _Lock()
+	, _Pattern_type()
+	, _Extend()
+	, _Filter()
+	, _Matrix()
+	, _Has_current_patch()
+	, _Current_patch_index()
+	, _Current_patch_side_count()
+	, _Current_patch_initial_point()
+	, _Patches() {
+	lock_guard<decltype(other._Lock)> olg(other._Lock);
+	_Pattern_type = move(other._Pattern_type);
+	_Extend = move(other._Extend);
+	_Filter = move(other._Filter);
+	_Matrix = move(other._Matrix);
+	_Has_current_patch = move(other._Has_current_patch);
+	_Current_patch_index = move(other._Current_patch_index);
+	_Current_patch_side_count = move(other._Current_patch_side_count);
+	_Current_patch_initial_point = move(other._Current_patch_initial_point);
+	_Patches = move(other._Patches);
 }
 
 mesh_pattern_builder& mesh_pattern_builder::operator=(mesh_pattern_builder&& other) {
 	if (this != &other) {
+		lock_guard<decltype(other._Lock)> olg(other._Lock);
+		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Pattern_type = move(other._Pattern_type);
 		_Extend = move(other._Extend);
 		_Filter = move(other._Filter);
@@ -44,7 +98,8 @@ mesh_pattern_builder& mesh_pattern_builder::operator=(mesh_pattern_builder&& oth
 	return *this;
 }
 
-pattern mesh_pattern_builder::get_pattern() {
+pattern mesh_pattern_builder::get_pattern() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> upPat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
 	auto pat = upPat.get();
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
@@ -149,31 +204,38 @@ pattern mesh_pattern_builder::get_pattern() {
 }
 
 void mesh_pattern_builder::set_extend(extend e) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Extend = e;
 }
 
-extend mesh_pattern_builder::get_extend() {
+extend mesh_pattern_builder::get_extend() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Extend;
 }
 
 void mesh_pattern_builder::set_filter(filter f) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Filter = f;
 }
 
-filter mesh_pattern_builder::get_filter() {
+filter mesh_pattern_builder::get_filter() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Filter;
 }
 
 void mesh_pattern_builder::set_matrix(const matrix_2d& m) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Matrix = m;
 }
 
 
-matrix_2d mesh_pattern_builder::get_matrix() {
+matrix_2d mesh_pattern_builder::get_matrix() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Matrix;
 }
 
 void mesh_pattern_builder::begin_patch() {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -185,6 +247,7 @@ void mesh_pattern_builder::begin_patch() {
 }
 
 void mesh_pattern_builder::begin_edit_patch(unsigned int patch_num) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -202,6 +265,7 @@ void mesh_pattern_builder::begin_edit_patch(unsigned int patch_num) {
 }
 
 void mesh_pattern_builder::end_patch() {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -212,6 +276,7 @@ void mesh_pattern_builder::end_patch() {
 }
 
 void mesh_pattern_builder::move_to(const point& pt) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch || _Current_patch_side_count > 0) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -221,6 +286,7 @@ void mesh_pattern_builder::move_to(const point& pt) {
 }
 
 void mesh_pattern_builder::line_to(const point& pt) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -236,6 +302,7 @@ void mesh_pattern_builder::line_to(const point& pt) {
 }
 
 void mesh_pattern_builder::curve_to(const point& pt0, const point& pt1, const point& pt2) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -250,6 +317,7 @@ void mesh_pattern_builder::curve_to(const point& pt0, const point& pt1, const po
 }
 
 void mesh_pattern_builder::set_control_point(unsigned int point_num, const point& pt) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -261,6 +329,7 @@ void mesh_pattern_builder::set_control_point(unsigned int point_num, const point
 }
 
 void mesh_pattern_builder::set_corner_color_rgba(unsigned int corner_num, const rgba_color& color) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -271,11 +340,13 @@ void mesh_pattern_builder::set_corner_color_rgba(unsigned int corner_num, const 
 	get<2>(patch)[corner_num] = color;
 }
 
-void mesh_pattern_builder::get_patch_count(unsigned int& count) {
-	count = static_cast<unsigned int>(_Patches.size());
+unsigned int mesh_pattern_builder::get_patch_count() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
+	return static_cast<unsigned int>(_Patches.size());
 }
 
-path mesh_pattern_builder::get_path(unsigned int patch_num) {
+path mesh_pattern_builder::get_path(unsigned int patch_num) const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (patch_num >= _Patches.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -283,7 +354,8 @@ path mesh_pattern_builder::get_path(unsigned int patch_num) {
 	return get<0>(patch).get_path();
 }
 
-path_builder mesh_pattern_builder::get_path_builder(unsigned int patch_num) {
+path_builder mesh_pattern_builder::get_path_builder(unsigned int patch_num) const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (patch_num >= _Patches.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -291,7 +363,8 @@ path_builder mesh_pattern_builder::get_path_builder(unsigned int patch_num) {
 	return get<0>(patch);
 }
 
-point mesh_pattern_builder::get_control_point(unsigned int patch_num, unsigned int point_num) {
+point mesh_pattern_builder::get_control_point(unsigned int patch_num, unsigned int point_num) const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (patch_num >= _Patches.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -304,7 +377,8 @@ point mesh_pattern_builder::get_control_point(unsigned int patch_num, unsigned i
 	return (*iter).second;
 }
 
-rgba_color mesh_pattern_builder::get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num) {
+rgba_color mesh_pattern_builder::get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num) const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (patch_num >= _Patches.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}

@@ -5,20 +5,85 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
+radial_pattern_builder::radial_pattern_builder()
+	: _Lock()
+	, _Pattern_type(pattern_type::radial)
+	, _Extend(extend::default_extend)
+	, _Filter(filter::default_filter)
+	, _Matrix(matrix_2d::init_identity())
+	, _Center0()
+	, _Radius0()
+	, _Center1()
+	, _Radius1() {
+}
+
+radial_pattern_builder::radial_pattern_builder(const radial_pattern_builder& other)
+	: _Lock()
+	, _Pattern_type()
+	, _Extend()
+	, _Filter()
+	, _Matrix()
+	, _Center0()
+	, _Radius0()
+	, _Center1()
+	, _Radius1()
+	, _Color_stops() {
+	lock_guard<decltype(other._Lock)> olg(other._Lock);
+	_Pattern_type = other._Pattern_type;
+	_Extend = other._Extend;
+	_Filter = other._Filter;
+	_Matrix = other._Matrix;
+	_Center0 = other._Center0;
+	_Radius0 = other._Radius0;
+	_Center1 = other._Center1;
+	_Radius1 = other._Radius1;
+	_Color_stops = other._Color_stops;
+}
+
+radial_pattern_builder& radial_pattern_builder::operator=(const radial_pattern_builder& other) {
+	if (this != &other) {
+		lock_guard<decltype(other._Lock)> olg(other._Lock);
+		lock_guard<decltype(_Lock)> lg(_Lock);
+		_Pattern_type = other._Pattern_type;
+		_Extend = other._Extend;
+		_Filter = other._Filter;
+		_Matrix = other._Matrix;
+		_Center0 = other._Center0;
+		_Radius0 = other._Radius0;
+		_Center1 = other._Center1;
+		_Radius1 = other._Radius1;
+		_Color_stops = other._Color_stops;
+	}
+	return *this;
+}
+
 radial_pattern_builder::radial_pattern_builder(radial_pattern_builder&& other)
-: _Pattern_type(move(other._Pattern_type))
-, _Extend(move(other._Extend))
-, _Filter(move(other._Filter))
-, _Matrix(move(other._Matrix))
-, _Center0(move(other._Center0))
-, _Radius0(move(other._Radius0))
-, _Center1(move(other._Center1))
-, _Radius1(move(other._Radius1))
-, _Color_stops(move(other._Color_stops)) {
+	: _Lock()
+	, _Pattern_type()
+	, _Extend()
+	, _Filter()
+	, _Matrix()
+	, _Center0()
+	, _Radius0()
+	, _Center1()
+	, _Radius1()
+	, _Color_stops() {
+	lock_guard<decltype(other._Lock)> olg(other._Lock);
+	_Pattern_type = move(other._Pattern_type);
+	_Extend = move(other._Extend);
+	_Filter = move(other._Filter);
+	_Matrix = move(other._Matrix);
+	_Center0 = move(other._Center0);
+	_Radius0 = move(other._Radius0);
+	_Center1 = move(other._Center1);
+	_Radius1 = move(other._Radius1);
+	_Color_stops = move(other._Color_stops);
 }
 
 radial_pattern_builder& radial_pattern_builder::operator=(radial_pattern_builder&& other) {
 	if (this != &other) {
+		lock_guard<decltype(other._Lock)> olg(other._Lock);
+		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Pattern_type = move(other._Pattern_type);
 		_Extend = move(other._Extend);
 		_Filter = move(other._Filter);
@@ -33,7 +98,8 @@ radial_pattern_builder& radial_pattern_builder::operator=(radial_pattern_builder
 }
 
 radial_pattern_builder::radial_pattern_builder(const point& center0, double radius0, const point& center1, double radius1)
-: _Pattern_type(pattern_type::radial)
+: _Lock()
+, _Pattern_type(pattern_type::radial)
 , _Extend(extend::default_extend)
 , _Filter(filter::default_filter)
 , _Matrix(matrix_2d::init_identity())
@@ -44,7 +110,8 @@ radial_pattern_builder::radial_pattern_builder(const point& center0, double radi
 , _Color_stops() {
 }
 
-pattern radial_pattern_builder::get_pattern() {
+pattern radial_pattern_builder::get_pattern() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_radial(_Center0.x, _Center0.y, _Radius0, _Center1.x, _Center1.y, _Radius1), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
@@ -66,31 +133,38 @@ pattern radial_pattern_builder::get_pattern() {
 }
 
 void radial_pattern_builder::set_extend(extend e) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Extend = e;
 }
 
-extend radial_pattern_builder::get_extend() {
+extend radial_pattern_builder::get_extend() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Extend;
 }
 
 void radial_pattern_builder::set_filter(filter f) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Filter = f;
 }
 
-filter radial_pattern_builder::get_filter() {
+filter radial_pattern_builder::get_filter() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Filter;
 }
 
 void radial_pattern_builder::set_matrix(const matrix_2d& m) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Matrix = m;
 }
 
 
-matrix_2d radial_pattern_builder::get_matrix() {
+matrix_2d radial_pattern_builder::get_matrix() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Matrix;
 }
 
 void radial_pattern_builder::add_color_stop_rgba(double offset, const rgba_color& color) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r >= 0.0 && color.r <= 1.0);
 	assert(color.g >= 0.0 && color.g <= 1.0);
@@ -99,11 +173,13 @@ void radial_pattern_builder::add_color_stop_rgba(double offset, const rgba_color
 	_Color_stops.push_back(make_tuple(offset, color));
 }
 
-int radial_pattern_builder::get_color_stop_count() {
+int radial_pattern_builder::get_color_stop_count() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return static_cast<int>(_Color_stops.size());
 }
 
-void radial_pattern_builder::get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) {
+void radial_pattern_builder::get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -114,6 +190,7 @@ void radial_pattern_builder::get_color_stop_rgba(unsigned int index, double& off
 }
 
 void radial_pattern_builder::set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r >= 0.0 && color.r <= 1.0);
 	assert(color.g >= 0.0 && color.g <= 1.0);
@@ -127,7 +204,8 @@ void radial_pattern_builder::set_color_stop_rgba(unsigned int index, double offs
 	_Color_stops[index] = make_tuple(offset, color);
 }
 
-void radial_pattern_builder::get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) {
+void radial_pattern_builder::get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	center0 = _Center0;
 	radius0 = _Radius0;
 	center1 = _Center1;
@@ -135,6 +213,7 @@ void radial_pattern_builder::get_radial_circles(point& center0, double& radius0,
 }
 
 void radial_pattern_builder::set_radial_circles(const point& center0, double radius0, const point& center1, double radius1) {
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Center0 = center0;
 	_Radius0 = radius0;
 	_Center1 = center1;
