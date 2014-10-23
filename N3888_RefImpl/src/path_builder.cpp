@@ -91,7 +91,7 @@ path path_builder::get_path() const {
 	return path(*this);
 }
 
-void path_builder::append_path(const path& p) {
+void path_builder::append(const path& p) {
 	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	const auto& data = p.get_data_ref();
 	for (const auto& item : data) {
@@ -107,7 +107,7 @@ void path_builder::append_path(const path& p) {
 	_Current_point = p._Current_point;
 }
 
-void path_builder::append_path(const path_builder& p) {
+void path_builder::append(const path_builder& p) {
 	lock_guard<decltype(p._Lock)> plg(p._Lock); // Can throw system_error if max number of recursions has been reached.
 	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	for (const auto& item : p._Data) {
@@ -121,6 +121,67 @@ void path_builder::append_path(const path_builder& p) {
 	}
 	_Has_current_point = p._Has_current_point;
 	_Current_point = p._Current_point;
+}
+
+void path_builder::append(const vector<path_data>& p) {
+	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	for (const auto& item : p) {
+		auto type = item.type;
+		switch (type)
+		{
+		case path_data_type::move_to:
+			_Has_current_point = true;
+			_Current_point = item.data.move;
+			break;
+		case path_data_type::line_to:
+			_Has_current_point = true;
+			_Current_point = item.data.line;
+			break;
+		case path_data_type::curve_to:
+			_Has_current_point = true;
+			_Current_point = item.data.curve.pt3;
+			break;
+		case path_data_type::new_sub_path:
+			_Has_current_point = false;
+			break;
+		case path_data_type::close_path:
+			_Has_current_point = false;
+			break;
+		case path_data_type::rel_move_to:
+			if (!_Has_current_point) {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+			}
+			_Current_point = item.data.move;
+			break;
+		case path_data_type::rel_line_to:
+			if (!_Has_current_point) {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+			}
+			_Current_point = item.data.line;
+			break;
+		case path_data_type::rel_curve_to:
+			if (!_Has_current_point) {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+			}
+			_Current_point = item.data.curve.pt3;
+			break;
+		case path_data_type::arc:
+			_Set_current_point_for_arc(_Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, false, _Has_current_point, _Current_point));
+			break;
+		case path_data_type::arc_negative:
+			_Set_current_point_for_arc(_Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, true, _Has_current_point, _Current_point));
+			break;
+		case path_data_type::change_matrix:
+			_Transform_matrix = item.data.matrix;
+			break;
+		case path_data_type::change_origin:
+			_Origin = item.data.origin;
+			break;
+		default:
+			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+			break;
+		}
+	}
 }
 
 bool path_builder::has_current_point() const {
@@ -268,17 +329,7 @@ vector<path_data> _Get_arc_as_beziers(const point& center, double radius, double
 	return pb.get_data();
 }
 
-void path_builder::arc(const point& center, double radius, double angle1, double angle2) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
-	path_data pd;
-	pd.type = path_data_type::arc;
-	pd.data.arc.center = center;
-	pd.data.arc.radius = radius;
-	pd.data.arc.angle1 = angle1;
-	pd.data.arc.angle2 = angle2;
-	_Data.push_back(pd);
-	// Update the current point.
-	auto data = _Get_arc_as_beziers(center, radius, angle1, angle2, false, _Has_current_point, _Current_point);
+void path_builder::_Set_current_point_for_arc(const vector<path_data>& data) {
 	if (data.size() > 0) {
 		const auto& lastItem = *data.crbegin();
 		if (lastItem.type == path_data_type::curve_to) {
@@ -299,6 +350,19 @@ void path_builder::arc(const point& center, double radius, double angle1, double
 	}
 }
 
+void path_builder::arc(const point& center, double radius, double angle1, double angle2) {
+	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	path_data pd;
+	pd.type = path_data_type::arc;
+	pd.data.arc.center = center;
+	pd.data.arc.radius = radius;
+	pd.data.arc.angle1 = angle1;
+	pd.data.arc.angle2 = angle2;
+	_Data.push_back(pd);
+	// Update the current point.
+	_Set_current_point_for_arc(_Get_arc_as_beziers(center, radius, angle1, angle2, false, _Has_current_point, _Current_point));
+}
+
 void path_builder::arc_negative(const point& center, double radius, double angle1, double angle2) {
 	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	path_data pd;
@@ -309,25 +373,7 @@ void path_builder::arc_negative(const point& center, double radius, double angle
 	pd.data.arc.angle2 = angle2;
 	_Data.push_back(pd);
 	// Update the current point.
-	auto data = _Get_arc_as_beziers(center, radius, angle1, angle2, true, _Has_current_point, _Current_point);
-	if (data.size() > 0) {
-		const auto& lastItem = *data.crbegin();
-		if (lastItem.type == path_data_type::curve_to) {
-			_Has_current_point = true;
-			_Current_point = lastItem.data.curve.pt3;
-		}
-		else if (lastItem.type == path_data_type::line_to) {
-			_Has_current_point = true;
-			_Current_point = lastItem.data.line;
-		}
-		else if (lastItem.type == path_data_type::move_to) {
-			_Has_current_point = true;
-			_Current_point = lastItem.data.move;
-		}
-		else {
-			assert("_Get_arc_as_beziers returned unexpected path_data value." && false);
-		}
-	}
+	_Set_current_point_for_arc(_Get_arc_as_beziers(center, radius, angle1, angle2, true, _Has_current_point, _Current_point));
 }
 
 void path_builder::curve_to(const point& pt0, const point& pt1, const point& pt2) {
@@ -372,9 +418,9 @@ void path_builder::move_to(const point& pt) {
 void path_builder::rect(const experimental::io2d::rectangle& r) {
 	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	move_to({ r.x, r.y });
-	line_to({ r.x + r.width, r.y });
-	line_to({ r.x + r.width, r.y + r.height });
-	line_to({ r.x, r.y + r.height });
+	rel_line_to({ r.width, 0.0 });
+	rel_line_to({ 0.0, r.height });
+	rel_line_to({ -r.width, 0.0 });
 	close_path();
 }
 
@@ -409,7 +455,7 @@ void path_builder::rel_line_to(const point& dpt) {
 void path_builder::rel_move_to(const point& dpt) {
 	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	if (!_Has_current_point) {
-		throw system_error(CAIRO_STATUS_NO_CURRENT_POINT);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
 	path_data pd;
 	pd.type = path_data_type::rel_move_to;

@@ -9,7 +9,7 @@
 
 inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 	if (s != CAIRO_STATUS_SUCCESS) {
-		throw ::std::system_error(s);
+		throw ::std::system_error(::std::error_code(s, ::std::experimental::io2d::io2d_category()));
 	}
 }
 

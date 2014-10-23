@@ -58,7 +58,7 @@ matrix_2d& matrix_2d::shear_y(double factor) {
 
 double matrix_2d::determinant() const {
 	if (isnan(x0) || isnan(y0)) {
-		throw system_error(CAIRO_STATUS_INVALID_MATRIX);
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MATRIX);
 	}
 	return xx * yy - yx * xy;
 }

@@ -554,6 +554,7 @@ namespace std {
 					matrix_2d _Transform_matrix;
 					point _Origin;
 
+					void _Set_current_point_for_arc(const ::std::vector<path_data>& data);
 				public:
 					path_builder();
 					path_builder(const path_builder& other);
@@ -564,8 +565,9 @@ namespace std {
 					path get_path() const;
 					rectangle get_path_extents() const;
 
-					void append_path(const path& p);
-					void append_path(const path_builder& p);
+					void append(const path& p);
+					void append(const path_builder& p);
+					void append(const ::std::vector<path_data>& p);
 					bool has_current_point() const;
 					point get_current_point() const;
 					void new_sub_path();
