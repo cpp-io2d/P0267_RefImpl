@@ -13,18 +13,18 @@
 #include <algorithm>
 #include <system_error>
 
-#if defined(_MSC_VER) && (_MSC_VER <= 1800)
+#if (_No_noexcept_conditional_support_test)
 #define noexcept
 #endif
 
 namespace std {
 	namespace experimental {
 		namespace io2d {
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
 				enum class io2d_error {
-					success = 1,
+					success,
 					no_memory,
 					invalid_restore,
 					invalid_pop_group,
@@ -510,6 +510,15 @@ namespace std {
 
 				bool operator==(const path_data& lhs, const path_data& rhs);
 
+				class io2d_error_category : public ::std::error_category {
+				public:
+					virtual const char* name() const noexcept;
+					virtual ::std::string message(int errVal) const;
+					virtual bool equivalent(const ::std::error_code& ec, int condition) const noexcept;
+				};
+
+				const ::std::error_category& io2d_category() noexcept;
+
 				// Forward declaration.
 				class path_builder;
 
@@ -557,8 +566,8 @@ namespace std {
 
 					void append_path(const path& p);
 					void append_path(const path_builder& p);
-					bool has_current_point();
-					point get_current_point();
+					bool has_current_point() const;
+					point get_current_point() const;
 					void new_sub_path();
 					void close_path();
 					void arc(const point& center, double radius, double angle1, double angle2);
@@ -580,21 +589,8 @@ namespace std {
 					path_data get_data(unsigned int index) const;
 					const ::std::vector<path_data>& get_data_ref() const;
 
-					void insert_path_data(unsigned int index, const path_data& pd);
-					path_data replace_path_data(unsigned int index, const path_data& pd);
-					void remove_path_data(unsigned int index);
-
 					void reset();
 				};
-
-				class io2d_error_category : public ::std::error_category {
-				public:
-					virtual const char* name() const noexcept;
-					virtual ::std::string message(int errVal) const;
-					virtual bool equivalent(const ::std::error_code& ec, int condition) const noexcept;
-				};
-
-				const ::std::error_category& io2d_category() noexcept;
 
 				class device {
 				protected:
@@ -1097,7 +1093,7 @@ namespace std {
 				int format_stride_for_width(format format, int width);
 				surface make_surface(surface::native_handle_type nh); // parameters are exposition only.
 				image_surface make_image_surface(format format, int width, int height); // parameters are exposition only.
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510) 
+#if _Inline_namespace_conditional_support_test
 			}
 #endif
 		}

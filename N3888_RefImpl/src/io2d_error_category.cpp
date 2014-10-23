@@ -21,7 +21,7 @@ const char* io2d_error_category::name() const {
 	case io2d_error::invalid_pop_group:
 		return "A call was made to surface::pop_group or surface::pop_group_to_source for which no prior call to surface::push_group was made.";
 	case io2d_error::no_current_point:
-		return "The operation requires a current point but no current point was set. This is usually the result of a call to path_builder::rel_curve_to, path_builder::rel_line_to, or  path_builder::rel_move_to  and can be corrected by first establishing a current point with a non-\"rel\" member function call such as path_builder::move_to.";
+		return "The operation requires a current point but no current point was set. This is usually the result of a call to path_builder::rel_curve_to, path_builder::rel_line_to, or  path_builder::rel_move_to and can be corrected by first establishing a current point with a non-\"rel\" member function call such as path_builder::move_to.";
 	case io2d_error::invalid_matrix:
 		return "A matrix_2d that the operation depends on is invalid. To be valid a matrix_2d must be invertible.";
 	case io2d_error::invalid_status:
@@ -43,7 +43,7 @@ const char* io2d_error_category::name() const {
 	case io2d_error::pattern_type_mismatch:
 		return "An operation was attempted on a pattern that does not support it.";
 	case io2d_error::invalid_content:
-		return "An invalid \tcode{content} value was passed as an argument.";
+		return "An invalid content value was passed as an argument.";
 	case io2d_error::invalid_format:
 		return "An invalid format value was passed as an argument.";
 	case io2d_error::invalid_visual:
@@ -57,7 +57,7 @@ const char* io2d_error_category::name() const {
 	case io2d_error::invalid_index:
 		return "Invalid index.";
 	case io2d_error::clip_not_representable:
-		return "A call was made to \tcode{surface::get_clip_rectangles} when the surface object's current clipping region could not be represented with rectangles.";
+		return "A call was made to surface::get_clip_rectangles when the surface object's current clipping region could not be represented with rectangles.";
 	case io2d_error::temp_file_error:
 		return "Temp file error.";
 	case io2d_error::invalid_stride:
@@ -71,7 +71,7 @@ const char* io2d_error_category::name() const {
 	case io2d_error::negative_count:
 		return "Negative count.";
 	case io2d_error::invalid_clusters:
-		return "A call was made to \tcode{surface::show_text_glyphs} with a std::vector<text_clusters> argument that does not properly map the UTF-8 std::string code points to the std::vector<glyph> glyphs.";
+		return "A call was made to surface::show_text_glyphs with a std::vector<text_clusters> argument that does not properly map the UTF-8 std::string code points to the std::vector<glyph> glyphs.";
 	case io2d_error::invalid_slant:
 		return "Invalid slant.";
 	case io2d_error::invalid_weight:

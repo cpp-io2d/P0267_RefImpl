@@ -91,10 +91,6 @@ path path_builder::get_path() const {
 	return path(*this);
 }
 
-bool path_builder::has_current_point() {
-	return _Has_current_point;
-}
-
 void path_builder::append_path(const path& p) {
 	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	const auto& data = p.get_data_ref();
@@ -127,7 +123,12 @@ void path_builder::append_path(const path_builder& p) {
 	_Current_point = p._Current_point;
 }
 
-point path_builder::get_current_point() {
+bool path_builder::has_current_point() const {
+	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	return _Has_current_point;
+}
+
+point path_builder::get_current_point() const {
 	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	if (_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
@@ -1077,32 +1078,6 @@ rectangle path_builder::get_path_extents() const {
 		}
 	}
 	return{ pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y };
-}
-
-void path_builder::insert_path_data(unsigned int index, const path_data& pd) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
-	if (index > _Data.size()) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
-	}
-	_Data.insert(_Data.cbegin() + index, pd);
-}
-
-path_data path_builder::replace_path_data(unsigned int index, const path_data& pd) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
-	if (index >= _Data.size()) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
-	}
-	auto oldPd = _Data[index];
-	_Data[index] = pd;
-	return oldPd;
-}
-
-void path_builder::remove_path_data(unsigned int index) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
-	if (index >= _Data.size()) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
-	}
-	_Data.erase(remove(begin(_Data) + index, begin(_Data) + index, _Data[index]), end(_Data));
 }
 
 void path_builder::reset() {
