@@ -161,12 +161,11 @@ namespace std {
 				};
 
 				enum class pattern_type {
+					unknown,
 					solid_color,
-					surface,
 					linear,
 					radial,
-					mesh,
-					raster_source
+					mesh
 				};
 
 				enum class font_slant {
@@ -182,10 +181,10 @@ namespace std {
 
 				enum class subpixel_order {
 					default_subpixel_order,
-					rgb,
-					bgr,
-					vrgb,
-					vbgr
+					horizontal_rgb,
+					horizontal_bgr,
+					vertical_rgb,
+					vertical_bgr
 				};
 
 				enum class hint_style {
@@ -527,6 +526,7 @@ namespace std {
 					::std::vector<path_data> _Data;
 					bool _Has_current_point;
 					point _Current_point;
+					point _Last_move_to_point;
 					rectangle _Extents;
 				public:
 					typedef cairo_path_t* native_handle_type;
@@ -549,12 +549,13 @@ namespace std {
 					::std::vector<path_data> _Data;
 					bool _Has_current_point;
 					point _Current_point;
+					point _Last_move_to_point;
 					point _Extents_pt0;
 					point _Extents_pt1;
 					matrix_2d _Transform_matrix;
 					point _Origin;
 
-					void _Set_current_point_for_arc(const ::std::vector<path_data>& data);
+					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<path_data>& data);
 				public:
 					path_builder();
 					path_builder(const path_builder& other);
@@ -1028,8 +1029,8 @@ namespace std {
 
 					void paint();
 					void paint(const surface& s);
-					void paint_with_alpha(double alpha);
-					void paint_with_alpha(const surface& s, double alpha);
+					void paint(double alpha);
+					void paint(const surface& s, double alpha);
 
 					void stroke();
 					void stroke(const surface& s);

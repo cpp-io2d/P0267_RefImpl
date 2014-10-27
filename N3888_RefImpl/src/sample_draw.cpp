@@ -79,8 +79,8 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 	auto secondRectPath = pb.get_path();
 
 	pb.reset();
-	pb.append_path(firstRectPath);
-	pb.append_path(secondRectPath);
+	pb.append(firstRectPath);
+	pb.append(secondRectPath);
 	auto bothRectsClipPath = pb.get_path();
 
 	pb.reset();
@@ -215,7 +215,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	linearPattern.add_color_stop_rgba(1.0, rgba_color::salmon);
 	linearPattern.set_extend(extend::repeat);
 	pb.reset();
-	pb.set_origin({ 500.0, 450.0 });
+//	pb.set_origin({ 500.0, 450.0 });
 	pb.rect({ 500.0, 450.0, 100.0, 100.0 });
 	pb.rect({ 525.0, 425.0, 50.0, 150.0 });
 	pb.move_to({ 650.0, 400.0 });
@@ -230,8 +230,12 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.fill();
 
 	pb.reset();
+//	pb.new_sub_path();
+	pb.move_to({ 430.0, 60.0 });
+	pb.arc({ 500.0, 60.0 }, 30.0, pi, pi * 2.0);
+	pb.line_to({ 570.0, 60.0 });
 	pb.new_sub_path();
-	pb.arc({ 500.0, 60.0 }, 30.0, 0.0, pi);
+	pb.arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi * 3.0 / 4.0);
 	pb.new_sub_path();
 	rs.set_path(pb.get_path());
 	rs.set_line_width(2.0);

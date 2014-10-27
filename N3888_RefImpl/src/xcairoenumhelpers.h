@@ -583,16 +583,12 @@ namespace std {
 				switch (pt) {
 				case ::std::experimental::io2d::pattern_type::solid_color:
 					return CAIRO_PATTERN_TYPE_SOLID;
-				case ::std::experimental::io2d::pattern_type::surface:
-					return CAIRO_PATTERN_TYPE_SURFACE;
 				case ::std::experimental::io2d::pattern_type::linear:
 					return CAIRO_PATTERN_TYPE_LINEAR;
 				case ::std::experimental::io2d::pattern_type::radial:
 					return CAIRO_PATTERN_TYPE_RADIAL;
 				case ::std::experimental::io2d::pattern_type::mesh:
 					return CAIRO_PATTERN_TYPE_MESH;
-				case ::std::experimental::io2d::pattern_type::raster_source:
-					return CAIRO_PATTERN_TYPE_RASTER_SOURCE;
 				default:
 					throw ::std::runtime_error("Unknown pattern_type value.");
 				}
@@ -603,7 +599,7 @@ namespace std {
 				case CAIRO_PATTERN_TYPE_SOLID:
 					return ::std::experimental::io2d::pattern_type::solid_color;
 				case CAIRO_PATTERN_TYPE_SURFACE:
-					return ::std::experimental::io2d::pattern_type::surface;
+					throw ::std::runtime_error("Unsupported cairo_pattern_type_t value 'CAIRO_PATTERN_TYPE_SURFACE'.");
 				case CAIRO_PATTERN_TYPE_LINEAR:
 					return ::std::experimental::io2d::pattern_type::linear;
 				case CAIRO_PATTERN_TYPE_RADIAL:
@@ -611,7 +607,7 @@ namespace std {
 				case CAIRO_PATTERN_TYPE_MESH:
 					return ::std::experimental::io2d::pattern_type::mesh;
 				case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
-					return ::std::experimental::io2d::pattern_type::raster_source;
+					throw ::std::runtime_error("Unsupported cairo_pattern_type_t value 'CAIRO_PATTERN_TYPE_RASTER_SOURCE'.");
 				default:
 					throw ::std::runtime_error("Unknown cairo_pattern_type_t value.");
 				}
@@ -693,13 +689,13 @@ namespace std {
 				switch (so) {
 				case ::std::experimental::io2d::subpixel_order::default_subpixel_order:
 					return CAIRO_SUBPIXEL_ORDER_DEFAULT;
-				case ::std::experimental::io2d::subpixel_order::rgb:
+				case ::std::experimental::io2d::subpixel_order::horizontal_rgb:
 					return CAIRO_SUBPIXEL_ORDER_RGB;
-				case ::std::experimental::io2d::subpixel_order::bgr:
+				case ::std::experimental::io2d::subpixel_order::horizontal_bgr:
 					return CAIRO_SUBPIXEL_ORDER_BGR;
-				case ::std::experimental::io2d::subpixel_order::vrgb:
+				case ::std::experimental::io2d::subpixel_order::vertical_rgb:
 					return CAIRO_SUBPIXEL_ORDER_VRGB;
-				case ::std::experimental::io2d::subpixel_order::vbgr:
+				case ::std::experimental::io2d::subpixel_order::vertical_bgr:
 					return CAIRO_SUBPIXEL_ORDER_VBGR;
 				default:
 					throw ::std::runtime_error("Unknown subpixel_order value.");
@@ -711,13 +707,13 @@ namespace std {
 				case CAIRO_SUBPIXEL_ORDER_DEFAULT:
 					return ::std::experimental::io2d::subpixel_order::default_subpixel_order;
 				case CAIRO_SUBPIXEL_ORDER_RGB:
-					return ::std::experimental::io2d::subpixel_order::rgb;
+					return ::std::experimental::io2d::subpixel_order::horizontal_rgb;
 				case CAIRO_SUBPIXEL_ORDER_BGR:
-					return ::std::experimental::io2d::subpixel_order::bgr;
+					return ::std::experimental::io2d::subpixel_order::horizontal_bgr;
 				case CAIRO_SUBPIXEL_ORDER_VRGB:
-					return ::std::experimental::io2d::subpixel_order::vrgb;
+					return ::std::experimental::io2d::subpixel_order::vertical_rgb;
 				case CAIRO_SUBPIXEL_ORDER_VBGR:
-					return ::std::experimental::io2d::subpixel_order::vbgr;
+					return ::std::experimental::io2d::subpixel_order::vertical_bgr;
 				default:
 					throw ::std::runtime_error("Unknown cairo_subpixel_order value.");
 				}

@@ -20,7 +20,7 @@ font_options_builder::font_options_builder(const font_options_builder& other)
 	, _Hint_style()
 	, _Hint_metrics() {
 	lock_guard<decltype(other._Lock)> olg(other._Lock);
-	lock_guard<decltype(_Lock)> tlg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> tlg(_Lock);
 	_Antialias = other._Antialias;
 	_Subpixel_order = other._Subpixel_order;
 	_Hint_style = other._Hint_style;
@@ -30,7 +30,7 @@ font_options_builder::font_options_builder(const font_options_builder& other)
 font_options_builder& font_options_builder::operator=(const font_options_builder& other) {
 	if (this != &other) {
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
-		lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Antialias = other._Antialias;
 		_Subpixel_order = other._Subpixel_order;
 		_Hint_style = other._Hint_style;
@@ -55,7 +55,7 @@ font_options_builder::font_options_builder(font_options_builder&& other)
 font_options_builder& font_options_builder::operator=(font_options_builder&& other) {
 	if (this != &other) {
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
-		lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Antialias = move(other._Antialias);
 		_Subpixel_order = move(other._Subpixel_order);
 		_Hint_style = move(other._Hint_style);

@@ -14,6 +14,7 @@ path::path(const path_builder& pb)
 	_Data = pb._Data;
 	_Has_current_point = pb._Has_current_point;
 	_Current_point = pb._Current_point;
+	_Last_move_to_point = pb._Last_move_to_point;
 	_Extents = pb.get_path_extents();
 }
 
@@ -21,6 +22,7 @@ path::path(path&& other)
 : _Data(move(other._Data))
 , _Has_current_point(move(other._Has_current_point))
 , _Current_point(move(other._Current_point))
+, _Last_move_to_point(move(other._Last_move_to_point))
 , _Extents(move(other._Extents)) {
 }
 
@@ -29,6 +31,7 @@ path& path::operator=(path&& other) {
 		_Data = move(other._Data);
 		_Has_current_point = move(other._Has_current_point);
 		_Current_point = move(other._Current_point);
+		_Last_move_to_point = move(other._Last_move_to_point);
 		_Extents = move(other._Extents);
 	}
 	return *this;

@@ -12,6 +12,7 @@ path_builder::path_builder()
 	, _Data()
 	, _Has_current_point()
 	, _Current_point()
+	, _Last_move_to_point()
 	, _Extents_pt0()
 	, _Extents_pt1()
 	, _Transform_matrix(matrix_2d::init_identity())
@@ -23,14 +24,16 @@ path_builder::path_builder(const path_builder& other)
 	, _Data()
 	, _Has_current_point()
 	, _Current_point()
+	, _Last_move_to_point()
 	, _Extents_pt0()
 	, _Extents_pt1()
 	, _Transform_matrix()
 	, _Origin() {
-	lock_guard<decltype(other._Lock)> lg(other._Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(other._Lock)> lg(other._Lock);
 	_Data = other._Data;
 	_Has_current_point = other._Has_current_point;
 	_Current_point = other._Current_point;
+	_Last_move_to_point = other._Last_move_to_point;
 	_Extents_pt0 = other._Extents_pt0;
 	_Extents_pt1 = other._Extents_pt1;
 	_Transform_matrix = other._Transform_matrix;
@@ -39,15 +42,16 @@ path_builder::path_builder(const path_builder& other)
 
 path_builder& path_builder::operator=(const path_builder& other) {
 	if (this != &other) {
-		lock_guard<decltype(_Lock)> tlg(_Lock); // Can throw system_error if max number of recursions has been reached.
-		lock_guard<decltype(other._Lock)> lg(other._Lock); // Can throw system_error if max number of recursions has been reached.
-		_Data = move(other._Data);
-		_Has_current_point = move(other._Has_current_point);
-		_Current_point = move(other._Current_point);
-		_Extents_pt0 = move(other._Extents_pt0);
-		_Extents_pt1 = move(other._Extents_pt1);
-		_Transform_matrix = move(other._Transform_matrix);
-		_Origin = move(other._Origin);
+		lock_guard<decltype(_Lock)> tlg(_Lock);
+		lock_guard<decltype(other._Lock)> lg(other._Lock);
+		_Data = other._Data;
+		_Has_current_point = other._Has_current_point;
+		_Current_point = other._Current_point;
+		_Last_move_to_point = other._Last_move_to_point;
+		_Extents_pt0 = other._Extents_pt0;
+		_Extents_pt1 = other._Extents_pt1;
+		_Transform_matrix = other._Transform_matrix;
+		_Origin = other._Origin;
 	}
 	return *this;
 }
@@ -61,10 +65,11 @@ path_builder::path_builder(path_builder&& other)
 	, _Extents_pt1()
 	, _Transform_matrix()
 	, _Origin() {
-	lock_guard<decltype(_Lock)> lg(other._Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(other._Lock);
 	_Data = move(other._Data);
 	_Has_current_point = move(other._Has_current_point);
 	_Current_point = move(other._Current_point);
+	_Last_move_to_point = move(other._Last_move_to_point);
 	_Extents_pt0 = move(other._Extents_pt0);
 	_Extents_pt1 = move(other._Extents_pt1);
 	_Transform_matrix = move(other._Transform_matrix);
@@ -73,11 +78,12 @@ path_builder::path_builder(path_builder&& other)
 
 path_builder& path_builder::operator=(path_builder&& other) {
 	if (this != &other) {
-		lock_guard<decltype(_Lock)> tlg(_Lock); // Can throw system_error if max number of recursions has been reached.
-		lock_guard<decltype(other._Lock)> lg(other._Lock); // Can throw system_error if max number of recursions has been reached.
+		lock_guard<decltype(_Lock)> tlg(_Lock);
+		lock_guard<decltype(other._Lock)> lg(other._Lock);
 		_Data = move(other._Data);
 		_Has_current_point = move(other._Has_current_point);
 		_Current_point = move(other._Current_point);
+		_Last_move_to_point = move(other._Last_move_to_point);
 		_Extents_pt0 = move(other._Extents_pt0);
 		_Extents_pt1 = move(other._Extents_pt1);
 		_Transform_matrix = move(other._Transform_matrix);
@@ -87,12 +93,12 @@ path_builder& path_builder::operator=(path_builder&& other) {
 }
 
 path path_builder::get_path() const {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return path(*this);
 }
 
 void path_builder::append(const path& p) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	const auto& data = p.get_data_ref();
 	for (const auto& item : data) {
 		_Data.push_back(item);
@@ -105,11 +111,12 @@ void path_builder::append(const path& p) {
 	}
 	_Has_current_point = p._Has_current_point;
 	_Current_point = p._Current_point;
+	_Last_move_to_point = p._Last_move_to_point;
 }
 
 void path_builder::append(const path_builder& p) {
-	lock_guard<decltype(p._Lock)> plg(p._Lock); // Can throw system_error if max number of recursions has been reached.
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(p._Lock)> plg(p._Lock);
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	for (const auto& item : p._Data) {
 		_Data.push_back(item);
 		if (item.type == path_data_type::change_matrix) {
@@ -121,10 +128,11 @@ void path_builder::append(const path_builder& p) {
 	}
 	_Has_current_point = p._Has_current_point;
 	_Current_point = p._Current_point;
+	_Last_move_to_point = p._Last_move_to_point;
 }
 
 void path_builder::append(const vector<path_data>& p) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	for (const auto& item : p) {
 		auto type = item.type;
 		switch (type)
@@ -132,6 +140,7 @@ void path_builder::append(const vector<path_data>& p) {
 		case path_data_type::move_to:
 			_Has_current_point = true;
 			_Current_point = item.data.move;
+			_Last_move_to_point = item.data.move;
 			break;
 		case path_data_type::line_to:
 			_Has_current_point = true;
@@ -145,7 +154,6 @@ void path_builder::append(const vector<path_data>& p) {
 			_Has_current_point = false;
 			break;
 		case path_data_type::close_path:
-			_Has_current_point = false;
 			break;
 		case path_data_type::rel_move_to:
 			if (!_Has_current_point) {
@@ -166,10 +174,10 @@ void path_builder::append(const vector<path_data>& p) {
 			_Current_point = item.data.curve.pt3;
 			break;
 		case path_data_type::arc:
-			_Set_current_point_for_arc(_Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, false, _Has_current_point, _Current_point));
+			_Set_current_point_and_last_move_to_point_for_arc(_Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, false, _Has_current_point, _Current_point));
 			break;
 		case path_data_type::arc_negative:
-			_Set_current_point_for_arc(_Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, true, _Has_current_point, _Current_point));
+			_Set_current_point_and_last_move_to_point_for_arc(_Get_arc_as_beziers(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2, true, _Has_current_point, _Current_point));
 			break;
 		case path_data_type::change_matrix:
 			_Transform_matrix = item.data.matrix;
@@ -185,12 +193,12 @@ void path_builder::append(const vector<path_data>& p) {
 }
 
 bool path_builder::has_current_point() const {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Has_current_point;
 }
 
 point path_builder::get_current_point() const {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
@@ -198,19 +206,23 @@ point path_builder::get_current_point() const {
 }
 
 void path_builder::new_sub_path() {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	path_data pd{ };
 	pd.type = path_data_type::new_sub_path;
 	pd.data.unused = 0;
 	_Data.push_back(pd);
+	_Has_current_point = false;
 }
 
 void path_builder::close_path() {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
-	path_data pd{ };
-	pd.type = path_data_type::close_path;
-	pd.data.unused = 0;
-	_Data.push_back(pd);
+	lock_guard<decltype(_Lock)> lg(_Lock);
+	if (_Has_current_point) {
+		path_data pd{ };
+		pd.type = path_data_type::close_path;
+		pd.data.unused = 0;
+		_Data.push_back(pd);
+		_Current_point = _Last_move_to_point;
+	}
 }
 
 point _Rotate_point(const point& pt, double angle, bool clockwise = true) {
@@ -296,17 +308,13 @@ vector<path_data> _Get_arc_as_beziers(const point& center, double radius, double
 	path_builder pb;
 	pb.set_origin(origin);
 	pb.set_transform_matrix(matrix);
-
+	
+	const auto startPoint = center + _Rotate_point(pt0 * radius, currentTheta);
 	if (hasCurrentPoint) {
 		pb.move_to(currentPoint);
-	}
-
-	const auto startPoint = center + _Rotate_point(pt0 * radius, currentTheta);
-	if (pb.has_current_point()) {
 		pb.line_to(startPoint);
 	}
 	else {
-		pb.new_sub_path();
 		pb.move_to(startPoint);
 	}
 
@@ -329,7 +337,7 @@ vector<path_data> _Get_arc_as_beziers(const point& center, double radius, double
 	return pb.get_data();
 }
 
-void path_builder::_Set_current_point_for_arc(const vector<path_data>& data) {
+void path_builder::_Set_current_point_and_last_move_to_point_for_arc(const vector<path_data>& data) {
 	if (data.size() > 0) {
 		const auto& lastItem = *data.crbegin();
 		if (lastItem.type == path_data_type::curve_to) {
@@ -343,6 +351,7 @@ void path_builder::_Set_current_point_for_arc(const vector<path_data>& data) {
 		else if (lastItem.type == path_data_type::move_to) {
 			_Has_current_point = true;
 			_Current_point = lastItem.data.move;
+			_Last_move_to_point = lastItem.data.move;
 		}
 		else {
 			assert("_Get_arc_as_beziers returned unexpected path_data value." && false);
@@ -351,7 +360,7 @@ void path_builder::_Set_current_point_for_arc(const vector<path_data>& data) {
 }
 
 void path_builder::arc(const point& center, double radius, double angle1, double angle2) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	path_data pd;
 	pd.type = path_data_type::arc;
 	pd.data.arc.center = center;
@@ -360,11 +369,11 @@ void path_builder::arc(const point& center, double radius, double angle1, double
 	pd.data.arc.angle2 = angle2;
 	_Data.push_back(pd);
 	// Update the current point.
-	_Set_current_point_for_arc(_Get_arc_as_beziers(center, radius, angle1, angle2, false, _Has_current_point, _Current_point));
+	_Set_current_point_and_last_move_to_point_for_arc(_Get_arc_as_beziers(center, radius, angle1, angle2, false, _Has_current_point, _Current_point));
 }
 
 void path_builder::arc_negative(const point& center, double radius, double angle1, double angle2) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	path_data pd;
 	pd.type = path_data_type::arc_negative;
 	pd.data.arc.center = center;
@@ -373,50 +382,50 @@ void path_builder::arc_negative(const point& center, double radius, double angle
 	pd.data.arc.angle2 = angle2;
 	_Data.push_back(pd);
 	// Update the current point.
-	_Set_current_point_for_arc(_Get_arc_as_beziers(center, radius, angle1, angle2, true, _Has_current_point, _Current_point));
+	_Set_current_point_and_last_move_to_point_for_arc(_Get_arc_as_beziers(center, radius, angle1, angle2, true, _Has_current_point, _Current_point));
 }
 
 void path_builder::curve_to(const point& pt0, const point& pt1, const point& pt2) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
 	if (!_Has_current_point) {
 		move_to(pt0);
 	}
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	path_data pd;
 	pd.type = path_data_type::curve_to;
-	pd.data.curve.pt1 = pt0;//_Transform_matrix.transform_point(pt0 - _Origin) + _Origin;
-	pd.data.curve.pt2 = pt1;//_Transform_matrix.transform_point(pt1 - _Origin) + _Origin;
-	pd.data.curve.pt3 = pt2;//_Transform_matrix.transform_point(pt2 - _Origin) + _Origin;
+	pd.data.curve.pt1 = pt0;
+	pd.data.curve.pt2 = pt1;
+	pd.data.curve.pt3 = pt2;
 	_Data.push_back(pd);
 	_Has_current_point = true;
 	_Current_point = pd.data.curve.pt3;
 }
 
 void path_builder::line_to(const point& pt) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
-	path_data pd;
 	if (!_Has_current_point) {
 		move_to(pt);
 		return;
 	}
+	lock_guard<decltype(_Lock)> lg(_Lock);
+	path_data pd;
 	pd.type = path_data_type::line_to;
-	pd.data.line = pt;//_Transform_matrix.transform_point(pt - _Origin) + _Origin;
+	pd.data.line = pt;
 	_Data.push_back(pd);
 	_Has_current_point = true;
 	_Current_point = pd.data.line;
 }
 
 void path_builder::move_to(const point& pt) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	path_data pd;
 	pd.type = path_data_type::move_to;
-	pd.data.move = pt;//_Transform_matrix.transform_point(pt - _Origin) + _Origin;
+	pd.data.move = pt;
 	_Data.push_back(pd);
 	_Has_current_point = true;
 	_Current_point = pd.data.move;
 }
 
 void path_builder::rect(const experimental::io2d::rectangle& r) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	move_to({ r.x, r.y });
 	rel_line_to({ r.width, 0.0 });
 	rel_line_to({ 0.0, r.height });
@@ -425,7 +434,7 @@ void path_builder::rect(const experimental::io2d::rectangle& r) {
 }
 
 void path_builder::rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
@@ -440,7 +449,7 @@ void path_builder::rel_curve_to(const point& dpt0, const point& dpt1, const poin
 }
 
 void path_builder::rel_line_to(const point& dpt) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
@@ -453,7 +462,7 @@ void path_builder::rel_line_to(const point& dpt) {
 }
 
 void path_builder::rel_move_to(const point& dpt) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
@@ -466,7 +475,7 @@ void path_builder::rel_move_to(const point& dpt) {
 }
 
 void path_builder::set_transform_matrix(const matrix_2d& m) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Transform_matrix = m;
 	path_data pd;
 	pd.type = path_data_type::change_matrix;
@@ -475,12 +484,12 @@ void path_builder::set_transform_matrix(const matrix_2d& m) {
 }
 
 matrix_2d path_builder::get_transform_matrix() const {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Transform_matrix;
 }
 
 void path_builder::set_origin(const point& pt) {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Origin = pt;
 	path_data pd;
 	pd.type = path_data_type::change_origin;
@@ -489,17 +498,17 @@ void path_builder::set_origin(const point& pt) {
 }
 
 point path_builder::get_origin() const {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Origin;
 }
 
 vector<path_data> path_builder::get_data() const {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return vector<path_data>(_Data);
 }
 
 const vector<path_data>& path_builder::get_data_ref() const {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Data;
 }
 
@@ -829,7 +838,7 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 }
 
 rectangle path_builder::get_path_extents() const {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	point pt0{ };
 	point pt1{ };
 
@@ -1127,7 +1136,7 @@ rectangle path_builder::get_path_extents() const {
 }
 
 void path_builder::reset() {
-	lock_guard<decltype(_Lock)> lg(_Lock); // Can throw system_error if max number of recursions has been reached.
+	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Data = { };
 	_Has_current_point = { };
 	_Current_point = { };

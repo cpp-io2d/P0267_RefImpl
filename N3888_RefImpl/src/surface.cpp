@@ -286,7 +286,7 @@ void surface::reset_clip() {
 
 vector<rectangle> surface::get_clip_rectangles() const {
 	vector<rectangle> results;
-	std::unique_ptr<cairo_rectangle_list_t, function<void(cairo_rectangle_list_t*)>> sp_rects(cairo_copy_clip_rectangle_list(_Context.get()), &cairo_rectangle_list_destroy);
+	unique_ptr<cairo_rectangle_list_t, function<void(cairo_rectangle_list_t*)>> sp_rects(cairo_copy_clip_rectangle_list(_Context.get()), &cairo_rectangle_list_destroy);
 	_Throw_if_failed_cairo_status_t(sp_rects->status);
 	for (auto i = 0; i < sp_rects->num_rectangles; ++i) {
 		results.push_back({ sp_rects->rectangles[i].x, sp_rects->rectangles[i].y, sp_rects->rectangles[i].width, sp_rects->rectangles[i].height });
@@ -342,11 +342,11 @@ void surface::paint(const surface& s) {
 	cairo_set_source(_Context.get(), pat.get());
 }
 
-void surface::paint_with_alpha(double alpha) {
+void surface::paint(double alpha) {
 	cairo_paint_with_alpha(_Context.get(), alpha);
 }
 
-void surface::paint_with_alpha(const surface& s, double alpha) {
+void surface::paint(const surface& s, double alpha) {
 	auto pat = cairo_get_source(_Context.get());
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	cairo_paint_with_alpha(_Context.get(), alpha);
@@ -381,6 +381,12 @@ void surface::set_path() {
 	cairo_new_path(_Context.get());
 }
 
+point _Rotate_point_absolute_angle(const point& center, double radius, double angle) {
+	point pt{ radius * cos(angle), -radius * -sin(angle) };
+	pt += center;
+	return pt;
+}
+
 void surface::set_path(const path& p) {
 	auto ctx = _Context.get();
 	auto matrix = matrix_2d::init_identity();
@@ -397,14 +403,14 @@ void surface::set_path(const path& p) {
 		{
 			auto pt = matrix.transform_point(item.data.move - origin) + origin;
 			cairo_move_to(ctx, pt.x, pt.y);
-			currentPoint = pt;
+			currentPoint = item.data.move;
 			hasCurrentPoint = true;
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
 			auto pt = matrix.transform_point(item.data.line - origin) + origin;
 			cairo_line_to(ctx, pt.x, pt.y);
-			currentPoint = pt;
+			currentPoint = item.data.line;
 			hasCurrentPoint = true;
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
@@ -413,7 +419,7 @@ void surface::set_path(const path& p) {
 			auto pt2 = matrix.transform_point(item.data.curve.pt2 - origin) + origin;
 			auto pt3 = matrix.transform_point(item.data.curve.pt3 - origin) + origin;
 			cairo_curve_to(ctx, pt1.x, pt1.y, pt2.x, pt2.y, pt3.x, pt3.y);
-			currentPoint = pt3;
+			currentPoint = item.data.curve.pt3;
 			hasCurrentPoint = true;
 		} break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
@@ -430,16 +436,16 @@ void surface::set_path(const path& p) {
 		{
 			assert(hasCurrentPoint);
 			auto pt = matrix.transform_point((item.data.move + currentPoint) - origin) + origin;
-			cairo_rel_move_to(ctx, pt.x, pt.y);
-			currentPoint = pt;
+			cairo_move_to(ctx, pt.x, pt.y);
+			currentPoint = item.data.move + currentPoint;
 			hasCurrentPoint = true;
 		} break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
 			assert(hasCurrentPoint);
 			auto pt = matrix.transform_point((item.data.line + currentPoint) - origin) + origin;
-			cairo_rel_line_to(ctx, pt.x, pt.y);
-			currentPoint = pt;
+			cairo_line_to(ctx, pt.x, pt.y);
+			currentPoint = item.data.line + currentPoint;
 			hasCurrentPoint = true;
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
@@ -448,8 +454,8 @@ void surface::set_path(const path& p) {
 			auto pt1 = matrix.transform_point((item.data.curve.pt1 + currentPoint) - origin) + origin;
 			auto pt2 = matrix.transform_point((item.data.curve.pt2 + currentPoint) - origin) + origin;
 			auto pt3 = matrix.transform_point((item.data.curve.pt3 + currentPoint) - origin) + origin;
-			cairo_rel_curve_to(ctx, pt1.x, pt1.y, pt2.x, pt2.y, pt3.x, pt3.y);
-			currentPoint = pt3;
+			cairo_curve_to(ctx, pt1.x, pt1.y, pt2.x, pt2.y, pt3.x, pt3.y);
+			currentPoint = item.data.curve.pt3 + currentPoint;
 			hasCurrentPoint = true;
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
@@ -461,15 +467,15 @@ void surface::set_path(const path& p) {
 				{
 					auto pt = matrix.transform_point(arcItem.data.move - origin) + origin;
 					cairo_move_to(ctx, pt.x, pt.y);
-					currentPoint = pt;
-					hasCurrentPoint = true;
+					//currentPoint = _Rotate_point_absolute_angle(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1);
+					//hasCurrentPoint = true;
 				} break;
 				case std::experimental::io2d::path_data_type::line_to:
 				{
 					auto pt = matrix.transform_point(arcItem.data.line - origin) + origin;
-					cairo_move_to(ctx, pt.x, pt.y);
-					currentPoint = pt;
-					hasCurrentPoint = true;
+					cairo_line_to(ctx, pt.x, pt.y);
+					//currentPoint = _Rotate_point_absolute_angle(item.data.arc.center, item.data.arc.radius, item.data.arc.angle1);
+					//hasCurrentPoint = true;
 				} break;
 				case std::experimental::io2d::path_data_type::curve_to:
 				{
@@ -477,8 +483,8 @@ void surface::set_path(const path& p) {
 					auto pt2 = matrix.transform_point(arcItem.data.curve.pt2 - origin) + origin;
 					auto pt3 = matrix.transform_point(arcItem.data.curve.pt3 - origin) + origin;
 					cairo_curve_to(ctx, pt1.x, pt1.y, pt2.x, pt2.y, pt3.x, pt3.y);
-					currentPoint = pt3;
-					hasCurrentPoint = true;
+					//currentPoint = arcItem.data.curve.pt3;
+					//hasCurrentPoint = true;
 				}
 					break;
 				case path_data_type::change_origin:
@@ -502,6 +508,8 @@ void surface::set_path(const path& p) {
 					break;
 				}
 			}
+			currentPoint = _Rotate_point_absolute_angle(item.data.arc.center, item.data.arc.radius, item.data.arc.angle2);
+			hasCurrentPoint = true;
 		}
 			break;
 		case std::experimental::io2d::path_data_type::arc_negative:
@@ -513,15 +521,15 @@ void surface::set_path(const path& p) {
 				{
 					auto pt = matrix.transform_point(arcItem.data.move - origin) + origin;
 					cairo_move_to(ctx, pt.x, pt.y);
-					currentPoint = pt;
-					hasCurrentPoint = true;
+					//currentPoint = arcItem.data.move;
+					//hasCurrentPoint = true;
 				} break;
 				case std::experimental::io2d::path_data_type::line_to:
 				{
 					auto pt = matrix.transform_point(arcItem.data.line - origin) + origin;
-					cairo_move_to(ctx, pt.x, pt.y);
-					currentPoint = pt;
-					hasCurrentPoint = true;
+					cairo_line_to(ctx, pt.x, pt.y);
+					//currentPoint = arcItem.data.line;
+					//hasCurrentPoint = true;
 				} break;
 				case std::experimental::io2d::path_data_type::curve_to:
 				{
@@ -529,8 +537,8 @@ void surface::set_path(const path& p) {
 					auto pt2 = matrix.transform_point(arcItem.data.curve.pt2 - origin) + origin;
 					auto pt3 = matrix.transform_point(arcItem.data.curve.pt3 - origin) + origin;
 					cairo_curve_to(ctx, pt1.x, pt1.y, pt2.x, pt2.y, pt3.x, pt3.y);
-					currentPoint = pt3;
-					hasCurrentPoint = true;
+					//currentPoint = arcItem.data.curve.pt3;
+					//hasCurrentPoint = true;
 				}
 					break;
 				case path_data_type::change_origin:
@@ -554,20 +562,10 @@ void surface::set_path(const path& p) {
 					break;
 				}
 			}
+			currentPoint = _Rotate_point_absolute_angle(item.data.arc.center, item.data.arc.radius, item.data.arc.angle2);
+			hasCurrentPoint = true;
 		}
 			break;
-			//case std::experimental::io2d::path_data_type::arc:
-			//{
-			//	auto pt = item.data.arc.center +;//matrix.transform_point(item.data.arc.center - origin) + origin;
-			//	auto ctm = get_matrix();
-			//	set_matrix(matrix);
-			//	cairo_arc(ctx, pt.x, pt.y, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2);
-			//} break;
-			//case std::experimental::io2d::path_data_type::arc_negative:
-			//{
-			//	auto pt = matrix.transform_point(item.data.arc.center - origin) + origin;
-			//	cairo_arc_negative(ctx, pt.x, pt.y, item.data.arc.radius, item.data.arc.angle1, item.data.arc.angle2);
-			//} break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
 			matrix = item.data.matrix;
