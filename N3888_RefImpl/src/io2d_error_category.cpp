@@ -95,6 +95,11 @@ const char* io2d_error_category::name() const {
 	}
 }
 
+bool io2d_error_category::equivalent(int code, const ::std::error_condition& condition) const {
+	return (*this == condition.category())
+		&& (static_cast<cairo_status_t>(code) == _Io2d_error_to_cairo_status_t(static_cast<io2d_error>(condition.value)));
+}
+
 bool io2d_error_category::equivalent(const ::std::error_code& code, int condition) const {
 	// Make sure the error_code's category is of type io2d_error_category
 	return (*this == code.category())

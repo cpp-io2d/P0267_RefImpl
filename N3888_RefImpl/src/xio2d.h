@@ -20,6 +20,12 @@
 // Designed to be used to conditionally define compiler support for inline namespaces using a #if
 #define _Inline_namespace_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510))
 
-// Designed to be used to conditionally define no compiler support for noexcept using a #if
-#define _No_noexcept_conditional_support_test (defined(_MSC_VER) || (_MSC_VER < 1900))
+// Designed to be used to conditionally define compiler support for UDLs using a #if
+#define _User_defined_literal_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190022203))
+
+// Designed to be used to conditionally define compiler support for noexcept using a #if
+#define _Noexcept_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190022203))
+
+// Designed to be used to conditionally define compiler support for constexpr using a #if
+#define _Constexpr_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190022203))
 #endif

@@ -8,7 +8,7 @@ using namespace std::experimental::io2d;
 namespace std {
 	namespace experimental {
 		namespace io2d {
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
 				const ::std::error_category& io2d_category() {
@@ -27,11 +27,14 @@ namespace std {
 				int format_stride_for_width(format format, int width) {
 					return cairo_format_stride_for_width(_Format_to_cairo_format_t(format), width);
 				}
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+#if _Inline_namespace_conditional_support_test
 			}
 #endif
 		}
 	}
+}
+
+namespace std {
 	::std::error_condition make_error_condition(io2d_error err) {
 		return ::std::error_condition(static_cast<int>(err), io2d_category());
 	}

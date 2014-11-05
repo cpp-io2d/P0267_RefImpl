@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <system_error>
 
-#if (_No_noexcept_conditional_support_test)
+#if !_Noexcept_conditional_support_test
 #define noexcept
 #endif
 
@@ -370,7 +370,7 @@ namespace std {
 				bool operator==(const rgba_color& lhs, const rgba_color& rhs);
 				bool operator!=(const rgba_color& lhs, const rgba_color& rhs);
 
-#if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
+#if _Inline_namespace_conditional_support_test && _User_defined_literal_conditional_support_test
 				inline namespace literals {
 					// Note: The _ prefix is added because certain compilers reject attempts to add a non-user-defined literal
 					inline double operator""_ubyte(unsigned long long value) {
@@ -455,6 +455,7 @@ namespace std {
 					static matrix_2d init_shear_x(double factor);
 					static matrix_2d init_shear_y(double factor);
 
+					// Modifiers
 					matrix_2d& translate(const point& value);
 					matrix_2d& scale(const point& value);
 					matrix_2d& rotate(double radians);
@@ -462,6 +463,7 @@ namespace std {
 					matrix_2d& shear_y(double factor);
 					matrix_2d& invert();
 
+					// Observers
 					double determinant() const;
 					point transform_distance(const point& dist) const;
 					point transform_point(const point& pt) const;
@@ -499,8 +501,10 @@ namespace std {
 
 				class io2d_error_category : public ::std::error_category {
 				public:
+					// Observers
 					virtual const char* name() const noexcept override;
 					virtual ::std::string message(int errVal) const override;
+					virtual bool equivalent(int code, const ::std::error_condition& condition) const noexcept override;
 					virtual bool equivalent(const ::std::error_code& ec, int condition) const noexcept override;
 				};
 
@@ -526,6 +530,7 @@ namespace std {
 					path(path&& other);
 					path& operator=(path&& other);
 
+					// Observers
 					::std::vector<path_data> get_data() const;
 					const ::std::vector<path_data>& get_data_ref() const;
 					rectangle get_path_extents() const;
@@ -551,14 +556,10 @@ namespace std {
 					path_builder(path_builder&& other);
 					path_builder& operator=(path_builder&& other);
 
-					path get_path() const;
-					rectangle get_path_extents() const;
-
+					// Modifiers
 					void append(const path& p);
 					void append(const path_builder& p);
 					void append(const ::std::vector<path_data>& p);
-					bool has_current_point() const;
-					point get_current_point() const;
 					void new_sub_path();
 					void close_path();
 					void arc(const point& center, double radius, double angle1, double angle2);
@@ -570,17 +571,20 @@ namespace std {
 					void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
 					void rel_line_to(const point& dpt);
 					void rel_move_to(const point& dpt);
-
 					void set_transform_matrix(const matrix_2d& m);
-					matrix_2d get_transform_matrix() const;
 					void set_origin(const point& pt);
-					point get_origin() const;
+					void reset();
 
+					// Observers
+					path get_path() const;
+					rectangle get_path_extents() const;
+					bool has_current_point() const;
+					point get_current_point() const;
+					matrix_2d get_transform_matrix() const;
+					point get_origin() const;
 					::std::vector<path_data> get_data() const;
 					path_data get_data(unsigned int index) const;
 					const ::std::vector<path_data>& get_data_ref() const;
-
-					void reset();
 				};
 
 				class device {
@@ -596,6 +600,8 @@ namespace std {
 					device(device&& other);
 					device& operator=(device&& other);
 					explicit device(native_handle_type nh);
+
+					// Modifiers
 					void flush();
 					void lock();
 					void unlock();
@@ -616,10 +622,13 @@ namespace std {
 					font_options_builder(font_options_builder&& other);
 					font_options_builder& operator=(font_options_builder&& other);
 
-					font_options get_font_options() const;
+					// Modifiers
 					void set_antialias(antialias a);
-					antialias get_antialias() const;
 					void set_subpixel_order(subpixel_order so);
+
+					// Observers
+					font_options get_font_options() const;
+					antialias get_antialias() const;
 					subpixel_order get_subpixel_order() const;
 				};
 
@@ -637,6 +646,7 @@ namespace std {
 					font_options(antialias a, subpixel_order so);
 					explicit font_options(native_handle_type nh);
 
+					// Observers
 					antialias get_antialias() const;
 					subpixel_order get_subpixel_order() const;
 				};
@@ -653,9 +663,7 @@ namespace std {
 					font_face& operator=(const font_face&) = default;
 					font_face(font_face&& other);
 					font_face& operator=(font_face&& other);
-
 					explicit font_face(native_handle_type nh);
-
 					virtual ~font_face();
 				};
 
@@ -671,10 +679,10 @@ namespace std {
 					scaled_font& operator=(const scaled_font&) = default;
 					scaled_font(scaled_font&& other);
 					scaled_font& operator=(scaled_font&& other);
-
 					explicit scaled_font(native_handle_type nh);
 					scaled_font(const font_face& ff, const matrix_2d& fm, const matrix_2d& ctm, const font_options& fo);
 
+					// Observers
 					font_extents get_extents() const;
 					text_extents get_text_extents(const ::std::string& utf8) const;
 					text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
@@ -690,7 +698,9 @@ namespace std {
 					simple_font_face(const ::std::string& family, font_slant slant, font_weight weight);
 					simple_font_face(simple_font_face&& other);
 					simple_font_face& operator=(simple_font_face&& other);
+					virtual ~simple_font_face();
 
+					// Observers
 					::std::string get_family() const;
 					font_slant get_slant() const;
 					font_weight get_weight() const;
@@ -754,24 +764,26 @@ namespace std {
 					solid_color_pattern_builder& operator=(solid_color_pattern_builder&& other);
 					solid_color_pattern_builder(const rgba_color& color);
 
-					pattern get_pattern() const;
+					// Modifiers
 					void set_extend(extend e);
-					extend get_extend() const;
 					void set_filter(filter f);
-					filter get_filter() const;
 					void set_matrix(const matrix_2d& m);
-					matrix_2d get_matrix() const;
-
-					rgba_color get_rgba() const;
 					void set_rgba(const rgba_color& color);
-					double get_red() const;
 					void set_red(double red);
-					double get_green() const;
 					void set_green(double green);
-					double get_blue() const;
 					void set_blue(double blue);
-					double get_alpha() const;
 					void set_alpha(double alpha);
+
+					// Observers
+					pattern get_pattern() const;
+					extend get_extend() const;
+					filter get_filter() const;
+					matrix_2d get_matrix() const;
+					rgba_color get_rgba() const;
+					double get_red() const;
+					double get_green() const;
+					double get_blue() const;
+					double get_alpha() const;
 				};
 
 				class linear_pattern_builder {
@@ -793,21 +805,22 @@ namespace std {
 					linear_pattern_builder& operator=(linear_pattern_builder&& other);
 					linear_pattern_builder(const point& pt0, const point& pt1);
 
-					pattern get_pattern() const;
+					// Modifiers
 					void set_extend(extend extend);
-					extend get_extend() const;
 					void set_filter(filter filter);
-					filter get_filter() const;
 					void set_matrix(const matrix_2d& matrix);
-					matrix_2d get_matrix() const;
-
 					void add_color_stop_rgba(double offset, const rgba_color& color);
-					int get_color_stop_count() const;
-
-					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
 					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
-					void get_linear_points(point& pt0, point& pt1) const;
 					void set_linear_points(const point& pt0, const point& pt1);
+
+					// Observers
+					pattern get_pattern() const;
+					extend get_extend() const;
+					filter get_filter() const;
+					matrix_2d get_matrix() const;
+					int get_color_stop_count() const;
+					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
+					void get_linear_points(point& pt0, point& pt1) const;
 				};
 
 				class radial_pattern_builder {
@@ -831,22 +844,22 @@ namespace std {
 					radial_pattern_builder& operator=(radial_pattern_builder&& other);
 					radial_pattern_builder(const point& center0, double radius0, const point& center1, double radius1);
 
-					pattern get_pattern() const;
+					// Modifiers
 					void set_extend(extend extend);
-					extend get_extend() const;
 					void set_filter(filter filter);
-					filter get_filter() const;
 					void set_matrix(const matrix_2d& matrix);
-					matrix_2d get_matrix() const;
-
 					void add_color_stop_rgba(double offset, const rgba_color& color);
-					int get_color_stop_count() const;
-
-					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
 					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
-
-					void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) const;
 					void set_radial_circles(const point& center0, double radius0, const point& center1, double radius1);
+
+					// Observers
+					pattern get_pattern() const;
+					extend get_extend() const;
+					filter get_filter() const;
+					matrix_2d get_matrix() const;
+					int get_color_stop_count() const;
+					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
+					void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) const;
 				};
 
 				class mesh_pattern_builder {
@@ -872,14 +885,10 @@ namespace std {
 					mesh_pattern_builder(mesh_pattern_builder&& other);
 					mesh_pattern_builder& operator=(mesh_pattern_builder&& other);
 
-					pattern get_pattern() const;
+					// Modifiers
 					void set_extend(extend extend);
-					extend get_extend() const;
 					void set_filter(filter filter);
-					filter get_filter() const;
 					void set_matrix(const matrix_2d& matrix);
-					matrix_2d get_matrix() const;
-
 					void begin_patch();
 					void begin_edit_patch(unsigned int patch_num);
 					void end_patch();
@@ -888,6 +897,12 @@ namespace std {
 					void curve_to(const point& pt0, const point& pt1, const point& pt2);
 					void set_control_point(unsigned int point_num, const point& pt);
 					void set_corner_color_rgba(unsigned int corner_num, const rgba_color& color);
+
+					// Observers
+					pattern get_pattern() const;
+					extend get_extend() const;
+					filter get_filter() const;
+					matrix_2d get_matrix() const;
 					unsigned int get_patch_count() const;
 					path get_path(unsigned int patch_num) const;
 					path_builder get_path_builder(unsigned int patch_num) const;
@@ -1055,9 +1070,11 @@ namespace std {
 					image_surface(const surface& other, format format, int width, int height);
 					// create_from_png
 					image_surface(const ::std::string& filename);
-						
+
+					// Modifiers
 					void set_data(::std::vector<unsigned char>& data);
 
+					// Observers
 					::std::vector<unsigned char> get_data() const;
 					format get_format() const;
 					int get_width() const;

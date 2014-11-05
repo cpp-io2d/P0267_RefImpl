@@ -22,6 +22,9 @@ simple_font_face& simple_font_face::operator=(simple_font_face&& other) {
 	return *this;
 }
 
+simple_font_face::~simple_font_face() {
+}
+
 string simple_font_face::get_family() const {
 	return string(cairo_toy_font_face_get_family(_Font_face.get()));
 }
