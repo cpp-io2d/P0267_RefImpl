@@ -1198,6 +1198,10 @@ namespace std {
 						return false;
 				}
 				}
+
+				bool operator!=(const path_data& lhs, const path_data& rhs) {
+					return !(lhs == rhs);
+				}
 #if _Inline_namespace_conditional_support_test
 			}
 #endif

@@ -47,13 +47,6 @@ surface::surface(const surface& other, content content, int width, int height)
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
 }
 
-surface::surface(const surface& target, const rectangle& rect)
-	: _Lock_for_device()
-	, _Device()
-	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_for_rectangle(target._Surface.get(), _Double_to_int(rect.x, false), _Double_to_int(rect.y, false), _Double_to_int(rect.width, false), _Double_to_int(rect.height, false)), &cairo_surface_destroy))
-	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
-}
-
 surface::surface(format fmt, int width, int height)
 	: _Lock_for_device()
 	, _Device()
@@ -91,7 +84,7 @@ void surface::mark_dirty() {
 	cairo_surface_mark_dirty(_Surface.get());
 }
 
-void surface::mark_dirty_rectangle(const rectangle& rect) {
+void surface::mark_dirty(const rectangle& rect) {
 	cairo_surface_mark_dirty_rectangle(_Surface.get(), static_cast<int>(rect.x), static_cast<int>(rect.y), static_cast<int>(rect.width), static_cast<int>(rect.height));
 }
 
@@ -105,7 +98,7 @@ point surface::get_device_offset() const {
 	return result;
 }
 
-void surface::write_to_png(const string& filename) {
+void surface::write_to_file(const string& filename) {
 	_Throw_if_failed_cairo_status_t(cairo_surface_write_to_png(_Surface.get(), filename.c_str()));
 }
 
@@ -583,7 +576,7 @@ void surface::set_path(const path& p) {
 }
 
 void surface::set_matrix(const matrix_2d& m) {
-	cairo_matrix_t cm{ m.xx, m.yx, m.xy, m.yy, m.x0, m.y0 };
+	cairo_matrix_t cm{ m.m00, m.m01, m.m10, m.m11, m.m20, m.m21 };
 	cairo_set_matrix(_Context.get(), &cm);
 }
 
@@ -626,7 +619,7 @@ void surface::set_font_size(double size) {
 }
 
 void surface::set_font_matrix(const matrix_2d& m) {
-	cairo_matrix_t cm{ m.xx, m.yx, m.xy, m.yy, m.x0, m.y0 };
+	cairo_matrix_t cm{ m.m00, m.m01, m.m10, m.m11, m.m20, m.m21 };
 	cairo_set_font_matrix(_Context.get(), &cm);
 }
 
@@ -642,19 +635,15 @@ void surface::set_font_options(const font_options& options) {
 
 // Note: This deviates from cairo in that we return the values that will actually wind up being used.
 font_options surface::get_font_options() const {
-	font_options fo(antialias::default_antialias, subpixel_order::default_subpixel_order, hint_style::default_hint_style, hint_metrics::default_hint_metrics);
+	font_options fo(antialias::default_antialias, subpixel_order::default_subpixel_order);
 	cairo_get_font_options(_Context.get(), fo.native_handle());
 	auto ca = fo.get_antialias();
 	auto cso = fo.get_subpixel_order();
-	auto chs = fo.get_hint_style();
-	auto chm = fo.get_hint_metrics();
 	cairo_surface_get_font_options(_Surface.get(), fo.native_handle());
 
 	return font_options(
 		(ca == antialias::default_antialias) ? fo.get_antialias() : ca,
-		(cso == subpixel_order::default_subpixel_order) ? fo.get_subpixel_order() : cso,
-		(chs == hint_style::default_hint_style) ? fo.get_hint_style() : chs,
-		(chm == hint_metrics::default_hint_metrics) ? fo.get_hint_metrics() : chm
+		(cso == subpixel_order::default_subpixel_order) ? fo.get_subpixel_order() : cso
 		);
 }
 
@@ -692,7 +681,7 @@ void surface::show_glyphs(const vector<glyph>& glyphs) {
 	cairo_show_glyphs(_Context.get(), vec.data(), static_cast<int>(vec.size()));
 }
 
-void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, text_cluster_flags::text_cluster_flags cluster_flags) {
+void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse) {
 	vector<cairo_glyph_t> vec;
 	for (const auto& glyph : glyphs) {
 		vec.push_back({ glyph.index, glyph.x, glyph.y });
@@ -704,7 +693,7 @@ void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, 
 		tc_ptr[i].num_bytes = clusters[i].num_bytes;
 		tc_ptr[i].num_glyphs = clusters[i].num_glyphs;
 	}
-	auto ctcf = _Text_cluster_flags_to_cairo_text_cluster_flags_t(cluster_flags);
+	auto ctcf = static_cast<cairo_text_cluster_flags_t>(clusterToGlyphsMapReverse ? CAIRO_TEXT_CLUSTER_FLAG_BACKWARD : 0);
 	cairo_show_text_glyphs(_Context.get(), utf8.data(), static_cast<int>(utf8.size()), vec.data(), static_cast<int>(vec.size()), sp_tc.get(), tcSize, ctcf);
 }
 

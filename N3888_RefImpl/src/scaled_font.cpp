@@ -28,8 +28,8 @@ scaled_font::scaled_font(scaled_font::native_handle_type nh) {
 
 scaled_font::scaled_font(const font_face& ff, const matrix_2d& fm, const matrix_2d& ctm, const font_options& fo)
 : _Scaled_font(nullptr) {
-	cairo_matrix_t c_fm{ fm.xx, fm.xy, fm.yx, fm.yy, fm.x0, fm.y0 },
-		c_ctm{ ctm.xx, ctm.xy, ctm.yx, ctm.yy, ctm.x0, ctm.y0 };
+	cairo_matrix_t c_fm{ fm.m00, fm.m01, fm.m10, fm.m11, fm.m20, fm.m21 },
+		c_ctm{ ctm.m00, ctm.m01, ctm.m10, ctm.m11, ctm.m20, ctm.m21 };
 	_Scaled_font = shared_ptr<cairo_scaled_font_t>(cairo_scaled_font_create(ff.native_handle(), &c_fm, &c_ctm, fo.native_handle()), &cairo_scaled_font_destroy);
 }
 
@@ -81,7 +81,7 @@ vector<glyph> scaled_font::text_to_glyphs(double x, double y, const string& utf8
 	return result;
 }
 
-vector<glyph> scaled_font::text_to_glyphs(double x, double y, const string& utf8, vector<text_cluster>& clusters, text_cluster_flags::text_cluster_flags& clFlags) const {
+vector<glyph> scaled_font::text_to_glyphs(double x, double y, const string& utf8, vector<text_cluster>& clusters, bool& clusterToGlyphsMapReverse) const {
 	vector<glyph> result;
 	cairo_glyph_t* c_glyphs = nullptr;
 	int num_glyphs;
@@ -97,7 +97,7 @@ vector<glyph> scaled_font::text_to_glyphs(double x, double y, const string& utf8
 		for (int i = 0; i < num_clusters; i++) {
 			clusters.push_back({ c_clusters[i].num_bytes, c_clusters[i].num_glyphs });
 		}
-		clFlags = _Cairo_text_cluster_flags_t_to_text_cluster_flags(c_clFlags);
+		clusterToGlyphsMapReverse = (c_clFlags & CAIRO_TEXT_CLUSTER_FLAG_BACKWARD) != 0;
 	}
 	catch (...) {
 		if (c_glyphs != nullptr) {

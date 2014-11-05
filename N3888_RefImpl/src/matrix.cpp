@@ -1,6 +1,7 @@
 #include "io2d.h"
 #include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
+#include <cmath>
 
 using namespace std;
 using namespace std::experimental::io2d;
@@ -37,52 +38,50 @@ matrix_2d& matrix_2d::translate(const point& value) {
 }
 
 matrix_2d& matrix_2d::scale(const point& value) {
-	*this *= init_scale(value);
+	*this = init_scale(value) * (*this);
 	return *this;
 }
 
 matrix_2d& matrix_2d::rotate(double radians) {
-	*this *= init_rotate(radians);
+	*this = init_rotate(radians) * (*this);
 	return *this;
 }
 
 matrix_2d& matrix_2d::shear_x(double factor) {
-	*this *= init_shear_x(factor);
+	*this = init_shear_x(factor) * (*this);
 	return *this;
 }
 
 matrix_2d& matrix_2d::shear_y(double factor) {
-	*this *= init_shear_y(factor);
+	*this = init_shear_y(factor) * (*this);
+	return *this;
+}
+
+matrix_2d& matrix_2d::invert() {
+	cairo_matrix_t cm{ m00, m01, m10, m11, m20, m21 };
+	_Throw_if_failed_cairo_status_t(cairo_matrix_invert(&cm));
+	m00 = cm.xx;
+	m01 = cm.yx;
+	m10 = cm.xy;
+	m11 = cm.yy;
+	m20 = cm.x0;
+	m21 = cm.y0;
 	return *this;
 }
 
 double matrix_2d::determinant() const {
-	if (isnan(x0) || isnan(y0)) {
+	if (isnan(m20) || isnan(m21)) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MATRIX);
 	}
-	return xx * yy - yx * xy;
+	return m00 * m11 - m01 * m10;
 }
 
-void matrix_2d::invert() {
-	cairo_matrix_t cm{ xx, yx, xy, yy, x0, y0 };
-	_Throw_if_failed_cairo_status_t(cairo_matrix_invert(&cm));
-	xx = cm.xx;
-	yx = cm.yx;
-	xy = cm.xy;
-	yy = cm.yy;
-	x0 = cm.x0;
-	y0 = cm.y0;
+point matrix_2d::transform_distance(const point& dist) const {
+	return{ m00 * dist.x + m10 * dist.y, m01 * dist.x + m11 * dist.y };
 }
 
-matrix_2d matrix_2d::operator*=(const matrix_2d& rhs) {
-	xx = (xx * rhs.xx) + (yx * rhs.xy);
-	yx = (xx * rhs.yx) + (yx * rhs.yy);
-	xy = (xy * rhs.xx) + (yy * rhs.xy);
-	yy = (xy * rhs.yx) + (yy * rhs.yy);
-	x0 = (x0 * rhs.xx) + (y0 * rhs.xy) + x0;
-	y0 = (x0 * rhs.yx) + (y0 * rhs.yy) + y0;
-
-	return *this;
+point matrix_2d::transform_point(const point& pt) const {
+	return transform_distance(pt) + point{ m20, m21 };
 }
 
 namespace std {
@@ -93,35 +92,36 @@ namespace std {
 #endif
 				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) {
 					return matrix_2d{
-						(lhs.xx * rhs.xx) + (lhs.yx * rhs.xy),
-						(lhs.xx * rhs.yx) + (lhs.yx * rhs.yy),
-						(lhs.xy * rhs.xx) + (lhs.yy * rhs.xy),
-						(lhs.xy * rhs.yx) + (lhs.yy * rhs.yy),
-						(lhs.x0 * rhs.xx) + (lhs.y0 * rhs.xy) + lhs.x0,
-						(lhs.x0 * rhs.yx) + (lhs.y0 * rhs.yy) + lhs.y0
+						(lhs.m00 * rhs.m00) + (lhs.m01 * rhs.m10),
+						(lhs.m00 * rhs.m01) + (lhs.m01 * rhs.m11),
+						(lhs.m10 * rhs.m00) + (lhs.m11 * rhs.m10),
+						(lhs.m10 * rhs.m01) + (lhs.m11 * rhs.m11),
+						(lhs.m20 * rhs.m00) + (lhs.m21 * rhs.m10) + lhs.m20,
+						(lhs.m20 * rhs.m01) + (lhs.m21 * rhs.m11) + lhs.m21
 					};
+				}
+
+				matrix_2d& operator*=(matrix_2d& lhs, const matrix_2d& rhs) {
+					lhs = lhs * rhs;
+					return lhs;
 				}
 
 				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) {
 					return
-						lhs.xx == rhs.xx &&
-						lhs.yx == rhs.yx &&
-						lhs.xy == rhs.xy &&
-						lhs.yy == rhs.yy &&
-						lhs.x0 == rhs.x0 &&
-						lhs.y0 == rhs.y0;
+						lhs.m00 == rhs.m00 &&
+						lhs.m01 == rhs.m01 &&
+						lhs.m10 == rhs.m10 &&
+						lhs.m11 == rhs.m11 &&
+						lhs.m20 == rhs.m20 &&
+						lhs.m21 == rhs.m21;
+				}
+
+				bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) {
+					return !(lhs == rhs);
 				}
 #if _Inline_namespace_conditional_support_test
 			}
 #endif
 		}
 	}
-}
-
-point matrix_2d::transform_distance(const point& dist) const {
-	return{ xx * dist.x + xy * dist.y, yx * dist.x + yy * dist.y };
-}
-
-point matrix_2d::transform_point(const point& pt) const {
-	return transform_distance(pt) + point{ x0, y0 };
 }

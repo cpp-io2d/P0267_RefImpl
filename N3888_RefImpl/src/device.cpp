@@ -31,10 +31,10 @@ void device::flush() {
 	cairo_device_flush(_Device.get());
 }
 
-void device::acquire() {
+void device::lock() {
 	_Throw_if_failed_cairo_status_t(cairo_device_acquire(_Device.get()));
 }
 
-void device::release() {
+void device::unlock() {
 	cairo_device_release(_Device.get());
 }

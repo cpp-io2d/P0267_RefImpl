@@ -173,6 +173,22 @@ namespace std {
 						::std::min(lhs.a * rhs, 1.0)
 					};
 				}
+
+				rgba_color& operator*=(rgba_color& lhs, double rhs) {
+					lhs = lhs * rhs;
+					return lhs;
+				}
+
+				bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
+					return lhs.r == rhs.r &&
+						lhs.g == rhs.g &&
+						lhs.b == rhs.b &&
+						lhs.a == rhs.a;
+				}
+
+				bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {
+					return !(lhs == rhs);
+				}
 #if _Inline_namespace_conditional_support_test
 			}
 #endif

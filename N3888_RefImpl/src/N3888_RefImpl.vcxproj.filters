@@ -74,9 +74,6 @@
     <ClCompile Include="scaled_font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="toy_font_face.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="image_surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -120,6 +117,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="io2d_error_category.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simple_font_face.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

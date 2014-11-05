@@ -661,30 +661,6 @@ namespace std {
 				}
 			}
 
-			inline cairo_text_cluster_flags_t _Text_cluster_flags_to_cairo_text_cluster_flags_t(const ::std::experimental::io2d::text_cluster_flags::text_cluster_flags& tcf) {
-				cairo_text_cluster_flags_t result{ };
-				if (tcf == 0) {
-					return static_cast<cairo_text_cluster_flags_t>(0);
-				}
-				if ((tcf & ::std::experimental::io2d::text_cluster_flags::backward) != 0) {
-					result = static_cast<cairo_text_cluster_flags_t>(result | CAIRO_TEXT_CLUSTER_FLAG_BACKWARD);
-				}
-				return result;
-			}
-
-			inline ::std::experimental::io2d::text_cluster_flags::text_cluster_flags _Cairo_text_cluster_flags_t_to_text_cluster_flags(cairo_text_cluster_flags_t ctcf) {
-				::std::experimental::io2d::text_cluster_flags::text_cluster_flags result{ };
-				if (ctcf == 0) {
-					return result;
-				}
-
-				if ((ctcf & CAIRO_TEXT_CLUSTER_FLAG_BACKWARD) != 0) {
-					result = static_cast<::std::experimental::io2d::text_cluster_flags::text_cluster_flags>(result | ::std::experimental::io2d::text_cluster_flags::backward);
-				}
-
-				return result;
-			}
-
 			inline cairo_subpixel_order_t _Subpixel_order_to_cairo_subpixel_order_t(::std::experimental::io2d::subpixel_order so) {
 				switch (so) {
 				case ::std::experimental::io2d::subpixel_order::default_subpixel_order:
@@ -716,66 +692,6 @@ namespace std {
 					return ::std::experimental::io2d::subpixel_order::vertical_bgr;
 				default:
 					throw ::std::runtime_error("Unknown cairo_subpixel_order value.");
-				}
-			}
-
-			inline cairo_hint_style_t _Hint_style_to_cairo_hint_style_t(::std::experimental::io2d::hint_style hs) {
-				switch (hs) {
-				case ::std::experimental::io2d::hint_style::default_hint_style:
-					return CAIRO_HINT_STYLE_DEFAULT;
-				case ::std::experimental::io2d::hint_style::none:
-					return CAIRO_HINT_STYLE_NONE;
-				case ::std::experimental::io2d::hint_style::slight:
-					return CAIRO_HINT_STYLE_SLIGHT;
-				case ::std::experimental::io2d::hint_style::medium:
-					return CAIRO_HINT_STYLE_MEDIUM;
-				case ::std::experimental::io2d::hint_style::full:
-					return CAIRO_HINT_STYLE_FULL;
-				default:
-					throw ::std::runtime_error("Unknown hint_style value.");
-				}
-			}
-
-			inline ::std::experimental::io2d::hint_style _Cairo_hint_style_t_to_hint_style(cairo_hint_style_t chs) {
-				switch (chs) {
-				case CAIRO_HINT_STYLE_DEFAULT:
-					return ::std::experimental::io2d::hint_style::default_hint_style;
-				case CAIRO_HINT_STYLE_NONE:
-					return ::std::experimental::io2d::hint_style::none;
-				case CAIRO_HINT_STYLE_SLIGHT:
-					return ::std::experimental::io2d::hint_style::slight;
-				case CAIRO_HINT_STYLE_MEDIUM:
-					return ::std::experimental::io2d::hint_style::medium;
-				case CAIRO_HINT_STYLE_FULL:
-					return ::std::experimental::io2d::hint_style::full;
-				default:
-					throw ::std::runtime_error("Unknown cairo_hint_style_t value.");
-				}
-			}
-
-			inline cairo_hint_metrics_t _Hint_metrics_to_cairo_hint_metrics_t(::std::experimental::io2d::hint_metrics hm) {
-				switch (hm) {
-				case ::std::experimental::io2d::hint_metrics::default_hint_metrics:
-					return CAIRO_HINT_METRICS_DEFAULT;
-				case ::std::experimental::io2d::hint_metrics::off:
-					return CAIRO_HINT_METRICS_OFF;
-				case ::std::experimental::io2d::hint_metrics::on:
-					return CAIRO_HINT_METRICS_ON;
-				default:
-					throw ::std::runtime_error("Unknown hint_metrics value.");
-				}
-			}
-
-			inline ::std::experimental::io2d::hint_metrics _Cairo_hint_metrics_t_to_hint_metrics(cairo_hint_metrics_t chm) {
-				switch (chm) {
-				case CAIRO_HINT_METRICS_DEFAULT:
-					return ::std::experimental::io2d::hint_metrics::default_hint_metrics;
-				case CAIRO_HINT_METRICS_OFF:
-					return ::std::experimental::io2d::hint_metrics::off;
-				case CAIRO_HINT_METRICS_ON:
-					return ::std::experimental::io2d::hint_metrics::on;
-				default:
-					throw ::std::runtime_error("Unknown cairo_hint_metrics_t value.");
 				}
 			}
 

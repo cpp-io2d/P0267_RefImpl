@@ -187,20 +187,6 @@ namespace std {
 					vertical_bgr
 				};
 
-				enum class hint_style {
-					default_hint_style,
-					none,
-					slight,
-					medium,
-					full
-				};
-
-				enum class hint_metrics {
-					default_hint_metrics,
-					off,
-					on
-				};
-
 				enum class path_data_type {
 					move_to,
 					line_to,
@@ -214,13 +200,6 @@ namespace std {
 					arc_negative,
 					change_matrix,
 					change_origin
-				};
-
-				namespace text_cluster_flags {
-					enum text_cluster_flags : int {
-						none = 0x0,
-						backward = 0x1
-					};
 				};
 
 				struct rectangle {
@@ -386,12 +365,19 @@ namespace std {
 					const static rgba_color yellow_green;
 				};
 
+				rgba_color operator*(const rgba_color& lhs, double rhs);
+				rgba_color& operator*=(rgba_color& lhs, double rhs);
+				bool operator==(const rgba_color& lhs, const rgba_color& rhs);
+				bool operator!=(const rgba_color& lhs, const rgba_color& rhs);
+
 #if (__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510)
 				inline namespace literals {
+					// Note: The _ prefix is added because certain compilers reject attempts to add a non-user-defined literal
 					inline double operator""_ubyte(unsigned long long value) {
 						return ::std::max(0.0, ::std::min(1.0, static_cast<double>(value) / 255.0));
 					}
 
+					// Note: The _ prefix is added because certain compilers reject attempts to add a non-user-defined literal
 					inline double operator "" _unorm(long double value) {
 						auto result = ::std::max(0.0, ::std::min(1.0, static_cast<double>(value)));
 						result = ::std::nearbyint(result * 255.0); // We need to ensure it is one of the discrete values between 0 and 255.
@@ -399,33 +385,32 @@ namespace std {
 					}
 				}
 #endif
-				rgba_color operator*(const rgba_color& lhs, double rhs);
 
 				struct point {
 					double x;
 					double y;
-
-					point operator+=(const point& rhs);
-					point operator+=(double rhs);
-					point operator-=(const point& rhs);
-					point operator-=(double rhs);
-					point operator*=(const point& rhs);
-					point operator*=(double rhs);
-					point operator/=(const point& rhs);
-					point operator/=(double rhs);
 				};
 
 				point operator+(const point& lhs);
 				point operator+(const point& lhs, const point& rhs);
 				point operator+(const point& lhs, double rhs);
+				point& operator+=(point& lhs, const point& rhs);
+				point& operator+=(point& lhs, double rhs);
 				point operator-(const point& lhs);
 				point operator-(const point& lhs, const point& rhs);
 				point operator-(const point& lhs, double rhs);
+				point& operator-=(point& lhs, const point& rhs);
+				point& operator-=(point& lhs, double rhs);
 				point operator*(const point& lhs, const point& rhs);
 				point operator*(const point& lhs, double rhs);
+				point& operator*=(point& lhs, const point& rhs);
+				point& operator*=(point& lhs, double rhs);
 				point operator/(const point& lhs, const point& rhs);
 				point operator/(const point& lhs, double rhs);
+				point& operator/=(point& lhs, const point& rhs);
+				point& operator/=(point& lhs, double rhs);
 				bool operator==(const point& lhs, const point& rhs);
+				bool operator!=(const point& lhs, const point& rhs);
 
 				struct glyph {
 					unsigned long index;
@@ -456,12 +441,12 @@ namespace std {
 				};
 
 				struct matrix_2d {
-					double xx;
-					double yx;
-					double xy;
-					double yy;
-					double x0;
-					double y0;
+					double m00;
+					double m01;
+					double m10;
+					double m11;
+					double m20;
+					double m21;
 
 					static matrix_2d init_identity();
 					static matrix_2d init_translate(const point& value);
@@ -475,16 +460,18 @@ namespace std {
 					matrix_2d& rotate(double radians);
 					matrix_2d& shear_x(double factor);
 					matrix_2d& shear_y(double factor);
+					matrix_2d& invert();
+
 					double determinant() const;
-					void invert();
 					point transform_distance(const point& dist) const;
 					point transform_point(const point& pt) const;
-
-					matrix_2d operator*=(const matrix_2d& rhs);
 				};
 
 				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs);
+				matrix_2d& operator*=(matrix_2d& lhs, const matrix_2d& rhs);
 				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs);
+				bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs);
+
 				struct path_data {
 					path_data_type type;
 					union {
@@ -508,12 +495,13 @@ namespace std {
 				};
 
 				bool operator==(const path_data& lhs, const path_data& rhs);
+				bool operator!=(const path_data& lhs, const path_data& rhs);
 
 				class io2d_error_category : public ::std::error_category {
 				public:
-					virtual const char* name() const noexcept;
-					virtual ::std::string message(int errVal) const;
-					virtual bool equivalent(const ::std::error_code& ec, int condition) const noexcept;
+					virtual const char* name() const noexcept override;
+					virtual ::std::string message(int errVal) const override;
+					virtual bool equivalent(const ::std::error_code& ec, int condition) const noexcept override;
 				};
 
 				const ::std::error_category& io2d_category() noexcept;
@@ -609,8 +597,8 @@ namespace std {
 					device& operator=(device&& other);
 					explicit device(native_handle_type nh);
 					void flush();
-					void acquire();
-					void release();
+					void lock();
+					void unlock();
 				};
 
 				// Forward declaration.
@@ -620,8 +608,6 @@ namespace std {
 					mutable ::std::recursive_mutex _Lock;
 					antialias _Antialias = antialias::default_antialias;
 					subpixel_order _Subpixel_order = subpixel_order::default_subpixel_order;
-					hint_style _Hint_style = hint_style::default_hint_style;
-					hint_metrics _Hint_metrics = hint_metrics::default_hint_metrics;
 
 				public:
 					font_options_builder();
@@ -635,10 +621,6 @@ namespace std {
 					antialias get_antialias() const;
 					void set_subpixel_order(subpixel_order so);
 					subpixel_order get_subpixel_order() const;
-					void set_hint_style(hint_style hs);
-					hint_style get_hint_style() const;
-					void set_hint_metrics(hint_metrics hm);
-					hint_metrics get_hint_metrics() const;
 				};
 
 				class font_options {
@@ -652,13 +634,11 @@ namespace std {
 					font_options& operator=(const font_options&) = default;
 					font_options(font_options&& other);
 					font_options& operator=(font_options&& other);
-					font_options(antialias a, subpixel_order so, hint_style hs, hint_metrics hm);
+					font_options(antialias a, subpixel_order so);
 					explicit font_options(native_handle_type nh);
 
 					antialias get_antialias() const;
 					subpixel_order get_subpixel_order() const;
-					hint_style get_hint_style() const;
-					hint_metrics get_hint_metrics() const;
 				};
 
 				class font_face {
@@ -699,17 +679,17 @@ namespace std {
 					text_extents get_text_extents(const ::std::string& utf8) const;
 					text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
 					::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8) const;
-					::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8, ::std::vector<text_cluster>& clusters, text_cluster_flags::text_cluster_flags& clFlags) const;
+					::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8, ::std::vector<text_cluster>& clusters, bool& clustersToGlyphsReverseMap) const;
 				};
 
-				class toy_font_face : public font_face {
+				class simple_font_face : public font_face {
 				public:
-					toy_font_face() = delete;
-					toy_font_face(const toy_font_face&) = default;
-					toy_font_face& operator=(const toy_font_face&) = default;
-					toy_font_face(const ::std::string& family, font_slant slant, font_weight weight);
-					toy_font_face(toy_font_face&& other);
-					toy_font_face& operator=(toy_font_face&& other);
+					simple_font_face() = delete;
+					simple_font_face(const simple_font_face&) = default;
+					simple_font_face& operator=(const simple_font_face&) = default;
+					simple_font_face(const ::std::string& family, font_slant slant, font_weight weight);
+					simple_font_face(simple_font_face&& other);
+					simple_font_face& operator=(simple_font_face&& other);
 
 					::std::string get_family() const;
 					font_slant get_slant() const;
@@ -929,163 +909,155 @@ namespace std {
 					double _Miter_limit = 10.0;
 					const double _Line_join_miter_miter_limit = 10000.0;
 					line_join _Line_join = line_join::miter;
-				public:
-					surface() = delete;
 
+					surface(format fmt, int width, int height);
+				public:
 					typedef _Surface_native_handles native_handle_type;
 					native_handle_type native_handle() const;
 
+					// tuple<dashes, offset>
+					typedef ::std::tuple<::std::vector<double>, double> dashes;
+
+					surface() = delete;
 					surface(const surface&) = delete;
 					surface& operator=(const surface&) = delete;
-
 					surface(surface&& other);
 					surface& operator=(surface&& other);
 
 					explicit surface(native_handle_type nh);
 
-					surface(format fmt, int width, int height);
 					// create_similar
 					surface(const surface& other, content content, int width, int height);
-					// create_for_rectangle
-					surface(const surface& target, const rectangle& rect);
-
 					virtual ~surface();
 
-					void finish();
+					// \ref{\iotwod.surface.modifiers.state}, state modifiers:
+					virtual void finish();
 					void flush();
-
 					::std::shared_ptr<device> get_device();
-
-					content get_content() const;
 					void mark_dirty();
-					void mark_dirty_rectangle(const rectangle& rect);
-
+					void mark_dirty(const rectangle& rect);
 					void set_device_offset(const point& offset);
-					point get_device_offset() const;
-					void write_to_png(const ::std::string& filename);
+					void write_to_file(const ::std::string& filename);
 					image_surface map_to_image();
 					image_surface map_to_image(const rectangle& extents);
 					void unmap_image(image_surface& image);
-					bool has_surface_resource() const;
-
 					void save();
 					void restore();
 					void push_group();
 					void push_group(content c);
 					surface pop_group();
 					void pop_group_to_source();
-
 					void set_pattern();
 					void set_pattern(const pattern& source);
-					pattern get_pattern() const;
-
 					void set_antialias(antialias a);
-					antialias get_antialias() const;
-
-					// tuple<dashes, offset>
-					typedef ::std::tuple<::std::vector<double>, double> dashes;
-
 					void set_dashes();
 					void set_dashes(const dashes& d);
-					int get_dashes_count() const;
-					dashes get_dashes() const;
-
 					void set_fill_rule(fill_rule fr);
-					fill_rule get_fill_rule() const;
-
 					void set_line_cap(line_cap lc);
-					line_cap get_line_cap() const;
-
 					void set_line_join(line_join lj);
-					line_join get_line_join() const;
-
 					void set_line_width(double width);
-					double get_line_width() const;
-
 					void set_miter_limit(double limit);
-					double get_miter_limit() const;
-
 					void set_compositing_operator(compositing_operator co);
-					compositing_operator get_compositing_operator() const;
-
 					void set_tolerance(double tolerance);
-					double get_tolerance() const;
-
 					void clip();
-					rectangle get_clip_extents() const;
-					bool in_clip(const point& pt) const;
 					void reset_clip();
+					void set_path();
+					void set_path(const path& p);
 
-					::std::vector<rectangle> get_clip_rectangles() const;
-
+					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
 					void fill();
 					void fill(const surface& s);
-					rectangle get_fill_extents() const;
-					bool in_fill(const point& pt) const;
-
 					void mask(const pattern& pttn);
 					void mask(const surface& surface);
 					void mask(const surface& surface, const point& origin);
-
 					void paint();
 					void paint(const surface& s);
 					void paint(double alpha);
 					void paint(const surface& s, double alpha);
-
 					void stroke();
 					void stroke(const surface& s);
+					void show_text(const ::std::string& utf8);
+					void show_glyphs(const ::std::vector<glyph>& glyphs);
+					void show_text_glyphs(const ::std::string& utf8,
+						const ::std::vector<glyph>& glyphs,
+						const ::std::vector<text_cluster>& clusters,
+						bool clusterToGlyphsMapReverse = false);
+
+					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
+					void set_matrix(const matrix_2d& matrix);
+
+					// \ref{\iotwod.surface.modifiers.font}, font modifiers:
+					void select_font_face(const ::std::string& family, font_slant slant,
+						font_weight weight);
+					void set_font_size(double size);
+					void set_font_matrix(const matrix_2d& matrix);
+					void set_font_options(const font_options& options);
+					void set_font_face(const font_face& font_face);
+					void set_scaled_font(const scaled_font& scaled_font);
+
+					// \ref{\iotwod.surface.observers.state}, state observers:
+					content get_content() const;
+					point get_device_offset() const;
+					bool has_surface_resource() const;
+					pattern get_pattern() const;
+					antialias get_antialias() const;
+					int get_dashes_count() const;
+					dashes get_dashes() const;
+					fill_rule get_fill_rule() const;
+					line_cap get_line_cap() const;
+					line_join get_line_join() const;
+					double get_line_width() const;
+					double get_miter_limit() const;
+					compositing_operator get_compositing_operator() const;
+					double get_tolerance() const;
+					rectangle get_clip_extents() const;
+					bool in_clip(const point& pt) const;
+					::std::vector<rectangle> get_clip_rectangles() const;
+
+					// \ref{\iotwod.surface.observers.render}, render observers:
+					rectangle get_fill_extents() const;
+					bool in_fill(const point& pt) const;
 					rectangle get_stroke_extents() const;
 					bool in_stroke(const point& pt) const;
+					font_extents get_font_extents() const;
+					text_extents get_text_extents(const ::std::string& utf8) const;
+					text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
 
-					void set_path();
-					void set_path(const path& p);
-
-					// Transformations
-					void set_matrix(const matrix_2d& matrix);
+					// \ref{\iotwod.surface.observers.transform}, transformation observers:
 					matrix_2d get_matrix() const;
 					point user_to_device() const;
 					point user_to_device_distance() const;
 					point device_to_user() const;
 					point device_to_user_distance() const;
 
-					// Text
-					void select_font_face(const ::std::string& family, font_slant slant, font_weight weight);
-					void set_font_size(double size);
-					void set_font_matrix(const matrix_2d& matrix);
+					// \ref{\iotwod.surface.observers.font}, font observers:
 					matrix_2d get_font_matrix() const;
-					void set_font_options(const font_options& options);
 					font_options get_font_options() const;
-					void set_font_face(const font_face& font_face);
 					font_face get_font_face() const;
-					void set_scaled_font(const scaled_font& scaled_font);
 					scaled_font get_scaled_font() const;
-					void show_text(const ::std::string& utf8);
-					void show_glyphs(const ::std::vector<glyph>& glyphs);
-					void show_text_glyphs(const ::std::string& utf8, const ::std::vector<glyph>& glyphs, const ::std::vector<text_cluster>& clusters, text_cluster_flags::text_cluster_flags cluster_flags);
-					font_extents get_font_extents() const;
-					text_extents get_text_extents(const ::std::string& utf8) const;
-					text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
 				};
 
 				class image_surface : public surface {
 					friend surface;
 				protected:
 					::std::shared_ptr<::std::vector<unsigned char>> _Data;
+
+					image_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
 				public:
 					image_surface() = delete;
 					image_surface(const image_surface&) = delete;
 					image_surface& operator=(const image_surface&) = delete;
 					image_surface(image_surface&& other);
 					image_surface& operator=(image_surface&& other);
-					image_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
 					image_surface(format format, int width, int height);
 					image_surface(vector<unsigned char>& data, format format, int width, int height, int stride);
 					// create_similar_image
 					image_surface(const surface& other, format format, int width, int height);
 					// create_from_png
 					image_surface(const ::std::string& filename);
-
+						
 					void set_data(::std::vector<unsigned char>& data);
+
 					::std::vector<unsigned char> get_data() const;
 					format get_format() const;
 					int get_width() const;
