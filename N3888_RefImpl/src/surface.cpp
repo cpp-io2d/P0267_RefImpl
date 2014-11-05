@@ -129,28 +129,6 @@ void surface::restore() {
 	cairo_restore(_Context.get());
 }
 
-void surface::push_group() {
-	cairo_push_group(_Context.get());
-}
-
-void surface::push_group(content c) {
-	cairo_push_group_with_content(_Context.get(), _Content_to_cairo_content_t(c));
-}
-
-surface surface::pop_group() {
-	cairo_surface_t* sfce = nullptr;
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pttn(cairo_pop_group(_Context.get()), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pttn.get()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_get_surface(pttn.get(), &sfce));
-	// This next line would not create a resource leak if it threw because until we reference the surface we don't own it.
-	_Throw_if_failed_cairo_status_t(cairo_surface_status(sfce));
-	return surface({ cairo_surface_reference(sfce), nullptr });
-}
-
-void surface::pop_group_to_source() {
-	cairo_pop_group_to_source(_Context.get());
-}
-
 void surface::set_pattern() {
 	cairo_set_source_rgb(_Context.get(), 0.0, 0.0, 0.0);
 }

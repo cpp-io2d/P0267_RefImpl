@@ -958,10 +958,6 @@ namespace std {
 					void unmap_image(image_surface& image);
 					void save();
 					void restore();
-					void push_group();
-					void push_group(content c);
-					surface pop_group();
-					void pop_group_to_source();
 					void set_pattern();
 					void set_pattern(const pattern& source);
 					void set_antialias(antialias a);
