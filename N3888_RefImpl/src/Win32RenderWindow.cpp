@@ -404,7 +404,7 @@ void Win32RenderWindow::ShowSaveAsPNGDialog() {
 		if (usedDefault != FALSE) {
 			throw runtime_error("Could not convert short filename string to multibyte from wide character.");
 		}
-		m_imageSurface->write_to_png(mbFileName);
+		m_imageSurface->write_to_file(mbFileName);
 	}
 	else {
 		if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
