@@ -5,7 +5,7 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-path::path(const path_builder& pb)
+path::path(const path_factory& pb)
 : _Data()
 , _Has_current_point()
 , _Current_point()

@@ -7,7 +7,7 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-path_builder::path_builder()
+path_factory::path_factory()
 	: _Lock()
 	, _Data()
 	, _Has_current_point()
@@ -19,7 +19,7 @@ path_builder::path_builder()
 	, _Origin() {
 }
 
-path_builder::path_builder(const path_builder& other)
+path_factory::path_factory(const path_factory& other)
 	: _Lock()
 	, _Data()
 	, _Has_current_point()
@@ -40,7 +40,7 @@ path_builder::path_builder(const path_builder& other)
 	_Origin = other._Origin;
 }
 
-path_builder& path_builder::operator=(const path_builder& other) {
+path_factory& path_factory::operator=(const path_factory& other) {
 	if (this != &other) {
 		lock_guard<decltype(_Lock)> tlg(_Lock);
 		lock_guard<decltype(other._Lock)> lg(other._Lock);
@@ -56,7 +56,7 @@ path_builder& path_builder::operator=(const path_builder& other) {
 	return *this;
 }
 
-path_builder::path_builder(path_builder&& other)
+path_factory::path_factory(path_factory&& other)
 	: _Lock()
 	, _Data()
 	, _Has_current_point()
@@ -76,7 +76,7 @@ path_builder::path_builder(path_builder&& other)
 	_Origin = move(other._Origin);
 }
 
-path_builder& path_builder::operator=(path_builder&& other) {
+path_factory& path_factory::operator=(path_factory&& other) {
 	if (this != &other) {
 		lock_guard<decltype(_Lock)> tlg(_Lock);
 		lock_guard<decltype(other._Lock)> lg(other._Lock);
@@ -92,12 +92,12 @@ path_builder& path_builder::operator=(path_builder&& other) {
 	return *this;
 }
 
-path path_builder::get_path() const {
+path path_factory::get_path() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return path(*this);
 }
 
-void path_builder::append(const path& p) {
+void path_factory::append(const path& p) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	const auto& data = p.get_data_ref();
 	for (const auto& item : data) {
@@ -114,7 +114,7 @@ void path_builder::append(const path& p) {
 	_Last_move_to_point = p._Last_move_to_point;
 }
 
-void path_builder::append(const path_builder& p) {
+void path_factory::append(const path_factory& p) {
 	lock_guard<decltype(p._Lock)> plg(p._Lock);
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	for (const auto& item : p._Data) {
@@ -131,7 +131,7 @@ void path_builder::append(const path_builder& p) {
 	_Last_move_to_point = p._Last_move_to_point;
 }
 
-void path_builder::append(const vector<path_data>& p) {
+void path_factory::append(const vector<path_data>& p) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	for (const auto& item : p) {
 		auto type = item.type;
@@ -192,12 +192,12 @@ void path_builder::append(const vector<path_data>& p) {
 	}
 }
 
-bool path_builder::has_current_point() const {
+bool path_factory::has_current_point() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Has_current_point;
 }
 
-point path_builder::get_current_point() const {
+point path_factory::get_current_point() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
@@ -205,7 +205,7 @@ point path_builder::get_current_point() const {
 	return _Current_point;
 }
 
-void path_builder::new_sub_path() {
+void path_factory::new_sub_path() {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	path_data pd{ };
 	pd.type = path_data_type::new_sub_path;
@@ -214,7 +214,7 @@ void path_builder::new_sub_path() {
 	_Has_current_point = false;
 }
 
-void path_builder::close_path() {
+void path_factory::close_path() {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (_Has_current_point) {
 		path_data pd{ };
@@ -305,7 +305,7 @@ vector<path_data> _Get_arc_as_beziers(const point& center, double radius, double
 	}
 
 	auto currentTheta = angle1;
-	path_builder pb;
+	path_factory pb;
 	pb.set_origin(origin);
 	pb.set_transform_matrix(matrix);
 	
@@ -337,7 +337,7 @@ vector<path_data> _Get_arc_as_beziers(const point& center, double radius, double
 	return pb.get_data();
 }
 
-void path_builder::_Set_current_point_and_last_move_to_point_for_arc(const vector<path_data>& data) {
+void path_factory::_Set_current_point_and_last_move_to_point_for_arc(const vector<path_data>& data) {
 	if (data.size() > 0) {
 		const auto& lastItem = *data.crbegin();
 		if (lastItem.type == path_data_type::curve_to) {
@@ -359,7 +359,7 @@ void path_builder::_Set_current_point_and_last_move_to_point_for_arc(const vecto
 	}
 }
 
-void path_builder::arc(const point& center, double radius, double angle1, double angle2) {
+void path_factory::arc(const point& center, double radius, double angle1, double angle2) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	path_data pd;
 	pd.type = path_data_type::arc;
@@ -372,7 +372,7 @@ void path_builder::arc(const point& center, double radius, double angle1, double
 	_Set_current_point_and_last_move_to_point_for_arc(_Get_arc_as_beziers(center, radius, angle1, angle2, false, _Has_current_point, _Current_point));
 }
 
-void path_builder::arc_negative(const point& center, double radius, double angle1, double angle2) {
+void path_factory::arc_negative(const point& center, double radius, double angle1, double angle2) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	path_data pd;
 	pd.type = path_data_type::arc_negative;
@@ -385,7 +385,7 @@ void path_builder::arc_negative(const point& center, double radius, double angle
 	_Set_current_point_and_last_move_to_point_for_arc(_Get_arc_as_beziers(center, radius, angle1, angle2, true, _Has_current_point, _Current_point));
 }
 
-void path_builder::curve_to(const point& pt0, const point& pt1, const point& pt2) {
+void path_factory::curve_to(const point& pt0, const point& pt1, const point& pt2) {
 	if (!_Has_current_point) {
 		move_to(pt0);
 	}
@@ -400,7 +400,7 @@ void path_builder::curve_to(const point& pt0, const point& pt1, const point& pt2
 	_Current_point = pd.data.curve.pt3;
 }
 
-void path_builder::line_to(const point& pt) {
+void path_factory::line_to(const point& pt) {
 	if (!_Has_current_point) {
 		move_to(pt);
 		return;
@@ -414,7 +414,7 @@ void path_builder::line_to(const point& pt) {
 	_Current_point = pd.data.line;
 }
 
-void path_builder::move_to(const point& pt) {
+void path_factory::move_to(const point& pt) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	path_data pd;
 	pd.type = path_data_type::move_to;
@@ -424,7 +424,7 @@ void path_builder::move_to(const point& pt) {
 	_Current_point = pd.data.move;
 }
 
-void path_builder::rect(const experimental::io2d::rectangle& r) {
+void path_factory::rect(const experimental::io2d::rectangle& r) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	move_to({ r.x, r.y });
 	rel_line_to({ r.width, 0.0 });
@@ -433,7 +433,7 @@ void path_builder::rect(const experimental::io2d::rectangle& r) {
 	close_path();
 }
 
-void path_builder::rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2) {
+void path_factory::rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
@@ -448,7 +448,7 @@ void path_builder::rel_curve_to(const point& dpt0, const point& dpt1, const poin
 	_Current_point = _Current_point + dpt2;
 }
 
-void path_builder::rel_line_to(const point& dpt) {
+void path_factory::rel_line_to(const point& dpt) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
@@ -461,7 +461,7 @@ void path_builder::rel_line_to(const point& dpt) {
 	_Current_point = _Current_point + dpt;
 }
 
-void path_builder::rel_move_to(const point& dpt) {
+void path_factory::rel_move_to(const point& dpt) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
@@ -474,7 +474,7 @@ void path_builder::rel_move_to(const point& dpt) {
 	_Current_point = _Current_point + dpt;
 }
 
-void path_builder::set_transform_matrix(const matrix_2d& m) {
+void path_factory::set_transform_matrix(const matrix_2d& m) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Transform_matrix = m;
 	path_data pd;
@@ -483,12 +483,12 @@ void path_builder::set_transform_matrix(const matrix_2d& m) {
 	_Data.push_back(pd);
 }
 
-matrix_2d path_builder::get_transform_matrix() const {
+matrix_2d path_factory::get_transform_matrix() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Transform_matrix;
 }
 
-void path_builder::set_origin(const point& pt) {
+void path_factory::set_origin(const point& pt) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Origin = pt;
 	path_data pd;
@@ -497,17 +497,17 @@ void path_builder::set_origin(const point& pt) {
 	_Data.push_back(pd);
 }
 
-point path_builder::get_origin() const {
+point path_factory::get_origin() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Origin;
 }
 
-vector<path_data> path_builder::get_data() const {
+vector<path_data> path_factory::get_data() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return vector<path_data>(_Data);
 }
 
-const vector<path_data>& path_builder::get_data_ref() const {
+const vector<path_data>& path_factory::get_data_ref() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Data;
 }
@@ -837,7 +837,7 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 	assert(foundLowX && foundLowY && foundHighX && foundHighY && numPoints == 4 && numXs == 2 && numYs == 2);
 }
 
-rectangle path_builder::get_path_extents() const {
+rectangle path_factory::get_path_extents() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	point pt0{ };
 	point pt1{ };
@@ -1135,7 +1135,7 @@ rectangle path_builder::get_path_extents() const {
 	return{ pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y };
 }
 
-void path_builder::reset() {
+void path_factory::reset() {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Data = { };
 	_Has_current_point = { };

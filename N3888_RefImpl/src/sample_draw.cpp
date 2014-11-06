@@ -65,11 +65,11 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 	}
 	rs.save();
 
-	auto backgroundPattern = solid_color_pattern_builder(backgroundColor).get_pattern();
-	auto firstPattern = solid_color_pattern_builder(firstColor).get_pattern();
-	auto secondPattern = solid_color_pattern_builder(secondColor).get_pattern();
+	auto backgroundPattern = solid_color_pattern_factory(backgroundColor).get_pattern();
+	auto firstPattern = solid_color_pattern_factory(firstColor).get_pattern();
+	auto secondPattern = solid_color_pattern_factory(secondColor).get_pattern();
 
-	auto pb = path_builder();
+	auto pb = path_factory();
 
 	pb.rect({ 10.0, 10.0, 120.0, 90.0 });
 	auto firstRectPath = pb.get_path();
@@ -122,16 +122,16 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 		rs.set_line_width(2.0);
 
 		rs.set_path(firstRectPath);
-		rs.set_pattern(solid_color_pattern_builder(rgba_color::teal).get_pattern());
+		rs.set_pattern(solid_color_pattern_factory(rgba_color::teal).get_pattern());
 		rs.stroke();
 
 		rs.set_path(secondRectPath);
-		rs.set_pattern(solid_color_pattern_builder(rgba_color::red).get_pattern());
+		rs.set_pattern(solid_color_pattern_factory(rgba_color::red).get_pattern());
 		rs.stroke();
 
 		if (clipToTriangle) {
 			rs.set_path(triangleClipPath);
-			rs.set_pattern(solid_color_pattern_builder(rgba_color::yellow).get_pattern());
+			rs.set_pattern(solid_color_pattern_factory(rgba_color::yellow).get_pattern());
 			rs.stroke();
 		}
 	}
@@ -150,16 +150,16 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	const int elementCount = 12;
 	const static auto vec = init_sort_steps(elementCount);
 	const int phaseCount = static_cast<int>(vec.size()), x = min(static_cast<int>(timer / phaseTime), phaseCount - 1);
-	auto cornflowerBluePattern = solid_color_pattern_builder(rgba_color::cornflower_blue).get_pattern();
+	auto cornflowerBluePattern = solid_color_pattern_factory(rgba_color::cornflower_blue).get_pattern();
 	rs.set_pattern(cornflowerBluePattern);
 	rs.paint(); // Paint background.
 	auto clextents = rs.get_clip_extents();
 	const double radius = trunc(min(clextents.width * 0.8 / elementCount, clextents.height + 120.0) / 2.0);
 	const double beginX = trunc(clextents.width * 0.1), y = trunc(clextents.height * 0.5);
-	path_builder pb;
+	path_factory pb;
 	pb.move_to({ beginX, 50.0 });
 	rs.set_path(pb.get_path());
-	auto whitePattern = solid_color_pattern_builder(rgba_color::white).get_pattern();
+	auto whitePattern = solid_color_pattern_factory(rgba_color::white).get_pattern();
 	rs.set_pattern(whitePattern);
 	rs.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.set_font_size(40.0);
@@ -186,7 +186,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 		}
 		rs.set_path(pb.get_path());
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
-		auto greyPattern = solid_color_pattern_builder({ greyColor, greyColor, greyColor, 1.0 }).get_pattern();
+		auto greyPattern = solid_color_pattern_factory({ greyColor, greyColor, greyColor, 1.0 }).get_pattern();
 		rs.set_pattern(greyPattern);
 		rs.fill();
 	}
@@ -196,11 +196,11 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pb.set_transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 	pb.rect({ 200.0, 400.0, 100.0, 100.0 });
 	rs.set_path(pb.get_path());
-	auto redPattern = solid_color_pattern_builder(rgba_color::red).get_pattern();
+	auto redPattern = solid_color_pattern_factory(rgba_color::red).get_pattern();
 	rs.set_pattern(redPattern);
 	rs.set_line_width(3.0);
 	rs.stroke();
-	auto radialPattern = radial_pattern_builder({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
+	auto radialPattern = radial_pattern_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
 	radialPattern.add_color_stop_rgba(0.0, rgba_color::black);
 	radialPattern.add_color_stop_rgba(0.25, rgba_color::red);
 	radialPattern.add_color_stop_rgba(0.5, rgba_color::green);
@@ -210,7 +210,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.set_pattern(radialPattern.get_pattern());
 	rs.fill();
 
-	auto linearPattern = linear_pattern_builder({ 510.0, 460.0 }, { 530.0, 480.0 });
+	auto linearPattern = linear_pattern_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
 	linearPattern.add_color_stop_rgba(0.0, rgba_color::chartreuse);
 	linearPattern.add_color_stop_rgba(1.0, rgba_color::salmon);
 	linearPattern.set_extend(extend::repeat);

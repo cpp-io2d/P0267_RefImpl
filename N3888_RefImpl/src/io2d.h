@@ -511,10 +511,10 @@ namespace std {
 				const ::std::error_category& io2d_category() noexcept;
 
 				// Forward declaration.
-				class path_builder;
+				class path_factory;
 
 				class path {
-					friend class path_builder;
+					friend class path_factory;
 					::std::vector<path_data> _Data;
 					bool _Has_current_point;
 					point _Current_point;
@@ -524,7 +524,7 @@ namespace std {
 					typedef cairo_path_t* native_handle_type;
 
 					path() = delete;
-					path(const path_builder& pb);
+					path(const path_factory& pb);
 					path(const path& other) = default;
 					path& operator=(const path& other) = default;
 					path(path&& other);
@@ -536,7 +536,7 @@ namespace std {
 					rectangle get_path_extents() const;
 				};
 
-				class path_builder {
+				class path_factory {
 					friend class path;
 					mutable ::std::recursive_mutex _Lock;
 					::std::vector<path_data> _Data;
@@ -550,15 +550,15 @@ namespace std {
 
 					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<path_data>& data);
 				public:
-					path_builder();
-					path_builder(const path_builder& other);
-					path_builder& operator=(const path_builder& other);
-					path_builder(path_builder&& other);
-					path_builder& operator=(path_builder&& other);
+					path_factory();
+					path_factory(const path_factory& other);
+					path_factory& operator=(const path_factory& other);
+					path_factory(path_factory&& other);
+					path_factory& operator=(path_factory&& other);
 
 					// Modifiers
 					void append(const path& p);
-					void append(const path_builder& p);
+					void append(const path_factory& p);
 					void append(const ::std::vector<path_data>& p);
 					void new_sub_path();
 					void close_path();
@@ -610,17 +610,17 @@ namespace std {
 				// Forward declaration.
 				class font_options;
 
-				class font_options_builder {
+				class font_options_factory {
 					mutable ::std::recursive_mutex _Lock;
 					antialias _Antialias = antialias::default_antialias;
 					subpixel_order _Subpixel_order = subpixel_order::default_subpixel_order;
 
 				public:
-					font_options_builder();
-					font_options_builder(const font_options_builder&);
-					font_options_builder& operator=(const font_options_builder&);
-					font_options_builder(font_options_builder&& other);
-					font_options_builder& operator=(font_options_builder&& other);
+					font_options_factory();
+					font_options_factory(const font_options_factory&);
+					font_options_factory& operator=(const font_options_factory&);
+					font_options_factory(font_options_factory&& other);
+					font_options_factory& operator=(font_options_factory&& other);
 
 					// Modifiers
 					void set_antialias(antialias a);
@@ -710,11 +710,11 @@ namespace std {
 				class image_surface;
 
 				// Forward declaration.
-				class linear_pattern_builder;
-				class mesh_pattern_builder;
-				class radial_pattern_builder;
-				class raster_source_pattern_builder;
-				class solid_color_pattern_builder;
+				class linear_pattern_factory;
+				class mesh_pattern_factory;
+				class radial_pattern_factory;
+				class raster_source_pattern_factory;
+				class solid_color_pattern_factory;
 				class surface;
 
 				class pattern {
@@ -722,11 +722,11 @@ namespace std {
 					typedef cairo_pattern_t* native_handle_type;
 
 				private:
-					friend class linear_pattern_builder;
-					friend class mesh_pattern_builder;
-					friend class radial_pattern_builder;
-					friend class raster_source_pattern_builder;
-					friend class solid_color_pattern_builder;
+					friend class linear_pattern_factory;
+					friend class mesh_pattern_factory;
+					friend class radial_pattern_factory;
+					friend class raster_source_pattern_factory;
+					friend class solid_color_pattern_factory;
 					friend class surface;
 
 					pattern(native_handle_type nh);
@@ -748,7 +748,7 @@ namespace std {
 					pattern_type get_type() const;
 				};
 
-				class solid_color_pattern_builder {
+				class solid_color_pattern_factory {
 					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 					extend _Extend;
@@ -757,12 +757,12 @@ namespace std {
 					rgba_color _Color;
 
 				public:
-					solid_color_pattern_builder();
-					solid_color_pattern_builder(const solid_color_pattern_builder&);
-					solid_color_pattern_builder& operator=(const solid_color_pattern_builder&);
-					solid_color_pattern_builder(solid_color_pattern_builder&& other);
-					solid_color_pattern_builder& operator=(solid_color_pattern_builder&& other);
-					solid_color_pattern_builder(const rgba_color& color);
+					solid_color_pattern_factory();
+					solid_color_pattern_factory(const solid_color_pattern_factory&);
+					solid_color_pattern_factory& operator=(const solid_color_pattern_factory&);
+					solid_color_pattern_factory(solid_color_pattern_factory&& other);
+					solid_color_pattern_factory& operator=(solid_color_pattern_factory&& other);
+					solid_color_pattern_factory(const rgba_color& color);
 
 					// Modifiers
 					void set_extend(extend e);
@@ -786,7 +786,7 @@ namespace std {
 					double get_alpha() const;
 				};
 
-				class linear_pattern_builder {
+				class linear_pattern_factory {
 					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 					extend _Extend;
@@ -798,12 +798,12 @@ namespace std {
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
-					linear_pattern_builder();
-					linear_pattern_builder(const linear_pattern_builder&);
-					linear_pattern_builder& operator=(const linear_pattern_builder&);
-					linear_pattern_builder(linear_pattern_builder&& other);
-					linear_pattern_builder& operator=(linear_pattern_builder&& other);
-					linear_pattern_builder(const point& pt0, const point& pt1);
+					linear_pattern_factory();
+					linear_pattern_factory(const linear_pattern_factory&);
+					linear_pattern_factory& operator=(const linear_pattern_factory&);
+					linear_pattern_factory(linear_pattern_factory&& other);
+					linear_pattern_factory& operator=(linear_pattern_factory&& other);
+					linear_pattern_factory(const point& pt0, const point& pt1);
 
 					// Modifiers
 					void set_extend(extend extend);
@@ -823,7 +823,7 @@ namespace std {
 					void get_linear_points(point& pt0, point& pt1) const;
 				};
 
-				class radial_pattern_builder {
+				class radial_pattern_factory {
 					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 					extend _Extend;
@@ -837,12 +837,12 @@ namespace std {
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
-					radial_pattern_builder();
-					radial_pattern_builder(const radial_pattern_builder&);
-					radial_pattern_builder& operator=(const radial_pattern_builder&);
-					radial_pattern_builder(radial_pattern_builder&& other);
-					radial_pattern_builder& operator=(radial_pattern_builder&& other);
-					radial_pattern_builder(const point& center0, double radius0, const point& center1, double radius1);
+					radial_pattern_factory();
+					radial_pattern_factory(const radial_pattern_factory&);
+					radial_pattern_factory& operator=(const radial_pattern_factory&);
+					radial_pattern_factory(radial_pattern_factory&& other);
+					radial_pattern_factory& operator=(radial_pattern_factory&& other);
+					radial_pattern_factory(const point& center0, double radius0, const point& center1, double radius1);
 
 					// Modifiers
 					void set_extend(extend extend);
@@ -862,7 +862,7 @@ namespace std {
 					void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) const;
 				};
 
-				class mesh_pattern_builder {
+				class mesh_pattern_factory {
 					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 					extend _Extend;
@@ -876,14 +876,14 @@ namespace std {
 					typedef ::std::map<unsigned int, point> _Control_points;
 					typedef ::std::map<unsigned int, rgba_color> _Corner_colors;
 					// <Patch data, control points, corner colors>
-					typedef ::std::tuple<path_builder, _Control_points, _Corner_colors> _Patch;
+					typedef ::std::tuple<path_factory, _Control_points, _Corner_colors> _Patch;
 					::std::vector<_Patch> _Patches;
 				public:
-					mesh_pattern_builder();
-					mesh_pattern_builder(const mesh_pattern_builder&);
-					mesh_pattern_builder& operator=(const mesh_pattern_builder&);
-					mesh_pattern_builder(mesh_pattern_builder&& other);
-					mesh_pattern_builder& operator=(mesh_pattern_builder&& other);
+					mesh_pattern_factory();
+					mesh_pattern_factory(const mesh_pattern_factory&);
+					mesh_pattern_factory& operator=(const mesh_pattern_factory&);
+					mesh_pattern_factory(mesh_pattern_factory&& other);
+					mesh_pattern_factory& operator=(mesh_pattern_factory&& other);
 
 					// Modifiers
 					void set_extend(extend extend);
@@ -905,7 +905,7 @@ namespace std {
 					matrix_2d get_matrix() const;
 					unsigned int get_patch_count() const;
 					path get_path(unsigned int patch_num) const;
-					path_builder get_path_builder(unsigned int patch_num) const;
+					path_factory get_path_factory(unsigned int patch_num) const;
 					point get_control_point(unsigned int patch_num, unsigned int point_num) const;
 					rgba_color get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num) const;
 				};

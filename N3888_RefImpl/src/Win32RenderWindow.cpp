@@ -268,7 +268,7 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 		// cairo_win32_surface_create always returns an rgb24 surface so we need to manually blend the source to the dest since cairo doesn't.
 		auto destSurf = make_surface({ cairo_win32_surface_create(hdc), nullptr });
-		destSurf.set_pattern(solid_color_pattern_builder(rgba_color::black).get_pattern());
+		destSurf.set_pattern(solid_color_pattern_factory(rgba_color::black).get_pattern());
 		destSurf.paint();
 		destSurf.flush();
 
@@ -313,7 +313,7 @@ LRESULT Win32RenderWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		}
 		srcSurf.restore();
 		//m_imageSurface->write_to_png("D:\\michael\\00testgrph01.png");
-		//rs.set_pattern(solid_color_pattern_builder(rgba_color::black).get_pattern());
+		//rs.set_pattern(solid_color_pattern_factory(rgba_color::black).get_pattern());
 		//rs.paint();
 		//rs.paint(*m_imageSurface);
 		destSurf.flush();

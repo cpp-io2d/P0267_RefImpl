@@ -21,7 +21,7 @@ const char* io2d_error_category::name() const {
 	case io2d_error::invalid_pop_group:
 		return "A call was made to surface::pop_group or surface::pop_group_to_source for which no prior call to surface::push_group was made.";
 	case io2d_error::no_current_point:
-		return "The operation requires a current point but no current point was set. This is usually the result of a call to path_builder::rel_curve_to, path_builder::rel_line_to, or  path_builder::rel_move_to and can be corrected by first establishing a current point with a non-\"rel\" member function call such as path_builder::move_to.";
+		return "The operation requires a current point but no current point was set. This is usually the result of a call to path_factory::rel_curve_to, path_factory::rel_line_to, or  path_factory::rel_move_to and can be corrected by first establishing a current point with a non-\"rel\" member function call such as path_factory::move_to.";
 	case io2d_error::invalid_matrix:
 		return "A matrix_2d that the operation depends on is invalid. To be valid a matrix_2d must be invertible.";
 	case io2d_error::invalid_status:
@@ -31,7 +31,7 @@ const char* io2d_error_category::name() const {
 	case io2d_error::invalid_string:
 		return "A UTF-8 string value was expected but the string is not a valid UTF-8 string.";
 	case io2d_error::invalid_path_data:
-		return "Invalid data was encountered in a path or a path_builder object.";
+		return "Invalid data was encountered in a path or a path_factory object.";
 	case io2d_error::read_error:
 		return "An error occurred while attempting to read data from an input stream.";
 	case io2d_error::write_error:
@@ -85,7 +85,7 @@ const char* io2d_error_category::name() const {
 	case io2d_error::device_error:
 		return "The operation failed. The device encountered an error.";
 	case io2d_error::invalid_mesh_construction:
-		return "A mesh construction operation on a mesh_pattern_builder object failed. Mesh construction operations are only permitted in between a call to either mesh_pattern_builder::begin_patch or mesh_pattern_builder::begin_edit_patch and mesh_pattern_builder::end_patch.";
+		return "A mesh construction operation on a mesh_pattern_factory object failed. Mesh construction operations are only permitted in between a call to either mesh_pattern_factory::begin_patch or mesh_pattern_factory::begin_edit_patch and mesh_pattern_factory::end_patch.";
 	case io2d_error::device_finished:
 		return "Device finished.";
 	case io2d_error::last_value:
