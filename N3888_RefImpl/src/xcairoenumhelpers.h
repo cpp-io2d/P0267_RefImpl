@@ -304,6 +304,8 @@ namespace std {
 					return CAIRO_LINE_JOIN_ROUND;
 				case ::std::experimental::io2d::line_join::bevel:
 					return CAIRO_LINE_JOIN_BEVEL;
+				case ::std::experimental::io2d::line_join::miter_or_bevel:
+					return CAIRO_LINE_JOIN_MITER;
 				default:
 					throw ::std::runtime_error("Unknown line_join value.");
 				}
@@ -312,7 +314,7 @@ namespace std {
 			inline ::std::experimental::io2d::line_join _Cairo_line_join_t_to_line_join(cairo_line_join_t clj) {
 				switch (clj) {
 				case CAIRO_LINE_JOIN_MITER:
-					return ::std::experimental::io2d::line_join::miter;
+					return ::std::experimental::io2d::line_join::miter_or_bevel;
 				case CAIRO_LINE_JOIN_ROUND:
 					return ::std::experimental::io2d::line_join::round;
 				case CAIRO_LINE_JOIN_BEVEL:

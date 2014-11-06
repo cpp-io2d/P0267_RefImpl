@@ -202,7 +202,7 @@ line_join surface::get_line_join() const {
 }
 
 void surface::set_line_width(double width) {
-	cairo_set_line_width(_Context.get(), width);
+	cairo_set_line_width(_Context.get(), std::max(width, 0.0));
 }
 
 double surface::get_line_width() const {
@@ -212,7 +212,7 @@ double surface::get_line_width() const {
 void surface::set_miter_limit(double limit) {
 	_Miter_limit = limit;
 	if (_Line_join == line_join::miter_or_bevel) {
-		cairo_set_miter_limit(_Context.get(), limit);
+		cairo_set_miter_limit(_Context.get(), std::min(std::max(limit, 1.0), _Line_join_miter_miter_limit));
 	}
 }
 

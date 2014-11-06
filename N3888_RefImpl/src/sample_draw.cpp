@@ -218,12 +218,21 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 //	pb.set_origin({ 500.0, 450.0 });
 	pb.rect({ 500.0, 450.0, 100.0, 100.0 });
 	pb.rect({ 525.0, 425.0, 50.0, 150.0 });
+	rs.set_line_join(line_join::miter_or_bevel);
+	rs.set_miter_limit(1.0);
+	rs.set_line_width(10.0);
+	rs.set_path(pb.get_path());
+	rs.set_pattern(redPattern);
+	rs.stroke();
+	rs.set_pattern(linearPattern.get_pattern());
+	rs.fill();
+
+	pb.reset();
 	pb.move_to({ 650.0, 400.0 });
 	pb.rel_line_to({ 0.0, 100.0 });
 	pb.rel_line_to({ 10.0, -100.0 });
 	rs.set_line_join(line_join::miter);
 	rs.set_path(pb.get_path());
-	rs.set_line_width(10.0);
 	rs.set_pattern(redPattern);
 	rs.stroke();
 	rs.set_pattern(linearPattern.get_pattern());
