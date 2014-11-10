@@ -122,6 +122,9 @@
     <ClCompile Include="solid_color_pattern_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="path_data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="N3888_RefImpl.rc">

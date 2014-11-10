@@ -28,8 +28,8 @@ scaled_font::scaled_font(scaled_font::native_handle_type nh) {
 
 scaled_font::scaled_font(const font_face& ff, const matrix_2d& fm, const matrix_2d& ctm, const font_options& fo)
 : _Scaled_font(nullptr) {
-	cairo_matrix_t c_fm{ fm.m00, fm.m01, fm.m10, fm.m11, fm.m20, fm.m21 },
-		c_ctm{ ctm.m00, ctm.m01, ctm.m10, ctm.m11, ctm.m20, ctm.m21 };
+	cairo_matrix_t c_fm{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() },
+		c_ctm{ ctm.m00(), ctm.m01(), ctm.m10(), ctm.m11(), ctm.m20(), ctm.m21() };
 	_Scaled_font = shared_ptr<cairo_scaled_font_t>(cairo_scaled_font_create(ff.native_handle(), &c_fm, &c_ctm, fo.native_handle()), &cairo_scaled_font_destroy);
 }
 

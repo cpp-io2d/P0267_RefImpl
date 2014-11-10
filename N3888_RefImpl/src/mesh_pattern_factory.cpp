@@ -108,7 +108,7 @@ pattern mesh_pattern_factory::get_pattern() const {
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
 	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(_Filter));
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
-	cairo_matrix_t mtrx{ _Matrix.m00, _Matrix.m01, _Matrix.m10, _Matrix.m11, _Matrix.m20, _Matrix.m21 };
+	cairo_matrix_t mtrx{ _Matrix.m00(), _Matrix.m01(), _Matrix.m10(), _Matrix.m11(), _Matrix.m20(), _Matrix.m21() };
 	cairo_pattern_set_matrix(pat, &mtrx);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
 
@@ -118,74 +118,63 @@ pattern mesh_pattern_factory::get_pattern() const {
 		auto pdSize = pathData.size();
 		for (unsigned int i = 0; i < pdSize; i++) {
 			const auto& item = pathData[i];
-			auto type = item.type;
-			switch (type)
-			{
+			auto type = item->type();
+			switch (type) {
 			case std::experimental::io2d::path_data_type::move_to:
 			{
-				cairo_mesh_pattern_move_to(pat, item.data.move.x, item.data.move.y);
-			}
-				break;
+				auto pt = dynamic_cast<move_to_path_data*>(item.get())->to();
+				cairo_mesh_pattern_move_to(pat, pt.x, pt.y);
+			} break;
 			case std::experimental::io2d::path_data_type::line_to:
 			{
-				cairo_mesh_pattern_line_to(pat, item.data.line.x, item.data.line.y);
-			}
-				break;
+				auto pt = dynamic_cast<line_to_path_data*>(item.get())->to();
+				cairo_mesh_pattern_line_to(pat, pt.x, pt.y);
+			} break;
 			case std::experimental::io2d::path_data_type::curve_to:
 			{
-				cairo_mesh_pattern_curve_to(pat, item.data.curve.pt1.x, item.data.curve.pt1.y, item.data.curve.pt2.x, item.data.curve.pt2.y, item.data.curve.pt3.x, item.data.curve.pt3.y);
-			}
-				break;
+				auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
+				cairo_mesh_pattern_curve_to(pat, dataItem->control_point_1().x, dataItem->control_point_1().y, dataItem->control_point_2().x, dataItem->control_point_2().y, dataItem->end_point().x, dataItem->end_point().y);
+			} break;
 			case std::experimental::io2d::path_data_type::new_sub_path:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			case std::experimental::io2d::path_data_type::close_path:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			case std::experimental::io2d::path_data_type::rel_move_to:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			case std::experimental::io2d::path_data_type::rel_line_to:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			case std::experimental::io2d::path_data_type::rel_curve_to:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			case std::experimental::io2d::path_data_type::arc:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			case std::experimental::io2d::path_data_type::arc_negative:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			case std::experimental::io2d::path_data_type::change_matrix:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			case std::experimental::io2d::path_data_type::change_origin:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			default:
 			{
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			}
-				break;
+			} break;
 			}
 		}
 		const auto& controlPoints = get<1>(patch);

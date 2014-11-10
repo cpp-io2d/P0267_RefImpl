@@ -440,13 +440,17 @@ namespace std {
 					double y_advance;
 				};
 
-				struct matrix_2d {
-					double m00;
-					double m01;
-					double m10;
-					double m11;
-					double m20;
-					double m21;
+				class matrix_2d {
+					double _M00;
+					double _M01;
+					double _M10;
+					double _M11;
+					double _M20;
+					double _M21;
+				public:
+
+					matrix_2d();
+					matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21);
 
 					static matrix_2d init_identity();
 					static matrix_2d init_translate(const point& value);
@@ -456,6 +460,12 @@ namespace std {
 					static matrix_2d init_shear_y(double factor);
 
 					// Modifiers
+					void m00(double value);
+					void m01(double value);
+					void m10(double value);
+					void m11(double value);
+					void m20(double value);
+					void m21(double value);
 					matrix_2d& translate(const point& value);
 					matrix_2d& scale(const point& value);
 					matrix_2d& rotate(double radians);
@@ -464,6 +474,12 @@ namespace std {
 					matrix_2d& invert();
 
 					// Observers
+					double m00() const;
+					double m01() const;
+					double m10() const;
+					double m11() const;
+					double m20() const;
+					double m21() const;
 					double determinant() const;
 					point transform_distance(const point& dist) const;
 					point transform_point(const point& pt) const;
@@ -474,30 +490,181 @@ namespace std {
 				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs);
 				bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs);
 
-				struct path_data {
-					path_data_type type;
-					union {
-						point move;
-						point line;
-						struct {
-							point pt1;
-							point pt2;
-							point pt3;
-						} curve;
-						point origin;
-						struct {
-							point center;
-							double radius;
-							double angle1;
-							double angle2;
-						} arc;
-						matrix_2d matrix;
-						int unused;
-					} data;
+				class path_data {
+				public:
+					path_data() = default;
+					path_data(const path_data& other) = default;
+					path_data& operator=(const path_data& other) = default;
+					virtual ~path_data();
+
+					virtual path_data_type type() const = 0;
 				};
 
-				bool operator==(const path_data& lhs, const path_data& rhs);
-				bool operator!=(const path_data& lhs, const path_data& rhs);
+				class _Point_path_data : public path_data {
+					point _Data = { };
+				public:
+					_Point_path_data() = default;
+					_Point_path_data(const _Point_path_data& other) = default;
+					_Point_path_data& operator=(const _Point_path_data& other) = default;
+					_Point_path_data(const point& to);
+					virtual path_data_type type() const override = 0;
+
+					point to() const;
+					void to(const point& value);
+				};
+
+				class move_to_path_data : public _Point_path_data {
+				public:
+					move_to_path_data() = default;
+					move_to_path_data(const move_to_path_data& other) = default;
+					move_to_path_data& operator=(const move_to_path_data& other) = default;
+					move_to_path_data(const point& to);
+					virtual path_data_type type() const override;
+				};
+
+				class line_to_path_data : public _Point_path_data {
+				public:
+					line_to_path_data() = default;
+					line_to_path_data(const line_to_path_data& other) = default;
+					line_to_path_data& operator=(const line_to_path_data& other) = default;
+					line_to_path_data(const point& to);
+					virtual path_data_type type() const override;
+				};
+
+				class rel_move_to_path_data : public _Point_path_data {
+				public:
+					rel_move_to_path_data() = default;
+					rel_move_to_path_data(const rel_move_to_path_data& other) = default;
+					rel_move_to_path_data& operator=(const rel_move_to_path_data& other) = default;
+					rel_move_to_path_data(const point& to);
+					virtual path_data_type type() const override;
+				};
+
+				class rel_line_to_path_data : public _Point_path_data {
+				public:
+					rel_line_to_path_data() = default;
+					rel_line_to_path_data(const rel_line_to_path_data& other) = default;
+					rel_line_to_path_data& operator=(const rel_line_to_path_data& other) = default;
+					rel_line_to_path_data(const point& to);
+					virtual path_data_type type() const override;
+				};
+
+				class _Curve_to_path_data : public path_data {
+					point _Control_pt1 = { };
+					point _Control_pt2 = { };
+					point _End_pt = { };
+				public:
+					_Curve_to_path_data() = default;
+					_Curve_to_path_data(const _Curve_to_path_data& other) = default;
+					_Curve_to_path_data& operator=(const _Curve_to_path_data& other) = default;
+					_Curve_to_path_data(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
+					virtual path_data_type type() const override = 0;
+
+					void control_point_1(const point& value);
+					void control_point_2(const point& value);
+					void end_point(const point& value);
+
+					point control_point_1() const;
+					point control_point_2() const;
+					point end_point() const;
+				};
+
+				class curve_to_path_data : public _Curve_to_path_data {
+				public:
+					curve_to_path_data() = default;
+					curve_to_path_data(const curve_to_path_data& other) = default;
+					curve_to_path_data& operator=(const curve_to_path_data& other) = default;
+					curve_to_path_data(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
+					virtual path_data_type type() const override;
+				};
+
+				class rel_curve_to_path_data : public _Curve_to_path_data {
+				public:
+					rel_curve_to_path_data() = default;
+					rel_curve_to_path_data(const rel_curve_to_path_data& other) = default;
+					rel_curve_to_path_data& operator=(const rel_curve_to_path_data& other) = default;
+					rel_curve_to_path_data(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
+					virtual path_data_type type() const override;
+				};
+
+				class _Arc_path_data : public path_data {
+					point _Center;
+					double _Radius;
+					double _Angle_1;
+					double _Angle_2;
+				public:
+					_Arc_path_data();
+					_Arc_path_data(const _Arc_path_data& other) = default;
+					_Arc_path_data& operator=(const _Arc_path_data& other) = default;
+					_Arc_path_data(point center, double radius, double angle1, double angle2);
+					virtual path_data_type type() const override = 0;
+
+					void center(const point& value);
+					void radius(double value);
+					void angle_1(double radians);
+					void angle_2(double radians);
+
+					point center() const;
+					double radius() const;
+					double angle_1() const;
+					double angle_2() const;
+				};
+
+				class arc_path_data : public _Arc_path_data {
+				public:
+					arc_path_data() = default;
+					arc_path_data(const arc_path_data& other) = default;
+					arc_path_data& operator=(const arc_path_data& other) = default;
+					arc_path_data(point center, double radius, double angle1, double angle2);
+					virtual path_data_type type() const override;
+				};
+
+				class arc_negative_path_data : public _Arc_path_data {
+				public:
+					arc_negative_path_data() = default;
+					arc_negative_path_data(const arc_negative_path_data& other) = default;
+					arc_negative_path_data& operator=(const arc_negative_path_data& other) = default;
+					arc_negative_path_data(point center, double radius, double angle1, double angle2);
+					virtual path_data_type type() const override;
+				};
+
+				class new_sub_path_path_data : public path_data {
+				public:
+					virtual path_data_type type() const override;
+				};
+
+				class close_path_path_data : public path_data {
+				public:
+					virtual path_data_type type() const override;
+				};
+
+				class change_matrix_path_data : public path_data {
+					matrix_2d _Matrix = { };
+				public:
+					change_matrix_path_data() = default;
+					change_matrix_path_data(const change_matrix_path_data& other) = default;
+					change_matrix_path_data& operator=(const change_matrix_path_data& other) = default;
+					change_matrix_path_data(const matrix_2d& m);
+
+					void matrix(const matrix_2d& value);
+
+					matrix_2d matrix() const;
+					virtual path_data_type type() const override;
+				};
+
+				class change_origin_path_data : public path_data {
+					point _Origin = { };
+				public:
+					change_origin_path_data() = default;
+					change_origin_path_data(const change_origin_path_data& other) = default;
+					change_origin_path_data& operator=(const change_origin_path_data& other) = default;
+					change_origin_path_data(const point& origin);
+
+					void origin(const point& value);
+
+					point origin() const;
+					virtual path_data_type type() const override;
+				};
 
 				class io2d_error_category : public ::std::error_category {
 				public:
@@ -515,7 +682,7 @@ namespace std {
 
 				class path {
 					friend class path_factory;
-					::std::vector<path_data> _Data;
+					::std::shared_ptr<::std::vector<::std::unique_ptr<path_data>>> _Data;
 					bool _Has_current_point;
 					point _Current_point;
 					point _Last_move_to_point;
@@ -531,15 +698,15 @@ namespace std {
 					path& operator=(path&& other);
 
 					// Observers
-					::std::vector<path_data> get_data() const;
-					const ::std::vector<path_data>& get_data_ref() const;
+					::std::vector<::std::unique_ptr<path_data>> get_data() const;
+					const ::std::vector<::std::unique_ptr<path_data>>& get_data_ref() const;
 					rectangle get_path_extents() const;
 				};
 
 				class path_factory {
 					friend class path;
 					mutable ::std::recursive_mutex _Lock;
-					::std::vector<path_data> _Data;
+					::std::vector<::std::unique_ptr<path_data>> _Data;
 					bool _Has_current_point;
 					point _Current_point;
 					point _Last_move_to_point;
@@ -548,7 +715,7 @@ namespace std {
 					matrix_2d _Transform_matrix;
 					point _Origin;
 
-					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<path_data>& data);
+					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<::std::unique_ptr<path_data>>& data);
 				public:
 					path_factory();
 					path_factory(const path_factory& other);
@@ -559,7 +726,7 @@ namespace std {
 					// Modifiers
 					void append(const path& p);
 					void append(const path_factory& p);
-					void append(const ::std::vector<path_data>& p);
+					void append(const ::std::vector<::std::unique_ptr<path_data>>& p);
 					void new_sub_path();
 					void close_path();
 					void arc(const point& center, double radius, double angle1, double angle2);
@@ -571,20 +738,20 @@ namespace std {
 					void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
 					void rel_line_to(const point& dpt);
 					void rel_move_to(const point& dpt);
-					void set_transform_matrix(const matrix_2d& m);
-					void set_origin(const point& pt);
+					void transform_matrix(const matrix_2d& m);
+					void origin(const point& pt);
 					void reset();
 
 					// Observers
 					path get_path() const;
 					rectangle get_path_extents() const;
 					bool has_current_point() const;
-					point get_current_point() const;
-					matrix_2d get_transform_matrix() const;
-					point get_origin() const;
-					::std::vector<path_data> get_data() const;
-					path_data get_data(unsigned int index) const;
-					const ::std::vector<path_data>& get_data_ref() const;
+					point current_point() const;
+					matrix_2d transform_matrix() const;
+					point origin() const;
+					::std::vector<::std::unique_ptr<path_data>> get_data() const;
+					::std::unique_ptr<path_data> get_data(unsigned int index) const;
+					const ::std::vector<::std::unique_ptr<path_data>>& get_data_ref() const;
 				};
 
 				class device {

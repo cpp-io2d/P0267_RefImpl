@@ -174,14 +174,14 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 			const auto yr = y - ((i2 == i ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 				* (i % 2 == 1 ? 1.0 : -1.0));
 			const auto center = point{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
-			pb.set_transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
-			pb.set_origin(center);
+			pb.transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+			pb.origin(center);
 			pb.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
 		else {
 			const point center{ radius * i * 2.0 + radius + beginX, y };
-			pb.set_transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0));
-			pb.set_origin(center);
+			pb.transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0));
+			pb.origin(center);
 			pb.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
 		rs.set_path(pb.get_path());
@@ -192,8 +192,8 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	}
 
 	pb.reset();
-	pb.set_origin({ 250.0, 450.0 });
-	pb.set_transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
+	pb.origin({ 250.0, 450.0 });
+	pb.transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 	pb.rect({ 200.0, 400.0, 100.0, 100.0 });
 	rs.set_path(pb.get_path());
 	auto redPattern = solid_color_pattern_factory(rgba_color::red).get_pattern();

@@ -101,7 +101,7 @@ pattern linear_pattern_factory::get_pattern() const {
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(_Filter));
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_matrix_t mtrx{ _Matrix.m00, _Matrix.m01, _Matrix.m10, _Matrix.m11, _Matrix.m20, _Matrix.m21 };
+	cairo_matrix_t mtrx{ _Matrix.m00(), _Matrix.m01(), _Matrix.m10(), _Matrix.m11(), _Matrix.m20(), _Matrix.m21() };
 	cairo_pattern_set_matrix(pat.get(), &mtrx);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 	for (const auto& stop : _Color_stops) {
