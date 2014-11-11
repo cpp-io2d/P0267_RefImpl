@@ -94,7 +94,7 @@ linear_pattern_factory::linear_pattern_factory(const point& pt0, const point& pt
 
 pattern linear_pattern_factory::get_pattern() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_linear(_Point0.x, _Point0.y, _Point1.x, _Point1.y), &cairo_pattern_destroy);
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_linear(_Point0.x(), _Point0.y(), _Point1.x(), _Point1.y()), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(_Extend));

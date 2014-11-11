@@ -386,31 +386,21 @@ namespace std {
 				}
 #endif
 
-				struct point {
-					double x;
-					double y;
-				};
+				class point {
+					double _X = 0.0;
+					double _Y = 0.0;
+				public:
+					point() = default;
+					point(const point& other) = default;
+					point& operator=(const point& other) = default;
+					point(double x, double y);
 
-				point operator+(const point& lhs);
-				point operator+(const point& lhs, const point& rhs);
-				point operator+(const point& lhs, double rhs);
-				point& operator+=(point& lhs, const point& rhs);
-				point& operator+=(point& lhs, double rhs);
-				point operator-(const point& lhs);
-				point operator-(const point& lhs, const point& rhs);
-				point operator-(const point& lhs, double rhs);
-				point& operator-=(point& lhs, const point& rhs);
-				point& operator-=(point& lhs, double rhs);
-				point operator*(const point& lhs, const point& rhs);
-				point operator*(const point& lhs, double rhs);
-				point& operator*=(point& lhs, const point& rhs);
-				point& operator*=(point& lhs, double rhs);
-				point operator/(const point& lhs, const point& rhs);
-				point operator/(const point& lhs, double rhs);
-				point& operator/=(point& lhs, const point& rhs);
-				point& operator/=(point& lhs, double rhs);
-				bool operator==(const point& lhs, const point& rhs);
-				bool operator!=(const point& lhs, const point& rhs);
+					void x(double value);
+					void y(double value);
+
+					double x() const;
+					double y() const;
+				};
 
 				struct glyph {
 					unsigned long index;

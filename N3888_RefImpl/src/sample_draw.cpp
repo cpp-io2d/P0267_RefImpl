@@ -41,7 +41,7 @@ vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL) {
 }
 
 wostream& operator<<(wostream& os, const point& pt) {
-	os << L"(" << pt.x << L"," << pt.y << L")";
+	os << L"(" << pt.x() << L"," << pt.y() << L")";
 	return os;
 }
 

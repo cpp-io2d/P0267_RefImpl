@@ -36,62 +36,62 @@ path_factory::path_factory(const path_factory& other)
 		case std::experimental::io2d::path_data_type::move_to:
 		{
 			auto dataItem = dynamic_cast<move_to_path_data*>(item.get());
-			_Data.emplace_back(new move_to_path_data(*dataItem));
+			_Data.push_back(make_unique<move_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
 			auto dataItem = dynamic_cast<line_to_path_data*>(item.get());
-			_Data.emplace_back(new line_to_path_data(*dataItem));
+			_Data.push_back(make_unique<line_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
 			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-			_Data.emplace_back(new curve_to_path_data(*dataItem));
+			_Data.push_back(make_unique<curve_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
 			auto dataItem = dynamic_cast<new_sub_path_path_data*>(item.get());
-			_Data.emplace_back(new new_sub_path_path_data(*dataItem));
+			_Data.push_back(make_unique<new_sub_path_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::close_path:
 		{
 			auto dataItem = dynamic_cast<close_path_path_data*>(item.get());
-			_Data.emplace_back(new close_path_path_data(*dataItem));
+			_Data.push_back(make_unique<close_path_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
 			auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_move_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_move_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
 			auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_line_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_line_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
 			auto dataItem = dynamic_cast<rel_curve_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_curve_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_curve_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
 			auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-			_Data.emplace_back(new arc_path_data(*dataItem));
+			_Data.push_back(make_unique<arc_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
 			auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-			_Data.emplace_back(new arc_negative_path_data(*dataItem));
+			_Data.push_back(make_unique<arc_negative_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
 			auto dataItem = dynamic_cast<change_matrix_path_data*>(item.get());
-			_Data.emplace_back(new change_matrix_path_data(*dataItem));
+			_Data.push_back(make_unique<change_matrix_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
 			auto dataItem = dynamic_cast<change_origin_path_data*>(item.get());
-			_Data.emplace_back(new change_origin_path_data(*dataItem));
+			_Data.push_back(make_unique<change_origin_path_data>(*dataItem));
 		} break;
 		default:
 			assert("Unknown path_data_type" && false);
@@ -117,62 +117,62 @@ path_factory& path_factory::operator=(const path_factory& other) {
 			case std::experimental::io2d::path_data_type::move_to:
 			{
 				auto dataItem = dynamic_cast<move_to_path_data*>(item.get());
-				_Data.emplace_back(new move_to_path_data(*dataItem));
+				_Data.push_back(make_unique<move_to_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::line_to:
 			{
 				auto dataItem = dynamic_cast<line_to_path_data*>(item.get());
-				_Data.emplace_back(new line_to_path_data(*dataItem));
+				_Data.push_back(make_unique<line_to_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::curve_to:
 			{
 				auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-				_Data.emplace_back(new curve_to_path_data(*dataItem));
+				_Data.push_back(make_unique<curve_to_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::new_sub_path:
 			{
 				auto dataItem = dynamic_cast<new_sub_path_path_data*>(item.get());
-				_Data.emplace_back(new new_sub_path_path_data(*dataItem));
+				_Data.push_back(make_unique<new_sub_path_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::close_path:
 			{
 				auto dataItem = dynamic_cast<close_path_path_data*>(item.get());
-				_Data.emplace_back(new close_path_path_data(*dataItem));
+				_Data.push_back(make_unique<close_path_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::rel_move_to:
 			{
 				auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-				_Data.emplace_back(new rel_move_to_path_data(*dataItem));
+				_Data.push_back(make_unique<rel_move_to_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::rel_line_to:
 			{
 				auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-				_Data.emplace_back(new rel_line_to_path_data(*dataItem));
+				_Data.push_back(make_unique<rel_line_to_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::rel_curve_to:
 			{
 				auto dataItem = dynamic_cast<rel_curve_to_path_data*>(item.get());
-				_Data.emplace_back(new rel_curve_to_path_data(*dataItem));
+				_Data.push_back(make_unique<rel_curve_to_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::arc:
 			{
 				auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-				_Data.emplace_back(new arc_path_data(*dataItem));
+				_Data.push_back(make_unique<arc_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::arc_negative:
 			{
 				auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-				_Data.emplace_back(new arc_negative_path_data(*dataItem));
+				_Data.push_back(make_unique<arc_negative_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::change_matrix:
 			{
 				auto dataItem = dynamic_cast<change_matrix_path_data*>(item.get());
-				_Data.emplace_back(new change_matrix_path_data(*dataItem));
+				_Data.push_back(make_unique<change_matrix_path_data>(*dataItem));
 			} break;
 			case std::experimental::io2d::path_data_type::change_origin:
 			{
 				auto dataItem = dynamic_cast<change_origin_path_data*>(item.get());
-				_Data.emplace_back(new change_origin_path_data(*dataItem));
+				_Data.push_back(make_unique<change_origin_path_data>(*dataItem));
 			} break;
 			default:
 				assert("Unknown path_data_type" && false);
@@ -240,62 +240,62 @@ void path_factory::append(const path& p) {
 		case std::experimental::io2d::path_data_type::move_to:
 		{
 			auto dataItem = dynamic_cast<move_to_path_data*>(item.get());
-			_Data.emplace_back(new move_to_path_data(*dataItem));
+			_Data.push_back(make_unique<move_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
 			auto dataItem = dynamic_cast<line_to_path_data*>(item.get());
-			_Data.emplace_back(new line_to_path_data(*dataItem));
+			_Data.push_back(make_unique<line_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
 			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-			_Data.emplace_back(new curve_to_path_data(*dataItem));
+			_Data.push_back(make_unique<curve_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
 			auto dataItem = dynamic_cast<new_sub_path_path_data*>(item.get());
-			_Data.emplace_back(new new_sub_path_path_data(*dataItem));
+			_Data.push_back(make_unique<new_sub_path_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::close_path:
 		{
 			auto dataItem = dynamic_cast<close_path_path_data*>(item.get());
-			_Data.emplace_back(new close_path_path_data(*dataItem));
+			_Data.push_back(make_unique<close_path_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
 			auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_move_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_move_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
 			auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_line_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_line_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
 			auto dataItem = dynamic_cast<rel_curve_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_curve_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_curve_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
 			auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-			_Data.emplace_back(new arc_path_data(*dataItem));
+			_Data.push_back(make_unique<arc_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
 			auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-			_Data.emplace_back(new arc_negative_path_data(*dataItem));
+			_Data.push_back(make_unique<arc_negative_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
 			auto dataItem = dynamic_cast<change_matrix_path_data*>(item.get());
-			_Data.emplace_back(new change_matrix_path_data(*dataItem));
+			_Data.push_back(make_unique<change_matrix_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
 			auto dataItem = dynamic_cast<change_origin_path_data*>(item.get());
-			_Data.emplace_back(new change_origin_path_data(*dataItem));
+			_Data.push_back(make_unique<change_origin_path_data>(*dataItem));
 		} break;
 		default:
 			assert("Unknown path_data_type" && false);
@@ -316,62 +316,62 @@ void path_factory::append(const path_factory& p) {
 		case std::experimental::io2d::path_data_type::move_to:
 		{
 			auto dataItem = dynamic_cast<move_to_path_data*>(item.get());
-			_Data.emplace_back(new move_to_path_data(*dataItem));
+			_Data.push_back(make_unique<move_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
 			auto dataItem = dynamic_cast<line_to_path_data*>(item.get());
-			_Data.emplace_back(new line_to_path_data(*dataItem));
+			_Data.push_back(make_unique<line_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
 			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-			_Data.emplace_back(new curve_to_path_data(*dataItem));
+			_Data.push_back(make_unique<curve_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
 			auto dataItem = dynamic_cast<new_sub_path_path_data*>(item.get());
-			_Data.emplace_back(new new_sub_path_path_data(*dataItem));
+			_Data.push_back(make_unique<new_sub_path_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::close_path:
 		{
 			auto dataItem = dynamic_cast<close_path_path_data*>(item.get());
-			_Data.emplace_back(new close_path_path_data(*dataItem));
+			_Data.push_back(make_unique<close_path_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
 			auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_move_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_move_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
 			auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_line_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_line_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
 			auto dataItem = dynamic_cast<rel_curve_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_curve_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_curve_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
 			auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-			_Data.emplace_back(new arc_path_data(*dataItem));
+			_Data.push_back(make_unique<arc_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
 			auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-			_Data.emplace_back(new arc_negative_path_data(*dataItem));
+			_Data.push_back(make_unique<arc_negative_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
 			auto dataItem = dynamic_cast<change_matrix_path_data*>(item.get());
-			_Data.emplace_back(new change_matrix_path_data(*dataItem));
+			_Data.push_back(make_unique<change_matrix_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
 			auto dataItem = dynamic_cast<change_origin_path_data*>(item.get());
-			_Data.emplace_back(new change_origin_path_data(*dataItem));
+			_Data.push_back(make_unique<change_origin_path_data>(*dataItem));
 		} break;
 		default:
 			assert("Unknown path_data_type" && false);
@@ -391,7 +391,7 @@ void path_factory::append(const vector<unique_ptr<path_data>>& p) {
 		case std::experimental::io2d::path_data_type::move_to:
 		{
 			auto dataItem = dynamic_cast<move_to_path_data*>(item.get());
-			_Data.emplace_back(new move_to_path_data(*dataItem));
+			_Data.push_back(make_unique<move_to_path_data>(*dataItem));
 			_Last_move_to_point = dataItem->to();
 			_Current_point = dataItem->to();
 			_Has_current_point = true;
@@ -399,27 +399,27 @@ void path_factory::append(const vector<unique_ptr<path_data>>& p) {
 		case std::experimental::io2d::path_data_type::line_to:
 		{
 			auto dataItem = dynamic_cast<line_to_path_data*>(item.get());
-			_Data.emplace_back(new line_to_path_data(*dataItem));
+			_Data.push_back(make_unique<line_to_path_data>(*dataItem));
 			_Current_point = dataItem->to();
 			_Has_current_point = true;
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
 			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-			_Data.emplace_back(new curve_to_path_data(*dataItem));
+			_Data.push_back(make_unique<curve_to_path_data>(*dataItem));
 			_Current_point = dataItem->end_point();
 			_Has_current_point = true;
 		} break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
 			auto dataItem = dynamic_cast<new_sub_path_path_data*>(item.get());
-			_Data.emplace_back(new new_sub_path_path_data(*dataItem));
+			_Data.push_back(make_unique<new_sub_path_path_data>(*dataItem));
 			_Has_current_point = false;
 		} break;
 		case std::experimental::io2d::path_data_type::close_path:
 		{
 			auto dataItem = dynamic_cast<close_path_path_data*>(item.get());
-			_Data.emplace_back(new close_path_path_data(*dataItem));
+			_Data.push_back(make_unique<close_path_path_data>(*dataItem));
 			if (_Has_current_point) {
 				_Current_point = _Last_move_to_point;
 			}
@@ -428,7 +428,7 @@ void path_factory::append(const vector<unique_ptr<path_data>>& p) {
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
 			auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_move_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_move_to_path_data>(*dataItem));
 			_Last_move_to_point = _Current_point + dataItem->to();
 			_Current_point = _Current_point + dataItem->to();
 			_Has_current_point = true;
@@ -436,39 +436,39 @@ void path_factory::append(const vector<unique_ptr<path_data>>& p) {
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
 			auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_line_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_line_to_path_data>(*dataItem));
 			_Current_point = _Current_point + dataItem->to();
 			_Has_current_point = true;
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
 			auto dataItem = dynamic_cast<rel_curve_to_path_data*>(item.get());
-			_Data.emplace_back(new rel_curve_to_path_data(*dataItem));
+			_Data.push_back(make_unique<rel_curve_to_path_data>(*dataItem));
 			_Current_point = _Current_point + dataItem->end_point();
 			_Has_current_point = true;
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
 			auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-			_Data.emplace_back(new arc_path_data(*dataItem));
+			_Data.push_back(make_unique<arc_path_data>(*dataItem));
 			_Set_current_point_and_last_move_to_point_for_arc(_Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), false, _Has_current_point, _Current_point));
 		} break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
 			auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-			_Data.emplace_back(new arc_negative_path_data(*dataItem));
+			_Data.push_back(make_unique<arc_negative_path_data>(*dataItem));
 			_Set_current_point_and_last_move_to_point_for_arc(_Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), true, _Has_current_point, _Current_point));
 		} break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
 			auto dataItem = dynamic_cast<change_matrix_path_data*>(item.get());
-			_Data.emplace_back(new change_matrix_path_data(*dataItem));
+			_Data.push_back(make_unique<change_matrix_path_data>(*dataItem));
 			_Transform_matrix = dataItem->matrix();
 		} break;
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
 			auto dataItem = dynamic_cast<change_origin_path_data*>(item.get());
-			_Data.emplace_back(new change_origin_path_data(*dataItem));
+			_Data.push_back(make_unique<change_origin_path_data>(*dataItem));
 			_Origin = dataItem->origin();
 		} break;
 		default:
@@ -508,10 +508,10 @@ void path_factory::close_path() {
 
 point _Rotate_point(const point& pt, double angle, bool clockwise = true) {
 	if (clockwise) {
-		return{ pt.x * cos(angle) + pt.y * sin(angle), -(pt.x * -(sin(angle)) + pt.y * cos(angle)) };
+		return{ pt.x() * cos(angle) + pt.y() * sin(angle), -(pt.x() * -(sin(angle)) + pt.y() * cos(angle)) };
 	}
 	else {
-		return{ pt.x * cos(angle) + pt.y * sin(angle), pt.x * -(sin(angle)) + pt.y * cos(angle) };
+		return{ pt.x() * cos(angle) + pt.y() * sin(angle), pt.x() * -(sin(angle)) + pt.y() * cos(angle) };
 	}
 }
 
@@ -551,17 +551,17 @@ vector<::std::unique_ptr<path_data>> _Get_arc_as_beziers(const point& center, do
 		auto cosinePhi = cos(phi);
 		auto sinePhi = sin(phi);
 
-		pt0.x = cosinePhi;
-		pt0.y = -sinePhi;
+		pt0.x(cosinePhi);
+		pt0.y(-sinePhi);
 
-		pt3.x = pt0.x;
-		pt3.y = -pt0.y;
+		pt3.x(pt0.x());
+		pt3.y(-pt0.y());
 
-		pt1.x = (4.0 - cosinePhi) / 3.0;
-		pt1.y = -(((1.0 - cosinePhi) * (3.0 - cosinePhi)) / (3.0 * sinePhi));
+		pt1.x((4.0 - cosinePhi) / 3.0);
+		pt1.y(-(((1.0 - cosinePhi) * (3.0 - cosinePhi)) / (3.0 * sinePhi)));
 
-		pt2.x = pt1.x;
-		pt2.y = -pt1.y;
+		pt2.x(pt1.x());
+		pt2.y(-pt1.y());
 
 	}
 
@@ -752,62 +752,62 @@ vector<unique_ptr<path_data>> path_factory::get_data() const {
 		case std::experimental::io2d::path_data_type::move_to:
 		{
 			auto dataItem = dynamic_cast<move_to_path_data*>(item.get());
-			result.emplace_back(new move_to_path_data(*dataItem));
+			result.push_back(make_unique<move_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
 			auto dataItem = dynamic_cast<line_to_path_data*>(item.get());
-			result.emplace_back(new line_to_path_data(*dataItem));
+			result.push_back(make_unique<line_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
 			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-			result.emplace_back(new curve_to_path_data(*dataItem));
+			result.push_back(make_unique<curve_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
 			auto dataItem = dynamic_cast<new_sub_path_path_data*>(item.get());
-			result.emplace_back(new new_sub_path_path_data(*dataItem));
+			result.push_back(make_unique<new_sub_path_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::close_path:
 		{
 			auto dataItem = dynamic_cast<close_path_path_data*>(item.get());
-			result.emplace_back(new close_path_path_data(*dataItem));
+			result.push_back(make_unique<close_path_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
 			auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-			result.emplace_back(new rel_move_to_path_data(*dataItem));
+			result.push_back(make_unique<rel_move_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
 			auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-			result.emplace_back(new rel_line_to_path_data(*dataItem));
+			result.push_back(make_unique<rel_line_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
 			auto dataItem = dynamic_cast<rel_curve_to_path_data*>(item.get());
-			result.emplace_back(new rel_curve_to_path_data(*dataItem));
+			result.push_back(make_unique<rel_curve_to_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
 			auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-			result.emplace_back(new arc_path_data(*dataItem));
+			result.push_back(make_unique<arc_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
 			auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-			result.emplace_back(new arc_negative_path_data(*dataItem));
+			result.push_back(make_unique<arc_negative_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
 			auto dataItem = dynamic_cast<change_matrix_path_data*>(item.get());
-			result.emplace_back(new change_matrix_path_data(*dataItem));
+			result.push_back(make_unique<change_matrix_path_data>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
 			auto dataItem = dynamic_cast<change_origin_path_data*>(item.get());
-			result.emplace_back(new change_origin_path_data(*dataItem));
+			result.push_back(make_unique<change_origin_path_data>(*dataItem));
 		} break;
 		default:
 			assert("Unknown path_data_type" && false);
@@ -820,10 +820,6 @@ vector<unique_ptr<path_data>> path_factory::get_data() const {
 const vector<unique_ptr<path_data>>& path_factory::get_data_ref() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Data;
-}
-
-point operator*(double lhs, const point& rhs) {
-	return{ lhs * rhs.x, lhs * rhs.y };
 }
 
 // See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
@@ -865,10 +861,10 @@ double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const p
 	auto dt2 = _Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, t2);
 
 	if (findX) {
-		assert(!_Same_sign(dt0.x, dt2.x));
+		assert(!_Same_sign(dt0.x(), dt2.x()));
 	}
 	else {
-		assert(!_Same_sign(dt0.y, dt2.y));
+		assert(!_Same_sign(dt0.y(), dt2.y()));
 	}
 
 	auto dt1 = +_Cubic_bezier_derivative_for_t(pt0, pt1, pt2, pt3, t1);
@@ -876,17 +872,17 @@ double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const p
 	// If t0 and t1 are equal or t1 and t1Previous are equal, we can no longer get a meaningful t1 value so the value of t0 will have to be accepted as close enough.
 	while (!_Almost_equal_relative(t0, t1, epsilon) && !_Almost_equal_relative(t1, t1Previous, epsilon)) {
 		if (findX) {
-			if (_Almost_equal_relative(dt1.x, 0.0, epsilon)) {
+			if (_Almost_equal_relative(dt1.x(), 0.0, epsilon)) {
 				return t1;
 			}
-			if (_Same_sign(dt0.x, dt1.x)) {
+			if (_Same_sign(dt0.x(), dt1.x())) {
 				// Since t0 and t2 are different signs and t0 and t1 are the same sign, we know our value lies between t1 and t2 so set t0 = t1 and calculate the new t1.
 				t0 = t1;
 				t1Previous = t1;
 				t1 = (t2 - t0) / 2.0 + t0;
 			}
 			else {
-				assert(_Same_sign(dt1.x, dt2.x));
+				assert(_Same_sign(dt1.x(), dt2.x()));
 				// Since t0 and t2 are different signs and t1 and t2 are the same sign, we know our value lies between t0 and t1 so set t2 = t1 and calculate the new t1.
 				t2 = t1;
 				t1Previous = t1;
@@ -894,17 +890,17 @@ double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const p
 			}
 		}
 		else {
-			if (_Almost_equal_relative(dt1.y, 0.0, epsilon)) {
+			if (_Almost_equal_relative(dt1.y(), 0.0, epsilon)) {
 				return t1;
 			}
-			if (_Same_sign(dt0.y, dt1.y)) {
+			if (_Same_sign(dt0.y(), dt1.y())) {
 				// Since t0 and t2 are different signs and t0 and t1 are the same sign, we know our value lies between t1 and t2 so set t0 = t1 and calculate the new t1.
 				t0 = t1;
 				t1Previous = t1;
 				t1 = (t2 - t0) / 2.0 + t0;
 			}
 			else {
-				assert(_Same_sign(dt1.y, dt2.y));
+				assert(_Same_sign(dt1.y(), dt2.y()));
 				// Since t0 and t2 are different signs and t1 and t2 are the same sign, we know our value lies between t0 and t1 so set t2 = t1 and calculate the new t1.
 				t2 = t1;
 				t1Previous = t1;
@@ -917,10 +913,10 @@ double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const p
 
 void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, const point& pt3, point& extents0, point& extents1) {
 	// We know at a minimum that the extents are the two knots, pt0 and pt3. The only question is whether the extents go beyond those two points.
-	extents0.x = min(pt0.x, pt3.x);
-	extents0.y = min(pt0.y, pt3.y);
-	extents1.x = max(pt0.x, pt3.x);
-	extents1.y = max(pt0.y, pt3.y);
+	extents0.x(min(pt0.x(), pt3.x()));
+	extents0.y(min(pt0.y(), pt3.y()));
+	extents1.x(max(pt0.x(), pt3.x()));
+	extents1.y(max(pt0.y(), pt3.y()));
 
 	// Find X's and Ys (between 0 and 2).
 	int numPoints = 0;
@@ -938,13 +934,13 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 	const double epsilon = numeric_limits<double>::epsilon();
 
 	// X values
-	if (_Almost_equal_relative(dt0.x, 0.0, epsilon)) {
+	if (_Almost_equal_relative(dt0.x(), 0.0, epsilon)) {
 		assert(numXs == 0);
 		// First knot is critical. We already assigned it so we're done with that.
 		foundLowX = true;
 		numPoints++;
 		numXs++;
-		if (_Same_sign(dt1.x, dt2.x)) {
+		if (_Same_sign(dt1.x(), dt2.x())) {
 			// No second critical point so the second knot is the other extent and we already assigned it so we're done with that.
 			foundHighX = true;
 			numPoints++;
@@ -952,32 +948,32 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 		}
 		else {
 			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.5, 1.0, true);
-			auto xval = _Curve_value_for_t(pt0.x, pt1.x, pt2.x, pt3.x, t);
+			auto xval = _Curve_value_for_t(pt0.x(), pt1.x(), pt2.x(), pt3.x(), t);
 			// We do this min/max assignment because critical points just signal a change in curve direction, not that the critical point is actually a min/max point.
-			extents0.x = min(extents0.x, xval);
-			extents1.x = max(extents1.x, xval);
+			extents0.x(min(extents0.x(), xval));
+			extents1.x(max(extents1.x(), xval));
 			foundHighX = true;
 			numPoints++;
 			numXs++;
 		}
 	}
-	if (_Almost_equal_relative(dt1.x, 0.0, epsilon)) {
+	if (_Almost_equal_relative(dt1.x(), 0.0, epsilon)) {
 		assert(numXs == 0);
 		// Center is only critical.
-		auto cxval = _Curve_value_for_t(pt0.x, pt1.x, pt2.x, pt3.x, 0.5);
-		// Arbitrarily use pt3.x rather than pt0.x; they are the same value regardless.
-		assert(_Almost_equal_relative(pt0.x, pt3.x, epsilon));
-		extents0.x = min(cxval, pt3.x);
-		extents1.x = max(cxval, pt3.x);
+		auto cxval = _Curve_value_for_t(pt0.x(), pt1.x(), pt2.x(), pt3.x(), 0.5);
+		// Arbitrarily use pt3.x() rather than pt0.x(); they are the same value regardless.
+		assert(_Almost_equal_relative(pt0.x(), pt3.x(), epsilon));
+		extents0.x(min(cxval, pt3.x()));
+		extents1.x(max(cxval, pt3.x()));
 		numPoints += 2;
 		numXs += 2;
 	}
-	if (_Almost_equal_relative(dt2.x, 0.0, epsilon)) {
+	if (_Almost_equal_relative(dt2.x(), 0.0, epsilon)) {
 		assert(numXs == 0);
 		numPoints++;
 		numXs++;
 		foundHighX = true;
-		if (_Same_sign(dt0.x, dt1.x)) {
+		if (_Same_sign(dt0.x(), dt1.x())) {
 			// No second critical point so the first knot is the other extent and we already assigned it so we're done with that.
 			foundLowX = true;
 			numPoints++;
@@ -985,20 +981,20 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 		}
 		else {
 			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.0, 0.5, true);
-			auto xval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, t);
+			auto xval = _Curve_value_for_t(pt0.y(), pt1.y(), pt2.y(), pt3.y(), t);
 			// We do this min/max assignment because critical points just signal a change in curve direction, not that the critical point is actually a min/max point.
-			extents0.x = min(extents0.x, xval);
-			extents1.x = max(extents1.x, xval);
+			extents0.x(min(extents0.x(), xval));
+			extents1.x(max(extents1.x(), xval));
 			foundLowX = true;
 			numPoints++;
 			numXs++;
 		}
 	}
 	if (numXs == 0) {
-		if (_Same_sign(dt0.x, dt1.x) && _Same_sign(dt1.x, dt2.x)) {
+		if (_Same_sign(dt0.x(), dt1.x()) && _Same_sign(dt1.x(), dt2.x())) {
 			// No critical points on X: use ends.
-			extents0.x = min(pt0.x, pt3.x);
-			extents1.x = max(pt0.x, pt3.x);
+			extents0.x(min(pt0.x(), pt3.x()));
+			extents1.x(max(pt0.x(), pt3.x()));
 			foundLowX = true;
 			foundHighX = true;
 			numPoints += 2;
@@ -1006,25 +1002,25 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 		}
 	}
 	if (!foundLowX) {
-		if (_Same_sign(dt0.x, dt1.x)) {
-			// There is no critical point between dt0.x and dt1.x so the lowX point is pt0.x, which we already assigned.
+		if (_Same_sign(dt0.x(), dt1.x())) {
+			// There is no critical point between dt0.x() and dt1.x() so the lowX point is pt0.x(), which we already assigned.
 			foundLowX = true;
 			numPoints++;
 			numXs++;
 		}
 		else {
 			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.0, 0.5, true);
-			auto xval = _Curve_value_for_t(pt0.x, pt1.x, pt2.x, pt3.x, t);
+			auto xval = _Curve_value_for_t(pt0.x(), pt1.x(), pt2.x(), pt3.x(), t);
 			// We do this min/max assignment because critical points just signal a change in curve direction, not that the critical point is actually a min/max point.
-			extents0.x = min(extents0.x, xval);
-			extents1.x = max(extents1.x, xval);
+			extents0.x(min(extents0.x(), xval));
+			extents1.x(max(extents1.x(), xval));
 			foundLowX = true;
 			numPoints++;
 			numXs++;
 		}
 	}
 	if (!foundHighX) {
-		if (_Same_sign(dt1.x, dt2.x)) {
+		if (_Same_sign(dt1.x(), dt2.x())) {
 			// There is no critical point between dt1.x and dt2.x so the highX point is pt3.x, which we already assigned.
 			foundHighX = true;
 			numPoints++;
@@ -1032,10 +1028,10 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 		}
 		else {
 			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.5, 1.0, true);
-			auto xval = _Curve_value_for_t(pt0.x, pt1.x, pt2.x, pt3.x, t);
+			auto xval = _Curve_value_for_t(pt0.x(), pt1.x(), pt2.x(), pt3.x(), t);
 			// We do this min/max assignment because critical points just signal a change in curve direction, not that the critical point is actually a min/max point.
-			extents0.x = min(extents0.x, xval);
-			extents1.x = max(extents1.x, xval);
+			extents0.x(min(extents0.x(), xval));
+			extents1.x(max(extents1.x(), xval));
 			foundHighX = true;
 			numPoints++;
 			numXs++;
@@ -1043,13 +1039,13 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 	}
 
 	// Y values
-	if (_Almost_equal_relative(dt0.y, 0.0, epsilon)) {
+	if (_Almost_equal_relative(dt0.y(), 0.0, epsilon)) {
 		assert(numYs == 0);
 		// First knot is critical. We already assigned it so we're done with that.
 		foundLowY = true;
 		numPoints++;
 		numYs++;
-		if (_Same_sign(dt1.y, dt2.y)) {
+		if (_Same_sign(dt1.y(), dt2.y())) {
 			// No second critical point so the second knot is the other extent and we already assigned it so we're done with that.
 			foundHighY = true;
 			numPoints++;
@@ -1057,32 +1053,32 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 		}
 		else {
 			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.5, 1.0, true);
-			auto yval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, t);
+			auto yval = _Curve_value_for_t(pt0.y(), pt1.y(), pt2.y(), pt3.y(), t);
 			// We do this min/max assignment because critical points just signal a change in curve direction, not that the critical point is actually a min/max point.
-			extents0.y = min(extents0.y, yval);
-			extents1.y = max(extents1.y, yval);
+			extents0.y(min(extents0.y(), yval));
+			extents1.y(max(extents1.y(), yval));
 			foundHighY = true;
 			numPoints++;
 			numYs++;
 		}
 	}
-	if (_Almost_equal_relative(dt1.y, 0.0, epsilon)) {
+	if (_Almost_equal_relative(dt1.y(), 0.0, epsilon)) {
 		assert(numYs == 0);
 		// Center is only critical.
-		auto cyval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, 0.5);
-		// Arbitrarily use pt3.y rather than pt0.y; they are the same value regardless.
-		assert(_Almost_equal_relative(pt0.y, pt3.y, epsilon));
-		extents0.y = min(cyval, pt3.y);
-		extents1.y = max(cyval, pt3.y);
+		auto cyval = _Curve_value_for_t(pt0.y(), pt1.y(), pt2.y(), pt3.y(), 0.5);
+		// Arbitrarily use pt3.y() rather than pt0.y(); they are the same value regardless.
+		assert(_Almost_equal_relative(pt0.y(), pt3.y(), epsilon));
+		extents0.y(min(cyval, pt3.y()));
+		extents1.y(max(cyval, pt3.y()));
 		numPoints += 2;
 		numYs += 2;
 	}
-	if (_Almost_equal_relative(dt2.y, 0.0, epsilon)) {
+	if (_Almost_equal_relative(dt2.y(), 0.0, epsilon)) {
 		assert(numYs == 0);
 		numPoints++;
 		numYs++;
 		foundHighY = true;
-		if (_Same_sign(dt0.y, dt1.y)) {
+		if (_Same_sign(dt0.y(), dt1.y())) {
 			// No second critical point so the first knot is the other extent and we already assigned it so we're done with that.
 			foundLowY = true;
 			numPoints++;
@@ -1090,20 +1086,20 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 		}
 		else {
 			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.0, 0.5, true);
-			auto yval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, t);
+			auto yval = _Curve_value_for_t(pt0.y(), pt1.y(), pt2.y(), pt3.y(), t);
 			// We do this min/max assignment because critical points just signal a change in curve direction, not that the critical point is actually a min/max point.
-			extents0.y = min(extents0.y, yval);
-			extents1.y = max(extents1.y, yval);
+			extents0.y(min(extents0.y(), yval));
+			extents1.y(max(extents1.y(), yval));
 			foundLowY = true;
 			numPoints++;
 			numYs++;
 		}
 	}
 	if (numYs == 0) {
-		if (_Same_sign(dt0.y, dt1.y) && _Same_sign(dt1.y, dt2.y)) {
+		if (_Same_sign(dt0.y(), dt1.y()) && _Same_sign(dt1.y(), dt2.y())) {
 			// No critical points on Y: use ends.
-			extents0.y = min(pt0.y, pt3.y);
-			extents1.y = max(pt0.y, pt3.y);
+			extents0.y(min(pt0.y(), pt3.y()));
+			extents1.y(max(pt0.y(), pt3.y()));
 			foundLowY = true;
 			foundHighY = true;
 			numPoints += 2;
@@ -1111,34 +1107,34 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 		}
 	}
 	if (!foundLowY) {
-		if (_Same_sign(dt0.y, dt1.y)) {
-			// There is no critical point between dt0.y and dt1.y so the lowY point is pt0.y, which we already assigned.
+		if (_Same_sign(dt0.y(), dt1.y())) {
+			// There is no critical point between dt0.y() and dt1.y() so the lowY point is pt0.y(), which we already assigned.
 			foundLowY = true;
 			numPoints++;
 			numYs++;
 		}
 		else {
 			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.0, 0.5, false);
-			auto yval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, t);
-			extents0.y = min(extents0.y, yval);
-			extents1.y = max(extents1.y, yval);
+			auto yval = _Curve_value_for_t(pt0.y(), pt1.y(), pt2.y(), pt3.y(), t);
+			extents0.y(min(extents0.y(), yval));
+			extents1.y(max(extents1.y(), yval));
 			foundLowY = true;
 			numPoints++;
 			numYs++;
 		}
 	}
 	if (!foundHighY) {
-		if (_Same_sign(dt1.y, dt2.y)) {
-			// There is no critical point between dt1.y and dt2.y so the lowY point is pt3.y, which we already assigned.
+		if (_Same_sign(dt1.y(), dt2.y())) {
+			// There is no critical point between dt1.y() and dt2.y() so the lowY point is pt3.y(), which we already assigned.
 			foundHighY = true;
 			numPoints++;
 			numYs++;
 		}
 		else {
 			auto t = _Find_t_for_d_of_t_equal_zero(pt0, pt1, pt2, pt3, 0.5, 1.0, false);
-			auto yval = _Curve_value_for_t(pt0.y, pt1.y, pt2.y, pt3.y, t);
-			extents0.y = min(extents0.y, yval);
-			extents1.y = max(extents1.y, yval);
+			auto yval = _Curve_value_for_t(pt0.y(), pt1.y(), pt2.y(), pt3.y(), t);
+			extents0.y(min(extents0.y(), yval));
+			extents1.y(max(extents1.y(), yval));
 			foundHighY = true;
 			numPoints++;
 			numYs++;
@@ -1175,16 +1171,16 @@ rectangle path_factory::get_path_extents() const {
 				auto itemPt = currMatrix.transform_point(dynamic_cast<line_to_path_data*>(item.get())->to() - currOrigin) + currOrigin;
 				if (!hasExtents) {
 					hasExtents = true;
-					pt0.x = min(lastPoint.x, itemPt.x);
-					pt0.y = min(lastPoint.y, itemPt.y);
-					pt1.x = max(lastPoint.x, itemPt.x);
-					pt1.y = max(lastPoint.y, itemPt.y);
+					pt0.x(min(lastPoint.x(), itemPt.x()));
+					pt0.y(min(lastPoint.y(), itemPt.y()));
+					pt1.x(max(lastPoint.x(), itemPt.x()));
+					pt1.y(max(lastPoint.y(), itemPt.y()));
 				}
 				else {
-					pt0.x = min(min(pt0.x, lastPoint.x), itemPt.x);
-					pt0.y = min(min(pt0.y, lastPoint.y), itemPt.y);
-					pt1.x = max(max(pt1.x, lastPoint.x), itemPt.x);
-					pt1.y = max(max(pt1.y, lastPoint.y), itemPt.y);
+					pt0.x(min(min(pt0.x(), lastPoint.x()), itemPt.x()));
+					pt0.y(min(min(pt0.y(), lastPoint.y()), itemPt.y()));
+					pt1.x(max(max(pt1.x(), lastPoint.x()), itemPt.x()));
+					pt1.y(max(max(pt1.y(), lastPoint.y()), itemPt.y()));
 				}
 			}
 			else {
@@ -1204,16 +1200,16 @@ rectangle path_factory::get_path_extents() const {
 			_Curve_to_extents(lastPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
 			if (!hasExtents) {
 				hasExtents = true;
-				pt0.x = min(cte0.x, cte1.x);
-				pt0.y = min(cte0.y, cte1.y);
-				pt1.x = max(cte0.x, cte1.x);
-				pt1.y = max(cte0.y, cte1.y);
+				pt0.x(min(cte0.x(), cte1.x()));
+				pt0.y(min(cte0.y(), cte1.y()));
+				pt1.x(max(cte0.x(), cte1.x()));
+				pt1.y(max(cte0.y(), cte1.y()));
 			}
 			else {
-				pt0.x = min(min(pt0.x, cte0.x), cte1.x);
-				pt0.y = min(min(pt0.y, cte0.y), cte1.y);
-				pt1.x = max(max(pt1.x, cte0.x), cte1.x);
-				pt1.y = max(max(pt1.y, cte0.y), cte1.y);
+				pt0.x(min(min(pt0.x(), cte0.x()), cte1.x()));
+				pt0.y(min(min(pt0.y(), cte0.y()), cte1.y()));
+				pt1.x(max(max(pt1.x(), cte0.x()), cte1.x()));
+				pt1.y(max(max(pt1.y(), cte0.y()), cte1.y()));
 			}
 		}
 			break;
@@ -1235,16 +1231,16 @@ rectangle path_factory::get_path_extents() const {
 				auto itemPt = currMatrix.transform_point((dynamic_cast<rel_line_to_path_data*>(item.get())->to() + lastPoint) - currOrigin) + currOrigin;
 				if (!hasExtents) {
 					hasExtents = true;
-					pt0.x = min(lastPoint.x, itemPt.x);
-					pt0.y = min(lastPoint.y, itemPt.y);
-					pt1.x = max(lastPoint.x, itemPt.x);
-					pt1.y = max(lastPoint.y, itemPt.y);
+					pt0.x(min(lastPoint.x(), itemPt.x()));
+					pt0.y(min(lastPoint.y(), itemPt.y()));
+					pt1.x(max(lastPoint.x(), itemPt.x()));
+					pt1.y(max(lastPoint.y(), itemPt.y()));
 				}
 				else {
-					pt0.x = min(min(pt0.x, lastPoint.x), itemPt.x);
-					pt0.y = min(min(pt0.y, lastPoint.y), itemPt.y);
-					pt1.x = max(max(pt1.x, lastPoint.x), itemPt.x);
-					pt1.y = max(max(pt1.y, lastPoint.y), itemPt.y);
+					pt0.x(min(min(pt0.x(), lastPoint.x()), itemPt.x()));
+					pt0.y(min(min(pt0.y(), lastPoint.y()), itemPt.y()));
+					pt1.x(max(max(pt1.x(), lastPoint.x()), itemPt.x()));
+					pt1.y(max(max(pt1.y(), lastPoint.y()), itemPt.y()));
 				}
 			}
 			else {
@@ -1264,16 +1260,16 @@ rectangle path_factory::get_path_extents() const {
 			_Curve_to_extents(lastPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
 			if (!hasExtents) {
 				hasExtents = true;
-				pt0.x = min(cte0.x, cte1.x);
-				pt0.y = min(cte0.y, cte1.y);
-				pt1.x = max(cte0.x, cte1.x);
-				pt1.y = max(cte0.y, cte1.y);
+				pt0.x(min(cte0.x(), cte1.x()));
+				pt0.y(min(cte0.y(), cte1.y()));
+				pt1.x(max(cte0.x(), cte1.x()));
+				pt1.y(max(cte0.y(), cte1.y()));
 			}
 			else {
-				pt0.x = min(min(pt0.x, cte0.x), cte1.x);
-				pt0.y = min(min(pt0.y, cte0.y), cte1.y);
-				pt1.x = max(max(pt1.x, cte0.x), cte1.x);
-				pt1.y = max(max(pt1.y, cte0.y), cte1.y);
+				pt0.x(min(min(pt0.x(), cte0.x()), cte1.x()));
+				pt0.y(min(min(pt0.y(), cte0.y()), cte1.y()));
+				pt1.x(max(max(pt1.x(), cte0.x()), cte1.x()));
+				pt1.y(max(max(pt1.y(), cte0.y()), cte1.y()));
 			}
 		}
 			break;
@@ -1292,16 +1288,16 @@ rectangle path_factory::get_path_extents() const {
 						auto itemPt = currMatrix.transform_point(dynamic_cast<line_to_path_data*>(arcItem.get())->to() - currOrigin) + currOrigin;
 						if (!hasExtents) {
 							hasExtents = true;
-							pt0.x = min(lastPoint.x, itemPt.x);
-							pt0.y = min(lastPoint.y, itemPt.y);
-							pt1.x = max(lastPoint.x, itemPt.x);
-							pt1.y = max(lastPoint.y, itemPt.y);
+							pt0.x(min(lastPoint.x(), itemPt.x()));
+							pt0.y(min(lastPoint.y(), itemPt.y()));
+							pt1.x(max(lastPoint.x(), itemPt.x()));
+							pt1.y(max(lastPoint.y(), itemPt.y()));
 						}
 						else {
-							pt0.x = min(min(pt0.x, lastPoint.x), itemPt.x);
-							pt0.y = min(min(pt0.y, lastPoint.y), itemPt.y);
-							pt1.x = max(max(pt1.x, lastPoint.x), itemPt.x);
-							pt1.y = max(max(pt1.y, lastPoint.y), itemPt.y);
+							pt0.x(min(min(pt0.x(), lastPoint.x()), itemPt.x()));
+							pt0.y(min(min(pt0.y(), lastPoint.y()), itemPt.y()));
+							pt1.x(max(max(pt1.x(), lastPoint.x()), itemPt.x()));
+							pt1.y(max(max(pt1.y(), lastPoint.y()), itemPt.y()));
 						}
 					}
 					else {
@@ -1321,16 +1317,16 @@ rectangle path_factory::get_path_extents() const {
 					_Curve_to_extents(lastPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
 					if (!hasExtents) {
 						hasExtents = true;
-						pt0.x = min(cte0.x, cte1.x);
-						pt0.y = min(cte0.y, cte1.y);
-						pt1.x = max(cte0.x, cte1.x);
-						pt1.y = max(cte0.y, cte1.y);
+						pt0.x(min(cte0.x(), cte1.x()));
+						pt0.y(min(cte0.y(), cte1.y()));
+						pt1.x(max(cte0.x(), cte1.x()));
+						pt1.y(max(cte0.y(), cte1.y()));
 					}
 					else {
-						pt0.x = min(min(pt0.x, cte0.x), cte1.x);
-						pt0.y = min(min(pt0.y, cte0.y), cte1.y);
-						pt1.x = max(max(pt1.x, cte0.x), cte1.x);
-						pt1.y = max(max(pt1.y, cte0.y), cte1.y);
+						pt0.x(min(min(pt0.x(), cte0.x()), cte1.x()));
+						pt0.y(min(min(pt0.y(), cte0.y()), cte1.y()));
+						pt1.x(max(max(pt1.x(), cte0.x()), cte1.x()));
+						pt1.y(max(max(pt1.y(), cte0.y()), cte1.y()));
 					}
 				}
 					break;
@@ -1372,16 +1368,16 @@ rectangle path_factory::get_path_extents() const {
 						auto itemPt = currMatrix.transform_point(dynamic_cast<line_to_path_data*>(arcItem.get())->to() - currOrigin) + currOrigin;
 						if (!hasExtents) {
 							hasExtents = true;
-							pt0.x = min(lastPoint.x, itemPt.x);
-							pt0.y = min(lastPoint.y, itemPt.y);
-							pt1.x = max(lastPoint.x, itemPt.x);
-							pt1.y = max(lastPoint.y, itemPt.y);
+							pt0.x(min(lastPoint.x(), itemPt.x()));
+							pt0.y(min(lastPoint.y(), itemPt.y()));
+							pt1.x(max(lastPoint.x(), itemPt.x()));
+							pt1.y(max(lastPoint.y(), itemPt.y()));
 						}
 						else {
-							pt0.x = min(min(pt0.x, lastPoint.x), itemPt.x);
-							pt0.y = min(min(pt0.y, lastPoint.y), itemPt.y);
-							pt1.x = max(max(pt1.x, lastPoint.x), itemPt.x);
-							pt1.y = max(max(pt1.y, lastPoint.y), itemPt.y);
+							pt0.x(min(min(pt0.x(), lastPoint.x()), itemPt.x()));
+							pt0.y(min(min(pt0.y(), lastPoint.y()), itemPt.y()));
+							pt1.x(max(max(pt1.x(), lastPoint.x()), itemPt.x()));
+							pt1.y(max(max(pt1.y(), lastPoint.y()), itemPt.y()));
 						}
 					}
 					else {
@@ -1401,16 +1397,16 @@ rectangle path_factory::get_path_extents() const {
 					_Curve_to_extents(lastPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
 					if (!hasExtents) {
 						hasExtents = true;
-						pt0.x = min(cte0.x, cte1.x);
-						pt0.y = min(cte0.y, cte1.y);
-						pt1.x = max(cte0.x, cte1.x);
-						pt1.y = max(cte0.y, cte1.y);
+						pt0.x(min(cte0.x(), cte1.x()));
+						pt0.y(min(cte0.y(), cte1.y()));
+						pt1.x(max(cte0.x(), cte1.x()));
+						pt1.y(max(cte0.y(), cte1.y()));
 					}
 					else {
-						pt0.x = min(min(pt0.x, cte0.x), cte1.x);
-						pt0.y = min(min(pt0.y, cte0.y), cte1.y);
-						pt1.x = max(max(pt1.x, cte0.x), cte1.x);
-						pt1.y = max(max(pt1.y, cte0.y), cte1.y);
+						pt0.x(min(min(pt0.x(), cte0.x()), cte1.x()));
+						pt0.y(min(min(pt0.y(), cte0.y()), cte1.y()));
+						pt1.x(max(max(pt1.x(), cte0.x()), cte1.x()));
+						pt1.y(max(max(pt1.y(), cte0.y()), cte1.y()));
 					}
 				}
 					break;
@@ -1448,7 +1444,7 @@ rectangle path_factory::get_path_extents() const {
 			break;
 		}
 	}
-	return{ pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y };
+	return{ pt0.x(), pt0.y(), pt1.x() - pt0.x(), pt1.y() - pt0.y() };
 }
 
 void path_factory::reset() {
@@ -1462,65 +1458,66 @@ void path_factory::reset() {
 	_Origin = { };
 }
 
-namespace std {
-	namespace experimental {
-		namespace io2d {
-#if _Inline_namespace_conditional_support_test
-			inline namespace v1 {
-#endif
-				//bool operator==(const path_data& lhs, const path_data& rhs) {
-				//	if (lhs.type != rhs.type) {
-				//		return false;
-				//	}
-				//	auto type = lhs.type;
-				//	switch (type)
-				//	{
-				//	case std::experimental::io2d::path_data_type::move_to:
-				//		return lhs.data.move == rhs.data.move;
-				//	case std::experimental::io2d::path_data_type::line_to:
-				//		return lhs.data.line == rhs.data.line;
-				//	case std::experimental::io2d::path_data_type::curve_to:
-				//		return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
-				//			lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
-				//			lhs.data.curve.pt3 == rhs.data.curve.pt3;
-				//	case std::experimental::io2d::path_data_type::new_sub_path:
-				//		return true;
-				//	case std::experimental::io2d::path_data_type::close_path:
-				//		return true;
-				//	case std::experimental::io2d::path_data_type::rel_move_to:
-				//		return lhs.data.move == rhs.data.move;
-				//	case std::experimental::io2d::path_data_type::rel_line_to:
-				//		return lhs.data.line == rhs.data.line;
-				//	case std::experimental::io2d::path_data_type::rel_curve_to:
-				//		return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
-				//			lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
-				//			lhs.data.curve.pt3 == rhs.data.curve.pt3;
-				//	case std::experimental::io2d::path_data_type::arc:
-				//		return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
-				//			lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
-				//			lhs.data.arc.center == rhs.data.arc.center &&
-				//			lhs.data.arc.radius == rhs.data.arc.radius;
-				//	case std::experimental::io2d::path_data_type::arc_negative:
-				//		return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
-				//			lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
-				//			lhs.data.arc.center == rhs.data.arc.center &&
-				//			lhs.data.arc.radius == rhs.data.arc.radius;
-				//	case std::experimental::io2d::path_data_type::change_matrix:
-				//		return lhs.data.matrix == rhs.data.matrix;
-				//	case std::experimental::io2d::path_data_type::change_origin:
-				//		return lhs.data.origin == rhs.data.origin;
-				//	default:
-				//		assert("Unknown path_data_type!" && false);
-				//		return false;
-				//	}
-				//}
-
-				//bool operator!=(const path_data& lhs, const path_data& rhs) {
-				//	return !(lhs == rhs);
-				//}
-#if _Inline_namespace_conditional_support_test
-			}
-#endif
-		}
-	}
-}
+//
+//namespace std {
+//	namespace experimental {
+//		namespace io2d {
+//#if _Inline_namespace_conditional_support_test
+//			inline namespace v1 {
+//#endif
+//				//bool operator==(const path_data& lhs, const path_data& rhs) {
+//				//	if (lhs.type != rhs.type) {
+//				//		return false;
+//				//	}
+//				//	auto type = lhs.type;
+//				//	switch (type)
+//				//	{
+//				//	case std::experimental::io2d::path_data_type::move_to:
+//				//		return lhs.data.move == rhs.data.move;
+//				//	case std::experimental::io2d::path_data_type::line_to:
+//				//		return lhs.data.line == rhs.data.line;
+//				//	case std::experimental::io2d::path_data_type::curve_to:
+//				//		return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
+//				//			lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
+//				//			lhs.data.curve.pt3 == rhs.data.curve.pt3;
+//				//	case std::experimental::io2d::path_data_type::new_sub_path:
+//				//		return true;
+//				//	case std::experimental::io2d::path_data_type::close_path:
+//				//		return true;
+//				//	case std::experimental::io2d::path_data_type::rel_move_to:
+//				//		return lhs.data.move == rhs.data.move;
+//				//	case std::experimental::io2d::path_data_type::rel_line_to:
+//				//		return lhs.data.line == rhs.data.line;
+//				//	case std::experimental::io2d::path_data_type::rel_curve_to:
+//				//		return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
+//				//			lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
+//				//			lhs.data.curve.pt3 == rhs.data.curve.pt3;
+//				//	case std::experimental::io2d::path_data_type::arc:
+//				//		return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
+//				//			lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
+//				//			lhs.data.arc.center == rhs.data.arc.center &&
+//				//			lhs.data.arc.radius == rhs.data.arc.radius;
+//				//	case std::experimental::io2d::path_data_type::arc_negative:
+//				//		return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
+//				//			lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
+//				//			lhs.data.arc.center == rhs.data.arc.center &&
+//				//			lhs.data.arc.radius == rhs.data.arc.radius;
+//				//	case std::experimental::io2d::path_data_type::change_matrix:
+//				//		return lhs.data.matrix == rhs.data.matrix;
+//				//	case std::experimental::io2d::path_data_type::change_origin:
+//				//		return lhs.data.origin == rhs.data.origin;
+//				//	default:
+//				//		assert("Unknown path_data_type!" && false);
+//				//		return false;
+//				//	}
+//				//}
+//
+//				//bool operator!=(const path_data& lhs, const path_data& rhs) {
+//				//	return !(lhs == rhs);
+//				//}
+//#if _Inline_namespace_conditional_support_test
+//			}
+//#endif
+//		}
+//	}
+//}

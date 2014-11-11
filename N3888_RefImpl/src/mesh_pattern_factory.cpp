@@ -123,17 +123,17 @@ pattern mesh_pattern_factory::get_pattern() const {
 			case std::experimental::io2d::path_data_type::move_to:
 			{
 				auto pt = dynamic_cast<move_to_path_data*>(item.get())->to();
-				cairo_mesh_pattern_move_to(pat, pt.x, pt.y);
+				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
 			} break;
 			case std::experimental::io2d::path_data_type::line_to:
 			{
 				auto pt = dynamic_cast<line_to_path_data*>(item.get())->to();
-				cairo_mesh_pattern_line_to(pat, pt.x, pt.y);
+				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
 			} break;
 			case std::experimental::io2d::path_data_type::curve_to:
 			{
 				auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-				cairo_mesh_pattern_curve_to(pat, dataItem->control_point_1().x, dataItem->control_point_1().y, dataItem->control_point_2().x, dataItem->control_point_2().y, dataItem->end_point().x, dataItem->end_point().y);
+				cairo_mesh_pattern_curve_to(pat, dataItem->control_point_1().x(), dataItem->control_point_1().y(), dataItem->control_point_2().x(), dataItem->control_point_2().y(), dataItem->end_point().x(), dataItem->end_point().y());
 			} break;
 			case std::experimental::io2d::path_data_type::new_sub_path:
 			{
@@ -179,7 +179,7 @@ pattern mesh_pattern_factory::get_pattern() const {
 		}
 		const auto& controlPoints = get<1>(patch);
 		for (const auto& pt : controlPoints) {
-			cairo_mesh_pattern_set_control_point(pat, pt.first, pt.second.x, pt.second.y);
+			cairo_mesh_pattern_set_control_point(pat, pt.first, pt.second.x(), pt.second.y());
 		}
 		const auto& cornerColors = get<2>(patch);
 		for (const auto& cc : cornerColors) {

@@ -34,4 +34,41 @@ inline double _Clamp_to_normal(double value) {
 	return ::std::max(::std::min(value, 1.0), 0.0);
 }
 
+namespace std {
+	namespace experimental {
+		namespace io2d {
+#if _Inline_namespace_conditional_support_test
+			inline namespace v1 {
+#endif
+				point operator+(const point& lhs);
+				point operator+(const point& lhs, const point& rhs);
+				point operator+(const point& lhs, double rhs);
+				point operator+(double lhs, const point& rhs);
+				point& operator+=(point& lhs, const point& rhs);
+				point& operator+=(point& lhs, double rhs);
+				point operator-(const point& lhs);
+				point operator-(const point& lhs, const point& rhs);
+				point operator-(const point& lhs, double rhs);
+				point operator-(double lhs, const point& rhs);
+				point& operator-=(point& lhs, const point& rhs);
+				point& operator-=(point& lhs, double rhs);
+				point operator*(const point& lhs, const point& rhs);
+				point operator*(const point& lhs, double rhs);
+				point operator*(double lhs, const point& rhs);
+				point& operator*=(point& lhs, const point& rhs);
+				point& operator*=(point& lhs, double rhs);
+				point operator/(const point& lhs, const point& rhs);
+				point operator/(const point& lhs, double rhs);
+				point operator/(double lhs, const point& rhs);
+				point& operator/=(point& lhs, const point& rhs);
+				point& operator/=(point& lhs, double rhs);
+				bool operator==(const point& lhs, const point& rhs);
+				bool operator!=(const point& lhs, const point& rhs);
+#if _Inline_namespace_conditional_support_test
+			}
+#endif
+		}
+	}
+}
+
 #endif

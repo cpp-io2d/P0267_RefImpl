@@ -29,11 +29,11 @@ matrix_2d matrix_2d::init_identity() {
 }
 
 matrix_2d matrix_2d::init_translate(const point& value) {
-	return{ 1.0, 0.0, 0.0, 1.0, value.x, value.y };
+	return{ 1.0, 0.0, 0.0, 1.0, value.x(), value.y() };
 }
 
 matrix_2d matrix_2d::init_scale(const point& value) {
-	return{ value.x, 0.0, 0.0, value.y, 0.0, 0.0 };
+	return{ value.x(), 0.0, 0.0, value.y(), 0.0, 0.0 };
 }
 
 matrix_2d matrix_2d::init_rotate(double radians) {
@@ -95,7 +95,7 @@ double matrix_2d::determinant() const {
 }
 
 point matrix_2d::transform_distance(const point& dist) const {
-	return{ _M00 * dist.x + _M10 * dist.y, _M01 * dist.x + _M11 * dist.y };
+	return{ _M00 * dist.x() + _M10 * dist.y(), _M01 * dist.x() + _M11 * dist.y() };
 }
 
 point matrix_2d::transform_point(const point& pt) const {

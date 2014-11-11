@@ -112,7 +112,7 @@ radial_pattern_factory::radial_pattern_factory(const point& center0, double radi
 
 pattern radial_pattern_factory::get_pattern() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_radial(_Center0.x, _Center0.y, _Radius0, _Center1.x, _Center1.y, _Radius1), &cairo_pattern_destroy);
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_radial(_Center0.x(), _Center0.y(), _Radius0, _Center1.x(), _Center1.y(), _Radius1), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(_Extend));
