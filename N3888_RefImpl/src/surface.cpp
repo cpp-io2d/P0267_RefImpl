@@ -85,7 +85,7 @@ void surface::mark_dirty() {
 }
 
 void surface::mark_dirty(const rectangle& rect) {
-	cairo_surface_mark_dirty_rectangle(_Surface.get(), static_cast<int>(rect.x), static_cast<int>(rect.y), static_cast<int>(rect.width), static_cast<int>(rect.height));
+	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Double_to_int(rect.x(), false), _Double_to_int(rect.y(), false), _Double_to_int(rect.width()), _Double_to_int(rect.height()));
 }
 
 void surface::set_device_offset(const point& offset) {
@@ -107,9 +107,9 @@ image_surface surface::map_to_image() {
 }
 
 image_surface surface::map_to_image(const rectangle& extents) {
-	cairo_rectangle_int_t cextents{ _Double_to_int(extents.x), _Double_to_int(extents.y), _Double_to_int(extents.width), _Double_to_int(extents.height) };
+	cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
 
-	return image_surface({ cairo_surface_map_to_image(_Surface.get(), (extents.x == 0 && extents.y == 0 && extents.width == 0 && extents.height == 0) ? nullptr : &cextents), nullptr }, { _Surface.get(), _Context.get() });
+	return image_surface({ cairo_surface_map_to_image(_Surface.get(), (extents.x() == 0 && extents.y() == 0 && extents.width() == 0 && extents.height() == 0) ? nullptr : &cextents), nullptr }, { _Surface.get(), _Context.get() });
 }
 
 void surface::unmap_image(image_surface& image) {
@@ -154,7 +154,7 @@ void surface::set_dashes() {
 }
 
 void surface::set_dashes(const dashes& d) {
-	cairo_set_dash(_Context.get(), get<0>(d).data(), static_cast<int>(get<0>(d).size()), get<1>(d));
+	cairo_set_dash(_Context.get(), get<0>(d).data(), _Container_size_to_int(get<0>(d)), get<1>(d));
 }
 
 int surface::get_dashes_count() const {
@@ -639,7 +639,7 @@ void surface::show_glyphs(const vector<glyph>& glyphs) {
 	for (const auto& glyph : glyphs) {
 		vec.push_back({ glyph.index, glyph.x, glyph.y });
 	}
-	cairo_show_glyphs(_Context.get(), vec.data(), static_cast<int>(vec.size()));
+	cairo_show_glyphs(_Context.get(), vec.data(), _Container_size_to_int(vec));
 }
 
 void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse) {
@@ -647,7 +647,7 @@ void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, 
 	for (const auto& glyph : glyphs) {
 		vec.push_back({ glyph.index, glyph.x, glyph.y });
 	}
-	const auto tcSize = static_cast<int>(clusters.size());
+	const auto tcSize = _Container_size_to_int(clusters);
 	unique_ptr<cairo_text_cluster_t, function<void(cairo_text_cluster_t*)>> sp_tc(cairo_text_cluster_allocate(tcSize), &cairo_text_cluster_free);
 	auto tc_ptr = sp_tc.get();
 	for (auto i = 0; i < tcSize; ++i) {
@@ -655,7 +655,7 @@ void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, 
 		tc_ptr[i].num_glyphs = clusters[i].num_glyphs;
 	}
 	auto ctcf = static_cast<cairo_text_cluster_flags_t>(clusterToGlyphsMapReverse ? CAIRO_TEXT_CLUSTER_FLAG_BACKWARD : 0);
-	cairo_show_text_glyphs(_Context.get(), utf8.data(), static_cast<int>(utf8.size()), vec.data(), static_cast<int>(vec.size()), sp_tc.get(), tcSize, ctcf);
+	cairo_show_text_glyphs(_Context.get(), utf8.data(), _Container_size_to_int(utf8), vec.data(), _Container_size_to_int(vec), sp_tc.get(), tcSize, ctcf);
 }
 
 font_extents surface::get_font_extents() const {
@@ -690,7 +690,7 @@ text_extents surface::get_glyph_extents(const vector<glyph>& glyphs) const {
 	}
 	text_extents result;
 	cairo_text_extents_t cfe{ };
-	cairo_glyph_extents(_Context.get(), vec.data(), static_cast<int>(vec.size()), &cfe);
+	cairo_glyph_extents(_Context.get(), vec.data(), _Container_size_to_int(vec), &cfe);
 	result.height = cfe.height;
 	result.width = cfe.width;
 	result.x_advance = cfe.x_advance;

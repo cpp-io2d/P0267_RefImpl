@@ -204,6 +204,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="pattern.cpp" />
     <ClCompile Include="point.cpp" />
     <ClCompile Include="radial_pattern_factory.cpp" />
+    <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="rgba_color.cpp" />
     <ClCompile Include="sample_draw.cpp" />
     <ClCompile Include="scaled_font.cpp" />

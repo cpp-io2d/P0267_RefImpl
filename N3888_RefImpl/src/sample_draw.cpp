@@ -154,8 +154,8 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.set_pattern(cornflowerBluePattern);
 	rs.paint(); // Paint background.
 	auto clextents = rs.get_clip_extents();
-	const double radius = trunc(min(clextents.width * 0.8 / elementCount, clextents.height + 120.0) / 2.0);
-	const double beginX = trunc(clextents.width * 0.1), y = trunc(clextents.height * 0.5);
+	const double radius = trunc(min(clextents.width() * 0.8 / elementCount, clextents.height() + 120.0) / 2.0);
+	const double beginX = trunc(clextents.width() * 0.1), y = trunc(clextents.height() * 0.5);
 	path_factory pb;
 	pb.move_to({ beginX, 50.0 });
 	rs.set_path(pb.get_path());

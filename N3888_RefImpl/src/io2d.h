@@ -202,11 +202,26 @@ namespace std {
 					change_origin
 				};
 
-				struct rectangle {
-					double x;
-					double y;
-					double width;
-					double height;
+				class rectangle {
+					double _X = 0.0;
+					double _Y = 0.0;
+					double _Width = 0.0;
+					double _Height = 0.0;
+				public:
+					rectangle() = default;
+					rectangle(const rectangle& other) = default;
+					rectangle& operator=(const rectangle& other) = default;
+					rectangle(double x, double y, double width, double height);
+
+					void x(double value);
+					void y(double value);
+					void width(double value);
+					void height(double value);
+
+					double x() const;
+					double y() const;
+					double width() const;
+					double height() const;
 				};
 
 				struct rgba_color {

@@ -5,8 +5,6 @@
 
 #include "io2d.h"
 
-#define _PI 3.1415926535897932384626433832795
-
 inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 	if (s != CAIRO_STATUS_SUCCESS) {
 		throw ::std::system_error(::std::error_code(s, ::std::experimental::io2d::io2d_category()));
@@ -21,6 +19,12 @@ inline int _Double_to_int(double value, bool nearestNeighbor = true) {
 	}
 	// Otherwise truncate.
 	return static_cast<int>(trunc(value));
+}
+
+template <typename T>
+inline int _Container_size_to_int(const T& container) {
+	assert(container.size() <= static_cast<unsigned int>(::std::numeric_limits<int>::max()));
+	return static_cast<int>(container.size());
 }
 
 template <typename T>

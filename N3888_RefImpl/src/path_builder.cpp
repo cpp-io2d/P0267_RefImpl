@@ -7,6 +7,10 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
+namespace {
+	const double _Pi = 3.1415926535897932384626433832795;
+}
+
 path_factory::path_factory()
 	: _Lock()
 	, _Data()
@@ -519,12 +523,12 @@ point _Rotate_point(const point& pt, double angle, bool clockwise = true) {
 vector<::std::unique_ptr<path_data>> _Get_arc_as_beziers(const point& center, double radius, double angle1, double angle2, bool arcNegative, bool hasCurrentPoint, const point& currentPoint, const point& origin, const matrix_2d& matrix) {
 	if (arcNegative) {
 		while (angle2 > angle1) {
-			angle2 -= _PI * 2.0;
+			angle2 -= _Pi * 2.0;
 		}
 	}
 	else {
 		while (angle2 < angle1) {
-			angle2 += _PI * 2.0;
+			angle2 += _Pi * 2.0;
 		}
 	}
 	point pt0, pt1, pt2, pt3;
@@ -541,7 +545,7 @@ vector<::std::unique_ptr<path_data>> _Get_arc_as_beziers(const point& center, do
 	{
 		// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
 
-		while (theta >= (_PI / 2.0)) {
+		while (theta >= (_Pi / 2.0)) {
 			theta /= 2.0;
 			bezierCount += bezierCount;
 		}
@@ -684,10 +688,10 @@ void path_factory::move_to(const point& pt) {
 
 void path_factory::rect(const experimental::io2d::rectangle& r) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	move_to({ r.x, r.y });
-	rel_line_to({ r.width, 0.0 });
-	rel_line_to({ 0.0, r.height });
-	rel_line_to({ -r.width, 0.0 });
+	move_to({ r.x(), r.y() });
+	rel_line_to({ r.width(), 0.0 });
+	rel_line_to({ 0.0, r.height() });
+	rel_line_to({ -r.width(), 0.0 });
 	close_path();
 }
 
