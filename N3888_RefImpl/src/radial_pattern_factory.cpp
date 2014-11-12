@@ -123,7 +123,7 @@ pattern radial_pattern_factory::get_pattern() const {
 	cairo_pattern_set_matrix(pat.get(), &mtrx);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 	for (const auto& stop : _Color_stops) {
-		cairo_pattern_add_color_stop_rgba(pat.get(), get<0>(stop), get<1>(stop).r, get<1>(stop).g, get<1>(stop).b, get<1>(stop).a);
+		cairo_pattern_add_color_stop_rgba(pat.get(), get<0>(stop), get<1>(stop).r(), get<1>(stop).g(), get<1>(stop).b(), get<1>(stop).a());
 	}
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
@@ -166,10 +166,10 @@ matrix_2d radial_pattern_factory::get_matrix() const {
 void radial_pattern_factory::add_color_stop_rgba(double offset, const rgba_color& color) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(offset >= 0.0 && offset <= 1.0);
-	assert(color.r >= 0.0 && color.r <= 1.0);
-	assert(color.g >= 0.0 && color.g <= 1.0);
-	assert(color.b >= 0.0 && color.b <= 1.0);
-	assert(color.a >= 0.0 && color.a <= 1.0);
+	assert(color.r() >= 0.0 && color.r() <= 1.0);
+	assert(color.g() >= 0.0 && color.g() <= 1.0);
+	assert(color.b() >= 0.0 && color.b() <= 1.0);
+	assert(color.a() >= 0.0 && color.a() <= 1.0);
 	_Color_stops.push_back(make_tuple(offset, color));
 }
 
@@ -192,10 +192,10 @@ void radial_pattern_factory::get_color_stop_rgba(unsigned int index, double& off
 void radial_pattern_factory::set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(offset >= 0.0 && offset <= 1.0);
-	assert(color.r >= 0.0 && color.r <= 1.0);
-	assert(color.g >= 0.0 && color.g <= 1.0);
-	assert(color.b >= 0.0 && color.b <= 1.0);
-	assert(color.a >= 0.0 && color.a <= 1.0);
+	assert(color.r() >= 0.0 && color.r() <= 1.0);
+	assert(color.g() >= 0.0 && color.g() <= 1.0);
+	assert(color.b() >= 0.0 && color.b() <= 1.0);
+	assert(color.a() >= 0.0 && color.a() <= 1.0);
 
 	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);

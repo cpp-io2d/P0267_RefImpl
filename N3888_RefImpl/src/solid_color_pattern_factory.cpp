@@ -77,19 +77,19 @@ solid_color_pattern_factory::solid_color_pattern_factory(const rgba_color& color
 	, _Filter(filter::default_filter)
 	, _Matrix(matrix_2d::init_identity())
 	, _Color(color){
-	assert(color.r >= 0.0 && color.r <= 1.0);
-	assert(color.g >= 0.0 && color.g <= 1.0);
-	assert(color.b >= 0.0 && color.b <= 1.0);
-	assert(color.a >= 0.0 && color.a <= 1.0);
-	_Color.r = _Clamp_to_normal(color.r);
-	_Color.g = _Clamp_to_normal(color.g);
-	_Color.b = _Clamp_to_normal(color.b);
-	_Color.a = _Clamp_to_normal(color.a);
+	assert(color.r() >= 0.0 && color.r() <= 1.0);
+	assert(color.g() >= 0.0 && color.g() <= 1.0);
+	assert(color.b() >= 0.0 && color.b() <= 1.0);
+	assert(color.a() >= 0.0 && color.a() <= 1.0);
+	_Color.r(_Clamp_to_normal(color.r()));
+	_Color.g(_Clamp_to_normal(color.g()));
+	_Color.b(_Clamp_to_normal(color.b()));
+	_Color.a(_Clamp_to_normal(color.a()));
 }
 
 pattern solid_color_pattern_factory::get_pattern() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(_Color.r, _Color.g, _Color.b, _Color.a), &cairo_pattern_destroy);
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(_Color.r(), _Color.g(), _Color.b(), _Color.a()), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(_Extend));
@@ -143,54 +143,54 @@ rgba_color solid_color_pattern_factory::get_rgba() const {
 
 void solid_color_pattern_factory::set_rgba(const rgba_color& color) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	assert(color.r >= 0.0 && color.r <= 1.0);
-	assert(color.g >= 0.0 && color.g <= 1.0);
-	assert(color.b >= 0.0 && color.b <= 1.0);
-	assert(color.a >= 0.0 && color.a <= 1.0);
+	assert(color.r() >= 0.0 && color.r() <= 1.0);
+	assert(color.g() >= 0.0 && color.g() <= 1.0);
+	assert(color.b() >= 0.0 && color.b() <= 1.0);
+	assert(color.a() >= 0.0 && color.a() <= 1.0);
 	_Color = color;
-	_Color.r = _Clamp_to_normal(color.r);
-	_Color.g = _Clamp_to_normal(color.g);
-	_Color.b = _Clamp_to_normal(color.b);
-	_Color.a = _Clamp_to_normal(color.a);
+	_Color.r(_Clamp_to_normal(color.r()));
+	_Color.g(_Clamp_to_normal(color.g()));
+	_Color.b(_Clamp_to_normal(color.b()));
+	_Color.a(_Clamp_to_normal(color.a()));
 }
 
 double solid_color_pattern_factory::get_red() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Color.r;
+	return _Color.r();
 }
 
 void solid_color_pattern_factory::set_red(double red) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(red >= 0.0 && red <= 1.0);
-	_Color.r = _Clamp_to_normal(red);
+	_Color.r(_Clamp_to_normal(red));
 }
 
 double solid_color_pattern_factory::get_green() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Color.g;
+	return _Color.g();
 }
 
 void solid_color_pattern_factory::set_green(double green) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(green >= 0.0 && green <= 1.0);
-	_Color.g = _Clamp_to_normal(green);
+	_Color.g(_Clamp_to_normal(green));
 }
 
 double solid_color_pattern_factory::get_blue() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Color.b;
+	return _Color.b();
 }
 
 void solid_color_pattern_factory::set_blue(double blue) {
 	assert(blue >= 0.0 && blue <= 1.0);
-	_Color.b = _Clamp_to_normal(blue);
+	_Color.b(_Clamp_to_normal(blue));
 }
 
 double solid_color_pattern_factory::get_alpha() const {
-	return _Color.a;
+	return _Color.a();
 }
 
 void solid_color_pattern_factory::set_alpha(double alpha) {
 	assert(alpha >= 0.0 && alpha <= 1.0);
-	_Color.a = _Clamp_to_normal(alpha);
+	_Color.a(_Clamp_to_normal(alpha));
 }

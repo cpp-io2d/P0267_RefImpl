@@ -224,11 +224,27 @@ namespace std {
 					double height() const;
 				};
 
-				struct rgba_color {
-					double r;
-					double g;
-					double b;
-					double a;
+				class rgba_color {
+					double _R = 0.0;
+					double _G = 0.0;
+					double _B = 0.0;
+					double _A = 0.0;
+				public:
+					rgba_color() = default;
+					rgba_color(const rgba_color& other) = default;
+					rgba_color& operator=(const rgba_color& other) = default;
+					rgba_color(double red, double green, double blue, double alpha = 1.0);
+					rgba_color(int red, int green, int blue, int alpha = 255);
+
+					void r(double value);
+					void g(double value);
+					void b(double value);
+					void a(double value);
+
+					double r() const;
+					double g() const;
+					double b() const;
+					double a() const;
 
 					const static rgba_color alice_blue;
 					const static rgba_color antique_white;
@@ -379,11 +395,6 @@ namespace std {
 					const static rgba_color yellow;
 					const static rgba_color yellow_green;
 				};
-
-				rgba_color operator*(const rgba_color& lhs, double rhs);
-				rgba_color& operator*=(rgba_color& lhs, double rhs);
-				bool operator==(const rgba_color& lhs, const rgba_color& rhs);
-				bool operator!=(const rgba_color& lhs, const rgba_color& rhs);
 
 #if _Inline_namespace_conditional_support_test && _User_defined_literal_conditional_support_test
 				inline namespace literals {

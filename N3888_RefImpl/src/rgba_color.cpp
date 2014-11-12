@@ -5,6 +5,52 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
+rgba_color::rgba_color(double red, double green, double blue, double alpha)
+: _R(red)
+, _G(green)
+, _B(blue)
+, _A(alpha) {
+}
+
+rgba_color::rgba_color(int red, int green, int blue, int alpha)
+	: _R(red / 255.0)
+	, _G(green / 255.0)
+	, _B(blue / 255.0)
+	, _A(alpha / 255.0) {
+}
+
+void rgba_color::r(double value) {
+	_R = value;
+}
+
+void rgba_color::g(double value) {
+	_G = value;
+}
+
+void rgba_color::b(double value) {
+	_B = value;
+}
+
+void rgba_color::a(double value) {
+	_A = value;
+}
+
+double rgba_color::r() const {
+	return _R;
+}
+
+double rgba_color::g() const {
+	return _G;
+}
+
+double rgba_color::b() const {
+	return _B;
+}
+
+double rgba_color::a() const {
+	return _A;
+}
+
 rgba_color _Rgba_color_from_byte_values(unsigned char r, unsigned char g, unsigned char b, unsigned char a = static_cast<unsigned char>(255)) {
 	return{ static_cast<double>(r) / 255.0, static_cast<double>(g) / 255.0, static_cast<double>(b) / 255.0, static_cast<double>(a) / 255.0 };
 }
@@ -167,10 +213,20 @@ namespace std {
 				rgba_color operator*(const rgba_color& lhs, double rhs) {
 					rhs = ::std::max(rhs, 0.0);
 					return{
-						::std::min(lhs.r * rhs, 1.0),
-						::std::min(lhs.g * rhs, 1.0),
-						::std::min(lhs.b * rhs, 1.0),
-						::std::min(lhs.a * rhs, 1.0)
+						::std::min(lhs.r() * rhs, 1.0),
+						::std::min(lhs.g() * rhs, 1.0),
+						::std::min(lhs.b() * rhs, 1.0),
+						::std::min(lhs.a() * rhs, 1.0)
+					};
+				}
+
+				rgba_color operator*(double lhs, const rgba_color& rhs) {
+					lhs = _Clamp_to_normal(lhs);
+					return{
+						::std::min(lhs * rhs.r(), 1.0),
+						::std::min(lhs * rhs.g(), 1.0),
+						::std::min(lhs * rhs.b(), 1.0),
+						::std::min(lhs * rhs.a(), 1.0)
 					};
 				}
 
@@ -180,10 +236,10 @@ namespace std {
 				}
 
 				bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
-					return lhs.r == rhs.r &&
-						lhs.g == rhs.g &&
-						lhs.b == rhs.b &&
-						lhs.a == rhs.a;
+					return lhs.r() == rhs.r() &&
+						lhs.g() == rhs.g() &&
+						lhs.b() == rhs.b() &&
+						lhs.a() == rhs.a();
 				}
 
 				bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {

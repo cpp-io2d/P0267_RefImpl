@@ -183,7 +183,7 @@ pattern mesh_pattern_factory::get_pattern() const {
 		}
 		const auto& cornerColors = get<2>(patch);
 		for (const auto& cc : cornerColors) {
-			cairo_mesh_pattern_set_corner_color_rgba(pat, cc.first, cc.second.r, cc.second.g, cc.second.b, cc.second.a);
+			cairo_mesh_pattern_set_corner_color_rgba(pat, cc.first, cc.second.r(), cc.second.g(), cc.second.b(), cc.second.a());
 		}
 		cairo_mesh_pattern_end_patch(pat);
 	}

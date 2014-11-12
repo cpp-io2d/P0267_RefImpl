@@ -1,4 +1,5 @@
 #include "sample_draw.h"
+#include "xio2dhelpers.h"
 #include <cmath>
 #include <random>
 #include <vector>
