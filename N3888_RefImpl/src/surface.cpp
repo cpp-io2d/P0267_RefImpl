@@ -637,7 +637,7 @@ void surface::show_text(const string& utf8) {
 void surface::show_glyphs(const vector<glyph>& glyphs) {
 	vector<cairo_glyph_t> vec;
 	for (const auto& glyph : glyphs) {
-		vec.push_back({ glyph.index, glyph.x, glyph.y });
+		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
 	}
 	cairo_show_glyphs(_Context.get(), vec.data(), _Container_size_to_int(vec));
 }
@@ -645,7 +645,7 @@ void surface::show_glyphs(const vector<glyph>& glyphs) {
 void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse) {
 	vector<cairo_glyph_t> vec;
 	for (const auto& glyph : glyphs) {
-		vec.push_back({ glyph.index, glyph.x, glyph.y });
+		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
 	}
 	const auto tcSize = _Container_size_to_int(clusters);
 	unique_ptr<cairo_text_cluster_t, function<void(cairo_text_cluster_t*)>> sp_tc(cairo_text_cluster_allocate(tcSize), &cairo_text_cluster_free);
@@ -686,7 +686,7 @@ text_extents surface::get_text_extents(const string& utf8) const {
 text_extents surface::get_glyph_extents(const vector<glyph>& glyphs) const {
 	vector<cairo_glyph_t> vec;
 	for (const auto& glyph : glyphs) {
-		vec.push_back({ glyph.index, glyph.x, glyph.y });
+		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
 	}
 	text_extents result;
 	cairo_text_extents_t cfe{ };

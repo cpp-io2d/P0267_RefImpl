@@ -50,7 +50,7 @@ text_extents scaled_font::get_glyph_extents(const vector<glyph>& glyphs) const {
 	vector<cairo_glyph_t> c_vecg;
 	c_vecg.reserve(glyphs.size());
 	for (const auto& g : glyphs) {
-		c_vecg.push_back({ g.index, g.x, g.y });
+		c_vecg.push_back({ g.index(), g.x(), g.y() });
 	}
 	cairo_scaled_font_glyph_extents(_Scaled_font.get(), c_vecg.data(), static_cast<int>(c_vecg.size()), &c_te);
 	return{ c_te.x_bearing, c_te.y_bearing, c_te.width, c_te.height, c_te.x_advance, c_te.y_advance };

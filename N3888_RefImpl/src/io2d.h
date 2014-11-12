@@ -428,10 +428,25 @@ namespace std {
 					double y() const;
 				};
 
-				struct glyph {
-					unsigned long index;
-					double x;
-					double y;
+				class glyph {
+					cairo_glyph_t _Glyph_data;
+
+				public:
+					typedef decltype(_Glyph_data)* native_handle_type;
+					native_handle_type native_handle();
+
+					glyph();
+					glyph(const glyph& other) = default;
+					glyph& operator=(const glyph& other) = default;
+					glyph(unsigned long index, double x, double y);
+
+					void index(unsigned long index);
+					void x(double x);
+					void y(double y);
+
+					unsigned long index() const;
+					double x() const;
+					double y() const;
 				};
 
 				struct text_cluster {
