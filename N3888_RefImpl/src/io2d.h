@@ -491,13 +491,32 @@ namespace std {
 					double max_y_advance() const;
 				};
 
-				struct text_extents {
-					double x_bearing;
-					double y_bearing;
-					double width;
-					double height;
-					double x_advance;
-					double y_advance;
+				class text_extents {
+					cairo_text_extents_t _Text_extents;
+				public:
+					typedef cairo_text_extents_t* native_handle_type;
+					native_handle_type native_handle();
+
+					text_extents();
+					text_extents(const text_extents& other) = default;
+					text_extents& operator=(const text_extents& other) = default;
+					text_extents(text_extents&& other);
+					text_extents& operator=(text_extents&& other);
+					text_extents(double xBearing, double yBearing, double width, double height, double xAdvance, double yAdvance);
+
+					void x_bearing(double value);
+					void y_bearing(double value);
+					void width(double value);
+					void height(double value);
+					void x_advance(double value);
+					void y_advance(double value);
+
+					double x_bearing() const;
+					double y_bearing() const;
+					double width() const;
+					double height() const;
+					double x_advance() const;
+					double y_advance() const;
 				};
 
 				class matrix_2d {

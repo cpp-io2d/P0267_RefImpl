@@ -137,6 +137,9 @@
     <ClCompile Include="font_extents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="text_extents.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="N3888_RefImpl.rc">

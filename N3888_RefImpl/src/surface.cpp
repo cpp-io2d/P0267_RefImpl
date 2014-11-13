@@ -674,12 +674,12 @@ text_extents surface::get_text_extents(const string& utf8) const {
 	text_extents result;
 	cairo_text_extents_t cte{ };
 	cairo_text_extents(_Context.get(), utf8.c_str(), &cte);
-	result.height = cte.height;
-	result.width = cte.width;
-	result.x_advance = cte.x_advance;
-	result.x_bearing = cte.x_bearing;
-	result.y_advance = cte.y_advance;
-	result.y_bearing = cte.y_bearing;
+	result.height(cte.height);
+	result.width(cte.width);
+	result.x_advance(cte.x_advance);
+	result.x_bearing(cte.x_bearing);
+	result.y_advance(cte.y_advance);
+	result.y_bearing(cte.y_bearing);
 	return result;
 }
 
@@ -691,11 +691,11 @@ text_extents surface::get_glyph_extents(const vector<glyph>& glyphs) const {
 	text_extents result;
 	cairo_text_extents_t cfe{ };
 	cairo_glyph_extents(_Context.get(), vec.data(), _Container_size_to_int(vec), &cfe);
-	result.height = cfe.height;
-	result.width = cfe.width;
-	result.x_advance = cfe.x_advance;
-	result.x_bearing = cfe.x_bearing;
-	result.y_advance = cfe.y_advance;
-	result.y_bearing = cfe.y_bearing;
+	result.height(cfe.height);
+	result.width(cfe.width);
+	result.x_advance(cfe.x_advance);
+	result.x_bearing(cfe.x_bearing);
+	result.y_advance(cfe.y_advance);
+	result.y_bearing(cfe.y_bearing);
 	return result;
 }
