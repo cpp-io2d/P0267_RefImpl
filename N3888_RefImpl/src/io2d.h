@@ -432,7 +432,7 @@ namespace std {
 					cairo_glyph_t _Glyph_data;
 
 				public:
-					typedef decltype(_Glyph_data)* native_handle_type;
+					typedef cairo_glyph_t* native_handle_type;
 					native_handle_type native_handle();
 
 					glyph();
@@ -449,9 +449,22 @@ namespace std {
 					double y() const;
 				};
 
-				struct text_cluster {
-					int num_bytes;
-					int num_glyphs;
+				class text_cluster {
+					cairo_text_cluster_t _Text_cluster;
+				public:
+					typedef cairo_text_cluster_t* native_handle_type;
+					native_handle_type native_handle();
+
+					text_cluster();
+					text_cluster(const text_cluster& other) = default;
+					text_cluster& operator=(const text_cluster& other) = default;
+					text_cluster(int numBytes, int numGlyphs);
+
+					void num_bytes(int value);
+					void num_glyphs(int value);
+					
+					int num_bytes() const;
+					int num_glyphs() const;
 				};
 
 				struct font_extents {

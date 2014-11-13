@@ -131,6 +131,9 @@
     <ClCompile Include="glyph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="text_cluster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="N3888_RefImpl.rc">

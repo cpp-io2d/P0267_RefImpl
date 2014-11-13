@@ -651,8 +651,8 @@ void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, 
 	unique_ptr<cairo_text_cluster_t, function<void(cairo_text_cluster_t*)>> sp_tc(cairo_text_cluster_allocate(tcSize), &cairo_text_cluster_free);
 	auto tc_ptr = sp_tc.get();
 	for (auto i = 0; i < tcSize; ++i) {
-		tc_ptr[i].num_bytes = clusters[i].num_bytes;
-		tc_ptr[i].num_glyphs = clusters[i].num_glyphs;
+		tc_ptr[i].num_bytes = clusters[i].num_bytes();
+		tc_ptr[i].num_glyphs = clusters[i].num_glyphs();
 	}
 	auto ctcf = static_cast<cairo_text_cluster_flags_t>(clusterToGlyphsMapReverse ? CAIRO_TEXT_CLUSTER_FLAG_BACKWARD : 0);
 	cairo_show_text_glyphs(_Context.get(), utf8.data(), _Container_size_to_int(utf8), vec.data(), _Container_size_to_int(vec), sp_tc.get(), tcSize, ctcf);
