@@ -467,12 +467,28 @@ namespace std {
 					int num_glyphs() const;
 				};
 
-				struct font_extents {
-					double ascent;
-					double descent;
-					double height;
-					double max_x_advance;
-					double max_y_advance;
+				class font_extents {
+					cairo_font_extents_t _Font_extents;
+				public:
+					typedef cairo_font_extents_t* native_handle_type;
+					native_handle_type native_handle();
+
+					font_extents();
+					font_extents(const font_extents& other) = default;
+					font_extents& operator=(const font_extents& other) = default;
+					font_extents(double ascent, double descent, double height, double maxXAdvance, double maxYAdvance);
+
+					void ascent(double value);
+					void descent(double value);
+					void height(double value);
+					void max_x_advance(double value);
+					void max_y_advance(double value);
+
+					double ascent() const;
+					double descent() const;
+					double height() const;
+					double max_x_advance() const;
+					double max_y_advance() const;
 				};
 
 				struct text_extents {

@@ -662,11 +662,11 @@ font_extents surface::get_font_extents() const {
 	font_extents result;
 	cairo_font_extents_t cfe{ };
 	cairo_font_extents(_Context.get(), &cfe);
-	result.ascent = cfe.ascent;
-	result.descent = cfe.descent;
-	result.height = cfe.height;
-	result.max_x_advance = cfe.max_x_advance;
-	result.max_y_advance = cfe.max_y_advance;
+	result.ascent(cfe.ascent);
+	result.descent(cfe.descent);
+	result.height(cfe.height);
+	result.max_x_advance(cfe.max_x_advance);
+	result.max_y_advance(cfe.max_y_advance);
 	return result;
 }
 
