@@ -14,7 +14,9 @@ surface::surface(surface::native_handle_type nh)
 	: _Lock_for_device()
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
-	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy)) {
+	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy))
+	, _Default_path(path_factory().get_path())
+	, _Current_path(_Default_path) {
 	if (_Context.get() != nullptr) {
 		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 	}
@@ -24,7 +26,9 @@ surface::surface(surface&& other)
 	: _Lock_for_device()
 	, _Device(move(other._Device))
 	, _Surface(move(other._Surface))
-	, _Context(move(other._Context)) {
+	, _Context(move(other._Context))
+	, _Default_path(move(other._Default_path))
+	, _Current_path(move(other._Current_path)) {
 	other._Surface = nullptr;
 	other._Context = nullptr;
 }
@@ -34,6 +38,8 @@ surface& surface::operator=(surface&& other) {
 		_Device = move(other._Device);
 		_Surface = move(other._Surface);
 		_Context = move(other._Context);
+		_Default_path = move(other._Default_path);
+		_Current_path = move(other._Current_path);
 		other._Surface = nullptr;
 		other._Context = nullptr;
 	}
@@ -44,14 +50,18 @@ surface::surface(const surface& other, content content, int width, int height)
 	: _Lock_for_device()
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), width, height), &cairo_surface_destroy))
-	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
+	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
+	, _Default_path(path_factory().get_path())
+	, _Current_path(_Default_path) {
 }
 
 surface::surface(format fmt, int width, int height)
 	: _Lock_for_device()
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
-	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy)) {
+	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
+	, _Default_path(path_factory().get_path())
+	, _Current_path(_Default_path) {
 }
 
 surface::~surface() {
@@ -346,6 +356,7 @@ bool surface::in_stroke(const point& pt) const {
 }
 
 void surface::set_path() {
+	_Current_path = _Default_path;
 	cairo_new_path(_Context.get());
 }
 
@@ -356,183 +367,192 @@ point _Rotate_point_absolute_angle(const point& center, double radius, double an
 }
 
 void surface::set_path(const path& p) {
-	auto ctx = _Context.get();
-	auto matrix = matrix_2d::init_identity();
-	point origin{ };
-	bool hasCurrentPoint = false;
-	point currentPoint{ };
-	cairo_new_path(ctx);
-	const auto& pathData = p.get_data_ref();
-	for (unsigned int i = 0; i < pathData.size(); i++) {
-		const auto& item = pathData[i];
-		auto pdt = item->type();
-		switch (pdt) {
-		case std::experimental::io2d::path_data_type::move_to:
-		{
-			currentPoint = dynamic_cast<move_to_path_data*>(item.get())->to();
-			auto pt = matrix.transform_point(currentPoint - origin) + origin;
-			cairo_move_to(ctx, pt.x(), pt.y());
-			hasCurrentPoint = true;
-		} break;
-		case std::experimental::io2d::path_data_type::line_to:
-		{
-			currentPoint = dynamic_cast<line_to_path_data*>(item.get())->to();
-			auto pt = matrix.transform_point(currentPoint - origin) + origin;
-			cairo_line_to(ctx, pt.x(), pt.y());
-			hasCurrentPoint = true;
-		} break;
-		case std::experimental::io2d::path_data_type::curve_to:
-		{
-			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-			auto pt1 = matrix.transform_point(dataItem->control_point_1() - origin) + origin;
-			auto pt2 = matrix.transform_point(dataItem->control_point_2() - origin) + origin;
-			auto pt3 = matrix.transform_point(dataItem->end_point() - origin) + origin;
-			cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
-			currentPoint = dataItem->end_point();
-			hasCurrentPoint = true;
-		} break;
-		case std::experimental::io2d::path_data_type::new_sub_path:
-		{
-			cairo_new_sub_path(ctx);
-			hasCurrentPoint = false;
-		} break;
-		case std::experimental::io2d::path_data_type::close_path:
-		{
-			cairo_close_path(ctx);
-			hasCurrentPoint = false;
-		} break;
-		case std::experimental::io2d::path_data_type::rel_move_to:
-		{
-			assert(hasCurrentPoint);
-			auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-			auto pt = matrix.transform_point((dataItem->to() + currentPoint) - origin) + origin;
-			cairo_move_to(ctx, pt.x(), pt.y());
-			currentPoint = dataItem->to() + currentPoint;
-			hasCurrentPoint = true;
-		} break;
-		case std::experimental::io2d::path_data_type::rel_line_to:
-		{
-			assert(hasCurrentPoint);
-			auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-			auto pt = matrix.transform_point((dataItem->to() + currentPoint) - origin) + origin;
-			cairo_line_to(ctx, pt.x(), pt.y());
-			currentPoint = dataItem->to() + currentPoint;
-			hasCurrentPoint = true;
-		} break;
-		case std::experimental::io2d::path_data_type::rel_curve_to:
-		{
-			assert(hasCurrentPoint);
-			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-			auto pt1 = matrix.transform_point((dataItem->control_point_1() + currentPoint) - origin) + origin;
-			auto pt2 = matrix.transform_point((dataItem->control_point_2() + currentPoint) - origin) + origin;
-			auto pt3 = matrix.transform_point((dataItem->end_point() + currentPoint) - origin) + origin;
-			cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
-			currentPoint = dataItem->end_point() + currentPoint;
-			hasCurrentPoint = true;
-		} break;
-		case std::experimental::io2d::path_data_type::arc:
-		{
-			auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-			auto data = _Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), false, hasCurrentPoint, currentPoint, origin, matrix);
-			for (const auto& arcItem : data) {
-				switch (arcItem->type()) {
-				case std::experimental::io2d::path_data_type::move_to:
-				{
-					auto pt = matrix.transform_point(dynamic_cast<move_to_path_data*>(arcItem.get())->to() - origin) + origin;
-					cairo_move_to(ctx, pt.x(), pt.y());
-				} break;
-				case std::experimental::io2d::path_data_type::line_to:
-				{
-					auto pt = matrix.transform_point(dynamic_cast<line_to_path_data*>(arcItem.get())->to() - origin) + origin;
-					cairo_line_to(ctx, pt.x(), pt.y());
-				} break;
-				case std::experimental::io2d::path_data_type::curve_to:
-				{
-					auto arcDataItem = dynamic_cast<curve_to_path_data*>(arcItem.get());
-					auto pt1 = matrix.transform_point(arcDataItem->control_point_1() - origin) + origin;
-					auto pt2 = matrix.transform_point(arcDataItem->control_point_2() - origin) + origin;
-					auto pt3 = matrix.transform_point(arcDataItem->end_point() - origin) + origin;
-					cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
-				} break;
-				case path_data_type::change_origin:
-				{
-					// Ignore, it's just spitting out the value we handed it.
-				} break;
-				case path_data_type::change_matrix:
-				{
-					// Ignore, it's just spitting out the value we handed it.
-				} break;
-				case path_data_type::new_sub_path:
-				{
-					cairo_new_sub_path(ctx);
-				} break;
-				default:
-					assert("Unexpected path_data_type in arc." && false);
-					break;
+	try {
+		auto ctx = _Context.get();
+		auto matrix = matrix_2d::init_identity();
+		point origin{ };
+		bool hasCurrentPoint = false;
+		point currentPoint{ };
+		cairo_new_path(ctx);
+		const auto& pathData = p.get_data_ref();
+		auto pdSize = pathData.size();
+		for (unsigned int i = 0; i < pdSize; i++) {
+			const auto& item = pathData[i];
+			auto pdt = item->type();
+			switch (pdt) {
+			case std::experimental::io2d::path_data_type::move_to:
+			{
+				currentPoint = dynamic_cast<move_to_path_data*>(item.get())->to();
+				auto pt = matrix.transform_point(currentPoint - origin) + origin;
+				cairo_move_to(ctx, pt.x(), pt.y());
+				hasCurrentPoint = true;
+			} break;
+			case std::experimental::io2d::path_data_type::line_to:
+			{
+				currentPoint = dynamic_cast<line_to_path_data*>(item.get())->to();
+				auto pt = matrix.transform_point(currentPoint - origin) + origin;
+				cairo_line_to(ctx, pt.x(), pt.y());
+				hasCurrentPoint = true;
+			} break;
+			case std::experimental::io2d::path_data_type::curve_to:
+			{
+				auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
+				auto pt1 = matrix.transform_point(dataItem->control_point_1() - origin) + origin;
+				auto pt2 = matrix.transform_point(dataItem->control_point_2() - origin) + origin;
+				auto pt3 = matrix.transform_point(dataItem->end_point() - origin) + origin;
+				cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
+				currentPoint = dataItem->end_point();
+				hasCurrentPoint = true;
+			} break;
+			case std::experimental::io2d::path_data_type::new_sub_path:
+			{
+				cairo_new_sub_path(ctx);
+				hasCurrentPoint = false;
+			} break;
+			case std::experimental::io2d::path_data_type::close_path:
+			{
+				cairo_close_path(ctx);
+				hasCurrentPoint = false;
+			} break;
+			case std::experimental::io2d::path_data_type::rel_move_to:
+			{
+				assert(hasCurrentPoint);
+				auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
+				auto pt = matrix.transform_point((dataItem->to() + currentPoint) - origin) + origin;
+				cairo_move_to(ctx, pt.x(), pt.y());
+				currentPoint = dataItem->to() + currentPoint;
+				hasCurrentPoint = true;
+			} break;
+			case std::experimental::io2d::path_data_type::rel_line_to:
+			{
+				assert(hasCurrentPoint);
+				auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
+				auto pt = matrix.transform_point((dataItem->to() + currentPoint) - origin) + origin;
+				cairo_line_to(ctx, pt.x(), pt.y());
+				currentPoint = dataItem->to() + currentPoint;
+				hasCurrentPoint = true;
+			} break;
+			case std::experimental::io2d::path_data_type::rel_curve_to:
+			{
+				assert(hasCurrentPoint);
+				auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
+				auto pt1 = matrix.transform_point((dataItem->control_point_1() + currentPoint) - origin) + origin;
+				auto pt2 = matrix.transform_point((dataItem->control_point_2() + currentPoint) - origin) + origin;
+				auto pt3 = matrix.transform_point((dataItem->end_point() + currentPoint) - origin) + origin;
+				cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
+				currentPoint = dataItem->end_point() + currentPoint;
+				hasCurrentPoint = true;
+			} break;
+			case std::experimental::io2d::path_data_type::arc:
+			{
+				auto dataItem = dynamic_cast<arc_path_data*>(item.get());
+				auto data = _Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), false, hasCurrentPoint, currentPoint, origin, matrix);
+				for (const auto& arcItem : data) {
+					switch (arcItem->type()) {
+					case std::experimental::io2d::path_data_type::move_to:
+					{
+						auto pt = matrix.transform_point(dynamic_cast<move_to_path_data*>(arcItem.get())->to() - origin) + origin;
+						cairo_move_to(ctx, pt.x(), pt.y());
+					} break;
+					case std::experimental::io2d::path_data_type::line_to:
+					{
+						auto pt = matrix.transform_point(dynamic_cast<line_to_path_data*>(arcItem.get())->to() - origin) + origin;
+						cairo_line_to(ctx, pt.x(), pt.y());
+					} break;
+					case std::experimental::io2d::path_data_type::curve_to:
+					{
+						auto arcDataItem = dynamic_cast<curve_to_path_data*>(arcItem.get());
+						auto pt1 = matrix.transform_point(arcDataItem->control_point_1() - origin) + origin;
+						auto pt2 = matrix.transform_point(arcDataItem->control_point_2() - origin) + origin;
+						auto pt3 = matrix.transform_point(arcDataItem->end_point() - origin) + origin;
+						cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
+					} break;
+					case path_data_type::change_origin:
+					{
+						// Ignore, it's just spitting out the value we handed it.
+					} break;
+					case path_data_type::change_matrix:
+					{
+						// Ignore, it's just spitting out the value we handed it.
+					} break;
+					case path_data_type::new_sub_path:
+					{
+						cairo_new_sub_path(ctx);
+					} break;
+					default:
+						assert("Unexpected path_data_type in arc." && false);
+						break;
+					}
 				}
+				currentPoint = _Rotate_point_absolute_angle(dataItem->center(), dataItem->radius(), dataItem->angle_2());
+				hasCurrentPoint = true;
 			}
-			currentPoint = _Rotate_point_absolute_angle(dataItem->center(), dataItem->radius(), dataItem->angle_2());
-			hasCurrentPoint = true;
-		}
-			break;
-		case std::experimental::io2d::path_data_type::arc_negative:
-		{
-			auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-			auto data = _Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), true, hasCurrentPoint, currentPoint, origin, matrix);
-			for (const auto& arcItem : data) {
-				switch (arcItem->type()) {
-				case std::experimental::io2d::path_data_type::move_to:
-				{
-					auto pt = matrix.transform_point(dynamic_cast<move_to_path_data*>(arcItem.get())->to() - origin) + origin;
-					cairo_move_to(ctx, pt.x(), pt.y());
-				} break;
-				case std::experimental::io2d::path_data_type::line_to:
-				{
-					auto pt = matrix.transform_point(dynamic_cast<line_to_path_data*>(arcItem.get())->to() - origin) + origin;
-					cairo_line_to(ctx, pt.x(), pt.y());
-				} break;
-				case std::experimental::io2d::path_data_type::curve_to:
-				{
-					auto arcDataItem = dynamic_cast<curve_to_path_data*>(arcItem.get());
-					auto pt1 = matrix.transform_point(arcDataItem->control_point_1() - origin) + origin;
-					auto pt2 = matrix.transform_point(arcDataItem->control_point_2() - origin) + origin;
-					auto pt3 = matrix.transform_point(arcDataItem->end_point() - origin) + origin;
-					cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
-				} break;
-				case path_data_type::change_origin:
-				{
-					// Ignore, it's just spitting out the value we handed it.
-				} break;
-				case path_data_type::change_matrix:
-				{
-					// Ignore, it's just spitting out the value we handed it.
-				} break;
-				case path_data_type::new_sub_path:
-				{
-					cairo_new_sub_path(ctx);
-				} break;
-				default:
-					assert("Unexpected path_data_type in arc." && false);
-					break;
+				break;
+			case std::experimental::io2d::path_data_type::arc_negative:
+			{
+				auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
+				auto data = _Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), true, hasCurrentPoint, currentPoint, origin, matrix);
+				for (const auto& arcItem : data) {
+					switch (arcItem->type()) {
+					case std::experimental::io2d::path_data_type::move_to:
+					{
+						auto pt = matrix.transform_point(dynamic_cast<move_to_path_data*>(arcItem.get())->to() - origin) + origin;
+						cairo_move_to(ctx, pt.x(), pt.y());
+					} break;
+					case std::experimental::io2d::path_data_type::line_to:
+					{
+						auto pt = matrix.transform_point(dynamic_cast<line_to_path_data*>(arcItem.get())->to() - origin) + origin;
+						cairo_line_to(ctx, pt.x(), pt.y());
+					} break;
+					case std::experimental::io2d::path_data_type::curve_to:
+					{
+						auto arcDataItem = dynamic_cast<curve_to_path_data*>(arcItem.get());
+						auto pt1 = matrix.transform_point(arcDataItem->control_point_1() - origin) + origin;
+						auto pt2 = matrix.transform_point(arcDataItem->control_point_2() - origin) + origin;
+						auto pt3 = matrix.transform_point(arcDataItem->end_point() - origin) + origin;
+						cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
+					} break;
+					case path_data_type::change_origin:
+					{
+						// Ignore, it's just spitting out the value we handed it.
+					} break;
+					case path_data_type::change_matrix:
+					{
+						// Ignore, it's just spitting out the value we handed it.
+					} break;
+					case path_data_type::new_sub_path:
+					{
+						cairo_new_sub_path(ctx);
+					} break;
+					default:
+						assert("Unexpected path_data_type in arc." && false);
+						break;
+					}
 				}
+				currentPoint = _Rotate_point_absolute_angle(dataItem->center(), dataItem->radius(), dataItem->angle_2());
+				hasCurrentPoint = true;
 			}
-			currentPoint = _Rotate_point_absolute_angle(dataItem->center(), dataItem->radius(), dataItem->angle_2());
-			hasCurrentPoint = true;
+				break;
+			case std::experimental::io2d::path_data_type::change_matrix:
+			{
+				matrix = dynamic_cast<change_matrix_path_data*>(item.get())->matrix();
+			} break;
+			case std::experimental::io2d::path_data_type::change_origin:
+			{
+				origin = dynamic_cast<change_origin_path_data*>(item.get())->origin();
+			} break;
+			default:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+			} break;
+			}
 		}
-			break;
-		case std::experimental::io2d::path_data_type::change_matrix:
-		{
-			matrix = dynamic_cast<change_matrix_path_data*>(item.get())->matrix();
-		} break;
-		case std::experimental::io2d::path_data_type::change_origin:
-		{
-			origin = dynamic_cast<change_origin_path_data*>(item.get())->origin();
-		} break;
-		default:
-		{
-			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
-		} break;
-		}
+		_Current_path = p;
+	}
+	catch (...) {
+		cairo_new_path(_Context.get());
+		_Current_path = _Default_path;
+		throw;
 	}
 }
 
@@ -630,8 +650,14 @@ scaled_font surface::get_scaled_font() const {
 	return scaled_font(cairo_scaled_font_reference(sf));
 }
 
-void surface::show_text(const string& utf8) {
+point surface::show_text(const string& utf8, const point& position) {
+	cairo_new_path(_Context.get());
+	cairo_move_to(_Context.get(), position.x(), position.y());
 	cairo_show_text(_Context.get(), utf8.c_str());
+	double x, y;
+	cairo_get_current_point(_Context.get(), &x, &y);
+	set_path(_Current_path);
+	return point{ x, y };
 }
 
 void surface::show_glyphs(const vector<glyph>& glyphs) {

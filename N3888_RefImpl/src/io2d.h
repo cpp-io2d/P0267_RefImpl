@@ -1225,6 +1225,8 @@ namespace std {
 				protected:
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
+					path _Default_path;
+					path _Current_path;
 					double _Miter_limit = 10.0;
 					const double _Line_join_miter_miter_limit = 10000.0;
 					line_join _Line_join = line_join::miter;
@@ -1291,7 +1293,7 @@ namespace std {
 					void paint(const surface& s, double alpha);
 					void stroke();
 					void stroke(const surface& s);
-					void show_text(const ::std::string& utf8);
+					point show_text(const ::std::string& utf8, const point& position);
 					void show_glyphs(const ::std::vector<glyph>& glyphs);
 					void show_text_glyphs(const ::std::string& utf8,
 						const ::std::vector<glyph>& glyphs,

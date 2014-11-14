@@ -5,6 +5,7 @@
 
 #include "io2d.h"
 
+// Throws a system_error with an error_code formed from the 's' argument with a category from io2d_category(). 
 inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 	if (s != CAIRO_STATUS_SUCCESS) {
 		throw ::std::system_error(::std::error_code(s, ::std::experimental::io2d::io2d_category()));

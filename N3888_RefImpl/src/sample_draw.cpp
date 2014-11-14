@@ -157,17 +157,15 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	auto clextents = rs.get_clip_extents();
 	const double radius = trunc(min(clextents.width() * 0.8 / elementCount, clextents.height() + 120.0) / 2.0);
 	const double beginX = trunc(clextents.width() * 0.1), y = trunc(clextents.height() * 0.5);
-	path_factory pb;
-	pb.move_to({ beginX, 50.0 });
-	rs.set_path(pb.get_path());
 	auto whitePattern = solid_color_pattern_factory(rgba_color::white).get_pattern();
 	rs.set_pattern(whitePattern);
 	rs.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.set_font_size(40.0);
-	rs.show_text(string("Phase ").append(to_string(x + 1)).c_str());
+	rs.show_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 });
 
+	path_factory pf;
 	for (int i = 0; i < elementCount; ++i) {
-		pb.reset();
+		pf.reset();
 		const auto currVal = vec[x][i];
 		if (x < phaseCount - 1) {
 			const auto i2 = find(begin(vec[x + 1]), end(vec[x + 1]), currVal) - begin(vec[x + 1]);
@@ -175,28 +173,28 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 			const auto yr = y - ((i2 == i ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 				* (i % 2 == 1 ? 1.0 : -1.0));
 			const auto center = point{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
-			pb.transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
-			pb.origin(center);
-			pb.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
+			pf.transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+			pf.origin(center);
+			pf.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
 		else {
 			const point center{ radius * i * 2.0 + radius + beginX, y };
-			pb.transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0));
-			pb.origin(center);
-			pb.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
+			pf.transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0));
+			pf.origin(center);
+			pf.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
-		rs.set_path(pb.get_path());
+		rs.set_path(pf.get_path());
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
 		auto greyPattern = solid_color_pattern_factory({ greyColor, greyColor, greyColor, 1.0 }).get_pattern();
 		rs.set_pattern(greyPattern);
 		rs.fill();
 	}
 
-	pb.reset();
-	pb.origin({ 250.0, 450.0 });
-	pb.transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
-	pb.rect({ 200.0, 400.0, 100.0, 100.0 });
-	rs.set_path(pb.get_path());
+	pf.reset();
+	pf.origin({ 250.0, 450.0 });
+	pf.transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
+	pf.rect({ 200.0, 400.0, 100.0, 100.0 });
+	rs.set_path(pf.get_path());
 	auto redPattern = solid_color_pattern_factory(rgba_color::red).get_pattern();
 	rs.set_pattern(redPattern);
 	rs.set_line_width(3.0);
@@ -215,39 +213,37 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	linearPattern.add_color_stop_rgba(0.0, rgba_color::chartreuse);
 	linearPattern.add_color_stop_rgba(1.0, rgba_color::salmon);
 	linearPattern.set_extend(extend::repeat);
-	pb.reset();
-//	pb.set_origin({ 500.0, 450.0 });
-	pb.rect({ 500.0, 450.0, 100.0, 100.0 });
-	pb.rect({ 525.0, 425.0, 50.0, 150.0 });
+	pf.reset();
+	pf.rect({ 500.0, 450.0, 100.0, 100.0 });
+	pf.rect({ 525.0, 425.0, 50.0, 150.0 });
 	rs.set_line_join(line_join::miter_or_bevel);
 	rs.set_miter_limit(1.0);
 	rs.set_line_width(10.0);
-	rs.set_path(pb.get_path());
+	rs.set_path(pf.get_path());
 	rs.set_pattern(redPattern);
 	rs.stroke();
 	rs.set_pattern(linearPattern.get_pattern());
 	rs.fill();
 
-	pb.reset();
-	pb.move_to({ 650.0, 400.0 });
-	pb.rel_line_to({ 0.0, 100.0 });
-	pb.rel_line_to({ 10.0, -100.0 });
+	pf.reset();
+	pf.move_to({ 650.0, 400.0 });
+	pf.rel_line_to({ 0.0, 100.0 });
+	pf.rel_line_to({ 10.0, -100.0 });
 	rs.set_line_join(line_join::miter);
-	rs.set_path(pb.get_path());
+	rs.set_path(pf.get_path());
 	rs.set_pattern(redPattern);
 	rs.stroke();
 	rs.set_pattern(linearPattern.get_pattern());
 	rs.fill();
 
-	pb.reset();
-//	pb.new_sub_path();
-	pb.move_to({ 430.0, 60.0 });
-	pb.arc({ 500.0, 60.0 }, 30.0, pi, pi * 2.0);
-	pb.line_to({ 570.0, 60.0 });
-	pb.new_sub_path();
-	pb.arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi * 3.0 / 4.0);
-	pb.new_sub_path();
-	rs.set_path(pb.get_path());
+	pf.reset();
+	pf.move_to({ 430.0, 60.0 });
+	pf.arc({ 500.0, 60.0 }, 30.0, pi, pi * 2.0);
+	pf.line_to({ 570.0, 60.0 });
+	pf.new_sub_path();
+	pf.arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi * 3.0 / 4.0);
+	pf.new_sub_path();
+	rs.set_path(pf.get_path());
 	rs.set_line_width(2.0);
 	rs.set_pattern(redPattern);
 	rs.stroke();
