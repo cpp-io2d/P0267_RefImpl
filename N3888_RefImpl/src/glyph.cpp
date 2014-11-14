@@ -13,6 +13,19 @@ glyph::glyph()
 	: _Glyph_data({ 0UL, 0.0, 0.0 }) {
 }
 
+glyph::glyph(glyph&& other)
+	: _Glyph_data(move(other._Glyph_data)) {
+	other._Glyph_data = { };
+}
+
+glyph& glyph::operator=(glyph&& other) {
+	if (this != &other) {
+		_Glyph_data = move(other._Glyph_data);
+		other._Glyph_data = { };
+	}
+	return *this;
+}
+
 glyph::glyph(unsigned long index, double x, double y)
 	: _Glyph_data({ index, x, y }) {
 }

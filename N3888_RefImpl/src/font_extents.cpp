@@ -13,6 +13,20 @@ font_extents::font_extents()
 	: _Font_extents({ 0.0, 0.0, 0.0, 0.0, 0.0 }) {
 }
 
+font_extents::font_extents(font_extents&& other)
+	: _Font_extents(move(other._Font_extents)) {
+	other._Font_extents = { };
+}
+
+font_extents& font_extents::operator=(font_extents&& other) {
+	if (this != &other) {
+		_Font_extents = move(other._Font_extents);
+
+		other._Font_extents = { };
+	}
+	return *this;
+}
+
 font_extents::font_extents(double ascent, double descent, double height, double maxXAdvance, double maxYAdvance)
 	: _Font_extents({ ascent, descent, height, maxXAdvance, maxYAdvance }) {
 }

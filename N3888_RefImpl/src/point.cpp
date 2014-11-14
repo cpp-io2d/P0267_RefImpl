@@ -5,6 +5,23 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
+point::point(point&& other)
+	: _X(move(other._X))
+	, _Y(move(other._Y)) {
+	other._X = 0.0;
+	other._Y = 0.0;
+}
+
+point& point::operator=(point&& other) {
+	if (this != &other) {
+		_X = move(other._X);
+		_Y = move(other._Y);
+		other._X = 0.0;
+		other._Y = 0.0;
+	}
+	return *this;
+}
+
 point::point(double x, double y)
 	: _X(x)
 	, _Y(y) {

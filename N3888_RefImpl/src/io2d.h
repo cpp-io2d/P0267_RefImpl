@@ -211,6 +211,8 @@ namespace std {
 					rectangle() = default;
 					rectangle(const rectangle& other) = default;
 					rectangle& operator=(const rectangle& other) = default;
+					rectangle(rectangle&& other);
+					rectangle& operator=(rectangle&& other);
 					rectangle(double x, double y, double width, double height);
 
 					void x(double value);
@@ -233,6 +235,8 @@ namespace std {
 					rgba_color() = default;
 					rgba_color(const rgba_color& other) = default;
 					rgba_color& operator=(const rgba_color& other) = default;
+					rgba_color(rgba_color&& other);
+					rgba_color& operator=(rgba_color&& other);
 					rgba_color(double red, double green, double blue, double alpha = 1.0);
 					rgba_color(int red, int green, int blue, int alpha = 255);
 
@@ -419,6 +423,8 @@ namespace std {
 					point() = default;
 					point(const point& other) = default;
 					point& operator=(const point& other) = default;
+					point(point&& other);
+					point& operator=(point&& other);
 					point(double x, double y);
 
 					void x(double value);
@@ -438,6 +444,8 @@ namespace std {
 					glyph();
 					glyph(const glyph& other) = default;
 					glyph& operator=(const glyph& other) = default;
+					glyph(glyph&& other);
+					glyph& operator=(glyph&& other);
 					glyph(unsigned long index, double x, double y);
 
 					void index(unsigned long index);
@@ -458,6 +466,8 @@ namespace std {
 					text_cluster();
 					text_cluster(const text_cluster& other) = default;
 					text_cluster& operator=(const text_cluster& other) = default;
+					text_cluster(text_cluster&& other);
+					text_cluster& operator=(text_cluster&& other);
 					text_cluster(int numBytes, int numGlyphs);
 
 					void num_bytes(int value);
@@ -476,6 +486,8 @@ namespace std {
 					font_extents();
 					font_extents(const font_extents& other) = default;
 					font_extents& operator=(const font_extents& other) = default;
+					font_extents(font_extents&& other);
+					font_extents& operator=(font_extents&& other);
 					font_extents(double ascent, double descent, double height, double maxXAdvance, double maxYAdvance);
 
 					void ascent(double value);
@@ -529,6 +541,10 @@ namespace std {
 				public:
 
 					matrix_2d();
+					matrix_2d(const matrix_2d& other) = default;
+					matrix_2d& operator=(const matrix_2d& other) = default;
+					matrix_2d(matrix_2d&& other);
+					matrix_2d& operator=(matrix_2d&& other);
 					matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21);
 
 					static matrix_2d init_identity();
@@ -574,6 +590,8 @@ namespace std {
 					path_data() = default;
 					path_data(const path_data& other) = default;
 					path_data& operator=(const path_data& other) = default;
+					path_data(path_data&& other);
+					path_data& operator=(path_data&& other);
 					virtual ~path_data();
 
 					virtual path_data_type type() const = 0;
@@ -585,6 +603,8 @@ namespace std {
 					_Point_path_data() = default;
 					_Point_path_data(const _Point_path_data& other) = default;
 					_Point_path_data& operator=(const _Point_path_data& other) = default;
+					_Point_path_data(_Point_path_data&& other);
+					_Point_path_data& operator=(_Point_path_data&& other);
 					_Point_path_data(const point& to);
 					virtual path_data_type type() const override = 0;
 
@@ -597,6 +617,8 @@ namespace std {
 					move_to_path_data() = default;
 					move_to_path_data(const move_to_path_data& other) = default;
 					move_to_path_data& operator=(const move_to_path_data& other) = default;
+					move_to_path_data(move_to_path_data&& other);
+					move_to_path_data& operator=(move_to_path_data&& other);
 					move_to_path_data(const point& to);
 					virtual path_data_type type() const override;
 				};
@@ -606,6 +628,8 @@ namespace std {
 					line_to_path_data() = default;
 					line_to_path_data(const line_to_path_data& other) = default;
 					line_to_path_data& operator=(const line_to_path_data& other) = default;
+					line_to_path_data(line_to_path_data&& other);
+					line_to_path_data& operator=(line_to_path_data&& other);
 					line_to_path_data(const point& to);
 					virtual path_data_type type() const override;
 				};
@@ -615,6 +639,8 @@ namespace std {
 					rel_move_to_path_data() = default;
 					rel_move_to_path_data(const rel_move_to_path_data& other) = default;
 					rel_move_to_path_data& operator=(const rel_move_to_path_data& other) = default;
+					rel_move_to_path_data(rel_move_to_path_data&& other);
+					rel_move_to_path_data& operator=(rel_move_to_path_data&& other);
 					rel_move_to_path_data(const point& to);
 					virtual path_data_type type() const override;
 				};
@@ -624,6 +650,8 @@ namespace std {
 					rel_line_to_path_data() = default;
 					rel_line_to_path_data(const rel_line_to_path_data& other) = default;
 					rel_line_to_path_data& operator=(const rel_line_to_path_data& other) = default;
+					rel_line_to_path_data(rel_line_to_path_data&& other);
+					rel_line_to_path_data& operator=(rel_line_to_path_data&& other);
 					rel_line_to_path_data(const point& to);
 					virtual path_data_type type() const override;
 				};
@@ -636,6 +664,8 @@ namespace std {
 					_Curve_to_path_data() = default;
 					_Curve_to_path_data(const _Curve_to_path_data& other) = default;
 					_Curve_to_path_data& operator=(const _Curve_to_path_data& other) = default;
+					_Curve_to_path_data(_Curve_to_path_data&& other);
+					_Curve_to_path_data& operator=(_Curve_to_path_data&& other);
 					_Curve_to_path_data(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
 					virtual path_data_type type() const override = 0;
 
@@ -653,6 +683,8 @@ namespace std {
 					curve_to_path_data() = default;
 					curve_to_path_data(const curve_to_path_data& other) = default;
 					curve_to_path_data& operator=(const curve_to_path_data& other) = default;
+					curve_to_path_data(curve_to_path_data&& other);
+					curve_to_path_data& operator=(curve_to_path_data&& other);
 					curve_to_path_data(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
 					virtual path_data_type type() const override;
 				};
@@ -662,6 +694,8 @@ namespace std {
 					rel_curve_to_path_data() = default;
 					rel_curve_to_path_data(const rel_curve_to_path_data& other) = default;
 					rel_curve_to_path_data& operator=(const rel_curve_to_path_data& other) = default;
+					rel_curve_to_path_data(rel_curve_to_path_data&& other);
+					rel_curve_to_path_data& operator=(rel_curve_to_path_data&& other);
 					rel_curve_to_path_data(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
 					virtual path_data_type type() const override;
 				};
@@ -675,6 +709,8 @@ namespace std {
 					_Arc_path_data();
 					_Arc_path_data(const _Arc_path_data& other) = default;
 					_Arc_path_data& operator=(const _Arc_path_data& other) = default;
+					_Arc_path_data(_Arc_path_data&& other);
+					_Arc_path_data& operator=(_Arc_path_data&& other);
 					_Arc_path_data(point center, double radius, double angle1, double angle2);
 					virtual path_data_type type() const override = 0;
 
@@ -694,7 +730,10 @@ namespace std {
 					arc_path_data() = default;
 					arc_path_data(const arc_path_data& other) = default;
 					arc_path_data& operator=(const arc_path_data& other) = default;
+					arc_path_data(arc_path_data&& other);
+					arc_path_data& operator=(arc_path_data&& other);
 					arc_path_data(point center, double radius, double angle1, double angle2);
+
 					virtual path_data_type type() const override;
 				};
 
@@ -703,17 +742,32 @@ namespace std {
 					arc_negative_path_data() = default;
 					arc_negative_path_data(const arc_negative_path_data& other) = default;
 					arc_negative_path_data& operator=(const arc_negative_path_data& other) = default;
+					arc_negative_path_data(arc_negative_path_data&& other);
+					arc_negative_path_data& operator=(arc_negative_path_data&& other);
 					arc_negative_path_data(point center, double radius, double angle1, double angle2);
+
 					virtual path_data_type type() const override;
 				};
 
 				class new_sub_path_path_data : public path_data {
 				public:
+					new_sub_path_path_data() = default;
+					new_sub_path_path_data(const new_sub_path_path_data& other) = default;
+					new_sub_path_path_data& operator=(const new_sub_path_path_data& other) = default;
+					new_sub_path_path_data(new_sub_path_path_data&& other);
+					new_sub_path_path_data& operator=(new_sub_path_path_data&& other);
+
 					virtual path_data_type type() const override;
 				};
 
 				class close_path_path_data : public path_data {
 				public:
+					close_path_path_data() = default;
+					close_path_path_data(const close_path_path_data& other) = default;
+					close_path_path_data& operator=(const close_path_path_data& other) = default;
+					close_path_path_data(close_path_path_data&& other);
+					close_path_path_data& operator=(close_path_path_data&& other);
+
 					virtual path_data_type type() const override;
 				};
 
@@ -723,6 +777,8 @@ namespace std {
 					change_matrix_path_data() = default;
 					change_matrix_path_data(const change_matrix_path_data& other) = default;
 					change_matrix_path_data& operator=(const change_matrix_path_data& other) = default;
+					change_matrix_path_data(change_matrix_path_data&& other);
+					change_matrix_path_data& operator=(change_matrix_path_data&& other);
 					change_matrix_path_data(const matrix_2d& m);
 
 					void matrix(const matrix_2d& value);
@@ -737,6 +793,8 @@ namespace std {
 					change_origin_path_data() = default;
 					change_origin_path_data(const change_origin_path_data& other) = default;
 					change_origin_path_data& operator=(const change_origin_path_data& other) = default;
+					change_origin_path_data(change_origin_path_data&& other);
+					change_origin_path_data& operator=(change_origin_path_data&& other);
 					change_origin_path_data(const point& origin);
 
 					void origin(const point& value);

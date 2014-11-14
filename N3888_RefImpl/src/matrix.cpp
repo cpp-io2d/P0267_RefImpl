@@ -15,6 +15,40 @@ matrix_2d::matrix_2d()
 	, _M21{ 0.0 } {
 }
 
+matrix_2d::matrix_2d(matrix_2d&& other)
+	: _M00(move(other._M00))
+	, _M01(move(other._M01))
+	, _M10(move(other._M10))
+	, _M11(move(other._M11))
+	, _M20(move(other._M20))
+	, _M21(move(other._M21)) {
+	other._M00 = 0.0;
+	other._M01 = 0.0;
+	other._M10 = 0.0;
+	other._M11 = 0.0;
+	other._M20 = 0.0;
+	other._M21 = 0.0;
+}
+
+matrix_2d& matrix_2d::operator=(matrix_2d&&other) {
+	if (this != &other) {
+		_M00 = move(other._M00);
+		_M01 = move(other._M01);
+		_M10 = move(other._M10);
+		_M11 = move(other._M11);
+		_M20 = move(other._M20);
+		_M21 = move(other._M21);
+
+		other._M00 = 0.0;
+		other._M01 = 0.0;
+		other._M10 = 0.0;
+		other._M11 = 0.0;
+		other._M20 = 0.0;
+		other._M21 = 0.0;
+	}
+	return *this;
+}
+
 matrix_2d::matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21)
 	: _M00{ m00 }
 	, _M01{ m01 }

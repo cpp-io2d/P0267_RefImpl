@@ -13,6 +13,20 @@ text_cluster::text_cluster()
 	: _Text_cluster({ 0, 0 }) {
 }
 
+text_cluster::text_cluster(text_cluster&& other)
+	: _Text_cluster(move(other._Text_cluster)) {
+	other._Text_cluster = { };
+}
+
+text_cluster& text_cluster::operator=(text_cluster&& other) {
+	if (this != &other) {
+		_Text_cluster = move(other._Text_cluster);
+
+		other._Text_cluster = { };
+	}
+	return *this;
+}
+
 text_cluster::text_cluster(int numBytes, int numGlyphs)
 	: _Text_cluster({ numBytes, numGlyphs }) {
 }

@@ -5,6 +5,32 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
+rectangle::rectangle(rectangle&& other)
+: _X(move(other._X))
+, _Y(move(other._Y))
+, _Width(move(other._Width))
+, _Height(move(other._Height)){
+	other._X = 0.0;
+	other._Y = 0.0;
+	other._Width = 0.0;
+	other._Height = 0.0;
+}
+
+rectangle& rectangle::operator=(rectangle&& other) {
+	if (this != &other) {
+		_X = move(other._X);
+		_Y = move(other._Y);
+		_Width = move(other._Width);
+		_Height = move(other._Height);
+
+		other._X = 0.0;
+		other._Y = 0.0;
+		other._Width = 0.0;
+		other._Height = 0.0;
+	}
+	return *this;
+}
+
 rectangle::rectangle(double x, double y, double width, double height)
 	: _X(x)
 	, _Y(y)

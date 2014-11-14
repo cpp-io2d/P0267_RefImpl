@@ -5,6 +5,31 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
+rgba_color::rgba_color(rgba_color&& other)
+	: _R(move(other._R))
+	, _G(move(other._G))
+	, _B(move(other._B))
+	, _A(move(other._A)) {
+	other._R = 0.0;
+	other._G = 0.0;
+	other._B = 0.0;
+	other._A = 0.0;
+}
+
+rgba_color& rgba_color::operator=(rgba_color&& other) {
+	if (this != &other) {
+		_R = move(other._R);
+		_G = move(other._G);
+		_B = move(other._B);
+		_A = move(other._A);
+		other._R = 0.0;
+		other._G = 0.0;
+		other._B = 0.0;
+		other._A = 0.0;
+	}
+	return *this;
+}
+
 rgba_color::rgba_color(double red, double green, double blue, double alpha)
 : _R(red)
 , _G(green)
