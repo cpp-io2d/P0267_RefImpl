@@ -15,7 +15,7 @@ surface::surface(surface::native_handle_type nh)
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy))
-	, _Default_path(path_factory().get_path())
+	, _Default_path(get_path(path_factory()))
 	, _Current_path(_Default_path) {
 	if (_Context.get() != nullptr) {
 		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
@@ -51,7 +51,7 @@ surface::surface(const surface& other, content content, int width, int height)
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
-	, _Default_path(path_factory().get_path())
+	, _Default_path(get_path(path_factory()))
 	, _Current_path(_Default_path) {
 }
 
@@ -60,7 +60,7 @@ surface::surface(format fmt, int width, int height)
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
-	, _Default_path(path_factory().get_path())
+	, _Default_path(get_path(path_factory()))
 	, _Current_path(_Default_path) {
 }
 
@@ -724,4 +724,191 @@ text_extents surface::get_glyph_extents(const vector<glyph>& glyphs) const {
 	result.y_advance(cfe.y_advance);
 	result.y_bearing(cfe.y_bearing);
 	return result;
+}
+
+path surface::get_path(const path_factory& pf) const {
+	return path(pf);
+}
+
+font_options surface::get_font_options(const font_options_factory& fo) const {
+	return font_options(fo.get_antialias(), fo.get_subpixel_order());
+}
+
+pattern surface::get_pattern(const solid_color_pattern_factory& f) const {
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(f.get_red(), f.get_green(), f.get_blue(), f.get_alpha()), &cairo_pattern_destroy);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(f.get_extend()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(f.get_filter()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	auto fm = f.get_matrix();
+	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
+	cairo_pattern_set_matrix(pat.get(), &mtrx);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	auto pttn = pattern(pat.get());
+	pat.release();
+	return pttn;
+}
+
+pattern surface::get_pattern(const linear_pattern_factory& f) const {
+	point lpt0;
+	point lpt1;
+	f.get_linear_points(lpt0, lpt1);
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_linear(lpt0.x(), lpt0.y(), lpt1.x(), lpt1.y()), &cairo_pattern_destroy);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(f.get_extend()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(f.get_filter()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	auto fm = f.get_matrix();
+	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
+	cairo_pattern_set_matrix(pat.get(), &mtrx);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	auto count = static_cast<unsigned int>(f.get_color_stop_count());
+	for (unsigned int i = 0; i < count; i++) {
+		double offset;
+		rgba_color color;
+		f.get_color_stop_rgba(i, offset, color);
+		cairo_pattern_add_color_stop_rgba(pat.get(), offset, color.r(), color.g(), color.b(), color.a());
+	}
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	auto pttn = pattern(pat.get());
+	pat.release();
+	return pttn;
+}
+
+pattern surface::get_pattern(const radial_pattern_factory& f) const {
+	point center0, center1;
+	double radius0, radius1;
+	f.get_radial_circles(center0, radius0, center1, radius1);
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_radial(center0.x(), center0.y(), radius0, center1.x(), center1.y(), radius1), &cairo_pattern_destroy);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(f.get_extend()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(f.get_filter()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	auto fm = f.get_matrix();
+	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
+	cairo_pattern_set_matrix(pat.get(), &mtrx);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	auto count = static_cast<unsigned int>(f.get_color_stop_count());
+	for (unsigned int i = 0; i < count; i++) {
+		double offset;
+		rgba_color color;
+		f.get_color_stop_rgba(i, offset, color);
+		cairo_pattern_add_color_stop_rgba(pat.get(), offset, color.r(), color.g(), color.b(), color.a());
+	}
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	auto pttn = pattern(pat.get());
+	pat.release();
+	return pttn;
+}
+
+pattern surface::get_pattern(const mesh_pattern_factory& f) const {
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> upPat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
+	auto pat = upPat.get();
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
+
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(f.get_extend()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f.get_filter()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
+	auto fm = f.get_matrix();
+	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
+	cairo_pattern_set_matrix(pat, &mtrx);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
+
+	auto count = f.get_patch_count();
+	for (auto patchNum = 0U; patchNum < count; patchNum++) {
+		cairo_mesh_pattern_begin_patch(pat);
+		auto pathFactory = f.get_path_factory(patchNum);
+		const auto& pathData = pathFactory.get_data_ref();
+		auto pdSize = pathData.size();
+		for (unsigned int pdIndex = 0; pdIndex < pdSize; pdIndex++) {
+			const auto& item = pathData[pdIndex];
+			auto type = item->type();
+			switch (type) {
+			case std::experimental::io2d::path_data_type::move_to:
+			{
+				auto pt = dynamic_cast<move_to_path_data*>(item.get())->to();
+				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
+			} break;
+			case std::experimental::io2d::path_data_type::line_to:
+			{
+				auto pt = dynamic_cast<line_to_path_data*>(item.get())->to();
+				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
+			} break;
+			case std::experimental::io2d::path_data_type::curve_to:
+			{
+				auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
+				cairo_mesh_pattern_curve_to(pat, dataItem->control_point_1().x(), dataItem->control_point_1().y(), dataItem->control_point_2().x(), dataItem->control_point_2().y(), dataItem->end_point().x(), dataItem->end_point().y());
+			} break;
+			case std::experimental::io2d::path_data_type::new_sub_path:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			case std::experimental::io2d::path_data_type::close_path:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			case std::experimental::io2d::path_data_type::rel_move_to:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			case std::experimental::io2d::path_data_type::rel_line_to:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			case std::experimental::io2d::path_data_type::rel_curve_to:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			case std::experimental::io2d::path_data_type::arc:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			case std::experimental::io2d::path_data_type::arc_negative:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			case std::experimental::io2d::path_data_type::change_matrix:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			case std::experimental::io2d::path_data_type::change_origin:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			default:
+			{
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			} break;
+			}
+		}
+
+		for (auto pointNum = 0U; pointNum < 4U; pointNum++) {
+			point pt;
+			if (f.get_control_point(patchNum, pointNum, pt)) {
+				cairo_mesh_pattern_set_control_point(pat, pointNum, pt.x(), pt.y());
+			}
+		}
+		for (auto cornerNum = 0U; cornerNum < 4U; cornerNum++) {
+			rgba_color color;
+			if (f.get_corner_color_rgba(patchNum, cornerNum, color)) {
+				cairo_mesh_pattern_set_corner_color_rgba(pat, cornerNum, color.r(), color.g(), color.b(), color.a());
+			}
+		}
+		cairo_mesh_pattern_end_patch(pat);
+	}
+	auto pttn = pattern(pat);
+	upPat.release(); // Release the pattern only after it has been safely transferred to pttn.
+	return pttn;
 }

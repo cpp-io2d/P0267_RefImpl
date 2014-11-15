@@ -92,28 +92,6 @@ linear_pattern_factory::linear_pattern_factory(const point& pt0, const point& pt
 , _Color_stops() {
 }
 
-pattern linear_pattern_factory::get_pattern() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_linear(_Point0.x(), _Point0.y(), _Point1.x(), _Point1.y()), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(_Extend));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(_Filter));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_matrix_t mtrx{ _Matrix.m00(), _Matrix.m01(), _Matrix.m10(), _Matrix.m11(), _Matrix.m20(), _Matrix.m21() };
-	cairo_pattern_set_matrix(pat.get(), &mtrx);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	for (const auto& stop : _Color_stops) {
-		cairo_pattern_add_color_stop_rgba(pat.get(), get<0>(stop), get<1>(stop).r(), get<1>(stop).g(), get<1>(stop).b(), get<1>(stop).a());
-	}
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	auto pttn = pattern(pat.get());
-	pat.release();
-	return pttn;
-}
-
 void linear_pattern_factory::set_extend(extend e) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Extend = e;

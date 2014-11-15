@@ -50,11 +50,6 @@ font_options_factory& font_options_factory::operator=(font_options_factory&& oth
 	return *this;
 }
 
-font_options font_options_factory::get_font_options() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return font_options(_Antialias, _Subpixel_order);
-}
-
 void font_options_factory::set_antialias(antialias a) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Antialias = a;

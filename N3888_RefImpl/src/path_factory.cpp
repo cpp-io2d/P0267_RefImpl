@@ -230,11 +230,6 @@ path_factory& path_factory::operator=(path_factory&& other) {
 	return *this;
 }
 
-path path_factory::get_path() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return path(*this);
-}
-
 void path_factory::append(const path& p) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	const auto& data = p.get_data_ref();

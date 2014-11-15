@@ -880,7 +880,6 @@ namespace std {
 					void reset();
 
 					// Observers
-					path get_path() const;
 					rectangle get_path_extents() const;
 					bool has_current_point() const;
 					point current_point() const;
@@ -931,7 +930,6 @@ namespace std {
 					void set_subpixel_order(subpixel_order so);
 
 					// Observers
-					font_options get_font_options() const;
 					antialias get_antialias() const;
 					subpixel_order get_subpixel_order() const;
 				};
@@ -1079,7 +1077,6 @@ namespace std {
 					void set_alpha(double alpha);
 
 					// Observers
-					pattern get_pattern() const;
 					extend get_extend() const;
 					filter get_filter() const;
 					matrix_2d get_matrix() const;
@@ -1118,7 +1115,6 @@ namespace std {
 					void set_linear_points(const point& pt0, const point& pt1);
 
 					// Observers
-					pattern get_pattern() const;
 					extend get_extend() const;
 					filter get_filter() const;
 					matrix_2d get_matrix() const;
@@ -1157,7 +1153,6 @@ namespace std {
 					void set_radial_circles(const point& center0, double radius0, const point& center1, double radius1);
 
 					// Observers
-					pattern get_pattern() const;
 					extend get_extend() const;
 					filter get_filter() const;
 					matrix_2d get_matrix() const;
@@ -1203,15 +1198,13 @@ namespace std {
 					void set_corner_color_rgba(unsigned int corner_num, const rgba_color& color);
 
 					// Observers
-					pattern get_pattern() const;
 					extend get_extend() const;
 					filter get_filter() const;
 					matrix_2d get_matrix() const;
 					unsigned int get_patch_count() const;
-					path get_path(unsigned int patch_num) const;
 					path_factory get_path_factory(unsigned int patch_num) const;
-					point get_control_point(unsigned int patch_num, unsigned int point_num) const;
-					rgba_color get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num) const;
+					bool get_control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const;
+					bool get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
 				};
 
 				struct _Surface_native_handles {
@@ -1311,6 +1304,14 @@ namespace std {
 					void set_font_options(const font_options& options);
 					void set_font_face(const font_face& font_face);
 					void set_scaled_font(const scaled_font& scaled_font);
+
+					// \ref{\iotwod.surface.observers.stateobjects}, state object observers:
+					path get_path(const path_factory& pf) const;
+					font_options get_font_options(const font_options_factory& fo) const;
+					pattern get_pattern(const solid_color_pattern_factory& f) const;
+					pattern get_pattern(const linear_pattern_factory& f) const;
+					pattern get_pattern(const radial_pattern_factory& f) const;
+					pattern get_pattern(const mesh_pattern_factory& f) const;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
 					content get_content() const;

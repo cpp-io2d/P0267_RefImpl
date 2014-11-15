@@ -87,24 +87,6 @@ solid_color_pattern_factory::solid_color_pattern_factory(const rgba_color& color
 	_Color.a(_Clamp_to_normal(color.a()));
 }
 
-pattern solid_color_pattern_factory::get_pattern() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(_Color.r(), _Color.g(), _Color.b(), _Color.a()), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(_Extend));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(_Filter));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_matrix_t mtrx{ _Matrix.m00(), _Matrix.m01(), _Matrix.m10(), _Matrix.m11(), _Matrix.m20(), _Matrix.m21() };
-	cairo_pattern_set_matrix(pat.get(), &mtrx);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	auto pttn = pattern(pat.get());
-	pat.release();
-	return pttn;
-}
-
 void solid_color_pattern_factory::set_extend(extend e) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Extend = e;

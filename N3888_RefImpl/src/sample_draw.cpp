@@ -66,30 +66,30 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 	}
 	rs.save();
 
-	auto backgroundPattern = solid_color_pattern_factory(backgroundColor).get_pattern();
-	auto firstPattern = solid_color_pattern_factory(firstColor).get_pattern();
-	auto secondPattern = solid_color_pattern_factory(secondColor).get_pattern();
+	auto backgroundPattern = rs.get_pattern(solid_color_pattern_factory(backgroundColor));
+	auto firstPattern = rs.get_pattern(solid_color_pattern_factory(firstColor));
+	auto secondPattern = rs.get_pattern(solid_color_pattern_factory(secondColor));
 
 	auto pb = path_factory();
 
 	pb.rect({ 10.0, 10.0, 120.0, 90.0 });
-	auto firstRectPath = pb.get_path();
+	auto firstRectPath = rs.get_path(pb);
 
 	pb.reset();
 	pb.rect({ 50.0, 40.0, 120.0, 90.0 });
-	auto secondRectPath = pb.get_path();
+	auto secondRectPath = rs.get_path(pb);
 
 	pb.reset();
 	pb.append(firstRectPath);
 	pb.append(secondRectPath);
-	auto bothRectsClipPath = pb.get_path();
+	auto bothRectsClipPath = rs.get_path(pb);
 
 	pb.reset();
 	pb.move_to({ 85.0, 25.0 });
 	pb.line_to({ 150.0, 115.0 });
 	pb.line_to({ 30.0, 115.0 });
 	pb.close_path();
-	auto triangleClipPath = pb.get_path();
+	auto triangleClipPath = rs.get_path(pb);
 
 	rs.set_pattern(backgroundPattern);
 	rs.set_compositing_operator(compositing_operator::source);
@@ -123,16 +123,16 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 		rs.set_line_width(2.0);
 
 		rs.set_path(firstRectPath);
-		rs.set_pattern(solid_color_pattern_factory(rgba_color::teal).get_pattern());
+		rs.set_pattern(rs.get_pattern(solid_color_pattern_factory(rgba_color::teal)));
 		rs.stroke();
 
 		rs.set_path(secondRectPath);
-		rs.set_pattern(solid_color_pattern_factory(rgba_color::red).get_pattern());
+		rs.set_pattern(rs.get_pattern(solid_color_pattern_factory(rgba_color::red)));
 		rs.stroke();
 
 		if (clipToTriangle) {
 			rs.set_path(triangleClipPath);
-			rs.set_pattern(solid_color_pattern_factory(rgba_color::yellow).get_pattern());
+			rs.set_pattern(rs.get_pattern(solid_color_pattern_factory(rgba_color::yellow)));
 			rs.stroke();
 		}
 	}
@@ -151,13 +151,13 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	const int elementCount = 12;
 	const static auto vec = init_sort_steps(elementCount);
 	const int phaseCount = static_cast<int>(vec.size()), x = min(static_cast<int>(timer / phaseTime), phaseCount - 1);
-	auto cornflowerBluePattern = solid_color_pattern_factory(rgba_color::cornflower_blue).get_pattern();
+	auto cornflowerBluePattern = rs.get_pattern(solid_color_pattern_factory(rgba_color::cornflower_blue));
 	rs.set_pattern(cornflowerBluePattern);
 	rs.paint(); // Paint background.
 	auto clextents = rs.get_clip_extents();
 	const double radius = trunc(min(clextents.width() * 0.8 / elementCount, clextents.height() + 120.0) / 2.0);
 	const double beginX = trunc(clextents.width() * 0.1), y = trunc(clextents.height() * 0.5);
-	auto whitePattern = solid_color_pattern_factory(rgba_color::white).get_pattern();
+	auto whitePattern = rs.get_pattern(solid_color_pattern_factory(rgba_color::white));
 	rs.set_pattern(whitePattern);
 	rs.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.set_font_size(40.0);
@@ -183,9 +183,9 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 			pf.origin(center);
 			pf.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
-		rs.set_path(pf.get_path());
+		rs.set_path(rs.get_path(pf));
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
-		auto greyPattern = solid_color_pattern_factory({ greyColor, greyColor, greyColor, 1.0 }).get_pattern();
+		auto greyPattern = rs.get_pattern(solid_color_pattern_factory({ greyColor, greyColor, greyColor, 1.0 }));
 		rs.set_pattern(greyPattern);
 		rs.fill();
 	}
@@ -194,8 +194,8 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.origin({ 250.0, 450.0 });
 	pf.transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 	pf.rect({ 200.0, 400.0, 100.0, 100.0 });
-	rs.set_path(pf.get_path());
-	auto redPattern = solid_color_pattern_factory(rgba_color::red).get_pattern();
+	rs.set_path(rs.get_path(pf));
+	auto redPattern = rs.get_pattern(solid_color_pattern_factory(rgba_color::red));
 	rs.set_pattern(redPattern);
 	rs.set_line_width(3.0);
 	rs.stroke();
@@ -206,7 +206,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	radialPattern.add_color_stop_rgba(0.75, rgba_color::blue);
 	radialPattern.add_color_stop_rgba(1.0, rgba_color::white);
 	radialPattern.set_extend(extend::reflect);
-	rs.set_pattern(radialPattern.get_pattern());
+	rs.set_pattern(rs.get_pattern(radialPattern));
 	rs.fill();
 
 	auto linearPattern = linear_pattern_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
@@ -219,10 +219,10 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.set_line_join(line_join::miter_or_bevel);
 	rs.set_miter_limit(1.0);
 	rs.set_line_width(10.0);
-	rs.set_path(pf.get_path());
+	rs.set_path(rs.get_path(pf));
 	rs.set_pattern(redPattern);
 	rs.stroke();
-	rs.set_pattern(linearPattern.get_pattern());
+	rs.set_pattern(rs.get_pattern(linearPattern));
 	rs.fill();
 
 	pf.reset();
@@ -230,10 +230,10 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.rel_line_to({ 0.0, 100.0 });
 	pf.rel_line_to({ 10.0, -100.0 });
 	rs.set_line_join(line_join::miter);
-	rs.set_path(pf.get_path());
+	rs.set_path(rs.get_path(pf));
 	rs.set_pattern(redPattern);
 	rs.stroke();
-	rs.set_pattern(linearPattern.get_pattern());
+	rs.set_pattern(rs.get_pattern(linearPattern));
 	rs.fill();
 
 	pf.reset();
@@ -243,7 +243,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.new_sub_path();
 	pf.arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi * 3.0 / 4.0);
 	pf.new_sub_path();
-	rs.set_path(pf.get_path());
+	rs.set_path(rs.get_path(pf));
 	rs.set_line_width(2.0);
 	rs.set_pattern(redPattern);
 	rs.stroke();
