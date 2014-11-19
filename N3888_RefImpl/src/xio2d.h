@@ -16,6 +16,8 @@
 #include <tuple>
 #include <mutex>
 #include <cmath>
+#include <utility>
+#include <stack>
 
 // Designed to be used to conditionally define compiler support for inline namespaces using a #if
 #define _Inline_namespace_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510))

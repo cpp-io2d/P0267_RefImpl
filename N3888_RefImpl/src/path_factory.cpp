@@ -821,18 +821,6 @@ const vector<unique_ptr<path_data>>& path_factory::get_data_ref() const {
 	return _Data;
 }
 
-// See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
-bool _Almost_equal_relative(double a, double b, double epsilon) {
-	auto diff = abs(a - b);
-	a = abs(a);
-	b = abs(b);
-	auto largest = (b > a) ? b : a;
-	if (diff <= largest * epsilon) {
-		return true;
-	}
-	return false;
-}
-
 double _Curve_value_for_t(double a, double b, double c, double d, double t) {
 	return pow(1.0 - t, 3.0) * a + 3.0 * pow(1.0 - t, 2.0) * t * b + 3.0 * (1.0 - t) * pow(t, 2.0) * c + pow(t, 3.0) * d;
 }

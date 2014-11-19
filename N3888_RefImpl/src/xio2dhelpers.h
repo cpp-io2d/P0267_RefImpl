@@ -4,6 +4,9 @@
 #define _XIO2DHELPERS_
 
 #include "io2d.h"
+#include <system_error>
+#include <limits>
+#include <cmath>
 
 // Throws a system_error with an error_code formed from the 's' argument with a category from io2d_category(). 
 inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
@@ -12,14 +15,42 @@ inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 	}
 }
 
+// Checks for equality between two doubles.
+// See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+inline bool _Almost_equal_relative(double a, double b, double epsilon = ::std::numeric_limits<double>::epsilon()) {
+	auto diff = ::std::abs(a - b);
+	a = ::std::abs(a);
+	b = ::std::abs(b);
+	auto largest = (b > a) ? b : a;
+	if (diff <= largest * epsilon) {
+		return true;
+	}
+	return false;
+}
+
+inline ::std::experimental::io2d::point _Rotate_point_absolute_angle(const ::std::experimental::io2d::point& center, double radius, double angle, bool clockwise = true) {
+	if (clockwise) {
+		::std::experimental::io2d::point pt{ radius * ::std::cos(angle), -radius * -::std::sin(angle) };
+		pt.x(pt.x() + center.x());
+		pt.y(pt.y() + center.y());
+		return pt;
+	}
+	else {
+		::std::experimental::io2d::point pt{ radius * ::std::cos(angle), -radius * ::std::sin(angle) };
+		pt.x(pt.x() + center.x());
+		pt.y(pt.y() + center.y());
+		return pt;
+	}
+}
+
 // Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'. 
 inline int _Double_to_int(double value, bool nearestNeighbor = true) {
 	if (nearestNeighbor) {
 		// Round to the nearest neighbor.
-		return static_cast<int>(round(value));
+		return static_cast<int>(::std::round(value));
 	}
 	// Otherwise truncate.
-	return static_cast<int>(trunc(value));
+	return static_cast<int>(::std::trunc(value));
 }
 
 template <typename T>
@@ -45,6 +76,10 @@ namespace std {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
+				// Forward declarations.
+				class point;
+				class rgba_color;
+
 				point operator+(const point& lhs);
 				point operator+(const point& lhs, const point& rhs);
 				point operator+(const point& lhs, double rhs);

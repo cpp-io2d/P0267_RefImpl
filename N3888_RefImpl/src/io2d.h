@@ -816,19 +816,22 @@ namespace std {
 
 				// Forward declaration.
 				class path_factory;
+				class surface;
 
 				class path {
 					friend class path_factory;
 					::std::shared_ptr<::std::vector<::std::unique_ptr<path_data>>> _Data;
+					::std::shared_ptr<cairo_path_t> _Cairo_path;
 					bool _Has_current_point;
 					point _Current_point;
 					point _Last_move_to_point;
 					rectangle _Extents;
 				public:
 					typedef cairo_path_t* native_handle_type;
+					native_handle_type native_handle() const;
 
 					path() = delete;
-					path(const path_factory& pb);
+					path(const path_factory& pb, const surface& sf);
 					path(const path& other) = default;
 					path& operator=(const path& other) = default;
 					path(path&& other);
@@ -1218,12 +1221,14 @@ namespace std {
 				protected:
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
+					const double _Line_join_miter_miter_limit = 10000.0;
 					path _Default_path;
 					path _Current_path;
+					path_factory _Immediate_path;
 					double _Miter_limit = 10.0;
-					const double _Line_join_miter_miter_limit = 10000.0;
 					line_join _Line_join = line_join::miter;
-
+					::std::stack<::std::tuple<path, path, path_factory, double, line_join>> _Saved_state;
+					//save and restore need to save this state too
 					surface(format fmt, int width, int height);
 				public:
 					typedef _Surface_native_handles native_handle_type;
@@ -1270,23 +1275,41 @@ namespace std {
 					void set_compositing_operator(compositing_operator co);
 					void set_tolerance(double tolerance);
 					void clip();
+					void clip_immediate();
 					void reset_clip();
 					void set_path();
 					void set_path(const path& p);
 
+					// \ref{\iotwod.surface.modifiers.immediatepath}, immediate path modifiers:
+					path_factory& immediate();
+
 					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
 					void fill();
+					void fill(const pattern& pttn);
 					void fill(const surface& s);
+					void fill_immediate();
+					void fill_immediate(const pattern& pttn);
+					void fill_immediate(const surface& s);
 					void mask(const pattern& pttn);
 					void mask(const surface& surface);
 					void mask(const surface& surface, const point& origin);
+					void mask_immediate(const pattern& pttn);
+					void mask_immediate(const surface& surface);
+					void mask_immediate(const surface& surface, const point& origin);
+					void stroke();
+					void stroke(const pattern& pttn);
+					void stroke(const surface& s);
+					void stroke_immediate();
+					void stroke_immediate(const pattern& pttn);
+					void stroke_immediate(const surface& s);
 					void paint();
+					void paint(const pattern& pttn);
 					void paint(const surface& s);
 					void paint(double alpha);
+					void paint(const pattern& pttn, double alpha);
 					void paint(const surface& s, double alpha);
-					void stroke();
-					void stroke(const surface& s);
 					point show_text(const ::std::string& utf8, const point& position);
+					point show_text(const ::std::string& utf8, const point& position, const pattern& pttn);
 					void show_glyphs(const ::std::vector<glyph>& glyphs);
 					void show_text_glyphs(const ::std::string& utf8,
 						const ::std::vector<glyph>& glyphs,
@@ -1334,9 +1357,13 @@ namespace std {
 
 					// \ref{\iotwod.surface.observers.render}, render observers:
 					rectangle get_fill_extents() const;
+					rectangle get_fill_extents_immediate() const;
 					bool in_fill(const point& pt) const;
+					bool in_fill_immediate(const point& pt) const;
 					rectangle get_stroke_extents() const;
+					rectangle get_stroke_extents_immediate() const;
 					bool in_stroke(const point& pt) const;
+					bool in_stroke_immediate(const point& pt) const;
 					font_extents get_font_extents() const;
 					text_extents get_text_extents(const ::std::string& utf8) const;
 					text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;

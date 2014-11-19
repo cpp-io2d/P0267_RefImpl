@@ -16,7 +16,9 @@ surface::surface(surface::native_handle_type nh)
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy))
 	, _Default_path(get_path(path_factory()))
-	, _Current_path(_Default_path) {
+	, _Current_path(_Default_path)
+	, _Immediate_path()
+	, _Saved_state() {
 	if (_Context.get() != nullptr) {
 		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 	}
@@ -28,7 +30,11 @@ surface::surface(surface&& other)
 	, _Surface(move(other._Surface))
 	, _Context(move(other._Context))
 	, _Default_path(move(other._Default_path))
-	, _Current_path(move(other._Current_path)) {
+	, _Current_path(move(other._Current_path))
+	, _Immediate_path(move(other._Immediate_path))
+	, _Miter_limit(move(other._Miter_limit))
+	, _Line_join(move(other._Line_join))
+	, _Saved_state(move(other._Saved_state)) {
 	other._Surface = nullptr;
 	other._Context = nullptr;
 }
@@ -40,6 +46,10 @@ surface& surface::operator=(surface&& other) {
 		_Context = move(other._Context);
 		_Default_path = move(other._Default_path);
 		_Current_path = move(other._Current_path);
+		_Immediate_path = move(other._Immediate_path);
+		_Miter_limit = move(other._Miter_limit);
+		_Line_join = move(other._Line_join);
+		_Saved_state = move(other._Saved_state);
 		other._Surface = nullptr;
 		other._Context = nullptr;
 	}
@@ -52,7 +62,9 @@ surface::surface(const surface& other, content content, int width, int height)
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
 	, _Default_path(get_path(path_factory()))
-	, _Current_path(_Default_path) {
+	, _Current_path(_Default_path)
+	, _Immediate_path()
+	, _Saved_state() {
 }
 
 surface::surface(format fmt, int width, int height)
@@ -61,7 +73,8 @@ surface::surface(format fmt, int width, int height)
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
 	, _Default_path(get_path(path_factory()))
-	, _Current_path(_Default_path) {
+	, _Current_path(_Default_path)
+	, _Immediate_path() {
 }
 
 surface::~surface() {
@@ -133,10 +146,20 @@ bool surface::has_surface_resource() const {
 
 void surface::save() {
 	cairo_save(_Context.get());
+	_Saved_state.push(make_tuple(_Default_path, _Current_path, _Immediate_path, _Miter_limit, _Line_join));
 }
 
 void surface::restore() {
 	cairo_restore(_Context.get());
+	{
+		auto& t = _Saved_state.top();
+		_Default_path = get<0>(t);
+		_Current_path = get<1>(t);
+		_Immediate_path = get<2>(t);
+		_Miter_limit = get<3>(t);
+		_Line_join = get<4>(t);
+	}
+	_Saved_state.pop();
 }
 
 void surface::set_pattern() {
@@ -144,6 +167,7 @@ void surface::set_pattern() {
 }
 
 void surface::set_pattern(const pattern& source) {
+	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 	cairo_set_source(_Context.get(), source.native_handle());
 }
 
@@ -247,7 +271,14 @@ double surface::get_tolerance() const {
 }
 
 void surface::clip() {
-	cairo_clip_preserve(_Context.get());
+	cairo_clip(_Context.get());
+}
+
+void surface::clip_immediate() {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
+	cairo_clip(_Context.get());
+	set_path(currPath);
 }
 
 rectangle surface::get_clip_extents() const {
@@ -279,6 +310,11 @@ void surface::fill() {
 	cairo_fill_preserve(_Context.get());
 }
 
+void surface::fill(const pattern& pttn) {
+	set_pattern(pttn);
+	cairo_fill_preserve(_Context.get());
+}
+
 void surface::fill(const surface& s) {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
@@ -287,14 +323,49 @@ void surface::fill(const surface& s) {
 	cairo_set_source(_Context.get(), pat.get());
 }
 
+void surface::fill_immediate() {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
+	cairo_fill(_Context.get());
+	set_path(currPath);
+}
+
+void surface::fill_immediate(const pattern& pttn) {
+	set_pattern(pttn);
+	fill_immediate();
+}
+
+void surface::fill_immediate(const surface& s) {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	cairo_fill(_Context.get());
+	cairo_surface_flush(_Surface.get());
+	cairo_set_source(_Context.get(), pat.get());
+	set_path(currPath);
+}
+
 rectangle surface::get_fill_extents() const {
 	double pt0x, pt0y, pt1x, pt1y;
 	cairo_fill_extents(_Context.get(), &pt0x, &pt0y, &pt1x, &pt1y);
 	return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
+rectangle surface::get_fill_extents_immediate() const {
+	throw runtime_error("Not implemented.");
+	//double pt0x, pt0y, pt1x, pt1y;
+	//cairo_fill_extents(_Context.get(), &pt0x, &pt0y, &pt1x, &pt1y);
+	//return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
+}
+
 bool surface::in_fill(const point& pt) const {
 	return cairo_in_fill(_Context.get(), pt.x(), pt.y()) != 0;
+}
+
+bool surface::in_fill_immediate(const point& pt) const {
+	throw runtime_error("Not implemented.");
+	//return cairo_in_fill(_Context.get(), pt.x(), pt.y()) != 0;
 }
 
 void surface::mask(const pattern& pttn) {
@@ -309,8 +380,34 @@ void surface::mask(const surface& surface, const point& origin) {
 	cairo_mask_surface(_Context.get(), surface.native_handle().csfce, origin.x(), origin.y());
 }
 
+void surface::mask_immediate(const pattern& pttn) {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
+	cairo_mask(_Context.get(), pttn.native_handle());
+	set_path(currPath);
+}
+
+void surface::mask_immediate(const surface& surface) {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
+	cairo_mask_surface(_Context.get(), surface.native_handle().csfce, 0.0, 0.0);
+	set_path(currPath);
+}
+
+void surface::mask_immediate(const surface& surface, const point& origin) {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
+	cairo_mask_surface(_Context.get(), surface.native_handle().csfce, origin.x(), origin.y());
+	set_path(currPath);
+}
+
 void surface::paint() {
 	cairo_paint(_Context.get());
+}
+
+void surface::paint(const pattern& pttn) {
+	set_pattern(pttn);
+	paint();
 }
 
 void surface::paint(const surface& s) {
@@ -325,6 +422,11 @@ void surface::paint(double alpha) {
 	cairo_paint_with_alpha(_Context.get(), alpha);
 }
 
+void surface::paint(const pattern& pttn, double alpha) {
+	set_pattern(pttn);
+	paint(alpha);
+}
+
 void surface::paint(const surface& s, double alpha) {
 	auto pat = cairo_get_source(_Context.get());
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
@@ -337,6 +439,11 @@ void surface::stroke() {
 	cairo_stroke_preserve(_Context.get());
 }
 
+void surface::stroke(const pattern& pttn) {
+	set_pattern(pttn);
+	stroke();
+}
+
 void surface::stroke(const surface& s) {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
@@ -345,14 +452,51 @@ void surface::stroke(const surface& s) {
 	cairo_set_source(_Context.get(), pat.get());
 }
 
+void surface::stroke_immediate() {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
+	cairo_stroke(_Context.get());
+	set_path(currPath);
+}
+
+void surface::stroke_immediate(const pattern& pttn) {
+	set_pattern(pttn);
+	stroke_immediate();
+}
+
+void surface::stroke_immediate(const surface& s) {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	cairo_stroke(_Context.get());
+	cairo_surface_flush(_Surface.get());
+	cairo_set_source(_Context.get(), pat.get());
+	set_path(currPath);
+}
+
 rectangle surface::get_stroke_extents() const {
 	double pt0x, pt0y, pt1x, pt1y;
 	cairo_stroke_extents(_Context.get(), &pt0x, &pt0y, &pt1x, &pt1y);
 	return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
+rectangle surface::get_stroke_extents_immediate() const {
+	throw runtime_error("Not implemented.");
+	//auto currPath = _Current_path;
+	//set_path(get_path(_Immediate_path));
+	//double pt0x, pt0y, pt1x, pt1y;
+	//cairo_stroke_extents(_Context.get(), &pt0x, &pt0y, &pt1x, &pt1y);
+	//set_path(currPath);
+	//return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
+}
+
 bool surface::in_stroke(const point& pt) const {
 	return cairo_in_stroke(_Context.get(), pt.x(), pt.y()) != 0;
+}
+
+bool surface::in_stroke_immediate(const point& pt) const {
+	throw runtime_error("Not implemented.");
 }
 
 void surface::set_path() {
@@ -360,200 +504,14 @@ void surface::set_path() {
 	cairo_new_path(_Context.get());
 }
 
-point _Rotate_point_absolute_angle(const point& center, double radius, double angle) {
-	point pt{ radius * cos(angle), -radius * -sin(angle) };
-	pt += center;
-	return pt;
+void surface::set_path(const path& p) {
+	this->_Current_path = p;
+	cairo_new_path(_Context.get());
+	cairo_append_path(_Context.get(), p.native_handle());
 }
 
-void surface::set_path(const path& p) {
-	try {
-		auto ctx = _Context.get();
-		auto matrix = matrix_2d::init_identity();
-		point origin{ };
-		bool hasCurrentPoint = false;
-		point currentPoint{ };
-		cairo_new_path(ctx);
-		const auto& pathData = p.get_data_ref();
-		auto pdSize = pathData.size();
-		for (unsigned int i = 0; i < pdSize; i++) {
-			const auto& item = pathData[i];
-			auto pdt = item->type();
-			switch (pdt) {
-			case std::experimental::io2d::path_data_type::move_to:
-			{
-				currentPoint = dynamic_cast<move_to_path_data*>(item.get())->to();
-				auto pt = matrix.transform_point(currentPoint - origin) + origin;
-				cairo_move_to(ctx, pt.x(), pt.y());
-				hasCurrentPoint = true;
-			} break;
-			case std::experimental::io2d::path_data_type::line_to:
-			{
-				currentPoint = dynamic_cast<line_to_path_data*>(item.get())->to();
-				auto pt = matrix.transform_point(currentPoint - origin) + origin;
-				cairo_line_to(ctx, pt.x(), pt.y());
-				hasCurrentPoint = true;
-			} break;
-			case std::experimental::io2d::path_data_type::curve_to:
-			{
-				auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-				auto pt1 = matrix.transform_point(dataItem->control_point_1() - origin) + origin;
-				auto pt2 = matrix.transform_point(dataItem->control_point_2() - origin) + origin;
-				auto pt3 = matrix.transform_point(dataItem->end_point() - origin) + origin;
-				cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
-				currentPoint = dataItem->end_point();
-				hasCurrentPoint = true;
-			} break;
-			case std::experimental::io2d::path_data_type::new_sub_path:
-			{
-				cairo_new_sub_path(ctx);
-				hasCurrentPoint = false;
-			} break;
-			case std::experimental::io2d::path_data_type::close_path:
-			{
-				cairo_close_path(ctx);
-				hasCurrentPoint = false;
-			} break;
-			case std::experimental::io2d::path_data_type::rel_move_to:
-			{
-				assert(hasCurrentPoint);
-				auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-				auto pt = matrix.transform_point((dataItem->to() + currentPoint) - origin) + origin;
-				cairo_move_to(ctx, pt.x(), pt.y());
-				currentPoint = dataItem->to() + currentPoint;
-				hasCurrentPoint = true;
-			} break;
-			case std::experimental::io2d::path_data_type::rel_line_to:
-			{
-				assert(hasCurrentPoint);
-				auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-				auto pt = matrix.transform_point((dataItem->to() + currentPoint) - origin) + origin;
-				cairo_line_to(ctx, pt.x(), pt.y());
-				currentPoint = dataItem->to() + currentPoint;
-				hasCurrentPoint = true;
-			} break;
-			case std::experimental::io2d::path_data_type::rel_curve_to:
-			{
-				assert(hasCurrentPoint);
-				auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-				auto pt1 = matrix.transform_point((dataItem->control_point_1() + currentPoint) - origin) + origin;
-				auto pt2 = matrix.transform_point((dataItem->control_point_2() + currentPoint) - origin) + origin;
-				auto pt3 = matrix.transform_point((dataItem->end_point() + currentPoint) - origin) + origin;
-				cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
-				currentPoint = dataItem->end_point() + currentPoint;
-				hasCurrentPoint = true;
-			} break;
-			case std::experimental::io2d::path_data_type::arc:
-			{
-				auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-				auto data = _Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), false, hasCurrentPoint, currentPoint, origin, matrix);
-				for (const auto& arcItem : data) {
-					switch (arcItem->type()) {
-					case std::experimental::io2d::path_data_type::move_to:
-					{
-						auto pt = matrix.transform_point(dynamic_cast<move_to_path_data*>(arcItem.get())->to() - origin) + origin;
-						cairo_move_to(ctx, pt.x(), pt.y());
-					} break;
-					case std::experimental::io2d::path_data_type::line_to:
-					{
-						auto pt = matrix.transform_point(dynamic_cast<line_to_path_data*>(arcItem.get())->to() - origin) + origin;
-						cairo_line_to(ctx, pt.x(), pt.y());
-					} break;
-					case std::experimental::io2d::path_data_type::curve_to:
-					{
-						auto arcDataItem = dynamic_cast<curve_to_path_data*>(arcItem.get());
-						auto pt1 = matrix.transform_point(arcDataItem->control_point_1() - origin) + origin;
-						auto pt2 = matrix.transform_point(arcDataItem->control_point_2() - origin) + origin;
-						auto pt3 = matrix.transform_point(arcDataItem->end_point() - origin) + origin;
-						cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
-					} break;
-					case path_data_type::change_origin:
-					{
-						// Ignore, it's just spitting out the value we handed it.
-					} break;
-					case path_data_type::change_matrix:
-					{
-						// Ignore, it's just spitting out the value we handed it.
-					} break;
-					case path_data_type::new_sub_path:
-					{
-						cairo_new_sub_path(ctx);
-					} break;
-					default:
-						assert("Unexpected path_data_type in arc." && false);
-						break;
-					}
-				}
-				currentPoint = _Rotate_point_absolute_angle(dataItem->center(), dataItem->radius(), dataItem->angle_2());
-				hasCurrentPoint = true;
-			}
-				break;
-			case std::experimental::io2d::path_data_type::arc_negative:
-			{
-				auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-				auto data = _Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), true, hasCurrentPoint, currentPoint, origin, matrix);
-				for (const auto& arcItem : data) {
-					switch (arcItem->type()) {
-					case std::experimental::io2d::path_data_type::move_to:
-					{
-						auto pt = matrix.transform_point(dynamic_cast<move_to_path_data*>(arcItem.get())->to() - origin) + origin;
-						cairo_move_to(ctx, pt.x(), pt.y());
-					} break;
-					case std::experimental::io2d::path_data_type::line_to:
-					{
-						auto pt = matrix.transform_point(dynamic_cast<line_to_path_data*>(arcItem.get())->to() - origin) + origin;
-						cairo_line_to(ctx, pt.x(), pt.y());
-					} break;
-					case std::experimental::io2d::path_data_type::curve_to:
-					{
-						auto arcDataItem = dynamic_cast<curve_to_path_data*>(arcItem.get());
-						auto pt1 = matrix.transform_point(arcDataItem->control_point_1() - origin) + origin;
-						auto pt2 = matrix.transform_point(arcDataItem->control_point_2() - origin) + origin;
-						auto pt3 = matrix.transform_point(arcDataItem->end_point() - origin) + origin;
-						cairo_curve_to(ctx, pt1.x(), pt1.y(), pt2.x(), pt2.y(), pt3.x(), pt3.y());
-					} break;
-					case path_data_type::change_origin:
-					{
-						// Ignore, it's just spitting out the value we handed it.
-					} break;
-					case path_data_type::change_matrix:
-					{
-						// Ignore, it's just spitting out the value we handed it.
-					} break;
-					case path_data_type::new_sub_path:
-					{
-						cairo_new_sub_path(ctx);
-					} break;
-					default:
-						assert("Unexpected path_data_type in arc." && false);
-						break;
-					}
-				}
-				currentPoint = _Rotate_point_absolute_angle(dataItem->center(), dataItem->radius(), dataItem->angle_2());
-				hasCurrentPoint = true;
-			}
-				break;
-			case std::experimental::io2d::path_data_type::change_matrix:
-			{
-				matrix = dynamic_cast<change_matrix_path_data*>(item.get())->matrix();
-			} break;
-			case std::experimental::io2d::path_data_type::change_origin:
-			{
-				origin = dynamic_cast<change_origin_path_data*>(item.get())->origin();
-			} break;
-			default:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
-			} break;
-			}
-		}
-		_Current_path = p;
-	}
-	catch (...) {
-		cairo_new_path(_Context.get());
-		_Current_path = _Default_path;
-		throw;
-	}
+path_factory& surface::immediate() {
+	return _Immediate_path;
 }
 
 void surface::set_matrix(const matrix_2d& m) {
@@ -660,6 +618,11 @@ point surface::show_text(const string& utf8, const point& position) {
 	return point{ x, y };
 }
 
+point surface::show_text(const string& utf8, const point& position, const pattern& pttn) {
+	set_pattern(pttn);
+	return show_text(utf8, position);
+}
+
 void surface::show_glyphs(const vector<glyph>& glyphs) {
 	vector<cairo_glyph_t> vec;
 	for (const auto& glyph : glyphs) {
@@ -727,7 +690,7 @@ text_extents surface::get_glyph_extents(const vector<glyph>& glyphs) const {
 }
 
 path surface::get_path(const path_factory& pf) const {
-	return path(pf);
+	return path(pf, *this);
 }
 
 font_options surface::get_font_options(const font_options_factory& fo) const {
