@@ -1228,14 +1228,14 @@ namespace std {
 					double _Miter_limit = 10.0;
 					line_join _Line_join = line_join::miter;
 					::std::stack<::std::tuple<path, path, path_factory, double, line_join>> _Saved_state;
-					//save and restore need to save this state too
+
 					surface(format fmt, int width, int height);
 				public:
-					typedef _Surface_native_handles native_handle_type;
-					native_handle_type native_handle() const;
-
 					// tuple<dashes, offset>
 					typedef ::std::tuple<::std::vector<double>, double> dashes;
+
+					typedef _Surface_native_handles native_handle_type;
+					native_handle_type native_handle() const;
 
 					surface() = delete;
 					surface(const surface&) = delete;
