@@ -86,7 +86,6 @@
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)win32\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -108,7 +107,6 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pd
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)win32\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,9 +129,10 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pd
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions> /Qvec-report:2</AdditionalOptions>
+      <AdditionalOptions>
+      </AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)win32\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -156,9 +155,10 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions> /Qvec-report:2</AdditionalOptions>
+      <AdditionalOptions>
+      </AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)win32\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

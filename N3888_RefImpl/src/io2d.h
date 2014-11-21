@@ -1284,37 +1284,84 @@ namespace std {
 					path_factory& immediate();
 
 					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
-					void fill();
-					void fill(const pattern& pttn);
-					void fill(const surface& s);
-					void fill_immediate();
-					void fill_immediate(const pattern& pttn);
-					void fill_immediate(const surface& s);
-					void mask(const pattern& pttn);
-					void mask(const surface& surface);
-					void mask(const surface& surface, const point& origin);
-					void mask_immediate(const pattern& pttn);
-					void mask_immediate(const surface& surface);
-					void mask_immediate(const surface& surface, const point& origin);
-					void stroke();
-					void stroke(const pattern& pttn);
-					void stroke(const surface& s);
-					void stroke_immediate();
-					void stroke_immediate(const pattern& pttn);
-					void stroke_immediate(const surface& s);
 					void paint();
+					void paint(const rgba_color& c);
 					void paint(const pattern& pttn);
 					void paint(const surface& s);
 					void paint(double alpha);
 					void paint(const pattern& pttn, double alpha);
 					void paint(const surface& s, double alpha);
+					void fill();
+					void fill(const rgba_color& c);
+					void fill(const pattern& pttn);
+					void fill(const surface& s);
+					void fill_immediate();
+					void fill_immediate(const rgba_color& c);
+					void fill_immediate(const pattern& pttn);
+					void fill_immediate(const surface& s);
+					void stroke();
+					void stroke(const rgba_color& c);
+					void stroke(const pattern& pttn);
+					void stroke(const surface& s);
+					void stroke_immediate();
+					void stroke_immediate(const rgba_color& c);
+					void stroke_immediate(const pattern& pttn);
+					void stroke_immediate(const surface& s);
+
+					// \ref{\iotwod.surface.modifiers.maskrender}, mask render modifiers:
+					void mask(const pattern& maskPttn);
+					void mask(const pattern& maskPttn, const rgba_color& c);
+					void mask(const pattern& maskPttn, const pattern& pttn);
+					void mask(const pattern& maskPttn, const surface& s);
+					void mask(const surface& maskSurface);
+					void mask(const surface& maskSurface, const rgba_color& c);
+					void mask(const surface& maskSurface, const pattern& pttn);
+					void mask(const surface& maskSurface, const surface& s);
+					void mask(const surface& maskSurface, const point& origin);
+					void mask(const surface& maskSurface, const point& origin, const rgba_color& c);
+					void mask(const surface& maskSurface, const point& origin, const pattern& pttn);
+					void mask(const surface& maskSurface, const point& origin, const surface& s);
+					void mask_immediate(const pattern& maskPttn);
+					void mask_immediate(const pattern& maskPttn, const rgba_color& c);
+					void mask_immediate(const pattern& maskPttn, const pattern& pttn);
+					void mask_immediate(const pattern& maskPttn, const surface& s);
+					void mask_immediate(const surface& maskSurface);
+					void mask_immediate(const surface& maskSurface, const rgba_color& c);
+					void mask_immediate(const surface& maskSurface, const pattern& pttn);
+					void mask_immediate(const surface& maskSurface, const surface& s);
+					void mask_immediate(const surface& maskSurface, const point& origin);
+					void mask_immediate(const surface& maskSurface, const point& origin, const rgba_color& c);
+					void mask_immediate(const surface& maskSurface, const point& origin, const pattern& pttn);
+					void mask_immediate(const surface& maskSurface, const point& origin, const surface& s);
+
+					// \ref{\iotwod.surface.modifiers.textrender}, text render modifiers:
 					point show_text(const ::std::string& utf8, const point& position);
+					point show_text(const ::std::string& utf8, const point& position, const rgba_color& c);
 					point show_text(const ::std::string& utf8, const point& position, const pattern& pttn);
+					point show_text(const ::std::string& utf8, const point& position, const surface& s);
 					void show_glyphs(const ::std::vector<glyph>& glyphs);
+					void show_glyphs(const ::std::vector<glyph>& glyphs, const rgba_color& c);
+					void show_glyphs(const ::std::vector<glyph>& glyphs, const pattern& pttn);
+					void show_glyphs(const ::std::vector<glyph>& glyphs, const surface& s);
 					void show_text_glyphs(const ::std::string& utf8,
 						const ::std::vector<glyph>& glyphs,
 						const ::std::vector<text_cluster>& clusters,
-						bool clusterToGlyphsMapReverse = false);
+						bool clusterToGlyphsMapReverse);
+					void show_text_glyphs(const ::std::string& utf8,
+						const ::std::vector<glyph>& glyphs,
+						const ::std::vector<text_cluster>& clusters,
+						bool clusterToGlyphsMapReverse,
+						const rgba_color& c);
+					void show_text_glyphs(const ::std::string& utf8,
+						const ::std::vector<glyph>& glyphs,
+						const ::std::vector<text_cluster>& clusters,
+						bool clusterToGlyphsMapReverse,
+						const pattern& pttn);
+					void show_text_glyphs(const ::std::string& utf8,
+						const ::std::vector<glyph>& glyphs,
+						const ::std::vector<text_cluster>& clusters,
+						bool clusterToGlyphsMapReverse,
+						const surface& s);
 
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
 					void set_matrix(const matrix_2d& matrix);

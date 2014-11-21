@@ -163,15 +163,13 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	const int elementCount = 12;
 	const static auto vec = init_sort_steps(elementCount);
 	const int phaseCount = static_cast<int>(vec.size()), x = min(static_cast<int>(timer / phaseTime), phaseCount - 1);
-	auto cornflowerBluePattern = rs.get_pattern(solid_color_pattern_factory(rgba_color::cornflower_blue));
-	rs.paint(cornflowerBluePattern); // Paint background.
+	rs.paint(rgba_color::cornflower_blue); // Paint background.
 	auto clextents = rs.get_clip_extents();
 	const double radius = trunc(min(clextents.width() * 0.8 / elementCount, clextents.height() + 120.0) / 2.0);
 	const double beginX = trunc(clextents.width() * 0.1), y = trunc(clextents.height() * 0.5);
-	auto whitePattern = rs.get_pattern(solid_color_pattern_factory(rgba_color::white));
 	rs.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.set_font_size(40.0);
-	rs.show_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 }, whitePattern);
+	rs.show_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 }, rgba_color::white);
 
 	for (int i = 0; i < elementCount; ++i) {
 		rs.immediate().reset();
@@ -193,25 +191,24 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 			rs.immediate().arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
-		auto greyPattern = rs.get_pattern(solid_color_pattern_factory({ greyColor, greyColor, greyColor, 1.0 }));
-		rs.fill_immediate(greyPattern);
+		rs.fill_immediate({ greyColor, greyColor, greyColor, 1.0 });
 	}
 
 	rs.immediate().reset();
 	rs.immediate().origin({ 250.0, 450.0 });
 	rs.immediate().transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 	rs.immediate().rect({ 200.0, 400.0, 100.0, 100.0 });
-	auto redPattern = rs.get_pattern(solid_color_pattern_factory(rgba_color::red));
 	rs.set_line_width(3.0);
-	rs.stroke_immediate(redPattern);
-	auto radialPattern = radial_pattern_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
-	radialPattern.add_color_stop_rgba(0.0, rgba_color::black);
-	radialPattern.add_color_stop_rgba(0.25, rgba_color::red);
-	radialPattern.add_color_stop_rgba(0.5, rgba_color::green);
-	radialPattern.add_color_stop_rgba(0.75, rgba_color::blue);
-	radialPattern.add_color_stop_rgba(1.0, rgba_color::white);
-	radialPattern.set_extend(extend::reflect);
-	rs.fill_immediate(rs.get_pattern(radialPattern));
+	rs.stroke_immediate(rgba_color::red);
+	auto radialFactory = radial_pattern_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
+	radialFactory.add_color_stop_rgba(0.0, rgba_color::black);
+	radialFactory.add_color_stop_rgba(0.25, rgba_color::red);
+	radialFactory.add_color_stop_rgba(0.5, rgba_color::green);
+	radialFactory.add_color_stop_rgba(0.75, rgba_color::blue);
+	radialFactory.add_color_stop_rgba(1.0, rgba_color::white);
+	radialFactory.set_extend(extend::reflect);
+	auto radialPattern = rs.get_pattern(radialFactory);
+	rs.fill_immediate(radialPattern);
 
 	auto linearFactory = linear_pattern_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
 	linearFactory.add_color_stop_rgba(0.0, rgba_color::chartreuse);
@@ -224,7 +221,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.set_line_join(line_join::miter_or_bevel);
 	rs.set_miter_limit(1.0);
 	rs.set_line_width(10.0);
-	rs.stroke_immediate(redPattern);
+	rs.stroke_immediate(rgba_color::red);
 	rs.fill_immediate(linearPattern);
 
 	rs.immediate().reset();
@@ -232,7 +229,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.immediate().rel_line_to({ 0.0, 100.0 });
 	rs.immediate().rel_line_to({ 10.0, -100.0 });
 	rs.set_line_join(line_join::miter);
-	rs.stroke_immediate(redPattern);
+	rs.stroke_immediate(rgba_color::red);
 	rs.fill_immediate(linearPattern);
 
 	rs.immediate().reset();
@@ -243,7 +240,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.immediate().arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi * 3.0 / 4.0);
 	rs.immediate().new_sub_path();
 	rs.set_line_width(2.0);
-	rs.stroke_immediate(redPattern);
+	rs.stroke_immediate(rgba_color::red);
 
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }
