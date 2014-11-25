@@ -163,6 +163,7 @@ namespace std {
 				enum class pattern_type {
 					unknown,
 					solid_color,
+					surface,
 					linear,
 					radial,
 					mesh
@@ -819,7 +820,7 @@ namespace std {
 				class surface;
 
 				class path {
-					friend class path_factory;
+					friend path_factory;
 					::std::shared_ptr<::std::vector<::std::unique_ptr<path_data>>> _Data;
 					::std::shared_ptr<cairo_path_t> _Cairo_path;
 					bool _Has_current_point;
@@ -844,7 +845,7 @@ namespace std {
 				};
 
 				class path_factory {
-					friend class path;
+					friend path;
 					mutable ::std::recursive_mutex _Lock;
 					::std::vector<::std::unique_ptr<path_data>> _Data;
 					bool _Has_current_point;
@@ -912,9 +913,6 @@ namespace std {
 					void lock();
 					void unlock();
 				};
-
-				// Forward declaration.
-				class font_options;
 
 				class font_options_factory {
 					mutable ::std::recursive_mutex _Lock;
@@ -1012,27 +1010,25 @@ namespace std {
 				};
 
 				// Forward declaration.
-				class image_surface;
-
-				// Forward declaration.
 				class linear_pattern_factory;
 				class mesh_pattern_factory;
 				class radial_pattern_factory;
-				class raster_source_pattern_factory;
 				class solid_color_pattern_factory;
+				class surface_pattern_factory;
 				class surface;
+				class image_surface;
 
 				class pattern {
 				public:
 					typedef cairo_pattern_t* native_handle_type;
 
 				private:
-					friend class linear_pattern_factory;
-					friend class mesh_pattern_factory;
-					friend class radial_pattern_factory;
-					friend class raster_source_pattern_factory;
-					friend class solid_color_pattern_factory;
-					friend class surface;
+					friend linear_pattern_factory;
+					friend mesh_pattern_factory;
+					friend radial_pattern_factory;
+					friend solid_color_pattern_factory;
+					friend surface_pattern_factory;
+					friend surface;
 
 					pattern(native_handle_type nh);
 
@@ -1382,6 +1378,7 @@ namespace std {
 					pattern get_pattern(const linear_pattern_factory& f) const;
 					pattern get_pattern(const radial_pattern_factory& f) const;
 					pattern get_pattern(const mesh_pattern_factory& f) const;
+					pattern get_pattern(surface_pattern_factory& f) const;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
 					content get_content() const;
@@ -1432,8 +1429,6 @@ namespace std {
 				class image_surface : public surface {
 					friend surface;
 				protected:
-					::std::shared_ptr<::std::vector<unsigned char>> _Data;
-
 					image_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
 				public:
 					image_surface() = delete;
@@ -1442,21 +1437,54 @@ namespace std {
 					image_surface(image_surface&& other);
 					image_surface& operator=(image_surface&& other);
 					image_surface(format format, int width, int height);
-					image_surface(vector<unsigned char>& data, format format, int width, int height, int stride);
+					image_surface(vector<unsigned char>& data, format format, int width, int height);
 					// create_similar_image
 					image_surface(const surface& other, format format, int width, int height);
 					// create_from_png
 					image_surface(const ::std::string& filename);
 
 					// Modifiers
-					void set_data(::std::vector<unsigned char>& data);
+					void set_data(const ::std::vector<unsigned char>& data);
+					::std::vector<unsigned char> get_data();
 
 					// Observers
-					::std::vector<unsigned char> get_data() const;
 					format get_format() const;
 					int get_width() const;
 					int get_height() const;
 					int get_stride() const;
+				};
+
+				class surface_pattern_factory {
+					mutable ::std::recursive_mutex _Lock;
+					pattern_type _Pattern_type;
+					extend _Extend;
+					filter _Filter;
+					matrix_2d _Matrix;
+					image_surface _Surface;
+
+					friend surface;
+
+				public:
+					surface_pattern_factory();
+					//surface_pattern_factory(const solid_color_pattern_factory&) = delete;
+					//surface_pattern_factory& operator=(const surface_pattern_factory&) = delete;
+					surface_pattern_factory(surface_pattern_factory&);
+					surface_pattern_factory& operator=(surface_pattern_factory&);
+					surface_pattern_factory(surface_pattern_factory&& other);
+					surface_pattern_factory& operator=(surface_pattern_factory&& other);
+					surface_pattern_factory(surface& s);
+
+					// Modifiers
+					void set_extend(extend e);
+					void set_filter(filter f);
+					void set_matrix(const matrix_2d& m);
+					image_surface set_surface(surface& s);
+
+					// Observers
+					extend get_extend() const;
+					filter get_filter() const;
+					matrix_2d get_matrix() const;
+					const image_surface& get_surface() const;
 				};
 
 				int format_stride_for_width(format format, int width);

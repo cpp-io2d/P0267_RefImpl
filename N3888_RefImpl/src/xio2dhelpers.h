@@ -70,6 +70,22 @@ inline double _Clamp_to_normal(double value) {
 	return ::std::max(::std::min(value, 1.0), 0.0);
 }
 
+// Note: The resulting image_surface does not maintain its own memory store.
+inline ::std::experimental::io2d::image_surface _Surface_create_image_surface_copy(::std::experimental::io2d::surface& original) {
+	original.flush();
+	auto originalImageMap = original.map_to_image();
+	auto width = originalImageMap.get_width();
+	auto height = originalImageMap.get_height();
+	auto format = originalImageMap.get_format();
+	auto data = originalImageMap.get_data();
+	auto stride = originalImageMap.get_stride();
+	original.unmap_image(originalImageMap);
+	auto result = ::std::experimental::io2d::image_surface(original, format, width, height);
+	assert((width == result.get_width()) && (height == result.get_height()) && (stride == result.get_stride()));
+	result.set_data(data);
+	return ::std::move(result);
+}
+
 namespace std {
 	namespace experimental {
 		namespace io2d {

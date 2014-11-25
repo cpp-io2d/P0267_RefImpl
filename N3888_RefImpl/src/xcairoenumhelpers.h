@@ -585,6 +585,8 @@ namespace std {
 				switch (pt) {
 				case ::std::experimental::io2d::pattern_type::solid_color:
 					return CAIRO_PATTERN_TYPE_SOLID;
+				case ::std::experimental::io2d::pattern_type::surface:
+					return CAIRO_PATTERN_TYPE_SURFACE;
 				case ::std::experimental::io2d::pattern_type::linear:
 					return CAIRO_PATTERN_TYPE_LINEAR;
 				case ::std::experimental::io2d::pattern_type::radial:
@@ -601,7 +603,7 @@ namespace std {
 				case CAIRO_PATTERN_TYPE_SOLID:
 					return ::std::experimental::io2d::pattern_type::solid_color;
 				case CAIRO_PATTERN_TYPE_SURFACE:
-					throw ::std::runtime_error("Unsupported cairo_pattern_type_t value 'CAIRO_PATTERN_TYPE_SURFACE'.");
+					return ::std::experimental::io2d::pattern_type::surface;
 				case CAIRO_PATTERN_TYPE_LINEAR:
 					return ::std::experimental::io2d::pattern_type::linear;
 				case CAIRO_PATTERN_TYPE_RADIAL:

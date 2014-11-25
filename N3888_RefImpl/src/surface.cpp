@@ -850,6 +850,25 @@ pattern surface::get_pattern(const mesh_pattern_factory& f) const {
 	return pttn;
 }
 
+pattern surface::get_pattern(surface_pattern_factory& f) const {
+	auto patternSurface = _Surface_create_image_surface_copy(f._Surface);
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_for_surface(patternSurface.native_handle().csfce), &cairo_pattern_destroy);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(f.get_extend()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(f.get_filter()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+	auto fm = f.get_matrix();
+	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
+	cairo_pattern_set_matrix(pat.get(), &mtrx);
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
+
+	auto pttn = pattern(pat.get());
+	pat.release();
+	return pttn;
+}
+
 pattern surface::get_pattern() const {
 	return pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
 }

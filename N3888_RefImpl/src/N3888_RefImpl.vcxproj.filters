@@ -140,6 +140,9 @@
     <ClCompile Include="matrix_2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="surface_pattern_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="N3888_RefImpl.rc">

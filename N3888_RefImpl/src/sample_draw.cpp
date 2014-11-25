@@ -210,11 +210,17 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	auto radialPattern = rs.get_pattern(radialFactory);
 	rs.fill_immediate(radialPattern);
 
-	auto linearFactory = linear_pattern_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
-	linearFactory.add_color_stop_rgba(0.0, rgba_color::chartreuse);
-	linearFactory.add_color_stop_rgba(1.0, rgba_color::salmon);
-	linearFactory.set_extend(extend::repeat);
-	auto linearPattern = rs.get_pattern(linearFactory);
+	auto imgSfc = image_surface(format::argb32, 40, 40);
+	imgSfc.immediate().move_to({ 0.0, 0.0 });
+	imgSfc.immediate().line_to({ 40.0, 40.0 });
+	imgSfc.immediate().line_to({ 0.0, 40.0 });
+	imgSfc.immediate().close_path();
+	imgSfc.paint(rgba_color::green);
+	imgSfc.fill_immediate(rgba_color::yellow);
+
+	auto sfcFactory = surface_pattern_factory(imgSfc);
+	sfcFactory.set_extend(extend::repeat);
+	auto sfcPattern = rs.get_pattern(sfcFactory);
 	rs.immediate().reset();
 	rs.immediate().rect({ 500.0, 450.0, 100.0, 100.0 });
 	rs.immediate().rect({ 525.0, 425.0, 50.0, 150.0 });
@@ -222,8 +228,13 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.set_miter_limit(1.0);
 	rs.set_line_width(10.0);
 	rs.stroke_immediate(rgba_color::red);
-	rs.fill_immediate(linearPattern);
+	rs.fill_immediate(sfcPattern);
 
+	auto linearFactory = linear_pattern_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
+	linearFactory.add_color_stop_rgba(0.0, rgba_color::chartreuse);
+	linearFactory.add_color_stop_rgba(1.0, rgba_color::salmon);
+	linearFactory.set_extend(extend::repeat);
+	auto linearPattern = rs.get_pattern(linearFactory);
 	rs.immediate().reset();
 	rs.immediate().move_to({ 650.0, 400.0 });
 	rs.immediate().rel_line_to({ 0.0, 100.0 });
