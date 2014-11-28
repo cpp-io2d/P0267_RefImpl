@@ -1030,10 +1030,14 @@ namespace std {
 					friend surface_pattern_factory;
 					friend surface;
 
+					// Precondition: nh has already had its reference count incremented (either in creation or with cairo_pattern_reference).
 					pattern(native_handle_type nh);
 
-					cairo_pattern_t* _Pattern;
+					::std::shared_ptr<cairo_pattern_t> _Pattern;
 					pattern_type _Pattern_type;
+					extend _Extend;
+					filter _Filter;
+					matrix_2d _Matrix;
 
 				public:
 					native_handle_type native_handle() const;
@@ -1044,17 +1048,19 @@ namespace std {
 					pattern(pattern&& other);
 					pattern& operator=(pattern&& other);
 
-					~pattern();
+					void set_extend(extend e);
+					void set_filter(filter f);
+					void set_matrix(const matrix_2d& m);
 
+					extend get_extend() const;
+					filter get_filter() const;
+					matrix_2d get_matrix() const;
 					pattern_type get_type() const;
 				};
 
 				class solid_color_pattern_factory {
 					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
-					extend _Extend;
-					filter _Filter;
-					matrix_2d _Matrix;
 					rgba_color _Color;
 
 				public:
@@ -1066,9 +1072,6 @@ namespace std {
 					solid_color_pattern_factory(const rgba_color& color);
 
 					// Modifiers
-					void set_extend(extend e);
-					void set_filter(filter f);
-					void set_matrix(const matrix_2d& m);
 					void set_rgba(const rgba_color& color);
 					void set_red(double red);
 					void set_green(double green);
@@ -1076,9 +1079,6 @@ namespace std {
 					void set_alpha(double alpha);
 
 					// Observers
-					extend get_extend() const;
-					filter get_filter() const;
-					matrix_2d get_matrix() const;
 					rgba_color get_rgba() const;
 					double get_red() const;
 					double get_green() const;
@@ -1089,9 +1089,6 @@ namespace std {
 				class linear_pattern_factory {
 					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
-					extend _Extend;
-					filter _Filter;
-					matrix_2d _Matrix;
 
 					point _Point0;
 					point _Point1;
@@ -1106,17 +1103,11 @@ namespace std {
 					linear_pattern_factory(const point& pt0, const point& pt1);
 
 					// Modifiers
-					void set_extend(extend extend);
-					void set_filter(filter filter);
-					void set_matrix(const matrix_2d& matrix);
 					void add_color_stop_rgba(double offset, const rgba_color& color);
 					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
 					void set_linear_points(const point& pt0, const point& pt1);
 
 					// Observers
-					extend get_extend() const;
-					filter get_filter() const;
-					matrix_2d get_matrix() const;
 					int get_color_stop_count() const;
 					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
 					void get_linear_points(point& pt0, point& pt1) const;
@@ -1125,9 +1116,6 @@ namespace std {
 				class radial_pattern_factory {
 					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
-					extend _Extend;
-					filter _Filter;
-					matrix_2d _Matrix;
 
 					point _Center0;
 					double _Radius0;
@@ -1144,17 +1132,11 @@ namespace std {
 					radial_pattern_factory(const point& center0, double radius0, const point& center1, double radius1);
 
 					// Modifiers
-					void set_extend(extend extend);
-					void set_filter(filter filter);
-					void set_matrix(const matrix_2d& matrix);
 					void add_color_stop_rgba(double offset, const rgba_color& color);
 					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
 					void set_radial_circles(const point& center0, double radius0, const point& center1, double radius1);
 
 					// Observers
-					extend get_extend() const;
-					filter get_filter() const;
-					matrix_2d get_matrix() const;
 					int get_color_stop_count() const;
 					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
 					void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) const;
@@ -1163,9 +1145,6 @@ namespace std {
 				class mesh_pattern_factory {
 					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
-					extend _Extend;
-					filter _Filter;
-					matrix_2d _Matrix;
 
 					bool _Has_current_patch;
 					unsigned int _Current_patch_index;
@@ -1184,9 +1163,6 @@ namespace std {
 					mesh_pattern_factory& operator=(mesh_pattern_factory&& other);
 
 					// Modifiers
-					void set_extend(extend extend);
-					void set_filter(filter filter);
-					void set_matrix(const matrix_2d& matrix);
 					void begin_patch();
 					void begin_edit_patch(unsigned int patch_num);
 					void end_patch();
@@ -1197,9 +1173,6 @@ namespace std {
 					void set_corner_color_rgba(unsigned int corner_num, const rgba_color& color);
 
 					// Observers
-					extend get_extend() const;
-					filter get_filter() const;
-					matrix_2d get_matrix() const;
 					unsigned int get_patch_count() const;
 					path_factory get_path_factory(unsigned int patch_num) const;
 					bool get_control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const;
@@ -1223,8 +1196,10 @@ namespace std {
 					path_factory _Immediate_path;
 					double _Miter_limit = 10.0;
 					line_join _Line_join = line_join::miter;
-					::std::stack<::std::tuple<path, path, path_factory, double, line_join>> _Saved_state;
+					pattern _Pattern;
 
+					::std::stack<::std::tuple<path, path, path_factory, double, line_join, pattern>> _Saved_state;
+					
 					surface(format fmt, int width, int height);
 				public:
 					// tuple<dashes, offset>
@@ -1283,62 +1258,77 @@ namespace std {
 					void paint();
 					void paint(const rgba_color& c);
 					void paint(const pattern& pttn);
-					void paint(const surface& s);
+					void paint(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void paint(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void paint(double alpha);
+					void paint(const rgba_color& c, double alpha);
 					void paint(const pattern& pttn, double alpha);
-					void paint(const surface& s, double alpha);
+					void paint(const surface& s, double alpha, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void paint(const surface& s, double alpha, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill();
 					void fill(const rgba_color& c);
 					void fill(const pattern& pttn);
-					void fill(const surface& s);
+					void fill(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void fill(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill_immediate();
 					void fill_immediate(const rgba_color& c);
 					void fill_immediate(const pattern& pttn);
-					void fill_immediate(const surface& s);
+					void fill_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void fill_immediate(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke();
 					void stroke(const rgba_color& c);
 					void stroke(const pattern& pttn);
-					void stroke(const surface& s);
+					void stroke(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void stroke(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke_immediate();
 					void stroke_immediate(const rgba_color& c);
 					void stroke_immediate(const pattern& pttn);
-					void stroke_immediate(const surface& s);
+					void stroke_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void stroke_immediate(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 
 					// \ref{\iotwod.surface.modifiers.maskrender}, mask render modifiers:
 					void mask(const pattern& maskPttn);
 					void mask(const pattern& maskPttn, const rgba_color& c);
 					void mask(const pattern& maskPttn, const pattern& pttn);
-					void mask(const pattern& maskPttn, const surface& s);
+					void mask(const pattern& maskPttn, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const pattern& maskPttn, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask(const surface& maskSurface);
 					void mask(const surface& maskSurface, const rgba_color& c);
 					void mask(const surface& maskSurface, const pattern& pttn);
-					void mask(const surface& maskSurface, const surface& s);
-					void mask(const surface& maskSurface, const point& origin);
-					void mask(const surface& maskSurface, const point& origin, const rgba_color& c);
-					void mask(const surface& maskSurface, const point& origin, const pattern& pttn);
-					void mask(const surface& maskSurface, const point& origin, const surface& s);
+					void mask(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const surface& maskSurface, const point& maskOrigin);
+					void mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
+					void mask(const surface& maskSurface, const point& maskOrigin, const pattern& pttn);
+					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const pattern& maskPttn);
 					void mask_immediate(const pattern& maskPttn, const rgba_color& c);
 					void mask_immediate(const pattern& maskPttn, const pattern& pttn);
-					void mask_immediate(const pattern& maskPttn, const surface& s);
+					void mask_immediate(const pattern& maskPttn, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const pattern& maskPttn, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const surface& maskSurface);
 					void mask_immediate(const surface& maskSurface, const rgba_color& c);
 					void mask_immediate(const surface& maskSurface, const pattern& pttn);
-					void mask_immediate(const surface& maskSurface, const surface& s);
-					void mask_immediate(const surface& maskSurface, const point& origin);
-					void mask_immediate(const surface& maskSurface, const point& origin, const rgba_color& c);
-					void mask_immediate(const surface& maskSurface, const point& origin, const pattern& pttn);
-					void mask_immediate(const surface& maskSurface, const point& origin, const surface& s);
+					void mask_immediate(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const surface& maskSurface, const point& maskOrigin);
+					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
+					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const pattern& pttn);
+					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 
 					// \ref{\iotwod.surface.modifiers.textrender}, text render modifiers:
 					point show_text(const ::std::string& utf8, const point& position);
 					point show_text(const ::std::string& utf8, const point& position, const rgba_color& c);
 					point show_text(const ::std::string& utf8, const point& position, const pattern& pttn);
-					point show_text(const ::std::string& utf8, const point& position, const surface& s);
+					point show_text(const ::std::string& utf8, const point& position, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					point show_text(const ::std::string& utf8, const point& position, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void show_glyphs(const ::std::vector<glyph>& glyphs);
 					void show_glyphs(const ::std::vector<glyph>& glyphs, const rgba_color& c);
 					void show_glyphs(const ::std::vector<glyph>& glyphs, const pattern& pttn);
-					void show_glyphs(const ::std::vector<glyph>& glyphs, const surface& s);
+					void show_glyphs(const ::std::vector<glyph>& glyphs, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void show_glyphs(const ::std::vector<glyph>& glyphs, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void show_text_glyphs(const ::std::string& utf8,
 						const ::std::vector<glyph>& glyphs,
 						const ::std::vector<text_cluster>& clusters,
@@ -1357,7 +1347,18 @@ namespace std {
 						const ::std::vector<glyph>& glyphs,
 						const ::std::vector<text_cluster>& clusters,
 						bool clusterToGlyphsMapReverse,
-						const surface& s);
+						const surface& s,
+						const point& origin = point{ 0.0, 0.0 },
+						extend e = extend::default_extend,
+						filter f = filter::default_filter);
+					void show_text_glyphs(const ::std::string& utf8,
+						const ::std::vector<glyph>& glyphs,
+						const ::std::vector<text_cluster>& clusters,
+						bool clusterToGlyphsMapReverse,
+						const surface& s,
+						const matrix_2d& m,
+						extend e = extend::default_extend,
+						filter f = filter::default_filter);
 
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
 					void set_matrix(const matrix_2d& matrix);
@@ -1457,17 +1458,12 @@ namespace std {
 				class surface_pattern_factory {
 					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
-					extend _Extend;
-					filter _Filter;
-					matrix_2d _Matrix;
 					image_surface _Surface;
 
 					friend surface;
 
 				public:
 					surface_pattern_factory();
-					//surface_pattern_factory(const solid_color_pattern_factory&) = delete;
-					//surface_pattern_factory& operator=(const surface_pattern_factory&) = delete;
 					surface_pattern_factory(surface_pattern_factory&);
 					surface_pattern_factory& operator=(surface_pattern_factory&);
 					surface_pattern_factory(surface_pattern_factory&& other);
@@ -1475,15 +1471,9 @@ namespace std {
 					surface_pattern_factory(surface& s);
 
 					// Modifiers
-					void set_extend(extend e);
-					void set_filter(filter f);
-					void set_matrix(const matrix_2d& m);
 					image_surface set_surface(surface& s);
 
 					// Observers
-					extend get_extend() const;
-					filter get_filter() const;
-					matrix_2d get_matrix() const;
 					const image_surface& get_surface() const;
 				};
 

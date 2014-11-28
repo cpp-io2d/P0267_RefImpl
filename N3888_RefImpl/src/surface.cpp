@@ -13,7 +13,9 @@ surface::surface(format fmt, int width, int height)
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
 	, _Default_path(get_path(path_factory()))
 	, _Current_path(_Default_path)
-	, _Immediate_path() {
+	, _Immediate_path()
+	, _Pattern(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0))
+	, _Saved_state() {
 }
 
 surface::native_handle_type surface::native_handle() const {
@@ -30,6 +32,7 @@ surface::surface(surface&& other)
 	, _Immediate_path(move(other._Immediate_path))
 	, _Miter_limit(move(other._Miter_limit))
 	, _Line_join(move(other._Line_join))
+	, _Pattern(move(other._Pattern))
 	, _Saved_state(move(other._Saved_state)) {
 	other._Surface = nullptr;
 	other._Context = nullptr;
@@ -45,6 +48,7 @@ surface& surface::operator=(surface&& other) {
 		_Immediate_path = move(other._Immediate_path);
 		_Miter_limit = move(other._Miter_limit);
 		_Line_join = move(other._Line_join);
+		_Pattern = move(other._Pattern);
 		_Saved_state = move(other._Saved_state);
 		other._Surface = nullptr;
 		other._Context = nullptr;
@@ -60,6 +64,7 @@ surface::surface(surface::native_handle_type nh)
 	, _Default_path(get_path(path_factory()))
 	, _Current_path(_Default_path)
 	, _Immediate_path()
+	, _Pattern(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
 	, _Saved_state() {
 	if (_Context.get() != nullptr) {
 		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
@@ -74,6 +79,7 @@ surface::surface(const surface& other, content content, int width, int height)
 	, _Default_path(get_path(path_factory()))
 	, _Current_path(_Default_path)
 	, _Immediate_path()
+	, _Pattern(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0))
 	, _Saved_state() {
 }
 
@@ -132,7 +138,7 @@ void surface::unmap_image(image_surface& image) {
 
 void surface::save() {
 	cairo_save(_Context.get());
-	_Saved_state.push(make_tuple(_Default_path, _Current_path, _Immediate_path, _Miter_limit, _Line_join));
+	_Saved_state.push(make_tuple(_Default_path, _Current_path, _Immediate_path, _Miter_limit, _Line_join, _Pattern));
 }
 
 void surface::restore() {
@@ -144,16 +150,17 @@ void surface::restore() {
 		_Immediate_path = get<2>(t);
 		_Miter_limit = get<3>(t);
 		_Line_join = get<4>(t);
+		_Pattern = get<5>(t);
 	}
 	_Saved_state.pop();
 }
 
 void surface::set_pattern() {
-	cairo_set_source_rgb(_Context.get(), 0.0, 0.0, 0.0);
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::set_pattern(const pattern& source) {
-	cairo_set_source(_Context.get(), source.native_handle());
+	_Pattern = source;
 }
 
 void surface::set_antialias(antialias a) {
@@ -237,14 +244,19 @@ path_factory& surface::immediate() {
 }
 
 void surface::paint() {
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_paint(_Context.get());
 }
 
 void surface::paint(const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	paint();
-	set_pattern(pttn);
 }
 
 void surface::paint(const pattern& pttn) {
@@ -252,16 +264,35 @@ void surface::paint(const pattern& pttn) {
 	paint();
 }
 
-void surface::paint(const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::paint(const surface& s, const point& origin, extend e, filter f) {
+	paint(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::paint(const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
 	cairo_paint(_Context.get());
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::paint(double alpha) {
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_paint_with_alpha(_Context.get(), alpha);
+}
+
+void surface::paint(const rgba_color& c, double alpha) {
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
+	paint(alpha);
 }
 
 void surface::paint(const pattern& pttn, double alpha) {
@@ -269,50 +300,74 @@ void surface::paint(const pattern& pttn, double alpha) {
 	paint(alpha);
 }
 
-void surface::paint(const surface& s, double alpha) {
-	auto pat = cairo_get_source(_Context.get());
+void surface::paint(const surface& s, double alpha, const point& origin, extend e, filter f) {
+	paint(s, alpha, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::paint(const surface& s, double alpha, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
 	cairo_paint_with_alpha(_Context.get(), alpha);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat);
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::fill() {
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_fill_preserve(_Context.get());
 }
 
 void surface::fill(const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
-	cairo_fill_preserve(_Context.get());
-	set_pattern(pttn);
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
+	fill();
 }
 
 void surface::fill(const pattern& pttn) {
 	set_pattern(pttn);
-	cairo_fill_preserve(_Context.get());
+	fill();
 }
 
-void surface::fill(const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::fill(const surface& s, const point& origin, extend e, filter f) {
+	fill(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::fill(const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
 	cairo_fill_preserve(_Context.get());
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::fill_immediate() {
 	auto currPath = _Current_path;
 	set_path(get_path(_Immediate_path));
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_fill(_Context.get());
 	set_path(currPath);
 }
 
 void surface::fill_immediate(const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	fill_immediate();
-	set_pattern(pttn);
 }
 
 void surface::fill_immediate(const pattern& pttn) {
@@ -320,26 +375,38 @@ void surface::fill_immediate(const pattern& pttn) {
 	fill_immediate();
 }
 
-void surface::fill_immediate(const surface& s) {
+void surface::fill_immediate(const surface& s, const point& origin, extend e, filter f) {
+	fill_immediate(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::fill_immediate(const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
 	set_path(get_path(_Immediate_path));
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
 	cairo_fill(_Context.get());
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 	set_path(currPath);
 }
 
 void surface::stroke() {
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_stroke_preserve(_Context.get());
 }
 
 void surface::stroke(const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	stroke();
-	set_pattern(pttn);
 }
 
 void surface::stroke(const pattern& pttn) {
@@ -347,26 +414,38 @@ void surface::stroke(const pattern& pttn) {
 	stroke();
 }
 
-void surface::stroke(const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::stroke(const surface& s, const point& origin, extend e, filter f) {
+	stroke(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::stroke(const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
 	cairo_stroke_preserve(_Context.get());
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::stroke_immediate() {
 	auto currPath = _Current_path;
 	set_path(get_path(_Immediate_path));
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_stroke(_Context.get());
 	set_path(currPath);
 }
 
 void surface::stroke_immediate(const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	stroke_immediate();
-	set_pattern(pttn);
 }
 
 void surface::stroke_immediate(const pattern& pttn) {
@@ -374,26 +453,38 @@ void surface::stroke_immediate(const pattern& pttn) {
 	stroke_immediate();
 }
 
-void surface::stroke_immediate(const surface& s) {
+void surface::stroke_immediate(const surface& s, const point& origin, extend e, filter f) {
+	stroke_immediate(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::stroke_immediate(const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
 	set_path(get_path(_Immediate_path));
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
 	cairo_stroke(_Context.get());
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 	set_path(currPath);
 }
 
 void surface::mask(const pattern& maskPttn) {
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_mask(_Context.get(), maskPttn.native_handle());
 }
 
 void surface::mask(const pattern& maskPttn, const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	mask(maskPttn);
-	set_pattern(pttn);
 }
 
 void surface::mask(const pattern& maskPttn, const pattern& pttn) {
@@ -401,23 +492,35 @@ void surface::mask(const pattern& maskPttn, const pattern& pttn) {
 	mask(maskPttn);
 }
 
-void surface::mask(const pattern& maskPttn, const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::mask(const pattern& maskPttn, const surface& s, const point& origin, extend e, filter f) {
+	mask(maskPttn, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::mask(const pattern& maskPttn, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	mask(maskPttn);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
+	cairo_mask(_Context.get(), maskPttn.native_handle());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::mask(const surface& maskSurface) {
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
 }
 
 void surface::mask(const surface& maskSurface, const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	mask(maskSurface);
-	set_pattern(pttn);
 }
 
 void surface::mask(const surface& maskSurface, const pattern& pttn) {
@@ -425,48 +528,73 @@ void surface::mask(const surface& maskSurface, const pattern& pttn) {
 	mask(maskSurface);
 }
 
-void surface::mask(const surface& maskSurface, const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::mask(const surface& maskSurface, const surface& s, const point& origin, extend e, filter f) {
+	mask(maskSurface, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::mask(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	mask(maskSurface);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
+	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
-void surface::mask(const surface& maskSurface, const point& origin) {
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, origin.x(), origin.y());
+void surface::mask(const surface& maskSurface, const point& maskOrigin) {
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
 }
 
-void surface::mask(const surface& maskSurface, const point& origin, const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
-	mask(maskSurface, origin);
+void surface::mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
+	mask(maskSurface, maskOrigin);
+}
+
+void surface::mask(const surface& maskSurface, const point& maskOrigin, const pattern& pttn) {
 	set_pattern(pttn);
+	mask(maskSurface, maskOrigin);
 }
 
-void surface::mask(const surface& maskSurface, const point& origin, const pattern& pttn) {
-	set_pattern(pttn);
-	mask(maskSurface, origin);
+void surface::mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin, extend e, filter f) {
+	mask(maskSurface, maskOrigin, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
-void surface::mask(const surface& maskSurface, const point& origin, const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	mask(maskSurface, origin);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
+	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::mask_immediate(const pattern& maskPttn) {
 	auto currPath = _Current_path;
 	set_path(get_path(_Immediate_path));
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_mask(_Context.get(), maskPttn.native_handle());
 	set_path(currPath);
 }
 
 void surface::mask_immediate(const pattern& maskPttn, const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	mask(maskPttn);
 }
 
@@ -475,26 +603,41 @@ void surface::mask_immediate(const pattern& maskPttn, const pattern& pttn) {
 	mask(maskPttn);
 }
 
-void surface::mask_immediate(const pattern& maskPttn, const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::mask_immediate(const pattern& maskPttn, const surface& s, const point& origin, extend e, filter f) {
+	mask_immediate(maskPttn, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::mask_immediate(const pattern& maskPttn, const surface& s, const matrix_2d& m, extend e, filter f) {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	mask(maskPttn);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
+	cairo_mask(_Context.get(), maskPttn.native_handle());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
+	set_path(currPath);
 }
 
 void surface::mask_immediate(const surface& maskSurface) {
 	auto currPath = _Current_path;
 	set_path(get_path(_Immediate_path));
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
 	set_path(currPath);
 }
 
 void surface::mask_immediate(const surface& maskSurface, const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	mask_immediate(maskSurface);
-	set_pattern(pttn);
 }
 
 void surface::mask_immediate(const surface& maskSurface, const pattern& pttn) {
@@ -502,44 +645,73 @@ void surface::mask_immediate(const surface& maskSurface, const pattern& pttn) {
 	mask_immediate(maskSurface);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
-	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	mask_immediate(maskSurface);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+void surface::mask_immediate(const surface& maskSurface, const surface& s, const point& origin, extend e, filter f) {
+	mask_immediate(maskSurface, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& origin) {
+void surface::mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
 	set_path(get_path(_Immediate_path));
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, origin.x(), origin.y());
+	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
+	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
+}
+
+void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin) {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
 	set_path(currPath);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& origin, const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
-	mask_immediate(maskSurface, origin);
-	set_pattern(pttn);
+void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
+	mask_immediate(maskSurface, maskOrigin);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& origin, const pattern& pttn) {
+void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const pattern& pttn) {
 	set_pattern(pttn);
-	mask_immediate(maskSurface, origin);
+	mask_immediate(maskSurface, maskOrigin);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& origin, const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin, extend e, filter f) {
+	mask_immediate(maskSurface, maskOrigin, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e, filter f) {
+	auto currPath = _Current_path;
+	set_path(get_path(_Immediate_path));
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	mask_immediate(maskSurface, origin);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
+	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 point surface::show_text(const string& utf8, const point& position) {
 	cairo_new_path(_Context.get());
 	cairo_move_to(_Context.get(), position.x(), position.y());
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	cairo_show_text(_Context.get(), utf8.c_str());
 	double x, y;
 	cairo_get_current_point(_Context.get(), &x, &y);
@@ -548,11 +720,9 @@ point surface::show_text(const string& utf8, const point& position) {
 }
 
 point surface::show_text(const string& utf8, const point& position, const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
-	auto result = show_text(utf8, position);
-	set_pattern(pttn);
-	return result;
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
+	return show_text(utf8, position);
 }
 
 point surface::show_text(const string& utf8, const point& position, const pattern& pttn) {
@@ -560,16 +730,29 @@ point surface::show_text(const string& utf8, const point& position, const patter
 	return show_text(utf8, position);
 }
 
-point surface::show_text(const string& utf8, const point& position, const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+point surface::show_text(const string& utf8, const point& position, const surface& s, const point& origin, extend e, filter f) {
+	return show_text(utf8, position, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+point surface::show_text(const string& utf8, const point& position, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
 	auto result = show_text(utf8, position);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 	return result;
 }
 
 void surface::show_glyphs(const vector<glyph>& glyphs) {
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	vector<cairo_glyph_t> vec;
 	for (const auto& glyph : glyphs) {
 		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
@@ -578,10 +761,9 @@ void surface::show_glyphs(const vector<glyph>& glyphs) {
 }
 
 void surface::show_glyphs(const vector<glyph>& glyphs, const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	show_glyphs(glyphs);
-	set_pattern(pttn);
 }
 
 void surface::show_glyphs(const vector<glyph>& glyphs, const pattern& pttn) {
@@ -589,15 +771,32 @@ void surface::show_glyphs(const vector<glyph>& glyphs, const pattern& pttn) {
 	show_glyphs(glyphs);
 }
 
-void surface::show_glyphs(const vector<glyph>& glyphs, const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::show_glyphs(const vector<glyph>& glyphs, const surface& s, const point& origin, extend e, filter f) {
+	show_glyphs(glyphs, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::show_glyphs(const vector<glyph>& glyphs, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	show_glyphs(glyphs);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
+	vector<cairo_glyph_t> vec;
+	for (const auto& glyph : glyphs) {
+		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
+	}
+	cairo_show_glyphs(_Context.get(), vec.data(), _Container_size_to_int(vec));
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse) {
+	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.get_extend()));
+	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.get_filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Pattern.get_matrix().m00(), _Pattern.get_matrix().m01(), _Pattern.get_matrix().m10(), _Pattern.get_matrix().m11(), _Pattern.get_matrix().m20(), _Pattern.get_matrix().m21());
+	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Pattern.native_handle());
 	vector<cairo_glyph_t> vec;
 	for (const auto& glyph : glyphs) {
 		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
@@ -614,10 +813,9 @@ void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, 
 }
 
 void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const rgba_color& c) {
-	auto pttn = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
-	cairo_set_source_rgba(_Context.get(), c.r(), c.g(), c.b(), c.a());
+	solid_color_pattern_factory factory(c);
+	set_pattern(get_pattern(factory));
 	show_text_glyphs(utf8, glyphs, clusters, clusterToGlyphsMapReverse);
-	set_pattern(pttn);
 }
 
 void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const pattern& pttn) {
@@ -625,12 +823,31 @@ void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, 
 	show_text_glyphs(utf8, glyphs, clusters, clusterToGlyphsMapReverse);
 }
 
-void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const surface& s) {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_reference(cairo_get_source(_Context.get())), &cairo_pattern_destroy);
+void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const surface& s, const point& origin, extend e, filter f) {
+	show_text_glyphs(utf8, glyphs, clusters, clusterToGlyphsMapReverse, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+}
+
+void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	show_text_glyphs(utf8, glyphs, clusters, clusterToGlyphsMapReverse);
-	cairo_surface_flush(_Surface.get());
-	cairo_set_source(_Context.get(), pat.get());
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
+	vector<cairo_glyph_t> vec;
+	for (const auto& glyph : glyphs) {
+		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
+	}
+	const auto tcSize = _Container_size_to_int(clusters);
+	unique_ptr<cairo_text_cluster_t, function<void(cairo_text_cluster_t*)>> sp_tc(cairo_text_cluster_allocate(tcSize), &cairo_text_cluster_free);
+	auto tc_ptr = sp_tc.get();
+	for (auto i = 0; i < tcSize; ++i) {
+		tc_ptr[i].num_bytes = clusters[i].num_bytes();
+		tc_ptr[i].num_glyphs = clusters[i].num_glyphs();
+	}
+	auto ctcf = static_cast<cairo_text_cluster_flags_t>(clusterToGlyphsMapReverse ? CAIRO_TEXT_CLUSTER_FLAG_BACKWARD : 0);
+	cairo_show_text_glyphs(_Context.get(), utf8.data(), _Container_size_to_int(utf8), vec.data(), _Container_size_to_int(vec), sp_tc.get(), tcSize, ctcf);
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::set_matrix(const matrix_2d& m) {
@@ -675,15 +892,6 @@ pattern surface::get_pattern(const solid_color_pattern_factory& f) const {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(f.get_red(), f.get_green(), f.get_blue(), f.get_alpha()), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
-	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(f.get_extend()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(f.get_filter()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	auto fm = f.get_matrix();
-	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
-	cairo_pattern_set_matrix(pat.get(), &mtrx);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
 	auto pttn = pattern(pat.get());
 	pat.release();
 	return pttn;
@@ -694,15 +902,6 @@ pattern surface::get_pattern(const linear_pattern_factory& f) const {
 	point lpt1;
 	f.get_linear_points(lpt0, lpt1);
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_linear(lpt0.x(), lpt0.y(), lpt1.x(), lpt1.y()), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(f.get_extend()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(f.get_filter()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	auto fm = f.get_matrix();
-	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
-	cairo_pattern_set_matrix(pat.get(), &mtrx);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	auto count = static_cast<unsigned int>(f.get_color_stop_count());
@@ -726,15 +925,6 @@ pattern surface::get_pattern(const radial_pattern_factory& f) const {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_radial(center0.x(), center0.y(), radius0, center1.x(), center1.y(), radius1), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
-	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(f.get_extend()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(f.get_filter()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	auto fm = f.get_matrix();
-	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
-	cairo_pattern_set_matrix(pat.get(), &mtrx);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
 	auto count = static_cast<unsigned int>(f.get_color_stop_count());
 	for (unsigned int i = 0; i < count; i++) {
 		double offset;
@@ -752,15 +942,6 @@ pattern surface::get_pattern(const radial_pattern_factory& f) const {
 pattern surface::get_pattern(const mesh_pattern_factory& f) const {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> upPat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
 	auto pat = upPat.get();
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
-
-	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(f.get_extend()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
-	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f.get_filter()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
-	auto fm = f.get_matrix();
-	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
-	cairo_pattern_set_matrix(pat, &mtrx);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
 
 	auto count = f.get_patch_count();
@@ -853,15 +1034,6 @@ pattern surface::get_pattern(const mesh_pattern_factory& f) const {
 pattern surface::get_pattern(surface_pattern_factory& f) const {
 	auto patternSurface = _Surface_create_image_surface_copy(f._Surface);
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_for_surface(patternSurface.native_handle().csfce), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	cairo_pattern_set_extend(pat.get(), _Extend_to_cairo_extend_t(f.get_extend()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	cairo_pattern_set_filter(pat.get(), _Filter_to_cairo_filter_t(f.get_filter()));
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-	auto fm = f.get_matrix();
-	cairo_matrix_t mtrx{ fm.m00(), fm.m01(), fm.m10(), fm.m11(), fm.m20(), fm.m21() };
-	cairo_pattern_set_matrix(pat.get(), &mtrx);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	auto pttn = pattern(pat.get());

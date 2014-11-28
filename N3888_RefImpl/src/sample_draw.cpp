@@ -206,8 +206,8 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	radialFactory.add_color_stop_rgba(0.5, rgba_color::green);
 	radialFactory.add_color_stop_rgba(0.75, rgba_color::blue);
 	radialFactory.add_color_stop_rgba(1.0, rgba_color::white);
-	radialFactory.set_extend(extend::reflect);
 	auto radialPattern = rs.get_pattern(radialFactory);
+	radialPattern.set_extend(extend::reflect);
 	rs.fill_immediate(radialPattern);
 
 	auto imgSfc = image_surface(format::argb32, 40, 40);
@@ -219,8 +219,8 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	imgSfc.fill_immediate(rgba_color::yellow);
 
 	auto sfcFactory = surface_pattern_factory(imgSfc);
-	sfcFactory.set_extend(extend::repeat);
 	auto sfcPattern = rs.get_pattern(sfcFactory);
+	sfcPattern.set_extend(extend::repeat);
 	rs.immediate().reset();
 	rs.immediate().rect({ 500.0, 450.0, 100.0, 100.0 });
 	rs.immediate().rect({ 525.0, 425.0, 50.0, 150.0 });
@@ -233,8 +233,8 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	auto linearFactory = linear_pattern_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
 	linearFactory.add_color_stop_rgba(0.0, rgba_color::chartreuse);
 	linearFactory.add_color_stop_rgba(1.0, rgba_color::salmon);
-	linearFactory.set_extend(extend::repeat);
 	auto linearPattern = rs.get_pattern(linearFactory);
+	linearPattern.set_extend(extend::repeat);
 	rs.immediate().reset();
 	rs.immediate().move_to({ 650.0, 400.0 });
 	rs.immediate().rel_line_to({ 0.0, 100.0 });
@@ -313,19 +313,21 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.set_pattern(redPattern);
 	rs.set_line_width(3.0);
 	rs.stroke();
-	auto radialPattern = radial_pattern_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
-	radialPattern.add_color_stop_rgba(0.0, rgba_color::black);
-	radialPattern.add_color_stop_rgba(0.25, rgba_color::red);
-	radialPattern.add_color_stop_rgba(0.5, rgba_color::green);
-	radialPattern.add_color_stop_rgba(0.75, rgba_color::blue);
-	radialPattern.add_color_stop_rgba(1.0, rgba_color::white);
+	auto radialFactory = radial_pattern_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
+	radialFactory.add_color_stop_rgba(0.0, rgba_color::black);
+	radialFactory.add_color_stop_rgba(0.25, rgba_color::red);
+	radialFactory.add_color_stop_rgba(0.5, rgba_color::green);
+	radialFactory.add_color_stop_rgba(0.75, rgba_color::blue);
+	radialFactory.add_color_stop_rgba(1.0, rgba_color::white);
+	auto radialPattern = rs.get_pattern(radialFactory);
 	radialPattern.set_extend(extend::reflect);
-	rs.set_pattern(rs.get_pattern(radialPattern));
+	rs.set_pattern(radialPattern);
 	rs.fill();
 
-	auto linearPattern = linear_pattern_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
-	linearPattern.add_color_stop_rgba(0.0, rgba_color::chartreuse);
-	linearPattern.add_color_stop_rgba(1.0, rgba_color::salmon);
+	auto linearFactory = linear_pattern_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
+	linearFactory.add_color_stop_rgba(0.0, rgba_color::chartreuse);
+	linearFactory.add_color_stop_rgba(1.0, rgba_color::salmon);
+	auto linearPattern = rs.get_pattern(linearFactory);
 	linearPattern.set_extend(extend::repeat);
 	pf.reset();
 	pf.rect({ 500.0, 450.0, 100.0, 100.0 });
@@ -336,7 +338,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.set_path(rs.get_path(pf));
 	rs.set_pattern(redPattern);
 	rs.stroke();
-	rs.set_pattern(rs.get_pattern(linearPattern));
+	rs.set_pattern(linearPattern);
 	rs.fill();
 
 	pf.reset();
@@ -347,7 +349,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.set_path(rs.get_path(pf));
 	rs.set_pattern(redPattern);
 	rs.stroke();
-	rs.set_pattern(rs.get_pattern(linearPattern));
+	rs.set_pattern(linearPattern);
 	rs.fill();
 
 	pf.reset();

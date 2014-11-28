@@ -8,9 +8,6 @@ using namespace std::experimental::io2d;
 mesh_pattern_factory::mesh_pattern_factory()
 	: _Lock()
 	, _Pattern_type(pattern_type::mesh)
-	, _Extend(extend::default_extend)
-	, _Filter(filter::default_filter)
-	, _Matrix(matrix_2d::init_identity())
 	, _Has_current_patch()
 	, _Current_patch_index()
 	, _Current_patch_side_count()
@@ -21,9 +18,6 @@ mesh_pattern_factory::mesh_pattern_factory()
 mesh_pattern_factory::mesh_pattern_factory(const mesh_pattern_factory& other)
 	: _Lock()
 	, _Pattern_type()
-	, _Extend()
-	, _Filter()
-	, _Matrix()
 	, _Has_current_patch()
 	, _Current_patch_index()
 	, _Current_patch_side_count()
@@ -31,9 +25,6 @@ mesh_pattern_factory::mesh_pattern_factory(const mesh_pattern_factory& other)
 	, _Patches() {
 	lock_guard<decltype(other._Lock)> olg(other._Lock);
 	_Pattern_type = other._Pattern_type;
-	_Extend = other._Extend;
-	_Filter = other._Filter;
-	_Matrix = other._Matrix;
 	_Has_current_patch = other._Has_current_patch;
 	_Current_patch_index = other._Current_patch_index;
 	_Current_patch_side_count = other._Current_patch_side_count;
@@ -46,9 +37,6 @@ mesh_pattern_factory& mesh_pattern_factory::operator=(const mesh_pattern_factory
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
 		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Pattern_type = other._Pattern_type;
-		_Extend = other._Extend;
-		_Filter = other._Filter;
-		_Matrix = other._Matrix;
 		_Has_current_patch = other._Has_current_patch;
 		_Current_patch_index = other._Current_patch_index;
 		_Current_patch_side_count = other._Current_patch_side_count;
@@ -61,9 +49,6 @@ mesh_pattern_factory& mesh_pattern_factory::operator=(const mesh_pattern_factory
 mesh_pattern_factory::mesh_pattern_factory(mesh_pattern_factory&& other)
 	: _Lock()
 	, _Pattern_type()
-	, _Extend()
-	, _Filter()
-	, _Matrix()
 	, _Has_current_patch()
 	, _Current_patch_index()
 	, _Current_patch_side_count()
@@ -71,9 +56,6 @@ mesh_pattern_factory::mesh_pattern_factory(mesh_pattern_factory&& other)
 	, _Patches() {
 	lock_guard<decltype(other._Lock)> olg(other._Lock);
 	_Pattern_type = move(other._Pattern_type);
-	_Extend = move(other._Extend);
-	_Filter = move(other._Filter);
-	_Matrix = move(other._Matrix);
 	_Has_current_patch = move(other._Has_current_patch);
 	_Current_patch_index = move(other._Current_patch_index);
 	_Current_patch_side_count = move(other._Current_patch_side_count);
@@ -86,9 +68,6 @@ mesh_pattern_factory& mesh_pattern_factory::operator=(mesh_pattern_factory&& oth
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
 		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Pattern_type = move(other._Pattern_type);
-		_Extend = move(other._Extend);
-		_Filter = move(other._Filter);
-		_Matrix = move(other._Matrix);
 		_Has_current_patch = move(other._Has_current_patch);
 		_Current_patch_index = move(other._Current_patch_index);
 		_Current_patch_side_count = move(other._Current_patch_side_count);
@@ -96,37 +75,6 @@ mesh_pattern_factory& mesh_pattern_factory::operator=(mesh_pattern_factory&& oth
 		_Patches = move(other._Patches);
 	}
 	return *this;
-}
-
-void mesh_pattern_factory::set_extend(extend e) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Extend = e;
-}
-
-extend mesh_pattern_factory::get_extend() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Extend;
-}
-
-void mesh_pattern_factory::set_filter(filter f) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Filter = f;
-}
-
-filter mesh_pattern_factory::get_filter() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Filter;
-}
-
-void mesh_pattern_factory::set_matrix(const matrix_2d& m) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Matrix = m;
-}
-
-
-matrix_2d mesh_pattern_factory::get_matrix() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Matrix;
 }
 
 void mesh_pattern_factory::begin_patch() {

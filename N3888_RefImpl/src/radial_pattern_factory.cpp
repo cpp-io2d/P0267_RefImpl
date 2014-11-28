@@ -8,9 +8,6 @@ using namespace std::experimental::io2d;
 radial_pattern_factory::radial_pattern_factory()
 	: _Lock()
 	, _Pattern_type(pattern_type::radial)
-	, _Extend(extend::default_extend)
-	, _Filter(filter::default_filter)
-	, _Matrix(matrix_2d::init_identity())
 	, _Center0()
 	, _Radius0()
 	, _Center1()
@@ -20,9 +17,6 @@ radial_pattern_factory::radial_pattern_factory()
 radial_pattern_factory::radial_pattern_factory(const radial_pattern_factory& other)
 	: _Lock()
 	, _Pattern_type()
-	, _Extend()
-	, _Filter()
-	, _Matrix()
 	, _Center0()
 	, _Radius0()
 	, _Center1()
@@ -30,9 +24,6 @@ radial_pattern_factory::radial_pattern_factory(const radial_pattern_factory& oth
 	, _Color_stops() {
 	lock_guard<decltype(other._Lock)> olg(other._Lock);
 	_Pattern_type = other._Pattern_type;
-	_Extend = other._Extend;
-	_Filter = other._Filter;
-	_Matrix = other._Matrix;
 	_Center0 = other._Center0;
 	_Radius0 = other._Radius0;
 	_Center1 = other._Center1;
@@ -45,9 +36,6 @@ radial_pattern_factory& radial_pattern_factory::operator=(const radial_pattern_f
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
 		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Pattern_type = other._Pattern_type;
-		_Extend = other._Extend;
-		_Filter = other._Filter;
-		_Matrix = other._Matrix;
 		_Center0 = other._Center0;
 		_Radius0 = other._Radius0;
 		_Center1 = other._Center1;
@@ -60,9 +48,6 @@ radial_pattern_factory& radial_pattern_factory::operator=(const radial_pattern_f
 radial_pattern_factory::radial_pattern_factory(radial_pattern_factory&& other)
 	: _Lock()
 	, _Pattern_type()
-	, _Extend()
-	, _Filter()
-	, _Matrix()
 	, _Center0()
 	, _Radius0()
 	, _Center1()
@@ -70,9 +55,6 @@ radial_pattern_factory::radial_pattern_factory(radial_pattern_factory&& other)
 	, _Color_stops() {
 	lock_guard<decltype(other._Lock)> olg(other._Lock);
 	_Pattern_type = move(other._Pattern_type);
-	_Extend = move(other._Extend);
-	_Filter = move(other._Filter);
-	_Matrix = move(other._Matrix);
 	_Center0 = move(other._Center0);
 	_Radius0 = move(other._Radius0);
 	_Center1 = move(other._Center1);
@@ -85,9 +67,6 @@ radial_pattern_factory& radial_pattern_factory::operator=(radial_pattern_factory
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
 		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Pattern_type = move(other._Pattern_type);
-		_Extend = move(other._Extend);
-		_Filter = move(other._Filter);
-		_Matrix = move(other._Matrix);
 		_Center0 = move(other._Center0);
 		_Radius0 = move(other._Radius0);
 		_Center1 = move(other._Center1);
@@ -100,45 +79,11 @@ radial_pattern_factory& radial_pattern_factory::operator=(radial_pattern_factory
 radial_pattern_factory::radial_pattern_factory(const point& center0, double radius0, const point& center1, double radius1)
 : _Lock()
 , _Pattern_type(pattern_type::radial)
-, _Extend(extend::default_extend)
-, _Filter(filter::default_filter)
-, _Matrix(matrix_2d::init_identity())
 , _Center0(center0)
 , _Radius0(radius0)
 , _Center1(center1)
 , _Radius1(radius1)
 , _Color_stops() {
-}
-
-void radial_pattern_factory::set_extend(extend e) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Extend = e;
-}
-
-extend radial_pattern_factory::get_extend() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Extend;
-}
-
-void radial_pattern_factory::set_filter(filter f) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Filter = f;
-}
-
-filter radial_pattern_factory::get_filter() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Filter;
-}
-
-void radial_pattern_factory::set_matrix(const matrix_2d& m) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Matrix = m;
-}
-
-
-matrix_2d radial_pattern_factory::get_matrix() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Matrix;
 }
 
 void radial_pattern_factory::add_color_stop_rgba(double offset, const rgba_color& color) {

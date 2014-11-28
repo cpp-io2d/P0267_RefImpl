@@ -8,24 +8,15 @@ using namespace std::experimental::io2d;
 solid_color_pattern_factory::solid_color_pattern_factory()
 	: _Lock()
 	, _Pattern_type(pattern_type::solid_color)
-	, _Extend(extend::default_extend)
-	, _Filter(filter::default_filter)
-	, _Matrix(matrix_2d::init_identity())
 	, _Color(rgba_color::black) {
 }
 
 solid_color_pattern_factory::solid_color_pattern_factory(const solid_color_pattern_factory& other)
 	: _Lock()
 	, _Pattern_type()
-	, _Extend()
-	, _Filter()
-	, _Matrix()
 	, _Color() {
 	lock_guard<decltype(other._Lock)> olg(other._Lock);
 	_Pattern_type = other._Pattern_type;
-	_Extend = other._Extend;
-	_Filter = other._Filter;
-	_Matrix = other._Matrix;
 	_Color = other._Color;
 }
 
@@ -34,9 +25,6 @@ solid_color_pattern_factory& solid_color_pattern_factory::operator=(const solid_
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
 		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Pattern_type = other._Pattern_type;
-		_Extend = other._Extend;
-		_Filter = other._Filter;
-		_Matrix = other._Matrix;
 		_Color = other._Color;
 	}
 	return *this;
@@ -45,15 +33,9 @@ solid_color_pattern_factory& solid_color_pattern_factory::operator=(const solid_
 solid_color_pattern_factory::solid_color_pattern_factory(solid_color_pattern_factory&& other)
 	: _Lock()
 	, _Pattern_type()
-	, _Extend()
-	, _Filter()
-	, _Matrix()
 	, _Color() {
 	lock_guard<decltype(other._Lock)> olg(other._Lock);
 	_Pattern_type = move(other._Pattern_type);
-	_Extend = move(other._Extend);
-	_Filter = move(other._Filter);
-	_Matrix = move(other._Matrix);
 	_Color = move(other._Color);
 }
 
@@ -62,9 +44,6 @@ solid_color_pattern_factory& solid_color_pattern_factory::operator=(solid_color_
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
 		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Pattern_type = move(other._Pattern_type);
-		_Extend = move(other._Extend);
-		_Filter = move(other._Filter);
-		_Matrix = move(other._Matrix);
 		_Color = move(other._Color);
 	}
 	return *this;
@@ -73,9 +52,6 @@ solid_color_pattern_factory& solid_color_pattern_factory::operator=(solid_color_
 solid_color_pattern_factory::solid_color_pattern_factory(const rgba_color& color)
 	: _Lock()
 	, _Pattern_type(pattern_type::solid_color)
-	, _Extend(extend::default_extend)
-	, _Filter(filter::default_filter)
-	, _Matrix(matrix_2d::init_identity())
 	, _Color(color){
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -85,37 +61,6 @@ solid_color_pattern_factory::solid_color_pattern_factory(const rgba_color& color
 	_Color.g(_Clamp_to_normal(color.g()));
 	_Color.b(_Clamp_to_normal(color.b()));
 	_Color.a(_Clamp_to_normal(color.a()));
-}
-
-void solid_color_pattern_factory::set_extend(extend e) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Extend = e;
-}
-
-extend solid_color_pattern_factory::get_extend() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Extend;
-}
-
-void solid_color_pattern_factory::set_filter(filter f) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Filter = f;
-}
-
-filter solid_color_pattern_factory::get_filter() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Filter;
-}
-
-void solid_color_pattern_factory::set_matrix(const matrix_2d& m) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Matrix = m;
-}
-
-
-matrix_2d solid_color_pattern_factory::get_matrix() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	return _Matrix;
 }
 
 rgba_color solid_color_pattern_factory::get_rgba() const {
