@@ -64,7 +64,7 @@ T _Degrees_to_radians(T degrees) {
 	return degrees * static_cast<T>(3.1415926535897932384626433832795L) / static_cast<T>(180.0L);
 }
 
-inline ::std::vector<::std::unique_ptr<::std::experimental::io2d::path_data>> _Get_arc_as_beziers(const ::std::experimental::io2d::point& center, double radius, double angle1, double angle2, bool arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::io2d::point& currentPoint = { }, const ::std::experimental::io2d::point& origin = { }, const ::std::experimental::io2d::matrix_2d& matrix = ::std::experimental::io2d::matrix_2d::init_identity());
+::std::vector<::std::unique_ptr<::std::experimental::io2d::path_data>> _Get_arc_as_beziers(const ::std::experimental::io2d::point& center, double radius, double angle1, double angle2, bool arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::io2d::point& currentPoint = { }, const ::std::experimental::io2d::point& origin = { }, const ::std::experimental::io2d::matrix_2d& matrix = ::std::experimental::io2d::matrix_2d::init_identity());
 
 inline double _Clamp_to_normal(double value) {
 	return ::std::max(::std::min(value, 1.0), 0.0);

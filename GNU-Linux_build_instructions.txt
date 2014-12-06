@@ -6,12 +6,18 @@ tell you if you are missing any other dependencies.
 
 To build the project, from this directory run the command 'autoreconf -i'. It
 should run for a bit then complete silently. If so, you should then run the
-generated './configure' script. This should notify you if you are missing any
-pre-reqs or have an older version that wouldn't work. If configure completes
-successfully, you should be able to run the 'make' command and then execute
-the resulting executable by calling './N3888_RefImpl/src/N3888_RefImpl'.
+generated './configure' script with any necessary parameters. This should
+notify you if you are missing any pre-requisites or have an older version that
+won't work. If configure completes successfully, you should be able to run the
+'make' command and then execute the resulting executable by calling
+the './N3888_RefImpl/src/N3888_RefImpl' executable.
 
 The drawing portion is the same code as in the Windows version. The entry
-point uses GTK+3 and is quite rough currently (very C-like complete with
-*shudder* global variables). It is meant as a demonstration only and will
-improve as time allows.
+point uses GTK+3 and is primarily C code. It is patterned after Gnome project
+utilities. It has improved significantly and is now essentially on par with
+the Windows version.
+
+Tested on OpenSUSE 13.2 with GCC 4.9.0 using the following configure command:
+'./configure CC=gcc-4.9 CXX=g++-4.9 CXXFLAGS="-g -std=c++1y"'. Also tested
+with Clang 3.5 using the configure settings found in the
+run-configure-with-clang-and-libstdc++.sh shell script.

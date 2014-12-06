@@ -11,7 +11,7 @@ namespace std {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
-				const ::std::error_category& io2d_category() {
+				const ::std::error_category& io2d_category() noexcept {
 					static io2d_error_category ec;
 					return ec;
 				}
@@ -35,11 +35,11 @@ namespace std {
 }
 
 namespace std {
-	::std::error_condition make_error_condition(io2d_error err) {
+	::std::error_condition make_error_condition(io2d_error err) noexcept {
 		return ::std::error_condition(static_cast<int>(err), io2d_category());
 	}
 
-	::std::error_code make_error_code(cairo_status_t code) {
+	::std::error_code make_error_code(cairo_status_t code) noexcept {
 		return ::std::error_code(code, io2d_category());
 	}
 }

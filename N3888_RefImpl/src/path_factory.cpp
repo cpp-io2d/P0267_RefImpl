@@ -1436,7 +1436,7 @@ rectangle path_factory::get_path_extents() const {
 
 void path_factory::reset() {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	_Data = { };
+	_Data.clear();
 	_Has_current_point = { };
 	_Current_point = { };
 	_Extents_pt0 = { };

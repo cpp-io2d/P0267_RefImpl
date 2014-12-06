@@ -5,7 +5,7 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-const char* io2d_error_category::name() const {
+const char* io2d_error_category::name() const noexcept {
 	return "io2d";
 }
 
@@ -95,12 +95,12 @@ const char* io2d_error_category::name() const {
 	}
 }
 
-bool io2d_error_category::equivalent(int code, const ::std::error_condition& condition) const {
+bool io2d_error_category::equivalent(int code, const ::std::error_condition& condition) const noexcept {
 	return (*this == condition.category())
 		&& (static_cast<cairo_status_t>(code) == _Io2d_error_to_cairo_status_t(static_cast<io2d_error>(condition.value())));
 }
 
-bool io2d_error_category::equivalent(const ::std::error_code& code, int condition) const {
+bool io2d_error_category::equivalent(const ::std::error_code& code, int condition) const noexcept {
 	// Make sure the error_code's category is of type io2d_error_category
 	return (*this == code.category())
 		// Make sure the error_code's value (which should be a cairo_status_t) maps to the condition (casted to io2d_error).
