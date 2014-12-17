@@ -1,6 +1,10 @@
 #include "RefImplApp.h"
 #include "RefImplWindow.h"
 
+const gchar* RefImplAppVersion = "1.0.4073.1";
+const gchar* RefImplAppName = "N3888_RefImpl";
+const gchar* RefImplAppFullVersion = "N3888_RefImpl version 1.0.4073.1";
+
 struct RefImplAppPrivate_t {
     guint unused;
 };
@@ -13,9 +17,9 @@ GtkWindow* refimpl_app_peek_first_window(RefImplApp* app) {
     g_return_val_if_fail(REFIMPL_IS_APP(app), NULL);
 
     for (windowListItem = gtk_application_get_windows(GTK_APPLICATION(app)); windowListItem != NULL; windowListItem = g_list_next(windowListItem)) {
-	if (REFIMPL_IS_WINDOW(windowListItem->data)) {
-	    return GTK_WINDOW(windowListItem->data);
-	}
+		if (REFIMPL_IS_WINDOW(windowListItem->data)) {
+			return GTK_WINDOW(windowListItem->data);
+		}
     }
 
     refimpl_app_new_window(app);
@@ -60,21 +64,17 @@ static void about_window_action(GSimpleAction* action, GVariant* parameter, gpoi
 	NULL
     };
 
-    const gchar** documenters = NULL;
     GtkWindow* parent;
     parent = refimpl_app_peek_first_window(app);
 
     gtk_show_about_dialog(parent,
-			  "name", "N3888_RefImpl",
-			  "version", RefImplVersion,
-			  "comments", "Reference implementation of the latest successor to N3888.",
-			  "authors", authors,
-			  "documenters", documenters,
-			  "translator-credits", NULL,
-			  "website", "https://github.com/mikebmcl/N3888_RefImpl/",
-			  "website-label", "https://github.com/mikebmcl/N3888_RefImpl/",
-//			  "logo-icon-name", PACKAGE_TARNAME,
-			  NULL);
+		"name", RefImplAppName,
+		"version", RefImplAppVersion,
+		"comments", "Reference implementation of the latest successor to N3888.",
+		"authors", authors,
+		"website", "https://github.com/mikebmcl/N3888_RefImpl/",
+		"website-label", "https://github.com/mikebmcl/N3888_RefImpl/",
+		NULL);
 }
 
 static void raise_action(GSimpleAction* action, GVariant* parameter, gpointer user_data) {

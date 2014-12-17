@@ -24,8 +24,9 @@ struct RefImplAppClass_t {
     GtkApplicationClass parent_class;
 };
 
-const static gchar* RefImplVersion = "1.0.4073.1";
-const static gchar* RefImplFullVersion = "N3888_RefImpl version 1.0.4073.1";
+extern const gchar* RefImplAppVersion;
+extern const gchar* RefImplAppName;
+extern const gchar* RefImplAppFullVersion;
 
 GType refimpl_app_get_type(void);
 

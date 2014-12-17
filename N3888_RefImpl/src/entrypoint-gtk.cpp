@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     }
 
     if (option_version) {
-	g_print("%s\n", RefImplFullVersion);
+	g_print("%s\n", RefImplAppFullVersion);
 	return EXIT_SUCCESS;
     }
 

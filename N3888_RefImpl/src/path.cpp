@@ -33,7 +33,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 	bool hasCurrentPoint = false;
 	// Untransformed because we use it to add to raw relative points for transformation.
 	point currentPoint{ };
-	bool hasLastMoveToPoint = false;
 	// Transformed because we need to know where the transformed last move to point is when we receive a close path instruction and the matrix and origin may have since changed such that we wouldn't be able to calculate it correctly anymore.
 	point lastMoveToPoint{ };
 	const auto& pathData = pb.get_data_ref();
@@ -55,7 +54,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 			cpdItem.point = { pt.x(), pt.y() };
 			vec.push_back(cpdItem);
 			hasCurrentPoint = true;
-			hasLastMoveToPoint = true;
 			lastMoveToPoint = pt;
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
@@ -78,7 +76,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				cpdItem.point = { pt.x(), pt.y() };
 				vec.push_back(cpdItem);
 				hasCurrentPoint = true;
-				hasLastMoveToPoint = true;
 				lastMoveToPoint = pt;
 			}
 		} break;
@@ -98,7 +95,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				currentPoint = dataItem->control_point_1();
 				lastMoveToPoint = pt3;
 				hasCurrentPoint = true;
-				hasLastMoveToPoint = true;
 			}
 			cpdItem.header.type = CAIRO_PATH_CURVE_TO;
 			cpdItem.header.length = 4;
@@ -117,7 +113,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
 			hasCurrentPoint = false;
-			hasLastMoveToPoint = false;
 		} break;
 		case std::experimental::io2d::path_data_type::close_path:
 		{
@@ -150,7 +145,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 			cpdItem.point = { pt.x(), pt.y() };
 			vec.push_back(cpdItem);
 			hasCurrentPoint = true;
-			hasLastMoveToPoint = true;
 			lastMoveToPoint = pt;
 		} break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
@@ -176,7 +170,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				cpdItem.point = { pt.x(), pt.y() };
 				vec.push_back(cpdItem);
 				hasCurrentPoint = true;
-				hasLastMoveToPoint = true;
 				lastMoveToPoint = pt;
 			}
 		} break;
@@ -200,7 +193,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				currentPoint = dataItem->control_point_1() + existingCurrentPoint;
 				lastMoveToPoint = pt3;
 				hasCurrentPoint = true;
-				hasLastMoveToPoint = true;
 			}
 			cpdItem.header.type = CAIRO_PATH_CURVE_TO;
 			cpdItem.header.length = 4;
@@ -233,7 +225,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 					cpdItem.point = { pt.x(), pt.y() };
 					vec.push_back(cpdItem);
 					hasCurrentPoint = true;
-					hasLastMoveToPoint = true;
 					lastMoveToPoint = pt;
 				} break;
 				case std::experimental::io2d::path_data_type::line_to:
@@ -256,7 +247,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 						cpdItem.point = { pt.x(), pt.y() };
 						vec.push_back(cpdItem);
 						hasCurrentPoint = true;
-						hasLastMoveToPoint = true;
 						lastMoveToPoint = pt;
 					}
 				} break;
@@ -276,7 +266,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 						currentPoint = dataItem->control_point_1();
 						lastMoveToPoint = pt3;
 						hasCurrentPoint = true;
-						hasLastMoveToPoint = true;
 					}
 					cpdItem.header.type = CAIRO_PATH_CURVE_TO;
 					cpdItem.header.length = 4;
@@ -303,7 +292,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				case path_data_type::new_sub_path:
 				{
 					hasCurrentPoint = false;
-					hasLastMoveToPoint = false;
 				} break;
 				default:
 					assert("Unexpected path_data_type in arc." && false);
@@ -331,7 +319,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 					cpdItem.point = { pt.x(), pt.y() };
 					vec.push_back(cpdItem);
 					hasCurrentPoint = true;
-					hasLastMoveToPoint = true;
 					lastMoveToPoint = pt;
 				} break;
 				case std::experimental::io2d::path_data_type::line_to:
@@ -354,7 +341,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 						cpdItem.point = { pt.x(), pt.y() };
 						vec.push_back(cpdItem);
 						hasCurrentPoint = true;
-						hasLastMoveToPoint = true;
 						lastMoveToPoint = pt;
 					}
 				} break;
@@ -374,7 +360,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 						currentPoint = dataItem->control_point_1();
 						lastMoveToPoint = pt3;
 						hasCurrentPoint = true;
-						hasLastMoveToPoint = true;
 					}
 					cpdItem.header.type = CAIRO_PATH_CURVE_TO;
 					cpdItem.header.length = 4;
@@ -401,7 +386,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				case path_data_type::new_sub_path:
 				{
 					hasCurrentPoint = false;
-					hasLastMoveToPoint = false;
 				} break;
 				default:
 					assert("Unexpected path_data_type in arc." && false);
