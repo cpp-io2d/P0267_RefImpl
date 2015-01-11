@@ -12,6 +12,11 @@
 #include <string>
 #include <algorithm>
 #include <system_error>
+#ifdef _WIN32_WINNT
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
 
 #if !_Noexcept_conditional_support_test
 #define noexcept
@@ -1185,25 +1190,58 @@ namespace std {
 				};
 
 				class surface {
+				public:
+					// tuple<dashes, offset>
+					typedef ::std::tuple<::std::vector<double>, double> dashes;
+				private:
 					::std::mutex _Lock_for_device;
 					::std::weak_ptr<device> _Device;
 				protected:
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
+
 					const double _Line_join_miter_miter_limit = 10000.0;
+
+					// State - unsaved
+					typedef rectangle _Dirty_type;
+					_Dirty_type _Dirty_rect;
+					format _Format;
+					content _Content;
+
+					// State - saved
+					typedef point _Device_offset_type;
+					_Device_offset_type _Device_offset = { 0.0, 0.0 };
+					pattern _Pattern;
+					antialias _Antialias;
+					dashes _Dashes;
+					fill_rule _Fill_rule;
+					line_cap _Line_cap;
+					line_join _Line_join = line_join::miter;
+					typedef double _Line_width_type;
+					_Line_width_type _Line_width;
+					typedef double _Miter_limit_type;
+					_Miter_limit_type _Miter_limit = 10.0;
+					compositing_operator _Compositing_operator;
+					typedef double _Tolerance_type;
+					_Tolerance_type _Tolerance = 0.1;
 					path _Default_path;
 					path _Current_path;
 					path_factory _Immediate_path;
-					double _Miter_limit = 10.0;
-					line_join _Line_join = line_join::miter;
-					pattern _Pattern;
+					typedef matrix_2d _Transform_matrix_type;
+					_Transform_matrix_type _Transform_matrix;
+					font_face _Font_face; // Altered by select_font_face and set_font_face
+					typedef matrix_2d _Font_matrix_type;
+					_Font_matrix_type _Font_matrix; // Covers both size and full matrix - size is just a uniform scale matrix.
+					font_options _Font_options;
+					// The current scaled_font is created on demand from parameters that are already saved.
 
-					::std::stack<::std::tuple<path, path, path_factory, double, line_join, pattern>> _Saved_state;
+					::std::stack<::std::tuple<_Device_offset_type, pattern, antialias, dashes, fill_rule, line_cap, line_join, _Line_width_type, _Miter_limit_type, compositing_operator, _Tolerance_type, path, path, path_factory, _Transform_matrix_type, font_face, _Font_matrix_type, font_options>> _Saved_state;
+
+					void _Ensure_state();
+					void _Ensure_state(::std::error_code& ec) noexcept;
 					
 					surface(format fmt, int width, int height);
 				public:
-					// tuple<dashes, offset>
-					typedef ::std::tuple<::std::vector<double>, double> dashes;
 
 					typedef _Surface_native_handles native_handle_type;
 					native_handle_type native_handle() const;
@@ -1214,10 +1252,10 @@ namespace std {
 					surface(surface&& other);
 					surface& operator=(surface&& other);
 
-					explicit surface(native_handle_type nh);
+					surface(native_handle_type nh, format fmt, content ctnt);
 
 					// create_similar
-					surface(const surface& other, content content, int width, int height);
+					surface(const surface& other, content ctnt, int width, int height);
 					virtual ~surface();
 
 					// \ref{\iotwod.surface.modifiers.state}, state modifiers:
@@ -1231,8 +1269,8 @@ namespace std {
 					image_surface map_to_image();
 					image_surface map_to_image(const rectangle& extents);
 					void unmap_image(image_surface& image);
-					void save();
-					void restore();
+					virtual void save();
+					virtual void restore();
 					void set_pattern();
 					void set_pattern(const pattern& source);
 					void set_antialias(antialias a);
@@ -1244,7 +1282,7 @@ namespace std {
 					void set_line_width(double width);
 					void set_miter_limit(double limit);
 					void set_compositing_operator(compositing_operator co);
-					void set_tolerance(double tolerance);
+					void set_tolerance(double t);
 					void clip();
 					void clip_immediate();
 					void reset_clip();
@@ -1375,11 +1413,11 @@ namespace std {
 					// \ref{\iotwod.surface.observers.stateobjects}, state object observers:
 					path get_path(const path_factory& pf) const;
 					font_options get_font_options(const font_options_factory& fo) const;
-					pattern get_pattern(const solid_color_pattern_factory& f) const;
-					pattern get_pattern(const linear_pattern_factory& f) const;
-					pattern get_pattern(const radial_pattern_factory& f) const;
-					pattern get_pattern(const mesh_pattern_factory& f) const;
-					pattern get_pattern(surface_pattern_factory& f) const;
+					pattern create_pattern(const solid_color_pattern_factory& f) const;
+					pattern create_pattern(const linear_pattern_factory& f) const;
+					pattern create_pattern(const radial_pattern_factory& f) const;
+					pattern create_pattern(const mesh_pattern_factory& f) const;
+					pattern create_pattern(surface_pattern_factory& f) const;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
 					content get_content() const;
@@ -1437,10 +1475,10 @@ namespace std {
 					image_surface& operator=(const image_surface&) = delete;
 					image_surface(image_surface&& other);
 					image_surface& operator=(image_surface&& other);
-					image_surface(format format, int width, int height);
-					image_surface(vector<unsigned char>& data, format format, int width, int height);
+					image_surface(format fmt, int width, int height);
+					image_surface(vector<unsigned char>& data, format fmt, int width, int height);
 					// create_similar_image
-					image_surface(const surface& other, format format, int width, int height);
+					image_surface(const surface& other, format fmt, int width, int height);
 					// create_from_png
 					image_surface(const ::std::string& filename);
 
@@ -1453,6 +1491,72 @@ namespace std {
 					int get_width() const;
 					int get_height() const;
 					int get_stride() const;
+				};
+
+#ifdef _WIN32_WINNT
+				struct _Win32_display_surface_native_handle {
+					_Surface_native_handles sfc_nh;
+					HWND hwnd;
+					_Surface_native_handles win32_sfc_nh;
+				};
+#endif
+#ifdef _WIN32_WINNT
+				const int _Display_surface_ptr_window_data_byte_offset = 0;
+
+				LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+#endif
+
+				class display_surface : public surface {
+					friend surface;
+					int _Width;
+					int _Height;
+					int _Display_width;
+					int _Display_height;
+					::std::function<void(display_surface& sfc)> _Draw_fn;
+					::std::function<void(display_surface& sfc)> _Size_change_fn;
+
+#ifdef _WIN32_WINNT
+					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+					HWND _Hwnd;
+					// cairo_win32_surface_create doesn't support surfaces with alpha so we need this to do so.
+					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Win32_surface;
+					::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Win32_context;
+
+					LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+#endif
+
+				public:
+#ifdef _WIN32_WINNT
+					typedef _Win32_display_surface_native_handle native_handle_type;
+#endif
+					native_handle_type native_handle() const;
+
+					display_surface() = delete;
+					display_surface(const display_surface&) = delete;
+					display_surface& operator=(const display_surface&) = delete;
+					display_surface(display_surface&& other);
+					display_surface& operator=(display_surface&& other);
+					display_surface(int preferredWidth, int preferredHeight, format preferredFormat);
+
+					virtual ~display_surface();
+
+					void draw_fn(const ::std::function<void(display_surface& sfc)>& fn);
+					void size_change_fn(const ::std::function<void(display_surface& sfc)>& fn);
+					void width(int w);
+					void height(int h);
+					void size(const point& s);
+					void display_width(int w);
+					void display_height(int h);
+					void display_size(const point& s);
+					int join();
+
+					::std::experimental::io2d::format format() const;
+					int width() const;
+					int height() const;
+					point size() const;
+					int display_width() const;
+					int display_height() const;
+					point display_size() const;
 				};
 
 				class surface_pattern_factory {
@@ -1478,8 +1582,9 @@ namespace std {
 				};
 
 				int format_stride_for_width(format format, int width);
+				display_surface make_surface(int preferredWidth, int preferredHeight, format preferredFormat);
 				surface make_surface(surface::native_handle_type nh); // parameters are exposition only.
-				image_surface make_image_surface(format format, int width, int height); // parameters are exposition only.
+				image_surface make_image_surface(format format, int width, int height);
 #if _Inline_namespace_conditional_support_test
 			}
 #endif

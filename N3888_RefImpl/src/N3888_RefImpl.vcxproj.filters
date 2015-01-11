@@ -27,16 +27,10 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="entrypoint-win32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="throw_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xcairoenumhelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Win32RenderWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sample_draw.h">
@@ -53,9 +47,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="entrypoint-win32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -75,9 +66,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="standalone_functions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Win32RenderWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sample_draw.cpp">
@@ -141,6 +129,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="surface_pattern_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="display_surface-win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="entrypoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

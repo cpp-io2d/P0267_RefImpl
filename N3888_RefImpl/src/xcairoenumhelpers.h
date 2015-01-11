@@ -498,6 +498,50 @@ namespace std {
 				}
 			}
 
+			inline cairo_content_t _Cairo_content_t_for_cairo_format_t(cairo_format_t cf) {
+				switch (cf)
+				{
+				case CAIRO_FORMAT_INVALID:
+					_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
+					throw ::std::runtime_error("CAIRO_FORMAT_INVALID has no content equivalent.");
+				case CAIRO_FORMAT_ARGB32:
+					return CAIRO_CONTENT_COLOR_ALPHA;
+				case CAIRO_FORMAT_RGB24:
+					return CAIRO_CONTENT_COLOR;
+				case CAIRO_FORMAT_A8:
+					return CAIRO_CONTENT_ALPHA;
+				case CAIRO_FORMAT_A1:
+					return CAIRO_CONTENT_ALPHA;
+				case CAIRO_FORMAT_RGB16_565:
+					return CAIRO_CONTENT_COLOR;
+				case CAIRO_FORMAT_RGB30:
+					return CAIRO_CONTENT_COLOR;
+				default:
+					throw ::std::runtime_error("Unknown cairo_format_t value.");
+				}
+			}
+
+			inline ::std::experimental::io2d::content _Content_for_format(::std::experimental::io2d::format f) {
+				switch (f) {
+				case std::experimental::io2d::format::invalid:
+					throw ::std::runtime_error("format::invalid has no content equivalent.");
+				case std::experimental::io2d::format::argb32:
+					return ::std::experimental::io2d::content::color_alpha;
+				case std::experimental::io2d::format::rgb24:
+					return ::std::experimental::io2d::content::color;
+				case std::experimental::io2d::format::a8:
+					return ::std::experimental::io2d::content::alpha;
+				case std::experimental::io2d::format::a1:
+					return ::std::experimental::io2d::content::alpha;
+				case std::experimental::io2d::format::rgb16_565:
+					return ::std::experimental::io2d::content::color;
+				case std::experimental::io2d::format::rgb30:
+					return ::std::experimental::io2d::content::color;
+				default:
+					throw ::std::runtime_error("Unknown format value.");
+				}
+			}
+
 			inline ::std::experimental::io2d::path_data_type _Cairo_path_data_type_t_to_path_data_type(cairo_path_data_type_t cpdt) {
 				switch (cpdt) {
 				case CAIRO_PATH_MOVE_TO:

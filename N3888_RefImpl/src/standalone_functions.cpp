@@ -11,13 +11,17 @@ namespace std {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
-				const ::std::error_category& io2d_category() noexcept {
+				const ::std::error_category& io2d_category() noexcept{
 					static io2d_error_category ec;
 					return ec;
 				}
 
-				surface make_surface(surface::native_handle_type nh) {
-					return surface(nh);
+				display_surface make_surface(int preferredWidth, int preferredHeight, format preferredFormat) {
+					return display_surface(preferredWidth, preferredHeight, preferredFormat);
+				}
+
+				surface make_surface(surface::native_handle_type nh, format fmt) {
+					return surface(nh, fmt, _Content_for_format(fmt));
 				}
 
 				image_surface make_image_surface(format fmt, int width, int height) {
@@ -35,11 +39,11 @@ namespace std {
 }
 
 namespace std {
-	::std::error_condition make_error_condition(io2d_error err) noexcept {
+	::std::error_condition make_error_condition(io2d_error err) noexcept{
 		return ::std::error_condition(static_cast<int>(err), io2d_category());
 	}
 
-	::std::error_code make_error_code(cairo_status_t code) noexcept {
+		::std::error_code make_error_code(cairo_status_t code) noexcept{
 		return ::std::error_code(code, io2d_category());
 	}
 }

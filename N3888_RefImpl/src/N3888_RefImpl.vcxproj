@@ -91,6 +91,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
@@ -112,6 +113,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pd
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
@@ -140,6 +142,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pd
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
@@ -166,6 +169,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\cairo.lib";"$(ProjectDir)win32\lib\$(PlatformTarget)\$(Configuration)\zlib.lib";comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\cairo.dll" "$(OutputPath)"
@@ -177,19 +181,18 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="io2d.h" />
-    <ClInclude Include="entrypoint-win32.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="sample_draw.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="throw_helpers.h" />
-    <ClInclude Include="Win32RenderWindow.h" />
     <ClInclude Include="xcairoenumhelpers.h" />
     <ClInclude Include="xio2d.h" />
     <ClInclude Include="xio2dhelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="device.cpp" />
-    <ClCompile Include="entrypoint-win32.cpp" />
+    <ClCompile Include="display_surface-win32.cpp" />
+    <ClCompile Include="entrypoint.cpp" />
     <ClCompile Include="font_extents.cpp" />
     <ClCompile Include="font_face.cpp" />
     <ClCompile Include="font_options.cpp" />
@@ -217,7 +220,6 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="surface_pattern_factory.cpp" />
     <ClCompile Include="text_cluster.cpp" />
     <ClCompile Include="text_extents.cpp" />
-    <ClCompile Include="Win32RenderWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="N3888_RefImpl.rc" />

@@ -1,20 +1,62 @@
 #include "io2d.h"
 #include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
-#include <algorithm>
 
 using namespace std;
 using namespace std::experimental::io2d;
+
+void surface::_Ensure_state() {
+	if (_Surface == nullptr || _Context == nullptr) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
+	}
+	set_device_offset(_Device_offset);
+	set_pattern(_Pattern);
+	set_dashes(_Dashes);
+	set_fill_rule(_Fill_rule);
+	set_line_cap(_Line_cap);
+	set_line_join(_Line_join);
+	set_line_width(_Line_width);
+	set_miter_limit(_Miter_limit);
+	set_compositing_operator(_Compositing_operator);
+	set_tolerance(_Tolerance);
+	set_path(_Current_path);
+	set_matrix(_Transform_matrix);
+	set_font_face(_Font_face);
+	set_font_matrix(_Font_matrix);
+	set_font_options(_Font_options);
+}
+
+void surface::_Ensure_state(error_code& ec) noexcept {
+	if (_Surface == nullptr || _Context == nullptr) {
+		ec = make_error_code(CAIRO_STATUS_NULL_POINTER);
+		return;
+	}
+}
 
 surface::surface(format fmt, int width, int height)
 	: _Lock_for_device()
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
+	, _Dirty_rect()
+	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get())))
+	, _Content(_Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get())))
+	, _Device_offset(0.0, 0.0)
+	, _Pattern(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0))
+	, _Fill_rule(fill_rule::winding)
+	, _Line_cap(line_cap::butt)
+	, _Line_join(line_join::miter)
+	, _Line_width(2.0)
+	, _Miter_limit(10.0)
+	, _Compositing_operator(compositing_operator::default_op)
+	, _Tolerance(0.1)
 	, _Default_path(get_path(path_factory()))
 	, _Current_path(_Default_path)
 	, _Immediate_path()
-	, _Pattern(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0))
+	, _Transform_matrix(matrix_2d::init_identity())
+	, _Font_face(simple_font_face("sans", font_slant::normal, font_weight::normal))
+	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
+	, _Font_options(antialias::default_antialias, subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 }
 
@@ -27,15 +69,25 @@ surface::surface(surface&& other)
 	, _Device(move(other._Device))
 	, _Surface(move(other._Surface))
 	, _Context(move(other._Context))
+	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get())))
+	, _Content(_Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get())))
+	, _Device_offset(move(other._Device_offset))
+	, _Pattern(move(other._Pattern))
+	, _Fill_rule(move(other._Fill_rule))
+	, _Line_cap(move(other._Line_cap))
+	, _Line_join(move(other._Line_join))
+	, _Line_width(move(other._Line_width))
+	, _Miter_limit(move(other._Miter_limit))
+	, _Compositing_operator(move(other._Compositing_operator))
+	, _Tolerance(move(other._Tolerance))
 	, _Default_path(move(other._Default_path))
 	, _Current_path(move(other._Current_path))
 	, _Immediate_path(move(other._Immediate_path))
-	, _Miter_limit(move(other._Miter_limit))
-	, _Line_join(move(other._Line_join))
-	, _Pattern(move(other._Pattern))
+	, _Transform_matrix(move(other._Transform_matrix))
+	, _Font_face(move(other._Font_face))
+	, _Font_matrix(move(other._Font_matrix))
+	, _Font_options(move(other._Font_options))
 	, _Saved_state(move(other._Saved_state)) {
-	other._Surface = nullptr;
-	other._Context = nullptr;
 }
 
 surface& surface::operator=(surface&& other) {
@@ -43,43 +95,81 @@ surface& surface::operator=(surface&& other) {
 		_Device = move(other._Device);
 		_Surface = move(other._Surface);
 		_Context = move(other._Context);
+		_Format = _Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get()));
+		_Content = _Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get()));
+		_Device_offset = move(other._Device_offset);
+		_Pattern = move(other._Pattern);
+		_Fill_rule = move(other._Fill_rule);
+		_Line_cap = move(other._Line_cap);
+		_Line_join = move(other._Line_join);
+		_Line_width = move(other._Line_width);
+		_Miter_limit = move(other._Miter_limit);
+		_Compositing_operator = move(other._Compositing_operator);
+		_Tolerance = move(other._Tolerance);
 		_Default_path = move(other._Default_path);
 		_Current_path = move(other._Current_path);
 		_Immediate_path = move(other._Immediate_path);
-		_Miter_limit = move(other._Miter_limit);
-		_Line_join = move(other._Line_join);
-		_Pattern = move(other._Pattern);
+		_Transform_matrix = move(other._Transform_matrix);
+		_Font_face = move(other._Font_face);
+		_Font_matrix = move(other._Font_matrix);
+		_Font_options = move(other._Font_options);
 		_Saved_state = move(other._Saved_state);
-		other._Surface = nullptr;
-		other._Context = nullptr;
 	}
 	return *this;
 }
 
-surface::surface(surface::native_handle_type nh)
+surface::surface(surface::native_handle_type nh, format fmt, content ctnt)
 	: _Lock_for_device()
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy))
+	, _Format(fmt)
+	, _Content(ctnt)
+	, _Device_offset(0.0, 0.0)
+	, _Pattern(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
+	, _Fill_rule(fill_rule::winding)
+	, _Line_cap(line_cap::butt)
+	, _Line_join(line_join::miter)
+	, _Line_width(2.0)
+	, _Miter_limit(10.0)
+	, _Compositing_operator(compositing_operator::default_op)
+	, _Tolerance(0.1)
 	, _Default_path(get_path(path_factory()))
 	, _Current_path(_Default_path)
 	, _Immediate_path()
-	, _Pattern(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
+	, _Transform_matrix(matrix_2d::init_identity())
+	, _Font_face(simple_font_face("sans", font_slant::normal, font_weight::normal))
+	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
+	, _Font_options(antialias::default_antialias, subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 	if (_Context.get() != nullptr) {
 		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 	}
 }
 
-surface::surface(const surface& other, content content, int width, int height)
+surface::surface(const surface& other, content ctnt, int width, int height)
 	: _Lock_for_device()
 	, _Device()
-	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(content), width, height), &cairo_surface_destroy))
+	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(ctnt), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
+	, _Format(other._Format)
+	, _Content(ctnt)
+	, _Device_offset(0.0, 0.0)
+	, _Pattern(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
+	, _Fill_rule(fill_rule::winding)
+	, _Line_cap(line_cap::butt)
+	, _Line_join(line_join::miter)
+	, _Line_width(2.0)
+	, _Miter_limit(10.0)
+	, _Compositing_operator(compositing_operator::default_op)
+	, _Tolerance(0.1)
 	, _Default_path(get_path(path_factory()))
 	, _Current_path(_Default_path)
 	, _Immediate_path()
-	, _Pattern(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0))
+	, _Transform_matrix(matrix_2d::init_identity())
+	, _Font_face(simple_font_face("sans", font_slant::normal, font_weight::normal))
+	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
+	, _Font_options(antialias::default_antialias, subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 }
 
@@ -110,10 +200,12 @@ void surface::mark_dirty() {
 }
 
 void surface::mark_dirty(const rectangle& rect) {
+	_Dirty_rect = rect;
 	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Double_to_int(rect.x(), false), _Double_to_int(rect.y(), false), _Double_to_int(rect.width()), _Double_to_int(rect.height()));
 }
 
 void surface::set_device_offset(const point& offset) {
+	_Device_offset = offset;
 	cairo_surface_set_device_offset(_Surface.get(), offset.x(), offset.y());
 }
 
@@ -138,25 +230,40 @@ void surface::unmap_image(image_surface& image) {
 
 void surface::save() {
 	cairo_save(_Context.get());
-	_Saved_state.push(make_tuple(_Default_path, _Current_path, _Immediate_path, _Miter_limit, _Line_join, _Pattern));
+	_Saved_state.push(make_tuple(_Device_offset, _Pattern, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Tolerance, _Default_path, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
 }
 
 void surface::restore() {
 	cairo_restore(_Context.get());
 	{
 		auto& t = _Saved_state.top();
-		_Default_path = get<0>(t);
-		_Current_path = get<1>(t);
-		_Immediate_path = get<2>(t);
-		_Miter_limit = get<3>(t);
-		_Line_join = get<4>(t);
-		_Pattern = get<5>(t);
+		_Device_offset = get<0>(t);
+		_Pattern = get<1>(t);
+		_Antialias = get<2>(t);
+		_Dashes = get<3>(t);
+		_Fill_rule = get<4>(t);
+		_Line_cap = get<5>(t);
+		_Line_join = get<6>(t);
+		_Line_width = get<7>(t);
+		_Miter_limit = get<8>(t);
+		_Compositing_operator = get<9>(t);
+		_Tolerance = get<10>(t);
+		_Default_path = get<11>(t);
+		_Current_path = get<12>(t);
+		_Immediate_path = get<13>(t);
+		_Transform_matrix = get<14>(t);
+		_Font_face = get<15>(t);
+		_Font_matrix = get<16>(t);
+		_Font_options = get<17>(t);
+
+		_Ensure_state();
 	}
 	_Saved_state.pop();
 }
 
 void surface::set_pattern() {
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
+	_Pattern = pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
 }
 
 void surface::set_pattern(const pattern& source) {
@@ -164,22 +271,27 @@ void surface::set_pattern(const pattern& source) {
 }
 
 void surface::set_antialias(antialias a) {
+	_Antialias = a;
 	cairo_set_antialias(_Context.get(), _Antialias_to_cairo_antialias_t(a));
 }
 
 void surface::set_dashes() {
+	_Dashes = dashes(vector<double>(), 0.0);
 	cairo_set_dash(_Context.get(), nullptr, 0, 0.0);
 }
 
 void surface::set_dashes(const dashes& d) {
+	_Dashes = d;
 	cairo_set_dash(_Context.get(), get<0>(d).data(), _Container_size_to_int(get<0>(d)), get<1>(d));
 }
 
 void surface::set_fill_rule(fill_rule fr) {
+	_Fill_rule = fr;
 	cairo_set_fill_rule(_Context.get(), _Fill_rule_to_cairo_fill_rule_t(fr));
 }
 
 void surface::set_line_cap(line_cap lc) {
+	_Line_cap = lc;
 	cairo_set_line_cap(_Context.get(), _Line_cap_to_cairo_line_cap_t(lc));
 }
 
@@ -195,6 +307,7 @@ void surface::set_line_join(line_join lj) {
 }
 
 void surface::set_line_width(double width) {
+	_Line_width = width;
 	cairo_set_line_width(_Context.get(), std::max(width, 0.0));
 }
 
@@ -206,11 +319,13 @@ void surface::set_miter_limit(double limit) {
 }
 
 void surface::set_compositing_operator(compositing_operator co) {
+	_Compositing_operator = co;
 	cairo_set_operator(_Context.get(), _Compositing_operator_to_cairo_operator_t(co));
 }
 
-void surface::set_tolerance(double tolerance) {
-	cairo_set_tolerance(_Context.get(), tolerance);
+void surface::set_tolerance(double t) {
+	_Tolerance = t;
+	cairo_set_tolerance(_Context.get(), t);
 }
 
 void surface::clip() {
@@ -234,7 +349,7 @@ void surface::set_path() {
 }
 
 void surface::set_path(const path& p) {
-	this->_Current_path = p;
+	_Current_path = p;
 	cairo_new_path(_Context.get());
 	cairo_append_path(_Context.get(), p.native_handle());
 }
@@ -255,7 +370,7 @@ void surface::paint() {
 
 void surface::paint(const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	paint();
 }
 
@@ -291,7 +406,7 @@ void surface::paint(double alpha) {
 
 void surface::paint(const rgba_color& c, double alpha) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	paint(alpha);
 }
 
@@ -327,7 +442,7 @@ void surface::fill() {
 
 void surface::fill(const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	fill();
 }
 
@@ -366,7 +481,7 @@ void surface::fill_immediate() {
 
 void surface::fill_immediate(const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	fill_immediate();
 }
 
@@ -405,7 +520,7 @@ void surface::stroke() {
 
 void surface::stroke(const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	stroke();
 }
 
@@ -444,7 +559,7 @@ void surface::stroke_immediate() {
 
 void surface::stroke_immediate(const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	stroke_immediate();
 }
 
@@ -483,7 +598,7 @@ void surface::mask(const pattern& maskPttn) {
 
 void surface::mask(const pattern& maskPttn, const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	mask(maskPttn);
 }
 
@@ -519,7 +634,7 @@ void surface::mask(const surface& maskSurface) {
 
 void surface::mask(const surface& maskSurface, const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	mask(maskSurface);
 }
 
@@ -555,7 +670,7 @@ void surface::mask(const surface& maskSurface, const point& maskOrigin) {
 
 void surface::mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	mask(maskSurface, maskOrigin);
 }
 
@@ -594,7 +709,7 @@ void surface::mask_immediate(const pattern& maskPttn) {
 
 void surface::mask_immediate(const pattern& maskPttn, const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	mask(maskPttn);
 }
 
@@ -636,7 +751,7 @@ void surface::mask_immediate(const surface& maskSurface) {
 
 void surface::mask_immediate(const surface& maskSurface, const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	mask_immediate(maskSurface);
 }
 
@@ -677,7 +792,7 @@ void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin
 
 void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	mask_immediate(maskSurface, maskOrigin);
 }
 
@@ -721,7 +836,7 @@ point surface::show_text(const string& utf8, const point& position) {
 
 point surface::show_text(const string& utf8, const point& position, const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	return show_text(utf8, position);
 }
 
@@ -762,7 +877,7 @@ void surface::show_glyphs(const vector<glyph>& glyphs) {
 
 void surface::show_glyphs(const vector<glyph>& glyphs, const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	show_glyphs(glyphs);
 }
 
@@ -814,7 +929,7 @@ void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, 
 
 void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const rgba_color& c) {
 	solid_color_pattern_factory factory(c);
-	set_pattern(get_pattern(factory));
+	set_pattern(create_pattern(factory));
 	show_text_glyphs(utf8, glyphs, clusters, clusterToGlyphsMapReverse);
 }
 
@@ -888,7 +1003,7 @@ font_options surface::get_font_options(const font_options_factory& fo) const {
 	return font_options(fo.get_antialias(), fo.get_subpixel_order());
 }
 
-pattern surface::get_pattern(const solid_color_pattern_factory& f) const {
+pattern surface::create_pattern(const solid_color_pattern_factory& f) const {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(f.get_red(), f.get_green(), f.get_blue(), f.get_alpha()), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
@@ -897,7 +1012,7 @@ pattern surface::get_pattern(const solid_color_pattern_factory& f) const {
 	return pttn;
 }
 
-pattern surface::get_pattern(const linear_pattern_factory& f) const {
+pattern surface::create_pattern(const linear_pattern_factory& f) const {
 	point lpt0;
 	point lpt1;
 	f.get_linear_points(lpt0, lpt1);
@@ -918,7 +1033,7 @@ pattern surface::get_pattern(const linear_pattern_factory& f) const {
 	return pttn;
 }
 
-pattern surface::get_pattern(const radial_pattern_factory& f) const {
+pattern surface::create_pattern(const radial_pattern_factory& f) const {
 	point center0, center1;
 	double radius0, radius1;
 	f.get_radial_circles(center0, radius0, center1, radius1);
@@ -939,7 +1054,7 @@ pattern surface::get_pattern(const radial_pattern_factory& f) const {
 	return pttn;
 }
 
-pattern surface::get_pattern(const mesh_pattern_factory& f) const {
+pattern surface::create_pattern(const mesh_pattern_factory& f) const {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> upPat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
 	auto pat = upPat.get();
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
@@ -1031,7 +1146,7 @@ pattern surface::get_pattern(const mesh_pattern_factory& f) const {
 	return pttn;
 }
 
-pattern surface::get_pattern(surface_pattern_factory& f) const {
+pattern surface::create_pattern(surface_pattern_factory& f) const {
 	auto patternSurface = _Surface_create_image_surface_copy(f._Surface);
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_for_surface(patternSurface.native_handle().csfce), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
@@ -1042,7 +1157,7 @@ pattern surface::get_pattern(surface_pattern_factory& f) const {
 }
 
 pattern surface::get_pattern() const {
-	return pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
+	return _Pattern;
 }
 
 content surface::get_content() const {
