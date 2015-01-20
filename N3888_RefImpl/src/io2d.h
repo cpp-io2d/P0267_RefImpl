@@ -16,6 +16,10 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#else
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #endif
 
 #if !_Noexcept_conditional_support_test
@@ -478,7 +482,7 @@ namespace std {
 
 					void num_bytes(int value);
 					void num_glyphs(int value);
-					
+
 					int num_bytes() const;
 					int num_glyphs() const;
 				};
@@ -1239,7 +1243,7 @@ namespace std {
 
 					void _Ensure_state();
 					void _Ensure_state(::std::error_code& ec) noexcept;
-					
+
 					surface(format fmt, int width, int height);
 				public:
 
@@ -1499,11 +1503,18 @@ namespace std {
 					HWND hwnd;
 					_Surface_native_handles win32_sfc_nh;
 				};
-#endif
-#ifdef _WIN32_WINNT
+
 				const int _Display_surface_ptr_window_data_byte_offset = 0;
 
 				LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+#else
+				struct _Xlib_display_surface_native_handle {
+					_Surface_native_handles sfc_nh;
+					Display* display;
+					Window wndw;
+					::std::mutex& display_mutex;
+					int& display_ref_count;
+				};
 #endif
 
 				class display_surface : public surface {
@@ -1520,14 +1531,26 @@ namespace std {
 					HWND _Hwnd;
 					// cairo_win32_surface_create doesn't support surfaces with alpha so we need this to do so.
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Win32_surface;
-					::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Win32_context;
+					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Win32_context;
 
 					LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+#else
+					static ::std::mutex _Display_mutex;
+					static ::std::unique_ptr<Display, ::std::function<void(Display*)>> _Display;
+					static int _Display_ref_count;
+					::Window _Wndw;
+					bool _Can_draw = false;
+					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Xlib_surface;
+					::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Xlib_context;
+
+					static Bool _X11_if_event_pred(Display* display, XEvent* event, XPointer arg);
 #endif
 
 				public:
 #ifdef _WIN32_WINNT
 					typedef _Win32_display_surface_native_handle native_handle_type;
+#else
+					typedef _Xlib_display_surface_native_handle native_handle_type;
 #endif
 					native_handle_type native_handle() const;
 
@@ -1544,19 +1567,15 @@ namespace std {
 					void size_change_fn(const ::std::function<void(display_surface& sfc)>& fn);
 					void width(int w);
 					void height(int h);
-					void size(const point& s);
 					void display_width(int w);
 					void display_height(int h);
-					void display_size(const point& s);
 					int join();
 
 					::std::experimental::io2d::format format() const;
 					int width() const;
 					int height() const;
-					point size() const;
 					int display_width() const;
 					int display_height() const;
-					point display_size() const;
 				};
 
 				class surface_pattern_factory {

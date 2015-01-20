@@ -8,7 +8,7 @@ using namespace std::experimental::io2d;
 
 inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const char* message) {
 	if (message != nullptr) {
-		// Note: C-style cast because system_error requires an int but GetLastError returns a DWORD (i.e. unsigned long) but ordinary WinError.h values never exceed the max value of an int. 
+		// Note: C-style cast because system_error requires an int but GetLastError returns a DWORD (i.e. unsigned long) but ordinary WinError.h values never exceed the max value of an int.
 		throw system_error((int)getLastErrorValue, system_category(), message);
 	}
 	else {
@@ -162,27 +162,23 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 }
 
 display_surface::native_handle_type display_surface::native_handle() const {
-#ifdef _WIN32_WINNT
 	return{ { _Surface.get(), _Context.get() }, _Hwnd, { _Win32_surface.get(), _Win32_context.get() } };
-#endif
 }
 
 display_surface::display_surface(display_surface&& other)
 	: surface(move(other))
 	, _Width(move(other._Width))
 	, _Height(move(other._Height))
+	, _Display_width(move(other._Display_width))
+	, _Display_height(move(other._Display_height))
 	, _Draw_fn(move(other._Draw_fn))
 	, _Size_change_fn(move(other._Size_change_fn))
-#ifdef _WIN32_WINNT
 	, _Hwnd(move(other._Hwnd))
 	, _Win32_surface(move(other._Win32_surface))
 	, _Win32_context(move(other._Win32_context)) {
-#endif
 	other._Draw_fn = nullptr;
 	other._Size_change_fn = nullptr;
-#ifdef _WIN32_WINNT
 	other._Hwnd = nullptr;
-#endif
 }
 
 display_surface& display_surface::operator=(display_surface&& other) {
@@ -190,15 +186,15 @@ display_surface& display_surface::operator=(display_surface&& other) {
 		surface::operator=(move(other));
 		_Width = move(other._Width);
 		_Height = move(other._Height);
+		_Display_width = move(other._Display_width);
+		_Display_height = move(other._Display_height);
 		_Draw_fn = move(other._Draw_fn);
 		_Size_change_fn = move(other._Size_change_fn);
-#ifdef _WIN32_WINNT
 		_Hwnd = move(other._Hwnd);
 		_Win32_surface = move(other._Win32_surface);
 		_Win32_context = move(other._Win32_context);
 
 		other._Hwnd = nullptr;
-#endif
 		other._Draw_fn = nullptr;
 		other._Size_change_fn = nullptr;
 	}
@@ -212,13 +208,13 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
 	, _Width(preferredWidth)
 	, _Height(preferredHeight)
+	, _Display_width(preferredWidth)
+	, _Display_height(preferredHeight)
 	, _Draw_fn()
 	, _Size_change_fn()
-#ifdef _WIN32_WINNT
 	, _Hwnd(nullptr)
 	, _Win32_surface(nullptr, &cairo_surface_destroy)
 	, _Win32_context(nullptr, &cairo_destroy) {
-#endif
 	call_once(_Window_class_registered_flag, _MyRegisterClass, static_cast<HINSTANCE>(GetModuleHandleW(nullptr)));
 	// Record the desired client window size
 	RECT rc;
@@ -247,7 +243,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 		lleft, ltop,						// initial x, y
 		lwidth,								// initial width
 		lheight,							// initial height
-		NULL,								// handle to parent 
+		NULL,								// handle to parent
 		NULL,								// handle to menu
 		NULL,								// instance of this application
 		NULL);								// extra creation parms
@@ -337,10 +333,6 @@ int display_surface::height() const {
 	return _Height;
 }
 
-point display_surface::size() const {
-	return{ static_cast<double>(_Width), static_cast<double>(_Height) };
-}
-
 int display_surface::join() {
 	MSG msg{ };
 	msg.message = WM_NULL;
@@ -389,8 +381,4 @@ int display_surface::display_width() const {
 
 int display_surface::display_height() const {
 	return _Display_height;
-}
-
-point display_surface::display_size() const {
-	return{ static_cast<double>(_Display_width), static_cast<double>(_Display_height) };
 }

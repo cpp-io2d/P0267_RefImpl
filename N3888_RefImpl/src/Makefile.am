@@ -1,19 +1,20 @@
 ## Process this file with automake to produce Makefile.in
 
-resource_Files = @DOLLAR_SIGN@(shell glib-compile-resources --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/refimpl.gresource.xml)
-refimpl-resources.c: refimpl.gresource.xml $(resource_Files)
-	glib-compile-resources --target=$@ --sourcedir=$(srcdir) --generate-source --c-name refimpl $(srcdir)/refimpl.gresource.xml
-refimpl-resources.h: refimpl.gresource.xml $(resource_Files)
-	glib-compile-resources --target=$@ --sourcedir=$(srcdir) --generate-header --c-name refimpl $(srcdir)/refimpl.gresource.xml
+##resource_Files = @DOLLAR_SIGN@(shell glib-compile-resources --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/refimpl.gresource.xml)
+##refimpl-resources.c: refimpl.gresource.xml $(resource_Files)
+##	glib-compile-resources --target=$@ --sourcedir=$(srcdir) --generate-source --c-name refimpl $(srcdir)/refimpl.gresource.xml
+##refimpl-resources.h: refimpl.gresource.xml $(resource_Files)
+##	glib-compile-resources --target=$@ --sourcedir=$(srcdir) --generate-header --c-name refimpl $(srcdir)/refimpl.gresource.xml
 
-BUILT_SOURCES =			refimpl-resources.c \
-				refimpl-resources.h \
-				$(NULL)
+##BUILT_SOURCES =			refimpl-resources.c \
+##				refimpl-resources.h \
+##				$(NULL)
 
 bin_PROGRAMS = 			N3888_RefImpl
 
 N3888_RefImpl_SOURCES =		device.cpp \
-				entrypoint-gtk.cpp \
+				display_surface-xlib.cpp \
+				entrypoint.cpp \
 				font_extents.cpp \
 				font_face.cpp \
 				font_options.cpp \
@@ -40,11 +41,11 @@ N3888_RefImpl_SOURCES =		device.cpp \
 				surface.cpp \
 				surface_pattern_factory.cpp \
 				text_cluster.cpp \
-				text_extents.cpp \
-				refimpl-resources.c \
-				RefImplApp.c \
-				RefImplWindow.c \
-				RefImplDraw.cpp
+				text_extents.cpp
+##				refimpl-resources.c \
+##				RefImplApp.c \
+##				RefImplWindow.c \
+##				RefImplDraw.cpp
 ##				signals.cpp \
 
 N3888_RefImpl_LDADD = 		@GTKCAIRO_LIBS@
