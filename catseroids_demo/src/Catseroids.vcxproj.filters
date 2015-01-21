@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="N3888_Impl">
+      <UniqueIdentifier>{0a299a7f-f3ab-4442-86b3-9fe93583d99b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCatseroids.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Win32RenderWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsRendererN3888.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameActors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\drawing.h">
+      <Filter>N3888_Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\throw_helpers.h">
+      <Filter>N3888_Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\xcairoenumhelpers.h">
+      <Filter>N3888_Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\xdrawing.h">
+      <Filter>N3888_Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\xdrawinghelpers.h">
+      <Filter>N3888_Impl</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Win32RenderWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCatseroids.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsRendererN3888.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameActors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\device.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\drawing_exception.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\font_face.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\font_options.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\font_options_builder.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\image_surface.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\linear_pattern_builder.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\matrix.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\mesh_pattern_builder.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\path.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\path_builder.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\pattern.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\point.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\radial_pattern_builder.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\raster_source_pattern_builder.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\rgba_color.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\scaled_font.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\solid_color_pattern_builder.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\standalone_functions.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\surface.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\surface_pattern_builder.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\N3888_RefImpl\src\toy_font_face.cpp">
+      <Filter>N3888_Impl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Catseroids.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Catseroids.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
