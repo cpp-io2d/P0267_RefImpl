@@ -309,10 +309,6 @@ void display_surface::height(int h) {
 	throw system_error(make_error_code(errc::not_supported));
 }
 
-void display_surface::size(const point& s) {
-	throw system_error(make_error_code(errc::not_supported));
-}
-
 void display_surface::display_width(int w) {
 	throw system_error(make_error_code(errc::not_supported));
 }
