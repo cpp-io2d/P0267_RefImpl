@@ -263,18 +263,17 @@ void MSOTCppGUI::GraphicsRendererN3888::DrawFish(std::shared_ptr<GameActorFish> 
 	{
 	case GameActorRenderMode::sprite: {
 		// sprite mode
-		std::string path = rot == 0 ? "Sprites\\fish_forward.png" : "Sprites\\fish_backward.png";
-		image_surface fishSprite(path);
+		static image_surface forwardFishSprite("Sprites\\fish_forward.png");
+		static image_surface reverseFishSprite("Sprites\\fish_backward.png");
+		auto& fishSprite = rot == 0 ? forwardFishSprite : reverseFishSprite;
 		int spriteHeight = fishSprite.get_height();
 		int spriteWidth = fishSprite.get_width();
-		int spriteStride = fishSprite.get_stride();
 
 		double scaleW = (bnd.width / spriteWidth);
 		double scaleH = (bnd.height / spriteHeight);
 		_surface->set_matrix(matrix_2d::init_translate({ (pos.x * (1 - scaleW)) - (bnd.width / 4), (pos.y * (1 - scaleH)) - (bnd.height / 4) }) * matrix_2d::init_scale({ scaleW, scaleH }));
 		_surface->paint(fishSprite);
 		_surface->set_matrix(matrix_2d::init_identity());
-		_surface->unmap_image(fishSprite);
 		break;
 	}
 

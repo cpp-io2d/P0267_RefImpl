@@ -44,20 +44,20 @@ namespace MSOTCppGUI
 	public:
 		Catseroid();
 		virtual ~Catseroid();
-		virtual void Initialize(const unsigned int width, const unsigned int height);
-		virtual void Start(std::shared_ptr<IGraphicsRenderer> renderer);
-		virtual void Stop();
+		virtual void Initialize(const unsigned int width, const unsigned int height) override;
+		virtual void Start(std::shared_ptr<IGraphicsRenderer> renderer) override;
+		virtual void Stop() override;
 		void ToggleSpriteMode();
 
 		// IInputEvents methods
-		virtual void onKeyInput(UINT message, WPARAM wParam, LPARAM lParam);
-		virtual void onMouseInput(UINT message, WPARAM wParam, LPARAM lParam);
-		virtual void onTouchInput(UINT message, WPARAM wParam, LPARAM lParam);
+		virtual void onKeyInput(UINT message, WPARAM wParam, LPARAM lParam) override;
+		virtual void onMouseInput(UINT message, WPARAM wParam, LPARAM lParam) override;
+		virtual void onTouchInput(UINT message, WPARAM wParam, LPARAM lParam) override;
 
 		// IGameTimerEvents Methods
-		virtual void onTimerElapsed(UINT timerId);
-		virtual void onTimerStarted(UINT timerId);
-		virtual void onTimerStopped(UINT timerId);
+		virtual void onTimerElapsed(UINT_PTR timerId) override;
+		virtual void onTimerStarted(UINT_PTR timerId) override;
+		virtual void onTimerStopped(UINT_PTR timerId) override;
 
 	private:
 		void StartGameLoop();

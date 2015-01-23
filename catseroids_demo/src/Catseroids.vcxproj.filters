@@ -143,6 +143,9 @@
     <ClCompile Include="..\..\N3888_RefImpl\src\toy_font_face.cpp">
       <Filter>N3888_Impl</Filter>
     </ClCompile>
+    <ClCompile Include="GameFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Catseroids.rc">

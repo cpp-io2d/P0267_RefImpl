@@ -35,15 +35,15 @@ namespace MSOTCppGUI
 		GameActorCat(const unsigned int length);
 		GameActorCat(const unsigned int length, const GameActorRenderMode renderMode);
 		virtual ~GameActorCat();
-		virtual void ShowAt(const Point& pos);
-		virtual void MoveTo(const Point& pos);
-		virtual void Move(const double deltaX, const double deltaY);
-		virtual void Hide();
-		virtual bool IsVisible();
-		virtual GameActorType GetType();
-		virtual Point GetPosition();
-		virtual Bounds GetBounds();
-		virtual GameActorRenderMode GetRenderMode();
+		virtual void ShowAt(const Point& pos) override;
+		virtual void MoveTo(const Point& pos) override;
+		virtual void Move(const double deltaX, const double deltaY) override;
+		virtual void Hide() override;
+		virtual bool IsVisible() override;
+		virtual GameActorType GetType() override;
+		virtual Point GetPosition() override;
+		virtual Bounds GetBounds() override;
+		virtual GameActorRenderMode GetRenderMode() override;
 
 		void Rotate(const double angle);
 		void SetRotation(const double angle);
@@ -67,15 +67,15 @@ namespace MSOTCppGUI
 		GameActorFish(const unsigned int breadth);
 		GameActorFish(const unsigned int breadth, const GameActorRenderMode renderMode);
 		virtual ~GameActorFish();
-		virtual void ShowAt(const Point& pos);
-		virtual void MoveTo(const Point& pos);
-		virtual void Move(const double deltaX, const double deltaY);
-		virtual void Hide();
-		virtual bool IsVisible();
-		virtual GameActorType GetType();
-		virtual Point GetPosition();
-		virtual Bounds GetBounds();
-		virtual GameActorRenderMode GetRenderMode();
+		virtual void ShowAt(const Point& pos) override;
+		virtual void MoveTo(const Point& pos) override;
+		virtual void Move(const double deltaX, const double deltaY) override;
+		virtual void Hide() override;
+		virtual bool IsVisible() override;
+		virtual GameActorType GetType() override;
+		virtual Point GetPosition() override;
+		virtual Bounds GetBounds() override;
+		virtual GameActorRenderMode GetRenderMode() override;
 
 		Point GetDirection();
 
@@ -94,15 +94,15 @@ namespace MSOTCppGUI
 		GameActorMouse(const unsigned int base);
 		GameActorMouse(const unsigned int base, const GameActorRenderMode renderMode);
 		virtual ~GameActorMouse();
-		virtual void ShowAt(const Point& pos);
-		virtual void MoveTo(const Point& pos);
-		virtual void Move(const double deltaX, const double deltaY);
-		virtual void Hide();
-		virtual bool IsVisible();
-		virtual GameActorType GetType();
-		virtual Point GetPosition();
-		virtual Bounds GetBounds();
-		virtual GameActorRenderMode GetRenderMode();
+		virtual void ShowAt(const Point& pos) override;
+		virtual void MoveTo(const Point& pos) override;
+		virtual void Move(const double deltaX, const double deltaY) override;
+		virtual void Hide() override;
+		virtual bool IsVisible() override;
+		virtual GameActorType GetType() override;
+		virtual Point GetPosition() override;
+		virtual Bounds GetBounds() override;
+		virtual GameActorRenderMode GetRenderMode() override;
 
 		double GetTarget();
 		void SetTarget(const double angle);

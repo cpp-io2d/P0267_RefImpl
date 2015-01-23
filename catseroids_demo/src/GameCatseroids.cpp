@@ -160,7 +160,7 @@ void MSOTCppGUI::Catseroid::ToggleSpriteMode()
 	_useSprite = !_useSprite;
 }
 
-void MSOTCppGUI::Catseroid::onTimerElapsed(UINT timerId)
+void MSOTCppGUI::Catseroid::onTimerElapsed(UINT_PTR timerId)
 {
 	static bool doDraw = true;
 	static int skipCnt = MAX_SKIP_CNT;
@@ -191,15 +191,15 @@ void MSOTCppGUI::Catseroid::onTimerElapsed(UINT timerId)
 	}
 }
 
-void MSOTCppGUI::Catseroid::onTimerStarted(UINT timerId)
+void MSOTCppGUI::Catseroid::onTimerStarted(UINT_PTR /*timerId*/)
 {
 }
 
-void MSOTCppGUI::Catseroid::onTimerStopped(UINT timerId)
+void MSOTCppGUI::Catseroid::onTimerStopped(UINT_PTR /*timerId*/)
 {
 }
 
-void MSOTCppGUI::Catseroid::onKeyInput(UINT message, WPARAM wParam, LPARAM lParam)
+void MSOTCppGUI::Catseroid::onKeyInput(UINT message, WPARAM wParam, LPARAM /*lParam*/)
 {
 	switch (message)
 	{
@@ -243,12 +243,12 @@ void MSOTCppGUI::Catseroid::onKeyInput(UINT message, WPARAM wParam, LPARAM lPara
 	}
 }
 
-void MSOTCppGUI::Catseroid::onMouseInput(UINT message, WPARAM wParam, LPARAM lParam)
+void MSOTCppGUI::Catseroid::onMouseInput(UINT /*message*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 
 }
 
-void MSOTCppGUI::Catseroid::onTouchInput(UINT message, WPARAM wParam, LPARAM lParam)
+void MSOTCppGUI::Catseroid::onTouchInput(UINT /*message*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 
 }
@@ -565,9 +565,8 @@ void MSOTCppGUI::Catseroid::ShuffleFish()
 {
 	if (_catActor)
 	{
-		Bounds bndCat = _catActor->GetBounds();
 		unsigned cnt = 0;
-		unsigned mid = _fishActors.size() / 2;
+		auto mid = _fishActors.size() / 2;
 
 		for (auto fish : _fishActors)
 		{

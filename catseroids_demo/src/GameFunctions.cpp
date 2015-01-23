@@ -22,45 +22,14 @@
 // THE SOFTWARE.
 //
 
-#ifndef _GAMETIMER_H
-#define _GAMETIMER_H
-
-#include <memory>
-#include <vector>
-#include <algorithm>
-#include <Windows.h>
+#include "Game.h"
 
 namespace MSOTCppGUI
 {
-	class IGameTimerEvents
+	int Random(const int from, const int to)
 	{
-	public:
-		virtual void onTimerStarted(UINT_PTR timerId) = 0;
-
-		virtual void onTimerStopped(UINT_PTR timerId) = 0;
-
-		virtual void onTimerElapsed(UINT_PTR timerId) = 0;
-	};
-
-	class GameTimer
-	{
-	public:
-		GameTimer();
-		~GameTimer();
-
-		void AddTimerListener(const IGameTimerEvents* timerListener);
-		void RemoveTimerListener(const IGameTimerEvents* timerListener);
-		void SetInterval(unsigned int interval);
-		UINT_PTR GetTimerId();
-		void Start();
-		void Stop();
-
-		static void CALLBACK TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-
-	private:
-		UINT_PTR								_id;
-		unsigned int							_interval;
-		static std::vector<IGameTimerEvents*>	_timerListeners;
-	};
+		static RandomEngine rng((RandomEngine::result_type)std::chrono::high_resolution_clock::now().time_since_epoch().count());
+		std::uniform_int_distribution<int> int_dist(from, to);
+		return int_dist(rng);
+	}
 }
-#endif

@@ -172,19 +172,14 @@ namespace MSOTCppGUI
 		virtual void onTouchInput(UINT message, WPARAM wParam, LPARAM lParam) = 0;
 	};
 
-	static int Random(const int from, const int to)
-	{
-		static RandomEngine rng((RandomEngine::result_type)std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		std::uniform_int_distribution<int> int_dist(from, to);
-		return int_dist(rng);
-	}
+	int Random(const int from, const int to);
 
-	static bool Random()
+	inline bool Random()
 	{
 		return ((int)Random(1, INT_MAX) % 2) == 0 ? false : true;
 	}
 
-	static std::vector<std::string> SplitString(const std::string str, const char delim)
+	inline std::vector<std::string> SplitString(const std::string& str, const char delim)
 	{
 		std::vector<std::string> result;
 		std::istringstream ss(str);

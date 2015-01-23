@@ -78,14 +78,14 @@ void MSOTCppGUI::GameTimer::Start()
 	_id = SetTimer(NULL, _id, _interval, GameTimer::TimerProc);
 }
 
-void MSOTCppGUI::GameTimer::TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+void MSOTCppGUI::GameTimer::TimerProc(HWND /*hwnd*/, UINT /*uMsg*/, UINT_PTR idEvent, DWORD /*dwTime*/)
 {
 	std::for_each(_timerListeners.begin(), _timerListeners.end(), [idEvent](IGameTimerEvents* listner) {
 		listner->onTimerElapsed(idEvent);
 	});
 }
 
-int MSOTCppGUI::GameTimer::GetTimerId()
+UINT_PTR MSOTCppGUI::GameTimer::GetTimerId()
 {
 	return _id;
 }
