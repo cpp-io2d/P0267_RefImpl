@@ -13,6 +13,7 @@
 bin_PROGRAMS = 			N3888_RefImpl
 
 N3888_RefImpl_SOURCES =		device.cpp \
+				display_surface-common.cpp \
 				display_surface-xlib.cpp \
 				entrypoint.cpp \
 				font_extents.cpp \

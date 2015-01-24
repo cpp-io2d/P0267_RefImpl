@@ -135,6 +135,7 @@ display_surface::native_handle_type display_surface::native_handle() const {
 
 display_surface::display_surface(display_surface&& other)
 	: surface(move(other))
+	, _Scaling(move(other._Scaling))
 	, _Width(move(other._Width))
 	, _Height(move(other._Height))
 	, _Display_width(move(other._Display_width))
@@ -143,8 +144,8 @@ display_surface::display_surface(display_surface&& other)
 	, _Size_change_fn(move(other._Size_change_fn))
 	, _Wndw(move(other._Wndw))
 	, _Can_draw(move(other._Can_draw))
-	, _Xlib_surface(move(other._Xlib_surface))
-	, _Xlib_context(move(other._Xlib_context)) {
+	, _Native_surface(move(other._Native_surface))
+	, _Native_context(move(other._Native_context)) {
 	other._Draw_fn = nullptr;
 	other._Size_change_fn = nullptr;
 	other._Wndw = None;
@@ -153,6 +154,7 @@ display_surface::display_surface(display_surface&& other)
 display_surface& display_surface::operator=(display_surface&& other) {
 	if (this != &other) {
 		surface::operator=(move(other));
+		_Scaling = move(other._Scaling());
 		_Width = move(other._Width);
 		_Height = move(other._Height);
 		_Display_width = move(other._Display_width);
@@ -161,8 +163,8 @@ display_surface& display_surface::operator=(display_surface&& other) {
 		_Size_change_fn = move(other._Size_change_fn);
 		_Wndw = move(other._Wndw);
 		_Can_draw = move(other._Can_draw);
-		_Xlib_surface = move(other._Xlib_surface);
-		_Xlib_context = move(other._Xlib_context);
+		_Native_surface = move(other._Native_surface);
+		_Native_context = move(other._Native_context);
 
 		other._Wndw = None;
 		other._Draw_fn = nullptr;
@@ -181,8 +183,23 @@ namespace {
 	Atom _Wm_delete_window;
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat)
+void display_surface::_Make_native_surface_and_context() {
+	_Native_surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_xlib_surface_create(_Display.get(), _Wndw, DefaultVisual(_Display.get(), DefaultScreen(_Display.get())), _Display_width, _Display_height), &cairo_surface_destroy);
+	_Native_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Native_surface.get()), &cairo_destroy);
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Native_surface.get()));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Native_context.get()));
+}
+
+void display_surface::_Resize_window() {
+	XWindowChanges xwc{ };
+	xwc.width = _Display_width;
+	xwc.height = _Display_height;
+	XConfigureWindow(_Display.get(), _Wndw, CWWidth | CWHeight, &xwc);
+}
+
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, scaling scl)
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
+	, _Scaling(scl)
 	, _Width(preferredWidth)
 	, _Height(preferredHeight)
 	, _Display_width(preferredWidth)
@@ -191,8 +208,8 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Size_change_fn()
 	, _Wndw(None)
 	, _Can_draw(false)
-	, _Xlib_surface(nullptr, &cairo_surface_destroy)
-	, _Xlib_context(nullptr, &cairo_destroy) {
+	, _Native_surface(nullptr, &cairo_surface_destroy)
+	, _Native_context(nullptr, &cairo_destroy) {
 	Display* display = nullptr;
 	// Lock to increment the ref count.
 	{
@@ -229,8 +246,8 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 }
 
 display_surface::~display_surface() {
-	_Xlib_context.reset();
-	_Xlib_surface.reset();
+	_Native_context.reset();
+	_Native_surface.reset();
 	if (_Wndw != None) {
 		XDestroyWindow(_Display.get(), _Wndw);
 		_Wndw = None;
@@ -244,50 +261,6 @@ display_surface::~display_surface() {
 	}
 }
 
-void display_surface::draw_fn(const ::std::function<void(display_surface& sfc)>& fn) {
-	_Draw_fn = fn;
-}
-
-void display_surface::size_change_fn(const ::std::function<void(display_surface& sfc)>& fn) {
-	_Size_change_fn = fn;
-}
-
-void display_surface::width(int w) {
-	throw system_error(make_error_code(errc::not_supported));
-}
-
-void display_surface::height(int h) {
-	throw system_error(make_error_code(errc::not_supported));
-}
-
-void display_surface::display_width(int w) {
-	throw system_error(make_error_code(errc::not_supported));
-}
-
-void display_surface::display_height(int h) {
-	throw system_error(make_error_code(errc::not_supported));
-}
-
-format display_surface::format() const {
-	return _Format;
-}
-
-int display_surface::width() const {
-	return _Width;
-}
-
-int display_surface::height() const {
-	return _Height;
-}
-
-int display_surface::display_width() const {
-	return _Display_width;
-}
-
-int display_surface::display_height() const {
-	return _Display_height;
-}
-
 int display_surface::join() {
 	bool exit = false;
 	XEvent event;
@@ -299,19 +272,18 @@ int display_surface::join() {
 			case Expose:
 			{
 				if (!_Can_draw && _Wndw != None) {
-					_Xlib_surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_xlib_surface_create(_Display.get(), _Wndw, DefaultVisual(_Display.get(), DefaultScreen(_Display.get())), _Display_width, _Display_height), &cairo_surface_destroy);
-					_Xlib_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Xlib_surface.get()), &cairo_destroy);
+					_Make_native_surface_and_context();
 				}
-				assert(_Xlib_surface != nullptr && _Xlib_context != nullptr);
+				assert(_Native_surface != nullptr && _Native_context != nullptr);
 				_Can_draw = true;
 				if (_Draw_fn != nullptr) {
 					_Draw_fn(*this);
 				}
 
 				cairo_surface_flush(_Surface.get());
-				cairo_set_source_surface(_Xlib_context.get(), _Surface.get(), 0.0, 0.0);
-				cairo_paint(_Xlib_context.get());
-				cairo_surface_flush(_Xlib_surface.get());
+				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
+				cairo_paint(_Native_context.get());
+				cairo_surface_flush(_Native_surface.get());
 			} break;
 			// StructureNotifyMask events:
 			case CirculateNotify:
@@ -329,15 +301,15 @@ int display_surface::join() {
 					resized = true;
 				}
 				if (resized) {
-					cairo_xlib_surface_set_size(_Xlib_surface.get(), _Display_width, _Display_height);
+					cairo_xlib_surface_set_size(_Native_surface.get(), _Display_width, _Display_height);
 				}
 			} break;
 			case DestroyNotify:
 			{
 				_Wndw = None;
 				_Can_draw = false;
-				_Xlib_context.reset();
-				_Xlib_surface.reset();
+				_Native_context.reset();
+				_Native_surface.reset();
 				exit = true;
 			} break;
 			case GravityNotify:
@@ -353,8 +325,8 @@ int display_surface::join() {
 			{
 				// The window still exists, it has just been unmapped.
 				_Can_draw = false;
-				_Xlib_context.reset();
-				_Xlib_surface.reset();
+				_Native_context.reset();
+				_Native_surface.reset();
 			} break;
 			// Might get them even though they are unrequested events (see http://www.x.org/releases/X11R7.7/doc/libX11/libX11/libX11.html#Event_Masks ):
 			case GraphicsExpose:
@@ -365,9 +337,9 @@ int display_surface::join() {
 					}
 
 					cairo_surface_flush(_Surface.get());
-					cairo_set_source_surface(_Xlib_context.get(), _Surface.get(), 0.0, 0.0);
-					cairo_paint(_Xlib_context.get());
-					cairo_surface_flush(_Xlib_surface.get());
+					cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
+					cairo_paint(_Native_context.get());
+					cairo_surface_flush(_Native_surface.get());
 				}
 			} break;
 			case NoExpose:
@@ -378,8 +350,8 @@ int display_surface::join() {
 			{
 				if (event.xclient.format == 32 && (Atom)event.xclient.data.l[0] == _Wm_delete_window) {
 					_Can_draw = false;
-					_Xlib_context.reset();
-					_Xlib_surface.reset();
+					_Native_context.reset();
+					_Native_surface.reset();
 					XDestroyWindow(_Display.get(), _Wndw);
 					_Wndw = None;
 					exit = true;
@@ -450,9 +422,9 @@ int display_surface::join() {
 			}
 
 			cairo_surface_flush(_Surface.get());
-			cairo_set_source_surface(_Xlib_context.get(), _Surface.get(), 0.0, 0.0);
-			cairo_paint(_Xlib_context.get());
-			cairo_surface_flush(_Xlib_surface.get());
+			cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
+			cairo_paint(_Native_context.get());
+			cairo_surface_flush(_Native_surface.get());
 		}
 	}
 	return 0;

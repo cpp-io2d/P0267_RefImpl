@@ -1516,22 +1516,37 @@ namespace std {
 					int& display_ref_count;
 				};
 #endif
-
+				enum class scaling {
+					none, // Do not scale.
+					uniform, // Maintain aspect ratio and letterbox if needed
+					fill, // Maintain aspect ratio but fill entire display (some content may not be shown)
+					exact, // Ignore aspect ratio and use (possibly non-uniform) scale to fill exactly
+					lock_to_display, // Resize to match display dimensions
+					default_scaling = uniform // uniform
+				};
 				class display_surface : public surface {
 					friend surface;
-					int _Width;
-					int _Height;
-					int _Display_width;
-					int _Display_height;
+					scaling _Scaling;
+					typedef int _Width_type;
+					_Width_type _Width;
+					typedef int _Height_type;
+					_Height_type _Height;
+					typedef int _Display_width_type;
+					_Display_width_type _Display_width;
+					typedef int _Display_height_type;
+					_Display_height_type _Display_height;
 					::std::function<void(display_surface& sfc)> _Draw_fn;
 					::std::function<void(display_surface& sfc)> _Size_change_fn;
 
+					void _Make_native_surface_and_context();
+					void _All_dimensions(int w, int h, int dw, int dh);
+					void _Render_to_native_surface();
+					void _Resize_window();
 #ifdef _WIN32_WINNT
+					::std::stack<::std::tuple<scaling, _Width_type, _Height_type, _Display_width_type, _Display_height_type>> _Display_saved_state;
 					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+					DWORD _Window_style;
 					HWND _Hwnd;
-					// cairo_win32_surface_create doesn't support surfaces with alpha so we need this to do so.
-					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Win32_surface;
-					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Win32_context;
 
 					LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #else
@@ -1540,11 +1555,11 @@ namespace std {
 					static int _Display_ref_count;
 					::Window _Wndw;
 					bool _Can_draw = false;
-					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Xlib_surface;
-					::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Xlib_context;
 
 					static Bool _X11_if_event_pred(Display* display, XEvent* event, XPointer arg);
 #endif
+					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Native_surface;
+					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Native_context;
 
 				public:
 #ifdef _WIN32_WINNT
@@ -1559,9 +1574,12 @@ namespace std {
 					display_surface& operator=(const display_surface&) = delete;
 					display_surface(display_surface&& other);
 					display_surface& operator=(display_surface&& other);
-					display_surface(int preferredWidth, int preferredHeight, format preferredFormat);
+					display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::default_scaling);
 
 					virtual ~display_surface();
+
+					virtual void save() override;
+					virtual void restore() override;
 
 					void draw_fn(const ::std::function<void(display_surface& sfc)>& fn);
 					void size_change_fn(const ::std::function<void(display_surface& sfc)>& fn);
@@ -1569,6 +1587,8 @@ namespace std {
 					void height(int h);
 					void display_width(int w);
 					void display_height(int h);
+					void dimensions(int w, int h);
+					void display_dimensions(int dw, int dh);
 					int join();
 
 					::std::experimental::io2d::format format() const;
@@ -1601,7 +1621,7 @@ namespace std {
 				};
 
 				int format_stride_for_width(format format, int width);
-				display_surface make_surface(int preferredWidth, int preferredHeight, format preferredFormat);
+				display_surface make_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::default_scaling);
 				surface make_surface(surface::native_handle_type nh); // parameters are exposition only.
 				image_surface make_image_surface(format format, int width, int height);
 #if _Inline_namespace_conditional_support_test

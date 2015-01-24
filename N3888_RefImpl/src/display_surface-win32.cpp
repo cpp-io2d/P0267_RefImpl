@@ -16,38 +16,6 @@ inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const 
 	}
 }
 
-namespace {
-	void _ResizeWindowToClientArea(HWND hwnd, int width, int height) {
-		RECT clientRect;
-		RECT windowRect;
-		GetWindowRect(hwnd, &windowRect);
-		GetClientRect(hwnd, &clientRect);
-		auto crWidth = clientRect.right - clientRect.left;
-		auto crHeight = clientRect.bottom - clientRect.top;
-		auto wrWidth = windowRect.right - windowRect.left;
-		auto wrHeight = windowRect.bottom - windowRect.top;
-
-		if (crWidth != width || crHeight != height) {
-			// Record the desired client window size
-			RECT rc;
-			rc.top = rc.left = 0;
-			rc.right = width;
-			rc.bottom = height;
-
-			// Adjust the window size for correct device size
-			AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE);
-
-			//LONG lwidth = rc.right - rc.left;
-			LONG lheight = rc.bottom - rc.top;
-
-			width = std::max(1L, (width - crWidth) + wrWidth);
-			height = std::max(lheight - height, (height - crHeight) + wrHeight);
-			SetWindowPos(hwnd, 0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS);
-			PostMessageW(hwnd, WM_PAINT, (WPARAM)0, (LPARAM)0);
-		}
-	}
-}
-
 namespace std {
 	namespace experimental {
 		namespace io2d {
@@ -58,7 +26,7 @@ namespace std {
 					LONG_PTR objPtr = GetWindowLongPtrW(hwnd, _Display_surface_ptr_window_data_byte_offset);
 
 					if (objPtr == 0) {
-						return(DefWindowProcW(hwnd, msg, wparam, lparam));
+						return DefWindowProcW(hwnd, msg, wparam, lparam);
 					}
 					else {
 						return reinterpret_cast<display_surface*>(objPtr)->_Window_proc(hwnd, msg, wparam, lparam);
@@ -71,7 +39,9 @@ namespace std {
 	}
 }
 
-const wchar_t* _Refimpl_window_class_name = L"_RefImplWndwCls";
+namespace {
+	const wchar_t* _Refimpl_window_class_name = L"_RefImplWndwCls";
+}
 
 ATOM _MyRegisterClass(HINSTANCE hInstance) {
 	WNDCLASSEX wcex{ };
@@ -79,7 +49,7 @@ ATOM _MyRegisterClass(HINSTANCE hInstance) {
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
 	wcex.style = CS_OWNDC;
-	wcex.lpfnWndProc = _RefImplWindowProc;
+	wcex.lpfnWndProc = ::std::experimental::io2d::_RefImplWindowProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = sizeof(display_surface*);
 	wcex.hInstance = hInstance;
@@ -93,14 +63,56 @@ ATOM _MyRegisterClass(HINSTANCE hInstance) {
 	return RegisterClassEx(&wcex);
 }
 
+void display_surface::_Make_native_surface_and_context() {
+	auto hdc = GetDC(_Hwnd);
+	try {
+		_Native_surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_win32_surface_create(hdc), &cairo_surface_destroy);
+		_Native_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Native_surface.get()), &cairo_destroy);
+		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Native_surface.get()));
+		_Throw_if_failed_cairo_status_t(cairo_status(_Native_context.get()));
+	}
+	catch (...) {
+		// Release the DC to avoid a handle leak.
+		ReleaseDC(_Hwnd, hdc);
+		throw;
+	}
+	// Release the DC to avoid a handle leak.
+	ReleaseDC(_Hwnd, hdc);
+}
+
+
+void display_surface::_Resize_window() {
+	RECT clientRect;
+	RECT windowRect;
+	GetWindowRect(_Hwnd, &windowRect);
+	GetClientRect(_Hwnd, &clientRect);
+	auto crWidth = clientRect.right - clientRect.left;
+	auto crHeight = clientRect.bottom - clientRect.top;
+	auto wrWidth = windowRect.right - windowRect.left;
+	auto wrHeight = windowRect.bottom - windowRect.top;
+
+	if (crWidth != _Display_width || crHeight != _Display_height) {
+		auto width = std::max((wrWidth - crWidth) + 1L, (_Display_width - crWidth) + wrWidth);
+		auto height = std::max((wrHeight - crHeight) + 1L, (_Display_height - crHeight) + wrHeight);
+		// Resize the window.
+		if (!SetWindowPos(_Hwnd, 0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS)) {
+			_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to SetWindowPos.");
+		}
+
+		if (!PostMessageW(_Hwnd, WM_PAINT, static_cast<WPARAM>(0), static_cast<LPARAM>(0))) {
+			_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to PostMessageW.");
+		}
+	}
+}
+
 LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	const static auto lrZero = static_cast<LRESULT>(0);
 	switch (msg) {
 	case WM_CREATE:
 	{
-		_ResizeWindowToClientArea(hwnd, _Width, _Height);
-		// Automatically return 0 to allow the window to proceed in the
-		// creation process.
-		return(0);
+		_Resize_window();
+		// Return 0 to allow the window to proceed in the creation process.
+		return lrZero;
 	} break;
 
 	case WM_CLOSE:
@@ -113,19 +125,21 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	{
 		// This message is sent when a window has been destroyed.
 		PostQuitMessage(0);
-		return(0);
+		return lrZero;
 	} break;
 
 	case WM_SIZE:
 	{
 		int width = LOWORD(lparam);
 		int height = HIWORD(lparam);
-		_Width = static_cast<int>(width);
-		_Height = static_cast<int>(height);
 
-		// Call user size change function.
-		if (_Size_change_fn != nullptr) {
-			_Size_change_fn(*this);
+		if (_Display_width != width || _Display_height != height) {
+			display_dimensions(width, height);
+
+			// Call user size change function.
+			if (_Size_change_fn != nullptr) {
+				_Size_change_fn(*this);
+			}
 		}
 	} break;
 
@@ -136,14 +150,14 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		hdc = BeginPaint(hwnd, &ps);
 		RECT clientRect;
 		GetClientRect(hwnd, &clientRect);
-		if (clientRect.right - clientRect.left != _Width || clientRect.bottom - clientRect.top != _Height) {
+		if (clientRect.right - clientRect.left != _Display_width || clientRect.bottom - clientRect.top != _Display_height) {
 			// If there is a size mismatch we skip painting and resize the window instead.
 			EndPaint(hwnd, &ps);
-			_ResizeWindowToClientArea(hwnd, _Width, _Height);
+			_Resize_window();
 			break;
 		}
 
-		if (_Win32_surface.get() == nullptr) {
+		if (_Native_surface.get() == nullptr) {
 			EndPaint(hwnd, &ps);
 			break;
 		}
@@ -151,31 +165,33 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		if (_Draw_fn != nullptr) {
 			_Draw_fn(*this);
 		}
-		cairo_surface_flush(_Surface.get());
-		cairo_set_source_surface(_Win32_context.get(), _Surface.get(), 0.0, 0.0);
-		cairo_paint(_Win32_context.get());
+
+		_Render_to_native_surface();
+
 		EndPaint(hwnd, &ps);
 	} break;
 	}
 
-	return(DefWindowProc(hwnd, msg, wparam, lparam));
+	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
 display_surface::native_handle_type display_surface::native_handle() const {
-	return{ { _Surface.get(), _Context.get() }, _Hwnd, { _Win32_surface.get(), _Win32_context.get() } };
+	return{ { _Surface.get(), _Context.get() }, _Hwnd, { _Native_surface.get(), _Native_context.get() } };
 }
 
 display_surface::display_surface(display_surface&& other)
 	: surface(move(other))
+	, _Scaling(move(other._Scaling))
 	, _Width(move(other._Width))
 	, _Height(move(other._Height))
 	, _Display_width(move(other._Display_width))
 	, _Display_height(move(other._Display_height))
 	, _Draw_fn(move(other._Draw_fn))
 	, _Size_change_fn(move(other._Size_change_fn))
+	, _Window_style(move(other._Window_style))
 	, _Hwnd(move(other._Hwnd))
-	, _Win32_surface(move(other._Win32_surface))
-	, _Win32_context(move(other._Win32_context)) {
+	, _Native_surface(move(other._Native_surface))
+	, _Native_context(move(other._Native_context)) {
 	other._Draw_fn = nullptr;
 	other._Size_change_fn = nullptr;
 	other._Hwnd = nullptr;
@@ -184,15 +200,17 @@ display_surface::display_surface(display_surface&& other)
 display_surface& display_surface::operator=(display_surface&& other) {
 	if (this != &other) {
 		surface::operator=(move(other));
+		_Scaling = move(other._Scaling);
 		_Width = move(other._Width);
 		_Height = move(other._Height);
 		_Display_width = move(other._Display_width);
 		_Display_height = move(other._Display_height);
 		_Draw_fn = move(other._Draw_fn);
 		_Size_change_fn = move(other._Size_change_fn);
+		_Window_style = move(other._Window_style);
 		_Hwnd = move(other._Hwnd);
-		_Win32_surface = move(other._Win32_surface);
-		_Win32_context = move(other._Win32_context);
+		_Native_surface = move(other._Native_surface);
+		_Native_context = move(other._Native_context);
 
 		other._Hwnd = nullptr;
 		other._Draw_fn = nullptr;
@@ -202,19 +220,23 @@ display_surface& display_surface::operator=(display_surface&& other) {
 	return *this;
 }
 
-once_flag _Window_class_registered_flag;
+namespace {
+	once_flag _Window_class_registered_flag;
+}
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat)
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, scaling scl)
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
+	, _Scaling(scl)
 	, _Width(preferredWidth)
 	, _Height(preferredHeight)
 	, _Display_width(preferredWidth)
 	, _Display_height(preferredHeight)
 	, _Draw_fn()
 	, _Size_change_fn()
+	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
-	, _Win32_surface(nullptr, &cairo_surface_destroy)
-	, _Win32_context(nullptr, &cairo_destroy) {
+	, _Native_surface(nullptr, &cairo_surface_destroy)
+	, _Native_context(nullptr, &cairo_destroy) {
 	call_once(_Window_class_registered_flag, _MyRegisterClass, static_cast<HINSTANCE>(GetModuleHandleW(nullptr)));
 	// Record the desired client window size
 	RECT rc;
@@ -235,7 +257,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 
 
 	// Create an instance of the window
-	_Hwnd = CreateWindowEx(
+	_Hwnd = CreateWindowExW(
 		NULL,								// extended style
 		_Refimpl_window_class_name,			// class name
 		L"",								// instance title
@@ -267,23 +289,11 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	UpdateWindow(_Hwnd);
 
 	// We are using CS_OWNDC to keep a steady HDC for the Win32 window.
-	auto hdc = GetDC(_Hwnd);
-	try {
-		_Win32_surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_win32_surface_create(hdc), &cairo_surface_destroy);
-		_Win32_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Win32_surface.get()), &cairo_destroy);
+	_Make_native_surface_and_context();
 
-		// We render to the fixed size surface.
-		_Surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
-		_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-	}
-	catch (...) {
-		// Release the DC to avoid a handle leak.
-		ReleaseDC(_Hwnd, hdc);
-		throw;
-	}
-
-	// Release the DC to avoid a handle leak.
-	ReleaseDC(_Hwnd, hdc);
+	// We render to the fixed size surface.
+	_Surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
+	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
 }
 
 display_surface::~display_surface() {
@@ -293,59 +303,20 @@ display_surface::~display_surface() {
 	}
 }
 
-void display_surface::draw_fn(const ::std::function<void(display_surface& sfc)>& fn) {
-	_Draw_fn = fn;
-}
-
-void display_surface::size_change_fn(const ::std::function<void(display_surface& sfc)>& fn) {
-	_Size_change_fn = fn;
-}
-
-void display_surface::width(int w) {
-	throw system_error(make_error_code(errc::not_supported));
-}
-
-void display_surface::height(int h) {
-	throw system_error(make_error_code(errc::not_supported));
-}
-
-void display_surface::display_width(int w) {
-	throw system_error(make_error_code(errc::not_supported));
-}
-
-void display_surface::display_height(int h) {
-	throw system_error(make_error_code(errc::not_supported));
-}
-
-format display_surface::format() const {
-	return _Format;
-}
-
-int display_surface::width() const {
-	return _Width;
-}
-
-int display_surface::height() const {
-	return _Height;
-}
-
 int display_surface::join() {
 	MSG msg{ };
 	msg.message = WM_NULL;
 
-	while (msg.message != WM_QUIT)
-	{
+	while (msg.message != WM_QUIT) {
 		if (!PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
-			//InvalidateRect(_Hwnd, nullptr, FALSE);
-			//UpdateWindow(_Hwnd);
-
-			if (_Win32_surface.get() != nullptr) {
+			if (_Native_surface.get() != nullptr) {
 				RECT clientRect;
 				GetClientRect(_Hwnd, &clientRect);
-				if (clientRect.right - clientRect.left != _Width || clientRect.bottom - clientRect.top != _Height) {
+				if (clientRect.right - clientRect.left != _Display_width || clientRect.bottom - clientRect.top != _Display_height) {
 					// If there is a size mismatch we skip painting and resize the window instead.
-					_ResizeWindowToClientArea(_Hwnd, _Width, _Height);
-					break;
+					_Resize_window();
+					_Make_native_surface_and_context();
+					continue;
 				}
 				else {
 					// Run user draw function:
@@ -353,10 +324,7 @@ int display_surface::join() {
 						_Draw_fn(*this);
 					}
 
-					cairo_surface_flush(_Surface.get());
-					cairo_set_source_surface(_Win32_context.get(), _Surface.get(), 0.0, 0.0);
-					cairo_paint(_Win32_context.get());
-					cairo_surface_flush(_Win32_surface.get());
+					_Render_to_native_surface();
 				}
 			}
 		}
@@ -369,12 +337,4 @@ int display_surface::join() {
 	}
 
 	return (int)msg.wParam;
-}
-
-int display_surface::display_width() const {
-	return _Display_width;
-}
-
-int display_surface::display_height() const {
-	return _Display_height;
 }

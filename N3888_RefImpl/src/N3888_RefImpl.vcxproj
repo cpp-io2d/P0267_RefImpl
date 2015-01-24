@@ -191,6 +191,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="device.cpp" />
+    <ClCompile Include="display_surface-common.cpp" />
     <ClCompile Include="display_surface-win32.cpp" />
     <ClCompile Include="entrypoint.cpp" />
     <ClCompile Include="font_extents.cpp" />
