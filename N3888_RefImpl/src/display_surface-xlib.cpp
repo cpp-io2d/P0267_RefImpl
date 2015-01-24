@@ -154,7 +154,7 @@ display_surface::display_surface(display_surface&& other)
 display_surface& display_surface::operator=(display_surface&& other) {
 	if (this != &other) {
 		surface::operator=(move(other));
-		_Scaling = move(other._Scaling());
+		_Scaling = move(other._Scaling);
 		_Width = move(other._Width);
 		_Height = move(other._Height);
 		_Display_width = move(other._Display_width);
@@ -280,10 +280,7 @@ int display_surface::join() {
 					_Draw_fn(*this);
 				}
 
-				cairo_surface_flush(_Surface.get());
-				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
-				cairo_paint(_Native_context.get());
-				cairo_surface_flush(_Native_surface.get());
+				_Render_to_native_surface();
 			} break;
 			// StructureNotifyMask events:
 			case CirculateNotify:
@@ -336,10 +333,7 @@ int display_surface::join() {
 						_Draw_fn(*this);
 					}
 
-					cairo_surface_flush(_Surface.get());
-					cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
-					cairo_paint(_Native_context.get());
-					cairo_surface_flush(_Native_surface.get());
+					_Render_to_native_surface();
 				}
 			} break;
 			case NoExpose:
@@ -421,10 +415,7 @@ int display_surface::join() {
 				_Draw_fn(*this);
 			}
 
-			cairo_surface_flush(_Surface.get());
-			cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
-			cairo_paint(_Native_context.get());
-			cairo_surface_flush(_Native_surface.get());
+			_Render_to_native_surface();
 		}
 	}
 	return 0;

@@ -1542,8 +1542,8 @@ namespace std {
 					void _All_dimensions(int w, int h, int dw, int dh);
 					void _Render_to_native_surface();
 					void _Resize_window();
-#ifdef _WIN32_WINNT
 					::std::stack<::std::tuple<scaling, _Width_type, _Height_type, _Display_width_type, _Display_height_type>> _Display_saved_state;
+#ifdef _WIN32_WINNT
 					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 					DWORD _Window_style;
 					HWND _Hwnd;
