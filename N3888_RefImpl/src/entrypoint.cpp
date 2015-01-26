@@ -9,7 +9,7 @@ using namespace std::experimental::io2d;
 
 int main() {
 	assert(steady_clock::is_steady);
-	auto ds = make_surface(800, 600, format::argb32);
+	auto ds = make_display_surface(800, 600, format::argb32);
 	sample_draw sd;
 	ds.draw_fn(sd);
 	//ds.draw_fn([](display_surface& sfc) {

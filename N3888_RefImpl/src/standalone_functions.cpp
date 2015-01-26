@@ -16,7 +16,7 @@ namespace std {
 					return ec;
 				}
 
-				display_surface make_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl) {
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl) {
 					return display_surface(preferredWidth, preferredHeight, preferredFormat, scl);
 				}
 

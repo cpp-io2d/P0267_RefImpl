@@ -1621,7 +1621,7 @@ namespace std {
 				};
 
 				int format_stride_for_width(format format, int width);
-				display_surface make_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::default_scaling);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::default_scaling);
 				surface make_surface(surface::native_handle_type nh); // parameters are exposition only.
 				image_surface make_image_surface(format format, int width, int height);
 #if _Inline_namespace_conditional_support_test
