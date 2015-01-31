@@ -14,12 +14,8 @@ namespace std {
 				switch (s) {
 				case ::std::experimental::io2d::io2d_error::success:
 					return CAIRO_STATUS_SUCCESS;
-				case ::std::experimental::io2d::io2d_error::no_memory:
-					return CAIRO_STATUS_NO_MEMORY;
 				case ::std::experimental::io2d::io2d_error::invalid_restore:
 					return CAIRO_STATUS_INVALID_RESTORE;
-				case ::std::experimental::io2d::io2d_error::invalid_pop_group:
-					return CAIRO_STATUS_INVALID_POP_GROUP;
 				case ::std::experimental::io2d::io2d_error::no_current_point:
 					return CAIRO_STATUS_NO_CURRENT_POINT;
 				case ::std::experimental::io2d::io2d_error::invalid_matrix:
@@ -38,145 +34,145 @@ namespace std {
 					return CAIRO_STATUS_WRITE_ERROR;
 				case ::std::experimental::io2d::io2d_error::surface_finished:
 					return CAIRO_STATUS_SURFACE_FINISHED;
-				case ::std::experimental::io2d::io2d_error::surface_type_mismatch:
-					return CAIRO_STATUS_SURFACE_TYPE_MISMATCH;
-				case ::std::experimental::io2d::io2d_error::pattern_type_mismatch:
-					return CAIRO_STATUS_PATTERN_TYPE_MISMATCH;
-				case ::std::experimental::io2d::io2d_error::invalid_content:
-					return CAIRO_STATUS_INVALID_CONTENT;
-				case ::std::experimental::io2d::io2d_error::invalid_format:
-					return CAIRO_STATUS_INVALID_FORMAT;
-				case ::std::experimental::io2d::io2d_error::invalid_visual:
-					return CAIRO_STATUS_INVALID_VISUAL;
-				case ::std::experimental::io2d::io2d_error::file_not_found:
-					return CAIRO_STATUS_FILE_NOT_FOUND;
 				case ::std::experimental::io2d::io2d_error::invalid_dash:
 					return CAIRO_STATUS_INVALID_DASH;
-				case ::std::experimental::io2d::io2d_error::invalid_dsc_comment:
-					return CAIRO_STATUS_INVALID_DSC_COMMENT;
-				case ::std::experimental::io2d::io2d_error::invalid_index:
-					return CAIRO_STATUS_INVALID_INDEX;
 				case ::std::experimental::io2d::io2d_error::clip_not_representable:
 					return CAIRO_STATUS_CLIP_NOT_REPRESENTABLE;
-				case ::std::experimental::io2d::io2d_error::temp_file_error:
-					return CAIRO_STATUS_TEMP_FILE_ERROR;
 				case ::std::experimental::io2d::io2d_error::invalid_stride:
 					return CAIRO_STATUS_INVALID_STRIDE;
-				case ::std::experimental::io2d::io2d_error::font_type_mismatch:
-					return CAIRO_STATUS_FONT_TYPE_MISMATCH;
 				case ::std::experimental::io2d::io2d_error::user_font_immutable:
 					return CAIRO_STATUS_USER_FONT_IMMUTABLE;
 				case ::std::experimental::io2d::io2d_error::user_font_error:
 					return CAIRO_STATUS_USER_FONT_ERROR;
-				case ::std::experimental::io2d::io2d_error::negative_count:
-					return CAIRO_STATUS_NEGATIVE_COUNT;
 				case ::std::experimental::io2d::io2d_error::invalid_clusters:
 					return CAIRO_STATUS_INVALID_CLUSTERS;
-				case ::std::experimental::io2d::io2d_error::invalid_slant:
-					return CAIRO_STATUS_INVALID_SLANT;
-				case ::std::experimental::io2d::io2d_error::invalid_weight:
-					return CAIRO_STATUS_INVALID_WEIGHT;
-				case ::std::experimental::io2d::io2d_error::invalid_size:
-					return CAIRO_STATUS_INVALID_SIZE;
-				case ::std::experimental::io2d::io2d_error::user_font_not_implemented:
-					return CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED;
-				case ::std::experimental::io2d::io2d_error::device_type_mismatch:
-					return CAIRO_STATUS_DEVICE_TYPE_MISMATCH;
 				case ::std::experimental::io2d::io2d_error::device_error:
 					return CAIRO_STATUS_DEVICE_ERROR;
 				case ::std::experimental::io2d::io2d_error::invalid_mesh_construction:
 					return CAIRO_STATUS_INVALID_MESH_CONSTRUCTION;
-				case ::std::experimental::io2d::io2d_error::device_finished:
-					return CAIRO_STATUS_DEVICE_FINISHED;
-				case ::std::experimental::io2d::io2d_error::last_value:
-					throw ::std::runtime_error("Invalid io2d_error value io2d_error::last_value.");
 				default:
 					throw ::std::runtime_error("Unknown io2d_error value.");
 				}
 			}
 
-			inline ::std::experimental::io2d::io2d_error _Cairo_status_t_to_io2d_error(cairo_status_t cs) {
+			inline bool _Cairo_status_t_to_io2d_error(cairo_status_t cs, ::std::experimental::io2d::io2d_error& result) {
 				switch (cs) {
 				case CAIRO_STATUS_SUCCESS:
-					return ::std::experimental::io2d::io2d_error::success;
+					result = ::std::experimental::io2d::io2d_error::success;
+					return true;
 				case CAIRO_STATUS_NO_MEMORY:
-					return ::std::experimental::io2d::io2d_error::no_memory;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				case CAIRO_STATUS_INVALID_RESTORE:
-					return ::std::experimental::io2d::io2d_error::invalid_restore;
-				case CAIRO_STATUS_INVALID_POP_GROUP:
-					return ::std::experimental::io2d::io2d_error::invalid_pop_group;
+					result = ::std::experimental::io2d::io2d_error::invalid_restore;
+					return true;
 				case CAIRO_STATUS_NO_CURRENT_POINT:
-					return ::std::experimental::io2d::io2d_error::no_current_point;
+					result = ::std::experimental::io2d::io2d_error::no_current_point;
+					return true;
 				case CAIRO_STATUS_INVALID_MATRIX:
-					return ::std::experimental::io2d::io2d_error::invalid_matrix;
+					result = ::std::experimental::io2d::io2d_error::invalid_matrix;
+					return true;
 				case CAIRO_STATUS_INVALID_STATUS:
-					return ::std::experimental::io2d::io2d_error::invalid_status;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_NULL_POINTER:
-					return ::std::experimental::io2d::io2d_error::null_pointer;
+					result = ::std::experimental::io2d::io2d_error::null_pointer;
+					return true;
 				case CAIRO_STATUS_INVALID_STRING:
-					return ::std::experimental::io2d::io2d_error::invalid_string;
+					result = ::std::experimental::io2d::io2d_error::invalid_string;
+					return true;
 				case CAIRO_STATUS_INVALID_PATH_DATA:
-					return ::std::experimental::io2d::io2d_error::invalid_path_data;
+					result = ::std::experimental::io2d::io2d_error::invalid_path_data;
+					return true;
 				case CAIRO_STATUS_READ_ERROR:
-					return ::std::experimental::io2d::io2d_error::read_error;
+					result = ::std::experimental::io2d::io2d_error::read_error;
+					return true;
 				case CAIRO_STATUS_WRITE_ERROR:
-					return ::std::experimental::io2d::io2d_error::write_error;
+					result = ::std::experimental::io2d::io2d_error::write_error;
+					return true;
 				case CAIRO_STATUS_SURFACE_FINISHED:
-					return ::std::experimental::io2d::io2d_error::surface_finished;
+					result = ::std::experimental::io2d::io2d_error::surface_finished;
+					return true;
 				case CAIRO_STATUS_SURFACE_TYPE_MISMATCH:
-					return ::std::experimental::io2d::io2d_error::surface_type_mismatch;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_PATTERN_TYPE_MISMATCH:
-					return ::std::experimental::io2d::io2d_error::pattern_type_mismatch;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_INVALID_CONTENT:
-					return ::std::experimental::io2d::io2d_error::invalid_content;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				case CAIRO_STATUS_INVALID_FORMAT:
-					return ::std::experimental::io2d::io2d_error::invalid_format;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				case CAIRO_STATUS_INVALID_VISUAL:
-					return ::std::experimental::io2d::io2d_error::invalid_visual;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_FILE_NOT_FOUND:
-					return ::std::experimental::io2d::io2d_error::file_not_found;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				case CAIRO_STATUS_INVALID_DASH:
-					return ::std::experimental::io2d::io2d_error::invalid_dash;
+					result = ::std::experimental::io2d::io2d_error::invalid_dash;
 				case CAIRO_STATUS_INVALID_DSC_COMMENT:
-					return ::std::experimental::io2d::io2d_error::invalid_dsc_comment;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_INVALID_INDEX:
-					return ::std::experimental::io2d::io2d_error::invalid_index;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				case CAIRO_STATUS_CLIP_NOT_REPRESENTABLE:
-					return ::std::experimental::io2d::io2d_error::clip_not_representable;
+					result = ::std::experimental::io2d::io2d_error::clip_not_representable;
+					return true;
 				case CAIRO_STATUS_TEMP_FILE_ERROR:
-					return ::std::experimental::io2d::io2d_error::temp_file_error;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_INVALID_STRIDE:
-					return ::std::experimental::io2d::io2d_error::invalid_stride;
+					result = ::std::experimental::io2d::io2d_error::invalid_stride;
+					return true;
 				case CAIRO_STATUS_FONT_TYPE_MISMATCH:
-					return ::std::experimental::io2d::io2d_error::font_type_mismatch;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_USER_FONT_IMMUTABLE:
-					return ::std::experimental::io2d::io2d_error::user_font_immutable;
+					result = ::std::experimental::io2d::io2d_error::user_font_immutable;
+					return true;
 				case CAIRO_STATUS_USER_FONT_ERROR:
-					return ::std::experimental::io2d::io2d_error::user_font_error;
+					result = ::std::experimental::io2d::io2d_error::user_font_error;
+					return true;
 				case CAIRO_STATUS_NEGATIVE_COUNT:
-					return ::std::experimental::io2d::io2d_error::negative_count;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				case CAIRO_STATUS_INVALID_CLUSTERS:
-					return ::std::experimental::io2d::io2d_error::invalid_clusters;
+					result = ::std::experimental::io2d::io2d_error::invalid_clusters;
+					return true;
 				case CAIRO_STATUS_INVALID_SLANT:
-					return ::std::experimental::io2d::io2d_error::invalid_slant;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_INVALID_WEIGHT:
-					return ::std::experimental::io2d::io2d_error::invalid_weight;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_INVALID_SIZE:
-					return ::std::experimental::io2d::io2d_error::invalid_size;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				case CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED:
-					return ::std::experimental::io2d::io2d_error::user_font_not_implemented;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				case CAIRO_STATUS_DEVICE_TYPE_MISMATCH:
-					return ::std::experimental::io2d::io2d_error::device_type_mismatch;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_DEVICE_ERROR:
-					return ::std::experimental::io2d::io2d_error::device_error;
+					result = ::std::experimental::io2d::io2d_error::device_error;
+					return true;
 				case CAIRO_STATUS_INVALID_MESH_CONSTRUCTION:
-					return ::std::experimental::io2d::io2d_error::invalid_mesh_construction;
+					result = ::std::experimental::io2d::io2d_error::invalid_mesh_construction;
+					return true;
 				case CAIRO_STATUS_DEVICE_FINISHED:
-					return ::std::experimental::io2d::io2d_error::device_finished;
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_LAST_STATUS:
-					throw ::std::runtime_error("Invalid cairo_status_t value CAIRO_STATUS_LAST_STATUS.");
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				default:
-					throw ::std::runtime_error("Unknown cairo_status_t value.");
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return false;
 				}
 			}
 
@@ -542,7 +538,7 @@ namespace std {
 				}
 			}
 
-			inline ::std::experimental::io2d::path_data_type _Cairo_path_data_type_t_to_path_data_type(cairo_path_data_type_t cpdt) {
+			inline ::std::experimental::io2d::path_data_type _Cairo_type_t_to_type(cairo_path_data_type_t cpdt) {
 				switch (cpdt) {
 				case CAIRO_PATH_MOVE_TO:
 					return ::std::experimental::io2d::path_data_type::move_to;

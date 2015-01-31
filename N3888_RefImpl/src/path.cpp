@@ -45,7 +45,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		switch (pdt) {
 		case std::experimental::io2d::path_data_type::move_to:
 		{
-			currentPoint = dynamic_cast<move_to_path_data*>(item.get())->to();
+			currentPoint = dynamic_cast<move_to*>(item.get())->to();
 			auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 			cpdItem.header.length = 2;
@@ -58,7 +58,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
-			currentPoint = dynamic_cast<line_to_path_data*>(item.get())->to();
+			currentPoint = dynamic_cast<line_to*>(item.get())->to();
 			auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			if (hasCurrentPoint) {
 				cpdItem.header.type = CAIRO_PATH_LINE_TO;
@@ -81,7 +81,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
-			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
+			auto dataItem = dynamic_cast<curve_to*>(item.get());
 			auto pt1 = matrix.transform_point(dataItem->control_point_1() - origin) + origin;
 			auto pt2 = matrix.transform_point(dataItem->control_point_2() - origin) + origin;
 			auto pt3 = matrix.transform_point(dataItem->end_point() - origin) + origin;
@@ -136,7 +136,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 			if (!hasCurrentPoint) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
 			}
-			currentPoint = dynamic_cast<rel_move_to_path_data*>(item.get())->to() + currentPoint;
+			currentPoint = dynamic_cast<rel_move_to*>(item.get())->to() + currentPoint;
 			auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 			cpdItem.header.length = 2;
@@ -152,7 +152,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 			if (!hasCurrentPoint) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
 			}
-			currentPoint = dynamic_cast<rel_line_to_path_data*>(item.get())->to() + currentPoint;
+			currentPoint = dynamic_cast<rel_line_to*>(item.get())->to() + currentPoint;
 			auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			if (hasCurrentPoint) {
 				cpdItem.header.type = CAIRO_PATH_LINE_TO;
@@ -179,7 +179,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
 			}
 			auto existingCurrentPoint = currentPoint;
-			auto dataItem = dynamic_cast<rel_curve_to_path_data*>(item.get());
+			auto dataItem = dynamic_cast<rel_curve_to*>(item.get());
 			auto pt1 = matrix.transform_point(dataItem->control_point_1() + existingCurrentPoint - origin) + origin;
 			auto pt2 = matrix.transform_point(dataItem->control_point_2() + existingCurrentPoint - origin) + origin;
 			auto pt3 = matrix.transform_point(dataItem->end_point() + existingCurrentPoint - origin) + origin;
@@ -210,13 +210,13 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
-			auto dataItem = dynamic_cast<arc_path_data*>(item.get());
+			auto dataItem = dynamic_cast<arc*>(item.get());
 			auto data = _Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), false, hasCurrentPoint, currentPoint, origin, matrix);
 			for (const auto& arcItem : data) {
 				switch (arcItem->type()) {
 				case std::experimental::io2d::path_data_type::move_to:
 				{
-					currentPoint = dynamic_cast<move_to_path_data*>(arcItem.get())->to();
+					currentPoint = dynamic_cast<move_to*>(arcItem.get())->to();
 					auto pt = matrix.transform_point(currentPoint - origin) + origin;
 					cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 					cpdItem.header.length = 2;
@@ -229,7 +229,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				} break;
 				case std::experimental::io2d::path_data_type::line_to:
 				{
-					currentPoint = dynamic_cast<line_to_path_data*>(arcItem.get())->to();
+					currentPoint = dynamic_cast<line_to*>(arcItem.get())->to();
 					auto pt = matrix.transform_point(currentPoint - origin) + origin;
 					if (hasCurrentPoint) {
 						cpdItem.header.type = CAIRO_PATH_LINE_TO;
@@ -252,7 +252,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				} break;
 				case std::experimental::io2d::path_data_type::curve_to:
 				{
-					auto dataItem = dynamic_cast<curve_to_path_data*>(arcItem.get());
+					auto dataItem = dynamic_cast<curve_to*>(arcItem.get());
 					auto pt1 = matrix.transform_point(dataItem->control_point_1() - origin) + origin;
 					auto pt2 = matrix.transform_point(dataItem->control_point_2() - origin) + origin;
 					auto pt3 = matrix.transform_point(dataItem->end_point() - origin) + origin;
@@ -304,13 +304,13 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
-			auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
+			auto dataItem = dynamic_cast<arc_negative*>(item.get());
 			auto data = _Get_arc_as_beziers(dataItem->center(), dataItem->radius(), dataItem->angle_1(), dataItem->angle_2(), true, hasCurrentPoint, currentPoint, origin, matrix);
 			for (const auto& arcItem : data) {
 				switch (arcItem->type()) {
 				case std::experimental::io2d::path_data_type::move_to:
 				{
-					currentPoint = dynamic_cast<move_to_path_data*>(arcItem.get())->to();
+					currentPoint = dynamic_cast<move_to*>(arcItem.get())->to();
 					auto pt = matrix.transform_point(currentPoint - origin) + origin;
 					cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 					cpdItem.header.length = 2;
@@ -323,7 +323,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				} break;
 				case std::experimental::io2d::path_data_type::line_to:
 				{
-					currentPoint = dynamic_cast<line_to_path_data*>(arcItem.get())->to();
+					currentPoint = dynamic_cast<line_to*>(arcItem.get())->to();
 					auto pt = matrix.transform_point(currentPoint - origin) + origin;
 					if (hasCurrentPoint) {
 						cpdItem.header.type = CAIRO_PATH_LINE_TO;
@@ -346,7 +346,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				} break;
 				case std::experimental::io2d::path_data_type::curve_to:
 				{
-					auto dataItem = dynamic_cast<curve_to_path_data*>(arcItem.get());
+					auto dataItem = dynamic_cast<curve_to*>(arcItem.get());
 					auto pt1 = matrix.transform_point(dataItem->control_point_1() - origin) + origin;
 					auto pt2 = matrix.transform_point(dataItem->control_point_2() - origin) + origin;
 					auto pt3 = matrix.transform_point(dataItem->end_point() - origin) + origin;
@@ -398,11 +398,11 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
-			matrix = dynamic_cast<change_matrix_path_data*>(item.get())->matrix();
+			matrix = dynamic_cast<change_matrix*>(item.get())->matrix();
 		} break;
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
-			origin = dynamic_cast<change_origin_path_data*>(item.get())->origin();
+			origin = dynamic_cast<change_origin*>(item.get())->origin();
 		} break;
 		default:
 		{
@@ -423,63 +423,63 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		switch (type) {
 		case std::experimental::io2d::path_data_type::move_to:
 		{
-			auto dataItem = dynamic_cast<move_to_path_data*>(item.get());
-			_Data->push_back(make_unique<move_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<move_to*>(item.get());
+			_Data->push_back(make_unique<move_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
-			auto dataItem = dynamic_cast<line_to_path_data*>(item.get());
-			_Data->push_back(make_unique<line_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<line_to*>(item.get());
+			_Data->push_back(make_unique<line_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
-			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-			_Data->push_back(make_unique<curve_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<curve_to*>(item.get());
+			_Data->push_back(make_unique<curve_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
-			auto dataItem = dynamic_cast<new_sub_path_path_data*>(item.get());
-			_Data->push_back(make_unique<new_sub_path_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<new_sub_path*>(item.get());
+			_Data->push_back(make_unique<new_sub_path>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::close_path:
 		{
-			auto dataItem = dynamic_cast<close_path_path_data*>(item.get());
-			_Data->push_back(make_unique<close_path_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<close_path*>(item.get());
+			_Data->push_back(make_unique<close_path>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
-			auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-			_Data->push_back(make_unique<rel_move_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<rel_move_to*>(item.get());
+			_Data->push_back(make_unique<rel_move_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
-			auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-			_Data->push_back(make_unique<rel_line_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<rel_line_to*>(item.get());
+			_Data->push_back(make_unique<rel_line_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
-			auto dataItem = dynamic_cast<rel_curve_to_path_data*>(item.get());
-			_Data->push_back(make_unique<rel_curve_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<rel_curve_to*>(item.get());
+			_Data->push_back(make_unique<rel_curve_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
-			auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-			_Data->push_back(make_unique<arc_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<arc*>(item.get());
+			_Data->push_back(make_unique<arc>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
-			auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-			_Data->push_back(make_unique<arc_negative_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<arc_negative*>(item.get());
+			_Data->push_back(make_unique<arc_negative>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
-			auto dataItem = dynamic_cast<change_matrix_path_data*>(item.get());
-			_Data->push_back(make_unique<change_matrix_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<change_matrix*>(item.get());
+			_Data->push_back(make_unique<change_matrix>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
-			auto dataItem = dynamic_cast<change_origin_path_data*>(item.get());
-			_Data->push_back(make_unique<change_origin_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<change_origin*>(item.get());
+			_Data->push_back(make_unique<change_origin>(*dataItem));
 		} break;
 		default:
 			assert("Unknown path_data_type" && false);
@@ -520,63 +520,63 @@ vector<unique_ptr<path_data>> path::get_data() const {
 		switch (type) {
 		case std::experimental::io2d::path_data_type::move_to:
 		{
-			auto dataItem = dynamic_cast<move_to_path_data*>(item.get());
-			result.push_back(make_unique<move_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<move_to*>(item.get());
+			result.push_back(make_unique<move_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
-			auto dataItem = dynamic_cast<line_to_path_data*>(item.get());
-			result.push_back(make_unique<line_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<line_to*>(item.get());
+			result.push_back(make_unique<line_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
-			auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
-			result.push_back(make_unique<curve_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<curve_to*>(item.get());
+			result.push_back(make_unique<curve_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
-			auto dataItem = dynamic_cast<new_sub_path_path_data*>(item.get());
-			result.push_back(make_unique<new_sub_path_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<new_sub_path*>(item.get());
+			result.push_back(make_unique<new_sub_path>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::close_path:
 		{
-			auto dataItem = dynamic_cast<close_path_path_data*>(item.get());
-			result.push_back(make_unique<close_path_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<close_path*>(item.get());
+			result.push_back(make_unique<close_path>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
-			auto dataItem = dynamic_cast<rel_move_to_path_data*>(item.get());
-			result.push_back(make_unique<rel_move_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<rel_move_to*>(item.get());
+			result.push_back(make_unique<rel_move_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
-			auto dataItem = dynamic_cast<rel_line_to_path_data*>(item.get());
-			result.push_back(make_unique<rel_line_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<rel_line_to*>(item.get());
+			result.push_back(make_unique<rel_line_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
-			auto dataItem = dynamic_cast<rel_curve_to_path_data*>(item.get());
-			result.push_back(make_unique<rel_curve_to_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<rel_curve_to*>(item.get());
+			result.push_back(make_unique<rel_curve_to>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
-			auto dataItem = dynamic_cast<arc_path_data*>(item.get());
-			result.push_back(make_unique<arc_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<arc*>(item.get());
+			result.push_back(make_unique<arc>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
-			auto dataItem = dynamic_cast<arc_negative_path_data*>(item.get());
-			result.push_back(make_unique<arc_negative_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<arc_negative*>(item.get());
+			result.push_back(make_unique<arc_negative>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
-			auto dataItem = dynamic_cast<change_matrix_path_data*>(item.get());
-			result.push_back(make_unique<change_matrix_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<change_matrix*>(item.get());
+			result.push_back(make_unique<change_matrix>(*dataItem));
 		} break;
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
-			auto dataItem = dynamic_cast<change_origin_path_data*>(item.get());
-			result.push_back(make_unique<change_origin_path_data>(*dataItem));
+			auto dataItem = dynamic_cast<change_origin*>(item.get());
+			result.push_back(make_unique<change_origin>(*dataItem));
 		} break;
 		default:
 			assert("Unknown path_data_type" && false);

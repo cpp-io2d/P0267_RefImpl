@@ -31,12 +31,10 @@ namespace std {
 		namespace io2d {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
-#endif
+#endif 
 				enum class io2d_error {
 					success,
-					no_memory,
 					invalid_restore,
-					invalid_pop_group,
 					no_current_point,
 					invalid_matrix,
 					invalid_status,
@@ -46,32 +44,14 @@ namespace std {
 					read_error,
 					write_error,
 					surface_finished,
-					surface_type_mismatch,
-					pattern_type_mismatch,
-					invalid_content,
-					invalid_format,
-					invalid_visual,
-					file_not_found,
 					invalid_dash,
-					invalid_dsc_comment,
-					invalid_index,
 					clip_not_representable,
-					temp_file_error,
 					invalid_stride,
-					font_type_mismatch,
 					user_font_immutable,
 					user_font_error,
-					negative_count,
 					invalid_clusters,
-					invalid_slant,
-					invalid_weight,
-					invalid_size,
-					user_font_not_implemented,
-					device_type_mismatch,
 					device_error,
-					invalid_mesh_construction,
-					device_finished,
-					last_value
+					invalid_mesh_construction
 				};
 
 				enum class antialias {
@@ -444,6 +424,9 @@ namespace std {
 					double y() const;
 				};
 
+				bool operator==(const point& lhs, const point& rhs);
+				bool operator!=(const point& lhs, const point& rhs);
+
 				class glyph {
 					cairo_glyph_t _Glyph_data;
 
@@ -607,76 +590,76 @@ namespace std {
 					virtual path_data_type type() const = 0;
 				};
 
-				class _Point_path_data : public path_data {
+				class _Point : public path_data {
 					point _Data = { };
 				public:
-					_Point_path_data() = default;
-					_Point_path_data(const _Point_path_data& other) = default;
-					_Point_path_data& operator=(const _Point_path_data& other) = default;
-					_Point_path_data(_Point_path_data&& other);
-					_Point_path_data& operator=(_Point_path_data&& other);
-					_Point_path_data(const point& to);
+					_Point() = default;
+					_Point(const _Point& other) = default;
+					_Point& operator=(const _Point& other) = default;
+					_Point(_Point&& other);
+					_Point& operator=(_Point&& other);
+					_Point(const point& to);
 					virtual path_data_type type() const override = 0;
 
 					point to() const;
 					void to(const point& value);
 				};
 
-				class move_to_path_data : public _Point_path_data {
+				class move_to : public _Point {
 				public:
-					move_to_path_data() = default;
-					move_to_path_data(const move_to_path_data& other) = default;
-					move_to_path_data& operator=(const move_to_path_data& other) = default;
-					move_to_path_data(move_to_path_data&& other);
-					move_to_path_data& operator=(move_to_path_data&& other);
-					move_to_path_data(const point& to);
+					move_to() = default;
+					move_to(const move_to& other) = default;
+					move_to& operator=(const move_to& other) = default;
+					move_to(move_to&& other);
+					move_to& operator=(move_to&& other);
+					move_to(const point& to);
 					virtual path_data_type type() const override;
 				};
 
-				class line_to_path_data : public _Point_path_data {
+				class line_to : public _Point {
 				public:
-					line_to_path_data() = default;
-					line_to_path_data(const line_to_path_data& other) = default;
-					line_to_path_data& operator=(const line_to_path_data& other) = default;
-					line_to_path_data(line_to_path_data&& other);
-					line_to_path_data& operator=(line_to_path_data&& other);
-					line_to_path_data(const point& to);
+					line_to() = default;
+					line_to(const line_to& other) = default;
+					line_to& operator=(const line_to& other) = default;
+					line_to(line_to&& other);
+					line_to& operator=(line_to&& other);
+					line_to(const point& to);
 					virtual path_data_type type() const override;
 				};
 
-				class rel_move_to_path_data : public _Point_path_data {
+				class rel_move_to : public _Point {
 				public:
-					rel_move_to_path_data() = default;
-					rel_move_to_path_data(const rel_move_to_path_data& other) = default;
-					rel_move_to_path_data& operator=(const rel_move_to_path_data& other) = default;
-					rel_move_to_path_data(rel_move_to_path_data&& other);
-					rel_move_to_path_data& operator=(rel_move_to_path_data&& other);
-					rel_move_to_path_data(const point& to);
+					rel_move_to() = default;
+					rel_move_to(const rel_move_to& other) = default;
+					rel_move_to& operator=(const rel_move_to& other) = default;
+					rel_move_to(rel_move_to&& other);
+					rel_move_to& operator=(rel_move_to&& other);
+					rel_move_to(const point& to);
 					virtual path_data_type type() const override;
 				};
 
-				class rel_line_to_path_data : public _Point_path_data {
+				class rel_line_to : public _Point {
 				public:
-					rel_line_to_path_data() = default;
-					rel_line_to_path_data(const rel_line_to_path_data& other) = default;
-					rel_line_to_path_data& operator=(const rel_line_to_path_data& other) = default;
-					rel_line_to_path_data(rel_line_to_path_data&& other);
-					rel_line_to_path_data& operator=(rel_line_to_path_data&& other);
-					rel_line_to_path_data(const point& to);
+					rel_line_to() = default;
+					rel_line_to(const rel_line_to& other) = default;
+					rel_line_to& operator=(const rel_line_to& other) = default;
+					rel_line_to(rel_line_to&& other);
+					rel_line_to& operator=(rel_line_to&& other);
+					rel_line_to(const point& to);
 					virtual path_data_type type() const override;
 				};
 
-				class _Curve_to_path_data : public path_data {
+				class _Curve_to : public path_data {
 					point _Control_pt1 = { };
 					point _Control_pt2 = { };
 					point _End_pt = { };
 				public:
-					_Curve_to_path_data() = default;
-					_Curve_to_path_data(const _Curve_to_path_data& other) = default;
-					_Curve_to_path_data& operator=(const _Curve_to_path_data& other) = default;
-					_Curve_to_path_data(_Curve_to_path_data&& other);
-					_Curve_to_path_data& operator=(_Curve_to_path_data&& other);
-					_Curve_to_path_data(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
+					_Curve_to() = default;
+					_Curve_to(const _Curve_to& other) = default;
+					_Curve_to& operator=(const _Curve_to& other) = default;
+					_Curve_to(_Curve_to&& other);
+					_Curve_to& operator=(_Curve_to&& other);
+					_Curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
 					virtual path_data_type type() const override = 0;
 
 					void control_point_1(const point& value);
@@ -688,40 +671,40 @@ namespace std {
 					point end_point() const;
 				};
 
-				class curve_to_path_data : public _Curve_to_path_data {
+				class curve_to : public _Curve_to {
 				public:
-					curve_to_path_data() = default;
-					curve_to_path_data(const curve_to_path_data& other) = default;
-					curve_to_path_data& operator=(const curve_to_path_data& other) = default;
-					curve_to_path_data(curve_to_path_data&& other);
-					curve_to_path_data& operator=(curve_to_path_data&& other);
-					curve_to_path_data(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
+					curve_to() = default;
+					curve_to(const curve_to& other) = default;
+					curve_to& operator=(const curve_to& other) = default;
+					curve_to(curve_to&& other);
+					curve_to& operator=(curve_to&& other);
+					curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
 					virtual path_data_type type() const override;
 				};
 
-				class rel_curve_to_path_data : public _Curve_to_path_data {
+				class rel_curve_to : public _Curve_to {
 				public:
-					rel_curve_to_path_data() = default;
-					rel_curve_to_path_data(const rel_curve_to_path_data& other) = default;
-					rel_curve_to_path_data& operator=(const rel_curve_to_path_data& other) = default;
-					rel_curve_to_path_data(rel_curve_to_path_data&& other);
-					rel_curve_to_path_data& operator=(rel_curve_to_path_data&& other);
-					rel_curve_to_path_data(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
+					rel_curve_to() = default;
+					rel_curve_to(const rel_curve_to& other) = default;
+					rel_curve_to& operator=(const rel_curve_to& other) = default;
+					rel_curve_to(rel_curve_to&& other);
+					rel_curve_to& operator=(rel_curve_to&& other);
+					rel_curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
 					virtual path_data_type type() const override;
 				};
 
-				class _Arc_path_data : public path_data {
+				class _Arc : public path_data {
 					point _Center;
 					double _Radius;
 					double _Angle_1;
 					double _Angle_2;
 				public:
-					_Arc_path_data();
-					_Arc_path_data(const _Arc_path_data& other) = default;
-					_Arc_path_data& operator=(const _Arc_path_data& other) = default;
-					_Arc_path_data(_Arc_path_data&& other);
-					_Arc_path_data& operator=(_Arc_path_data&& other);
-					_Arc_path_data(point center, double radius, double angle1, double angle2);
+					_Arc();
+					_Arc(const _Arc& other) = default;
+					_Arc& operator=(const _Arc& other) = default;
+					_Arc(_Arc&& other);
+					_Arc& operator=(_Arc&& other);
+					_Arc(point center, double radius, double angle1, double angle2);
 					virtual path_data_type type() const override = 0;
 
 					void center(const point& value);
@@ -735,61 +718,61 @@ namespace std {
 					double angle_2() const;
 				};
 
-				class arc_path_data : public _Arc_path_data {
+				class arc : public _Arc {
 				public:
-					arc_path_data() = default;
-					arc_path_data(const arc_path_data& other) = default;
-					arc_path_data& operator=(const arc_path_data& other) = default;
-					arc_path_data(arc_path_data&& other);
-					arc_path_data& operator=(arc_path_data&& other);
-					arc_path_data(point center, double radius, double angle1, double angle2);
+					arc() = default;
+					arc(const arc& other) = default;
+					arc& operator=(const arc& other) = default;
+					arc(arc&& other);
+					arc& operator=(arc&& other);
+					arc(point center, double radius, double angle1, double angle2);
 
 					virtual path_data_type type() const override;
 				};
 
-				class arc_negative_path_data : public _Arc_path_data {
+				class arc_negative : public _Arc {
 				public:
-					arc_negative_path_data() = default;
-					arc_negative_path_data(const arc_negative_path_data& other) = default;
-					arc_negative_path_data& operator=(const arc_negative_path_data& other) = default;
-					arc_negative_path_data(arc_negative_path_data&& other);
-					arc_negative_path_data& operator=(arc_negative_path_data&& other);
-					arc_negative_path_data(point center, double radius, double angle1, double angle2);
+					arc_negative() = default;
+					arc_negative(const arc_negative& other) = default;
+					arc_negative& operator=(const arc_negative& other) = default;
+					arc_negative(arc_negative&& other);
+					arc_negative& operator=(arc_negative&& other);
+					arc_negative(point center, double radius, double angle1, double angle2);
 
 					virtual path_data_type type() const override;
 				};
 
-				class new_sub_path_path_data : public path_data {
+				class new_sub_path : public path_data {
 				public:
-					new_sub_path_path_data() = default;
-					new_sub_path_path_data(const new_sub_path_path_data& other) = default;
-					new_sub_path_path_data& operator=(const new_sub_path_path_data& other) = default;
-					new_sub_path_path_data(new_sub_path_path_data&& other);
-					new_sub_path_path_data& operator=(new_sub_path_path_data&& other);
+					new_sub_path() = default;
+					new_sub_path(const new_sub_path& other) = default;
+					new_sub_path& operator=(const new_sub_path& other) = default;
+					new_sub_path(new_sub_path&& other);
+					new_sub_path& operator=(new_sub_path&& other);
 
 					virtual path_data_type type() const override;
 				};
 
-				class close_path_path_data : public path_data {
+				class close_path : public path_data {
 				public:
-					close_path_path_data() = default;
-					close_path_path_data(const close_path_path_data& other) = default;
-					close_path_path_data& operator=(const close_path_path_data& other) = default;
-					close_path_path_data(close_path_path_data&& other);
-					close_path_path_data& operator=(close_path_path_data&& other);
+					close_path() = default;
+					close_path(const close_path& other) = default;
+					close_path& operator=(const close_path& other) = default;
+					close_path(close_path&& other);
+					close_path& operator=(close_path&& other);
 
 					virtual path_data_type type() const override;
 				};
 
-				class change_matrix_path_data : public path_data {
+				class change_matrix : public path_data {
 					matrix_2d _Matrix = { };
 				public:
-					change_matrix_path_data() = default;
-					change_matrix_path_data(const change_matrix_path_data& other) = default;
-					change_matrix_path_data& operator=(const change_matrix_path_data& other) = default;
-					change_matrix_path_data(change_matrix_path_data&& other);
-					change_matrix_path_data& operator=(change_matrix_path_data&& other);
-					change_matrix_path_data(const matrix_2d& m);
+					change_matrix() = default;
+					change_matrix(const change_matrix& other) = default;
+					change_matrix& operator=(const change_matrix& other) = default;
+					change_matrix(change_matrix&& other);
+					change_matrix& operator=(change_matrix&& other);
+					change_matrix(const matrix_2d& m);
 
 					void matrix(const matrix_2d& value);
 
@@ -797,15 +780,15 @@ namespace std {
 					virtual path_data_type type() const override;
 				};
 
-				class change_origin_path_data : public path_data {
+				class change_origin : public path_data {
 					point _Origin = { };
 				public:
-					change_origin_path_data() = default;
-					change_origin_path_data(const change_origin_path_data& other) = default;
-					change_origin_path_data& operator=(const change_origin_path_data& other) = default;
-					change_origin_path_data(change_origin_path_data&& other);
-					change_origin_path_data& operator=(change_origin_path_data&& other);
-					change_origin_path_data(const point& origin);
+					change_origin() = default;
+					change_origin(const change_origin& other) = default;
+					change_origin& operator=(const change_origin& other) = default;
+					change_origin(change_origin&& other);
+					change_origin& operator=(change_origin&& other);
+					change_origin(const point& origin);
 
 					void origin(const point& value);
 

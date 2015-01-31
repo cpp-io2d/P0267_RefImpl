@@ -1071,17 +1071,17 @@ pattern surface::create_pattern(const mesh_pattern_factory& f) const {
 			switch (type) {
 			case std::experimental::io2d::path_data_type::move_to:
 			{
-				auto pt = dynamic_cast<move_to_path_data*>(item.get())->to();
+				auto pt = dynamic_cast<move_to*>(item.get())->to();
 				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
 			} break;
 			case std::experimental::io2d::path_data_type::line_to:
 			{
-				auto pt = dynamic_cast<line_to_path_data*>(item.get())->to();
+				auto pt = dynamic_cast<line_to*>(item.get())->to();
 				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
 			} break;
 			case std::experimental::io2d::path_data_type::curve_to:
 			{
-				auto dataItem = dynamic_cast<curve_to_path_data*>(item.get());
+				auto dataItem = dynamic_cast<curve_to*>(item.get());
 				cairo_mesh_pattern_curve_to(pat, dataItem->control_point_1().x(), dataItem->control_point_1().y(), dataItem->control_point_2().x(), dataItem->control_point_2().y(), dataItem->end_point().x(), dataItem->end_point().y());
 			} break;
 			case std::experimental::io2d::path_data_type::new_sub_path:

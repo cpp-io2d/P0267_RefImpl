@@ -10,8 +10,47 @@
 
 // Throws a system_error with an error_code formed from the 's' argument with a category from io2d_category(). 
 inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
+	assert(s != CAIRO_STATUS_LAST_STATUS && s != CAIRO_STATUS_INVALID_POP_GROUP);
 	if (s != CAIRO_STATUS_SUCCESS) {
-		throw ::std::system_error(::std::error_code(s, ::std::experimental::io2d::io2d_category()));
+		if (s == CAIRO_STATUS_NO_MEMORY) {
+			throw ::std::bad_alloc{ };
+		}
+		else {
+			if (s == CAIRO_STATUS_INVALID_FORMAT || s == CAIRO_STATUS_INVALID_CONTENT) {
+				if (s == CAIRO_STATUS_INVALID_FORMAT) {
+					throw ::std::invalid_argument{ "A format type parameter is invalid." };
+				}
+				else {
+					throw ::std::invalid_argument{ "A content type parameter is invalid." };
+				}
+			}
+			else {
+				if (s == CAIRO_STATUS_INVALID_INDEX || s == CAIRO_STATUS_INVALID_SIZE) {
+					throw ::std::out_of_range{ "An index or size parameter has an invalid value." };
+				}
+				else {
+					if (s == CAIRO_STATUS_SURFACE_TYPE_MISMATCH
+						|| s == CAIRO_STATUS_PATTERN_TYPE_MISMATCH
+						|| s == CAIRO_STATUS_FONT_TYPE_MISMATCH
+						|| s == CAIRO_STATUS_DEVICE_TYPE_MISMATCH
+						|| s == CAIRO_STATUS_DEVICE_FINISHED
+						|| s == CAIRO_STATUS_TEMP_FILE_ERROR
+						|| s == CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED
+						|| s == CAIRO_STATUS_INVALID_VISUAL
+						|| s == CAIRO_STATUS_INVALID_DSC_COMMENT
+						|| s == CAIRO_STATUS_INVALID_SLANT
+						|| s == CAIRO_STATUS_INVALID_WEIGHT) {
+						throw ::std::system_error(::std::make_error_code(CAIRO_STATUS_INVALID_STATUS));
+					}
+					else {
+						if (s == CAIRO_STATUS_FILE_NOT_FOUND) {
+							throw ::std::system_error(::std::make_error_code(::std::errc::no_such_file_or_directory));
+						}
+					}
+				}
+			}
+			throw ::std::system_error(::std::make_error_code(s));
+		}
 	}
 }
 
@@ -118,8 +157,6 @@ namespace std {
 				point operator/(double lhs, const point& rhs);
 				point& operator/=(point& lhs, const point& rhs);
 				point& operator/=(point& lhs, double rhs);
-				bool operator==(const point& lhs, const point& rhs);
-				bool operator!=(const point& lhs, const point& rhs);
 
 				rgba_color operator*(const rgba_color& lhs, double rhs);
 				rgba_color operator*(double lhs, const rgba_color& rhs);
