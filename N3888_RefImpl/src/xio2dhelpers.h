@@ -113,15 +113,15 @@ inline double _Clamp_to_normal(double value) {
 inline ::std::experimental::io2d::image_surface _Surface_create_image_surface_copy(::std::experimental::io2d::surface& original) {
 	original.flush();
 	auto originalImageMap = original.map_to_image();
-	auto width = originalImageMap.get_width();
-	auto height = originalImageMap.get_height();
-	auto format = originalImageMap.get_format();
-	auto data = originalImageMap.get_data();
-	auto stride = originalImageMap.get_stride();
+	auto width = originalImageMap.width();
+	auto height = originalImageMap.height();
+	auto format = originalImageMap.format();
+	auto data = originalImageMap.data();
+	auto stride = originalImageMap.stride();
 	original.unmap_image(originalImageMap);
 	auto result = ::std::experimental::io2d::image_surface(original, format, width, height);
-	assert((width == result.get_width()) && (height == result.get_height()) && (stride == result.get_stride()));
-	result.set_data(data);
+	assert((width == result.width()) && (height == result.height()) && (stride == result.stride()));
+	result.data(data);
 	return ::std::move(result);
 }
 

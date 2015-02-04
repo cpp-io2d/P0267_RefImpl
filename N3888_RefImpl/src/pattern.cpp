@@ -39,30 +39,30 @@ pattern& pattern::operator=(pattern&& other) {
 	return *this;
 }
 
-void pattern::set_extend(extend e) {
+void pattern::extend(::std::experimental::io2d::extend e) {
 	_Extend = e;
 }
 
-void pattern::set_filter(filter f) {
+void pattern::filter(::std::experimental::io2d::filter f) {
 	_Filter = f;
 }
 
-void pattern::set_matrix(const matrix_2d& m) {
+void pattern::matrix(const matrix_2d& m) {
 	_Matrix = m;
 }
 
-extend pattern::get_extend() const {
+extend pattern::extend() const {
 	return _Extend;
 }
 
-filter pattern::get_filter() const {
+filter pattern::filter() const {
 	return _Filter;
 }
 
-matrix_2d pattern::get_matrix() const {
+matrix_2d pattern::matrix() const {
 	return _Matrix;
 }
 
-pattern_type pattern::get_type() const {
+pattern_type pattern::type() const {
 	return _Pattern_type;
 }

@@ -49,14 +49,14 @@ surface_pattern_factory& surface_pattern_factory::operator=(surface_pattern_fact
 	return *this;
 }
 
-surface_pattern_factory::surface_pattern_factory(surface& s)
+surface_pattern_factory::surface_pattern_factory(::std::experimental::io2d::surface& s)
 	: _Lock()
 	, _Pattern_type(pattern_type::surface)
 	, _Surface(image_surface(format::argb32, 1, 1)) {
 	_Surface = _Surface_create_image_surface_copy(s);
 }
 
-image_surface surface_pattern_factory::set_surface(surface& s) {
+image_surface surface_pattern_factory::surface(::std::experimental::io2d::surface& s) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	auto sfc = _Surface_create_image_surface_copy(s);
 	auto result = move(_Surface);
@@ -64,7 +64,7 @@ image_surface surface_pattern_factory::set_surface(surface& s) {
 	return move(result);
 }
 
-const image_surface& surface_pattern_factory::get_surface() const {
+const image_surface& surface_pattern_factory::surface() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Surface;
 }

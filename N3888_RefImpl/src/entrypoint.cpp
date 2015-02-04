@@ -14,7 +14,7 @@ int main() {
 	ds.draw_fn(sd);
 	//ds.draw_fn([](display_surface& sfc) {
 	//	sfc.paint(rgba_color::cornflower_blue);
-	//	sfc.set_font_size(48.0);
+	//	sfc.font_size(48.0);
 	//	sfc.show_text("Hello ISO C++!", { 50.0, 50.0 }, rgba_color::white);
 	//});
 	return ds.join();

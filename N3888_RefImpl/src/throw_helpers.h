@@ -25,7 +25,7 @@ inline void throw_if_null(void* ptr, const char* msg) {
 #if defined(_WIN32_WINNT)
 
 // Returns the system error message as a string or, if there is no message, the result of calling ::std::to_string on errorCode.
-inline ::std::string get_last_error_string(DWORD errorCode = GetLastError(), bool* foundSystemMessage = nullptr) {
+inline ::std::string last_error_string(DWORD errorCode = GetLastError(), bool* foundSystemMessage = nullptr) {
 	const auto strCount = 0xFFFF;
 	::std::unique_ptr<char[]> str(new char[strCount]);
 	ZeroMemory(str.get(), strCount * sizeof(char));
@@ -58,7 +58,7 @@ inline ::std::string get_last_error_string(DWORD errorCode = GetLastError(), boo
 template <class exception_type>
 inline void throw_get_last_error(const char* backupMessage, DWORD errorCode = GetLastError()) {
 	bool foundMessage;
-	auto error_message = get_last_error_string(errorCode, &foundMessage);
+	auto error_message = last_error_string(errorCode, &foundMessage);
 	if (foundMessage) {
 		throw exception_type(error_message);
 	}

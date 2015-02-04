@@ -33,19 +33,19 @@ scaled_font::scaled_font(const font_face& ff, const matrix_2d& fm, const matrix_
 	_Scaled_font = shared_ptr<cairo_scaled_font_t>(cairo_scaled_font_create(ff.native_handle(), &c_fm, &c_ctm, fo.native_handle()), &cairo_scaled_font_destroy);
 }
 
-font_extents scaled_font::get_extents() const {
+font_extents scaled_font::extents() const {
 	cairo_font_extents_t c_fe{ };
 	cairo_scaled_font_extents(_Scaled_font.get(), &c_fe);
 	return{ c_fe.ascent, c_fe.descent, c_fe.height, c_fe.max_x_advance, c_fe.max_y_advance };
 }
 
-text_extents scaled_font::get_text_extents(const string& utf8) const {
+text_extents scaled_font::text_extents(const string& utf8) const {
 	cairo_text_extents_t c_te{ };
 	cairo_scaled_font_text_extents(_Scaled_font.get(), utf8.c_str(), &c_te);
 	return{ c_te.x_bearing, c_te.y_bearing, c_te.width, c_te.height, c_te.x_advance, c_te.y_advance };
 }
 
-text_extents scaled_font::get_glyph_extents(const vector<glyph>& glyphs) const {
+text_extents scaled_font::glyph_extents(const vector<glyph>& glyphs) const {
 	cairo_text_extents_t c_te{ };
 	vector<cairo_glyph_t> c_vecg;
 	c_vecg.reserve(glyphs.size());

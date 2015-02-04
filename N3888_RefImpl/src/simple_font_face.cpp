@@ -25,14 +25,14 @@ simple_font_face& simple_font_face::operator=(simple_font_face&& other) {
 simple_font_face::~simple_font_face() {
 }
 
-string simple_font_face::get_family() const {
+string simple_font_face::family() const {
 	return string(cairo_toy_font_face_get_family(_Font_face.get()));
 }
 
-font_slant simple_font_face::get_slant() const {
+font_slant simple_font_face::slant() const {
 	return _Cairo_font_slant_t_to_font_slant(cairo_toy_font_face_get_slant(_Font_face.get()));
 }
 
-font_weight simple_font_face::get_weight() const {
+font_weight simple_font_face::weight() const {
 	return _Cairo_font_weight_t_to_font_weight(cairo_toy_font_face_get_weight(_Font_face.get()));
 }

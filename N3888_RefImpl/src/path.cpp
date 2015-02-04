@@ -35,7 +35,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 	point currentPoint{ };
 	// Transformed because we need to know where the transformed last move to point is when we receive a close path instruction and the matrix and origin may have since changed such that we wouldn't be able to calculate it correctly anymore.
 	point lastMoveToPoint{ };
-	const auto& pathData = pb.get_data_ref();
+	const auto& pathData = pb.data_ref();
 	auto pdSize = pathData.size();
 	vector<cairo_path_data_t> vec;
 	for (unsigned int i = 0; i < pdSize; i++) {
@@ -418,7 +418,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 	}
 	_Cairo_path->status = CAIRO_STATUS_SUCCESS;
 
-	for (const auto& item : pb.get_data_ref()) {
+	for (const auto& item : pb.data_ref()) {
 		auto type = item->type();
 		switch (type) {
 		case std::experimental::io2d::path_data_type::move_to:
@@ -489,7 +489,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 	_Has_current_point = pb._Has_current_point;
 	_Current_point = pb._Current_point;
 	_Last_move_to_point = pb._Last_move_to_point;
-	_Extents = pb.get_path_extents();
+	_Extents = pb.path_extents();
 }
 
 path::path(path&& other)
@@ -513,7 +513,7 @@ path& path::operator=(path&& other) {
 	return *this;
 }
 
-vector<unique_ptr<path_data>> path::get_data() const {
+vector<unique_ptr<path_data>> path::data() const {
 	vector<unique_ptr<path_data>> result;
 	for (const auto& item : *_Data) {
 		auto type = item->type();
@@ -586,10 +586,10 @@ vector<unique_ptr<path_data>> path::get_data() const {
 	return result;
 }
 
-const vector<unique_ptr<path_data>>& path::get_data_ref() const {
+const vector<unique_ptr<path_data>>& path::data_ref() const {
 	return *_Data;
 }
 
-rectangle path::get_path_extents() const {
+rectangle path::path_extents() const {
 	return _Extents;
 }

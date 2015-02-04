@@ -831,9 +831,9 @@ namespace std {
 					path& operator=(path&& other);
 
 					// Observers
-					::std::vector<::std::unique_ptr<path_data>> get_data() const;
-					const ::std::vector<::std::unique_ptr<path_data>>& get_data_ref() const;
-					rectangle get_path_extents() const;
+					::std::vector<::std::unique_ptr<path_data>> data() const;
+					const ::std::vector<::std::unique_ptr<path_data>>& data_ref() const;
+					rectangle path_extents() const;
 				};
 
 				class path_factory {
@@ -876,14 +876,14 @@ namespace std {
 					void reset();
 
 					// Observers
-					rectangle get_path_extents() const;
+					rectangle path_extents() const;
 					bool has_current_point() const;
 					point current_point() const;
 					matrix_2d transform_matrix() const;
 					point origin() const;
-					::std::vector<::std::unique_ptr<path_data>> get_data() const;
-					::std::unique_ptr<path_data> get_data(unsigned int index) const;
-					const ::std::vector<::std::unique_ptr<path_data>>& get_data_ref() const;
+					::std::vector<::std::unique_ptr<path_data>> data() const;
+					::std::unique_ptr<path_data> data(unsigned int index) const;
+					const ::std::vector<::std::unique_ptr<path_data>>& data_ref() const;
 				};
 
 				class device {
@@ -919,12 +919,12 @@ namespace std {
 					font_options_factory& operator=(font_options_factory&& other);
 
 					// Modifiers
-					void set_antialias(antialias a);
-					void set_subpixel_order(subpixel_order so);
+					void antialias(::std::experimental::io2d::antialias a);
+					void subpixel_order(::std::experimental::io2d::subpixel_order so);
 
 					// Observers
-					antialias get_antialias() const;
-					subpixel_order get_subpixel_order() const;
+					::std::experimental::io2d::antialias antialias() const;
+					::std::experimental::io2d::subpixel_order subpixel_order() const;
 				};
 
 				class font_options {
@@ -942,8 +942,8 @@ namespace std {
 					explicit font_options(native_handle_type nh);
 
 					// Observers
-					antialias get_antialias() const;
-					subpixel_order get_subpixel_order() const;
+					antialias antialias() const;
+					subpixel_order subpixel_order() const;
 				};
 
 				class font_face {
@@ -978,9 +978,9 @@ namespace std {
 					scaled_font(const font_face& ff, const matrix_2d& fm, const matrix_2d& ctm, const font_options& fo);
 
 					// Observers
-					font_extents get_extents() const;
-					text_extents get_text_extents(const ::std::string& utf8) const;
-					text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
+					font_extents extents() const;
+					::std::experimental::io2d::text_extents text_extents(const ::std::string& utf8) const;
+					::std::experimental::io2d::text_extents glyph_extents(const ::std::vector<glyph>& glyphs) const;
 					::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8) const;
 					::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8, ::std::vector<text_cluster>& clusters, bool& clustersToGlyphsReverseMap) const;
 				};
@@ -996,9 +996,9 @@ namespace std {
 					virtual ~simple_font_face();
 
 					// Observers
-					::std::string get_family() const;
-					font_slant get_slant() const;
-					font_weight get_weight() const;
+					::std::string family() const;
+					font_slant slant() const;
+					font_weight weight() const;
 				};
 
 				// Forward declaration.
@@ -1040,14 +1040,14 @@ namespace std {
 					pattern(pattern&& other);
 					pattern& operator=(pattern&& other);
 
-					void set_extend(extend e);
-					void set_filter(filter f);
-					void set_matrix(const matrix_2d& m);
+					void extend(::std::experimental::io2d::extend e);
+					void filter(::std::experimental::io2d::filter f);
+					void matrix(const matrix_2d& m);
 
-					extend get_extend() const;
-					filter get_filter() const;
-					matrix_2d get_matrix() const;
-					pattern_type get_type() const;
+					::std::experimental::io2d::extend extend() const;
+					::std::experimental::io2d::filter filter() const;
+					matrix_2d matrix() const;
+					pattern_type type() const;
 				};
 
 				class solid_color_pattern_factory {
@@ -1064,18 +1064,18 @@ namespace std {
 					solid_color_pattern_factory(const rgba_color& color);
 
 					// Modifiers
-					void set_rgba(const rgba_color& color);
-					void set_red(double red);
-					void set_green(double green);
-					void set_blue(double blue);
-					void set_alpha(double alpha);
+					void rgba(const rgba_color& color);
+					void red(double red);
+					void green(double green);
+					void blue(double blue);
+					void alpha(double alpha);
 
 					// Observers
-					rgba_color get_rgba() const;
-					double get_red() const;
-					double get_green() const;
-					double get_blue() const;
-					double get_alpha() const;
+					rgba_color rgba() const;
+					double red() const;
+					double green() const;
+					double blue() const;
+					double alpha() const;
 				};
 
 				class linear_pattern_factory {
@@ -1096,13 +1096,13 @@ namespace std {
 
 					// Modifiers
 					void add_color_stop_rgba(double offset, const rgba_color& color);
-					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
-					void set_linear_points(const point& pt0, const point& pt1);
+					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
+					void linear_points(const point& pt0, const point& pt1);
 
 					// Observers
-					int get_color_stop_count() const;
-					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
-					void get_linear_points(point& pt0, point& pt1) const;
+					int color_stop_count() const;
+					void color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
+					void linear_points(point& pt0, point& pt1) const;
 				};
 
 				class radial_pattern_factory {
@@ -1125,13 +1125,13 @@ namespace std {
 
 					// Modifiers
 					void add_color_stop_rgba(double offset, const rgba_color& color);
-					void set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
-					void set_radial_circles(const point& center0, double radius0, const point& center1, double radius1);
+					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
+					void radial_circles(const point& center0, double radius0, const point& center1, double radius1);
 
 					// Observers
-					int get_color_stop_count() const;
-					void get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
-					void get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) const;
+					int color_stop_count() const;
+					void color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
+					void radial_circles(point& center0, double& radius0, point& center1, double& radius1) const;
 				};
 
 				class mesh_pattern_factory {
@@ -1161,14 +1161,14 @@ namespace std {
 					void move_to(const point& pt);
 					void line_to(const point& pt);
 					void curve_to(const point& pt0, const point& pt1, const point& pt2);
-					void set_control_point(unsigned int point_num, const point& pt);
-					void set_corner_color_rgba(unsigned int corner_num, const rgba_color& color);
+					void control_point(unsigned int point_num, const point& pt);
+					void corner_color_rgba(unsigned int corner_num, const rgba_color& color);
 
 					// Observers
-					unsigned int get_patch_count() const;
-					path_factory get_path_factory(unsigned int patch_num) const;
-					bool get_control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const;
-					bool get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
+					unsigned int patch_count() const;
+					path_factory path_factory(unsigned int patch_num) const;
+					bool control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const;
+					bool corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
 				};
 
 				struct _Surface_native_handles {
@@ -1176,10 +1176,11 @@ namespace std {
 					::cairo_t* cctxt;
 				};
 
+				typedef ::std::tuple<::std::vector<double>, double> dashes;
+
 				class surface {
 				public:
 					// tuple<dashes, offset>
-					typedef ::std::tuple<::std::vector<double>, double> dashes;
 				private:
 					::std::mutex _Lock_for_device;
 					::std::weak_ptr<device> _Device;
@@ -1196,8 +1197,8 @@ namespace std {
 					content _Content;
 
 					// State - saved
-					typedef point _Device_offset_type;
-					_Device_offset_type _Device_offset = { 0.0, 0.0 };
+					typedef point _Device_offtype;
+					_Device_offtype _Device_offset = { 0.0, 0.0 };
 					pattern _Pattern;
 					antialias _Antialias;
 					dashes _Dashes;
@@ -1216,13 +1217,13 @@ namespace std {
 					path_factory _Immediate_path;
 					typedef matrix_2d _Transform_matrix_type;
 					_Transform_matrix_type _Transform_matrix;
-					font_face _Font_face; // Altered by select_font_face and set_font_face
+					font_face _Font_face; // Altered by select_font_face and font_face
 					typedef matrix_2d _Font_matrix_type;
 					_Font_matrix_type _Font_matrix; // Covers both size and full matrix - size is just a uniform scale matrix.
 					font_options _Font_options;
 					// The current scaled_font is created on demand from parameters that are already saved.
 
-					::std::stack<::std::tuple<_Device_offset_type, pattern, antialias, dashes, fill_rule, line_cap, line_join, _Line_width_type, _Miter_limit_type, compositing_operator, _Tolerance_type, path, path, path_factory, _Transform_matrix_type, font_face, _Font_matrix_type, font_options>> _Saved_state;
+					::std::stack<::std::tuple<_Device_offtype, pattern, antialias, dashes, fill_rule, line_cap, line_join, _Line_width_type, _Miter_limit_type, compositing_operator, _Tolerance_type, path, path, path_factory, _Transform_matrix_type, font_face, _Font_matrix_type, font_options>> _Saved_state;
 
 					void _Ensure_state();
 					void _Ensure_state(::std::error_code& ec) noexcept;
@@ -1248,33 +1249,33 @@ namespace std {
 					// \ref{\iotwod.surface.modifiers.state}, state modifiers:
 					virtual void finish();
 					void flush();
-					::std::shared_ptr<device> get_device();
+					::std::shared_ptr<device> device();
 					void mark_dirty();
 					void mark_dirty(const rectangle& rect);
-					void set_device_offset(const point& offset);
+					void device_offset(const point& offset);
 					void write_to_file(const ::std::string& filename);
 					image_surface map_to_image();
 					image_surface map_to_image(const rectangle& extents);
 					void unmap_image(image_surface& image);
 					virtual void save();
 					virtual void restore();
-					void set_pattern();
-					void set_pattern(const pattern& source);
-					void set_antialias(antialias a);
-					void set_dashes();
-					void set_dashes(const dashes& d);
-					void set_fill_rule(fill_rule fr);
-					void set_line_cap(line_cap lc);
-					void set_line_join(line_join lj);
-					void set_line_width(double width);
-					void set_miter_limit(double limit);
-					void set_compositing_operator(compositing_operator co);
-					void set_tolerance(double t);
+					void pattern();
+					void pattern(const ::std::experimental::io2d::pattern& source);
+					void antialias(::std::experimental::io2d::antialias a);
+					void dashes();
+					void dashes(const ::std::experimental::io2d::dashes& d);
+					void fill_rule(::std::experimental::io2d::fill_rule fr);
+					void line_cap(::std::experimental::io2d::line_cap lc);
+					void line_join(::std::experimental::io2d::line_join lj);
+					void line_width(double width);
+					void miter_limit(double limit);
+					void compositing_operator(::std::experimental::io2d::compositing_operator co);
+					void tolerance(double t);
 					void clip();
 					void clip_immediate();
-					void reset_clip();
-					void set_path();
-					void set_path(const path& p);
+					void reclip();
+					void path();
+					void path(const ::std::experimental::io2d::path& p);
 
 					// \ref{\iotwod.surface.modifiers.immediatepath}, immediate path modifiers:
 					path_factory& immediate();
@@ -1282,76 +1283,76 @@ namespace std {
 					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
 					void paint();
 					void paint(const rgba_color& c);
-					void paint(const pattern& pttn);
+					void paint(const ::std::experimental::io2d::pattern& pttn);
 					void paint(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void paint(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void paint(double alpha);
 					void paint(const rgba_color& c, double alpha);
-					void paint(const pattern& pttn, double alpha);
+					void paint(const ::std::experimental::io2d::pattern& pttn, double alpha);
 					void paint(const surface& s, double alpha, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void paint(const surface& s, double alpha, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill();
 					void fill(const rgba_color& c);
-					void fill(const pattern& pttn);
+					void fill(const ::std::experimental::io2d::pattern& pttn);
 					void fill(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill_immediate();
 					void fill_immediate(const rgba_color& c);
-					void fill_immediate(const pattern& pttn);
+					void fill_immediate(const ::std::experimental::io2d::pattern& pttn);
 					void fill_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill_immediate(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke();
 					void stroke(const rgba_color& c);
-					void stroke(const pattern& pttn);
+					void stroke(const ::std::experimental::io2d::pattern& pttn);
 					void stroke(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke_immediate();
 					void stroke_immediate(const rgba_color& c);
-					void stroke_immediate(const pattern& pttn);
+					void stroke_immediate(const ::std::experimental::io2d::pattern& pttn);
 					void stroke_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke_immediate(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 
 					// \ref{\iotwod.surface.modifiers.maskrender}, mask render modifiers:
-					void mask(const pattern& maskPttn);
-					void mask(const pattern& maskPttn, const rgba_color& c);
-					void mask(const pattern& maskPttn, const pattern& pttn);
-					void mask(const pattern& maskPttn, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask(const pattern& maskPttn, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const ::std::experimental::io2d::pattern& maskPttn);
+					void mask(const ::std::experimental::io2d::pattern& maskPttn, const rgba_color& c);
+					void mask(const ::std::experimental::io2d::pattern& maskPttn, const ::std::experimental::io2d::pattern& pttn);
+					void mask(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask(const surface& maskSurface);
 					void mask(const surface& maskSurface, const rgba_color& c);
-					void mask(const surface& maskSurface, const pattern& pttn);
+					void mask(const surface& maskSurface, const ::std::experimental::io2d::pattern& pttn);
 					void mask(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask(const surface& maskSurface, const point& maskOrigin);
 					void mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
-					void mask(const surface& maskSurface, const point& maskOrigin, const pattern& pttn);
+					void mask(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::pattern& pttn);
 					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask_immediate(const pattern& maskPttn);
-					void mask_immediate(const pattern& maskPttn, const rgba_color& c);
-					void mask_immediate(const pattern& maskPttn, const pattern& pttn);
-					void mask_immediate(const pattern& maskPttn, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask_immediate(const pattern& maskPttn, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn);
+					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const rgba_color& c);
+					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const ::std::experimental::io2d::pattern& pttn);
+					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const surface& maskSurface);
 					void mask_immediate(const surface& maskSurface, const rgba_color& c);
-					void mask_immediate(const surface& maskSurface, const pattern& pttn);
+					void mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::pattern& pttn);
 					void mask_immediate(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
-					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const pattern& pttn);
+					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::pattern& pttn);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 
 					// \ref{\iotwod.surface.modifiers.textrender}, text render modifiers:
 					point show_text(const ::std::string& utf8, const point& position);
 					point show_text(const ::std::string& utf8, const point& position, const rgba_color& c);
-					point show_text(const ::std::string& utf8, const point& position, const pattern& pttn);
+					point show_text(const ::std::string& utf8, const point& position, const ::std::experimental::io2d::pattern& pttn);
 					point show_text(const ::std::string& utf8, const point& position, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					point show_text(const ::std::string& utf8, const point& position, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void show_glyphs(const ::std::vector<glyph>& glyphs);
 					void show_glyphs(const ::std::vector<glyph>& glyphs, const rgba_color& c);
-					void show_glyphs(const ::std::vector<glyph>& glyphs, const pattern& pttn);
+					void show_glyphs(const ::std::vector<glyph>& glyphs, const ::std::experimental::io2d::pattern& pttn);
 					void show_glyphs(const ::std::vector<glyph>& glyphs, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void show_glyphs(const ::std::vector<glyph>& glyphs, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void show_text_glyphs(const ::std::string& utf8,
@@ -1367,7 +1368,7 @@ namespace std {
 						const ::std::vector<glyph>& glyphs,
 						const ::std::vector<text_cluster>& clusters,
 						bool clusterToGlyphsMapReverse,
-						const pattern& pttn);
+						const ::std::experimental::io2d::pattern& pttn);
 					void show_text_glyphs(const ::std::string& utf8,
 						const ::std::vector<glyph>& glyphs,
 						const ::std::vector<text_cluster>& clusters,
@@ -1386,70 +1387,70 @@ namespace std {
 						filter f = filter::default_filter);
 
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
-					void set_matrix(const matrix_2d& matrix);
+					void matrix(const matrix_2d& matrix);
 
 					// \ref{\iotwod.surface.modifiers.font}, font modifiers:
 					void select_font_face(const ::std::string& family, font_slant slant,
 						font_weight weight);
-					void set_font_size(double size);
-					void set_font_matrix(const matrix_2d& matrix);
-					void set_font_options(const font_options& options);
-					void set_font_face(const font_face& font_face);
-					void set_scaled_font(const scaled_font& scaled_font);
+					void font_size(double size);
+					void font_matrix(const matrix_2d& matrix);
+					void font_options(const font_options& options);
+					void font_face(const font_face& font_face);
+					void scaled_font(const scaled_font& scaled_font);
 
 					// \ref{\iotwod.surface.observers.stateobjects}, state object observers:
-					path get_path(const path_factory& pf) const;
-					font_options get_font_options(const font_options_factory& fo) const;
-					pattern create_pattern(const solid_color_pattern_factory& f) const;
-					pattern create_pattern(const linear_pattern_factory& f) const;
-					pattern create_pattern(const radial_pattern_factory& f) const;
-					pattern create_pattern(const mesh_pattern_factory& f) const;
-					pattern create_pattern(surface_pattern_factory& f) const;
+					::std::experimental::io2d::path path(const path_factory& pf) const;
+					::std::experimental::io2d::font_options font_options(const font_options_factory& fo) const;
+					::std::experimental::io2d::pattern create_pattern(const solid_color_pattern_factory& f) const;
+					::std::experimental::io2d::pattern create_pattern(const linear_pattern_factory& f) const;
+					::std::experimental::io2d::pattern create_pattern(const radial_pattern_factory& f) const;
+					::std::experimental::io2d::pattern create_pattern(const mesh_pattern_factory& f) const;
+					::std::experimental::io2d::pattern create_pattern(surface_pattern_factory& f) const;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
-					content get_content() const;
-					point get_device_offset() const;
+					content content() const;
+					point device_offset() const;
 					bool has_surface_resource() const;
-					pattern get_pattern() const;
-					antialias get_antialias() const;
-					int get_dashes_count() const;
-					dashes get_dashes() const;
-					fill_rule get_fill_rule() const;
-					line_cap get_line_cap() const;
-					line_join get_line_join() const;
-					double get_line_width() const;
-					double get_miter_limit() const;
-					compositing_operator get_compositing_operator() const;
-					double get_tolerance() const;
-					rectangle get_clip_extents() const;
+					::std::experimental::io2d::pattern pattern() const;
+					::std::experimental::io2d::antialias antialias() const;
+					int dashes_count() const;
+					::std::experimental::io2d::dashes dashes() const;
+					::std::experimental::io2d::fill_rule fill_rule() const;
+					::std::experimental::io2d::line_cap line_cap() const;
+					::std::experimental::io2d::line_join line_join() const;
+					double line_width() const;
+					double miter_limit() const;
+					::std::experimental::io2d::compositing_operator compositing_operator() const;
+					double tolerance() const;
+					rectangle clip_extents() const;
 					bool in_clip(const point& pt) const;
-					::std::vector<rectangle> get_clip_rectangles() const;
+					::std::vector<rectangle> clip_rectangles() const;
 
 					// \ref{\iotwod.surface.observers.render}, render observers:
-					rectangle get_fill_extents() const;
-					rectangle get_fill_extents_immediate() const;
+					rectangle fill_extents() const;
+					rectangle fill_extents_immediate() const;
 					bool in_fill(const point& pt) const;
 					bool in_fill_immediate(const point& pt) const;
-					rectangle get_stroke_extents() const;
-					rectangle get_stroke_extents_immediate() const;
+					rectangle stroke_extents() const;
+					rectangle stroke_extents_immediate() const;
 					bool in_stroke(const point& pt) const;
 					bool in_stroke_immediate(const point& pt) const;
-					font_extents get_font_extents() const;
-					text_extents get_text_extents(const ::std::string& utf8) const;
-					text_extents get_glyph_extents(const ::std::vector<glyph>& glyphs) const;
+					::std::experimental::io2d::font_extents font_extents() const;
+					::std::experimental::io2d::text_extents text_extents(const ::std::string& utf8) const;
+					::std::experimental::io2d::text_extents glyph_extents(const ::std::vector<glyph>& glyphs) const;
 
 					// \ref{\iotwod.surface.observers.transform}, transformation observers:
-					matrix_2d get_matrix() const;
+					matrix_2d matrix() const;
 					point user_to_device() const;
 					point user_to_device_distance() const;
 					point device_to_user() const;
 					point device_to_user_distance() const;
 
 					// \ref{\iotwod.surface.observers.font}, font observers:
-					matrix_2d get_font_matrix() const;
-					font_options get_font_options() const;
-					font_face get_font_face() const;
-					scaled_font get_scaled_font() const;
+					matrix_2d font_matrix() const;
+					::std::experimental::io2d::font_options font_options() const;
+					::std::experimental::io2d::font_face font_face() const;
+					::std::experimental::io2d::scaled_font scaled_font() const;
 				};
 
 				class image_surface : public surface {
@@ -1470,14 +1471,14 @@ namespace std {
 					image_surface(const ::std::string& filename);
 
 					// Modifiers
-					void set_data(const ::std::vector<unsigned char>& data);
-					::std::vector<unsigned char> get_data();
+					void data(const ::std::vector<unsigned char>& data);
+					::std::vector<unsigned char> data();
 
 					// Observers
-					format get_format() const;
-					int get_width() const;
-					int get_height() const;
-					int get_stride() const;
+					format format() const;
+					int width() const;
+					int height() const;
+					int stride() const;
 				};
 
 #ifdef _WIN32_WINNT
@@ -1597,10 +1598,10 @@ namespace std {
 					surface_pattern_factory(surface& s);
 
 					// Modifiers
-					image_surface set_surface(surface& s);
+					image_surface surface(surface& s);
 
 					// Observers
-					const image_surface& get_surface() const;
+					const image_surface& surface() const;
 				};
 
 				int format_stride_for_width(format format, int width);

@@ -232,7 +232,7 @@ path_factory& path_factory::operator=(path_factory&& other) {
 
 void path_factory::append(const path& p) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	const auto& data = p.get_data_ref();
+	const auto& data = p.data_ref();
 	for (const auto& item : data) {
 		auto type = item->type();
 		switch (type) {
@@ -614,7 +614,7 @@ vector<::std::unique_ptr<path_data>> _Get_arc_as_beziers(const point& center, do
 			currentTheta += theta;
 		}
 	}
-	return pb.get_data();
+	return pb.data();
 }
 
 void path_factory::_Set_current_point_and_last_move_to_point_for_arc(const vector<unique_ptr<path_data>>& data) {
@@ -742,7 +742,7 @@ point path_factory::origin() const {
 	return _Origin;
 }
 
-vector<unique_ptr<path_data>> path_factory::get_data() const {
+vector<unique_ptr<path_data>> path_factory::data() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	vector<unique_ptr<path_data>> result;
 	for (const auto& item : _Data) {
@@ -816,7 +816,7 @@ vector<unique_ptr<path_data>> path_factory::get_data() const {
 	return result;
 }
 
-const vector<unique_ptr<path_data>>& path_factory::get_data_ref() const {
+const vector<unique_ptr<path_data>>& path_factory::data_ref() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Data;
 }
@@ -1130,7 +1130,7 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 	assert(foundLowX && foundLowY && foundHighX && foundHighY && numPoints == 4 && numXs == 2 && numYs == 2);
 }
 
-rectangle path_factory::get_path_extents() const {
+rectangle path_factory::path_extents() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	point pt0{ };
 	point pt1{ };

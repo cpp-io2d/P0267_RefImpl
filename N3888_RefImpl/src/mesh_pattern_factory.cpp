@@ -159,7 +159,7 @@ void mesh_pattern_factory::curve_to(const point& pt0, const point& pt1, const po
 	get<0>(patch).curve_to(pt0, pt1, pt2);
 }
 
-void mesh_pattern_factory::set_control_point(unsigned int point_num, const point& pt) {
+void mesh_pattern_factory::control_point(unsigned int point_num, const point& pt) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
@@ -171,7 +171,7 @@ void mesh_pattern_factory::set_control_point(unsigned int point_num, const point
 	get<1>(patch)[point_num] = pt;
 }
 
-void mesh_pattern_factory::set_corner_color_rgba(unsigned int corner_num, const rgba_color& color) {
+void mesh_pattern_factory::corner_color_rgba(unsigned int corner_num, const rgba_color& color) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
@@ -183,12 +183,12 @@ void mesh_pattern_factory::set_corner_color_rgba(unsigned int corner_num, const 
 	get<2>(patch)[corner_num] = color;
 }
 
-unsigned int mesh_pattern_factory::get_patch_count() const {
+unsigned int mesh_pattern_factory::patch_count() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return static_cast<unsigned int>(_Patches.size());
 }
 
-path_factory mesh_pattern_factory::get_path_factory(unsigned int patch_num) const {
+path_factory mesh_pattern_factory::path_factory(unsigned int patch_num) const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (patch_num >= _Patches.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
@@ -197,7 +197,7 @@ path_factory mesh_pattern_factory::get_path_factory(unsigned int patch_num) cons
 	return get<0>(patch);
 }
 
-bool mesh_pattern_factory::get_control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const {
+bool mesh_pattern_factory::control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (patch_num >= _Patches.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
@@ -212,7 +212,7 @@ bool mesh_pattern_factory::get_control_point(unsigned int patch_num, unsigned in
 	return true;
 }
 
-bool mesh_pattern_factory::get_corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const {
+bool mesh_pattern_factory::corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (patch_num >= _Patches.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);

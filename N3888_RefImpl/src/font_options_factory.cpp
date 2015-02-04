@@ -50,22 +50,22 @@ font_options_factory& font_options_factory::operator=(font_options_factory&& oth
 	return *this;
 }
 
-void font_options_factory::set_antialias(antialias a) {
+void font_options_factory::antialias(::std::experimental::io2d::antialias a) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Antialias = a;
 }
 
-antialias font_options_factory::get_antialias() const {
+antialias font_options_factory::antialias() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Antialias;
 }
 
-void font_options_factory::set_subpixel_order(subpixel_order so) {
+void font_options_factory::subpixel_order(::std::experimental::io2d::subpixel_order so) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Subpixel_order = so;
 }
 
-subpixel_order font_options_factory::get_subpixel_order() const {
+subpixel_order font_options_factory::subpixel_order() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Subpixel_order;
 }

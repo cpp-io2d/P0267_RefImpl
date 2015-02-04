@@ -78,12 +78,12 @@ void linear_pattern_factory::add_color_stop_rgba(double offset, const rgba_color
 	_Color_stops.push_back(make_tuple(offset, color));
 }
 
-int linear_pattern_factory::get_color_stop_count() const {
+int linear_pattern_factory::color_stop_count() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return static_cast<int>(_Color_stops.size());
 }
 
-void linear_pattern_factory::get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const {
+void linear_pattern_factory::color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
@@ -94,7 +94,7 @@ void linear_pattern_factory::get_color_stop_rgba(unsigned int index, double& off
 	color = get<1>(stop);
 }
 
-void linear_pattern_factory::set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
+void linear_pattern_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
@@ -109,13 +109,13 @@ void linear_pattern_factory::set_color_stop_rgba(unsigned int index, double offs
 	_Color_stops[index] = make_tuple(offset, color);
 }
 
-void linear_pattern_factory::get_linear_points(point& pt0, point& pt1) const {
+void linear_pattern_factory::linear_points(point& pt0, point& pt1) const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	pt0 = _Point0;
 	pt1 = _Point1;
 }
 
-void linear_pattern_factory::set_linear_points(const point& pt0, const point& pt1) {
+void linear_pattern_factory::linear_points(const point& pt0, const point& pt1) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Point0 = pt0;
 	_Point1 = pt1;

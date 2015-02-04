@@ -96,12 +96,12 @@ void radial_pattern_factory::add_color_stop_rgba(double offset, const rgba_color
 	_Color_stops.push_back(make_tuple(offset, color));
 }
 
-int radial_pattern_factory::get_color_stop_count() const {
+int radial_pattern_factory::color_stop_count() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return static_cast<int>(_Color_stops.size());
 }
 
-void radial_pattern_factory::get_color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const {
+void radial_pattern_factory::color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
@@ -112,7 +112,7 @@ void radial_pattern_factory::get_color_stop_rgba(unsigned int index, double& off
 	color = get<1>(stop);
 }
 
-void radial_pattern_factory::set_color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
+void radial_pattern_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
@@ -127,7 +127,7 @@ void radial_pattern_factory::set_color_stop_rgba(unsigned int index, double offs
 	_Color_stops[index] = make_tuple(offset, color);
 }
 
-void radial_pattern_factory::get_radial_circles(point& center0, double& radius0, point& center1, double& radius1) const {
+void radial_pattern_factory::radial_circles(point& center0, double& radius0, point& center1, double& radius1) const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	center0 = _Center0;
 	radius0 = _Radius0;
@@ -135,7 +135,7 @@ void radial_pattern_factory::get_radial_circles(point& center0, double& radius0,
 	radius1 = _Radius1;
 }
 
-void radial_pattern_factory::set_radial_circles(const point& center0, double radius0, const point& center1, double radius1) {
+void radial_pattern_factory::radial_circles(const point& center0, double radius0, const point& center1, double radius1) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	_Center0 = center0;
 	_Radius0 = radius0;

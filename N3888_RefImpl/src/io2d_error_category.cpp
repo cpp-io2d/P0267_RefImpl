@@ -36,9 +36,9 @@ const char* io2d_error_category::name() const noexcept {
 	case io2d_error::surface_finished:
 		return "An attempt was made to use or manipulate a surface object or surface-derived object which is no longer valid.";
 	case io2d_error::invalid_dash:
-		return "An invalid dash value was specified in a call to surface::set_dashes.";
+		return "An invalid dash value was specified in a call to surface::dashes.";
 	case io2d_error::clip_not_representable:
-		return "A call was made to surface::get_clip_rectangles when the surface object's current clipping region could not be represented with rectangles.";
+		return "A call was made to surface::clip_rectangles when the surface object's current clipping region could not be represented with rectangles.";
 	case io2d_error::invalid_stride:
 		return "An invalid stride value was used. Surface formats may require padding at the end of each row of pixel data depending on the implementation and the current graphics chipset, if any.Use format_stride_for_width to obtain the correct stride value.";
 	case io2d_error::user_font_immutable:

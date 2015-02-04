@@ -63,12 +63,12 @@ solid_color_pattern_factory::solid_color_pattern_factory(const rgba_color& color
 	_Color.a(_Clamp_to_normal(color.a()));
 }
 
-rgba_color solid_color_pattern_factory::get_rgba() const {
+rgba_color solid_color_pattern_factory::rgba() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Color;
 }
 
-void solid_color_pattern_factory::set_rgba(const rgba_color& color) {
+void solid_color_pattern_factory::rgba(const rgba_color& color) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -81,43 +81,43 @@ void solid_color_pattern_factory::set_rgba(const rgba_color& color) {
 	_Color.a(_Clamp_to_normal(color.a()));
 }
 
-double solid_color_pattern_factory::get_red() const {
+double solid_color_pattern_factory::red() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Color.r();
 }
 
-void solid_color_pattern_factory::set_red(double red) {
+void solid_color_pattern_factory::red(double red) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(red >= 0.0 && red <= 1.0);
 	_Color.r(_Clamp_to_normal(red));
 }
 
-double solid_color_pattern_factory::get_green() const {
+double solid_color_pattern_factory::green() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Color.g();
 }
 
-void solid_color_pattern_factory::set_green(double green) {
+void solid_color_pattern_factory::green(double green) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	assert(green >= 0.0 && green <= 1.0);
 	_Color.g(_Clamp_to_normal(green));
 }
 
-double solid_color_pattern_factory::get_blue() const {
+double solid_color_pattern_factory::blue() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Color.b();
 }
 
-void solid_color_pattern_factory::set_blue(double blue) {
+void solid_color_pattern_factory::blue(double blue) {
 	assert(blue >= 0.0 && blue <= 1.0);
 	_Color.b(_Clamp_to_normal(blue));
 }
 
-double solid_color_pattern_factory::get_alpha() const {
+double solid_color_pattern_factory::alpha() const {
 	return _Color.a();
 }
 
-void solid_color_pattern_factory::set_alpha(double alpha) {
+void solid_color_pattern_factory::alpha(double alpha) {
 	assert(alpha >= 0.0 && alpha <= 1.0);
 	_Color.a(_Clamp_to_normal(alpha));
 }
