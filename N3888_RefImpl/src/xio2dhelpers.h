@@ -8,7 +8,7 @@
 #include <limits>
 #include <cmath>
 
-// Throws a system_error with an error_code formed from the 's' argument with a category from io2d_category(). 
+// Throws a system_error with an error_code formed from the 's' argument with a category from io2d_category().
 inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 	assert(s != CAIRO_STATUS_LAST_STATUS && s != CAIRO_STATUS_INVALID_POP_GROUP);
 	if (s != CAIRO_STATUS_SUCCESS) {
@@ -56,7 +56,8 @@ inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 
 // Checks for equality between two doubles.
 // See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
-inline bool _Almost_equal_relative(double a, double b, double epsilon = ::std::numeric_limits<double>::epsilon()) {
+template <typename T>
+inline bool _Almost_equal_relative(T a, T b, T epsilon = ::std::numeric_limits<T>::epsilon()) {
 	auto diff = ::std::abs(a - b);
 	a = ::std::abs(a);
 	b = ::std::abs(b);
@@ -82,7 +83,7 @@ inline ::std::experimental::io2d::point _Rotate_point_absolute_angle(const ::std
 	}
 }
 
-// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'. 
+// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'.
 inline int _Double_to_int(double value, bool nearestNeighbor = true) {
 	if (nearestNeighbor) {
 		// Round to the nearest neighbor.

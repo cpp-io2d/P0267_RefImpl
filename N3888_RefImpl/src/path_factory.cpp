@@ -505,7 +505,8 @@ void path_factory::close_path() {
 	}
 }
 
-point _Rotate_point(const point& pt, double angle, bool clockwise = true) {
+point _Rotate_point(const point& pt, double angle, bool clockwise = true);
+point _Rotate_point(const point& pt, double angle, bool clockwise) {
 	if (clockwise) {
 		return{ pt.x() * cos(angle) + pt.y() * sin(angle), -(pt.x() * -(sin(angle)) + pt.y() * cos(angle)) };
 	}
@@ -514,7 +515,6 @@ point _Rotate_point(const point& pt, double angle, bool clockwise = true) {
 	}
 }
 
-// Returns a path_data composed of 
 vector<::std::unique_ptr<path_data>> _Get_arc_as_beziers(const point& center, double radius, double angle1, double angle2, bool arcNegative, bool hasCurrentPoint, const point& currentPoint, const point& origin, const matrix_2d& matrix) {
 	if (arcNegative) {
 		while (angle2 > angle1) {
@@ -821,19 +821,23 @@ const vector<unique_ptr<path_data>>& path_factory::data_ref() const {
 	return _Data;
 }
 
+double _Curve_value_for_t(double a, double b, double c, double d, double t);
 double _Curve_value_for_t(double a, double b, double c, double d, double t) {
 	return pow(1.0 - t, 3.0) * a + 3.0 * pow(1.0 - t, 2.0) * t * b + 3.0 * (1.0 - t) * pow(t, 2.0) * c + pow(t, 3.0) * d;
 }
 
+inline point _Cubic_bezier_derivative_for_t(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t);
 inline point _Cubic_bezier_derivative_for_t(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t) {
 	return 3.0 * pow(1.0 - t, 2.0) * (pt1 - pt0) + 6.0 * (1.0 - t) * t * (pt2 - pt1) + 3.0 * pow(t, 2.0) * (pt3 - pt2);
 }
 
+inline bool _Same_sign(double lhs, double rhs);
 inline bool _Same_sign(double lhs, double rhs) {
 	return ((lhs < 0.0) && (rhs < 0.0)) || ((lhs > 0.0) && (rhs > 0.0));
 }
 
-double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t0, double t2, const bool findX, const double epsilon = numeric_limits<double>::epsilon()) {
+double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t0, double t2, const bool findX, const double epsilon = numeric_limits<double>::epsilon());
+double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t0, double t2, const bool findX, const double epsilon) {
 	// Validate that t0 is the low value, t2 is the high value, t0 is not equal to t2, and that both are in the range [0.0, 1.0].
 	assert(t0 >= 0.0 && t0 < t2 && t2 <= 1.0);
 	// Find the midpoint.
@@ -898,6 +902,7 @@ double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const p
 	return t1;
 }
 
+void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, const point& pt3, point& extents0, point& extents1);
 void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, const point& pt3, point& extents0, point& extents1) {
 	// We know at a minimum that the extents are the two knots, pt0 and pt3. The only question is whether the extents go beyond those two points.
 	extents0.x(min(pt0.x(), pt3.x()));
@@ -1317,6 +1322,41 @@ rectangle path_factory::path_extents() const {
 					}
 				}
 					break;
+				case path_data_type::new_sub_path:
+				{
+					assert("Unexpected value path_data_type::new_sub_path." && false);
+					throw runtime_error("Unexpected value path_data_type::new_sub_path.");
+				}
+				case path_data_type::close_path:
+				{
+					assert("Unexpected value path_data_type::close_path." && false);
+					throw runtime_error("Unexpected value path_data_type::close_path.");
+				}
+				case path_data_type::rel_move_to:
+				{
+					assert("Unexpected value path_data_type::rel_move_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_move_to.");
+				}
+				case path_data_type::rel_line_to:
+				{
+					assert("Unexpected value path_data_type::rel_line_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_line_to.");
+				}
+				case path_data_type::rel_curve_to:
+				{
+					assert("Unexpected value path_data_type::rel_curve_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_curve_to.");
+				}
+				case path_data_type::arc:
+				{
+					assert("Unexpected value path_data_type::arc." && false);
+					throw runtime_error("Unexpected value path_data_type::arc.");
+				}
+				case path_data_type::arc_negative:
+				{
+					assert("Unexpected value path_data_type::arc_negative." && false);
+					throw runtime_error("Unexpected value path_data_type::arc_negative.");
+				}
 				case path_data_type::change_origin:
 				{
 					// Ignore, we're already dealing with this.
@@ -1326,11 +1366,6 @@ rectangle path_factory::path_extents() const {
 				case path_data_type::change_matrix:
 				{
 					// Ignore, we're already dealing with this.
-				}
-					break;
-				case path_data_type::new_sub_path:
-				{
-					// Ignore, we don't need this.
 				}
 					break;
 				default:
@@ -1397,6 +1432,41 @@ rectangle path_factory::path_extents() const {
 					}
 				}
 					break;
+				case path_data_type::new_sub_path:
+				{
+					assert("Unexpected value path_data_type::new_sub_path." && false);
+					throw runtime_error("Unexpected value path_data_type::new_sub_path.");
+				}
+				case path_data_type::close_path:
+				{
+					assert("Unexpected value path_data_type::close_path." && false);
+					throw runtime_error("Unexpected value path_data_type::close_path.");
+				}
+				case path_data_type::rel_move_to:
+				{
+					assert("Unexpected value path_data_type::rel_move_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_move_to.");
+				}
+				case path_data_type::rel_line_to:
+				{
+					assert("Unexpected value path_data_type::rel_line_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_line_to.");
+				}
+				case path_data_type::rel_curve_to:
+				{
+					assert("Unexpected value path_data_type::rel_curve_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_curve_to.");
+				}
+				case path_data_type::arc:
+				{
+					assert("Unexpected value path_data_type::arc." && false);
+					throw runtime_error("Unexpected value path_data_type::arc.");
+				}
+				case path_data_type::arc_negative:
+				{
+					assert("Unexpected value path_data_type::arc_negative." && false);
+					throw runtime_error("Unexpected value path_data_type::arc_negative.");
+				}
 				case path_data_type::change_origin:
 				{
 					// Ignore, we're already dealing with this.
@@ -1406,11 +1476,6 @@ rectangle path_factory::path_extents() const {
 				case path_data_type::change_matrix:
 				{
 					// Ignore, we're already dealing with this.
-				}
-					break;
-				case path_data_type::new_sub_path:
-				{
-					// Ignore, we don't need this.
 				}
 					break;
 				default:
@@ -1444,67 +1509,3 @@ void path_factory::reset() {
 	_Transform_matrix = matrix_2d::init_identity();
 	_Origin = { };
 }
-
-//
-//namespace std {
-//	namespace experimental {
-//		namespace io2d {
-//#if _Inline_namespace_conditional_support_test
-//			inline namespace v1 {
-//#endif
-//				//bool operator==(const path_data& lhs, const path_data& rhs) {
-//				//	if (lhs.type != rhs.type) {
-//				//		return false;
-//				//	}
-//				//	auto type = lhs.type;
-//				//	switch (type)
-//				//	{
-//				//	case std::experimental::io2d::path_data_type::move_to:
-//				//		return lhs.data.move == rhs.data.move;
-//				//	case std::experimental::io2d::path_data_type::line_to:
-//				//		return lhs.data.line == rhs.data.line;
-//				//	case std::experimental::io2d::path_data_type::curve_to:
-//				//		return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
-//				//			lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
-//				//			lhs.data.curve.pt3 == rhs.data.curve.pt3;
-//				//	case std::experimental::io2d::path_data_type::new_sub_path:
-//				//		return true;
-//				//	case std::experimental::io2d::path_data_type::close_path:
-//				//		return true;
-//				//	case std::experimental::io2d::path_data_type::rel_move_to:
-//				//		return lhs.data.move == rhs.data.move;
-//				//	case std::experimental::io2d::path_data_type::rel_line_to:
-//				//		return lhs.data.line == rhs.data.line;
-//				//	case std::experimental::io2d::path_data_type::rel_curve_to:
-//				//		return lhs.data.curve.pt1 == rhs.data.curve.pt1 &&
-//				//			lhs.data.curve.pt2 == rhs.data.curve.pt2 &&
-//				//			lhs.data.curve.pt3 == rhs.data.curve.pt3;
-//				//	case std::experimental::io2d::path_data_type::arc:
-//				//		return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
-//				//			lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
-//				//			lhs.data.arc.center == rhs.data.arc.center &&
-//				//			lhs.data.arc.radius == rhs.data.arc.radius;
-//				//	case std::experimental::io2d::path_data_type::arc_negative:
-//				//		return lhs.data.arc.angle1 == rhs.data.arc.angle1 &&
-//				//			lhs.data.arc.angle2 == rhs.data.arc.angle2 &&
-//				//			lhs.data.arc.center == rhs.data.arc.center &&
-//				//			lhs.data.arc.radius == rhs.data.arc.radius;
-//				//	case std::experimental::io2d::path_data_type::change_matrix:
-//				//		return lhs.data.matrix == rhs.data.matrix;
-//				//	case std::experimental::io2d::path_data_type::change_origin:
-//				//		return lhs.data.origin == rhs.data.origin;
-//				//	default:
-//				//		assert("Unknown path_data_type!" && false);
-//				//		return false;
-//				//	}
-//				//}
-//
-//				//bool operator!=(const path_data& lhs, const path_data& rhs) {
-//				//	return !(lhs == rhs);
-//				//}
-//#if _Inline_namespace_conditional_support_test
-//			}
-//#endif
-//		}
-//	}
-//}

@@ -8,7 +8,7 @@ using namespace std::experimental::io2d;
 solid_color_pattern_factory::solid_color_pattern_factory()
 	: _Lock()
 	, _Pattern_type(pattern_type::solid_color)
-	, _Color(rgba_color::black) {
+	, _Color(rgba_color::black()) {
 }
 
 solid_color_pattern_factory::solid_color_pattern_factory(const solid_color_pattern_factory& other)

@@ -154,7 +154,7 @@ namespace std {
 				}
 
 				bool operator==(const point& lhs, const point& rhs) {
-					return lhs.x() == rhs.x() && lhs.y() == rhs.y();
+					return _Almost_equal_relative(lhs.x(), rhs.x()) && _Almost_equal_relative(lhs.y(), rhs.y());
 				}
 
 				bool operator!=(const point& lhs, const point& rhs) {

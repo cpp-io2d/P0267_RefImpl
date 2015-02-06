@@ -31,7 +31,7 @@ namespace std {
 		namespace io2d {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
-#endif 
+#endif
 				enum class io2d_error {
 					success,
 					invalid_restore,
@@ -240,154 +240,154 @@ namespace std {
 					double b() const;
 					double a() const;
 
-					const static rgba_color alice_blue;
-					const static rgba_color antique_white;
-					const static rgba_color aqua;
-					const static rgba_color aquamarine;
-					const static rgba_color azure;
-					const static rgba_color beige;
-					const static rgba_color bisque;
-					const static rgba_color black;
-					const static rgba_color blanched_almond;
-					const static rgba_color blue;
-					const static rgba_color blue_violet;
-					const static rgba_color brown;
-					const static rgba_color burly_wood;
-					const static rgba_color cadet_blue;
-					const static rgba_color chartreuse;
-					const static rgba_color chocolate;
-					const static rgba_color coral;
-					const static rgba_color cornflower_blue;
-					const static rgba_color cornsilk;
-					const static rgba_color crimson;
-					const static rgba_color cyan;
-					const static rgba_color dark_blue;
-					const static rgba_color dark_cyan;
-					const static rgba_color dark_goldenrod;
-					const static rgba_color dark_gray;
-					const static rgba_color dark_green;
-					const static rgba_color dark_grey;
-					const static rgba_color dark_khaki;
-					const static rgba_color dark_magenta;
-					const static rgba_color dark_olive_green;
-					const static rgba_color dark_orange;
-					const static rgba_color dark_orchid;
-					const static rgba_color dark_red;
-					const static rgba_color dark_salmon;
-					const static rgba_color dark_sea_green;
-					const static rgba_color dark_slate_blue;
-					const static rgba_color dark_slate_gray;
-					const static rgba_color dark_slate_grey;
-					const static rgba_color dark_turquoise;
-					const static rgba_color dark_violet;
-					const static rgba_color deep_pink;
-					const static rgba_color deep_sky_blue;
-					const static rgba_color dim_gray;
-					const static rgba_color dim_grey;
-					const static rgba_color dodger_blue;
-					const static rgba_color firebrick;
-					const static rgba_color floral_white;
-					const static rgba_color forest_green;
-					const static rgba_color fuchsia;
-					const static rgba_color gainsboro;
-					const static rgba_color ghost_white;
-					const static rgba_color gold;
-					const static rgba_color goldenrod;
-					const static rgba_color gray;
-					const static rgba_color green;
-					const static rgba_color green_yellow;
-					const static rgba_color grey;
-					const static rgba_color honeydew;
-					const static rgba_color hot_pink;
-					const static rgba_color indian_red;
-					const static rgba_color indigo;
-					const static rgba_color ivory;
-					const static rgba_color khaki;
-					const static rgba_color lavender;
-					const static rgba_color lavender_blush;
-					const static rgba_color lawn_green;
-					const static rgba_color lemon_chiffon;
-					const static rgba_color light_blue;
-					const static rgba_color light_coral;
-					const static rgba_color light_cyan;
-					const static rgba_color light_goldenrod_yellow;
-					const static rgba_color light_gray;
-					const static rgba_color light_green;
-					const static rgba_color light_grey;
-					const static rgba_color light_pink;
-					const static rgba_color light_salmon;
-					const static rgba_color light_sea_green;
-					const static rgba_color light_sky_blue;
-					const static rgba_color light_slate_gray;
-					const static rgba_color light_slate_grey;
-					const static rgba_color light_steel_blue;
-					const static rgba_color light_yellow;
-					const static rgba_color lime;
-					const static rgba_color lime_green;
-					const static rgba_color linen;
-					const static rgba_color magenta;
-					const static rgba_color maroon;
-					const static rgba_color medium_aquamarine;
-					const static rgba_color medium_blue;
-					const static rgba_color medium_orchid;
-					const static rgba_color medium_purple;
-					const static rgba_color medium_sea_green;
-					const static rgba_color medium_slate_blue;
-					const static rgba_color medium_spring_green;
-					const static rgba_color medium_turquoise;
-					const static rgba_color medium_violet_red;
-					const static rgba_color midnight_blue;
-					const static rgba_color mint_cream;
-					const static rgba_color misty_rose;
-					const static rgba_color moccasin;
-					const static rgba_color navajo_white;
-					const static rgba_color navy;
-					const static rgba_color old_lace;
-					const static rgba_color olive;
-					const static rgba_color olive_drab;
-					const static rgba_color orange;
-					const static rgba_color orange_red;
-					const static rgba_color orchid;
-					const static rgba_color pale_goldenrod;
-					const static rgba_color pale_green;
-					const static rgba_color pale_turquoise;
-					const static rgba_color pale_violet_red;
-					const static rgba_color papaya_whip;
-					const static rgba_color peach_puff;
-					const static rgba_color peru;
-					const static rgba_color pink;
-					const static rgba_color plum;
-					const static rgba_color powder_blue;
-					const static rgba_color purple;
-					const static rgba_color red;
-					const static rgba_color rosy_brown;
-					const static rgba_color royal_blue;
-					const static rgba_color saddle_brown;
-					const static rgba_color salmon;
-					const static rgba_color sandy_brown;
-					const static rgba_color sea_green;
-					const static rgba_color sea_shell;
-					const static rgba_color sienna;
-					const static rgba_color silver;
-					const static rgba_color sky_blue;
-					const static rgba_color slate_blue;
-					const static rgba_color slate_gray;
-					const static rgba_color slate_grey;
-					const static rgba_color snow;
-					const static rgba_color spring_green;
-					const static rgba_color steel_blue;
-					const static rgba_color tan;
-					const static rgba_color teal;
-					const static rgba_color thistle;
-					const static rgba_color tomato;
-					const static rgba_color transparent_black; // Note: Not in CSS3.
-					const static rgba_color turquoise;
-					const static rgba_color violet;
-					const static rgba_color wheat;
-					const static rgba_color white;
-					const static rgba_color white_smoke;
-					const static rgba_color yellow;
-					const static rgba_color yellow_green;
+					static rgba_color alice_blue();
+					static rgba_color antique_white();
+					static rgba_color aqua();
+					static rgba_color aquamarine();
+					static rgba_color azure();
+					static rgba_color beige();
+					static rgba_color bisque();
+					static rgba_color black();
+					static rgba_color blanched_almond();
+					static rgba_color blue();
+					static rgba_color blue_violet();
+					static rgba_color brown();
+					static rgba_color burly_wood();
+					static rgba_color cadet_blue();
+					static rgba_color chartreuse();
+					static rgba_color chocolate();
+					static rgba_color coral();
+					static rgba_color cornflower_blue();
+					static rgba_color cornsilk();
+					static rgba_color crimson();
+					static rgba_color cyan();
+					static rgba_color dark_blue();
+					static rgba_color dark_cyan();
+					static rgba_color dark_goldenrod();
+					static rgba_color dark_gray();
+					static rgba_color dark_green();
+					static rgba_color dark_grey();
+					static rgba_color dark_khaki();
+					static rgba_color dark_magenta();
+					static rgba_color dark_olive_green();
+					static rgba_color dark_orange();
+					static rgba_color dark_orchid();
+					static rgba_color dark_red();
+					static rgba_color dark_salmon();
+					static rgba_color dark_sea_green();
+					static rgba_color dark_slate_blue();
+					static rgba_color dark_slate_gray();
+					static rgba_color dark_slate_grey();
+					static rgba_color dark_turquoise();
+					static rgba_color dark_violet();
+					static rgba_color deep_pink();
+					static rgba_color deep_sky_blue();
+					static rgba_color dim_gray();
+					static rgba_color dim_grey();
+					static rgba_color dodger_blue();
+					static rgba_color firebrick();
+					static rgba_color floral_white();
+					static rgba_color forest_green();
+					static rgba_color fuchsia();
+					static rgba_color gainsboro();
+					static rgba_color ghost_white();
+					static rgba_color gold();
+					static rgba_color goldenrod();
+					static rgba_color gray();
+					static rgba_color green();
+					static rgba_color green_yellow();
+					static rgba_color grey();
+					static rgba_color honeydew();
+					static rgba_color hot_pink();
+					static rgba_color indian_red();
+					static rgba_color indigo();
+					static rgba_color ivory();
+					static rgba_color khaki();
+					static rgba_color lavender();
+					static rgba_color lavender_blush();
+					static rgba_color lawn_green();
+					static rgba_color lemon_chiffon();
+					static rgba_color light_blue();
+					static rgba_color light_coral();
+					static rgba_color light_cyan();
+					static rgba_color light_goldenrod_yellow();
+					static rgba_color light_gray();
+					static rgba_color light_green();
+					static rgba_color light_grey();
+					static rgba_color light_pink();
+					static rgba_color light_salmon();
+					static rgba_color light_sea_green();
+					static rgba_color light_sky_blue();
+					static rgba_color light_slate_gray();
+					static rgba_color light_slate_grey();
+					static rgba_color light_steel_blue();
+					static rgba_color light_yellow();
+					static rgba_color lime();
+					static rgba_color lime_green();
+					static rgba_color linen();
+					static rgba_color magenta();
+					static rgba_color maroon();
+					static rgba_color medium_aquamarine();
+					static rgba_color medium_blue();
+					static rgba_color medium_orchid();
+					static rgba_color medium_purple();
+					static rgba_color medium_sea_green();
+					static rgba_color medium_slate_blue();
+					static rgba_color medium_spring_green();
+					static rgba_color medium_turquoise();
+					static rgba_color medium_violet_red();
+					static rgba_color midnight_blue();
+					static rgba_color mint_cream();
+					static rgba_color misty_rose();
+					static rgba_color moccasin();
+					static rgba_color navajo_white();
+					static rgba_color navy();
+					static rgba_color old_lace();
+					static rgba_color olive();
+					static rgba_color olive_drab();
+					static rgba_color orange();
+					static rgba_color orange_red();
+					static rgba_color orchid();
+					static rgba_color pale_goldenrod();
+					static rgba_color pale_green();
+					static rgba_color pale_turquoise();
+					static rgba_color pale_violet_red();
+					static rgba_color papaya_whip();
+					static rgba_color peach_puff();
+					static rgba_color peru();
+					static rgba_color pink();
+					static rgba_color plum();
+					static rgba_color powder_blue();
+					static rgba_color purple();
+					static rgba_color red();
+					static rgba_color rosy_brown();
+					static rgba_color royal_blue();
+					static rgba_color saddle_brown();
+					static rgba_color salmon();
+					static rgba_color sandy_brown();
+					static rgba_color sea_green();
+					static rgba_color sea_shell();
+					static rgba_color sienna();
+					static rgba_color silver();
+					static rgba_color sky_blue();
+					static rgba_color slate_blue();
+					static rgba_color slate_gray();
+					static rgba_color slate_grey();
+					static rgba_color snow();
+					static rgba_color spring_green();
+					static rgba_color steel_blue();
+					static rgba_color tan();
+					static rgba_color teal();
+					static rgba_color thistle();
+					static rgba_color tomato();
+					static rgba_color transparent_black(); // Note: Not in CSS3.
+					static rgba_color turquoise();
+					static rgba_color violet();
+					static rgba_color wheat();
+					static rgba_color white();
+					static rgba_color white_smoke();
+					static rgba_color yellow();
+					static rgba_color yellow_green();
 				};
 
 #if _Inline_namespace_conditional_support_test && _User_defined_literal_conditional_support_test
@@ -599,6 +599,7 @@ namespace std {
 					_Point(_Point&& other);
 					_Point& operator=(_Point&& other);
 					_Point(const point& to);
+					virtual ~_Point();
 					virtual path_data_type type() const override = 0;
 
 					point to() const;
@@ -660,6 +661,7 @@ namespace std {
 					_Curve_to(_Curve_to&& other);
 					_Curve_to& operator=(_Curve_to&& other);
 					_Curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
+					virtual ~_Curve_to();
 					virtual path_data_type type() const override = 0;
 
 					void control_point_1(const point& value);
@@ -705,6 +707,7 @@ namespace std {
 					_Arc(_Arc&& other);
 					_Arc& operator=(_Arc&& other);
 					_Arc(point center, double radius, double angle1, double angle2);
+					virtual ~_Arc();
 					virtual path_data_type type() const override = 0;
 
 					void center(const point& value);
@@ -908,8 +911,8 @@ namespace std {
 
 				class font_options_factory {
 					mutable ::std::recursive_mutex _Lock;
-					antialias _Antialias = antialias::default_antialias;
-					subpixel_order _Subpixel_order = subpixel_order::default_subpixel_order;
+					::std::experimental::io2d::antialias _Antialias = ::std::experimental::io2d::antialias::default_antialias;
+					::std::experimental::io2d::subpixel_order _Subpixel_order = ::std::experimental::io2d::subpixel_order::default_subpixel_order;
 
 				public:
 					font_options_factory();
@@ -938,12 +941,12 @@ namespace std {
 					font_options& operator=(const font_options&) = default;
 					font_options(font_options&& other);
 					font_options& operator=(font_options&& other);
-					font_options(antialias a, subpixel_order so);
+					font_options(::std::experimental::io2d::antialias a, ::std::experimental::io2d::subpixel_order so);
 					explicit font_options(native_handle_type nh);
 
 					// Observers
-					antialias antialias() const;
-					subpixel_order subpixel_order() const;
+					::std::experimental::io2d::antialias antialias() const;
+					::std::experimental::io2d::subpixel_order subpixel_order() const;
 				};
 
 				class font_face {
@@ -1027,8 +1030,8 @@ namespace std {
 
 					::std::shared_ptr<cairo_pattern_t> _Pattern;
 					pattern_type _Pattern_type;
-					extend _Extend;
-					filter _Filter;
+					::std::experimental::io2d::extend _Extend;
+					::std::experimental::io2d::filter _Filter;
 					matrix_2d _Matrix;
 
 				public:
@@ -1145,7 +1148,7 @@ namespace std {
 					typedef ::std::map<unsigned int, point> _Control_points;
 					typedef ::std::map<unsigned int, rgba_color> _Corner_colors;
 					// <Patch data, control points, corner colors>
-					typedef ::std::tuple<path_factory, _Control_points, _Corner_colors> _Patch;
+					typedef ::std::tuple<::std::experimental::io2d::path_factory, _Control_points, _Corner_colors> _Patch;
 					::std::vector<_Patch> _Patches;
 				public:
 					mesh_pattern_factory();
@@ -1166,7 +1169,7 @@ namespace std {
 
 					// Observers
 					unsigned int patch_count() const;
-					path_factory path_factory(unsigned int patch_num) const;
+					::std::experimental::io2d::path_factory path_factory(unsigned int patch_num) const;
 					bool control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const;
 					bool corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
 				};
@@ -1183,7 +1186,7 @@ namespace std {
 					// tuple<dashes, offset>
 				private:
 					::std::mutex _Lock_for_device;
-					::std::weak_ptr<device> _Device;
+					::std::weak_ptr<::std::experimental::io2d::device> _Device;
 				protected:
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
@@ -1193,42 +1196,42 @@ namespace std {
 					// State - unsaved
 					typedef rectangle _Dirty_type;
 					_Dirty_type _Dirty_rect;
-					format _Format;
-					content _Content;
+					::std::experimental::io2d::format _Format;
+					::std::experimental::io2d::content _Content;
 
 					// State - saved
 					typedef point _Device_offtype;
 					_Device_offtype _Device_offset = { 0.0, 0.0 };
-					pattern _Pattern;
-					antialias _Antialias;
-					dashes _Dashes;
-					fill_rule _Fill_rule;
-					line_cap _Line_cap;
-					line_join _Line_join = line_join::miter;
+					::std::experimental::io2d::pattern _Pattern;
+					::std::experimental::io2d::antialias _Antialias;
+					::std::experimental::io2d::dashes _Dashes;
+					::std::experimental::io2d::fill_rule _Fill_rule;
+					::std::experimental::io2d::line_cap _Line_cap;
+					::std::experimental::io2d::line_join _Line_join = ::std::experimental::io2d::line_join::miter;
 					typedef double _Line_width_type;
 					_Line_width_type _Line_width;
 					typedef double _Miter_limit_type;
 					_Miter_limit_type _Miter_limit = 10.0;
-					compositing_operator _Compositing_operator;
+					::std::experimental::io2d::compositing_operator _Compositing_operator;
 					typedef double _Tolerance_type;
 					_Tolerance_type _Tolerance = 0.1;
-					path _Default_path;
-					path _Current_path;
-					path_factory _Immediate_path;
+					::std::experimental::io2d::path _Default_path;
+					::std::experimental::io2d::path _Current_path;
+					::std::experimental::io2d::path_factory _Immediate_path;
 					typedef matrix_2d _Transform_matrix_type;
 					_Transform_matrix_type _Transform_matrix;
-					font_face _Font_face; // Altered by select_font_face and font_face
+					::std::experimental::io2d::font_face _Font_face; // Altered by select_font_face and font_face
 					typedef matrix_2d _Font_matrix_type;
 					_Font_matrix_type _Font_matrix; // Covers both size and full matrix - size is just a uniform scale matrix.
-					font_options _Font_options;
+					::std::experimental::io2d::font_options _Font_options;
 					// The current scaled_font is created on demand from parameters that are already saved.
 
-					::std::stack<::std::tuple<_Device_offtype, pattern, antialias, dashes, fill_rule, line_cap, line_join, _Line_width_type, _Miter_limit_type, compositing_operator, _Tolerance_type, path, path, path_factory, _Transform_matrix_type, font_face, _Font_matrix_type, font_options>> _Saved_state;
+					::std::stack<::std::tuple<_Device_offtype, ::std::experimental::io2d::pattern, ::std::experimental::io2d::antialias, ::std::experimental::io2d::dashes, ::std::experimental::io2d::fill_rule, ::std::experimental::io2d::line_cap, ::std::experimental::io2d::line_join, _Line_width_type, _Miter_limit_type, ::std::experimental::io2d::compositing_operator, _Tolerance_type, ::std::experimental::io2d::path, ::std::experimental::io2d::path, ::std::experimental::io2d::path_factory, _Transform_matrix_type, ::std::experimental::io2d::font_face, _Font_matrix_type, ::std::experimental::io2d::font_options>> _Saved_state;
 
 					void _Ensure_state();
 					void _Ensure_state(::std::error_code& ec) noexcept;
 
-					surface(format fmt, int width, int height);
+					surface(::std::experimental::io2d::format fmt, int width, int height);
 				public:
 
 					typedef _Surface_native_handles native_handle_type;
@@ -1240,16 +1243,16 @@ namespace std {
 					surface(surface&& other);
 					surface& operator=(surface&& other);
 
-					surface(native_handle_type nh, format fmt, content ctnt);
+					surface(native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::experimental::io2d::content ctnt);
 
 					// create_similar
-					surface(const surface& other, content ctnt, int width, int height);
+					surface(const surface& other, ::std::experimental::io2d::content ctnt, int width, int height);
 					virtual ~surface();
 
 					// \ref{\iotwod.surface.modifiers.state}, state modifiers:
 					virtual void finish();
 					void flush();
-					::std::shared_ptr<device> device();
+					::std::shared_ptr<::std::experimental::io2d::device> device();
 					void mark_dirty();
 					void mark_dirty(const rectangle& rect);
 					void device_offset(const point& offset);
@@ -1278,7 +1281,7 @@ namespace std {
 					void path(const ::std::experimental::io2d::path& p);
 
 					// \ref{\iotwod.surface.modifiers.immediatepath}, immediate path modifiers:
-					path_factory& immediate();
+					::std::experimental::io2d::path_factory& immediate();
 
 					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
 					void paint();
@@ -1390,13 +1393,13 @@ namespace std {
 					void matrix(const matrix_2d& matrix);
 
 					// \ref{\iotwod.surface.modifiers.font}, font modifiers:
-					void select_font_face(const ::std::string& family, font_slant slant,
-						font_weight weight);
-					void font_size(double size);
-					void font_matrix(const matrix_2d& matrix);
-					void font_options(const font_options& options);
-					void font_face(const font_face& font_face);
-					void scaled_font(const scaled_font& scaled_font);
+					void select_font_face(const ::std::string& family, font_slant sl,
+						font_weight w);
+					void font_size(double s);
+					void font_matrix(const matrix_2d& m);
+					void font_options(const font_options& fo);
+					void font_face(const ::std::experimental::io2d::font_face& f);
+					void scaled_font(const ::std::experimental::io2d::scaled_font& sf);
 
 					// \ref{\iotwod.surface.observers.stateobjects}, state object observers:
 					::std::experimental::io2d::path path(const path_factory& pf) const;
@@ -1408,7 +1411,7 @@ namespace std {
 					::std::experimental::io2d::pattern create_pattern(surface_pattern_factory& f) const;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
-					content content() const;
+					::std::experimental::io2d::content content() const;
 					point device_offset() const;
 					bool has_surface_resource() const;
 					::std::experimental::io2d::pattern pattern() const;
@@ -1463,19 +1466,20 @@ namespace std {
 					image_surface& operator=(const image_surface&) = delete;
 					image_surface(image_surface&& other);
 					image_surface& operator=(image_surface&& other);
-					image_surface(format fmt, int width, int height);
-					image_surface(vector<unsigned char>& data, format fmt, int width, int height);
+					image_surface(::std::experimental::io2d::format fmt, int width, int height);
+					image_surface(vector<unsigned char>& data, ::std::experimental::io2d::format fmt, int width, int height);
 					// create_similar_image
-					image_surface(const surface& other, format fmt, int width, int height);
+					image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height);
 					// create_from_png
 					image_surface(const ::std::string& filename);
+					virtual ~image_surface();
 
 					// Modifiers
 					void data(const ::std::vector<unsigned char>& data);
 					::std::vector<unsigned char> data();
 
 					// Observers
-					format format() const;
+					::std::experimental::io2d::format format() const;
 					int width() const;
 					int height() const;
 					int stride() const;
@@ -1508,9 +1512,10 @@ namespace std {
 					lock_to_display, // Resize to match display dimensions
 					default_scaling = uniform // uniform
 				};
+
 				class display_surface : public surface {
 					friend surface;
-					scaling _Scaling;
+					::std::experimental::io2d::scaling _Scaling;
 					typedef int _Width_type;
 					_Width_type _Width;
 					typedef int _Height_type;
@@ -1526,7 +1531,7 @@ namespace std {
 					void _All_dimensions(int w, int h, int dw, int dh);
 					void _Render_to_native_surface();
 					void _Resize_window();
-					::std::stack<::std::tuple<scaling, _Width_type, _Height_type, _Display_width_type, _Display_height_type>> _Display_saved_state;
+					::std::stack<::std::tuple<::std::experimental::io2d::scaling, _Width_type, _Height_type, _Display_width_type, _Display_height_type>> _Display_saved_state;
 #ifdef _WIN32_WINNT
 					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 					DWORD _Window_style;
@@ -1558,7 +1563,7 @@ namespace std {
 					display_surface& operator=(const display_surface&) = delete;
 					display_surface(display_surface&& other);
 					display_surface& operator=(display_surface&& other);
-					display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::default_scaling);
+					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::default_scaling);
 
 					virtual ~display_surface();
 
@@ -1587,7 +1592,7 @@ namespace std {
 					pattern_type _Pattern_type;
 					image_surface _Surface;
 
-					friend surface;
+					friend ::std::experimental::io2d::surface;
 
 				public:
 					surface_pattern_factory();
@@ -1595,10 +1600,10 @@ namespace std {
 					surface_pattern_factory& operator=(surface_pattern_factory&);
 					surface_pattern_factory(surface_pattern_factory&& other);
 					surface_pattern_factory& operator=(surface_pattern_factory&& other);
-					surface_pattern_factory(surface& s);
+					surface_pattern_factory(::std::experimental::io2d::surface& s);
 
 					// Modifiers
-					image_surface surface(surface& s);
+					image_surface surface(::std::experimental::io2d::surface& s);
 
 					// Observers
 					const image_surface& surface() const;
@@ -1606,7 +1611,7 @@ namespace std {
 
 				int format_stride_for_width(format format, int width);
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::default_scaling);
-				surface make_surface(surface::native_handle_type nh); // parameters are exposition only.
+				surface make_surface(surface::native_handle_type nh, format fmt); // parameters are exposition only.
 				image_surface make_image_surface(format format, int width, int height);
 #if _Inline_namespace_conditional_support_test
 			}

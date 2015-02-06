@@ -7,8 +7,8 @@ using namespace std::experimental::io2d;
 
 font_options_factory::font_options_factory()
 	: _Lock()
-	, _Antialias(antialias::default_antialias)
-	, _Subpixel_order(subpixel_order::default_subpixel_order) {
+	, _Antialias(::std::experimental::io2d::antialias::default_antialias)
+	, _Subpixel_order(::std::experimental::io2d::subpixel_order::default_subpixel_order) {
 }
 
 font_options_factory::font_options_factory(const font_options_factory& other)

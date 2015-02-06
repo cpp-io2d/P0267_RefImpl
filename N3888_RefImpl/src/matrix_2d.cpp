@@ -234,12 +234,12 @@ namespace std {
 
 				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) {
 					return
-						lhs.m00() == rhs.m00() &&
-						lhs.m01() == rhs.m01() &&
-						lhs.m10() == rhs.m10() &&
-						lhs.m11() == rhs.m11() &&
-						lhs.m20() == rhs.m20() &&
-						lhs.m21() == rhs.m21();
+						_Almost_equal_relative(lhs.m00(), rhs.m00()) &&
+						_Almost_equal_relative(lhs.m01(), rhs.m01()) &&
+						_Almost_equal_relative(lhs.m10(), rhs.m10()) &&
+						_Almost_equal_relative(lhs.m11(), rhs.m11()) &&
+						_Almost_equal_relative(lhs.m20(), rhs.m20()) &&
+						_Almost_equal_relative(lhs.m21(), rhs.m21());
 				}
 
 				bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) {

@@ -43,12 +43,12 @@ surface::surface(format fmt, int width, int height)
 	, _Content(_Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get())))
 	, _Device_offset(0.0, 0.0)
 	, _Pattern(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0))
-	, _Fill_rule(fill_rule::winding)
-	, _Line_cap(line_cap::butt)
-	, _Line_join(line_join::miter)
+	, _Fill_rule(::std::experimental::io2d::fill_rule::winding)
+	, _Line_cap(::std::experimental::io2d::line_cap::butt)
+	, _Line_join(::std::experimental::io2d::line_join::miter)
 	, _Line_width(2.0)
 	, _Miter_limit(10.0)
-	, _Compositing_operator(compositing_operator::default_op)
+	, _Compositing_operator(::std::experimental::io2d::compositing_operator::default_op)
 	, _Tolerance(0.1)
 	, _Default_path(path(path_factory()))
 	, _Current_path(_Default_path)
@@ -56,7 +56,7 @@ surface::surface(format fmt, int width, int height)
 	, _Transform_matrix(matrix_2d::init_identity())
 	, _Font_face(simple_font_face("sans", font_slant::normal, font_weight::normal))
 	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
-	, _Font_options(antialias::default_antialias, subpixel_order::default_subpixel_order)
+	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 }
 
@@ -156,12 +156,12 @@ surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, 
 	, _Content(ctnt)
 	, _Device_offset(0.0, 0.0)
 	, _Pattern(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
-	, _Fill_rule(fill_rule::winding)
-	, _Line_cap(line_cap::butt)
-	, _Line_join(line_join::miter)
+	, _Fill_rule(::std::experimental::io2d::fill_rule::winding)
+	, _Line_cap(::std::experimental::io2d::line_cap::butt)
+	, _Line_join(::std::experimental::io2d::line_join::miter)
 	, _Line_width(2.0)
 	, _Miter_limit(10.0)
-	, _Compositing_operator(compositing_operator::default_op)
+	, _Compositing_operator(::std::experimental::io2d::compositing_operator::default_op)
 	, _Tolerance(0.1)
 	, _Default_path(path(path_factory()))
 	, _Current_path(_Default_path)
@@ -169,7 +169,7 @@ surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, 
 	, _Transform_matrix(matrix_2d::init_identity())
 	, _Font_face(simple_font_face("sans", font_slant::normal, font_weight::normal))
 	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
-	, _Font_options(antialias::default_antialias, subpixel_order::default_subpixel_order)
+	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 }
 
@@ -220,7 +220,7 @@ image_surface surface::map_to_image() {
 image_surface surface::map_to_image(const rectangle& extents) {
 	cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
 
-	return image_surface({ cairo_surface_map_to_image(_Surface.get(), (extents.x() == 0 && extents.y() == 0 && extents.width() == 0 && extents.height() == 0) ? nullptr : &cextents), nullptr }, { _Surface.get(), _Context.get() });
+	return image_surface({ cairo_surface_map_to_image(_Surface.get(), (_Almost_equal_relative(extents.x(), 0.0) && _Almost_equal_relative(extents.y(), 0.0) && _Almost_equal_relative(extents.width(), 0.0) && _Almost_equal_relative(extents.height(), 0.0)) ? nullptr : &cextents), nullptr }, { _Surface.get(), _Context.get() });
 }
 
 void surface::unmap_image(image_surface& image) {
@@ -298,10 +298,10 @@ void surface::line_cap(::std::experimental::io2d::line_cap lc) {
 void surface::line_join(::std::experimental::io2d::line_join lj) {
 	_Line_join = lj;
 	cairo_set_line_join(_Context.get(), _Line_join_to_cairo_line_join_t(lj));
-	if (lj == line_join::miter_or_bevel) {
+	if (lj == ::std::experimental::io2d::line_join::miter_or_bevel) {
 		cairo_set_miter_limit(_Context.get(), _Miter_limit);
 	}
-	if (lj == line_join::miter) {
+	if (lj == ::std::experimental::io2d::line_join::miter) {
 		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 	}
 }
@@ -313,7 +313,7 @@ void surface::line_width(double width) {
 
 void surface::miter_limit(double limit) {
 	_Miter_limit = limit;
-	if (_Line_join == line_join::miter_or_bevel) {
+	if (_Line_join == ::std::experimental::io2d::line_join::miter_or_bevel) {
 		cairo_set_miter_limit(_Context.get(), std::min(std::max(limit, 1.0), _Line_join_miter_miter_limit));
 	}
 }
@@ -919,7 +919,8 @@ void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, 
 	const auto tcSize = _Container_size_to_int(clusters);
 	unique_ptr<cairo_text_cluster_t, function<void(cairo_text_cluster_t*)>> sp_tc(cairo_text_cluster_allocate(tcSize), &cairo_text_cluster_free);
 	auto tc_ptr = sp_tc.get();
-	for (auto i = 0; i < tcSize; ++i) {
+	const auto tcSizeST = static_cast<size_t>(tcSize);
+	for (size_t i = 0; i < tcSizeST; ++i) {
 		tc_ptr[i].num_bytes = clusters[i].num_bytes();
 		tc_ptr[i].num_glyphs = clusters[i].num_glyphs();
 	}
@@ -956,7 +957,8 @@ void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, 
 	const auto tcSize = _Container_size_to_int(clusters);
 	unique_ptr<cairo_text_cluster_t, function<void(cairo_text_cluster_t*)>> sp_tc(cairo_text_cluster_allocate(tcSize), &cairo_text_cluster_free);
 	auto tc_ptr = sp_tc.get();
-	for (auto i = 0; i < tcSize; ++i) {
+	const auto tcSizeST = static_cast<size_t>(tcSize);
+	for (size_t i = 0; i < tcSizeST; ++i) {
 		tc_ptr[i].num_bytes = clusters[i].num_bytes();
 		tc_ptr[i].num_glyphs = clusters[i].num_glyphs();
 	}
@@ -1186,8 +1188,8 @@ int surface::dashes_count() const {
 	::std::experimental::io2d::dashes result{ };
 	auto& d = get<0>(result);
 	auto& o = get<1>(result);
-	d.resize(dashes_count());
-	cairo_get_dash(_Context.get(), &d[0], &o);
+	d.resize(static_cast<size_t>(dashes_count()));
+	cairo_get_dash(_Context.get(), d.data(), &o);
 	return result;
 }
 
@@ -1366,15 +1368,15 @@ matrix_2d surface::font_matrix() const {
 
 // Note: This deviates from cairo in that we return the values that will actually wind up being used.
 ::std::experimental::io2d::font_options surface::font_options() const {
-	::std::experimental::io2d::font_options fo(antialias::default_antialias, subpixel_order::default_subpixel_order);
+	::std::experimental::io2d::font_options fo(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order);
 	cairo_get_font_options(_Context.get(), fo.native_handle());
 	auto ca = fo.antialias();
 	auto cso = fo.subpixel_order();
 	cairo_surface_get_font_options(_Surface.get(), fo.native_handle());
 
 	return ::std::experimental::io2d::font_options(
-		(ca == antialias::default_antialias) ? fo.antialias() : ca,
-		(cso == subpixel_order::default_subpixel_order) ? fo.subpixel_order() : cso
+		(ca == ::std::experimental::io2d::antialias::default_antialias) ? fo.antialias() : ca,
+		(cso == ::std::experimental::io2d::subpixel_order::default_subpixel_order) ? fo.subpixel_order() : cso
 		);
 }
 

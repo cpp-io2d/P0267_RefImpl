@@ -236,7 +236,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	int screenNumber = DefaultScreen(display);
 	int x = 0;
 	int y = 0;
-	int borderWidth = 4;
+	unsigned int borderWidth = 4;
 	_Wndw = XCreateSimpleWindow(display, RootWindow(display, screenNumber), x, y, static_cast<unsigned int>(preferredWidth), static_cast<unsigned int>(preferredHeight), borderWidth, WhitePixel(display, screenNumber), BlackPixel(display, screenNumber));
 	XSelectInput(display, _Wndw, ExposureMask | StructureNotifyMask);
 	XSetWMProtocols(display, _Wndw, &_Wm_delete_window, 1);
@@ -342,7 +342,7 @@ int display_surface::join() {
 			// Unmasked events
 			case ClientMessage:
 			{
-				if (event.xclient.format == 32 && (Atom)event.xclient.data.l[0] == _Wm_delete_window) {
+				if (event.xclient.format == 32 && static_cast<Atom>(event.xclient.data.l[0]) == _Wm_delete_window) {
 					_Can_draw = false;
 					_Native_context.reset();
 					_Native_surface.reset();

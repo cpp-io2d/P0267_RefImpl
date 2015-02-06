@@ -12,8 +12,8 @@ pattern::native_handle_type pattern::native_handle() const {
 pattern::pattern(pattern::native_handle_type nh)
 	: _Pattern(nh, &cairo_pattern_destroy)
 	, _Pattern_type(_Cairo_pattern_type_t_to_pattern_type(cairo_pattern_get_type(nh)))
-	, _Extend(extend::default_extend)
-	, _Filter(filter::default_filter)
+	, _Extend(::std::experimental::io2d::extend::default_extend)
+	, _Filter(::std::experimental::io2d::filter::default_filter)
 	, _Matrix(matrix_2d::init_identity()) {
 }
 

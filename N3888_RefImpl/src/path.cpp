@@ -5,6 +5,7 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
+void _Free_manual_cairo_path(cairo_path_t* path);
 void _Free_manual_cairo_path(cairo_path_t* path) {
 	if (path != nullptr) {
 		if (path->data != nullptr) {
@@ -252,10 +253,10 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				} break;
 				case std::experimental::io2d::path_data_type::curve_to:
 				{
-					auto dataItem = dynamic_cast<curve_to*>(arcItem.get());
-					auto pt1 = matrix.transform_point(dataItem->control_point_1() - origin) + origin;
-					auto pt2 = matrix.transform_point(dataItem->control_point_2() - origin) + origin;
-					auto pt3 = matrix.transform_point(dataItem->end_point() - origin) + origin;
+					auto curveItem = dynamic_cast<curve_to*>(arcItem.get());
+					auto pt1 = matrix.transform_point(curveItem->control_point_1() - origin) + origin;
+					auto pt2 = matrix.transform_point(curveItem->control_point_2() - origin) + origin;
+					auto pt3 = matrix.transform_point(curveItem->end_point() - origin) + origin;
 					if (!hasCurrentPoint) {
 						cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 						cpdItem.header.length = 2;
@@ -263,7 +264,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 						cpdItem = { };
 						cpdItem.point = { pt1.x(), pt1.y() };
 						vec.push_back(cpdItem);
-						currentPoint = dataItem->control_point_1();
+						currentPoint = curveItem->control_point_1();
 						lastMoveToPoint = pt3;
 						hasCurrentPoint = true;
 					}
@@ -279,8 +280,43 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 					cpdItem = { };
 					cpdItem.point = { pt3.x(), pt3.y() };
 					vec.push_back(cpdItem);
-					currentPoint = dataItem->end_point();
+					currentPoint = curveItem->end_point();
 				} break;
+				case path_data_type::new_sub_path:
+				{
+					assert("Unexpected value path_data_type::new_sub_path." && false);
+					throw runtime_error("Unexpected value path_data_type::new_sub_path.");
+				}
+				case path_data_type::close_path:
+				{
+					assert("Unexpected value path_data_type::close_path." && false);
+					throw runtime_error("Unexpected value path_data_type::close_path.");
+				}
+				case path_data_type::rel_move_to:
+				{
+					assert("Unexpected value path_data_type::rel_move_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_move_to.");
+				}
+				case path_data_type::rel_line_to:
+				{
+					assert("Unexpected value path_data_type::rel_line_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_line_to.");
+				}
+				case path_data_type::rel_curve_to:
+				{
+					assert("Unexpected value path_data_type::rel_curve_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_curve_to.");
+				}
+				case path_data_type::arc:
+				{
+					assert("Unexpected value path_data_type::arc." && false);
+					throw runtime_error("Unexpected value path_data_type::arc.");
+				}
+				case path_data_type::arc_negative:
+				{
+					assert("Unexpected value path_data_type::arc_negative." && false);
+					throw runtime_error("Unexpected value path_data_type::arc_negative.");
+				}
 				case path_data_type::change_origin:
 				{
 					// Ignore, it's just spitting out the value we handed it.
@@ -288,10 +324,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				case path_data_type::change_matrix:
 				{
 					// Ignore, it's just spitting out the value we handed it.
-				} break;
-				case path_data_type::new_sub_path:
-				{
-					hasCurrentPoint = false;
 				} break;
 				default:
 					assert("Unexpected path_data_type in arc." && false);
@@ -346,10 +378,10 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				} break;
 				case std::experimental::io2d::path_data_type::curve_to:
 				{
-					auto dataItem = dynamic_cast<curve_to*>(arcItem.get());
-					auto pt1 = matrix.transform_point(dataItem->control_point_1() - origin) + origin;
-					auto pt2 = matrix.transform_point(dataItem->control_point_2() - origin) + origin;
-					auto pt3 = matrix.transform_point(dataItem->end_point() - origin) + origin;
+					auto curveItem = dynamic_cast<curve_to*>(arcItem.get());
+					auto pt1 = matrix.transform_point(curveItem->control_point_1() - origin) + origin;
+					auto pt2 = matrix.transform_point(curveItem->control_point_2() - origin) + origin;
+					auto pt3 = matrix.transform_point(curveItem->end_point() - origin) + origin;
 					if (!hasCurrentPoint) {
 						cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 						cpdItem.header.length = 2;
@@ -357,7 +389,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 						cpdItem = { };
 						cpdItem.point = { pt1.x(), pt1.y() };
 						vec.push_back(cpdItem);
-						currentPoint = dataItem->control_point_1();
+						currentPoint = curveItem->control_point_1();
 						lastMoveToPoint = pt3;
 						hasCurrentPoint = true;
 					}
@@ -373,8 +405,43 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 					cpdItem = { };
 					cpdItem.point = { pt3.x(), pt3.y() };
 					vec.push_back(cpdItem);
-					currentPoint = dataItem->end_point();
+					currentPoint = curveItem->end_point();
 				} break;
+				case path_data_type::new_sub_path:
+				{
+					assert("Unexpected value path_data_type::new_sub_path." && false);
+					throw runtime_error("Unexpected value path_data_type::new_sub_path.");
+				}
+				case path_data_type::close_path:
+				{
+					assert("Unexpected value path_data_type::close_path." && false);
+					throw runtime_error("Unexpected value path_data_type::close_path.");
+				}
+				case path_data_type::rel_move_to:
+				{
+					assert("Unexpected value path_data_type::rel_move_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_move_to.");
+				}
+				case path_data_type::rel_line_to:
+				{
+					assert("Unexpected value path_data_type::rel_line_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_line_to.");
+				}
+				case path_data_type::rel_curve_to:
+				{
+					assert("Unexpected value path_data_type::rel_curve_to." && false);
+					throw runtime_error("Unexpected value path_data_type::rel_curve_to.");
+				}
+				case path_data_type::arc:
+				{
+					assert("Unexpected value path_data_type::arc." && false);
+					throw runtime_error("Unexpected value path_data_type::arc.");
+				}
+				case path_data_type::arc_negative:
+				{
+					assert("Unexpected value path_data_type::arc_negative." && false);
+					throw runtime_error("Unexpected value path_data_type::arc_negative.");
+				}
 				case path_data_type::change_origin:
 				{
 					// Ignore, it's just spitting out the value we handed it.
@@ -382,10 +449,6 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				case path_data_type::change_matrix:
 				{
 					// Ignore, it's just spitting out the value we handed it.
-				} break;
-				case path_data_type::new_sub_path:
-				{
-					hasCurrentPoint = false;
 				} break;
 				default:
 					assert("Unexpected path_data_type in arc." && false);
@@ -412,8 +475,9 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 	}
 
 	_Cairo_path->num_data = static_cast<int>(vec.size());
-	_Cairo_path->data = new cairo_path_data_t[static_cast<::std::size_t>(_Cairo_path->num_data)];
-	for (auto currItemIndex = 0; currItemIndex < _Cairo_path->num_data; currItemIndex++) {
+	const auto numDataST = vec.size();
+	_Cairo_path->data = new cairo_path_data_t[numDataST];
+	for (size_t currItemIndex = 0; currItemIndex < numDataST; currItemIndex++) {
 		_Cairo_path->data[currItemIndex] = vec[currItemIndex];
 	}
 	_Cairo_path->status = CAIRO_STATUS_SUCCESS;

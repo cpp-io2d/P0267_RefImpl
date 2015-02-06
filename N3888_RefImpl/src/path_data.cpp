@@ -36,6 +36,9 @@ _Point::_Point(const point& to)
 	, _Data(to) {
 }
 
+_Point::~_Point() {
+}
+
 point _Point::to() const {
 	return _Data;
 }
@@ -150,6 +153,9 @@ _Curve_to::_Curve_to(const point& controlPoint1, const point& controlPoint2, con
 	, _End_pt(endPoint) {
 }
 
+_Curve_to::~_Curve_to() {
+}
+
 void _Curve_to::control_point_1(const point& value) {
 	_Control_pt1 = value;
 }
@@ -245,6 +251,9 @@ _Arc::_Arc(point center, double radius, double angle1, double angle2)
 	, _Radius(radius)
 	, _Angle_1(angle1)
 	, _Angle_2(angle2) {
+}
+
+_Arc::~_Arc() {
 }
 
 void _Arc::center(const point& value) {

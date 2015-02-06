@@ -66,6 +66,10 @@ namespace std {
 				case CAIRO_STATUS_INVALID_RESTORE:
 					result = ::std::experimental::io2d::io2d_error::invalid_restore;
 					return true;
+				case CAIRO_STATUS_INVALID_POP_GROUP:
+					assert("Unexpected value CAIRO_STATUS_INVALID_POP_GROUP." && false);
+					result = ::std::experimental::io2d::io2d_error::invalid_status;
+					return true;
 				case CAIRO_STATUS_NO_CURRENT_POINT:
 					result = ::std::experimental::io2d::io2d_error::no_current_point;
 					return true;
@@ -113,6 +117,7 @@ namespace std {
 					return false;
 				case CAIRO_STATUS_INVALID_DASH:
 					result = ::std::experimental::io2d::io2d_error::invalid_dash;
+					return true;
 				case CAIRO_STATUS_INVALID_DSC_COMMENT:
 					result = ::std::experimental::io2d::io2d_error::invalid_status;
 					return true;
@@ -633,6 +638,9 @@ namespace std {
 					return CAIRO_PATTERN_TYPE_RADIAL;
 				case ::std::experimental::io2d::pattern_type::mesh:
 					return CAIRO_PATTERN_TYPE_MESH;
+				case ::std::experimental::io2d::pattern_type::unknown:
+					assert("Invalid value: pattern_type::unknown." && false);
+					throw ::std::runtime_error("Value pattern_type::unknown is invalid.");
 				default:
 					throw ::std::runtime_error("Unknown pattern_type value.");
 				}

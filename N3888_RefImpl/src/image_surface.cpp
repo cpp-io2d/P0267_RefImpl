@@ -63,7 +63,7 @@ image_surface::image_surface(const surface& other, ::std::experimental::io2d::fo
 }
 
 image_surface::image_surface(const string& filename)
-	: surface({ nullptr, nullptr }, format::argb32, content::color_alpha) {
+	: surface({ nullptr, nullptr }, ::std::experimental::io2d::format::argb32, ::std::experimental::io2d::content::color_alpha) {
 	_Surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create_from_png(filename.c_str()), &cairo_surface_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Context = unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy);
@@ -71,6 +71,9 @@ image_surface::image_surface(const string& filename)
 	_Content = _Content_for_format(_Format);
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
+}
+
+image_surface::~image_surface() {
 }
 
 void image_surface::data(const vector<unsigned char>& data) {
