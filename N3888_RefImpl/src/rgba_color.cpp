@@ -81,742 +81,742 @@ rgba_color _Rgba_color_from_byte_values(unsigned char r, unsigned char g, unsign
 	return{ static_cast<double>(r) / 255.0, static_cast<double>(g) / 255.0, static_cast<double>(b) / 255.0, static_cast<double>(a) / 255.0 };
 }
 
-rgba_color rgba_color::alice_blue() {
+const rgba_color& rgba_color::alice_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(240), static_cast<unsigned char>(248), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::antique_white() {
+const rgba_color& rgba_color::antique_white() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(250), static_cast<unsigned char>(235), static_cast<unsigned char>(215));
 	return c;
 }
 
-rgba_color rgba_color::aqua() {
+const rgba_color& rgba_color::aqua() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(255), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::aquamarine() {
+const rgba_color& rgba_color::aquamarine() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(127), static_cast<unsigned char>(255), static_cast<unsigned char>(212));
 	return c;
 }
 
-rgba_color rgba_color::azure() {
+const rgba_color& rgba_color::azure() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(240), static_cast<unsigned char>(255), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::beige() {
+const rgba_color& rgba_color::beige() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(245), static_cast<unsigned char>(245), static_cast<unsigned char>(220));
 	return c;
 }
 
-rgba_color rgba_color::bisque() {
+const rgba_color& rgba_color::bisque() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(228), static_cast<unsigned char>(196));
 	return c;
 }
 
-rgba_color rgba_color::black() {
+const rgba_color& rgba_color::black() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(0), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::blanched_almond() {
+const rgba_color& rgba_color::blanched_almond() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(235), static_cast<unsigned char>(205));
 	return c;
 }
 
-rgba_color rgba_color::blue() {
+const rgba_color& rgba_color::blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(0), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::blue_violet() {
+const rgba_color& rgba_color::blue_violet() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(138), static_cast<unsigned char>(43), static_cast<unsigned char>(226));
 	return c;
 }
 
-rgba_color rgba_color::brown() {
+const rgba_color& rgba_color::brown() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(165), static_cast<unsigned char>(42), static_cast<unsigned char>(42));
 	return c;
 }
 
-rgba_color rgba_color::burly_wood() {
+const rgba_color& rgba_color::burly_wood() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(222), static_cast<unsigned char>(184), static_cast<unsigned char>(135));
 	return c;
 }
 
-rgba_color rgba_color::cadet_blue() {
+const rgba_color& rgba_color::cadet_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(95), static_cast<unsigned char>(158), static_cast<unsigned char>(160));
 	return c;
 }
 
-rgba_color rgba_color::chartreuse() {
+const rgba_color& rgba_color::chartreuse() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(127), static_cast<unsigned char>(255), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::chocolate() {
+const rgba_color& rgba_color::chocolate() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(210), static_cast<unsigned char>(105), static_cast<unsigned char>(30));
 	return c;
 }
 
-rgba_color rgba_color::coral() {
+const rgba_color& rgba_color::coral() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(127), static_cast<unsigned char>(80));
 	return c;
 }
 
-rgba_color rgba_color::cornflower_blue() {
+const rgba_color& rgba_color::cornflower_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(100), static_cast<unsigned char>(149), static_cast<unsigned char>(237));
 	return c;
 }
 
-rgba_color rgba_color::cornsilk() {
+const rgba_color& rgba_color::cornsilk() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(248), static_cast<unsigned char>(220));
 	return c;
 }
 
-rgba_color rgba_color::crimson() {
+const rgba_color& rgba_color::crimson() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(220), static_cast<unsigned char>(20), static_cast<unsigned char>(60));
 	return c;
 }
 
-rgba_color rgba_color::cyan() {
+const rgba_color& rgba_color::cyan() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(255), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::dark_blue() {
+const rgba_color& rgba_color::dark_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(0), static_cast<unsigned char>(139));
 	return c;
 }
 
-rgba_color rgba_color::dark_cyan() {
+const rgba_color& rgba_color::dark_cyan() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(139), static_cast<unsigned char>(139));
 	return c;
 }
 
-rgba_color rgba_color::dark_goldenrod() {
+const rgba_color& rgba_color::dark_goldenrod() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(184), static_cast<unsigned char>(134), static_cast<unsigned char>(11));
 	return c;
 }
 
-rgba_color rgba_color::dark_gray() {
+const rgba_color& rgba_color::dark_gray() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(169), static_cast<unsigned char>(169), static_cast<unsigned char>(169));
 	return c;
 }
 
-rgba_color rgba_color::dark_green() {
+const rgba_color& rgba_color::dark_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(100), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::dark_grey() {
+const rgba_color& rgba_color::dark_grey() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(169), static_cast<unsigned char>(169), static_cast<unsigned char>(169));
 	return c;
 }
 
-rgba_color rgba_color::dark_khaki() {
+const rgba_color& rgba_color::dark_khaki() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(189), static_cast<unsigned char>(183), static_cast<unsigned char>(107));
 	return c;
 }
 
-rgba_color rgba_color::dark_magenta() {
+const rgba_color& rgba_color::dark_magenta() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(139), static_cast<unsigned char>(0), static_cast<unsigned char>(139));
 	return c;
 }
 
-rgba_color rgba_color::dark_olive_green() {
+const rgba_color& rgba_color::dark_olive_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(85), static_cast<unsigned char>(107), static_cast<unsigned char>(47));
 	return c;
 }
 
-rgba_color rgba_color::dark_orange() {
+const rgba_color& rgba_color::dark_orange() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(140), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::dark_orchid() {
+const rgba_color& rgba_color::dark_orchid() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(153), static_cast<unsigned char>(50), static_cast<unsigned char>(204));
 	return c;
 }
 
-rgba_color rgba_color::dark_red() {
+const rgba_color& rgba_color::dark_red() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(139), static_cast<unsigned char>(0), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::dark_salmon() {
+const rgba_color& rgba_color::dark_salmon() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(233), static_cast<unsigned char>(150), static_cast<unsigned char>(122));
 	return c;
 }
 
-rgba_color rgba_color::dark_sea_green() {
+const rgba_color& rgba_color::dark_sea_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(143), static_cast<unsigned char>(188), static_cast<unsigned char>(143));
 	return c;
 }
 
-rgba_color rgba_color::dark_slate_blue() {
+const rgba_color& rgba_color::dark_slate_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(72), static_cast<unsigned char>(61), static_cast<unsigned char>(139));
 	return c;
 }
 
-rgba_color rgba_color::dark_slate_gray() {
+const rgba_color& rgba_color::dark_slate_gray() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(47), static_cast<unsigned char>(79), static_cast<unsigned char>(79));
 	return c;
 }
 
-rgba_color rgba_color::dark_slate_grey() {
+const rgba_color& rgba_color::dark_slate_grey() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(47), static_cast<unsigned char>(79), static_cast<unsigned char>(79));
 	return c;
 }
 
-rgba_color rgba_color::dark_turquoise() {
+const rgba_color& rgba_color::dark_turquoise() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(206), static_cast<unsigned char>(209));
 	return c;
 }
 
-rgba_color rgba_color::dark_violet() {
+const rgba_color& rgba_color::dark_violet() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(148), static_cast<unsigned char>(0), static_cast<unsigned char>(211));
 	return c;
 }
 
-rgba_color rgba_color::deep_pink() {
+const rgba_color& rgba_color::deep_pink() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(20), static_cast<unsigned char>(147));
 	return c;
 }
 
-rgba_color rgba_color::deep_sky_blue() {
+const rgba_color& rgba_color::deep_sky_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(191), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::dim_gray() {
+const rgba_color& rgba_color::dim_gray() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(105), static_cast<unsigned char>(105), static_cast<unsigned char>(105));
 	return c;
 }
 
-rgba_color rgba_color::dim_grey() {
+const rgba_color& rgba_color::dim_grey() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(105), static_cast<unsigned char>(105), static_cast<unsigned char>(105));
 	return c;
 }
 
-rgba_color rgba_color::dodger_blue() {
+const rgba_color& rgba_color::dodger_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(30), static_cast<unsigned char>(144), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::firebrick() {
+const rgba_color& rgba_color::firebrick() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(178), static_cast<unsigned char>(34), static_cast<unsigned char>(34));
 	return c;
 }
 
-rgba_color rgba_color::floral_white() {
+const rgba_color& rgba_color::floral_white() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(250), static_cast<unsigned char>(240));
 	return c;
 }
 
-rgba_color rgba_color::forest_green() {
+const rgba_color& rgba_color::forest_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(34), static_cast<unsigned char>(139), static_cast<unsigned char>(34));
 	return c;
 }
 
-rgba_color rgba_color::fuchsia() {
+const rgba_color& rgba_color::fuchsia() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(0), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::gainsboro() {
+const rgba_color& rgba_color::gainsboro() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(220), static_cast<unsigned char>(220), static_cast<unsigned char>(220));
 	return c;
 }
 
-rgba_color rgba_color::ghost_white() {
+const rgba_color& rgba_color::ghost_white() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(248), static_cast<unsigned char>(248), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::gold() {
+const rgba_color& rgba_color::gold() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(215), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::goldenrod() {
+const rgba_color& rgba_color::goldenrod() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(218), static_cast<unsigned char>(165), static_cast<unsigned char>(32));
 	return c;
 }
 
-rgba_color rgba_color::gray() {
+const rgba_color& rgba_color::gray() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(128), static_cast<unsigned char>(128), static_cast<unsigned char>(128));
 	return c;
 }
 
-rgba_color rgba_color::green() {
+const rgba_color& rgba_color::green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(128), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::green_yellow() {
+const rgba_color& rgba_color::green_yellow() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(173), static_cast<unsigned char>(255), static_cast<unsigned char>(47));
 	return c;
 }
 
-rgba_color rgba_color::grey() {
+const rgba_color& rgba_color::grey() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(128), static_cast<unsigned char>(128), static_cast<unsigned char>(128));
 	return c;
 }
 
-rgba_color rgba_color::honeydew() {
+const rgba_color& rgba_color::honeydew() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(240), static_cast<unsigned char>(255), static_cast<unsigned char>(240));
 	return c;
 }
 
-rgba_color rgba_color::hot_pink() {
+const rgba_color& rgba_color::hot_pink() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(105), static_cast<unsigned char>(180));
 	return c;
 }
 
-rgba_color rgba_color::indian_red() {
+const rgba_color& rgba_color::indian_red() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(205), static_cast<unsigned char>(92), static_cast<unsigned char>(92));
 	return c;
 }
 
-rgba_color rgba_color::indigo() {
+const rgba_color& rgba_color::indigo() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(75), static_cast<unsigned char>(0), static_cast<unsigned char>(130));
 	return c;
 }
 
-rgba_color rgba_color::ivory() {
+const rgba_color& rgba_color::ivory() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(255), static_cast<unsigned char>(240));
 	return c;
 }
 
-rgba_color rgba_color::khaki() {
+const rgba_color& rgba_color::khaki() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(240), static_cast<unsigned char>(230), static_cast<unsigned char>(140));
 	return c;
 }
 
-rgba_color rgba_color::lavender() {
+const rgba_color& rgba_color::lavender() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(230), static_cast<unsigned char>(230), static_cast<unsigned char>(250));
 	return c;
 }
 
-rgba_color rgba_color::lavender_blush() {
+const rgba_color& rgba_color::lavender_blush() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(240), static_cast<unsigned char>(245));
 	return c;
 }
 
-rgba_color rgba_color::lawn_green() {
+const rgba_color& rgba_color::lawn_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(124), static_cast<unsigned char>(252), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::lemon_chiffon() {
+const rgba_color& rgba_color::lemon_chiffon() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(250), static_cast<unsigned char>(205));
 	return c;
 }
 
-rgba_color rgba_color::light_blue() {
+const rgba_color& rgba_color::light_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(173), static_cast<unsigned char>(216), static_cast<unsigned char>(230));
 	return c;
 }
 
-rgba_color rgba_color::light_coral() {
+const rgba_color& rgba_color::light_coral() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(240), static_cast<unsigned char>(128), static_cast<unsigned char>(128));
 	return c;
 }
 
-rgba_color rgba_color::light_cyan() {
+const rgba_color& rgba_color::light_cyan() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(224), static_cast<unsigned char>(255), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::light_goldenrod_yellow() {
+const rgba_color& rgba_color::light_goldenrod_yellow() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(250), static_cast<unsigned char>(250), static_cast<unsigned char>(210));
 	return c;
 }
 
-rgba_color rgba_color::light_gray() {
+const rgba_color& rgba_color::light_gray() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(211), static_cast<unsigned char>(211), static_cast<unsigned char>(211));
 	return c;
 }
 
-rgba_color rgba_color::light_green() {
+const rgba_color& rgba_color::light_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(144), static_cast<unsigned char>(238), static_cast<unsigned char>(144));
 	return c;
 }
 
-rgba_color rgba_color::light_grey() {
+const rgba_color& rgba_color::light_grey() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(211), static_cast<unsigned char>(211), static_cast<unsigned char>(211));
 	return c;
 }
 
-rgba_color rgba_color::light_pink() {
+const rgba_color& rgba_color::light_pink() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(182), static_cast<unsigned char>(193));
 	return c;
 }
 
-rgba_color rgba_color::light_salmon() {
+const rgba_color& rgba_color::light_salmon() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(160), static_cast<unsigned char>(122));
 	return c;
 }
 
-rgba_color rgba_color::light_sea_green() {
+const rgba_color& rgba_color::light_sea_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(32), static_cast<unsigned char>(178), static_cast<unsigned char>(170));
 	return c;
 }
 
-rgba_color rgba_color::light_sky_blue() {
+const rgba_color& rgba_color::light_sky_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(135), static_cast<unsigned char>(206), static_cast<unsigned char>(250));
 	return c;
 }
 
-rgba_color rgba_color::light_slate_gray() {
+const rgba_color& rgba_color::light_slate_gray() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(119), static_cast<unsigned char>(136), static_cast<unsigned char>(153));
 	return c;
 }
 
-rgba_color rgba_color::light_slate_grey() {
+const rgba_color& rgba_color::light_slate_grey() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(119), static_cast<unsigned char>(136), static_cast<unsigned char>(153));
 	return c;
 }
 
-rgba_color rgba_color::light_steel_blue() {
+const rgba_color& rgba_color::light_steel_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(176), static_cast<unsigned char>(196), static_cast<unsigned char>(222));
 	return c;
 }
 
-rgba_color rgba_color::light_yellow() {
+const rgba_color& rgba_color::light_yellow() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(255), static_cast<unsigned char>(224));
 	return c;
 }
 
-rgba_color rgba_color::lime() {
+const rgba_color& rgba_color::lime() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(255), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::lime_green() {
+const rgba_color& rgba_color::lime_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(50), static_cast<unsigned char>(205), static_cast<unsigned char>(50));
 	return c;
 }
 
-rgba_color rgba_color::linen() {
+const rgba_color& rgba_color::linen() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(250), static_cast<unsigned char>(240), static_cast<unsigned char>(230));
 	return c;
 }
 
-rgba_color rgba_color::magenta() {
+const rgba_color& rgba_color::magenta() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(0), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::maroon() {
+const rgba_color& rgba_color::maroon() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(128), static_cast<unsigned char>(0), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::medium_aquamarine() {
+const rgba_color& rgba_color::medium_aquamarine() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(102), static_cast<unsigned char>(205), static_cast<unsigned char>(170));
 	return c;
 }
 
-rgba_color rgba_color::medium_blue() {
+const rgba_color& rgba_color::medium_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(0), static_cast<unsigned char>(205));
 	return c;
 }
 
-rgba_color rgba_color::medium_orchid() {
+const rgba_color& rgba_color::medium_orchid() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(186), static_cast<unsigned char>(85), static_cast<unsigned char>(211));
 	return c;
 }
 
-rgba_color rgba_color::medium_purple() {
+const rgba_color& rgba_color::medium_purple() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(147), static_cast<unsigned char>(112), static_cast<unsigned char>(219));
 	return c;
 }
 
-rgba_color rgba_color::medium_sea_green() {
+const rgba_color& rgba_color::medium_sea_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(60), static_cast<unsigned char>(179), static_cast<unsigned char>(113));
 	return c;
 }
 
-rgba_color rgba_color::medium_slate_blue() {
+const rgba_color& rgba_color::medium_slate_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(123), static_cast<unsigned char>(104), static_cast<unsigned char>(238));
 	return c;
 }
 
-rgba_color rgba_color::medium_spring_green() {
+const rgba_color& rgba_color::medium_spring_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(250), static_cast<unsigned char>(154));
 	return c;
 }
 
-rgba_color rgba_color::medium_turquoise() {
+const rgba_color& rgba_color::medium_turquoise() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(72), static_cast<unsigned char>(209), static_cast<unsigned char>(204));
 	return c;
 }
 
-rgba_color rgba_color::medium_violet_red() {
+const rgba_color& rgba_color::medium_violet_red() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(199), static_cast<unsigned char>(21), static_cast<unsigned char>(133));
 	return c;
 }
 
-rgba_color rgba_color::midnight_blue() {
+const rgba_color& rgba_color::midnight_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(25), static_cast<unsigned char>(25), static_cast<unsigned char>(112));
 	return c;
 }
 
-rgba_color rgba_color::mint_cream() {
+const rgba_color& rgba_color::mint_cream() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(245), static_cast<unsigned char>(255), static_cast<unsigned char>(250));
 	return c;
 }
 
-rgba_color rgba_color::misty_rose() {
+const rgba_color& rgba_color::misty_rose() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(228), static_cast<unsigned char>(225));
 	return c;
 }
 
-rgba_color rgba_color::moccasin() {
+const rgba_color& rgba_color::moccasin() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(228), static_cast<unsigned char>(181));
 	return c;
 }
 
-rgba_color rgba_color::navajo_white() {
+const rgba_color& rgba_color::navajo_white() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(222), static_cast<unsigned char>(173));
 	return c;
 }
 
-rgba_color rgba_color::navy() {
+const rgba_color& rgba_color::navy() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(0), static_cast<unsigned char>(128));
 	return c;
 }
 
-rgba_color rgba_color::old_lace() {
+const rgba_color& rgba_color::old_lace() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(253), static_cast<unsigned char>(245), static_cast<unsigned char>(230));
 	return c;
 }
 
-rgba_color rgba_color::olive() {
+const rgba_color& rgba_color::olive() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(128), static_cast<unsigned char>(128), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::olive_drab() {
+const rgba_color& rgba_color::olive_drab() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(107), static_cast<unsigned char>(142), static_cast<unsigned char>(35));
 	return c;
 }
 
-rgba_color rgba_color::orange() {
+const rgba_color& rgba_color::orange() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(165), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::orange_red() {
+const rgba_color& rgba_color::orange_red() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(69), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::orchid() {
+const rgba_color& rgba_color::orchid() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(218), static_cast<unsigned char>(112), static_cast<unsigned char>(214));
 	return c;
 }
 
-rgba_color rgba_color::pale_goldenrod() {
+const rgba_color& rgba_color::pale_goldenrod() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(238), static_cast<unsigned char>(232), static_cast<unsigned char>(170));
 	return c;
 }
 
-rgba_color rgba_color::pale_green() {
+const rgba_color& rgba_color::pale_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(152), static_cast<unsigned char>(251), static_cast<unsigned char>(152));
 	return c;
 }
 
-rgba_color rgba_color::pale_turquoise() {
+const rgba_color& rgba_color::pale_turquoise() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(175), static_cast<unsigned char>(238), static_cast<unsigned char>(238));
 	return c;
 }
 
-rgba_color rgba_color::pale_violet_red() {
+const rgba_color& rgba_color::pale_violet_red() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(219), static_cast<unsigned char>(112), static_cast<unsigned char>(147));
 	return c;
 }
 
-rgba_color rgba_color::papaya_whip() {
+const rgba_color& rgba_color::papaya_whip() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(239), static_cast<unsigned char>(213));
 	return c;
 }
 
-rgba_color rgba_color::peach_puff() {
+const rgba_color& rgba_color::peach_puff() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(218), static_cast<unsigned char>(185));
 	return c;
 }
 
-rgba_color rgba_color::peru() {
+const rgba_color& rgba_color::peru() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(205), static_cast<unsigned char>(133), static_cast<unsigned char>(63));
 	return c;
 }
 
-rgba_color rgba_color::pink() {
+const rgba_color& rgba_color::pink() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(192), static_cast<unsigned char>(203));
 	return c;
 }
 
-rgba_color rgba_color::plum() {
+const rgba_color& rgba_color::plum() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(221), static_cast<unsigned char>(160), static_cast<unsigned char>(221));
 	return c;
 }
 
-rgba_color rgba_color::powder_blue() {
+const rgba_color& rgba_color::powder_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(176), static_cast<unsigned char>(224), static_cast<unsigned char>(230));
 	return c;
 }
 
-rgba_color rgba_color::purple() {
+const rgba_color& rgba_color::purple() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(128), static_cast<unsigned char>(0), static_cast<unsigned char>(128));
 	return c;
 }
 
-rgba_color rgba_color::red() {
+const rgba_color& rgba_color::red() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(0), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::rosy_brown() {
+const rgba_color& rgba_color::rosy_brown() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(188), static_cast<unsigned char>(143), static_cast<unsigned char>(143));
 	return c;
 }
 
-rgba_color rgba_color::royal_blue() {
+const rgba_color& rgba_color::royal_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(65), static_cast<unsigned char>(105), static_cast<unsigned char>(225));
 	return c;
 }
 
-rgba_color rgba_color::saddle_brown() {
+const rgba_color& rgba_color::saddle_brown() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(139), static_cast<unsigned char>(69), static_cast<unsigned char>(19));
 	return c;
 }
 
-rgba_color rgba_color::salmon() {
+const rgba_color& rgba_color::salmon() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(250), static_cast<unsigned char>(128), static_cast<unsigned char>(114));
 	return c;
 }
 
-rgba_color rgba_color::sandy_brown() {
+const rgba_color& rgba_color::sandy_brown() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(244), static_cast<unsigned char>(164), static_cast<unsigned char>(96));
 	return c;
 }
 
-rgba_color rgba_color::sea_green() {
+const rgba_color& rgba_color::sea_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(46), static_cast<unsigned char>(139), static_cast<unsigned char>(87));
 	return c;
 }
 
-rgba_color rgba_color::sea_shell() {
+const rgba_color& rgba_color::sea_shell() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(245), static_cast<unsigned char>(238));
 	return c;
 }
 
-rgba_color rgba_color::sienna() {
+const rgba_color& rgba_color::sienna() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(160), static_cast<unsigned char>(82), static_cast<unsigned char>(45));
 	return c;
 }
 
-rgba_color rgba_color::silver() {
+const rgba_color& rgba_color::silver() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(192), static_cast<unsigned char>(192), static_cast<unsigned char>(192));
 	return c;
 }
 
-rgba_color rgba_color::sky_blue() {
+const rgba_color& rgba_color::sky_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(135), static_cast<unsigned char>(206), static_cast<unsigned char>(235));
 	return c;
 }
 
-rgba_color rgba_color::slate_blue() {
+const rgba_color& rgba_color::slate_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(106), static_cast<unsigned char>(90), static_cast<unsigned char>(205));
 	return c;
 }
 
-rgba_color rgba_color::slate_gray() {
+const rgba_color& rgba_color::slate_gray() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(112), static_cast<unsigned char>(128), static_cast<unsigned char>(144));
 	return c;
 }
 
-rgba_color rgba_color::slate_grey() {
+const rgba_color& rgba_color::slate_grey() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(112), static_cast<unsigned char>(128), static_cast<unsigned char>(144));
 	return c;
 }
 
-rgba_color rgba_color::snow() {
+const rgba_color& rgba_color::snow() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(250), static_cast<unsigned char>(250));
 	return c;
 }
 
-rgba_color rgba_color::spring_green() {
+const rgba_color& rgba_color::spring_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(255), static_cast<unsigned char>(127));
 	return c;
 }
 
-rgba_color rgba_color::steel_blue() {
+const rgba_color& rgba_color::steel_blue() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(70), static_cast<unsigned char>(130), static_cast<unsigned char>(180));
 	return c;
 }
 
-rgba_color rgba_color::tan() {
+const rgba_color& rgba_color::tan() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(210), static_cast<unsigned char>(180), static_cast<unsigned char>(140));
 	return c;
 }
 
-rgba_color rgba_color::teal() {
+const rgba_color& rgba_color::teal() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(128), static_cast<unsigned char>(128));
 	return c;
 }
 
-rgba_color rgba_color::thistle() {
+const rgba_color& rgba_color::thistle() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(216), static_cast<unsigned char>(191), static_cast<unsigned char>(216));
 	return c;
 }
 
-rgba_color rgba_color::tomato() {
+const rgba_color& rgba_color::tomato() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(99), static_cast<unsigned char>(71));
 	return c;
 }
 
-rgba_color rgba_color::transparent_black() {
+const rgba_color& rgba_color::transparent_black() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(0), static_cast<unsigned char>(0), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::turquoise() {
+const rgba_color& rgba_color::turquoise() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(64), static_cast<unsigned char>(244), static_cast<unsigned char>(208));
 	return c;
 }
 
-rgba_color rgba_color::violet() {
+const rgba_color& rgba_color::violet() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(238), static_cast<unsigned char>(130), static_cast<unsigned char>(238));
 	return c;
 }
 
-rgba_color rgba_color::wheat() {
+const rgba_color& rgba_color::wheat() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(245), static_cast<unsigned char>(222), static_cast<unsigned char>(179));
 	return c;
 }
 
-rgba_color rgba_color::white() {
+const rgba_color& rgba_color::white() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(255), static_cast<unsigned char>(255));
 	return c;
 }
 
-rgba_color rgba_color::white_smoke() {
+const rgba_color& rgba_color::white_smoke() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(245), static_cast<unsigned char>(245), static_cast<unsigned char>(245));
 	return c;
 }
 
-rgba_color rgba_color::yellow() {
+const rgba_color& rgba_color::yellow() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(255), static_cast<unsigned char>(255), static_cast<unsigned char>(0));
 	return c;
 }
 
-rgba_color rgba_color::yellow_green() {
+const rgba_color& rgba_color::yellow_green() {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(154), static_cast<unsigned char>(205), static_cast<unsigned char>(50));
 	return c;
 }

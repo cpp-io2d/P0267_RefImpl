@@ -192,6 +192,26 @@ namespace std {
 					change_origin
 				};
 
+				enum class scaling {
+					none, // Do not scale.
+					uniform, // Maintain aspect ratio and letterbox if needed
+					fill, // Maintain aspect ratio but fill entire display (some content may not be shown)
+					exact, // Ignore aspect ratio and use (possibly non-uniform) scale to fill exactly
+					lock_to_display, // Resize to match display dimensions
+					default_scaling = uniform // uniform
+				};
+
+				class io2d_error_category : public ::std::error_category {
+				public:
+					// Observers
+					virtual const char* name() const noexcept override;
+					virtual ::std::string message(int errVal) const override;
+					virtual bool equivalent(int code, const ::std::error_condition& condition) const noexcept override;
+					virtual bool equivalent(const ::std::error_code& ec, int condition) const noexcept override;
+				};
+
+				const ::std::error_category& io2d_category() noexcept;
+
 				class rectangle {
 					double _X = 0.0;
 					double _Y = 0.0;
@@ -240,154 +260,154 @@ namespace std {
 					double b() const;
 					double a() const;
 
-					static rgba_color alice_blue();
-					static rgba_color antique_white();
-					static rgba_color aqua();
-					static rgba_color aquamarine();
-					static rgba_color azure();
-					static rgba_color beige();
-					static rgba_color bisque();
-					static rgba_color black();
-					static rgba_color blanched_almond();
-					static rgba_color blue();
-					static rgba_color blue_violet();
-					static rgba_color brown();
-					static rgba_color burly_wood();
-					static rgba_color cadet_blue();
-					static rgba_color chartreuse();
-					static rgba_color chocolate();
-					static rgba_color coral();
-					static rgba_color cornflower_blue();
-					static rgba_color cornsilk();
-					static rgba_color crimson();
-					static rgba_color cyan();
-					static rgba_color dark_blue();
-					static rgba_color dark_cyan();
-					static rgba_color dark_goldenrod();
-					static rgba_color dark_gray();
-					static rgba_color dark_green();
-					static rgba_color dark_grey();
-					static rgba_color dark_khaki();
-					static rgba_color dark_magenta();
-					static rgba_color dark_olive_green();
-					static rgba_color dark_orange();
-					static rgba_color dark_orchid();
-					static rgba_color dark_red();
-					static rgba_color dark_salmon();
-					static rgba_color dark_sea_green();
-					static rgba_color dark_slate_blue();
-					static rgba_color dark_slate_gray();
-					static rgba_color dark_slate_grey();
-					static rgba_color dark_turquoise();
-					static rgba_color dark_violet();
-					static rgba_color deep_pink();
-					static rgba_color deep_sky_blue();
-					static rgba_color dim_gray();
-					static rgba_color dim_grey();
-					static rgba_color dodger_blue();
-					static rgba_color firebrick();
-					static rgba_color floral_white();
-					static rgba_color forest_green();
-					static rgba_color fuchsia();
-					static rgba_color gainsboro();
-					static rgba_color ghost_white();
-					static rgba_color gold();
-					static rgba_color goldenrod();
-					static rgba_color gray();
-					static rgba_color green();
-					static rgba_color green_yellow();
-					static rgba_color grey();
-					static rgba_color honeydew();
-					static rgba_color hot_pink();
-					static rgba_color indian_red();
-					static rgba_color indigo();
-					static rgba_color ivory();
-					static rgba_color khaki();
-					static rgba_color lavender();
-					static rgba_color lavender_blush();
-					static rgba_color lawn_green();
-					static rgba_color lemon_chiffon();
-					static rgba_color light_blue();
-					static rgba_color light_coral();
-					static rgba_color light_cyan();
-					static rgba_color light_goldenrod_yellow();
-					static rgba_color light_gray();
-					static rgba_color light_green();
-					static rgba_color light_grey();
-					static rgba_color light_pink();
-					static rgba_color light_salmon();
-					static rgba_color light_sea_green();
-					static rgba_color light_sky_blue();
-					static rgba_color light_slate_gray();
-					static rgba_color light_slate_grey();
-					static rgba_color light_steel_blue();
-					static rgba_color light_yellow();
-					static rgba_color lime();
-					static rgba_color lime_green();
-					static rgba_color linen();
-					static rgba_color magenta();
-					static rgba_color maroon();
-					static rgba_color medium_aquamarine();
-					static rgba_color medium_blue();
-					static rgba_color medium_orchid();
-					static rgba_color medium_purple();
-					static rgba_color medium_sea_green();
-					static rgba_color medium_slate_blue();
-					static rgba_color medium_spring_green();
-					static rgba_color medium_turquoise();
-					static rgba_color medium_violet_red();
-					static rgba_color midnight_blue();
-					static rgba_color mint_cream();
-					static rgba_color misty_rose();
-					static rgba_color moccasin();
-					static rgba_color navajo_white();
-					static rgba_color navy();
-					static rgba_color old_lace();
-					static rgba_color olive();
-					static rgba_color olive_drab();
-					static rgba_color orange();
-					static rgba_color orange_red();
-					static rgba_color orchid();
-					static rgba_color pale_goldenrod();
-					static rgba_color pale_green();
-					static rgba_color pale_turquoise();
-					static rgba_color pale_violet_red();
-					static rgba_color papaya_whip();
-					static rgba_color peach_puff();
-					static rgba_color peru();
-					static rgba_color pink();
-					static rgba_color plum();
-					static rgba_color powder_blue();
-					static rgba_color purple();
-					static rgba_color red();
-					static rgba_color rosy_brown();
-					static rgba_color royal_blue();
-					static rgba_color saddle_brown();
-					static rgba_color salmon();
-					static rgba_color sandy_brown();
-					static rgba_color sea_green();
-					static rgba_color sea_shell();
-					static rgba_color sienna();
-					static rgba_color silver();
-					static rgba_color sky_blue();
-					static rgba_color slate_blue();
-					static rgba_color slate_gray();
-					static rgba_color slate_grey();
-					static rgba_color snow();
-					static rgba_color spring_green();
-					static rgba_color steel_blue();
-					static rgba_color tan();
-					static rgba_color teal();
-					static rgba_color thistle();
-					static rgba_color tomato();
-					static rgba_color transparent_black(); // Note: Not in CSS3.
-					static rgba_color turquoise();
-					static rgba_color violet();
-					static rgba_color wheat();
-					static rgba_color white();
-					static rgba_color white_smoke();
-					static rgba_color yellow();
-					static rgba_color yellow_green();
+					static const rgba_color& alice_blue();
+					static const rgba_color& antique_white();
+					static const rgba_color& aqua();
+					static const rgba_color& aquamarine();
+					static const rgba_color& azure();
+					static const rgba_color& beige();
+					static const rgba_color& bisque();
+					static const rgba_color& black();
+					static const rgba_color& blanched_almond();
+					static const rgba_color& blue();
+					static const rgba_color& blue_violet();
+					static const rgba_color& brown();
+					static const rgba_color& burly_wood();
+					static const rgba_color& cadet_blue();
+					static const rgba_color& chartreuse();
+					static const rgba_color& chocolate();
+					static const rgba_color& coral();
+					static const rgba_color& cornflower_blue();
+					static const rgba_color& cornsilk();
+					static const rgba_color& crimson();
+					static const rgba_color& cyan();
+					static const rgba_color& dark_blue();
+					static const rgba_color& dark_cyan();
+					static const rgba_color& dark_goldenrod();
+					static const rgba_color& dark_gray();
+					static const rgba_color& dark_green();
+					static const rgba_color& dark_grey();
+					static const rgba_color& dark_khaki();
+					static const rgba_color& dark_magenta();
+					static const rgba_color& dark_olive_green();
+					static const rgba_color& dark_orange();
+					static const rgba_color& dark_orchid();
+					static const rgba_color& dark_red();
+					static const rgba_color& dark_salmon();
+					static const rgba_color& dark_sea_green();
+					static const rgba_color& dark_slate_blue();
+					static const rgba_color& dark_slate_gray();
+					static const rgba_color& dark_slate_grey();
+					static const rgba_color& dark_turquoise();
+					static const rgba_color& dark_violet();
+					static const rgba_color& deep_pink();
+					static const rgba_color& deep_sky_blue();
+					static const rgba_color& dim_gray();
+					static const rgba_color& dim_grey();
+					static const rgba_color& dodger_blue();
+					static const rgba_color& firebrick();
+					static const rgba_color& floral_white();
+					static const rgba_color& forest_green();
+					static const rgba_color& fuchsia();
+					static const rgba_color& gainsboro();
+					static const rgba_color& ghost_white();
+					static const rgba_color& gold();
+					static const rgba_color& goldenrod();
+					static const rgba_color& gray();
+					static const rgba_color& green();
+					static const rgba_color& green_yellow();
+					static const rgba_color& grey();
+					static const rgba_color& honeydew();
+					static const rgba_color& hot_pink();
+					static const rgba_color& indian_red();
+					static const rgba_color& indigo();
+					static const rgba_color& ivory();
+					static const rgba_color& khaki();
+					static const rgba_color& lavender();
+					static const rgba_color& lavender_blush();
+					static const rgba_color& lawn_green();
+					static const rgba_color& lemon_chiffon();
+					static const rgba_color& light_blue();
+					static const rgba_color& light_coral();
+					static const rgba_color& light_cyan();
+					static const rgba_color& light_goldenrod_yellow();
+					static const rgba_color& light_gray();
+					static const rgba_color& light_green();
+					static const rgba_color& light_grey();
+					static const rgba_color& light_pink();
+					static const rgba_color& light_salmon();
+					static const rgba_color& light_sea_green();
+					static const rgba_color& light_sky_blue();
+					static const rgba_color& light_slate_gray();
+					static const rgba_color& light_slate_grey();
+					static const rgba_color& light_steel_blue();
+					static const rgba_color& light_yellow();
+					static const rgba_color& lime();
+					static const rgba_color& lime_green();
+					static const rgba_color& linen();
+					static const rgba_color& magenta();
+					static const rgba_color& maroon();
+					static const rgba_color& medium_aquamarine();
+					static const rgba_color& medium_blue();
+					static const rgba_color& medium_orchid();
+					static const rgba_color& medium_purple();
+					static const rgba_color& medium_sea_green();
+					static const rgba_color& medium_slate_blue();
+					static const rgba_color& medium_spring_green();
+					static const rgba_color& medium_turquoise();
+					static const rgba_color& medium_violet_red();
+					static const rgba_color& midnight_blue();
+					static const rgba_color& mint_cream();
+					static const rgba_color& misty_rose();
+					static const rgba_color& moccasin();
+					static const rgba_color& navajo_white();
+					static const rgba_color& navy();
+					static const rgba_color& old_lace();
+					static const rgba_color& olive();
+					static const rgba_color& olive_drab();
+					static const rgba_color& orange();
+					static const rgba_color& orange_red();
+					static const rgba_color& orchid();
+					static const rgba_color& pale_goldenrod();
+					static const rgba_color& pale_green();
+					static const rgba_color& pale_turquoise();
+					static const rgba_color& pale_violet_red();
+					static const rgba_color& papaya_whip();
+					static const rgba_color& peach_puff();
+					static const rgba_color& peru();
+					static const rgba_color& pink();
+					static const rgba_color& plum();
+					static const rgba_color& powder_blue();
+					static const rgba_color& purple();
+					static const rgba_color& red();
+					static const rgba_color& rosy_brown();
+					static const rgba_color& royal_blue();
+					static const rgba_color& saddle_brown();
+					static const rgba_color& salmon();
+					static const rgba_color& sandy_brown();
+					static const rgba_color& sea_green();
+					static const rgba_color& sea_shell();
+					static const rgba_color& sienna();
+					static const rgba_color& silver();
+					static const rgba_color& sky_blue();
+					static const rgba_color& slate_blue();
+					static const rgba_color& slate_gray();
+					static const rgba_color& slate_grey();
+					static const rgba_color& snow();
+					static const rgba_color& spring_green();
+					static const rgba_color& steel_blue();
+					static const rgba_color& tan();
+					static const rgba_color& teal();
+					static const rgba_color& thistle();
+					static const rgba_color& tomato();
+					static const rgba_color& transparent_black(); // Note: Not in CSS3.
+					static const rgba_color& turquoise();
+					static const rgba_color& violet();
+					static const rgba_color& wheat();
+					static const rgba_color& white();
+					static const rgba_color& white_smoke();
+					static const rgba_color& yellow();
+					static const rgba_color& yellow_green();
 				};
 
 #if _Inline_namespace_conditional_support_test && _User_defined_literal_conditional_support_test
@@ -799,17 +819,6 @@ namespace std {
 					virtual path_data_type type() const override;
 				};
 
-				class io2d_error_category : public ::std::error_category {
-				public:
-					// Observers
-					virtual const char* name() const noexcept override;
-					virtual ::std::string message(int errVal) const override;
-					virtual bool equivalent(int code, const ::std::error_condition& condition) const noexcept override;
-					virtual bool equivalent(const ::std::error_code& ec, int condition) const noexcept override;
-				};
-
-				const ::std::error_category& io2d_category() noexcept;
-
 				// Forward declaration.
 				class path_factory;
 				class surface;
@@ -965,6 +974,22 @@ namespace std {
 					virtual ~font_face();
 				};
 
+				class simple_font_face : public font_face {
+				public:
+					simple_font_face() = delete;
+					simple_font_face(const simple_font_face&) = default;
+					simple_font_face& operator=(const simple_font_face&) = default;
+					simple_font_face(const ::std::string& family, font_slant slant, font_weight weight);
+					simple_font_face(simple_font_face&& other);
+					simple_font_face& operator=(simple_font_face&& other);
+					virtual ~simple_font_face();
+
+					// Observers
+					::std::string family() const;
+					font_slant slant() const;
+					font_weight weight() const;
+				};
+
 				class scaled_font {
 					::std::shared_ptr<cairo_scaled_font_t> _Scaled_font;
 
@@ -986,22 +1011,6 @@ namespace std {
 					::std::experimental::io2d::text_extents glyph_extents(const ::std::vector<glyph>& glyphs) const;
 					::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8) const;
 					::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8, ::std::vector<text_cluster>& clusters, bool& clustersToGlyphsReverseMap) const;
-				};
-
-				class simple_font_face : public font_face {
-				public:
-					simple_font_face() = delete;
-					simple_font_face(const simple_font_face&) = default;
-					simple_font_face& operator=(const simple_font_face&) = default;
-					simple_font_face(const ::std::string& family, font_slant slant, font_weight weight);
-					simple_font_face(simple_font_face&& other);
-					simple_font_face& operator=(simple_font_face&& other);
-					virtual ~simple_font_face();
-
-					// Observers
-					::std::string family() const;
-					font_slant slant() const;
-					font_weight weight() const;
 				};
 
 				// Forward declaration.
@@ -1504,15 +1513,6 @@ namespace std {
 					int& display_ref_count;
 				};
 #endif
-				enum class scaling {
-					none, // Do not scale.
-					uniform, // Maintain aspect ratio and letterbox if needed
-					fill, // Maintain aspect ratio but fill entire display (some content may not be shown)
-					exact, // Ignore aspect ratio and use (possibly non-uniform) scale to fill exactly
-					lock_to_display, // Resize to match display dimensions
-					default_scaling = uniform // uniform
-				};
-
 				class display_surface : public surface {
 					friend surface;
 					::std::experimental::io2d::scaling _Scaling;
