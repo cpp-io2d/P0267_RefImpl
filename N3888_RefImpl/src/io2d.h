@@ -193,12 +193,11 @@ namespace std {
 				};
 
 				enum class scaling {
-					none, // Do not scale.
-					uniform, // Maintain aspect ratio and letterbox if needed
-					fill, // Maintain aspect ratio but fill entire display (some content may not be shown)
-					exact, // Ignore aspect ratio and use (possibly non-uniform) scale to fill exactly
-					lock_to_display, // Resize to match display dimensions
-					default_scaling = uniform // uniform
+					letterbox, // Same as uniform except that the display_surface is cleared using the letterbox pattern first
+					uniform, // Maintain aspect ratio and center as needed, ignoring side areas that are not drawn to
+					fill_uniform, // Maintain aspect ratio but fill entire display (some content may not be shown)
+					fill_exact, // Ignore aspect ratio and use (possibly non-uniform) scale to fill exactly
+					none // Do not scale.
 				};
 
 				class io2d_error_category : public ::std::error_category {
@@ -1021,6 +1020,7 @@ namespace std {
 				class surface_pattern_factory;
 				class surface;
 				class image_surface;
+				class display_surface;
 
 				class pattern {
 				public:
@@ -1033,7 +1033,7 @@ namespace std {
 					friend solid_color_pattern_factory;
 					friend surface_pattern_factory;
 					friend surface;
-
+					friend display_surface;
 					// Precondition: nh has already had its reference count incremented (either in creation or with cairo_pattern_reference).
 					pattern(native_handle_type nh);
 
@@ -1271,7 +1271,7 @@ namespace std {
 					void unmap_image(image_surface& image);
 					virtual void save();
 					virtual void restore();
-					void pattern();
+					void clear_pattern();
 					void pattern(const ::std::experimental::io2d::pattern& source);
 					void antialias(::std::experimental::io2d::antialias a);
 					void dashes();
@@ -1526,12 +1526,22 @@ namespace std {
 					_Display_height_type _Display_height;
 					::std::function<void(display_surface& sfc)> _Draw_fn;
 					::std::function<void(display_surface& sfc)> _Size_change_fn;
+					typedef ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> _User_scaling_fn_type;
+					 _User_scaling_fn_type _User_scaling_fn = nullptr;
+					 ::std::experimental::io2d::pattern _Letterbox_pttn;
 
 					void _Make_native_surface_and_context();
 					void _All_dimensions(int w, int h, int dw, int dh);
 					void _Render_to_native_surface();
 					void _Resize_window();
-					::std::stack<::std::tuple<::std::experimental::io2d::scaling, _Width_type, _Height_type, _Display_width_type, _Display_height_type>> _Display_saved_state;
+					::std::stack<::std::tuple<
+						::std::experimental::io2d::scaling,
+						_Width_type,
+						_Height_type,
+						_Display_width_type,
+						_Display_height_type,
+						_User_scaling_fn_type,
+						::std::experimental::io2d::pattern>> _Display_saved_state;
 #ifdef _WIN32_WINNT
 					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 					DWORD _Window_style;
@@ -1563,7 +1573,10 @@ namespace std {
 					display_surface& operator=(const display_surface&) = delete;
 					display_surface(display_surface&& other);
 					display_surface& operator=(display_surface&& other);
-					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::default_scaling);
+					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox);
+					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
+						int preferredDisplayWidth, int preferredDisplayHeight,
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox);
 
 					virtual ~display_surface();
 
@@ -1578,6 +1591,11 @@ namespace std {
 					void display_height(int h);
 					void dimensions(int w, int h);
 					void display_dimensions(int dw, int dh);
+					void scaling(::std::experimental::io2d::scaling scl);
+					void user_scaling_fn(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn);
+					void clear_letterbox_pattern();
+					void letterbox_pattern(const rgba_color& c);
+					void letterbox_pattern(const ::std::experimental::io2d::pattern& pttn);
 					int join();
 
 					::std::experimental::io2d::format format() const;
@@ -1585,6 +1603,11 @@ namespace std {
 					int height() const;
 					int display_width() const;
 					int display_height() const;
+					::std::tuple<int, int> dimensions() const;
+					::std::tuple<int, int> display_dimensions() const;
+					::std::experimental::io2d::scaling scaling() const;
+					const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& user_scaling_fn() const;
+					::std::experimental::io2d::pattern letterbox_pattern() const;
 				};
 
 				class surface_pattern_factory {
@@ -1610,7 +1633,7 @@ namespace std {
 				};
 
 				int format_stride_for_width(format format, int width);
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::default_scaling);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox);
 				surface make_surface(surface::native_handle_type nh, format fmt); // parameters are exposition only.
 				image_surface make_image_surface(format format, int width, int height);
 #if _Inline_namespace_conditional_support_test

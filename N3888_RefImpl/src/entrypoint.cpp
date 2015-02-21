@@ -9,7 +9,13 @@ using namespace std::experimental::io2d;
 
 int main() {
 	assert(steady_clock::is_steady);
-	auto ds = make_display_surface(800, 600, format::argb32);
+	auto ds = make_display_surface(800, 600, format::argb32, scaling::letterbox);
+	auto radialFactory = radial_pattern_factory({ 0.0, 0.0 }, 0.0, { 0.0, 0.0 }, 50.0);
+	radialFactory.add_color_stop_rgba(0.0, rgba_color::orange());
+	radialFactory.add_color_stop_rgba(1.0, rgba_color::aquamarine());
+	auto letterboxPttn = ds.create_pattern(radialFactory);//solid_color_pattern_factory(rgba_color::gold()));
+	letterboxPttn.extend(extend::repeat);
+	ds.letterbox_pattern(letterboxPttn);
 	sample_draw sd;
 	ds.draw_fn(sd);
 	//ds.draw_fn([](display_surface& sfc) {

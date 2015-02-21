@@ -261,7 +261,7 @@ void surface::restore() {
 	_Saved_state.pop();
 }
 
-void surface::pattern() {
+void surface::clear_pattern() {
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 	_Pattern = ::std::experimental::io2d::pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
 }

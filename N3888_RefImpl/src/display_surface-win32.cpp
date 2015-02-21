@@ -47,8 +47,9 @@ ATOM _MyRegisterClass(HINSTANCE hInstance) {
 	WNDCLASSEX wcex{ };
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
-
-	wcex.style = CS_OWNDC;
+	// We want to keep a DC so we don't have to constantly recreate the native cairo device.
+	// We want CS_HREDRAW and CS_VREDRAW so we get a refresh of the whole window if the client area changes due to movement or size adjustment.
+	wcex.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = ::std::experimental::io2d::_RefImplWindowProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = sizeof(display_surface*);
@@ -188,6 +189,8 @@ display_surface::display_surface(display_surface&& other)
 	, _Display_height(move(other._Display_height))
 	, _Draw_fn(move(other._Draw_fn))
 	, _Size_change_fn(move(other._Size_change_fn))
+	, _User_scaling_fn(move(other._User_scaling_fn))
+	, _Letterbox_pttn(move(other._Letterbox_pttn))
 	, _Window_style(move(other._Window_style))
 	, _Hwnd(move(other._Hwnd))
 	, _Native_surface(move(other._Native_surface))
@@ -207,6 +210,8 @@ display_surface& display_surface::operator=(display_surface&& other) {
 		_Display_height = move(other._Display_height);
 		_Draw_fn = move(other._Draw_fn);
 		_Size_change_fn = move(other._Size_change_fn);
+		_User_scaling_fn = move(other._User_scaling_fn);
+		_Letterbox_pttn = move(other._Letterbox_pttn);
 		_Window_style = move(other._Window_style);
 		_Hwnd = move(other._Hwnd);
 		_Native_surface = move(other._Native_surface);
@@ -224,15 +229,21 @@ namespace {
 	once_flag _Window_class_registered_flag;
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, scaling scl)
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl)
+	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl) {	
+}
+
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl)
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
 	, _Scaling(scl)
 	, _Width(preferredWidth)
 	, _Height(preferredHeight)
-	, _Display_width(preferredWidth)
-	, _Display_height(preferredHeight)
+	, _Display_width(preferredDisplayWidth)
+	, _Display_height(preferredDisplayHeight)
 	, _Draw_fn()
 	, _Size_change_fn()
+	, _User_scaling_fn()
+	, _Letterbox_pttn(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
@@ -241,12 +252,12 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	// Record the desired client window size
 	RECT rc;
 	rc.top = rc.left = 0;
-	rc.right = preferredWidth;
-	rc.bottom = preferredHeight;
+	rc.right = preferredDisplayWidth;
+	rc.bottom = preferredDisplayHeight;
 
 	// Adjust the window size for correct device size
 	if (!AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE)) {
-		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to AdjustWindowRect in display_surface::display_surface(int, int, format).");
+		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to AdjustWindowRect in display_surface::display_surface(int, int, format, int, int, scaling).");
 	}
 
 	long lwidth = rc.right - rc.left;
@@ -271,7 +282,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 		NULL);								// extra creation parms
 
 	if (_Hwnd == nullptr) {
-		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to CreateWindowEx in display_surface::display_surface(int, int, format)");
+		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to CreateWindowEx in display_surface::display_surface(int, int, format, int, int, scaling)");
 	}
 
 	SetLastError(ERROR_SUCCESS);
@@ -280,7 +291,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	if (!SetWindowLongPtrW(_Hwnd, _Display_surface_ptr_window_data_byte_offset, (LONG_PTR)this)) {
 		DWORD lastError = GetLastError();
 		if (lastError != ERROR_SUCCESS) {
-			_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in display_surface::display_surface(int, int, format)");
+			_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in display_surface::display_surface(int, int, format, int, int, scaling)");
 		}
 	}
 

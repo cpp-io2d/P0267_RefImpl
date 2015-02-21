@@ -21,7 +21,7 @@ Bool display_surface::_X11_if_event_pred(::Display* display, ::XEvent* event, XP
 	}
 	// Need to check for ExposureMask events, StructureNotifyMask events, and unmaskable events.
 	switch(event->type) {
-	// ExposureMask evemts:
+	// ExposureMask events:
 	case Expose:
 	{
 		if (event->xexpose.window == sfc->_Wndw) {
@@ -142,6 +142,8 @@ display_surface::display_surface(display_surface&& other)
 	, _Display_height(move(other._Display_height))
 	, _Draw_fn(move(other._Draw_fn))
 	, _Size_change_fn(move(other._Size_change_fn))
+	, _User_scaling_fn(move(other._User_scaling_fn))
+	, _Letterbox_pttn(move(other._Letterbox_pttn))
 	, _Wndw(move(other._Wndw))
 	, _Can_draw(move(other._Can_draw))
 	, _Native_surface(move(other._Native_surface))
@@ -161,6 +163,8 @@ display_surface& display_surface::operator=(display_surface&& other) {
 		_Display_height = move(other._Display_height);
 		_Draw_fn = move(other._Draw_fn);
 		_Size_change_fn = move(other._Size_change_fn);
+		_User_scaling_fn = move(other._User_scaling_fn);
+		_Letterbox_pttn = move(other._Letterbox_pttn);
 		_Wndw = move(other._Wndw);
 		_Can_draw = move(other._Can_draw);
 		_Native_surface = move(other._Native_surface);
@@ -197,15 +201,21 @@ void display_surface::_Resize_window() {
 	XConfigureWindow(_Display.get(), _Wndw, CWWidth | CWHeight, &xwc);
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, scaling scl)
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl)
+	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl) {
+}
+
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl) 
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
 	, _Scaling(scl)
 	, _Width(preferredWidth)
 	, _Height(preferredHeight)
-	, _Display_width(preferredWidth)
-	, _Display_height(preferredHeight)
+	, _Display_width(preferredDisplayWidth)
+	, _Display_height(preferredDisplayHeight)
 	, _Draw_fn()
 	, _Size_change_fn()
+	, _User_scaling_fn()
+	, _Letterbox_pttn(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Wndw(None)
 	, _Can_draw(false)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
@@ -237,7 +247,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	int x = 0;
 	int y = 0;
 	unsigned int borderWidth = 4;
-	_Wndw = XCreateSimpleWindow(display, RootWindow(display, screenNumber), x, y, static_cast<unsigned int>(preferredWidth), static_cast<unsigned int>(preferredHeight), borderWidth, WhitePixel(display, screenNumber), BlackPixel(display, screenNumber));
+	_Wndw = XCreateSimpleWindow(display, RootWindow(display, screenNumber), x, y, static_cast<unsigned int>(preferredDisplayWidth), static_cast<unsigned int>(preferredDisplayHeight), borderWidth, WhitePixel(display, screenNumber), BlackPixel(display, screenNumber));
 	XSelectInput(display, _Wndw, ExposureMask | StructureNotifyMask);
 	XSetWMProtocols(display, _Wndw, &_Wm_delete_window, 1);
 	XMapWindow(display, _Wndw);
