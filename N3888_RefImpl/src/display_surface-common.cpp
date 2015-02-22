@@ -10,12 +10,12 @@ void display_surface::_All_dimensions(int w, int h, int dw, int dh) {
 	display_dimensions(dw, dh);
 }
 
+// Note: cairo_surface_flush(_Native_surface.get()); must be called after calling this function.
 void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 	const cairo_filter_t cairoFilter = CAIRO_FILTER_BEST;
 	if (_Width == _Display_width && _Height == _Display_height) {
 		cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
 		cairo_paint(_Native_context.get());
-//		cairo_surface_flush(_Native_surface.get());
 	}
 	else {
 		if (_Scaling == std::experimental::io2d::scaling::letterbox) {
@@ -48,7 +48,6 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 		cairo_pattern_set_filter(pat.get(), cairoFilter);
 		cairo_set_source(_Native_context.get(), pat.get());
 		cairo_paint(_Native_context.get());
-//		cairo_surface_flush(_Native_surface.get());
 	}
 }
 
@@ -77,7 +76,7 @@ void display_surface::_Render_to_native_surface() {
 		cairo_pattern_set_filter(pat.get(), cairoFilter);
 		cairo_set_source(_Native_context.get(), pat.get());
 		cairo_paint(_Native_context.get());
-//		cairo_surface_flush(_Native_surface.get());
+		cairo_surface_flush(_Native_surface.get());
 	}
 	else {
 
@@ -99,7 +98,6 @@ void display_surface::_Render_to_native_surface() {
 			if (_Width == _Display_width && _Height == _Display_height) {
 				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
 				cairo_paint(_Native_context.get());
-//				cairo_surface_flush(_Native_surface.get());
 			}
 			else {
 				auto widthRatio = static_cast<double>(_Display_width) / static_cast<double>(_Width);
@@ -116,7 +114,6 @@ void display_surface::_Render_to_native_surface() {
 					cairo_pattern_set_filter(pat.get(), cairoFilter);
 					cairo_set_source(_Native_context.get(), pat.get());
 					cairo_paint(_Native_context.get());
-//					cairo_surface_flush(_Native_surface.get());
 				}
 				else {
 					cairo_set_source_rgb(_Native_context.get(), 0.0, 0.0, 0.0);
@@ -130,7 +127,6 @@ void display_surface::_Render_to_native_surface() {
 					cairo_pattern_set_filter(pat.get(), cairoFilter);
 					cairo_set_source(_Native_context.get(), pat.get());
 					cairo_paint(_Native_context.get());
-//					cairo_surface_flush(_Native_surface.get());
 				}
 			}
 		} break;
@@ -140,7 +136,6 @@ void display_surface::_Render_to_native_surface() {
 			if (_Width == _Display_width && _Height == _Display_height) {
 				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
 				cairo_paint(_Native_context.get());
-//				cairo_surface_flush(_Native_surface.get());
 			}
 			else {
 				auto widthRatio = static_cast<double>(_Display_width) / static_cast<double>(_Width);
@@ -153,14 +148,12 @@ void display_surface::_Render_to_native_surface() {
 				cairo_pattern_set_filter(pat.get(), cairoFilter);
 				cairo_set_source(_Native_context.get(), pat.get());
 				cairo_paint(_Native_context.get());
-//				cairo_surface_flush(_Native_surface.get());
 			}
 		} break;
 		case std::experimental::io2d::scaling::none:
 		{
 			cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
 			cairo_paint(_Native_context.get());
-//			cairo_surface_flush(_Native_surface.get());
 		} break;
 		default:
 		{
@@ -168,6 +161,9 @@ void display_surface::_Render_to_native_surface() {
 		} break;
 		}
 	}
+
+	// This call to cairo_surface_flush is needed for Win32 surfaces to update.
+	cairo_surface_flush(_Native_surface.get());
 }
 
 void display_surface::save() {
