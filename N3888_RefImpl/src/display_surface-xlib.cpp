@@ -195,17 +195,30 @@ void display_surface::_Make_native_surface_and_context() {
 }
 
 void display_surface::_Resize_window() {
-	XWindowChanges xwc{ };
-	xwc.width = _Display_width;
-	xwc.height = _Display_height;
-	XConfigureWindow(_Display.get(), _Wndw, CWWidth | CWHeight, &xwc);
+	Window rootWindow{};
+	int x{};
+	int y{};
+	unsigned int width = 0;
+	unsigned int height = 0;
+	unsigned int borderWidth{};
+	unsigned int depth{};
+	auto status = XGetGeometry(_Display.get(), _Wndw, &rootWindow, &x, &y, &width, &height, &borderWidth, &depth);
+	if (status == 0) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STATUS);
+	}
+	if (width != static_cast<unsigned int>(_Display_width) || height != static_cast<unsigned int>(_Display_height)) {
+		XWindowChanges xwc{ };
+		xwc.width = _Display_width;
+		xwc.height = _Display_height;
+		XConfigureWindow(_Display.get(), _Wndw, CWWidth | CWHeight, &xwc);
+	}
 }
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl)
 	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl) {
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl) 
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl)
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
 	, _Scaling(scl)
 	, _Width(preferredWidth)

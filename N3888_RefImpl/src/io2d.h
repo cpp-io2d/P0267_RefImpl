@@ -1534,6 +1534,8 @@ namespace std {
 					void _All_dimensions(int w, int h, int dw, int dh);
 					void _Render_to_native_surface();
 					void _Resize_window();
+					void _Render_for_scaling_uniform_or_letterbox();
+
 					::std::stack<::std::tuple<
 						::std::experimental::io2d::scaling,
 						_Width_type,

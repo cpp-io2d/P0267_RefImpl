@@ -10,10 +10,51 @@ void display_surface::_All_dimensions(int w, int h, int dw, int dh) {
 	display_dimensions(dw, dh);
 }
 
+void display_surface::_Render_for_scaling_uniform_or_letterbox() {
+	const cairo_filter_t cairoFilter = CAIRO_FILTER_BEST;
+	if (_Width == _Display_width && _Height == _Display_height) {
+		cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
+		cairo_paint(_Native_context.get());
+//		cairo_surface_flush(_Native_surface.get());
+	}
+	else {
+		if (_Scaling == std::experimental::io2d::scaling::letterbox) {
+			cairo_pattern_set_extend(_Letterbox_pttn.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_pttn.extend()));
+			cairo_pattern_set_filter(_Letterbox_pttn.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_pttn.filter()));
+			cairo_matrix_t cPttnMatrix;
+			cairo_matrix_init(&cPttnMatrix, _Letterbox_pttn.matrix().m00(), _Letterbox_pttn.matrix().m01(), _Letterbox_pttn.matrix().m10(), _Letterbox_pttn.matrix().m11(), _Letterbox_pttn.matrix().m20(), _Letterbox_pttn.matrix().m21());
+			cairo_pattern_set_matrix(_Letterbox_pttn.native_handle(), &cPttnMatrix);
+			cairo_set_source(_Native_context.get(), _Letterbox_pttn.native_handle());
+			cairo_paint(_Native_context.get());
+		}
+
+		auto widthRatio = static_cast<double>(_Display_width) / static_cast<double>(_Width);
+		auto heightRatio = static_cast<double>(_Display_height) / static_cast<double>(_Height);
+
+		cairo_matrix_t ctm;
+
+		if (widthRatio < heightRatio) {
+			cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / widthRatio);
+			cairo_matrix_translate(&ctm, 0.0, -trunc(abs(static_cast<double>(_Display_height - (_Height * widthRatio)) / 2.0)));
+		}
+		else {
+			cairo_matrix_init_scale(&ctm, 1.0 / heightRatio, 1.0 / heightRatio);
+			cairo_matrix_translate(&ctm, -trunc(abs(static_cast<double>(_Display_width - (_Width * heightRatio)) / 2.0)), 0.0);
+		}
+
+		unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
+		cairo_pattern_set_matrix(pat.get(), &ctm);
+		cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
+		cairo_pattern_set_filter(pat.get(), cairoFilter);
+		cairo_set_source(_Native_context.get(), pat.get());
+		cairo_paint(_Native_context.get());
+//		cairo_surface_flush(_Native_surface.get());
+	}
+}
+
 void display_surface::_Render_to_native_surface() {
 	const cairo_filter_t cairoFilter = CAIRO_FILTER_BEST;
 	cairo_surface_flush(_Surface.get());
-	//cairo_save(_Native_context.get());
 
 	if (_User_scaling_fn != nullptr) {
 		bool letterbox = false;
@@ -36,70 +77,20 @@ void display_surface::_Render_to_native_surface() {
 		cairo_pattern_set_filter(pat.get(), cairoFilter);
 		cairo_set_source(_Native_context.get(), pat.get());
 		cairo_paint(_Native_context.get());
-		cairo_surface_flush(_Native_surface.get());
+//		cairo_surface_flush(_Native_surface.get());
 	}
 	else {
-		auto uniformScaleFn = [&]() {
-			if (_Width == _Display_width && _Height == _Display_height) {
-				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
-				cairo_paint(_Native_context.get());
-				cairo_surface_flush(_Native_surface.get());
-			}
-			else {
-				if (_Scaling == std::experimental::io2d::scaling::letterbox) {
-					cairo_pattern_set_extend(_Letterbox_pttn.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_pttn.extend()));
-					cairo_pattern_set_filter(_Letterbox_pttn.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_pttn.filter()));
-					cairo_matrix_t cPttnMatrix;
-					cairo_matrix_init(&cPttnMatrix, _Letterbox_pttn.matrix().m00(), _Letterbox_pttn.matrix().m01(), _Letterbox_pttn.matrix().m10(), _Letterbox_pttn.matrix().m11(), _Letterbox_pttn.matrix().m20(), _Letterbox_pttn.matrix().m21());
-					cairo_pattern_set_matrix(_Letterbox_pttn.native_handle(), &cPttnMatrix);
-					cairo_set_source(_Native_context.get(), _Letterbox_pttn.native_handle());
-					cairo_paint(_Native_context.get());
-				}
-
-				auto widthRatio = static_cast<double>(_Display_width) / static_cast<double>(_Width);
-				auto heightRatio = static_cast<double>(_Display_height) / static_cast<double>(_Height);
-
-				if (widthRatio < heightRatio) {
-					cairo_matrix_t ctm;
-					cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / widthRatio);
-					cairo_matrix_translate(&ctm, 0.0, -trunc(abs(static_cast<double>(_Display_height - (_Height * widthRatio)) / 2.0)));
-					unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
-					cairo_pattern_set_matrix(pat.get(), &ctm);
-					cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
-					cairo_pattern_set_filter(pat.get(), cairoFilter);
-					cairo_set_source(_Native_context.get(), pat.get());
-					cairo_paint(_Native_context.get());
-					cairo_surface_flush(_Native_surface.get());
-				}
-				else {
-					cairo_matrix_t ctm;
-					cairo_matrix_init_scale(&ctm, 1.0 / heightRatio, 1.0 / heightRatio);
-					cairo_matrix_translate(&ctm, -trunc(abs(static_cast<double>(_Display_width - (_Width * heightRatio)) / 2.0)), 0.0);
-					unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
-					cairo_pattern_set_matrix(pat.get(), &ctm);
-					cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
-					cairo_pattern_set_filter(pat.get(), cairoFilter);
-					cairo_set_source(_Native_context.get(), pat.get());
-					cairo_paint(_Native_context.get());
-					cairo_surface_flush(_Native_surface.get());
-				}
-			}
-		};
 
 		// Calculate the destRect values.
 		switch (_Scaling) {
 		case std::experimental::io2d::scaling::letterbox:
 		{
-			// Fill with black.
-			cairo_set_source(_Native_context.get(), _Letterbox_pttn.native_handle());
-			cairo_paint(_Native_context.get());
-
-			uniformScaleFn();
-		}
+			_Render_for_scaling_uniform_or_letterbox();
+		} break;
 
 		case std::experimental::io2d::scaling::uniform:
 		{
-			uniformScaleFn();
+			_Render_for_scaling_uniform_or_letterbox();
 		} break;
 
 		case std::experimental::io2d::scaling::fill_uniform:
@@ -108,7 +99,7 @@ void display_surface::_Render_to_native_surface() {
 			if (_Width == _Display_width && _Height == _Display_height) {
 				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
 				cairo_paint(_Native_context.get());
-				cairo_surface_flush(_Native_surface.get());
+//				cairo_surface_flush(_Native_surface.get());
 			}
 			else {
 				auto widthRatio = static_cast<double>(_Display_width) / static_cast<double>(_Width);
@@ -125,7 +116,7 @@ void display_surface::_Render_to_native_surface() {
 					cairo_pattern_set_filter(pat.get(), cairoFilter);
 					cairo_set_source(_Native_context.get(), pat.get());
 					cairo_paint(_Native_context.get());
-					cairo_surface_flush(_Native_surface.get());
+//					cairo_surface_flush(_Native_surface.get());
 				}
 				else {
 					cairo_set_source_rgb(_Native_context.get(), 0.0, 0.0, 0.0);
@@ -139,7 +130,7 @@ void display_surface::_Render_to_native_surface() {
 					cairo_pattern_set_filter(pat.get(), cairoFilter);
 					cairo_set_source(_Native_context.get(), pat.get());
 					cairo_paint(_Native_context.get());
-					cairo_surface_flush(_Native_surface.get());
+//					cairo_surface_flush(_Native_surface.get());
 				}
 			}
 		} break;
@@ -149,7 +140,7 @@ void display_surface::_Render_to_native_surface() {
 			if (_Width == _Display_width && _Height == _Display_height) {
 				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
 				cairo_paint(_Native_context.get());
-				cairo_surface_flush(_Native_surface.get());
+//				cairo_surface_flush(_Native_surface.get());
 			}
 			else {
 				auto widthRatio = static_cast<double>(_Display_width) / static_cast<double>(_Width);
@@ -162,14 +153,14 @@ void display_surface::_Render_to_native_surface() {
 				cairo_pattern_set_filter(pat.get(), cairoFilter);
 				cairo_set_source(_Native_context.get(), pat.get());
 				cairo_paint(_Native_context.get());
-				cairo_surface_flush(_Native_surface.get());
+//				cairo_surface_flush(_Native_surface.get());
 			}
 		} break;
 		case std::experimental::io2d::scaling::none:
 		{
 			cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
 			cairo_paint(_Native_context.get());
-			cairo_surface_flush(_Native_surface.get());
+//			cairo_surface_flush(_Native_surface.get());
 		} break;
 		default:
 		{
@@ -177,7 +168,6 @@ void display_surface::_Render_to_native_surface() {
 		} break;
 		}
 	}
-	//cairo_restore(_Native_context.get());
 }
 
 void display_surface::save() {
