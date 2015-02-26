@@ -5,20 +5,20 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-font_extents::native_handle_type font_extents::native_handle() {
+font_extents::native_handle_type font_extents::native_handle() noexcept {
 	return &_Font_extents;
 }
 
-font_extents::font_extents()
+font_extents::font_extents() noexcept
 	: _Font_extents({ 0.0, 0.0, 0.0, 0.0, 0.0 }) {
 }
 
-font_extents::font_extents(font_extents&& other)
+font_extents::font_extents(font_extents&& other) noexcept
 	: _Font_extents(move(other._Font_extents)) {
 	other._Font_extents = { };
 }
 
-font_extents& font_extents::operator=(font_extents&& other) {
+font_extents& font_extents::operator=(font_extents&& other) noexcept {
 	if (this != &other) {
 		_Font_extents = move(other._Font_extents);
 
@@ -27,46 +27,46 @@ font_extents& font_extents::operator=(font_extents&& other) {
 	return *this;
 }
 
-font_extents::font_extents(double ascent, double descent, double height, double maxXAdvance, double maxYAdvance)
+font_extents::font_extents(double ascent, double descent, double height, double maxXAdvance, double maxYAdvance) noexcept
 	: _Font_extents({ ascent, descent, height, maxXAdvance, maxYAdvance }) {
 }
 
-void font_extents::ascent(double value) {
+void font_extents::ascent(double value) noexcept {
 	_Font_extents.ascent = value;
 }
 
-void font_extents::descent(double value) {
+void font_extents::descent(double value) noexcept {
 	_Font_extents.descent = value;
 }
 
-void font_extents::height(double value) {
+void font_extents::height(double value) noexcept {
 	_Font_extents.height = value;
 }
 
-void font_extents::max_x_advance(double value) {
+void font_extents::max_x_advance(double value) noexcept {
 	_Font_extents.max_x_advance = value;
 }
 
-void font_extents::max_y_advance(double value) {
+void font_extents::max_y_advance(double value) noexcept {
 	_Font_extents.max_y_advance = value;
 }
 
-double font_extents::ascent() const {
+double font_extents::ascent() const noexcept {
 	return _Font_extents.ascent;
 }
 
-double font_extents::descent() const {
+double font_extents::descent() const noexcept {
 	return _Font_extents.descent;
 }
 
-double font_extents::height() const {
+double font_extents::height() const noexcept {
 	return _Font_extents.height;
 }
 
-double font_extents::max_x_advance() const {
+double font_extents::max_x_advance() const noexcept {
 	return _Font_extents.max_x_advance;
 }
 
-double font_extents::max_y_advance() const {
+double font_extents::max_y_advance() const noexcept {
 	return _Font_extents.max_y_advance;
 }

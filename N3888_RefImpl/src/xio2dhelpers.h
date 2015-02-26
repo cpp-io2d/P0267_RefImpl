@@ -54,10 +54,10 @@ inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 	}
 }
 
-// Checks for equality between two doubles.
+// Checks for equality between two floating point numbers using an epsilon value to specify the equality tolerance limit.
 // See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
 template <typename T>
-inline bool _Almost_equal_relative(T a, T b, T epsilon = ::std::numeric_limits<T>::epsilon()) {
+inline bool _Almost_equal_relative(T a, T b, T epsilon = ::std::numeric_limits<T>::epsilon()) noexcept {
 	auto diff = ::std::abs(a - b);
 	a = ::std::abs(a);
 	b = ::std::abs(b);

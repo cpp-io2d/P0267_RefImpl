@@ -5,14 +5,14 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-point::point(point&& other)
+point::point(point&& other) noexcept
 	: _X(move(other._X))
 	, _Y(move(other._Y)) {
 	other._X = 0.0;
 	other._Y = 0.0;
 }
 
-point& point::operator=(point&& other) {
+point& point::operator=(point&& other) noexcept {
 	if (this != &other) {
 		_X = move(other._X);
 		_Y = move(other._Y);
@@ -22,24 +22,24 @@ point& point::operator=(point&& other) {
 	return *this;
 }
 
-point::point(double x, double y)
+point::point(double x, double y) noexcept
 	: _X(x)
 	, _Y(y) {
 }
 
-void point::x(double value) {
+void point::x(double value) noexcept {
 	_X = value;
 }
 
-void point::y(double value) {
+void point::y(double value) noexcept {
 	_Y = value;
 }
 
-double point::x() const {
+double point::x() const noexcept {
 	return _X;
 }
 
-double point::y() const {
+double point::y() const noexcept {
 	return _Y;
 }
 
@@ -49,6 +49,14 @@ namespace std {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
+				bool operator==(const point& lhs, const point& rhs) noexcept {
+					return _Almost_equal_relative(lhs.x(), rhs.x()) && _Almost_equal_relative(lhs.y(), rhs.y());
+				}
+
+				bool operator!=(const point& lhs, const point& rhs) noexcept {
+					return !(lhs == rhs);
+				}
+
 				point operator+(const point& lhs) {
 					return lhs;
 				}
@@ -151,14 +159,6 @@ namespace std {
 					lhs.x(lhs.x() / rhs);
 					lhs.y(lhs.y() / rhs);
 					return lhs;
-				}
-
-				bool operator==(const point& lhs, const point& rhs) {
-					return _Almost_equal_relative(lhs.x(), rhs.x()) && _Almost_equal_relative(lhs.y(), rhs.y());
-				}
-
-				bool operator!=(const point& lhs, const point& rhs) {
-					return !(lhs == rhs);
 				}
 #if _Inline_namespace_conditional_support_test
 			}

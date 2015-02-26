@@ -5,7 +5,7 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-rectangle::rectangle(rectangle&& other)
+rectangle::rectangle(rectangle&& other) noexcept
 : _X(move(other._X))
 , _Y(move(other._Y))
 , _Width(move(other._Width))
@@ -16,7 +16,7 @@ rectangle::rectangle(rectangle&& other)
 	other._Height = 0.0;
 }
 
-rectangle& rectangle::operator=(rectangle&& other) {
+rectangle& rectangle::operator=(rectangle&& other) noexcept {
 	if (this != &other) {
 		_X = move(other._X);
 		_Y = move(other._Y);
@@ -31,41 +31,41 @@ rectangle& rectangle::operator=(rectangle&& other) {
 	return *this;
 }
 
-rectangle::rectangle(double x, double y, double width, double height)
+rectangle::rectangle(double x, double y, double width, double height) noexcept
 	: _X(x)
 	, _Y(y)
 	, _Width(width)
 	, _Height(height) {
 }
 
-void rectangle::x(double value) {
+void rectangle::x(double value) noexcept {
 	_X = value;
 }
 
-void rectangle::y(double value) {
+void rectangle::y(double value) noexcept {
 	_Y = value;
 }
 
-void rectangle::width(double value) {
+void rectangle::width(double value) noexcept {
 	_Width = value;
 }
 
-void rectangle::height(double value) {
+void rectangle::height(double value) noexcept {
 	_Height = value;
 }
 
-double rectangle::x() const {
+double rectangle::x() const noexcept {
 	return _X;
 }
 
-double rectangle::y() const {
+double rectangle::y() const noexcept {
 	return _Y;
 }
 
-double rectangle::width() const {
+double rectangle::width() const noexcept {
 	return _Width;
 }
 
-double rectangle::height() const {
+double rectangle::height() const noexcept {
 	return _Height;
 }
