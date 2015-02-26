@@ -601,74 +601,74 @@ namespace std {
 
 				class path_data {
 				public:
-					path_data() = default;
-					path_data(const path_data& other) = default;
-					path_data& operator=(const path_data& other) = default;
-					path_data(path_data&& other);
-					path_data& operator=(path_data&& other);
-					virtual ~path_data();
+					path_data() noexcept = default;
+					path_data(const path_data& other) noexcept = default;
+					path_data& operator=(const path_data& other) noexcept = default;
+					path_data(path_data&& other) noexcept;
+					path_data& operator=(path_data&& other) noexcept;
+					virtual ~path_data() noexcept;
 
-					virtual path_data_type type() const = 0;
+					virtual path_data_type type() const noexcept = 0;
 				};
 
 				class _Point : public path_data {
 					point _Data = { };
 				public:
-					_Point() = default;
-					_Point(const _Point& other) = default;
-					_Point& operator=(const _Point& other) = default;
-					_Point(_Point&& other);
-					_Point& operator=(_Point&& other);
-					_Point(const point& to);
-					virtual ~_Point();
-					virtual path_data_type type() const override = 0;
+					_Point() noexcept = default;
+					_Point(const _Point& other) noexcept = default;
+					_Point& operator=(const _Point& other) noexcept = default;
+					_Point(_Point&& other) noexcept;
+					_Point& operator=(_Point&& other) noexcept;
+					_Point(const point& to) noexcept;
+					virtual ~_Point() noexcept;
+					virtual path_data_type type() const noexcept override = 0;
 
-					point to() const;
-					void to(const point& value);
+					point to() const noexcept;
+					void to(const point& value) noexcept;
 				};
 
 				class move_to : public _Point {
 				public:
-					move_to() = default;
-					move_to(const move_to& other) = default;
-					move_to& operator=(const move_to& other) = default;
-					move_to(move_to&& other);
-					move_to& operator=(move_to&& other);
-					move_to(const point& to);
-					virtual path_data_type type() const override;
+					move_to() noexcept = default;
+					move_to(const move_to& other) noexcept = default;
+					move_to& operator=(const move_to& other) noexcept = default;
+					move_to(move_to&& other) noexcept;
+					move_to& operator=(move_to&& other) noexcept;
+					move_to(const point& to) noexcept;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class line_to : public _Point {
 				public:
-					line_to() = default;
-					line_to(const line_to& other) = default;
-					line_to& operator=(const line_to& other) = default;
-					line_to(line_to&& other);
-					line_to& operator=(line_to&& other);
-					line_to(const point& to);
-					virtual path_data_type type() const override;
+					line_to() noexcept = default;
+					line_to(const line_to& other) noexcept = default;
+					line_to& operator=(const line_to& other) noexcept = default;
+					line_to(line_to&& other) noexcept;
+					line_to& operator=(line_to&& other) noexcept;
+					line_to(const point& to) noexcept;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class rel_move_to : public _Point {
 				public:
-					rel_move_to() = default;
-					rel_move_to(const rel_move_to& other) = default;
-					rel_move_to& operator=(const rel_move_to& other) = default;
-					rel_move_to(rel_move_to&& other);
-					rel_move_to& operator=(rel_move_to&& other);
-					rel_move_to(const point& to);
-					virtual path_data_type type() const override;
+					rel_move_to() noexcept = default;
+					rel_move_to(const rel_move_to& other) noexcept = default;
+					rel_move_to& operator=(const rel_move_to& other) noexcept = default;
+					rel_move_to(rel_move_to&& other) noexcept;
+					rel_move_to& operator=(rel_move_to&& other) noexcept;
+					rel_move_to(const point& to) noexcept;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class rel_line_to : public _Point {
 				public:
-					rel_line_to() = default;
-					rel_line_to(const rel_line_to& other) = default;
-					rel_line_to& operator=(const rel_line_to& other) = default;
-					rel_line_to(rel_line_to&& other);
-					rel_line_to& operator=(rel_line_to&& other);
-					rel_line_to(const point& to);
-					virtual path_data_type type() const override;
+					rel_line_to() noexcept = default;
+					rel_line_to(const rel_line_to& other) noexcept = default;
+					rel_line_to& operator=(const rel_line_to& other) noexcept = default;
+					rel_line_to(rel_line_to&& other) noexcept;
+					rel_line_to& operator=(rel_line_to&& other) noexcept;
+					rel_line_to(const point& to) noexcept;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class _Curve_to : public path_data {
@@ -676,44 +676,44 @@ namespace std {
 					point _Control_pt2 = { };
 					point _End_pt = { };
 				public:
-					_Curve_to() = default;
-					_Curve_to(const _Curve_to& other) = default;
-					_Curve_to& operator=(const _Curve_to& other) = default;
-					_Curve_to(_Curve_to&& other);
-					_Curve_to& operator=(_Curve_to&& other);
-					_Curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
-					virtual ~_Curve_to();
-					virtual path_data_type type() const override = 0;
+					_Curve_to() noexcept = default;
+					_Curve_to(const _Curve_to& other) noexcept = default;
+					_Curve_to& operator=(const _Curve_to& other) noexcept = default;
+					_Curve_to(_Curve_to&& other) noexcept;
+					_Curve_to& operator=(_Curve_to&& other) noexcept;
+					_Curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint) noexcept;
+					virtual ~_Curve_to() noexcept;
+					virtual path_data_type type() const noexcept override = 0;
 
-					void control_point_1(const point& value);
-					void control_point_2(const point& value);
-					void end_point(const point& value);
+					void control_point_1(const point& value) noexcept;
+					void control_point_2(const point& value) noexcept;
+					void end_point(const point& value) noexcept;
 
-					point control_point_1() const;
-					point control_point_2() const;
-					point end_point() const;
+					point control_point_1() const noexcept;
+					point control_point_2() const noexcept;
+					point end_point() const noexcept;
 				};
 
 				class curve_to : public _Curve_to {
 				public:
-					curve_to() = default;
-					curve_to(const curve_to& other) = default;
-					curve_to& operator=(const curve_to& other) = default;
-					curve_to(curve_to&& other);
-					curve_to& operator=(curve_to&& other);
-					curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
-					virtual path_data_type type() const override;
+					curve_to() noexcept = default;
+					curve_to(const curve_to& other) noexcept = default;
+					curve_to& operator=(const curve_to& other) noexcept = default;
+					curve_to(curve_to&& other) noexcept;
+					curve_to& operator=(curve_to&& other) noexcept;
+					curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint) noexcept;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class rel_curve_to : public _Curve_to {
 				public:
-					rel_curve_to() = default;
-					rel_curve_to(const rel_curve_to& other) = default;
-					rel_curve_to& operator=(const rel_curve_to& other) = default;
-					rel_curve_to(rel_curve_to&& other);
-					rel_curve_to& operator=(rel_curve_to&& other);
-					rel_curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint);
-					virtual path_data_type type() const override;
+					rel_curve_to() noexcept = default;
+					rel_curve_to(const rel_curve_to& other) noexcept = default;
+					rel_curve_to& operator=(const rel_curve_to& other) noexcept = default;
+					rel_curve_to(rel_curve_to&& other) noexcept;
+					rel_curve_to& operator=(rel_curve_to&& other) noexcept;
+					rel_curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint) noexcept;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class _Arc : public path_data {
@@ -722,102 +722,102 @@ namespace std {
 					double _Angle_1;
 					double _Angle_2;
 				public:
-					_Arc();
-					_Arc(const _Arc& other) = default;
-					_Arc& operator=(const _Arc& other) = default;
-					_Arc(_Arc&& other);
-					_Arc& operator=(_Arc&& other);
-					_Arc(point center, double radius, double angle1, double angle2);
-					virtual ~_Arc();
-					virtual path_data_type type() const override = 0;
+					_Arc() noexcept;
+					_Arc(const _Arc& other) noexcept = default;
+					_Arc& operator=(const _Arc& other) noexcept = default;
+					_Arc(_Arc&& other) noexcept;
+					_Arc& operator=(_Arc&& other) noexcept;
+					_Arc(point center, double radius, double angle1, double angle2) noexcept;
+					virtual ~_Arc() noexcept;
+					virtual path_data_type type() const noexcept override = 0;
 
-					void center(const point& value);
-					void radius(double value);
-					void angle_1(double radians);
-					void angle_2(double radians);
+					void center(const point& value) noexcept;
+					void radius(double value) noexcept;
+					void angle_1(double radians) noexcept;
+					void angle_2(double radians) noexcept;
 
-					point center() const;
-					double radius() const;
-					double angle_1() const;
-					double angle_2() const;
+					point center() const noexcept;
+					double radius() const noexcept;
+					double angle_1() const noexcept;
+					double angle_2() const noexcept;
 				};
 
 				class arc : public _Arc {
 				public:
-					arc() = default;
-					arc(const arc& other) = default;
-					arc& operator=(const arc& other) = default;
-					arc(arc&& other);
-					arc& operator=(arc&& other);
-					arc(point center, double radius, double angle1, double angle2);
+					arc() noexcept = default;
+					arc(const arc& other) noexcept = default;
+					arc& operator=(const arc& other) noexcept = default;
+					arc(arc&& other) noexcept;
+					arc& operator=(arc&& other) noexcept;
+					arc(point center, double radius, double angle1, double angle2) noexcept;
 
-					virtual path_data_type type() const override;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class arc_negative : public _Arc {
 				public:
-					arc_negative() = default;
-					arc_negative(const arc_negative& other) = default;
-					arc_negative& operator=(const arc_negative& other) = default;
-					arc_negative(arc_negative&& other);
-					arc_negative& operator=(arc_negative&& other);
-					arc_negative(point center, double radius, double angle1, double angle2);
+					arc_negative() noexcept = default;
+					arc_negative(const arc_negative& other) noexcept = default;
+					arc_negative& operator=(const arc_negative& other) noexcept = default;
+					arc_negative(arc_negative&& other) noexcept;
+					arc_negative& operator=(arc_negative&& other) noexcept;
+					arc_negative(point center, double radius, double angle1, double angle2) noexcept;
 
-					virtual path_data_type type() const override;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class new_sub_path : public path_data {
 				public:
-					new_sub_path() = default;
-					new_sub_path(const new_sub_path& other) = default;
-					new_sub_path& operator=(const new_sub_path& other) = default;
-					new_sub_path(new_sub_path&& other);
-					new_sub_path& operator=(new_sub_path&& other);
+					new_sub_path() noexcept = default;
+					new_sub_path(const new_sub_path& other) noexcept = default;
+					new_sub_path& operator=(const new_sub_path& other) noexcept = default;
+					new_sub_path(new_sub_path&& other) noexcept;
+					new_sub_path& operator=(new_sub_path&& other) noexcept;
 
-					virtual path_data_type type() const override;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class close_path : public path_data {
 				public:
-					close_path() = default;
-					close_path(const close_path& other) = default;
-					close_path& operator=(const close_path& other) = default;
-					close_path(close_path&& other);
-					close_path& operator=(close_path&& other);
+					close_path() noexcept = default;
+					close_path(const close_path& other) noexcept = default;
+					close_path& operator=(const close_path& other) noexcept = default;
+					close_path(close_path&& other) noexcept;
+					close_path& operator=(close_path&& other) noexcept;
 
-					virtual path_data_type type() const override;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class change_matrix : public path_data {
 					matrix_2d _Matrix = { };
 				public:
-					change_matrix() = default;
-					change_matrix(const change_matrix& other) = default;
-					change_matrix& operator=(const change_matrix& other) = default;
-					change_matrix(change_matrix&& other);
-					change_matrix& operator=(change_matrix&& other);
-					change_matrix(const matrix_2d& m);
+					change_matrix() noexcept = default;
+					change_matrix(const change_matrix& other) noexcept = default;
+					change_matrix& operator=(const change_matrix& other) noexcept = default;
+					change_matrix(change_matrix&& other) noexcept;
+					change_matrix& operator=(change_matrix&& other) noexcept;
+					change_matrix(const matrix_2d& m) noexcept;
 
-					void matrix(const matrix_2d& value);
+					void matrix(const matrix_2d& value) noexcept;
 
-					matrix_2d matrix() const;
-					virtual path_data_type type() const override;
+					matrix_2d matrix() const noexcept;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				class change_origin : public path_data {
 					point _Origin = { };
 				public:
-					change_origin() = default;
-					change_origin(const change_origin& other) = default;
-					change_origin& operator=(const change_origin& other) = default;
-					change_origin(change_origin&& other);
-					change_origin& operator=(change_origin&& other);
-					change_origin(const point& origin);
+					change_origin() noexcept = default;
+					change_origin(const change_origin& other) noexcept = default;
+					change_origin& operator=(const change_origin& other) noexcept = default;
+					change_origin(change_origin&& other) noexcept;
+					change_origin& operator=(change_origin&& other) noexcept;
+					change_origin(const point& origin) noexcept;
 
-					void origin(const point& value);
+					void origin(const point& value) noexcept;
 
-					point origin() const;
-					virtual path_data_type type() const override;
+					point origin() const noexcept;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				// Forward declaration.
