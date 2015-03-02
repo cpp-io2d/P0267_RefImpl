@@ -133,37 +133,11 @@ namespace std {
 			inline namespace v1 {
 #endif
 				// Forward declarations.
-				class point;
 				class rgba_color;
-
-				point operator+(const point& lhs);
-				point operator+(const point& lhs, const point& rhs);
-				point operator+(const point& lhs, double rhs);
-				point operator+(double lhs, const point& rhs);
-				point& operator+=(point& lhs, const point& rhs);
-				point& operator+=(point& lhs, double rhs);
-				point operator-(const point& lhs);
-				point operator-(const point& lhs, const point& rhs);
-				point operator-(const point& lhs, double rhs);
-				point operator-(double lhs, const point& rhs);
-				point& operator-=(point& lhs, const point& rhs);
-				point& operator-=(point& lhs, double rhs);
-				point operator*(const point& lhs, const point& rhs);
-				point operator*(const point& lhs, double rhs);
-				point operator*(double lhs, const point& rhs);
-				point& operator*=(point& lhs, const point& rhs);
-				point& operator*=(point& lhs, double rhs);
-				point operator/(const point& lhs, const point& rhs);
-				point operator/(const point& lhs, double rhs);
-				point operator/(double lhs, const point& rhs);
-				point& operator/=(point& lhs, const point& rhs);
-				point& operator/=(point& lhs, double rhs);
 
 				rgba_color operator*(const rgba_color& lhs, double rhs);
 				rgba_color operator*(double lhs, const rgba_color& rhs);
 				rgba_color& operator*=(rgba_color& lhs, double rhs);
-				bool operator==(const rgba_color& lhs, const rgba_color& rhs);
-				bool operator!=(const rgba_color& lhs, const rgba_color& rhs);
 #if _Inline_namespace_conditional_support_test
 			}
 #endif

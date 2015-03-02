@@ -589,7 +589,7 @@ vector<::std::unique_ptr<path_data>> _Get_arc_as_beziers(const point& center, do
 	pb.origin(origin);
 	pb.transform_matrix(matrix);
 
-	const auto startPoint = center + _Rotate_point(pt0 * radius, currentTheta);
+	const auto startPoint = center + _Rotate_point({ pt0.x() * radius, pt0.y() * radius }, currentTheta);
 	if (hasCurrentPoint) {
 		pb.move_to(currentPoint);
 		pb.line_to(startPoint);
@@ -602,9 +602,9 @@ vector<::std::unique_ptr<path_data>> _Get_arc_as_beziers(const point& center, do
 	// The point we have is already rotated by half of theta.
 	for (; bezierCount > 0; bezierCount--) {
 		pb.curve_to(
-			center + _Rotate_point(pt1 * radius, currentTheta),
-			center + _Rotate_point(pt2 * radius, currentTheta),
-			center + _Rotate_point(pt3 * radius, currentTheta)
+			center + _Rotate_point({ pt1.x() * radius, pt1.y() * radius }, currentTheta),
+			center + _Rotate_point({ pt2.x() * radius, pt2.y() * radius }, currentTheta),
+			center + _Rotate_point({ pt3.x() * radius, pt3.y() * radius }, currentTheta)
 			);
 
 		if (arcNegative) {
@@ -828,7 +828,7 @@ double _Curve_value_for_t(double a, double b, double c, double d, double t) {
 
 inline point _Cubic_bezier_derivative_for_t(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t);
 inline point _Cubic_bezier_derivative_for_t(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t) {
-	return 3.0 * pow(1.0 - t, 2.0) * (pt1 - pt0) + 6.0 * (1.0 - t) * t * (pt2 - pt1) + 3.0 * pow(t, 2.0) * (pt3 - pt2);
+	return point{ 3.0 * pow(1.0 - t, 2.0) * (pt1 - pt0).x(), 3.0 * pow(1.0 - t, 2.0) * (pt1 - pt0).y() } + point{ 6.0 * (1.0 - t) * t * (pt2 - pt1).x(), 6.0 * (1.0 - t) * t * (pt2 - pt1).y()} + point{3.0 * pow(t, 2.0) * (pt3 - pt2).x(), 3.0 * pow(t, 2.0) * (pt3 - pt2).y() };
 }
 
 inline bool _Same_sign(double lhs, double rhs);
@@ -1184,7 +1184,8 @@ rectangle path_factory::path_extents() const {
 			if (!hasLastPoint) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 			}
-			point cte0{ }, cte1{ };
+			point cte0{ };
+			point cte1{ };
 			auto dataItem = dynamic_cast<std::experimental::io2d::curve_to*>(item.get());
 			auto itemPt1 = currMatrix.transform_point(dataItem->control_point_1() - currOrigin) + currOrigin;
 			auto itemPt2 = currMatrix.transform_point(dataItem->control_point_2() - currOrigin) + currOrigin;
@@ -1204,7 +1205,7 @@ rectangle path_factory::path_extents() const {
 				pt1.y(max(max(pt1.y(), cte0.y()), cte1.y()));
 			}
 		}
-			break;
+		break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
 			hasLastPoint = false;
 			break;
@@ -1244,7 +1245,8 @@ rectangle path_factory::path_extents() const {
 			if (!hasLastPoint) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 			}
-			point cte0{ }, cte1{ };
+			point cte0{ };
+			point cte1{ };
 			auto dataItem = dynamic_cast<std::experimental::io2d::rel_curve_to*>(item.get());
 			auto itemPt1 = currMatrix.transform_point((dataItem->control_point_1() + lastPoint) - currOrigin) + currOrigin;
 			auto itemPt2 = currMatrix.transform_point((dataItem->control_point_2() + lastPoint) - currOrigin) + currOrigin;
@@ -1264,7 +1266,7 @@ rectangle path_factory::path_extents() const {
 				pt1.y(max(max(pt1.y(), cte0.y()), cte1.y()));
 			}
 		}
-			break;
+		break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::arc*>(item.get());
@@ -1301,7 +1303,8 @@ rectangle path_factory::path_extents() const {
 					if (!hasLastPoint) {
 						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 					}
-					point cte0{ }, cte1{ };
+					point cte0{ };
+					point cte1{ };
 					auto arcDataItem = dynamic_cast<std::experimental::io2d::curve_to*>(arcItem.get());
 					auto itemPt1 = currMatrix.transform_point(arcDataItem->control_point_1() - currOrigin) + currOrigin;
 					auto itemPt2 = currMatrix.transform_point(arcDataItem->control_point_2() - currOrigin) + currOrigin;
@@ -1321,7 +1324,7 @@ rectangle path_factory::path_extents() const {
 						pt1.y(max(max(pt1.y(), cte0.y()), cte1.y()));
 					}
 				}
-					break;
+				break;
 				case path_data_type::new_sub_path:
 				{
 					assert("Unexpected value path_data_type::new_sub_path." && false);
@@ -1361,20 +1364,20 @@ rectangle path_factory::path_extents() const {
 				{
 					// Ignore, we're already dealing with this.
 				}
-					break;
+				break;
 
 				case path_data_type::change_matrix:
 				{
 					// Ignore, we're already dealing with this.
 				}
-					break;
+				break;
 				default:
 					assert("Unexpected path_data_type in arc." && false);
 					break;
 				}
 			}
 		}
-			break;
+		break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::arc_negative*>(item.get());
@@ -1411,7 +1414,8 @@ rectangle path_factory::path_extents() const {
 					if (!hasLastPoint) {
 						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 					}
-					point cte0{ }, cte1{ };
+					point cte0{ };
+					point cte1{ };
 					auto arcDataItem = dynamic_cast<std::experimental::io2d::curve_to*>(arcItem.get());
 					auto itemPt1 = currMatrix.transform_point(arcDataItem->control_point_1() - currOrigin) + currOrigin;
 					auto itemPt2 = currMatrix.transform_point(arcDataItem->control_point_2() - currOrigin) + currOrigin;
@@ -1431,7 +1435,7 @@ rectangle path_factory::path_extents() const {
 						pt1.y(max(max(pt1.y(), cte0.y()), cte1.y()));
 					}
 				}
-					break;
+				break;
 				case path_data_type::new_sub_path:
 				{
 					assert("Unexpected value path_data_type::new_sub_path." && false);
@@ -1471,13 +1475,13 @@ rectangle path_factory::path_extents() const {
 				{
 					// Ignore, we're already dealing with this.
 				}
-					break;
+				break;
 
 				case path_data_type::change_matrix:
 				{
 					// Ignore, we're already dealing with this.
 				}
-					break;
+				break;
 				default:
 					assert("Unexpected path_data_type in arc." && false);
 					break;

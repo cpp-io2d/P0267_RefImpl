@@ -212,10 +212,10 @@ namespace std {
 				const ::std::error_category& io2d_category() noexcept;
 
 				class rectangle {
-					double _X;
-					double _Y;
-					double _Width;
-					double _Height;
+					double _X = 0.0;
+					double _Y = 0.0;
+					double _Width = 0.0;
+					double _Height = 0.0;
 				public:
 					rectangle() noexcept = default;
 					rectangle(const rectangle& other) noexcept = default;
@@ -409,6 +409,9 @@ namespace std {
 					static const rgba_color& yellow_green() noexcept;
 				};
 
+				bool operator==(const rgba_color& lhs, const rgba_color& rhs);
+				bool operator!=(const rgba_color& lhs, const rgba_color& rhs);
+
 #if _Inline_namespace_conditional_support_test && _User_defined_literal_conditional_support_test
 				inline namespace literals {
 					// Note: The _ prefix is added because certain compilers reject attempts to add a non-user-defined literal
@@ -426,8 +429,8 @@ namespace std {
 #endif
 
 				class point {
-					double _X;
-					double _Y;
+					double _X = 0.0;
+					double _Y = 0.0;
 				public:
 					point() noexcept = default;
 					point(const point& other) noexcept = default;
@@ -441,10 +444,17 @@ namespace std {
 
 					double x() const noexcept;
 					double y() const noexcept;
+
+					point& operator+=(const point& rhs) noexcept;
+					point& operator-=(const point& rhs) noexcept;
 				};
 
 				bool operator==(const point& lhs, const point& rhs) noexcept;
 				bool operator!=(const point& lhs, const point& rhs) noexcept;
+				point operator+(const point& lhs) noexcept;
+				point operator+(const point& lhs, const point& rhs) noexcept;
+				point operator-(const point& lhs) noexcept;
+				point operator-(const point& lhs, const point& rhs) noexcept;
 
 				class glyph {
 					cairo_glyph_t _Glyph_data;
@@ -544,12 +554,12 @@ namespace std {
 				};
 
 				class matrix_2d {
-					double _M00;
-					double _M01;
-					double _M10;
-					double _M11;
-					double _M20;
-					double _M21;
+					double _M00 = 1.0;
+					double _M01 = 0.0;
+					double _M10 = 0.0;
+					double _M11 = 1.0;
+					double _M20 = 0.0;
+					double _M21 = 0.0;
 				public:
 
 					matrix_2d() noexcept;
