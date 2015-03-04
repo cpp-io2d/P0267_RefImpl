@@ -57,108 +57,32 @@ namespace std {
 					return !(lhs == rhs);
 				}
 
-				point operator+(const point& lhs) {
+				point operator+(const point& lhs) noexcept {
 					return lhs;
 				}
 
-				point operator+(const point& lhs, const point& rhs) {
+				point operator+(const point& lhs, const point& rhs) noexcept {
 					return point{ lhs.x() + rhs.x(), lhs.y() + rhs.y() };
 				}
 
-				point operator+(const point& lhs, double rhs) {
-					return point{ lhs.x() + rhs, lhs.y() + rhs };
+				point& point::operator+=(const point& rhs) noexcept {
+					_X = _X + rhs.x();
+					_Y = _Y + rhs.y();
+					return *this;
 				}
 
-				point operator+(double lhs, const point& rhs) {
-					return point{ lhs + rhs.x(), lhs + rhs.y() };
-				}
-
-				point& operator+=(point& lhs, const point& rhs) {
-					lhs.x(lhs.x() + rhs.x());
-					lhs.y( lhs.y() + rhs.y());
-					return lhs;
-				}
-
-				point& operator+=(point& lhs, double rhs) {
-					lhs.x(lhs.x() + rhs);
-					lhs.x(lhs.y() + rhs);
-					return lhs;
-				}
-
-				point operator-(const point& lhs) {
+				point operator-(const point& lhs) noexcept {
 					return point{ -lhs.x(), -lhs.y() };
 				}
 
-				point operator-(const point& lhs, const point& rhs) {
+				point operator-(const point& lhs, const point& rhs) noexcept {
 					return point{ lhs.x() - rhs.x(), lhs.y() - rhs.y() };
 				}
 
-				point operator-(const point& lhs, double rhs) {
-					return point{ lhs.x() - rhs, lhs.y() - rhs };
-				}
-
-				point operator-(double lhs, const point& rhs) {
-					return point{ lhs - rhs.x(), lhs - rhs.y() };
-				}
-
-				point& operator-=(point& lhs, const point& rhs) {
-					lhs.x(lhs.x() - rhs.x());
-					lhs.y(lhs.y() - rhs.y());
-					return lhs;
-				}
-
-				point& operator-=(point& lhs, double rhs) {
-					lhs.x(lhs.x() - rhs);
-					lhs.y(lhs.y() - rhs);
-					return lhs;
-				}
-
-				point operator*(const point& lhs, const point& rhs) {
-					return point{ lhs.x() * rhs.x(), lhs.y() * rhs.y() };
-				}
-
-				point operator*(const point& lhs, double rhs) {
-					return point{ lhs.x() * rhs, lhs.y() * rhs };
-				}
-
-				point operator*(double lhs, const point& rhs) {
-					return point{ lhs * rhs.x(), lhs * rhs.y() };
-				}
-
-				point& operator*=(point& lhs, const point& rhs) {
-					lhs.x(lhs.x() * rhs.x());
-					lhs.y(lhs.y() * rhs.y());
-					return lhs;
-				}
-
-				point& operator*=(point& lhs, double rhs) {
-					lhs.x(lhs.x() * rhs);
-					lhs.y(lhs.y() * rhs);
-					return lhs;
-				}
-
-				point operator/(const point& lhs, const point& rhs) {
-					return point{ lhs.x() / rhs.x(), lhs.y() / rhs.y() };
-				}
-
-				point operator/(const point& lhs, double rhs) {
-					return point{ lhs.x() / rhs, lhs.y() / rhs };
-				}
-
-				point operator/(double lhs, const point& rhs) {
-					return point{ lhs / rhs.x(), lhs / rhs.y() };
-				}
-
-				point& operator/=(point& lhs, const point& rhs) {
-					lhs.x(lhs.x() / rhs.x());
-					lhs.y(lhs.y() / rhs.y());
-					return lhs;
-				}
-
-				point& operator/=(point& lhs, double rhs) {
-					lhs.x(lhs.x() / rhs);
-					lhs.y(lhs.y() / rhs);
-					return lhs;
+				point& point::operator-=(const point& rhs) noexcept {
+					_X = _X - rhs.x();
+					_Y = _Y - rhs.y();
+					return *this;
 				}
 #if _Inline_namespace_conditional_support_test
 			}

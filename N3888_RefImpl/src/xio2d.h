@@ -20,7 +20,7 @@
 #include <stack>
 
 // Designed to be used to conditionally define compiler support for inline namespaces using a #if
-#define _Inline_namespace_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190021510))
+#define _Inline_namespace_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190022609))
 
 // Designed to be used to conditionally define compiler support for UDLs using a #if
 #define _User_defined_literal_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190022203))

@@ -218,7 +218,15 @@ path_data_type rel_curve_to::type() const noexcept {
 	return path_data_type::rel_curve_to;
 }
 
-_Arc::_Arc(_Arc&& other)
+_Arc::_Arc() noexcept
+	: path_data()
+	, _Center()
+	, _Radius()
+	, _Angle_1()
+	, _Angle_2() {
+}
+
+_Arc::_Arc(_Arc&& other) noexcept
 	: path_data(move(other))
 	, _Center(move(other._Center))
 	, _Radius(move(other._Radius))

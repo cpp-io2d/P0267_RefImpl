@@ -32,6 +32,79 @@ namespace std {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
+				enum class io2d_error;
+				enum class antialias;
+				enum class content;
+				enum class fill_rule;
+				enum class line_cap;
+				enum class line_join;
+				enum class compositing_operator;
+				enum class format;
+				enum class extend;
+				enum class filter;
+				enum class pattern_type;
+				enum class font_slant;
+				enum class font_weight;
+				enum class subpixel_order;
+				enum class path_data_type;
+				enum class scaling;
+				class io2d_error_category;
+				class rectangle;
+				class rgba_color;
+				class point;
+				class glyph;
+				class text_cluster;
+				class font_extents;
+				class text_extents;
+				class matrix_2d;
+				class path_data;
+				class _Point;
+				class move_to;
+				class line_to;
+				class rel_move_to;
+				class rel_line_to;
+				class _Curve_to;
+				class curve_to;
+				class rel_curve_to;
+				class _Arc;
+				class arc;
+				class arc_negative;
+				class new_sub_path;
+				class close_path;
+				class change_matrix;
+				class change_origin;
+				class path;
+				class path_factory;
+				class device;
+				class font_options_factory;
+				class font_options;
+				class font_fact;
+				class simple_font_face;
+				class scaled_font;
+				class pattern;
+				class solid_color_pattern_factory;
+				class linear_pattern_factory;
+				class radial_pattern_factory;
+				class mesh_pattern_factory;
+				struct _Surface_native_handles;
+				class surface;
+				class image_surface;
+				class display_surface;
+				class surface_pattern_factory;
+#if _Inline_namespace_conditional_support_test
+			}
+#endif
+		}
+	}
+}
+
+namespace std {
+	namespace experimental {
+		namespace io2d {
+#if _Inline_namespace_conditional_support_test
+			inline namespace v1 {
+#endif
+
 				enum class io2d_error {
 					success,
 					invalid_restore,
