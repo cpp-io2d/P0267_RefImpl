@@ -40,7 +40,7 @@ rgba_color::rgba_color(double red, double green, double blue, double alpha)
 	}
 }
 
-rgba_color::rgba_color(double red, double green, double blue, error_code& ec)
+rgba_color::rgba_color(double red, double green, double blue, error_code& ec) noexcept
 	: _R(red)
 	, _G(green)
 	, _B(blue)
@@ -58,12 +58,17 @@ rgba_color::rgba_color(double red, double green, double blue, error_code& ec)
 	}
 }
 
-rgba_color::rgba_color(double red, double green, double blue, double alpha, error_code& ec)
+rgba_color::rgba_color(double red, double green, double blue, double alpha, error_code& ec) noexcept
 	: _R(red)
 	, _G(green)
 	, _B(blue)
 	, _A(alpha) {
 	if (red > 1.0 || red < 0.0 || green > 1.0 || green < 0.0 || blue > 1.0 || blue < 0.0 || alpha > 1.0 || alpha < 1.0) {
+		// Default to magenta for error visibility in case people don't check the ec.
+		_R = 1.0;
+		_G = 0.0;
+		_B = 1.0;
+		_A = 1.0;
 		ec = make_error_code(errc::invalid_argument);
 	}
 	else {
