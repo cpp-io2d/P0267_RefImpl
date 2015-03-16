@@ -3,6 +3,8 @@
 #ifndef _IO2D_
 #define _IO2D_
 
+#define __cpp_lib_experimental_io2d 201505
+
 #include "xio2d.h"
 
 #include <memory>
@@ -312,20 +314,23 @@ namespace std {
 					double _R = 0.0;
 					double _G = 0.0;
 					double _B = 0.0;
-					double _A = 0.0;
+					double _A = 1.0;
 				public:
 					rgba_color() noexcept = default;
 					rgba_color(const rgba_color& other) noexcept = default;
 					rgba_color& operator=(const rgba_color& other) noexcept = default;
 					rgba_color(rgba_color&& other) noexcept;
 					rgba_color& operator=(rgba_color&& other) noexcept;
-					rgba_color(double red, double green, double blue, double alpha = 1.0) noexcept;
-					rgba_color(int red, int green, int blue, int alpha = 255) noexcept;
+					rgba_color(double r, double g, double b, double a = 1.0);
+					rgba_color(double r, double g, double b, ::std::error_code& ec) noexcept;
+					rgba_color(double r, double g, double b, double a, ::std::error_code& ec) noexcept;
+					rgba_color(long long r, long long g, long long b) = delete;
+					rgba_color(long long r, long long g, long long b, long long a) = delete;
 
-					void r(double value) noexcept;
-					void g(double value) noexcept;
-					void b(double value) noexcept;
-					void a(double value) noexcept;
+					void r(double val) noexcept;
+					void g(double val) noexcept;
+					void b(double val) noexcept;
+					void a(double val) noexcept;
 
 					double r() const noexcept;
 					double g() const noexcept;
