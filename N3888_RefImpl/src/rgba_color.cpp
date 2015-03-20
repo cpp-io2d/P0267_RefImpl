@@ -36,7 +36,7 @@ rgba_color::rgba_color(double red, double green, double blue, double alpha)
 , _B(blue)
 , _A(alpha) {
 	if (red > 1.0 || red < 0.0 || green > 1.0 || green < 0.0 || blue > 1.0 || blue < 0.0 || alpha > 1.0 || alpha < 1.0) {
-		throw system_error(make_error_code(errc::invalid_argument));
+		throw out_of_range("The arguments must each fall between 0.0 and 1.0, inclusive.");
 	}
 }
 
@@ -51,7 +51,7 @@ rgba_color::rgba_color(double red, double green, double blue, error_code& ec) no
 		_G = 0.0;
 		_B = 1.0;
 		_A = 1.0;
-		ec = make_error_code(errc::invalid_argument);
+		ec = make_error_code(errc::argument_out_of_domain);
 	}
 	else {
 		ec.clear();
@@ -69,33 +69,37 @@ rgba_color::rgba_color(double red, double green, double blue, double alpha, erro
 		_G = 0.0;
 		_B = 1.0;
 		_A = 1.0;
-		ec = make_error_code(errc::invalid_argument);
+		ec = make_error_code(errc::argument_out_of_domain);
 	}
 	else {
 		ec.clear();
 	}
 }
 
-void rgba_color::r(double val) noexcept{
+void rgba_color::r(double val) noexcept {
+	assert(val >= 0.0 && val <= 1.0);
 	_R = val;
 }
 
-void rgba_color::g(double val) noexcept{
+void rgba_color::g(double val) noexcept {
+	assert(val >= 0.0 && val <= 1.0);
 	_G = val;
 }
 
-void rgba_color::b(double val) noexcept{
+void rgba_color::b(double val) noexcept {
+	assert(val >= 0.0 && val <= 1.0);
 	_B = val;
 }
 
-void rgba_color::a(double val) noexcept{
+void rgba_color::a(double val) noexcept {
+	assert(val >= 0.0 && val <= 1.0);
 	_R *= val;
 	_G *= val;
 	_B *= val;
 	_A = val;
 }
 
-double rgba_color::r() const noexcept{
+double rgba_color::r() const noexcept {
 	return _R;
 }
 
