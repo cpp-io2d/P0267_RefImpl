@@ -861,112 +861,6 @@ point surface::show_text(const string& utf8, const point& position, const surfac
 	return result;
 }
 
-void surface::show_glyphs(const vector<glyph>& glyphs) {
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
-	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
-	vector<cairo_glyph_t> vec;
-	for (const auto& glyph : glyphs) {
-		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
-	}
-	cairo_show_glyphs(_Context.get(), vec.data(), _Container_size_to_int(vec));
-}
-
-void surface::show_glyphs(const vector<glyph>& glyphs, const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
-	show_glyphs(glyphs);
-}
-
-void surface::show_glyphs(const vector<glyph>& glyphs, const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
-	show_glyphs(glyphs);
-}
-
-void surface::show_glyphs(const vector<glyph>& glyphs, const surface& s, const point& origin, extend e, filter f) {
-	show_glyphs(glyphs, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
-void surface::show_glyphs(const vector<glyph>& glyphs, const surface& s, const matrix_2d& m, extend e, filter f) {
-	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	auto pat = cairo_get_source(_Context.get());
-	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
-	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
-	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-	cairo_pattern_set_matrix(pat, &cmat);
-	vector<cairo_glyph_t> vec;
-	for (const auto& glyph : glyphs) {
-		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
-	}
-	cairo_show_glyphs(_Context.get(), vec.data(), _Container_size_to_int(vec));
-	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
-}
-
-void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse) {
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
-	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
-	vector<cairo_glyph_t> vec;
-	for (const auto& glyph : glyphs) {
-		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
-	}
-	const auto tcSize = _Container_size_to_int(clusters);
-	unique_ptr<cairo_text_cluster_t, function<void(cairo_text_cluster_t*)>> sp_tc(cairo_text_cluster_allocate(tcSize), &cairo_text_cluster_free);
-	auto tc_ptr = sp_tc.get();
-	const auto tcSizeST = static_cast<size_t>(tcSize);
-	for (size_t i = 0; i < tcSizeST; ++i) {
-		tc_ptr[i].num_bytes = clusters[i].num_bytes();
-		tc_ptr[i].num_glyphs = clusters[i].num_glyphs();
-	}
-	auto ctcf = static_cast<cairo_text_cluster_flags_t>(clusterToGlyphsMapReverse ? CAIRO_TEXT_CLUSTER_FLAG_BACKWARD : 0);
-	cairo_show_text_glyphs(_Context.get(), utf8.data(), _Container_size_to_int(utf8), vec.data(), _Container_size_to_int(vec), sp_tc.get(), tcSize, ctcf);
-}
-
-void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
-	show_text_glyphs(utf8, glyphs, clusters, clusterToGlyphsMapReverse);
-}
-
-void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
-	show_text_glyphs(utf8, glyphs, clusters, clusterToGlyphsMapReverse);
-}
-
-void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const surface& s, const point& origin, extend e, filter f) {
-	show_text_glyphs(utf8, glyphs, clusters, clusterToGlyphsMapReverse, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
-void surface::show_text_glyphs(const string& utf8, const vector<glyph>& glyphs, const vector<text_cluster>& clusters, bool clusterToGlyphsMapReverse, const surface& s, const matrix_2d& m, extend e, filter f) {
-	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	auto pat = cairo_get_source(_Context.get());
-	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
-	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
-	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-	cairo_pattern_set_matrix(pat, &cmat);
-	vector<cairo_glyph_t> vec;
-	for (const auto& glyph : glyphs) {
-		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
-	}
-	const auto tcSize = _Container_size_to_int(clusters);
-	unique_ptr<cairo_text_cluster_t, function<void(cairo_text_cluster_t*)>> sp_tc(cairo_text_cluster_allocate(tcSize), &cairo_text_cluster_free);
-	auto tc_ptr = sp_tc.get();
-	const auto tcSizeST = static_cast<size_t>(tcSize);
-	for (size_t i = 0; i < tcSizeST; ++i) {
-		tc_ptr[i].num_bytes = clusters[i].num_bytes();
-		tc_ptr[i].num_glyphs = clusters[i].num_glyphs();
-	}
-	auto ctcf = static_cast<cairo_text_cluster_flags_t>(clusterToGlyphsMapReverse ? CAIRO_TEXT_CLUSTER_FLAG_BACKWARD : 0);
-	cairo_show_text_glyphs(_Context.get(), utf8.data(), _Container_size_to_int(utf8), vec.data(), _Container_size_to_int(vec), sp_tc.get(), tcSize, ctcf);
-	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
-}
-
 void surface::matrix(const matrix_2d& m) {
 	cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
 	cairo_set_matrix(_Context.get(), &cm);
@@ -991,10 +885,6 @@ void surface::font_options(const ::std::experimental::io2d::font_options& option
 
 void surface::font_face(const ::std::experimental::io2d::font_face& font_face) {
 	cairo_set_font_face(_Context.get(), font_face.native_handle());
-}
-
-void surface::scaled_font(const ::std::experimental::io2d::scaled_font& scaled_font) {
-	cairo_set_scaled_font(_Context.get(), scaled_font.native_handle());
 }
 
 path surface::path(const path_factory& pf) const {
@@ -1313,23 +1203,6 @@ bool surface::in_stroke_immediate(const point& pt) const {
 	return result;
 }
 
-::std::experimental::io2d::text_extents surface::glyph_extents(const vector<glyph>& glyphs) const {
-	vector<cairo_glyph_t> vec;
-	for (const auto& glyph : glyphs) {
-		vec.push_back({ glyph.index(), glyph.x(), glyph.y() });
-	}
-	::std::experimental::io2d::text_extents result;
-	cairo_text_extents_t cfe{ };
-	cairo_glyph_extents(_Context.get(), vec.data(), _Container_size_to_int(vec), &cfe);
-	result.height(cfe.height);
-	result.width(cfe.width);
-	result.x_advance(cfe.x_advance);
-	result.x_bearing(cfe.x_bearing);
-	result.y_advance(cfe.y_advance);
-	result.y_bearing(cfe.y_bearing);
-	return result;
-}
-
 matrix_2d surface::matrix() const {
 	cairo_matrix_t cm{ };
 	cairo_get_matrix(_Context.get(), &cm);
@@ -1385,11 +1258,4 @@ matrix_2d surface::font_matrix() const {
 	_Throw_if_failed_cairo_status_t(cairo_font_face_status(ff));
 	// Cairo doesn't increase the font face's reference count when you call cairo_get_font_face so we do it manually.
 	return ::std::experimental::io2d::font_face(cairo_font_face_reference(ff));
-}
-
-::std::experimental::io2d::scaled_font surface::scaled_font() const {
-	auto sf = cairo_get_scaled_font(_Context.get());
-	_Throw_if_failed_cairo_status_t(cairo_scaled_font_status(sf));
-	// Cairo doesn't increase the scaled font's reference count when you call cairo_get_scaled_font so we do it manually.
-	return ::std::experimental::io2d::scaled_font(cairo_scaled_font_reference(sf));
 }

@@ -20,7 +20,6 @@ N3888_RefImpl_SOURCES =		device.cpp \
 				font_face.cpp \
 				font_options.cpp \
 				font_options_factory.cpp \
-				glyph.cpp \
 				image_surface.cpp \
 				io2d_error_category.cpp \
 				linear_pattern_factory.cpp \
@@ -35,13 +34,11 @@ N3888_RefImpl_SOURCES =		device.cpp \
 				rectangle.cpp \
 				rgba_color.cpp \
 				sample_draw.cpp \
-				scaled_font.cpp \
 				simple_font_face.cpp \
 				solid_color_pattern_factory.cpp \
 				standalone_functions.cpp \
 				surface.cpp \
 				surface_pattern_factory.cpp \
-				text_cluster.cpp \
 				text_extents.cpp
 ##				refimpl-resources.c \
 ##				RefImplApp.c \

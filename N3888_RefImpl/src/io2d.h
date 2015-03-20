@@ -54,8 +54,6 @@ namespace std {
 				class rectangle;
 				class rgba_color;
 				class point;
-				class glyph;
-				class text_cluster;
 				class font_extents;
 				class text_extents;
 				class matrix_2d;
@@ -82,7 +80,6 @@ namespace std {
 				class font_options;
 				class font_fact;
 				class simple_font_face;
-				class scaled_font;
 				class pattern;
 				class solid_color_pattern_factory;
 				class linear_pattern_factory;
@@ -533,49 +530,6 @@ namespace std {
 				point operator+(const point& lhs, const point& rhs) noexcept;
 				point operator-(const point& lhs) noexcept;
 				point operator-(const point& lhs, const point& rhs) noexcept;
-
-				class glyph {
-					cairo_glyph_t _Glyph_data;
-
-				public:
-					typedef cairo_glyph_t* native_handle_type;
-					native_handle_type native_handle() noexcept;
-
-					glyph() noexcept;
-					glyph(const glyph& other) noexcept = default;
-					glyph& operator=(const glyph& other) noexcept = default;
-					glyph(glyph&& other) noexcept;
-					glyph& operator=(glyph&& other) noexcept;
-					glyph(unsigned long index, double x, double y) noexcept;
-
-					void index(unsigned long index) noexcept;
-					void x(double x) noexcept;
-					void y(double y) noexcept;
-
-					unsigned long index() const noexcept;
-					double x() const noexcept;
-					double y() const noexcept;
-				};
-
-				class text_cluster {
-					cairo_text_cluster_t _Text_cluster;
-				public:
-					typedef cairo_text_cluster_t* native_handle_type;
-					native_handle_type native_handle() noexcept;
-
-					text_cluster() noexcept;
-					text_cluster(const text_cluster& other) noexcept = default;
-					text_cluster& operator=(const text_cluster& other) noexcept = default;
-					text_cluster(text_cluster&& other) noexcept;
-					text_cluster& operator=(text_cluster&& other) noexcept;
-					text_cluster(int numBytes, int numGlyphs) noexcept;
-
-					void num_bytes(int value) noexcept;
-					void num_glyphs(int value) noexcept;
-
-					int num_bytes() const noexcept;
-					int num_glyphs() const noexcept;
-				};
 
 				class font_extents {
 					cairo_font_extents_t _Font_extents;
@@ -1079,29 +1033,6 @@ namespace std {
 					font_weight weight() const;
 				};
 
-				class scaled_font {
-					::std::shared_ptr<cairo_scaled_font_t> _Scaled_font;
-
-				public:
-					typedef cairo_scaled_font_t* native_handle_type;
-					native_handle_type native_handle() const;
-
-					scaled_font() = delete;
-					scaled_font(const scaled_font&) = default;
-					scaled_font& operator=(const scaled_font&) = default;
-					scaled_font(scaled_font&& other);
-					scaled_font& operator=(scaled_font&& other);
-					explicit scaled_font(native_handle_type nh);
-					scaled_font(const font_face& ff, const matrix_2d& fm, const matrix_2d& ctm, const font_options& fo);
-
-					// Observers
-					font_extents extents() const;
-					::std::experimental::io2d::text_extents text_extents(const ::std::string& utf8) const;
-					::std::experimental::io2d::text_extents glyph_extents(const ::std::vector<glyph>& glyphs) const;
-					::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8) const;
-					::std::vector<glyph> text_to_glyphs(double x, double y, const ::std::string& utf8, ::std::vector<text_cluster>& clusters, bool& clustersToGlyphsReverseMap) const;
-				};
-
 				// Forward declaration.
 				class linear_pattern_factory;
 				class mesh_pattern_factory;
@@ -1452,42 +1383,6 @@ namespace std {
 					point show_text(const ::std::string& utf8, const point& position, const ::std::experimental::io2d::pattern& pttn);
 					point show_text(const ::std::string& utf8, const point& position, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					point show_text(const ::std::string& utf8, const point& position, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
-					void show_glyphs(const ::std::vector<glyph>& glyphs);
-					void show_glyphs(const ::std::vector<glyph>& glyphs, const rgba_color& c);
-					void show_glyphs(const ::std::vector<glyph>& glyphs, const ::std::experimental::io2d::pattern& pttn);
-					void show_glyphs(const ::std::vector<glyph>& glyphs, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void show_glyphs(const ::std::vector<glyph>& glyphs, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
-					void show_text_glyphs(const ::std::string& utf8,
-						const ::std::vector<glyph>& glyphs,
-						const ::std::vector<text_cluster>& clusters,
-						bool clusterToGlyphsMapReverse);
-					void show_text_glyphs(const ::std::string& utf8,
-						const ::std::vector<glyph>& glyphs,
-						const ::std::vector<text_cluster>& clusters,
-						bool clusterToGlyphsMapReverse,
-						const rgba_color& c);
-					void show_text_glyphs(const ::std::string& utf8,
-						const ::std::vector<glyph>& glyphs,
-						const ::std::vector<text_cluster>& clusters,
-						bool clusterToGlyphsMapReverse,
-						const ::std::experimental::io2d::pattern& pttn);
-					void show_text_glyphs(const ::std::string& utf8,
-						const ::std::vector<glyph>& glyphs,
-						const ::std::vector<text_cluster>& clusters,
-						bool clusterToGlyphsMapReverse,
-						const surface& s,
-						const point& origin = point{ 0.0, 0.0 },
-						extend e = extend::default_extend,
-						filter f = filter::default_filter);
-					void show_text_glyphs(const ::std::string& utf8,
-						const ::std::vector<glyph>& glyphs,
-						const ::std::vector<text_cluster>& clusters,
-						bool clusterToGlyphsMapReverse,
-						const surface& s,
-						const matrix_2d& m,
-						extend e = extend::default_extend,
-						filter f = filter::default_filter);
-
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
 					void matrix(const matrix_2d& matrix);
 
@@ -1498,7 +1393,6 @@ namespace std {
 					void font_matrix(const matrix_2d& m);
 					void font_options(const font_options& fo);
 					void font_face(const ::std::experimental::io2d::font_face& f);
-					void scaled_font(const ::std::experimental::io2d::scaled_font& sf);
 
 					// \ref{\iotwod.surface.observers.stateobjects}, state object observers:
 					::std::experimental::io2d::path path(const path_factory& pf) const;
@@ -1539,7 +1433,6 @@ namespace std {
 					bool in_stroke_immediate(const point& pt) const;
 					::std::experimental::io2d::font_extents font_extents() const;
 					::std::experimental::io2d::text_extents text_extents(const ::std::string& utf8) const;
-					::std::experimental::io2d::text_extents glyph_extents(const ::std::vector<glyph>& glyphs) const;
 
 					// \ref{\iotwod.surface.observers.transform}, transformation observers:
 					matrix_2d matrix() const;
@@ -1552,7 +1445,6 @@ namespace std {
 					matrix_2d font_matrix() const;
 					::std::experimental::io2d::font_options font_options() const;
 					::std::experimental::io2d::font_face font_face() const;
-					::std::experimental::io2d::scaled_font scaled_font() const;
 				};
 
 				class image_surface : public surface {

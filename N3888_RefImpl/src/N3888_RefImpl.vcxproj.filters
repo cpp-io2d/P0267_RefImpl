@@ -59,9 +59,6 @@
     <ClCompile Include="font_face.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scaled_font.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="image_surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,12 +105,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="rectangle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="glyph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="text_cluster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="font_extents.cpp">
