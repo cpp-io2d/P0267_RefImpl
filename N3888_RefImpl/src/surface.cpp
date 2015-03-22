@@ -1185,8 +1185,6 @@ bool surface::in_stroke_immediate(const point& pt) const {
 	result.ascent(cfe.ascent);
 	result.descent(cfe.descent);
 	result.height(cfe.height);
-	result.max_x_advance(cfe.max_x_advance);
-	result.max_y_advance(cfe.max_y_advance);
 	return result;
 }
 

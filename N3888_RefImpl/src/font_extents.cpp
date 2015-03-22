@@ -27,8 +27,8 @@ font_extents& font_extents::operator=(font_extents&& other) noexcept {
 	return *this;
 }
 
-font_extents::font_extents(double ascent, double descent, double height, double maxXAdvance, double maxYAdvance) noexcept
-	: _Font_extents({ ascent, descent, height, maxXAdvance, maxYAdvance }) {
+font_extents::font_extents(double ascent, double descent, double height) noexcept
+	: _Font_extents({ ascent, descent, height, 0.0, 0.0 }) {
 }
 
 void font_extents::ascent(double value) noexcept {
@@ -43,14 +43,6 @@ void font_extents::height(double value) noexcept {
 	_Font_extents.height = value;
 }
 
-void font_extents::max_x_advance(double value) noexcept {
-	_Font_extents.max_x_advance = value;
-}
-
-void font_extents::max_y_advance(double value) noexcept {
-	_Font_extents.max_y_advance = value;
-}
-
 double font_extents::ascent() const noexcept {
 	return _Font_extents.ascent;
 }
@@ -61,12 +53,4 @@ double font_extents::descent() const noexcept {
 
 double font_extents::height() const noexcept {
 	return _Font_extents.height;
-}
-
-double font_extents::max_x_advance() const noexcept {
-	return _Font_extents.max_x_advance;
-}
-
-double font_extents::max_y_advance() const noexcept {
-	return _Font_extents.max_y_advance;
 }

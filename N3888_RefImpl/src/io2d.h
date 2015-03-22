@@ -542,19 +542,15 @@ namespace std {
 					font_extents& operator=(const font_extents& other) noexcept = default;
 					font_extents(font_extents&& other) noexcept;
 					font_extents& operator=(font_extents&& other) noexcept;
-					font_extents(double ascent, double descent, double height, double maxXAdvance, double maxYAdvance) noexcept;
+					font_extents(double ascent, double descent, double height) noexcept;
 
 					void ascent(double value) noexcept;
 					void descent(double value) noexcept;
 					void height(double value) noexcept;
-					void max_x_advance(double value) noexcept;
-					void max_y_advance(double value) noexcept;
 
 					double ascent() const noexcept;
 					double descent() const noexcept;
 					double height() const noexcept;
-					double max_x_advance() const noexcept;
-					double max_y_advance() const noexcept;
 				};
 
 				class text_extents {
