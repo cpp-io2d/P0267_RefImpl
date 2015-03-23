@@ -1190,14 +1190,151 @@ bool surface::in_stroke_immediate(const point& pt) const {
 
 ::std::experimental::io2d::text_extents surface::text_extents(const string& utf8) const {
 	::std::experimental::io2d::text_extents result;
+	if (utf8.size() == 0) {
+		return result;
+	}
+
 	cairo_text_extents_t cte{ };
 	cairo_text_extents(_Context.get(), utf8.c_str(), &cte);
-	result.height(cte.height);
-	result.width(cte.width);
-	result.x_advance(cte.x_advance);
-	result.x_bearing(cte.x_bearing);
-	result.y_advance(cte.y_advance);
-	result.y_bearing(cte.y_bearing);
+
+	cairo_text_extents_t spaceExtents{ };
+	cairo_text_extents(_Context.get(), " ", &spaceExtents);
+
+	char str[2] = { '\0', '\0' };
+	vector<cairo_text_extents_t> extentsVec;
+	for (const auto& iter : utf8) {
+		extentsVec.emplace_back(cairo_text_extents_t{ });
+		str[0] = iter;
+		cairo_text_extents(_Context.get(), str, &extentsVec.back());
+	}
+
+	auto beginSpaceCount = 0U;
+	for (auto iter = utf8.cbegin(); iter != utf8.cend(); iter++) {
+		if (*iter == ' ') {
+			beginSpaceCount++;
+		}
+		else {
+			break;
+		}
+	}
+	auto endSpaceCount = 0U;
+	for (auto iter = utf8.crbegin(); iter != utf8.crend(); iter++) {
+		if (*iter == ' ') {
+			endSpaceCount++;
+		}
+		else {
+			break;
+		}
+	}
+
+	if (extentsVec.size() == 1) {
+		const auto& item = extentsVec[0];
+		result.x_advance(item.x_advance);
+		result.y_advance(item.y_advance);
+		if (utf8[0] == ' ') {
+			// Everything else is already zeroes so we're done.
+			return result;
+		}
+		else {
+			result.x_bearing(item.x_bearing);
+			result.y_bearing(item.y_bearing);
+			result.width(item.width);
+			result.height(item.height);
+
+			return result;
+		}
+	}
+
+	const auto evSize = extentsVec.size();
+	const auto extentsVecNoSpaceSize = extentsVec.size() - (beginSpaceCount + endSpaceCount);
+
+	if (extentsVecNoSpaceSize == 0) {
+		result.x_advance(spaceExtents.x_advance * evSize);
+		result.y_advance(spaceExtents.y_advance * evSize);
+
+		// Everything else is already zeroes so we're done.
+		return result;
+	}
+	if (extentsVecNoSpaceSize == 1) {
+		const auto& item = extentsVec[beginSpaceCount];
+		result.x_advance(spaceExtents.x_advance * (evSize - 1) + item.x_advance);
+		result.y_advance(spaceExtents.y_advance * (evSize - 1) + item.y_advance);
+		result.width(item.width);
+		result.height(item.height);
+		result.x_bearing(item.x_bearing + beginSpaceCount * spaceExtents.x_advance);
+		result.y_bearing(item.y_bearing + beginSpaceCount * spaceExtents.y_advance);
+
+		return result;
+	}
+
+	double totalXAdvance = beginSpaceCount * spaceExtents.x_advance;
+	double totalYAdvance = beginSpaceCount * spaceExtents.y_advance;
+
+	assert(extentsVecNoSpaceSize >= 2);
+
+	for (auto i = beginSpaceCount; i < extentsVecNoSpaceSize; ++i) {
+		const auto& item = extentsVec[i];
+		if (i == beginSpaceCount) {
+			result.x_bearing(spaceExtents.x_advance * beginSpaceCount + item.x_bearing);
+			result.y_bearing(spaceExtents.y_advance * beginSpaceCount + item.y_bearing);
+			result.x_advance(spaceExtents.x_advance * beginSpaceCount + item.x_advance);
+			result.y_advance(spaceExtents.y_advance * beginSpaceCount + item.y_advance);
+			result.width(item.x_advance == 0.0 ? 0.0 : item.x_advance - item.x_bearing);
+			result.height(item.y_advance == 0.0 ? 0.0 : item.y_advance - item.y_bearing);
+		}
+		else {
+			if (i + 1U == extentsVecNoSpaceSize) {
+				// Handle LTR and RTL scripts.
+				result.x_bearing(min(result.x_bearing(), totalXAdvance + item.x_bearing));
+				result.y_bearing(min(result.y_bearing(), totalYAdvance + item.y_bearing));
+				result.x_advance(result.x_advance() + spaceExtents.x_advance * endSpaceCount + item.x_advance);
+				result.y_advance(result.y_advance() + spaceExtents.y_advance * endSpaceCount + item.y_advance);
+				if (item.x_advance != 0.0) {
+					if (item.x_advance < 0.0) {
+						// If RTL then x_bearing is the max extent of the item.
+						result.width(abs(result.width() + item.x_bearing));
+					}
+					else {
+						// Otherwise the max extent should be x_bearing + width
+						result.width(result.width() + item.x_bearing + item.width);
+					}
+					// This is wrong...
+					//result.width(result.width() + (item.x_advance < 0 ? item.x_advance - item.x_bearing : item.x_bearing + item.width));
+					result.height(max(result.height(), item.height));
+				}
+				else {
+					if (item.y_advance < 0.0) {
+						// I don't know of any bottom to top scripts but we might as well provide for them.
+						result.height(abs(result.height() + item.y_bearing));
+					}
+					else {
+						// I believe that this works even if y_bearing is negative since we're advancing baseline to baseline except for first and last items.
+						result.height(result.height() + item.y_bearing + item.height);
+					}
+					result.width(max(result.width(), item.width));
+				}
+			}
+			else {
+				result.x_advance(result.x_advance() + item.x_advance);
+				result.y_advance(result.y_advance() + item.y_advance);
+				if (item.x_advance != 0.0) {
+					result.width(result.width() + item.x_advance);
+					result.height(max(result.height(), item.height));
+				}
+				else {
+					result.width(max(result.width(), item.width));
+					result.height(result.height() + item.y_advance);
+				}
+			}
+		}
+	}
+
+	//result.height(cte.height);
+	//result.width(cte.width);
+	//result.x_advance(cte.x_advance);
+	//result.x_bearing(cte.x_bearing);
+	//result.y_advance(cte.y_advance);
+	//result.y_bearing(cte.y_bearing);
 	return result;
 }
 
