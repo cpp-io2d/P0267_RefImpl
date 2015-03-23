@@ -1267,9 +1267,6 @@ bool surface::in_stroke_immediate(const point& pt) const {
 		return result;
 	}
 
-	double totalXAdvance = beginSpaceCount * spaceExtents.x_advance;
-	double totalYAdvance = beginSpaceCount * spaceExtents.y_advance;
-
 	assert(extentsVecNoSpaceSize >= 2);
 
 
@@ -1286,8 +1283,8 @@ bool surface::in_stroke_immediate(const point& pt) const {
 		else {
 			if (i + 1U == extentsVecNoSpaceSize + beginSpaceCount) {
 				// Handle LTR and RTL scripts.
-				result.x_bearing(min(result.x_bearing(), totalXAdvance + item.x_bearing));
-				result.y_bearing(min(result.y_bearing(), totalYAdvance + item.y_bearing));
+				result.x_bearing(min(result.x_bearing(), result.x_advance() + item.x_bearing));
+				result.y_bearing(min(result.y_bearing(), result.y_advance() + item.y_bearing));
 				result.x_advance(result.x_advance() + spaceExtents.x_advance * endSpaceCount + item.x_advance);
 				result.y_advance(result.y_advance() + spaceExtents.y_advance * endSpaceCount + item.y_advance);
 				if (item.x_advance != 0.0) {
@@ -1317,10 +1314,14 @@ bool surface::in_stroke_immediate(const point& pt) const {
 				result.x_advance(result.x_advance() + item.x_advance);
 				result.y_advance(result.y_advance() + item.y_advance);
 				if (item.x_advance != 0.0) {
+					// If this is a horizontal script, the correct y_bearing is the min of all char/glyph extents from the string.
+					result.y_bearing(min(result.y_bearing(), result.y_advance() + item.y_bearing));
 					result.width(result.width() + item.x_advance);
 					result.height(max(result.height(), item.height));
 				}
 				else {
+					// If this is a vertical script, the correct x_bearing is the min of all char/glyph extents from the string.
+					result.x_bearing(min(result.x_bearing(), result.x_advance() + item.x_bearing));
 					result.width(max(result.width(), item.width));
 					result.height(result.height() + item.y_advance);
 				}
