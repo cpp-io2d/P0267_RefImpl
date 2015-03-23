@@ -1272,18 +1272,19 @@ bool surface::in_stroke_immediate(const point& pt) const {
 
 	assert(extentsVecNoSpaceSize >= 2);
 
-	for (auto i = beginSpaceCount; i < extentsVecNoSpaceSize; ++i) {
+
+	for (auto i = beginSpaceCount; i < extentsVecNoSpaceSize + beginSpaceCount; ++i) {
 		const auto& item = extentsVec[i];
 		if (i == beginSpaceCount) {
 			result.x_bearing(spaceExtents.x_advance * beginSpaceCount + item.x_bearing);
 			result.y_bearing(spaceExtents.y_advance * beginSpaceCount + item.y_bearing);
 			result.x_advance(spaceExtents.x_advance * beginSpaceCount + item.x_advance);
 			result.y_advance(spaceExtents.y_advance * beginSpaceCount + item.y_advance);
-			result.width(item.x_advance == 0.0 ? 0.0 : item.x_advance - item.x_bearing);
-			result.height(item.y_advance == 0.0 ? 0.0 : item.y_advance - item.y_bearing);
+			result.width(item.x_advance == 0.0 ? item.width : item.x_advance - item.x_bearing);
+			result.height(item.y_advance == 0.0 ? item.height : item.y_advance - item.y_bearing);
 		}
 		else {
-			if (i + 1U == extentsVecNoSpaceSize) {
+			if (i + 1U == extentsVecNoSpaceSize + beginSpaceCount) {
 				// Handle LTR and RTL scripts.
 				result.x_bearing(min(result.x_bearing(), totalXAdvance + item.x_bearing));
 				result.y_bearing(min(result.y_bearing(), totalYAdvance + item.y_bearing));
@@ -1298,8 +1299,6 @@ bool surface::in_stroke_immediate(const point& pt) const {
 						// Otherwise the max extent should be x_bearing + width
 						result.width(result.width() + item.x_bearing + item.width);
 					}
-					// This is wrong...
-					//result.width(result.width() + (item.x_advance < 0 ? item.x_advance - item.x_bearing : item.x_bearing + item.width));
 					result.height(max(result.height(), item.height));
 				}
 				else {
@@ -1329,12 +1328,6 @@ bool surface::in_stroke_immediate(const point& pt) const {
 		}
 	}
 
-	//result.height(cte.height);
-	//result.width(cte.width);
-	//result.x_advance(cte.x_advance);
-	//result.x_bearing(cte.x_bearing);
-	//result.y_advance(cte.y_advance);
-	//result.y_bearing(cte.y_bearing);
 	return result;
 }
 
