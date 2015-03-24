@@ -630,10 +630,11 @@ namespace std {
 					double determinant(::std::error_code& ec) const noexcept;
 					point transform_distance(const point& dist) const noexcept;
 					point transform_point(const point& pt) const noexcept;
+
+					matrix_2d& operator*=(const matrix_2d& rhs) noexcept;
 				};
 
 				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
-				matrix_2d& operator*=(matrix_2d& lhs, const matrix_2d& rhs) noexcept;
 				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
 				bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
 

@@ -155,7 +155,7 @@ matrix_2d& matrix_2d::invert(error_code& ec) noexcept {
 		return *this;
 	}
 
-	if (_Almost_equal_relative(det, 0.0)) {
+	if (_Almost_equal_relative(det, 0.0) || !isfinite(det)) {
 		// A matrix_2d with a determinant of 0.0 is not invertible.
 		ec = make_error_code(CAIRO_STATUS_INVALID_MATRIX);
 		return *this;
@@ -167,12 +167,13 @@ matrix_2d& matrix_2d::invert(error_code& ec) noexcept {
 		adjugateM20, adjugateM21;
 
 	// Calculates the determinant of a 2x2 row-major matrix.
-	auto determinant2x2 = [](double dm00, double dm01, double dm10, double dm11) noexcept { return dm00 * dm11 + dm01 * dm10; };
+	auto determinant2x2 = [](double dm00, double dm01, double dm10, double dm11) noexcept { return dm00 * dm11 - dm01 * dm10; };
 
 	// The values for the third column of this matrix_2d.
 	const double cM02 = 0.0, cM12 = 0.0, cM22 = 1.0;
+
 	adjugateM00 = determinant2x2(_M11, cM12, _M21, cM22);
-	adjugateM01 = -determinant2x2(_M01, cM02, _M20, cM22);
+	adjugateM01 = -determinant2x2(_M01, cM02, _M21, cM22);
 	adjugateM10 = -determinant2x2(_M10, cM12, _M20, cM22);
 	adjugateM11 = determinant2x2(_M00, cM02, _M20, cM22);
 	adjugateM20 = determinant2x2(_M10, _M11, _M20, _M21);
@@ -193,16 +194,16 @@ matrix_2d& matrix_2d::invert(error_code& ec) noexcept {
 }
 
 double matrix_2d::determinant() const {
-	if (isnan(_M20) || isnan(_M21)) {
+	if (isnan(_M00) || isnan(_M01) || isnan(_M10) || isnan(_M11) || isnan(_M20) || isnan(_M21)) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MATRIX);
 	}
 	return _M00 * _M11 - _M01 * _M10;
 }
 
 double matrix_2d::determinant(error_code& ec) const noexcept {
-	if (isnan(_M20) || isnan(_M21)) {
+	if (isnan(_M00) || isnan(_M01) || isnan(_M10) || isnan(_M11) || isnan(_M20) || isnan(_M21)) {
 		ec = make_error_code(CAIRO_STATUS_INVALID_MATRIX);
-		return 0.0;
+		return numeric_limits<double>::quiet_NaN();
 	}
 	ec.clear();
 	return _M00 * _M11 - _M01 * _M10;
@@ -264,6 +265,11 @@ double matrix_2d::m21() const noexcept {
 	return _M21;
 }
 
+matrix_2d& matrix_2d::operator*=(const matrix_2d& rhs) noexcept {
+	*this = *this * rhs;
+	return *this;
+}
+
 namespace std {
 	namespace experimental {
 		namespace io2d {
@@ -281,19 +287,10 @@ namespace std {
 					};
 				}
 
-				matrix_2d& operator*=(matrix_2d& lhs, const matrix_2d& rhs) noexcept {
-					lhs = lhs * rhs;
-					return lhs;
-				}
-
 				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
-					return
-						_Almost_equal_relative(lhs.m00(), rhs.m00()) &&
-						_Almost_equal_relative(lhs.m01(), rhs.m01()) &&
-						_Almost_equal_relative(lhs.m10(), rhs.m10()) &&
-						_Almost_equal_relative(lhs.m11(), rhs.m11()) &&
-						_Almost_equal_relative(lhs.m20(), rhs.m20()) &&
-						_Almost_equal_relative(lhs.m21(), rhs.m21());
+					return lhs.m00() == rhs.m00() && lhs.m01() == rhs.m01() &&
+						lhs.m10() == rhs.m10() && lhs.m11() == rhs.m11() &&
+						lhs.m20() == rhs.m20() && lhs.m21() == rhs.m21();
 				}
 
 				bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
