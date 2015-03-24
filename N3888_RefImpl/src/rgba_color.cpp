@@ -893,11 +893,7 @@ namespace std {
 				}
 
 				bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
-					return
-						_Almost_equal_relative(lhs.r(), rhs.r()) &&
-						_Almost_equal_relative(lhs.g(), rhs.g()) &&
-						_Almost_equal_relative(lhs.b(), rhs.b()) &&
-						_Almost_equal_relative(lhs.a(), rhs.a());
+					return lhs.r() ==  rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
 				}
 
 				bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {

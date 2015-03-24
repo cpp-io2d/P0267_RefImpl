@@ -50,7 +50,7 @@ namespace std {
 			inline namespace v1 {
 #endif
 				bool operator==(const point& lhs, const point& rhs) noexcept {
-					return _Almost_equal_relative(lhs.x(), rhs.x()) && _Almost_equal_relative(lhs.y(), rhs.y());
+					return lhs.x() == rhs.x() && lhs.y() == rhs.y();
 				}
 
 				bool operator!=(const point& lhs, const point& rhs) noexcept {
