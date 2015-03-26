@@ -485,7 +485,7 @@ bool path_factory::has_current_point() const {
 
 point path_factory::current_point() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
-	if (_Has_current_point) {
+	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
 	return _Current_point;
@@ -742,78 +742,90 @@ point path_factory::origin() const {
 	return _Origin;
 }
 
-vector<unique_ptr<path_data>> path_factory::data() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	vector<unique_ptr<path_data>> result;
-	for (const auto& item : _Data) {
+namespace {
+	template <typename ReturnType>
+	ReturnType _Do_action(const unique_ptr<path_data>& item, function<ReturnType(unique_ptr<path_data>&&)> action) {
 		auto type = item->type();
 		switch (type) {
 		case std::experimental::io2d::path_data_type::move_to:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::move_to*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::move_to>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::move_to>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::line_to:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::line_to*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::line_to>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::line_to>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::curve_to*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::curve_to>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::curve_to>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::new_sub_path*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::new_sub_path>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::new_sub_path>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::close_path:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::close_path*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::close_path>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::close_path>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::rel_move_to*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::rel_move_to>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::rel_move_to>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::rel_line_to*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::rel_line_to>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::rel_line_to>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::rel_curve_to*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::rel_curve_to>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::rel_curve_to>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::arc:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::arc*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::arc>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::arc>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::arc_negative*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::arc_negative>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::arc_negative>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::change_matrix*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::change_matrix>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::change_matrix>(*dataItem));
+		};
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
 			auto dataItem = dynamic_cast<std::experimental::io2d::change_origin*>(item.get());
-			result.push_back(make_unique<std::experimental::io2d::change_origin>(*dataItem));
-		} break;
+			return action(make_unique<std::experimental::io2d::change_origin>(*dataItem));
+		};
 		default:
 			assert("Unknown path_data_type" && false);
-			break;
+			throw logic_error("Unknown path_data_type.");
 		}
 	}
+}
+
+vector<unique_ptr<path_data>> path_factory::data() const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
+	vector<unique_ptr<path_data>> result;
+	for (const auto& item : _Data) {
+		_Do_action<void>(item, [&result](unique_ptr<path_data>&& val) -> void { result.push_back(move(val)); });
+	}
 	return result;
+}
+
+unique_ptr<path_data> path_factory::data(unsigned int index) const {
+	lock_guard<decltype(_Lock)> lg(_Lock);
+	return _Do_action<unique_ptr<path_data>>(_Data.at(index), [](unique_ptr<path_data>&& val) -> unique_ptr<path_data> { return move(val); });
 }
 
 const vector<unique_ptr<path_data>>& path_factory::data_ref() const {
