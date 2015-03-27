@@ -942,19 +942,21 @@ namespace std {
 					::std::shared_ptr<cairo_device_t> _Device;
 				public:
 					typedef cairo_device_t* native_handle_type;
-					native_handle_type native_handle() const;
+					native_handle_type native_handle() const noexcept;
 
 					device() = delete;
 					device(const device&) = delete;
 					device& operator=(const device&) = delete;
-					device(device&& other);
-					device& operator=(device&& other);
+					device(device&& other) noexcept;
+					device& operator=(device&& other) noexcept;
 					explicit device(native_handle_type nh);
+					device(native_handle_type nh, error_code& ec) noexcept;
 
 					// Modifiers
-					void flush();
+					void flush() noexcept;
 					void lock();
-					void unlock();
+					void lock(::std::error_code& ec) noexcept;
+					void unlock() noexcept;
 				};
 
 				class font_options {
