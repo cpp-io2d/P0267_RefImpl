@@ -19,7 +19,6 @@ N3888_RefImpl_SOURCES =		device.cpp \
 				font_extents.cpp \
 				font_face.cpp \
 				font_options.cpp \
-				font_options_factory.cpp \
 				image_surface.cpp \
 				io2d_error_category.cpp \
 				linear_pattern_factory.cpp \

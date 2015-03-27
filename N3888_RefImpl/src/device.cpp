@@ -14,7 +14,7 @@ device::device(device::native_handle_type nh) : _Device() {
 	_Throw_if_failed_cairo_status_t(cairo_device_status(_Device.get()));
 }
 
-device::device(device::native_handle_type nh, error_code& ec) : _Device() {
+device::device(device::native_handle_type nh, error_code& ec) noexcept : _Device() {
 	_Device = shared_ptr<cairo_device_t>(nh, &cairo_device_destroy);
 	if (cairo_device_status(_Device.get()) != CAIRO_STATUS_SUCCESS) {
 		ec = make_error_code(CAIRO_STATUS_DEVICE_ERROR);
