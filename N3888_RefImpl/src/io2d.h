@@ -76,7 +76,6 @@ namespace std {
 				class path;
 				class path_factory;
 				class device;
-				class font_options_factory;
 				class font_options;
 				class font_fact;
 				class simple_font_face;
@@ -958,27 +957,6 @@ namespace std {
 					void unlock();
 				};
 
-				class font_options_factory {
-					mutable ::std::recursive_mutex _Lock;
-					::std::experimental::io2d::antialias _Antialias = ::std::experimental::io2d::antialias::default_antialias;
-					::std::experimental::io2d::subpixel_order _Subpixel_order = ::std::experimental::io2d::subpixel_order::default_subpixel_order;
-
-				public:
-					font_options_factory();
-					font_options_factory(const font_options_factory&);
-					font_options_factory& operator=(const font_options_factory&);
-					font_options_factory(font_options_factory&& other);
-					font_options_factory& operator=(font_options_factory&& other);
-
-					// Modifiers
-					void antialias(::std::experimental::io2d::antialias a);
-					void subpixel_order(::std::experimental::io2d::subpixel_order so);
-
-					// Observers
-					::std::experimental::io2d::antialias antialias() const;
-					::std::experimental::io2d::subpixel_order subpixel_order() const;
-				};
-
 				class font_options {
 					::std::shared_ptr<cairo_font_options_t> _Font_options;
 				public:
@@ -1384,16 +1362,14 @@ namespace std {
 					void matrix(const matrix_2d& matrix);
 
 					// \ref{\iotwod.surface.modifiers.font}, font modifiers:
-					void select_font_face(const ::std::string& family, font_slant sl,
-						font_weight w);
+					void font_face(const ::std::string& family, font_slant sl, font_weight w);
+					void font_face(const ::std::experimental::io2d::font_face& f);
 					void font_size(double s);
 					void font_matrix(const matrix_2d& m);
 					void font_options(const font_options& fo);
-					void font_face(const ::std::experimental::io2d::font_face& f);
 
 					// \ref{\iotwod.surface.observers.stateobjects}, state object observers:
 					::std::experimental::io2d::path path(const path_factory& pf) const;
-					::std::experimental::io2d::font_options font_options(const font_options_factory& fo) const;
 					::std::experimental::io2d::pattern create_pattern(const solid_color_pattern_factory& f) const;
 					::std::experimental::io2d::pattern create_pattern(const linear_pattern_factory& f) const;
 					::std::experimental::io2d::pattern create_pattern(const radial_pattern_factory& f) const;

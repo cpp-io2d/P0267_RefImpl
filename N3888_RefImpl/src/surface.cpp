@@ -866,7 +866,7 @@ void surface::matrix(const matrix_2d& m) {
 	cairo_set_matrix(_Context.get(), &cm);
 }
 
-void surface::select_font_face(const string& family, font_slant slant, font_weight weight) {
+void surface::font_face(const string& family, font_slant slant, font_weight weight) {
 	cairo_select_font_face(_Context.get(), family.c_str(), _Font_slant_to_cairo_font_slant_t(slant), _Font_weight_to_cairo_font_weight_t(weight));
 }
 
@@ -889,10 +889,6 @@ void surface::font_face(const ::std::experimental::io2d::font_face& font_face) {
 
 path surface::path(const path_factory& pf) const {
 	return ::std::experimental::io2d::path(pf, *this);
-}
-
-font_options surface::font_options(const font_options_factory& fo) const {
-	return ::std::experimental::io2d::font_options(fo.antialias(), fo.subpixel_order());
 }
 
 pattern surface::create_pattern(const solid_color_pattern_factory& f) const {

@@ -179,7 +179,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	const double beginX = trunc(clextents.width() * 0.1);
 	const double y = trunc(clextents.height() * 0.5);
 
-	rs.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
+	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.font_size(40.0);
 	auto str = string("Phase ").append(to_string(x + 1));
 	rs.show_text(str, { beginX, 50.0 }, rgba_color::white());
@@ -297,7 +297,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 
 	auto whitePattern = rs.create_pattern(solid_color_pattern_factory(rgba_color::white()));
 	rs.pattern(whitePattern);
-	rs.select_font_face("Segoe UI", font_slant::normal, font_weight::normal);
+	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.font_size(40.0);
 	rs.show_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 });
 

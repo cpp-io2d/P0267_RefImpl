@@ -197,7 +197,6 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="font_extents.cpp" />
     <ClCompile Include="font_face.cpp" />
     <ClCompile Include="font_options.cpp" />
-    <ClCompile Include="font_options_factory.cpp" />
     <ClCompile Include="image_surface.cpp" />
     <ClCompile Include="io2d_error_category.cpp" />
     <ClCompile Include="linear_pattern_factory.cpp" />

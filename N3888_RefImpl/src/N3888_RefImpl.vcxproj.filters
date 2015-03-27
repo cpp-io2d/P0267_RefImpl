@@ -86,9 +86,6 @@
     <ClCompile Include="simple_font_face.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="font_options_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="linear_pattern_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
