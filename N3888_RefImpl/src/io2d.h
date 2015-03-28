@@ -983,31 +983,31 @@ namespace std {
 					::std::shared_ptr<cairo_font_face_t> _Font_face;
 				public:
 					typedef cairo_font_face_t* native_handle_type;
-					native_handle_type native_handle() const;
+					native_handle_type native_handle() const noexcept;
 
 					font_face() = delete;
-					font_face(const font_face&) = default;
-					font_face& operator=(const font_face&) = default;
-					font_face(font_face&& other);
-					font_face& operator=(font_face&& other);
-					explicit font_face(native_handle_type nh);
+					font_face(const font_face&) noexcept = default;
+					font_face& operator=(const font_face&) noexcept = default;
+					font_face(font_face&& other) noexcept;
+					font_face& operator=(font_face&& other) noexcept;
+					explicit font_face(native_handle_type nh) noexcept;
 					virtual ~font_face();
 				};
 
 				class simple_font_face : public font_face {
 				public:
 					simple_font_face() = delete;
-					simple_font_face(const simple_font_face&) = default;
-					simple_font_face& operator=(const simple_font_face&) = default;
-					simple_font_face(const ::std::string& family, font_slant slant, font_weight weight);
-					simple_font_face(simple_font_face&& other);
-					simple_font_face& operator=(simple_font_face&& other);
+					simple_font_face(const simple_font_face&) noexcept = default;
+					simple_font_face& operator=(const simple_font_face&) noexcept = default;
+					simple_font_face(const ::std::string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw) noexcept;
+					simple_font_face(simple_font_face&& other) noexcept;
+					simple_font_face& operator=(simple_font_face&& other) noexcept;
 					virtual ~simple_font_face();
 
 					// Observers
-					::std::string family() const;
-					font_slant slant() const;
-					font_weight weight() const;
+					::std::string family() const noexcept;
+					::std::experimental::io2d::font_slant font_slant() const noexcept;
+					::std::experimental::io2d::font_weight font_weight() const noexcept;
 				};
 
 				// Forward declaration.
