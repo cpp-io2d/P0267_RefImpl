@@ -1033,7 +1033,7 @@ namespace std {
 					friend surface;
 					friend display_surface;
 					// Precondition: nh has already had its reference count incremented (either in creation or with cairo_pattern_reference).
-					pattern(native_handle_type nh);
+					pattern(native_handle_type nh) noexcept;
 
 					::std::shared_ptr<cairo_pattern_t> _Pattern;
 					pattern_type _Pattern_type;
@@ -1042,22 +1042,22 @@ namespace std {
 					matrix_2d _Matrix;
 
 				public:
-					native_handle_type native_handle() const;
+					native_handle_type native_handle() const noexcept;
 
 					pattern() = delete;
-					pattern(const pattern&) = default;
-					pattern& operator=(const pattern&) = default;
-					pattern(pattern&& other);
-					pattern& operator=(pattern&& other);
+					pattern(const pattern&) noexcept = default;
+					pattern& operator=(const pattern&) noexcept = default;
+					pattern(pattern&& other) noexcept;
+					pattern& operator=(pattern&& other) noexcept;
 
-					void extend(::std::experimental::io2d::extend e);
-					void filter(::std::experimental::io2d::filter f);
-					void matrix(const matrix_2d& m);
+					void extend(::std::experimental::io2d::extend e) noexcept;
+					void filter(::std::experimental::io2d::filter f) noexcept;
+					void matrix(const matrix_2d& m) noexcept;
 
-					::std::experimental::io2d::extend extend() const;
-					::std::experimental::io2d::filter filter() const;
-					matrix_2d matrix() const;
-					pattern_type type() const;
+					::std::experimental::io2d::extend extend() const noexcept;
+					::std::experimental::io2d::filter filter() const noexcept;
+					matrix_2d matrix() const noexcept;
+					pattern_type type() const noexcept;
 				};
 
 				class solid_color_pattern_factory {

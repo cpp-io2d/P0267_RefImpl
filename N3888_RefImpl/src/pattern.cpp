@@ -5,11 +5,11 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-pattern::native_handle_type pattern::native_handle() const {
+pattern::native_handle_type pattern::native_handle() const noexcept {
 	return _Pattern.get();
 }
 
-pattern::pattern(pattern::native_handle_type nh)
+pattern::pattern(pattern::native_handle_type nh) noexcept
 	: _Pattern(nh, &cairo_pattern_destroy)
 	, _Pattern_type(_Cairo_pattern_type_t_to_pattern_type(cairo_pattern_get_type(nh)))
 	, _Extend(::std::experimental::io2d::extend::default_extend)
@@ -17,7 +17,7 @@ pattern::pattern(pattern::native_handle_type nh)
 	, _Matrix(matrix_2d::init_identity()) {
 }
 
-pattern::pattern(pattern&& other)
+pattern::pattern(pattern&& other) noexcept
 	: _Pattern(move(other._Pattern))
 	, _Pattern_type(move(other._Pattern_type))
 	, _Extend(move(other._Extend))
@@ -26,7 +26,7 @@ pattern::pattern(pattern&& other)
 	other._Pattern = nullptr;
 }
 
-pattern& pattern::operator=(pattern&& other) {
+pattern& pattern::operator=(pattern&& other) noexcept {
 	if (this != &other) {
 		_Pattern = move(other._Pattern);
 		_Pattern_type = move(other._Pattern_type);
@@ -39,30 +39,30 @@ pattern& pattern::operator=(pattern&& other) {
 	return *this;
 }
 
-void pattern::extend(::std::experimental::io2d::extend e) {
+void pattern::extend(::std::experimental::io2d::extend e) noexcept {
 	_Extend = e;
 }
 
-void pattern::filter(::std::experimental::io2d::filter f) {
+void pattern::filter(::std::experimental::io2d::filter f) noexcept {
 	_Filter = f;
 }
 
-void pattern::matrix(const matrix_2d& m) {
+void pattern::matrix(const matrix_2d& m) noexcept {
 	_Matrix = m;
 }
 
-extend pattern::extend() const {
+::std::experimental::io2d::extend pattern::extend() const noexcept {
 	return _Extend;
 }
 
-filter pattern::filter() const {
+::std::experimental::io2d::filter pattern::filter() const noexcept {
 	return _Filter;
 }
 
-matrix_2d pattern::matrix() const {
+matrix_2d pattern::matrix() const noexcept {
 	return _Matrix;
 }
 
-pattern_type pattern::type() const {
+pattern_type pattern::type() const noexcept {
 	return _Pattern_type;
 }
