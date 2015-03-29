@@ -323,10 +323,17 @@ namespace std {
 					rgba_color(long long r, long long g, long long b) = delete;
 					rgba_color(long long r, long long g, long long b, long long a) = delete;
 
-					void r(double val) noexcept;
-					void g(double val) noexcept;
-					void b(double val) noexcept;
-					void a(double val) noexcept;
+					void r(double val);
+					void r(double val, ::std::error_code& ec) noexcept;
+
+					void g(double val);
+					void g(double val, ::std::error_code& ec) noexcept;
+
+					void b(double val);
+					void b(double val, ::std::error_code& ec) noexcept;
+
+					void a(double val);
+					void a(double val, ::std::error_code& ec) noexcept;
 
 					double r() const noexcept;
 					double g() const noexcept;
@@ -1061,35 +1068,33 @@ namespace std {
 				};
 
 				class solid_color_pattern_factory {
-					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 					rgba_color _Color;
 
 				public:
-					solid_color_pattern_factory();
-					solid_color_pattern_factory(const solid_color_pattern_factory&);
-					solid_color_pattern_factory& operator=(const solid_color_pattern_factory&);
-					solid_color_pattern_factory(solid_color_pattern_factory&& other);
-					solid_color_pattern_factory& operator=(solid_color_pattern_factory&& other);
-					solid_color_pattern_factory(const rgba_color& color);
+					solid_color_pattern_factory() noexcept;
+					solid_color_pattern_factory(const solid_color_pattern_factory&) noexcept = default;
+					solid_color_pattern_factory& operator=(const solid_color_pattern_factory&) noexcept = default;
+					solid_color_pattern_factory(solid_color_pattern_factory&& other) noexcept;
+					solid_color_pattern_factory& operator=(solid_color_pattern_factory&& other) noexcept;
+					solid_color_pattern_factory(const rgba_color& color) noexcept;
 
 					// Modifiers
-					void rgba(const rgba_color& color);
-					void red(double red);
-					void green(double green);
-					void blue(double blue);
-					void alpha(double alpha);
+					void rgba(const rgba_color& color) noexcept;
+					void red(double red) noexcept;
+					void green(double green) noexcept;
+					void blue(double blue) noexcept;
+					void alpha(double alpha) noexcept;
 
 					// Observers
-					rgba_color rgba() const;
-					double red() const;
-					double green() const;
-					double blue() const;
-					double alpha() const;
+					rgba_color rgba() const noexcept;
+					double red() const noexcept;
+					double green() const noexcept;
+					double blue() const noexcept;
+					double alpha() const noexcept;
 				};
 
 				class linear_pattern_factory {
-					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 
 					point _Point0;
@@ -1097,26 +1102,28 @@ namespace std {
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
-					linear_pattern_factory();
-					linear_pattern_factory(const linear_pattern_factory&);
-					linear_pattern_factory& operator=(const linear_pattern_factory&);
-					linear_pattern_factory(linear_pattern_factory&& other);
-					linear_pattern_factory& operator=(linear_pattern_factory&& other);
-					linear_pattern_factory(const point& pt0, const point& pt1);
+					linear_pattern_factory() noexcept;
+					linear_pattern_factory(const linear_pattern_factory&) = default;
+					linear_pattern_factory& operator=(const linear_pattern_factory&) = default;
+					linear_pattern_factory(linear_pattern_factory&& other) noexcept;
+					linear_pattern_factory& operator=(linear_pattern_factory&& other) noexcept;
+					linear_pattern_factory(const point& pt0, const point& pt1) noexcept;
 
 					// Modifiers
 					void add_color_stop_rgba(double offset, const rgba_color& color);
+					void add_color_stop_rgba(double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
 					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
-					void linear_points(const point& pt0, const point& pt1);
+					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
+					void linear_points(const point& pt0, const point& pt1) noexcept;
 
 					// Observers
-					int color_stop_count() const;
-					void color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
-					void linear_points(point& pt0, point& pt1) const;
+					int color_stop_count() const noexcept;
+					::std::tuple<double, rgba_color> color_stop_rgba(unsigned int index) const;
+					::std::tuple<double, rgba_color> color_stop_rgba(unsigned int index, ::std::error_code& ec) const noexcept;
+					::std::tuple<point, point> linear_points() const noexcept;
 				};
 
 				class radial_pattern_factory {
-					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 
 					point _Center0;
@@ -1126,59 +1133,72 @@ namespace std {
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
-					radial_pattern_factory();
-					radial_pattern_factory(const radial_pattern_factory&);
-					radial_pattern_factory& operator=(const radial_pattern_factory&);
-					radial_pattern_factory(radial_pattern_factory&& other);
-					radial_pattern_factory& operator=(radial_pattern_factory&& other);
-					radial_pattern_factory(const point& center0, double radius0, const point& center1, double radius1);
+					radial_pattern_factory() noexcept;
+					radial_pattern_factory(const radial_pattern_factory&) = default;
+					radial_pattern_factory& operator=(const radial_pattern_factory&) = default;
+					radial_pattern_factory(radial_pattern_factory&& other) noexcept;
+					radial_pattern_factory& operator=(radial_pattern_factory&& other) noexcept;
+					radial_pattern_factory(const point& center0, double radius0, const point& center1, double radius1) noexcept;
 
 					// Modifiers
 					void add_color_stop_rgba(double offset, const rgba_color& color);
+					void add_color_stop_rgba(double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
 					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
-					void radial_circles(const point& center0, double radius0, const point& center1, double radius1);
+					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
+					void radial_circles(const point& center0, double radius0, const point& center1, double radius1) noexcept;
 
 					// Observers
-					int color_stop_count() const;
-					void color_stop_rgba(unsigned int index, double& offset, rgba_color& color) const;
-					void radial_circles(point& center0, double& radius0, point& center1, double& radius1) const;
+					int color_stop_count() const noexcept;
+					::std::tuple<double, rgba_color> color_stop_rgba(unsigned int index) const;
+					::std::tuple<double, rgba_color> color_stop_rgba(unsigned int index, ::std::error_code& ec) const noexcept;
+					::std::tuple<point, double, point, double> radial_circles() const noexcept;
 				};
 
 				class mesh_pattern_factory {
-					mutable ::std::recursive_mutex _Lock;
 					pattern_type _Pattern_type;
 
 					bool _Has_current_patch;
 					unsigned int _Current_patch_index;
 					int _Current_patch_side_count;
 					point _Current_patch_initial_point;
-					typedef ::std::map<unsigned int, point> _Control_points;
-					typedef ::std::map<unsigned int, rgba_color> _Corner_colors;
+					typedef ::std::array<::std::tuple<bool, point>, 4> _Control_points;
+					typedef ::std::array<::std::tuple<bool, rgba_color>, 4> _Corner_colors;
 					// <Patch data, control points, corner colors>
 					typedef ::std::tuple<::std::experimental::io2d::path_factory, _Control_points, _Corner_colors> _Patch;
 					::std::vector<_Patch> _Patches;
 				public:
-					mesh_pattern_factory();
-					mesh_pattern_factory(const mesh_pattern_factory&);
-					mesh_pattern_factory& operator=(const mesh_pattern_factory&);
-					mesh_pattern_factory(mesh_pattern_factory&& other);
-					mesh_pattern_factory& operator=(mesh_pattern_factory&& other);
+					mesh_pattern_factory() noexcept;
+					mesh_pattern_factory(const mesh_pattern_factory&) = default;
+					mesh_pattern_factory& operator=(const mesh_pattern_factory&) = default;
+					mesh_pattern_factory(mesh_pattern_factory&& other) noexcept;
+					mesh_pattern_factory& operator=(mesh_pattern_factory&& other) noexcept;
 
 					// Modifiers
 					void begin_patch();
+					void begin_patch(::std::error_code& ec) noexcept;
 					void begin_edit_patch(unsigned int patch_num);
+					void begin_edit_patch(unsigned int patch_num, ::std::error_code& ec) noexcept;
 					void end_patch();
+					void end_patch(::std::error_code& ec) noexcept;
 					void move_to(const point& pt);
+					void move_to(const point& pt, ::std::error_code& ec) noexcept;
 					void line_to(const point& pt);
+					void line_to(const point& pt, ::std::error_code& ec) noexcept;
 					void curve_to(const point& pt0, const point& pt1, const point& pt2);
+					void curve_to(const point& pt0, const point& pt1, const point& pt2, ::std::error_code& ec) noexcept;
 					void control_point(unsigned int point_num, const point& pt);
+					void control_point(unsigned int point_num, const point& pt, ::std::error_code& ec) noexcept;
 					void corner_color_rgba(unsigned int corner_num, const rgba_color& color);
+					void corner_color_rgba(unsigned int corner_num, const rgba_color& color, ::std::error_code& ec) noexcept;
 
 					// Observers
-					unsigned int patch_count() const;
+					unsigned int patch_count() const noexcept;
 					::std::experimental::io2d::path_factory path_factory(unsigned int patch_num) const;
+					::std::experimental::io2d::path_factory path_factory(unsigned int patch_num, ::std::error_code& ec) const noexcept;
 					bool control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const;
+					bool control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint, ::std::error_code& ec) const noexcept;
 					bool corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
+					bool corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color, ::std::error_code& ec) const noexcept;
 				};
 
 				struct _Surface_native_handles {

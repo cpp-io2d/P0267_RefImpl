@@ -901,17 +901,17 @@ pattern surface::create_pattern(const solid_color_pattern_factory& f) const {
 }
 
 pattern surface::create_pattern(const linear_pattern_factory& f) const {
-	point lpt0;
-	point lpt1;
-	f.linear_points(lpt0, lpt1);
+	auto points = f.linear_points();
+	point& lpt0 = get<0>(points);
+	point& lpt1 = get<1>(points);
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_linear(lpt0.x(), lpt0.y(), lpt1.x(), lpt1.y()), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	auto count = static_cast<unsigned int>(f.color_stop_count());
 	for (unsigned int i = 0; i < count; i++) {
-		double offset;
-		rgba_color color;
-		f.color_stop_rgba(i, offset, color);
+		auto stop = f.color_stop_rgba(i);
+		double& offset = get<0>(stop);
+		rgba_color& color = get<1>(stop);
 		cairo_pattern_add_color_stop_rgba(pat.get(), offset, color.r(), color.g(), color.b(), color.a());
 	}
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
@@ -922,17 +922,19 @@ pattern surface::create_pattern(const linear_pattern_factory& f) const {
 }
 
 pattern surface::create_pattern(const radial_pattern_factory& f) const {
-	point center0, center1;
-	double radius0, radius1;
-	f.radial_circles(center0, radius0, center1, radius1);
+	auto points = f.radial_circles();
+	point& center0 = get<0>(points);
+	double& radius0 = get<1>(points);
+	point& center1 = get<2>(points);
+	double& radius1 = get<3>(points);
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_radial(center0.x(), center0.y(), radius0, center1.x(), center1.y(), radius1), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	auto count = static_cast<unsigned int>(f.color_stop_count());
 	for (unsigned int i = 0; i < count; i++) {
-		double offset;
-		rgba_color color;
-		f.color_stop_rgba(i, offset, color);
+		auto stop = f.color_stop_rgba(i);
+		double& offset = get<0>(stop);
+		rgba_color& color = get<1>(stop);
 		cairo_pattern_add_color_stop_rgba(pat.get(), offset, color.r(), color.g(), color.b(), color.a());
 	}
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));

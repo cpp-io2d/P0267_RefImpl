@@ -5,9 +5,8 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-mesh_pattern_factory::mesh_pattern_factory()
-	: _Lock()
-	, _Pattern_type(pattern_type::mesh)
+mesh_pattern_factory::mesh_pattern_factory() noexcept
+	: _Pattern_type(pattern_type::mesh)
 	, _Has_current_patch()
 	, _Current_patch_index()
 	, _Current_patch_side_count()
@@ -15,46 +14,13 @@ mesh_pattern_factory::mesh_pattern_factory()
 	, _Patches() {
 }
 
-mesh_pattern_factory::mesh_pattern_factory(const mesh_pattern_factory& other)
-	: _Lock()
-	, _Pattern_type()
+mesh_pattern_factory::mesh_pattern_factory(mesh_pattern_factory&& other) noexcept
+	: _Pattern_type()
 	, _Has_current_patch()
 	, _Current_patch_index()
 	, _Current_patch_side_count()
 	, _Current_patch_initial_point()
 	, _Patches() {
-	lock_guard<decltype(other._Lock)> olg(other._Lock);
-	_Pattern_type = other._Pattern_type;
-	_Has_current_patch = other._Has_current_patch;
-	_Current_patch_index = other._Current_patch_index;
-	_Current_patch_side_count = other._Current_patch_side_count;
-	_Current_patch_initial_point = other._Current_patch_initial_point;
-	_Patches = other._Patches;
-}
-
-mesh_pattern_factory& mesh_pattern_factory::operator=(const mesh_pattern_factory& other) {
-	if (this != &other) {
-		lock_guard<decltype(other._Lock)> olg(other._Lock);
-		lock_guard<decltype(_Lock)> lg(_Lock);
-		_Pattern_type = other._Pattern_type;
-		_Has_current_patch = other._Has_current_patch;
-		_Current_patch_index = other._Current_patch_index;
-		_Current_patch_side_count = other._Current_patch_side_count;
-		_Current_patch_initial_point = other._Current_patch_initial_point;
-		_Patches = other._Patches;
-	}
-	return *this;
-}
-
-mesh_pattern_factory::mesh_pattern_factory(mesh_pattern_factory&& other)
-	: _Lock()
-	, _Pattern_type()
-	, _Has_current_patch()
-	, _Current_patch_index()
-	, _Current_patch_side_count()
-	, _Current_patch_initial_point()
-	, _Patches() {
-	lock_guard<decltype(other._Lock)> olg(other._Lock);
 	_Pattern_type = move(other._Pattern_type);
 	_Has_current_patch = move(other._Has_current_patch);
 	_Current_patch_index = move(other._Current_patch_index);
@@ -63,10 +29,8 @@ mesh_pattern_factory::mesh_pattern_factory(mesh_pattern_factory&& other)
 	_Patches = move(other._Patches);
 }
 
-mesh_pattern_factory& mesh_pattern_factory::operator=(mesh_pattern_factory&& other) {
+mesh_pattern_factory& mesh_pattern_factory::operator=(mesh_pattern_factory&& other) noexcept {
 	if (this != &other) {
-		lock_guard<decltype(other._Lock)> olg(other._Lock);
-		lock_guard<decltype(_Lock)> lg(_Lock);
 		_Pattern_type = move(other._Pattern_type);
 		_Has_current_patch = move(other._Has_current_patch);
 		_Current_patch_index = move(other._Current_patch_index);
@@ -78,19 +42,36 @@ mesh_pattern_factory& mesh_pattern_factory::operator=(mesh_pattern_factory&& oth
 }
 
 void mesh_pattern_factory::begin_patch() {
-	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	}
+	_Patches.push_back(_Patch());
+	_Has_current_patch = true;
+	_Current_patch_side_count = 0;
+	_Current_patch_initial_point = { };
+	_Current_patch_index = static_cast<unsigned int>(_Patches.size()) - 1U;
+}
+
+void mesh_pattern_factory::begin_patch(error_code& ec) noexcept {
+	if (_Has_current_patch) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+	try {
+		_Patches.push_back(_Patch());
+	}
+	catch (const bad_alloc&) {
+		ec = make_error_code(errc::not_enough_memory);
+		return;
 	}
 	_Has_current_patch = true;
 	_Current_patch_side_count = 0;
 	_Current_patch_initial_point = { };
-	_Patches.push_back(_Patch());
 	_Current_patch_index = static_cast<unsigned int>(_Patches.size()) - 1U;
+	ec.clear();
 }
 
 void mesh_pattern_factory::begin_edit_patch(unsigned int patch_num) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -107,8 +88,26 @@ void mesh_pattern_factory::begin_edit_patch(unsigned int patch_num) {
 	_Current_patch_index = patch_num;
 }
 
+void mesh_pattern_factory::begin_edit_patch(unsigned int patch_num, error_code& ec) noexcept {
+	if (_Has_current_patch) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+
+	if (patch_num >= _Patches.size()) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		return;
+	}
+	_Patch p;
+	_Patches[patch_num] = p;
+	_Has_current_patch = true;
+	_Current_patch_side_count = 0;
+	_Current_patch_initial_point = { };
+	_Current_patch_index = patch_num;
+	ec.clear();
+}
+
 void mesh_pattern_factory::end_patch() {
-	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -118,18 +117,48 @@ void mesh_pattern_factory::end_patch() {
 	_Has_current_patch = false;
 }
 
+void mesh_pattern_factory::end_patch(error_code& ec) noexcept {
+	if (!_Has_current_patch) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+	if (_Current_patch_side_count < 4) {
+		line_to(_Current_patch_initial_point, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
+	}
+	_Has_current_patch = false;
+	ec.clear();
+}
+
 void mesh_pattern_factory::move_to(const point& pt) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch || _Current_patch_side_count > 0) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
-	_Current_patch_initial_point = pt;
 	auto& patch = _Patches.at(_Current_patch_index);
+	_Current_patch_initial_point = pt;
 	get<0>(patch).move_to(pt);
 }
 
+void mesh_pattern_factory::move_to(const point& pt, error_code& ec) noexcept {
+	if (!_Has_current_patch || _Current_patch_side_count > 0) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+	try {
+		auto& patch = _Patches.at(_Current_patch_index);
+		_Current_patch_initial_point = pt;
+		get<0>(patch).move_to(pt);
+	}
+	catch (const out_of_range&) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+	ec.clear();
+}
+
 void mesh_pattern_factory::line_to(const point& pt) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -138,14 +167,39 @@ void mesh_pattern_factory::line_to(const point& pt) {
 		move_to(pt);
 	}
 	else {
-		_Current_patch_side_count++;
 		auto& patch = _Patches.at(_Current_patch_index);
 		get<0>(patch).line_to(pt);
+		_Current_patch_side_count++;
 	}
 }
 
+void mesh_pattern_factory::line_to(const point& pt, error_code& ec) noexcept {
+	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+
+	if (_Current_patch_side_count == 0) {
+		move_to(pt, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
+	}
+	else {
+		try {
+			auto& patch = _Patches.at(_Current_patch_index);
+			get<0>(patch).line_to(pt);
+			_Current_patch_side_count++;
+		}
+		catch (const out_of_range&) {
+			ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+			return;
+		}
+	}
+	ec.clear();
+}
+
 void mesh_pattern_factory::curve_to(const point& pt0, const point& pt1, const point& pt2) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -159,8 +213,32 @@ void mesh_pattern_factory::curve_to(const point& pt0, const point& pt1, const po
 	get<0>(patch).curve_to(pt0, pt1, pt2);
 }
 
+void mesh_pattern_factory::curve_to(const point& pt0, const point& pt1, const point& pt2, error_code& ec) noexcept {
+	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+
+	if (_Current_patch_side_count == 0) {
+		move_to(pt0, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
+	}
+
+	try {
+		auto& patch = _Patches.at(_Current_patch_index);
+		_Current_patch_side_count++;
+		get<0>(patch).curve_to(pt0, pt1, pt2);
+	}
+	catch (const out_of_range&) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+	ec.clear();
+}
+
 void mesh_pattern_factory::control_point(unsigned int point_num, const point& pt) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -168,11 +246,31 @@ void mesh_pattern_factory::control_point(unsigned int point_num, const point& pt
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	auto& patch = _Patches.at(_Current_patch_index);
-	get<1>(patch)[point_num] = pt;
+	get<1>(patch)[point_num] = make_tuple(true, pt);
+}
+
+void mesh_pattern_factory::control_point(unsigned int point_num, const point& pt, error_code& ec) noexcept {
+	if (!_Has_current_patch) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+	if (point_num > 3) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		return;
+	}
+
+	try {
+		auto& patch = _Patches.at(_Current_patch_index);
+		get<1>(patch)[point_num] = make_tuple(true, pt);
+	}
+	catch (const out_of_range&) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+	ec.clear();
 }
 
 void mesh_pattern_factory::corner_color_rgba(unsigned int corner_num, const rgba_color& color) {
-	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -180,16 +278,35 @@ void mesh_pattern_factory::corner_color_rgba(unsigned int corner_num, const rgba
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	auto& patch = _Patches.at(_Current_patch_index);
-	get<2>(patch)[corner_num] = color;
+	get<2>(patch)[corner_num] = make_tuple(true, color);
 }
 
-unsigned int mesh_pattern_factory::patch_count() const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
+void mesh_pattern_factory::corner_color_rgba(unsigned int corner_num, const rgba_color& color, error_code& ec) noexcept {
+	if (!_Has_current_patch) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+	if (corner_num > 3) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		return;
+	}
+
+	try {
+		auto& patch = _Patches.at(_Current_patch_index);
+		get<2>(patch)[corner_num] = make_tuple(true, color);
+	}
+	catch (const out_of_range&) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return;
+	}
+	ec.clear();
+}
+
+unsigned int mesh_pattern_factory::patch_count() const noexcept {
 	return static_cast<unsigned int>(_Patches.size());
 }
 
 path_factory mesh_pattern_factory::path_factory(unsigned int patch_num) const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
 	if (patch_num >= _Patches.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -197,32 +314,102 @@ path_factory mesh_pattern_factory::path_factory(unsigned int patch_num) const {
 	return get<0>(patch);
 }
 
-bool mesh_pattern_factory::control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
+// Note: This and various other code relies on C++17's provision that the default vector ctor is noexcept (N4258, adopted 2014-11).
+path_factory mesh_pattern_factory::path_factory(unsigned int patch_num, error_code& ec) const noexcept {
 	if (patch_num >= _Patches.size()) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		return ::std::experimental::io2d::path_factory{};
+	}
+	try {
+		const auto& patch = _Patches[patch_num];
+		auto factory = get<0>(patch);
+		ec.clear();
+		return factory;
+	}
+	catch (const out_of_range&) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return ::std::experimental::io2d::path_factory{};
+	}
+	catch (const bad_alloc&) {
+		ec = make_error_code(errc::not_enough_memory);
+		return ::std::experimental::io2d::path_factory{};
+	}
+}
+
+// Note: This returns a bool and uses an out parameter because it's valid to have a control point which has not been assigned a value.
+bool mesh_pattern_factory::control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const {
+	if (patch_num >= _Patches.size() || point_num > 3) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	const auto& patch = _Patches[patch_num];
 	const auto& controlPoints = get<1>(patch);
-	const auto& iter = controlPoints.find(point_num);
-	if (iter == controlPoints.cend()) {
+	const auto& controlPointTuple = controlPoints[point_num];
+	if (!get<0>(controlPointTuple)) {
 		return false;
 	}
-	controlPoint = (*iter).second;
+	controlPoint = get<1>(controlPointTuple);
 	return true;
 }
 
+// Note: This returns a bool and uses an out parameter because it's valid to have a control point which has not been assigned a value.
+bool mesh_pattern_factory::control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint, error_code& ec) const noexcept {
+	if (patch_num >= _Patches.size() || point_num > 3) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		return false;
+	}
+	try {
+		const auto& patch = _Patches[patch_num];
+		const auto& controlPoints = get<1>(patch);
+		const auto& controlPointTuple = controlPoints[point_num];
+		if (!get<0>(controlPointTuple)) {
+			ec.clear();
+			return false;
+		}
+		controlPoint = get<1>(controlPointTuple);
+		ec.clear();
+		return true;
+	}
+	catch (const out_of_range&) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return false;
+	}
+}
+
+// Note: This returns a bool and uses an out parameter because it's valid to have a corner which has not been assigned a color.
 bool mesh_pattern_factory::corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const {
-	lock_guard<decltype(_Lock)> lg(_Lock);
-	if (patch_num >= _Patches.size()) {
+	if (patch_num >= _Patches.size() || corner_num > 3) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 	const auto& patch = _Patches[patch_num];
 	const auto& cornerColors = get<2>(patch);
-	const auto& iter = cornerColors.find(corner_num);
-	if (iter == cornerColors.cend()) {
+	const auto& cornerColorTuple = cornerColors[corner_num];
+	if (!get<0>(cornerColorTuple)) {
 		return false;
 	}
-	color = (*iter).second;
+	color = get<1>(cornerColorTuple);
 	return true;
+}
+
+// Note: This returns a bool and uses an out parameter because it's valid to have a corner which has not been assigned a color.
+bool mesh_pattern_factory::corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color, error_code& ec) const noexcept {
+	if (patch_num >= _Patches.size() || corner_num > 3) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		return false;
+	}
+	try {
+		const auto& patch = _Patches[patch_num];
+		const auto& cornerColors = get<2>(patch);
+		const auto& cornerColorTuple = cornerColors[corner_num];
+		if (!get<0>(cornerColorTuple)) {
+			ec.clear();
+			return false;
+		}
+		color = get<1>(cornerColorTuple);
+		ec.clear();
+		return true;
+	}
+	catch (const out_of_range&) {
+		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+		return false;
+	}
 }

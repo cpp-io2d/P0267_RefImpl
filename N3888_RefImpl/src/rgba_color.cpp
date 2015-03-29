@@ -76,27 +76,74 @@ rgba_color::rgba_color(double red, double green, double blue, double alpha, erro
 	}
 }
 
-void rgba_color::r(double val) noexcept {
-	assert(val >= 0.0 && val <= 1.0);
+void rgba_color::r(double val) {
+	if (val < 0.0 || val > 1.0) {
+		throw system_error(make_error_code(errc::argument_out_of_domain));
+	}
 	_R = val;
 }
 
-void rgba_color::g(double val) noexcept {
-	assert(val >= 0.0 && val <= 1.0);
+void rgba_color::r(double val, error_code& ec) noexcept {
+	if (val < 0.0 || val > 1.0) {
+		ec = make_error_code(errc::argument_out_of_domain);
+		return;
+	}
+	_R = val;
+	ec.clear();
+}
+
+void rgba_color::g(double val) {
+	if (val < 0.0 || val > 1.0) {
+		throw system_error(make_error_code(errc::argument_out_of_domain));
+	}
 	_G = val;
 }
 
-void rgba_color::b(double val) noexcept {
-	assert(val >= 0.0 && val <= 1.0);
+void rgba_color::g(double val, error_code& ec) noexcept {
+	if (val < 0.0 || val > 1.0) {
+		ec = make_error_code(errc::argument_out_of_domain);
+		return;
+	}
+	_G = val;
+	ec.clear();
+}
+
+void rgba_color::b(double val) {
+	if (val < 0.0 || val > 1.0) {
+		throw system_error(make_error_code(errc::argument_out_of_domain));
+	}
 	_B = val;
 }
 
-void rgba_color::a(double val) noexcept {
-	assert(val >= 0.0 && val <= 1.0);
+void rgba_color::b(double val, error_code& ec) noexcept {
+	if (val < 0.0 || val > 1.0) {
+		ec = make_error_code(errc::argument_out_of_domain);
+		return;
+	}
+	_B = val;
+	ec.clear();
+}
+
+void rgba_color::a(double val) {
+	if (val < 0.0 || val > 1.0) {
+		throw system_error(make_error_code(errc::argument_out_of_domain));
+	}
 	_R *= val;
 	_G *= val;
 	_B *= val;
 	_A = val;
+}
+
+void rgba_color::a(double val, error_code& ec) noexcept {
+	if (val < 0.0 || val > 1.0) {
+		ec = make_error_code(errc::argument_out_of_domain);
+		return;
+	}
+	_R *= val;
+	_G *= val;
+	_B *= val;
+	_A = val;
+	ec.clear();
 }
 
 double rgba_color::r() const noexcept {
