@@ -11,6 +11,7 @@ mesh_pattern_factory::mesh_pattern_factory() noexcept
 	, _Current_patch_index()
 	, _Current_patch_side_count()
 	, _Current_patch_initial_point()
+	, _Has_current_point()
 	, _Patches() {
 }
 
@@ -20,9 +21,11 @@ mesh_pattern_factory::mesh_pattern_factory(mesh_pattern_factory&& other) noexcep
 	, _Current_patch_index()
 	, _Current_patch_side_count()
 	, _Current_patch_initial_point()
+	, _Has_current_point()
 	, _Patches() {
 	_Pattern_type = move(other._Pattern_type);
 	_Has_current_patch = move(other._Has_current_patch);
+	_Has_current_point = move(other._Has_current_point);
 	_Current_patch_index = move(other._Current_patch_index);
 	_Current_patch_side_count = move(other._Current_patch_side_count);
 	_Current_patch_initial_point = move(other._Current_patch_initial_point);
@@ -33,6 +36,7 @@ mesh_pattern_factory& mesh_pattern_factory::operator=(mesh_pattern_factory&& oth
 	if (this != &other) {
 		_Pattern_type = move(other._Pattern_type);
 		_Has_current_patch = move(other._Has_current_patch);
+		_Has_current_point = move(other._Has_current_point);
 		_Current_patch_index = move(other._Current_patch_index);
 		_Current_patch_side_count = move(other._Current_patch_side_count);
 		_Current_patch_initial_point = move(other._Current_patch_initial_point);
@@ -47,6 +51,7 @@ void mesh_pattern_factory::begin_patch() {
 	}
 	_Patches.push_back(_Patch());
 	_Has_current_patch = true;
+	_Has_current_point = false;
 	_Current_patch_side_count = 0;
 	_Current_patch_initial_point = { };
 	_Current_patch_index = static_cast<unsigned int>(_Patches.size()) - 1U;
@@ -65,6 +70,7 @@ void mesh_pattern_factory::begin_patch(error_code& ec) noexcept {
 		return;
 	}
 	_Has_current_patch = true;
+	_Has_current_point = false;
 	_Current_patch_side_count = 0;
 	_Current_patch_initial_point = { };
 	_Current_patch_index = static_cast<unsigned int>(_Patches.size()) - 1U;
@@ -81,6 +87,7 @@ void mesh_pattern_factory::begin_edit_patch(unsigned int patch_num) {
 	}
 
 	_Has_current_patch = true;
+	_Has_current_point = false;
 	_Current_patch_side_count = 0;
 	_Current_patch_initial_point = { };
 	_Patch p;
@@ -101,6 +108,7 @@ void mesh_pattern_factory::begin_edit_patch(unsigned int patch_num, error_code& 
 	_Patch p;
 	_Patches[patch_num] = p;
 	_Has_current_patch = true;
+	_Has_current_point = false;
 	_Current_patch_side_count = 0;
 	_Current_patch_initial_point = { };
 	_Current_patch_index = patch_num;
@@ -115,6 +123,7 @@ void mesh_pattern_factory::end_patch() {
 		line_to(_Current_patch_initial_point);
 	}
 	_Has_current_patch = false;
+	_Has_current_point = false;
 }
 
 void mesh_pattern_factory::end_patch(error_code& ec) noexcept {
@@ -129,6 +138,7 @@ void mesh_pattern_factory::end_patch(error_code& ec) noexcept {
 		}
 	}
 	_Has_current_patch = false;
+	_Has_current_point = false;
 	ec.clear();
 }
 
@@ -139,6 +149,7 @@ void mesh_pattern_factory::move_to(const point& pt) {
 	auto& patch = _Patches.at(_Current_patch_index);
 	_Current_patch_initial_point = pt;
 	get<0>(patch).move_to(pt);
+	_Has_current_point = true;
 }
 
 void mesh_pattern_factory::move_to(const point& pt, error_code& ec) noexcept {
@@ -150,6 +161,7 @@ void mesh_pattern_factory::move_to(const point& pt, error_code& ec) noexcept {
 		auto& patch = _Patches.at(_Current_patch_index);
 		_Current_patch_initial_point = pt;
 		get<0>(patch).move_to(pt);
+		_Has_current_point = true;
 	}
 	catch (const out_of_range&) {
 		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
@@ -163,7 +175,7 @@ void mesh_pattern_factory::line_to(const point& pt) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 
-	if (_Current_patch_side_count == 0) {
+	if (!_Has_current_point) {
 		move_to(pt);
 	}
 	else {
@@ -179,7 +191,7 @@ void mesh_pattern_factory::line_to(const point& pt, error_code& ec) noexcept {
 		return;
 	}
 
-	if (_Current_patch_side_count == 0) {
+	if (!_Has_current_point) {
 		move_to(pt, ec);
 		if (static_cast<bool>(ec)) {
 			return;
@@ -204,7 +216,7 @@ void mesh_pattern_factory::curve_to(const point& pt0, const point& pt1, const po
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
 
-	if (_Current_patch_side_count == 0) {
+	if (!_Has_current_point) {
 		move_to(pt0);
 	}
 
@@ -219,7 +231,7 @@ void mesh_pattern_factory::curve_to(const point& pt0, const point& pt1, const po
 		return;
 	}
 
-	if (_Current_patch_side_count == 0) {
+	if (!_Has_current_point) {
 		move_to(pt0, ec);
 		if (static_cast<bool>(ec)) {
 			return;

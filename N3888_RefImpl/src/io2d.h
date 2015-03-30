@@ -1162,6 +1162,7 @@ namespace std {
 					unsigned int _Current_patch_index;
 					int _Current_patch_side_count;
 					point _Current_patch_initial_point;
+					bool _Has_current_point;
 					typedef ::std::array<::std::tuple<bool, point>, 4> _Control_points;
 					typedef ::std::array<::std::tuple<bool, rgba_color>, 4> _Corner_colors;
 					// <Patch data, control points, corner colors>
