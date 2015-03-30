@@ -77,7 +77,7 @@ void mesh_brush_factory::begin_patch(error_code& ec) noexcept {
 	ec.clear();
 }
 
-void mesh_brush_factory::begin_edit_patch(unsigned int patch_num) {
+void mesh_brush_factory::begin_replace_patch(unsigned int patch_num) {
 	if (_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -95,7 +95,7 @@ void mesh_brush_factory::begin_edit_patch(unsigned int patch_num) {
 	_Current_patch_index = patch_num;
 }
 
-void mesh_brush_factory::begin_edit_patch(unsigned int patch_num, error_code& ec) noexcept {
+void mesh_brush_factory::begin_replace_patch(unsigned int patch_num, error_code& ec) noexcept {
 	if (_Has_current_patch) {
 		ec = make_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 		return;

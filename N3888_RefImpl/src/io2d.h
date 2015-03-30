@@ -1178,8 +1178,8 @@ namespace std {
 					// Modifiers
 					void begin_patch();
 					void begin_patch(::std::error_code& ec) noexcept;
-					void begin_edit_patch(unsigned int patch_num);
-					void begin_edit_patch(unsigned int patch_num, ::std::error_code& ec) noexcept;
+					void begin_replace_patch(unsigned int patch_num);
+					void begin_replace_patch(unsigned int patch_num, ::std::error_code& ec) noexcept;
 					void end_patch();
 					void end_patch(::std::error_code& ec) noexcept;
 					void move_to(const point& pt);
