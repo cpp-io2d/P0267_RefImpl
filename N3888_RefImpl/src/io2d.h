@@ -1592,7 +1592,6 @@ namespace std {
 				};
 
 				class surface_brush_factory {
-					mutable ::std::recursive_mutex _Lock;
 					brush_type _Brush_type;
 					image_surface _Surface;
 
