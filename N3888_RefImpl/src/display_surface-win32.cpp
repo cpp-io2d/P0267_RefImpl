@@ -190,7 +190,7 @@ display_surface::display_surface(display_surface&& other)
 	, _Draw_fn(move(other._Draw_fn))
 	, _Size_change_fn(move(other._Size_change_fn))
 	, _User_scaling_fn(move(other._User_scaling_fn))
-	, _Letterbox_pttn(move(other._Letterbox_pttn))
+	, _Letterbox_brush(move(other._Letterbox_brush))
 	, _Window_style(move(other._Window_style))
 	, _Hwnd(move(other._Hwnd))
 	, _Native_surface(move(other._Native_surface))
@@ -211,7 +211,7 @@ display_surface& display_surface::operator=(display_surface&& other) {
 		_Draw_fn = move(other._Draw_fn);
 		_Size_change_fn = move(other._Size_change_fn);
 		_User_scaling_fn = move(other._User_scaling_fn);
-		_Letterbox_pttn = move(other._Letterbox_pttn);
+		_Letterbox_brush = move(other._Letterbox_brush);
 		_Window_style = move(other._Window_style);
 		_Hwnd = move(other._Hwnd);
 		_Native_surface = move(other._Native_surface);
@@ -243,7 +243,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Draw_fn()
 	, _Size_change_fn()
 	, _User_scaling_fn()
-	, _Letterbox_pttn(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Letterbox_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
 	, _Native_surface(nullptr, &cairo_surface_destroy)

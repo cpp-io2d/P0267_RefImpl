@@ -19,12 +19,12 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 	}
 	else {
 		if (_Scaling == std::experimental::io2d::scaling::letterbox) {
-			cairo_pattern_set_extend(_Letterbox_pttn.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_pttn.extend()));
-			cairo_pattern_set_filter(_Letterbox_pttn.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_pttn.filter()));
+			cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.extend()));
+			cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
 			cairo_matrix_t cPttnMatrix;
-			cairo_matrix_init(&cPttnMatrix, _Letterbox_pttn.matrix().m00(), _Letterbox_pttn.matrix().m01(), _Letterbox_pttn.matrix().m10(), _Letterbox_pttn.matrix().m11(), _Letterbox_pttn.matrix().m20(), _Letterbox_pttn.matrix().m21());
-			cairo_pattern_set_matrix(_Letterbox_pttn.native_handle(), &cPttnMatrix);
-			cairo_set_source(_Native_context.get(), _Letterbox_pttn.native_handle());
+			cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
+			cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
+			cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
 			cairo_paint(_Native_context.get());
 		}
 
@@ -59,12 +59,12 @@ void display_surface::_Render_to_native_surface() {
 		bool letterbox = false;
 		auto userRect = _User_scaling_fn(*this, letterbox);
 		if (letterbox) {
-			cairo_pattern_set_extend(_Letterbox_pttn.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_pttn.extend()));
-			cairo_pattern_set_filter(_Letterbox_pttn.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_pttn.filter()));
+			cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.extend()));
+			cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
 			cairo_matrix_t cPttnMatrix;
-			cairo_matrix_init(&cPttnMatrix, _Letterbox_pttn.matrix().m00(), _Letterbox_pttn.matrix().m01(), _Letterbox_pttn.matrix().m10(), _Letterbox_pttn.matrix().m11(), _Letterbox_pttn.matrix().m20(), _Letterbox_pttn.matrix().m21());
-			cairo_pattern_set_matrix(_Letterbox_pttn.native_handle(), &cPttnMatrix);
-			cairo_set_source(_Native_context.get(), _Letterbox_pttn.native_handle());
+			cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
+			cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
+			cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
 			cairo_paint(_Native_context.get());
 		}
 		cairo_matrix_t ctm;
@@ -168,7 +168,7 @@ void display_surface::_Render_to_native_surface() {
 
 void display_surface::save() {
 	surface::save();
-	_Display_saved_state.push(make_tuple(_Scaling, _Width, _Height, _Display_width, _Display_height, _User_scaling_fn, _Letterbox_pttn));
+	_Display_saved_state.push(make_tuple(_Scaling, _Width, _Height, _Display_width, _Display_height, _User_scaling_fn, _Letterbox_brush));
 }
 
 void display_surface::restore() {
@@ -238,16 +238,16 @@ void display_surface::user_scaling_fn(const function<experimental::io2d::rectang
 	_User_scaling_fn = fn;
 }
 
-void display_surface::clear_letterbox_pattern() {
-	_Letterbox_pttn = create_pattern(solid_color_pattern_factory(rgba_color::transparent_black()));
+void display_surface::clear_letterbox_brush() {
+	_Letterbox_brush = create_brush(solid_color_brush_factory(rgba_color::transparent_black()));
 }
 
-void display_surface::letterbox_pattern(const rgba_color& c) {
-	_Letterbox_pttn = create_pattern(solid_color_pattern_factory(c));
+void display_surface::letterbox_brush(const rgba_color& c) {
+	_Letterbox_brush = create_brush(solid_color_brush_factory(c));
 }
 
-void display_surface::letterbox_pattern(const experimental::io2d::pattern& pttn) {
-	_Letterbox_pttn = pttn;
+void display_surface::letterbox_brush(const experimental::io2d::brush& b) {
+	_Letterbox_brush = b;
 }
 
 format display_surface::format() const {
@@ -286,6 +286,6 @@ const ::std::function<::std::experimental::io2d::rectangle(const display_surface
 	return _User_scaling_fn;
 }
 
-experimental::io2d::pattern display_surface::letterbox_pattern() const {
-	return _Letterbox_pttn;
+experimental::io2d::brush display_surface::letterbox_brush() const {
+	return _Letterbox_brush;
 }

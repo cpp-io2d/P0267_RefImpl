@@ -5,58 +5,58 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-surface_pattern_factory::surface_pattern_factory()
+surface_brush_factory::surface_brush_factory()
 	: _Lock()
-	, _Pattern_type(pattern_type::surface)
+	, _Brush_type(brush_type::surface)
 	, _Surface(image_surface(format::argb32, 1, 1)) {
 }
 
-surface_pattern_factory::surface_pattern_factory(surface_pattern_factory& other)
+surface_brush_factory::surface_brush_factory(surface_brush_factory& other)
 	: _Lock()
-	, _Pattern_type()
+	, _Brush_type()
 	, _Surface(image_surface(format::argb32, 1, 1)) {
 	lock_guard<decltype(other._Lock)> olg(other._Lock);
-	_Pattern_type = other._Pattern_type;
+	_Brush_type = other._Brush_type;
 	_Surface = _Surface_create_image_surface_copy(other._Surface);
 }
 
-surface_pattern_factory& surface_pattern_factory::operator=(surface_pattern_factory& other) {
+surface_brush_factory& surface_brush_factory::operator=(surface_brush_factory& other) {
 	if (this != &other) {
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
 		lock_guard<decltype(_Lock)> lg(_Lock);
-		_Pattern_type = other._Pattern_type;
+		_Brush_type = other._Brush_type;
 		_Surface = _Surface_create_image_surface_copy(other._Surface);
 	}
 	return *this;
 }
 
-surface_pattern_factory::surface_pattern_factory(surface_pattern_factory&& other)
+surface_brush_factory::surface_brush_factory(surface_brush_factory&& other)
 	: _Lock()
-	, _Pattern_type()
+	, _Brush_type()
 	, _Surface(image_surface(format::argb32, 1, 1)) {
 	lock_guard<decltype(other._Lock)> olg(other._Lock);
-	_Pattern_type = move(other._Pattern_type);
+	_Brush_type = move(other._Brush_type);
 	_Surface = move(other._Surface);
 }
 
-surface_pattern_factory& surface_pattern_factory::operator=(surface_pattern_factory&& other) {
+surface_brush_factory& surface_brush_factory::operator=(surface_brush_factory&& other) {
 	if (this != &other) {
 		lock_guard<decltype(other._Lock)> olg(other._Lock);
 		lock_guard<decltype(_Lock)> lg(_Lock);
-		_Pattern_type = move(other._Pattern_type);
+		_Brush_type = move(other._Brush_type);
 		_Surface = move(other._Surface);
 	}
 	return *this;
 }
 
-surface_pattern_factory::surface_pattern_factory(::std::experimental::io2d::surface& s)
+surface_brush_factory::surface_brush_factory(::std::experimental::io2d::surface& s)
 	: _Lock()
-	, _Pattern_type(pattern_type::surface)
+	, _Brush_type(brush_type::surface)
 	, _Surface(image_surface(format::argb32, 1, 1)) {
 	_Surface = _Surface_create_image_surface_copy(s);
 }
 
-image_surface surface_pattern_factory::surface(::std::experimental::io2d::surface& s) {
+image_surface surface_brush_factory::surface(::std::experimental::io2d::surface& s) {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	auto sfc = _Surface_create_image_surface_copy(s);
 	auto result = move(_Surface);
@@ -64,7 +64,7 @@ image_surface surface_pattern_factory::surface(::std::experimental::io2d::surfac
 	return move(result);
 }
 
-const image_surface& surface_pattern_factory::surface() const {
+const image_surface& surface_brush_factory::surface() const {
 	lock_guard<decltype(_Lock)> lg(_Lock);
 	return _Surface;
 }

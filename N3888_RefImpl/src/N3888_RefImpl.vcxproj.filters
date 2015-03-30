@@ -74,9 +74,6 @@
     <ClCompile Include="path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="rgba_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -84,18 +81,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="simple_font_face.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="linear_pattern_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mesh_pattern_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="radial_pattern_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="solid_color_pattern_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="path_data.cpp">
@@ -116,9 +101,6 @@
     <ClCompile Include="matrix_2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="surface_pattern_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="display_surface-win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -126,6 +108,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="display_surface-common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="linear_brush_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="brush.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="radial_brush_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="solid_color_brush_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="surface_brush_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh_brush_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

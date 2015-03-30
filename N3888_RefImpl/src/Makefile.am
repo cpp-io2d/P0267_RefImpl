@@ -12,7 +12,8 @@
 
 bin_PROGRAMS = 			N3888_RefImpl
 
-N3888_RefImpl_SOURCES =		device.cpp \
+N3888_RefImpl_SOURCES =	brush.cpp \
+				device.cpp \
 				display_surface-common.cpp \
 				display_surface-xlib.cpp \
 				entrypoint.cpp \
@@ -21,23 +22,22 @@ N3888_RefImpl_SOURCES =		device.cpp \
 				font_options.cpp \
 				image_surface.cpp \
 				io2d_error_category.cpp \
-				linear_pattern_factory.cpp \
+				linear_brush_factory.cpp \
 				matrix_2d.cpp \
-				mesh_pattern_factory.cpp \
+				mesh_brush_factory.cpp \
 				path.cpp \
 				path_data.cpp \
 				path_factory.cpp \
-				pattern.cpp \
 				point.cpp \
-				radial_pattern_factory.cpp \
+				radial_brush_factory.cpp \
 				rectangle.cpp \
 				rgba_color.cpp \
 				sample_draw.cpp \
 				simple_font_face.cpp \
-				solid_color_pattern_factory.cpp \
+				solid_color_brush_factory.cpp \
 				standalone_functions.cpp \
 				surface.cpp \
-				surface_pattern_factory.cpp \
+				surface_brush_factory.cpp \
 				text_extents.cpp
 ##				refimpl-resources.c \
 ##				RefImplApp.c \

@@ -45,7 +45,7 @@ namespace std {
 				enum class format;
 				enum class extend;
 				enum class filter;
-				enum class pattern_type;
+				enum class brush_type;
 				enum class font_slant;
 				enum class font_weight;
 				enum class subpixel_order;
@@ -80,16 +80,16 @@ namespace std {
 				class font_options;
 				class font_fact;
 				class simple_font_face;
-				class pattern;
-				class solid_color_pattern_factory;
-				class linear_pattern_factory;
-				class radial_pattern_factory;
-				class mesh_pattern_factory;
+				class brush;
+				class solid_color_brush_factory;
+				class linear_brush_factory;
+				class radial_brush_factory;
+				class mesh_brush_factory;
 				struct _Surface_native_handles;
 				class surface;
 				class image_surface;
 				class display_surface;
-				class surface_pattern_factory;
+				class surface_brush_factory;
 #if _Inline_namespace_conditional_support_test
 			}
 #endif
@@ -221,7 +221,7 @@ namespace std {
 					default_filter = good
 				};
 
-				enum class pattern_type {
+				enum class brush_type {
 					unknown,
 					solid_color,
 					surface,
@@ -265,7 +265,7 @@ namespace std {
 				};
 
 				enum class scaling {
-					letterbox, // Same as uniform except that the display_surface is cleared using the letterbox pattern first
+					letterbox, // Same as uniform except that the display_surface is cleared using the letterbox brush first
 					uniform, // Maintain aspect ratio and center as needed, ignoring side areas that are not drawn to
 					fill_uniform, // Maintain aspect ratio but fill entire display (some content may not be shown)
 					fill_exact, // Ignore aspect ratio and use (possibly non-uniform) scale to fill exactly
@@ -1019,32 +1019,32 @@ namespace std {
 				};
 
 				// Forward declaration.
-				class linear_pattern_factory;
-				class mesh_pattern_factory;
-				class radial_pattern_factory;
-				class solid_color_pattern_factory;
-				class surface_pattern_factory;
+				class linear_brush_factory;
+				class mesh_brush_factory;
+				class radial_brush_factory;
+				class solid_color_brush_factory;
+				class surface_brush_factory;
 				class surface;
 				class image_surface;
 				class display_surface;
 
-				class pattern {
+				class brush {
 				public:
 					typedef cairo_pattern_t* native_handle_type;
 
 				private:
-					friend linear_pattern_factory;
-					friend mesh_pattern_factory;
-					friend radial_pattern_factory;
-					friend solid_color_pattern_factory;
-					friend surface_pattern_factory;
+					friend linear_brush_factory;
+					friend mesh_brush_factory;
+					friend radial_brush_factory;
+					friend solid_color_brush_factory;
+					friend surface_brush_factory;
 					friend surface;
 					friend display_surface;
 					// Precondition: nh has already had its reference count incremented (either in creation or with cairo_pattern_reference).
-					pattern(native_handle_type nh) noexcept;
+					brush(native_handle_type nh) noexcept;
 
-					::std::shared_ptr<cairo_pattern_t> _Pattern;
-					pattern_type _Pattern_type;
+					::std::shared_ptr<cairo_pattern_t> _Brush;
+					brush_type _Brush_type;
 					::std::experimental::io2d::extend _Extend;
 					::std::experimental::io2d::filter _Filter;
 					matrix_2d _Matrix;
@@ -1052,11 +1052,11 @@ namespace std {
 				public:
 					native_handle_type native_handle() const noexcept;
 
-					pattern() = delete;
-					pattern(const pattern&) noexcept = default;
-					pattern& operator=(const pattern&) noexcept = default;
-					pattern(pattern&& other) noexcept;
-					pattern& operator=(pattern&& other) noexcept;
+					brush() = delete;
+					brush(const brush&) noexcept = default;
+					brush& operator=(const brush&) noexcept = default;
+					brush(brush&& other) noexcept;
+					brush& operator=(brush&& other) noexcept;
 
 					void extend(::std::experimental::io2d::extend e) noexcept;
 					void filter(::std::experimental::io2d::filter f) noexcept;
@@ -1065,20 +1065,20 @@ namespace std {
 					::std::experimental::io2d::extend extend() const noexcept;
 					::std::experimental::io2d::filter filter() const noexcept;
 					matrix_2d matrix() const noexcept;
-					pattern_type type() const noexcept;
+					brush_type type() const noexcept;
 				};
 
-				class solid_color_pattern_factory {
-					pattern_type _Pattern_type;
+				class solid_color_brush_factory {
+					brush_type _Brush_type;
 					rgba_color _Color;
 
 				public:
-					solid_color_pattern_factory() noexcept;
-					solid_color_pattern_factory(const solid_color_pattern_factory&) noexcept = default;
-					solid_color_pattern_factory& operator=(const solid_color_pattern_factory&) noexcept = default;
-					solid_color_pattern_factory(solid_color_pattern_factory&& other) noexcept;
-					solid_color_pattern_factory& operator=(solid_color_pattern_factory&& other) noexcept;
-					solid_color_pattern_factory(const rgba_color& color) noexcept;
+					solid_color_brush_factory() noexcept;
+					solid_color_brush_factory(const solid_color_brush_factory&) noexcept = default;
+					solid_color_brush_factory& operator=(const solid_color_brush_factory&) noexcept = default;
+					solid_color_brush_factory(solid_color_brush_factory&& other) noexcept;
+					solid_color_brush_factory& operator=(solid_color_brush_factory&& other) noexcept;
+					solid_color_brush_factory(const rgba_color& color) noexcept;
 
 					// Modifiers
 					void rgba(const rgba_color& color) noexcept;
@@ -1095,20 +1095,20 @@ namespace std {
 					double alpha() const noexcept;
 				};
 
-				class linear_pattern_factory {
-					pattern_type _Pattern_type;
+				class linear_brush_factory {
+					brush_type _Brush_type;
 
 					point _Point0;
 					point _Point1;
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
-					linear_pattern_factory() noexcept;
-					linear_pattern_factory(const linear_pattern_factory&) = default;
-					linear_pattern_factory& operator=(const linear_pattern_factory&) = default;
-					linear_pattern_factory(linear_pattern_factory&& other) noexcept;
-					linear_pattern_factory& operator=(linear_pattern_factory&& other) noexcept;
-					linear_pattern_factory(const point& pt0, const point& pt1) noexcept;
+					linear_brush_factory() noexcept;
+					linear_brush_factory(const linear_brush_factory&) = default;
+					linear_brush_factory& operator=(const linear_brush_factory&) = default;
+					linear_brush_factory(linear_brush_factory&& other) noexcept;
+					linear_brush_factory& operator=(linear_brush_factory&& other) noexcept;
+					linear_brush_factory(const point& pt0, const point& pt1) noexcept;
 
 					// Modifiers
 					void add_color_stop_rgba(double offset, const rgba_color& color);
@@ -1124,8 +1124,8 @@ namespace std {
 					::std::tuple<point, point> linear_points() const noexcept;
 				};
 
-				class radial_pattern_factory {
-					pattern_type _Pattern_type;
+				class radial_brush_factory {
+					brush_type _Brush_type;
 
 					point _Center0;
 					double _Radius0;
@@ -1134,12 +1134,12 @@ namespace std {
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
-					radial_pattern_factory() noexcept;
-					radial_pattern_factory(const radial_pattern_factory&) = default;
-					radial_pattern_factory& operator=(const radial_pattern_factory&) = default;
-					radial_pattern_factory(radial_pattern_factory&& other) noexcept;
-					radial_pattern_factory& operator=(radial_pattern_factory&& other) noexcept;
-					radial_pattern_factory(const point& center0, double radius0, const point& center1, double radius1) noexcept;
+					radial_brush_factory() noexcept;
+					radial_brush_factory(const radial_brush_factory&) = default;
+					radial_brush_factory& operator=(const radial_brush_factory&) = default;
+					radial_brush_factory(radial_brush_factory&& other) noexcept;
+					radial_brush_factory& operator=(radial_brush_factory&& other) noexcept;
+					radial_brush_factory(const point& center0, double radius0, const point& center1, double radius1) noexcept;
 
 					// Modifiers
 					void add_color_stop_rgba(double offset, const rgba_color& color);
@@ -1155,8 +1155,8 @@ namespace std {
 					::std::tuple<point, double, point, double> radial_circles() const noexcept;
 				};
 
-				class mesh_pattern_factory {
-					pattern_type _Pattern_type;
+				class mesh_brush_factory {
+					brush_type _Brush_type;
 
 					bool _Has_current_patch;
 					unsigned int _Current_patch_index;
@@ -1169,11 +1169,11 @@ namespace std {
 					typedef ::std::tuple<::std::experimental::io2d::path_factory, _Control_points, _Corner_colors> _Patch;
 					::std::vector<_Patch> _Patches;
 				public:
-					mesh_pattern_factory() noexcept;
-					mesh_pattern_factory(const mesh_pattern_factory&) = default;
-					mesh_pattern_factory& operator=(const mesh_pattern_factory&) = default;
-					mesh_pattern_factory(mesh_pattern_factory&& other) noexcept;
-					mesh_pattern_factory& operator=(mesh_pattern_factory&& other) noexcept;
+					mesh_brush_factory() noexcept;
+					mesh_brush_factory(const mesh_brush_factory&) = default;
+					mesh_brush_factory& operator=(const mesh_brush_factory&) = default;
+					mesh_brush_factory(mesh_brush_factory&& other) noexcept;
+					mesh_brush_factory& operator=(mesh_brush_factory&& other) noexcept;
 
 					// Modifiers
 					void begin_patch();
@@ -1231,7 +1231,7 @@ namespace std {
 					// State - saved
 					typedef point _Device_offtype;
 					_Device_offtype _Device_offset = { 0.0, 0.0 };
-					::std::experimental::io2d::pattern _Pattern;
+					::std::experimental::io2d::brush _Brush;
 					::std::experimental::io2d::antialias _Antialias;
 					::std::experimental::io2d::dashes _Dashes;
 					::std::experimental::io2d::fill_rule _Fill_rule;
@@ -1255,7 +1255,7 @@ namespace std {
 					::std::experimental::io2d::font_options _Font_options;
 					// The current scaled_font is created on demand from parameters that are already saved.
 
-					::std::stack<::std::tuple<_Device_offtype, ::std::experimental::io2d::pattern, ::std::experimental::io2d::antialias, ::std::experimental::io2d::dashes, ::std::experimental::io2d::fill_rule, ::std::experimental::io2d::line_cap, ::std::experimental::io2d::line_join, _Line_width_type, _Miter_limit_type, ::std::experimental::io2d::compositing_operator, _Tolerance_type, ::std::experimental::io2d::path, ::std::experimental::io2d::path, ::std::experimental::io2d::path_factory, _Transform_matrix_type, ::std::experimental::io2d::font_face, _Font_matrix_type, ::std::experimental::io2d::font_options>> _Saved_state;
+					::std::stack<::std::tuple<_Device_offtype, ::std::experimental::io2d::brush, ::std::experimental::io2d::antialias, ::std::experimental::io2d::dashes, ::std::experimental::io2d::fill_rule, ::std::experimental::io2d::line_cap, ::std::experimental::io2d::line_join, _Line_width_type, _Miter_limit_type, ::std::experimental::io2d::compositing_operator, _Tolerance_type, ::std::experimental::io2d::path, ::std::experimental::io2d::path, ::std::experimental::io2d::path_factory, _Transform_matrix_type, ::std::experimental::io2d::font_face, _Font_matrix_type, ::std::experimental::io2d::font_options>> _Saved_state;
 
 					void _Ensure_state();
 					void _Ensure_state(::std::error_code& ec) noexcept;
@@ -1291,8 +1291,8 @@ namespace std {
 					void unmap_image(image_surface& image);
 					virtual void save();
 					virtual void restore();
-					void clear_pattern();
-					void pattern(const ::std::experimental::io2d::pattern& source);
+					void clear_brush();
+					void brush(const ::std::experimental::io2d::brush& source);
 					void antialias(::std::experimental::io2d::antialias a);
 					void dashes();
 					void dashes(const ::std::experimental::io2d::dashes& d);
@@ -1315,71 +1315,71 @@ namespace std {
 					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
 					void paint();
 					void paint(const rgba_color& c);
-					void paint(const ::std::experimental::io2d::pattern& pttn);
+					void paint(const ::std::experimental::io2d::brush& b);
 					void paint(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void paint(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void paint(double alpha);
 					void paint(const rgba_color& c, double alpha);
-					void paint(const ::std::experimental::io2d::pattern& pttn, double alpha);
+					void paint(const ::std::experimental::io2d::brush& b, double alpha);
 					void paint(const surface& s, double alpha, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void paint(const surface& s, double alpha, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill();
 					void fill(const rgba_color& c);
-					void fill(const ::std::experimental::io2d::pattern& pttn);
+					void fill(const ::std::experimental::io2d::brush& b);
 					void fill(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill_immediate();
 					void fill_immediate(const rgba_color& c);
-					void fill_immediate(const ::std::experimental::io2d::pattern& pttn);
+					void fill_immediate(const ::std::experimental::io2d::brush& b);
 					void fill_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void fill_immediate(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke();
 					void stroke(const rgba_color& c);
-					void stroke(const ::std::experimental::io2d::pattern& pttn);
+					void stroke(const ::std::experimental::io2d::brush& b);
 					void stroke(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke_immediate();
 					void stroke_immediate(const rgba_color& c);
-					void stroke_immediate(const ::std::experimental::io2d::pattern& pttn);
+					void stroke_immediate(const ::std::experimental::io2d::brush& b);
 					void stroke_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void stroke_immediate(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 
 					// \ref{\iotwod.surface.modifiers.maskrender}, mask render modifiers:
-					void mask(const ::std::experimental::io2d::pattern& maskPttn);
-					void mask(const ::std::experimental::io2d::pattern& maskPttn, const rgba_color& c);
-					void mask(const ::std::experimental::io2d::pattern& maskPttn, const ::std::experimental::io2d::pattern& pttn);
-					void mask(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const ::std::experimental::io2d::brush& maskBrush);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask(const surface& maskSurface);
 					void mask(const surface& maskSurface, const rgba_color& c);
-					void mask(const surface& maskSurface, const ::std::experimental::io2d::pattern& pttn);
+					void mask(const surface& maskSurface, const ::std::experimental::io2d::brush& b);
 					void mask(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask(const surface& maskSurface, const point& maskOrigin);
 					void mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
-					void mask(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::pattern& pttn);
+					void mask(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b);
 					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn);
-					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const rgba_color& c);
-					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const ::std::experimental::io2d::pattern& pttn);
-					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const surface& maskSurface);
 					void mask_immediate(const surface& maskSurface, const rgba_color& c);
-					void mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::pattern& pttn);
+					void mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::brush& b);
 					void mask_immediate(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
-					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::pattern& pttn);
+					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 
 					// \ref{\iotwod.surface.modifiers.textrender}, text render modifiers:
 					point show_text(const ::std::string& utf8, const point& position);
 					point show_text(const ::std::string& utf8, const point& position, const rgba_color& c);
-					point show_text(const ::std::string& utf8, const point& position, const ::std::experimental::io2d::pattern& pttn);
+					point show_text(const ::std::string& utf8, const point& position, const ::std::experimental::io2d::brush& b);
 					point show_text(const ::std::string& utf8, const point& position, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
 					point show_text(const ::std::string& utf8, const point& position, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
@@ -1394,17 +1394,17 @@ namespace std {
 
 					// \ref{\iotwod.surface.observers.stateobjects}, state object observers:
 					::std::experimental::io2d::path path(const path_factory& pf) const;
-					::std::experimental::io2d::pattern create_pattern(const solid_color_pattern_factory& f) const;
-					::std::experimental::io2d::pattern create_pattern(const linear_pattern_factory& f) const;
-					::std::experimental::io2d::pattern create_pattern(const radial_pattern_factory& f) const;
-					::std::experimental::io2d::pattern create_pattern(const mesh_pattern_factory& f) const;
-					::std::experimental::io2d::pattern create_pattern(surface_pattern_factory& f) const;
+					::std::experimental::io2d::brush create_brush(const solid_color_brush_factory& f) const;
+					::std::experimental::io2d::brush create_brush(const linear_brush_factory& f) const;
+					::std::experimental::io2d::brush create_brush(const radial_brush_factory& f) const;
+					::std::experimental::io2d::brush create_brush(const mesh_brush_factory& f) const;
+					::std::experimental::io2d::brush create_brush(surface_brush_factory& f) const;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
 					::std::experimental::io2d::content content() const;
 					point device_offset() const;
 					bool has_surface_resource() const;
-					::std::experimental::io2d::pattern pattern() const;
+					::std::experimental::io2d::brush brush() const;
 					::std::experimental::io2d::antialias antialias() const;
 					int dashes_count() const;
 					::std::experimental::io2d::dashes dashes() const;
@@ -1507,7 +1507,7 @@ namespace std {
 					::std::function<void(display_surface& sfc)> _Size_change_fn;
 					typedef ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> _User_scaling_fn_type;
 					 _User_scaling_fn_type _User_scaling_fn = nullptr;
-					 ::std::experimental::io2d::pattern _Letterbox_pttn;
+					 ::std::experimental::io2d::brush _Letterbox_brush;
 
 					void _Make_native_surface_and_context();
 					void _All_dimensions(int w, int h, int dw, int dh);
@@ -1522,7 +1522,7 @@ namespace std {
 						_Display_width_type,
 						_Display_height_type,
 						_User_scaling_fn_type,
-						::std::experimental::io2d::pattern>> _Display_saved_state;
+						::std::experimental::io2d::brush>> _Display_saved_state;
 #ifdef _WIN32_WINNT
 					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 					DWORD _Window_style;
@@ -1574,9 +1574,9 @@ namespace std {
 					void display_dimensions(int dw, int dh);
 					void scaling(::std::experimental::io2d::scaling scl);
 					void user_scaling_fn(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn);
-					void clear_letterbox_pattern();
-					void letterbox_pattern(const rgba_color& c);
-					void letterbox_pattern(const ::std::experimental::io2d::pattern& pttn);
+					void clear_letterbox_brush();
+					void letterbox_brush(const rgba_color& c);
+					void letterbox_brush(const ::std::experimental::io2d::brush& b);
 					int join();
 
 					::std::experimental::io2d::format format() const;
@@ -1588,23 +1588,23 @@ namespace std {
 					::std::tuple<int, int> display_dimensions() const;
 					::std::experimental::io2d::scaling scaling() const;
 					const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& user_scaling_fn() const;
-					::std::experimental::io2d::pattern letterbox_pattern() const;
+					::std::experimental::io2d::brush letterbox_brush() const;
 				};
 
-				class surface_pattern_factory {
+				class surface_brush_factory {
 					mutable ::std::recursive_mutex _Lock;
-					pattern_type _Pattern_type;
+					brush_type _Brush_type;
 					image_surface _Surface;
 
 					friend ::std::experimental::io2d::surface;
 
 				public:
-					surface_pattern_factory();
-					surface_pattern_factory(surface_pattern_factory&);
-					surface_pattern_factory& operator=(surface_pattern_factory&);
-					surface_pattern_factory(surface_pattern_factory&& other);
-					surface_pattern_factory& operator=(surface_pattern_factory&& other);
-					surface_pattern_factory(::std::experimental::io2d::surface& s);
+					surface_brush_factory();
+					surface_brush_factory(surface_brush_factory&);
+					surface_brush_factory& operator=(surface_brush_factory&);
+					surface_brush_factory(surface_brush_factory&& other);
+					surface_brush_factory& operator=(surface_brush_factory&& other);
+					surface_brush_factory(::std::experimental::io2d::surface& s);
 
 					// Modifiers
 					image_surface surface(::std::experimental::io2d::surface& s);

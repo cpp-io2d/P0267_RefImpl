@@ -631,38 +631,38 @@ namespace std {
 				}
 			}
 
-			inline cairo_pattern_type_t _Pattern_type_to_cairo_pattern_type_t(::std::experimental::io2d::pattern_type pt) {
-				switch (pt) {
-				case ::std::experimental::io2d::pattern_type::solid_color:
+			inline cairo_pattern_type_t _Brush_type_to_cairo_pattern_type_t(::std::experimental::io2d::brush_type bt) {
+				switch (bt) {
+				case ::std::experimental::io2d::brush_type::solid_color:
 					return CAIRO_PATTERN_TYPE_SOLID;
-				case ::std::experimental::io2d::pattern_type::surface:
+				case ::std::experimental::io2d::brush_type::surface:
 					return CAIRO_PATTERN_TYPE_SURFACE;
-				case ::std::experimental::io2d::pattern_type::linear:
+				case ::std::experimental::io2d::brush_type::linear:
 					return CAIRO_PATTERN_TYPE_LINEAR;
-				case ::std::experimental::io2d::pattern_type::radial:
+				case ::std::experimental::io2d::brush_type::radial:
 					return CAIRO_PATTERN_TYPE_RADIAL;
-				case ::std::experimental::io2d::pattern_type::mesh:
+				case ::std::experimental::io2d::brush_type::mesh:
 					return CAIRO_PATTERN_TYPE_MESH;
-				case ::std::experimental::io2d::pattern_type::unknown:
-					assert("Invalid value: pattern_type::unknown." && false);
-					throw ::std::runtime_error("Value pattern_type::unknown is invalid.");
+				case ::std::experimental::io2d::brush_type::unknown:
+					assert("Invalid value: brush_type::unknown." && false);
+					throw ::std::runtime_error("Value brush_type::unknown is invalid.");
 				default:
-					throw ::std::runtime_error("Unknown pattern_type value.");
+					throw ::std::runtime_error("Unknown brush_type value.");
 				}
 			}
 
-			inline ::std::experimental::io2d::pattern_type _Cairo_pattern_type_t_to_pattern_type(cairo_pattern_type_t cpt) {
+			inline ::std::experimental::io2d::brush_type _Cairo_pattern_type_t_to_brush_type(cairo_pattern_type_t cpt) {
 				switch (cpt) {
 				case CAIRO_PATTERN_TYPE_SOLID:
-					return ::std::experimental::io2d::pattern_type::solid_color;
+					return ::std::experimental::io2d::brush_type::solid_color;
 				case CAIRO_PATTERN_TYPE_SURFACE:
-					return ::std::experimental::io2d::pattern_type::surface;
+					return ::std::experimental::io2d::brush_type::surface;
 				case CAIRO_PATTERN_TYPE_LINEAR:
-					return ::std::experimental::io2d::pattern_type::linear;
+					return ::std::experimental::io2d::brush_type::linear;
 				case CAIRO_PATTERN_TYPE_RADIAL:
-					return ::std::experimental::io2d::pattern_type::radial;
+					return ::std::experimental::io2d::brush_type::radial;
 				case CAIRO_PATTERN_TYPE_MESH:
-					return ::std::experimental::io2d::pattern_type::mesh;
+					return ::std::experimental::io2d::brush_type::mesh;
 				case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
 					throw ::std::runtime_error("Unsupported cairo_pattern_type_t value 'CAIRO_PATTERN_TYPE_RASTER_SOURCE'.");
 				default:

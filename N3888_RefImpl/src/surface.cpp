@@ -10,7 +10,7 @@ void surface::_Ensure_state() {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
 	}
 	device_offset(_Device_offset);
-	pattern(_Pattern);
+	brush(_Brush);
 	dashes(_Dashes);
 	fill_rule(_Fill_rule);
 	line_cap(_Line_cap);
@@ -42,7 +42,7 @@ surface::surface(format fmt, int width, int height)
 	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get())))
 	, _Content(_Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get())))
 	, _Device_offset(0.0, 0.0)
-	, _Pattern(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0))
+	, _Brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0))
 	, _Fill_rule(::std::experimental::io2d::fill_rule::winding)
 	, _Line_cap(::std::experimental::io2d::line_cap::butt)
 	, _Line_join(::std::experimental::io2d::line_join::miter)
@@ -72,7 +72,7 @@ surface::surface(surface&& other)
 	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get())))
 	, _Content(_Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get())))
 	, _Device_offset(move(other._Device_offset))
-	, _Pattern(move(other._Pattern))
+	, _Brush(move(other._Brush))
 	, _Fill_rule(move(other._Fill_rule))
 	, _Line_cap(move(other._Line_cap))
 	, _Line_join(move(other._Line_join))
@@ -98,7 +98,7 @@ surface& surface::operator=(surface&& other) {
 		_Format = _Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get()));
 		_Content = _Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get()));
 		_Device_offset = move(other._Device_offset);
-		_Pattern = move(other._Pattern);
+		_Brush = move(other._Brush);
 		_Fill_rule = move(other._Fill_rule);
 		_Line_cap = move(other._Line_cap);
 		_Line_join = move(other._Line_join);
@@ -126,7 +126,7 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	, _Format(fmt)
 	, _Content(ctnt)
 	, _Device_offset(0.0, 0.0)
-	, _Pattern(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
+	, _Brush(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
 	, _Fill_rule(::std::experimental::io2d::fill_rule::winding)
 	, _Line_cap(::std::experimental::io2d::line_cap::butt)
 	, _Line_join(::std::experimental::io2d::line_join::miter)
@@ -155,7 +155,7 @@ surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, 
 	, _Format(other._Format)
 	, _Content(ctnt)
 	, _Device_offset(0.0, 0.0)
-	, _Pattern(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
+	, _Brush(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
 	, _Fill_rule(::std::experimental::io2d::fill_rule::winding)
 	, _Line_cap(::std::experimental::io2d::line_cap::butt)
 	, _Line_join(::std::experimental::io2d::line_join::miter)
@@ -230,7 +230,7 @@ void surface::unmap_image(image_surface& image) {
 
 void surface::save() {
 	cairo_save(_Context.get());
-	_Saved_state.push(make_tuple(_Device_offset, _Pattern, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Tolerance, _Default_path, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
+	_Saved_state.push(make_tuple(_Device_offset, _Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Tolerance, _Default_path, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
 }
 
 void surface::restore() {
@@ -238,7 +238,7 @@ void surface::restore() {
 	{
 		auto& t = _Saved_state.top();
 		_Device_offset = get<0>(t);
-		_Pattern = get<1>(t);
+		_Brush = get<1>(t);
 		_Antialias = get<2>(t);
 		_Dashes = get<3>(t);
 		_Fill_rule = get<4>(t);
@@ -261,13 +261,13 @@ void surface::restore() {
 	_Saved_state.pop();
 }
 
-void surface::clear_pattern() {
+void surface::clear_brush() {
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
-	_Pattern = ::std::experimental::io2d::pattern(cairo_pattern_reference(cairo_get_source(_Context.get())));
+	_Brush = ::std::experimental::io2d::brush(cairo_pattern_reference(cairo_get_source(_Context.get())));
 }
 
-void surface::pattern(const ::std::experimental::io2d::pattern& source) {
-	_Pattern = source;
+void surface::brush(const ::std::experimental::io2d::brush& source) {
+	_Brush = source;
 }
 
 void surface::antialias(::std::experimental::io2d::antialias a) {
@@ -359,23 +359,23 @@ path_factory& surface::immediate() {
 }
 
 void surface::paint() {
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_paint(_Context.get());
 }
 
 void surface::paint(const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	paint();
 }
 
-void surface::paint(const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+void surface::paint(const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	paint();
 }
 
@@ -395,23 +395,23 @@ void surface::paint(const surface& s, const matrix_2d& m, extend e, filter f) {
 }
 
 void surface::paint(double alpha) {
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_paint_with_alpha(_Context.get(), alpha);
 }
 
 void surface::paint(const rgba_color& c, double alpha) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	paint(alpha);
 }
 
-void surface::paint(const ::std::experimental::io2d::pattern& pttn, double alpha) {
-	pattern(pttn);
+void surface::paint(const ::std::experimental::io2d::brush& b, double alpha) {
+	brush(b);
 	paint(alpha);
 }
 
@@ -431,23 +431,23 @@ void surface::paint(const surface& s, double alpha, const matrix_2d& m, extend e
 }
 
 void surface::fill() {
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_fill_preserve(_Context.get());
 }
 
 void surface::fill(const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	fill();
 }
 
-void surface::fill(const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+void surface::fill(const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	fill();
 }
 
@@ -469,24 +469,24 @@ void surface::fill(const surface& s, const matrix_2d& m, extend e, filter f) {
 void surface::fill_immediate() {
 	auto currPath = _Current_path;
 	path(path(_Immediate_path));
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_fill(_Context.get());
 	path(currPath);
 }
 
 void surface::fill_immediate(const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	fill_immediate();
 }
 
-void surface::fill_immediate(const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+void surface::fill_immediate(const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	fill_immediate();
 }
 
@@ -509,23 +509,23 @@ void surface::fill_immediate(const surface& s, const matrix_2d& m, extend e, fil
 }
 
 void surface::stroke() {
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_stroke_preserve(_Context.get());
 }
 
 void surface::stroke(const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	stroke();
 }
 
-void surface::stroke(const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+void surface::stroke(const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	stroke();
 }
 
@@ -547,24 +547,24 @@ void surface::stroke(const surface& s, const matrix_2d& m, extend e, filter f) {
 void surface::stroke_immediate() {
 	auto currPath = _Current_path;
 	path(path(_Immediate_path));
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_stroke(_Context.get());
 	path(currPath);
 }
 
 void surface::stroke_immediate(const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	stroke_immediate();
 }
 
-void surface::stroke_immediate(const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+void surface::stroke_immediate(const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	stroke_immediate();
 }
 
@@ -586,60 +586,60 @@ void surface::stroke_immediate(const surface& s, const matrix_2d& m, extend e, f
 	path(currPath);
 }
 
-void surface::mask(const ::std::experimental::io2d::pattern& maskPttn) {
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+void surface::mask(const ::std::experimental::io2d::brush& maskBrush) {
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
-	cairo_mask(_Context.get(), maskPttn.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
+	cairo_mask(_Context.get(), maskBrush.native_handle());
 }
 
-void surface::mask(const ::std::experimental::io2d::pattern& maskPttn, const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
-	mask(maskPttn);
+void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c) {
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
+	mask(maskBrush);
 }
 
-void surface::mask(const ::std::experimental::io2d::pattern& maskPttn, const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
-	mask(maskPttn);
+void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b) {
+	brush(b);
+	mask(maskBrush);
 }
 
-void surface::mask(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const point& origin, extend e, filter f) {
-	mask(maskPttn, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin, extend e, filter f) {
+	mask(maskBrush, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
-void surface::mask(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const matrix_2d& m, extend e, filter f) {
+void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
 	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
 	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
 	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
 	cairo_pattern_set_matrix(pat, &cmat);
-	cairo_mask(_Context.get(), maskPttn.native_handle());
+	cairo_mask(_Context.get(), maskBrush.native_handle());
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
 void surface::mask(const surface& maskSurface) {
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
 }
 
 void surface::mask(const surface& maskSurface, const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	mask(maskSurface);
 }
 
-void surface::mask(const surface& maskSurface, const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+void surface::mask(const surface& maskSurface, const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	mask(maskSurface);
 }
 
@@ -659,23 +659,23 @@ void surface::mask(const surface& maskSurface, const surface& s, const matrix_2d
 }
 
 void surface::mask(const surface& maskSurface, const point& maskOrigin) {
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
 }
 
 void surface::mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	mask(maskSurface, maskOrigin);
 }
 
-void surface::mask(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+void surface::mask(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	mask(maskSurface, maskOrigin);
 }
 
@@ -694,35 +694,35 @@ void surface::mask(const surface& maskSurface, const point& maskOrigin, const su
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
-void surface::mask_immediate(const ::std::experimental::io2d::pattern& maskPttn) {
+void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush) {
 	auto currPath = _Current_path;
 	path(path(_Immediate_path));
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
-	cairo_mask(_Context.get(), maskPttn.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
+	cairo_mask(_Context.get(), maskBrush.native_handle());
 	path(currPath);
 }
 
-void surface::mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
-	mask(maskPttn);
+void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c) {
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
+	mask(maskBrush);
 }
 
-void surface::mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
-	mask(maskPttn);
+void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b) {
+	brush(b);
+	mask(maskBrush);
 }
 
-void surface::mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const point& origin, extend e, filter f) {
-	mask_immediate(maskPttn, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
+void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin, extend e, filter f) {
+	mask_immediate(maskBrush, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
-void surface::mask_immediate(const ::std::experimental::io2d::pattern& maskPttn, const surface& s, const matrix_2d& m, extend e, filter f) {
+void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
 	path(path(_Immediate_path));
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
@@ -731,7 +731,7 @@ void surface::mask_immediate(const ::std::experimental::io2d::pattern& maskPttn,
 	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
 	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
 	cairo_pattern_set_matrix(pat, &cmat);
-	cairo_mask(_Context.get(), maskPttn.native_handle());
+	cairo_mask(_Context.get(), maskBrush.native_handle());
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 	path(currPath);
 }
@@ -739,24 +739,24 @@ void surface::mask_immediate(const ::std::experimental::io2d::pattern& maskPttn,
 void surface::mask_immediate(const surface& maskSurface) {
 	auto currPath = _Current_path;
 	path(path(_Immediate_path));
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
 	path(currPath);
 }
 
 void surface::mask_immediate(const surface& maskSurface, const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	mask_immediate(maskSurface);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+void surface::mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	mask_immediate(maskSurface);
 }
 
@@ -780,24 +780,24 @@ void surface::mask_immediate(const surface& maskSurface, const surface& s, const
 void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin) {
 	auto currPath = _Current_path;
 	path(path(_Immediate_path));
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
 	path(currPath);
 }
 
 void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	mask_immediate(maskSurface, maskOrigin);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	mask_immediate(maskSurface, maskOrigin);
 }
 
@@ -821,12 +821,12 @@ void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin
 point surface::show_text(const string& utf8, const point& position) {
 	cairo_new_path(_Context.get());
 	cairo_move_to(_Context.get(), position.x(), position.y());
-	cairo_pattern_set_extend(_Pattern.native_handle(), _Extend_to_cairo_extend_t(_Pattern.extend()));
-	cairo_pattern_set_filter(_Pattern.native_handle(), _Filter_to_cairo_filter_t(_Pattern.filter()));
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Pattern.matrix().m00(), _Pattern.matrix().m01(), _Pattern.matrix().m10(), _Pattern.matrix().m11(), _Pattern.matrix().m20(), _Pattern.matrix().m21());
-	cairo_pattern_set_matrix(_Pattern.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Pattern.native_handle());
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_show_text(_Context.get(), utf8.c_str());
 	double x, y;
 	cairo_get_current_point(_Context.get(), &x, &y);
@@ -835,13 +835,13 @@ point surface::show_text(const string& utf8, const point& position) {
 }
 
 point surface::show_text(const string& utf8, const point& position, const rgba_color& c) {
-	solid_color_pattern_factory factory(c);
-	pattern(create_pattern(factory));
+	solid_color_brush_factory factory(c);
+	brush(create_brush(factory));
 	return show_text(utf8, position);
 }
 
-point surface::show_text(const string& utf8, const point& position, const ::std::experimental::io2d::pattern& pttn) {
-	pattern(pttn);
+point surface::show_text(const string& utf8, const point& position, const ::std::experimental::io2d::brush& b) {
+	brush(b);
 	return show_text(utf8, position);
 }
 
@@ -891,16 +891,16 @@ path surface::path(const path_factory& pf) const {
 	return ::std::experimental::io2d::path(pf, *this);
 }
 
-pattern surface::create_pattern(const solid_color_pattern_factory& f) const {
+brush surface::create_brush(const solid_color_brush_factory& f) const {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(f.red(), f.green(), f.blue(), f.alpha()), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
-	auto pttn = ::std::experimental::io2d::pattern(pat.get());
+	auto b = ::std::experimental::io2d::brush(pat.get());
 	pat.release();
-	return pttn;
+	return b;
 }
 
-pattern surface::create_pattern(const linear_pattern_factory& f) const {
+brush surface::create_brush(const linear_brush_factory& f) const {
 	auto points = f.linear_points();
 	point& lpt0 = get<0>(points);
 	point& lpt1 = get<1>(points);
@@ -916,12 +916,12 @@ pattern surface::create_pattern(const linear_pattern_factory& f) const {
 	}
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
-	auto pttn = ::std::experimental::io2d::pattern(pat.get());
+	auto b = ::std::experimental::io2d::brush(pat.get());
 	pat.release();
-	return pttn;
+	return b;
 }
 
-pattern surface::create_pattern(const radial_pattern_factory& f) const {
+brush surface::create_brush(const radial_brush_factory& f) const {
 	auto points = f.radial_circles();
 	point& center0 = get<0>(points);
 	double& radius0 = get<1>(points);
@@ -939,12 +939,12 @@ pattern surface::create_pattern(const radial_pattern_factory& f) const {
 	}
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
-	auto pttn = ::std::experimental::io2d::pattern(pat.get());
+	auto b = ::std::experimental::io2d::brush(pat.get());
 	pat.release();
-	return pttn;
+	return b;
 }
 
-pattern surface::create_pattern(const mesh_pattern_factory& f) const {
+brush surface::create_brush(const mesh_brush_factory& f) const {
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> upPat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
 	auto pat = upPat.get();
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
@@ -1031,23 +1031,23 @@ pattern surface::create_pattern(const mesh_pattern_factory& f) const {
 		}
 		cairo_mesh_pattern_end_patch(pat);
 	}
-	auto pttn = ::std::experimental::io2d::pattern(pat);
-	upPat.release(); // Release the pattern only after it has been safely transferred to pttn.
-	return pttn;
+	auto b = ::std::experimental::io2d::brush(pat);
+	upPat.release(); // Release the cairo_pattern_t only after it has been safely transferred to b.
+	return b;
 }
 
-pattern surface::create_pattern(surface_pattern_factory& f) const {
-	auto patternSurface = _Surface_create_image_surface_copy(f._Surface);
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_for_surface(patternSurface.native_handle().csfce), &cairo_pattern_destroy);
+brush surface::create_brush(surface_brush_factory& f) const {
+	auto brushSurface = _Surface_create_image_surface_copy(f._Surface);
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_for_surface(brushSurface.native_handle().csfce), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
-	auto pttn = ::std::experimental::io2d::pattern(pat.get());
+	auto b = ::std::experimental::io2d::brush(pat.get());
 	pat.release();
-	return pttn;
+	return b;
 }
 
-pattern surface::pattern() const {
-	return _Pattern;
+brush surface::brush() const {
+	return _Brush;
 }
 
 content surface::content() const {

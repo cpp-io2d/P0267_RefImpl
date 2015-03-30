@@ -199,23 +199,23 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="font_options.cpp" />
     <ClCompile Include="image_surface.cpp" />
     <ClCompile Include="io2d_error_category.cpp" />
-    <ClCompile Include="linear_pattern_factory.cpp" />
+    <ClCompile Include="linear_brush_factory.cpp" />
     <ClCompile Include="matrix_2d.cpp" />
-    <ClCompile Include="mesh_pattern_factory.cpp" />
+    <ClCompile Include="mesh_brush_factory.cpp" />
     <ClCompile Include="path.cpp" />
     <ClCompile Include="path_factory.cpp" />
     <ClCompile Include="path_data.cpp" />
-    <ClCompile Include="pattern.cpp" />
+    <ClCompile Include="brush.cpp" />
     <ClCompile Include="point.cpp" />
-    <ClCompile Include="radial_pattern_factory.cpp" />
+    <ClCompile Include="radial_brush_factory.cpp" />
     <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="rgba_color.cpp" />
     <ClCompile Include="sample_draw.cpp" />
-    <ClCompile Include="solid_color_pattern_factory.cpp" />
+    <ClCompile Include="solid_color_brush_factory.cpp" />
     <ClCompile Include="standalone_functions.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="simple_font_face.cpp" />
-    <ClCompile Include="surface_pattern_factory.cpp" />
+    <ClCompile Include="surface_brush_factory.cpp" />
     <ClCompile Include="text_extents.cpp" />
   </ItemGroup>
   <ItemGroup>

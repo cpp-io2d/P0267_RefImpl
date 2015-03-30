@@ -50,7 +50,7 @@ const char* io2d_error_category::name() const noexcept {
 	case io2d_error::device_error:
 		return "The operation failed. The device encountered an error.";
 	case io2d_error::invalid_mesh_construction:
-		return "A mesh construction operation on a mesh_pattern_factory object failed. Mesh construction operations are only permitted in between a call to either mesh_pattern_factory::begin_patch or mesh_pattern_factory::begin_edit_patch and mesh_pattern_factory::end_patch.";
+		return "A mesh construction operation on a mesh_brush_factory object failed. Mesh construction operations are only permitted in between a call to either mesh_brush_factory::begin_patch or mesh_brush_factory::begin_edit_patch and mesh_brush_factory::end_patch.";
 	default:
 		return "Unknown value";
 	}

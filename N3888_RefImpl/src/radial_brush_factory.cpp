@@ -5,42 +5,51 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-linear_pattern_factory::linear_pattern_factory() noexcept
-	: _Pattern_type(pattern_type::linear)
-	, _Point0()
-	, _Point1()
-	, _Color_stops() {
+radial_brush_factory::radial_brush_factory() noexcept
+	: _Brush_type(brush_type::radial)
+	, _Center0()
+	, _Radius0()
+	, _Center1()
+	, _Radius1() {
 }
 
-linear_pattern_factory::linear_pattern_factory(linear_pattern_factory&& other) noexcept
-	: _Pattern_type()
-	, _Point0()
-	, _Point1()
+radial_brush_factory::radial_brush_factory(radial_brush_factory&& other) noexcept
+	: _Brush_type()
+	, _Center0()
+	, _Radius0()
+	, _Center1()
+	, _Radius1()
 	, _Color_stops() {
-	_Pattern_type = move(other._Pattern_type);
-	_Point0 = move(other._Point0);
-	_Point1 = move(other._Point1);
+	_Brush_type = move(other._Brush_type);
+	_Center0 = move(other._Center0);
+	_Radius0 = move(other._Radius0);
+	_Center1 = move(other._Center1);
+	_Radius1 = move(other._Radius1);
 	_Color_stops = move(other._Color_stops);
 }
 
-linear_pattern_factory& linear_pattern_factory::operator=(linear_pattern_factory&& other) noexcept {
+radial_brush_factory& radial_brush_factory::operator=(radial_brush_factory&& other) noexcept {
 	if (this != &other) {
-		_Pattern_type = move(other._Pattern_type);
-		_Point0 = move(other._Point0);
-		_Point1 = move(other._Point1);
+		_Brush_type = move(other._Brush_type);
+		_Center0 = move(other._Center0);
+		_Radius0 = move(other._Radius0);
+		_Center1 = move(other._Center1);
+		_Radius1 = move(other._Radius1);
 		_Color_stops = move(other._Color_stops);
 	}
 	return *this;
 }
 
-linear_pattern_factory::linear_pattern_factory(const point& pt0, const point& pt1) noexcept
-: _Pattern_type(pattern_type::linear)
-, _Point0(pt0)
-, _Point1(pt1)
-, _Color_stops() {
+radial_brush_factory::radial_brush_factory(const point& center0, double radius0, const point& center1, double radius1) noexcept
+	: _Brush_type(brush_type::radial)
+	, _Center0(center0)
+	, _Radius0(radius0)
+	, _Center1(center1)
+	, _Radius1(radius1)
+	, _Color_stops() {
 }
 
-void linear_pattern_factory::add_color_stop_rgba(double offset, const rgba_color& color) {
+void radial_brush_factory::add_color_stop_rgba(double offset, const rgba_color& color) {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -49,7 +58,7 @@ void linear_pattern_factory::add_color_stop_rgba(double offset, const rgba_color
 	_Color_stops.push_back(make_tuple(offset, color));
 }
 
-void linear_pattern_factory::add_color_stop_rgba(double offset, const rgba_color& color, error_code& ec) noexcept {
+void radial_brush_factory::add_color_stop_rgba(double offset, const rgba_color& color, error_code& ec) noexcept {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -65,7 +74,7 @@ void linear_pattern_factory::add_color_stop_rgba(double offset, const rgba_color
 	ec.clear();
 }
 
-void linear_pattern_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
+void radial_brush_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -79,7 +88,7 @@ void linear_pattern_factory::color_stop_rgba(unsigned int index, double offset, 
 	_Color_stops[index] = make_tuple(offset, color);
 }
 
-void linear_pattern_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color, error_code& ec) noexcept {
+void radial_brush_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color, error_code& ec) noexcept {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -100,16 +109,18 @@ void linear_pattern_factory::color_stop_rgba(unsigned int index, double offset, 
 	ec.clear();
 }
 
-void linear_pattern_factory::linear_points(const point& pt0, const point& pt1) noexcept {
-	_Point0 = pt0;
-	_Point1 = pt1;
+void radial_brush_factory::radial_circles(const point& center0, double radius0, const point& center1, double radius1) noexcept {
+	_Center0 = center0;
+	_Radius0 = radius0;
+	_Center1 = center1;
+	_Radius1 = radius1;
 }
 
-int linear_pattern_factory::color_stop_count() const noexcept {
+int radial_brush_factory::color_stop_count() const noexcept {
 	return static_cast<int>(_Color_stops.size());
 }
 
-tuple<double, rgba_color> linear_pattern_factory::color_stop_rgba(unsigned int index) const {
+tuple<double, rgba_color> radial_brush_factory::color_stop_rgba(unsigned int index) const {
 	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -117,7 +128,7 @@ tuple<double, rgba_color> linear_pattern_factory::color_stop_rgba(unsigned int i
 	return _Color_stops.at(index);
 }
 
-tuple<double, rgba_color> linear_pattern_factory::color_stop_rgba(unsigned int index, error_code& ec) const noexcept {
+tuple<double, rgba_color> radial_brush_factory::color_stop_rgba(unsigned int index, error_code& ec) const noexcept {
 	if (index >= _Color_stops.size()) {
 		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return make_tuple(0.0, rgba_color::transparent_black());
@@ -134,6 +145,6 @@ tuple<double, rgba_color> linear_pattern_factory::color_stop_rgba(unsigned int i
 	}
 }
 
-tuple<point, point> linear_pattern_factory::linear_points() const noexcept {
-	return make_tuple(_Point0, _Point1);
+tuple<point, double, point, double> radial_brush_factory::radial_circles() const noexcept {
+	return make_tuple(_Center0, _Radius0, _Center1, _Radius1);
 }
