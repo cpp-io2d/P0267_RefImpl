@@ -892,7 +892,8 @@ path surface::path(const path_factory& pf) const {
 }
 
 brush surface::create_brush(const solid_color_brush_factory& f) const {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(f.red(), f.green(), f.blue(), f.alpha()), &cairo_pattern_destroy);
+	auto color = f.color();
+	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(color.r(), color.g(), color.b(), color.a()), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	auto b = ::std::experimental::io2d::brush(pat.get());

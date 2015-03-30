@@ -6,18 +6,15 @@ using namespace std;
 using namespace std::experimental::io2d;
 
 linear_brush_factory::linear_brush_factory() noexcept
-	: _Brush_type(brush_type::linear)
-	, _Point0()
+	: _Point0()
 	, _Point1()
 	, _Color_stops() {
 }
 
 linear_brush_factory::linear_brush_factory(linear_brush_factory&& other) noexcept
-	: _Brush_type()
-	, _Point0()
+	: _Point0()
 	, _Point1()
 	, _Color_stops() {
-	_Brush_type = move(other._Brush_type);
 	_Point0 = move(other._Point0);
 	_Point1 = move(other._Point1);
 	_Color_stops = move(other._Color_stops);
@@ -25,7 +22,6 @@ linear_brush_factory::linear_brush_factory(linear_brush_factory&& other) noexcep
 
 linear_brush_factory& linear_brush_factory::operator=(linear_brush_factory&& other) noexcept {
 	if (this != &other) {
-		_Brush_type = move(other._Brush_type);
 		_Point0 = move(other._Point0);
 		_Point1 = move(other._Point1);
 		_Color_stops = move(other._Color_stops);
@@ -34,10 +30,9 @@ linear_brush_factory& linear_brush_factory::operator=(linear_brush_factory&& oth
 }
 
 linear_brush_factory::linear_brush_factory(const point& pt0, const point& pt1) noexcept
-: _Brush_type(brush_type::linear)
-, _Point0(pt0)
-, _Point1(pt1)
-, _Color_stops() {
+	: _Point0(pt0)
+	, _Point1(pt1)
+	, _Color_stops() {
 }
 
 void linear_brush_factory::add_color_stop_rgba(double offset, const rgba_color& color) {

@@ -6,21 +6,18 @@ using namespace std;
 using namespace std::experimental::io2d;
 
 radial_brush_factory::radial_brush_factory() noexcept
-	: _Brush_type(brush_type::radial)
-	, _Center0()
+	: _Center0()
 	, _Radius0()
 	, _Center1()
 	, _Radius1() {
 }
 
 radial_brush_factory::radial_brush_factory(radial_brush_factory&& other) noexcept
-	: _Brush_type()
-	, _Center0()
+	: _Center0()
 	, _Radius0()
 	, _Center1()
 	, _Radius1()
 	, _Color_stops() {
-	_Brush_type = move(other._Brush_type);
 	_Center0 = move(other._Center0);
 	_Radius0 = move(other._Radius0);
 	_Center1 = move(other._Center1);
@@ -30,7 +27,6 @@ radial_brush_factory::radial_brush_factory(radial_brush_factory&& other) noexcep
 
 radial_brush_factory& radial_brush_factory::operator=(radial_brush_factory&& other) noexcept {
 	if (this != &other) {
-		_Brush_type = move(other._Brush_type);
 		_Center0 = move(other._Center0);
 		_Radius0 = move(other._Radius0);
 		_Center1 = move(other._Center1);
@@ -41,8 +37,7 @@ radial_brush_factory& radial_brush_factory::operator=(radial_brush_factory&& oth
 }
 
 radial_brush_factory::radial_brush_factory(const point& center0, double radius0, const point& center1, double radius1) noexcept
-	: _Brush_type(brush_type::radial)
-	, _Center0(center0)
+	: _Center0(center0)
 	, _Radius0(radius0)
 	, _Center1(center1)
 	, _Radius1(radius1)

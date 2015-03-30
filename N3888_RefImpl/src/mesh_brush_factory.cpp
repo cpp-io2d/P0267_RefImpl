@@ -6,8 +6,7 @@ using namespace std;
 using namespace std::experimental::io2d;
 
 mesh_brush_factory::mesh_brush_factory() noexcept
-	: _Brush_type(brush_type::mesh)
-	, _Has_current_patch()
+	: _Has_current_patch()
 	, _Current_patch_index()
 	, _Current_patch_side_count()
 	, _Current_patch_initial_point()
@@ -16,14 +15,12 @@ mesh_brush_factory::mesh_brush_factory() noexcept
 }
 
 mesh_brush_factory::mesh_brush_factory(mesh_brush_factory&& other) noexcept
-	: _Brush_type()
-	, _Has_current_patch()
+	: _Has_current_patch()
 	, _Current_patch_index()
 	, _Current_patch_side_count()
 	, _Current_patch_initial_point()
 	, _Has_current_point()
 	, _Patches() {
-	_Brush_type = move(other._Brush_type);
 	_Has_current_patch = move(other._Has_current_patch);
 	_Has_current_point = move(other._Has_current_point);
 	_Current_patch_index = move(other._Current_patch_index);
@@ -34,7 +31,6 @@ mesh_brush_factory::mesh_brush_factory(mesh_brush_factory&& other) noexcept
 
 mesh_brush_factory& mesh_brush_factory::operator=(mesh_brush_factory&& other) noexcept {
 	if (this != &other) {
-		_Brush_type = move(other._Brush_type);
 		_Has_current_patch = move(other._Has_current_patch);
 		_Has_current_point = move(other._Has_current_point);
 		_Current_patch_index = move(other._Current_patch_index);

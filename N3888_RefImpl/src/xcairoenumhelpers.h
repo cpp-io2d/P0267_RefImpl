@@ -643,9 +643,6 @@ namespace std {
 					return CAIRO_PATTERN_TYPE_RADIAL;
 				case ::std::experimental::io2d::brush_type::mesh:
 					return CAIRO_PATTERN_TYPE_MESH;
-				case ::std::experimental::io2d::brush_type::unknown:
-					assert("Invalid value: brush_type::unknown." && false);
-					throw ::std::runtime_error("Value brush_type::unknown is invalid.");
 				default:
 					throw ::std::runtime_error("Unknown brush_type value.");
 				}

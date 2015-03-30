@@ -222,7 +222,6 @@ namespace std {
 				};
 
 				enum class brush_type {
-					unknown,
 					solid_color,
 					surface,
 					linear,
@@ -1069,7 +1068,6 @@ namespace std {
 				};
 
 				class solid_color_brush_factory {
-					brush_type _Brush_type;
 					rgba_color _Color;
 
 				public:
@@ -1081,23 +1079,13 @@ namespace std {
 					solid_color_brush_factory(const rgba_color& color) noexcept;
 
 					// Modifiers
-					void rgba(const rgba_color& color) noexcept;
-					void red(double red) noexcept;
-					void green(double green) noexcept;
-					void blue(double blue) noexcept;
-					void alpha(double alpha) noexcept;
+					void color(const rgba_color& color) noexcept;
 
 					// Observers
-					rgba_color rgba() const noexcept;
-					double red() const noexcept;
-					double green() const noexcept;
-					double blue() const noexcept;
-					double alpha() const noexcept;
+					rgba_color color() const noexcept;
 				};
 
 				class linear_brush_factory {
-					brush_type _Brush_type;
-
 					point _Point0;
 					point _Point1;
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
@@ -1125,8 +1113,6 @@ namespace std {
 				};
 
 				class radial_brush_factory {
-					brush_type _Brush_type;
-
 					point _Center0;
 					double _Radius0;
 					point _Center1;
@@ -1156,8 +1142,6 @@ namespace std {
 				};
 
 				class mesh_brush_factory {
-					brush_type _Brush_type;
-
 					bool _Has_current_patch;
 					unsigned int _Current_patch_index;
 					int _Current_patch_side_count;
@@ -1592,15 +1576,14 @@ namespace std {
 				};
 
 				class surface_brush_factory {
-					brush_type _Brush_type;
 					image_surface _Surface;
 
 					friend ::std::experimental::io2d::surface;
 
 				public:
 					surface_brush_factory();
-					surface_brush_factory(surface_brush_factory&);
-					surface_brush_factory& operator=(surface_brush_factory&);
+					surface_brush_factory(const surface_brush_factory&) = delete;
+					surface_brush_factory& operator=(const surface_brush_factory&) = delete;
 					surface_brush_factory(surface_brush_factory&& other);
 					surface_brush_factory& operator=(surface_brush_factory&& other);
 					surface_brush_factory(::std::experimental::io2d::surface& s);
