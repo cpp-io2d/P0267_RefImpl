@@ -605,8 +605,6 @@ namespace std {
 					return CAIRO_FILTER_NEAREST;
 				case ::std::experimental::io2d::filter::bilinear:
 					return CAIRO_FILTER_BILINEAR;
-				case ::std::experimental::io2d::filter::gaussian:
-					return CAIRO_FILTER_GAUSSIAN;
 				default:
 					throw ::std::runtime_error("Unknown filter value.");
 				}
@@ -625,7 +623,7 @@ namespace std {
 				case CAIRO_FILTER_BILINEAR:
 					return ::std::experimental::io2d::filter::bilinear;
 				case CAIRO_FILTER_GAUSSIAN:
-					return ::std::experimental::io2d::filter::gaussian;
+					throw ::std::runtime_error("Unexpected cairo_filter_t value CAIRO_FILTER_GAUSSIAN.");
 				default:
 					throw ::std::runtime_error("Unknown cairo_filter_t value.");
 				}

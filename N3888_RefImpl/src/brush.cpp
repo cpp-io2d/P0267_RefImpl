@@ -12,8 +12,8 @@ brush::native_handle_type brush::native_handle() const noexcept {
 brush::brush(brush::native_handle_type nh) noexcept
 	: _Brush(nh, &cairo_pattern_destroy)
 	, _Brush_type(_Cairo_pattern_type_t_to_brush_type(cairo_pattern_get_type(nh)))
-	, _Extend(::std::experimental::io2d::extend::default_extend)
-	, _Filter(::std::experimental::io2d::filter::default_filter)
+	, _Extend(::std::experimental::io2d::extend::none)
+	, _Filter(::std::experimental::io2d::filter::good)
 	, _Matrix(matrix_2d::init_identity()) {
 }
 

@@ -207,8 +207,7 @@ namespace std {
 					none,
 					repeat,
 					reflect,
-					pad,
-					default_extend = none
+					pad
 				};
 
 				enum class filter {
@@ -216,9 +215,7 @@ namespace std {
 					good,
 					best,
 					nearest,
-					bilinear,
-					gaussian,
-					default_filter = good
+					bilinear
 				};
 
 				enum class brush_type {
@@ -1300,72 +1297,72 @@ namespace std {
 					void paint();
 					void paint(const rgba_color& c);
 					void paint(const ::std::experimental::io2d::brush& b);
-					void paint(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void paint(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void paint(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void paint(double alpha);
 					void paint(const rgba_color& c, double alpha);
 					void paint(const ::std::experimental::io2d::brush& b, double alpha);
-					void paint(const surface& s, double alpha, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void paint(const surface& s, double alpha, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void paint(const surface& s, double alpha, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, double alpha, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void fill();
 					void fill(const rgba_color& c);
 					void fill(const ::std::experimental::io2d::brush& b);
-					void fill(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void fill(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void fill(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void fill(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void fill_immediate();
 					void fill_immediate(const rgba_color& c);
 					void fill_immediate(const ::std::experimental::io2d::brush& b);
-					void fill_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void fill_immediate(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void fill_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void fill_immediate(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void stroke();
 					void stroke(const rgba_color& c);
 					void stroke(const ::std::experimental::io2d::brush& b);
-					void stroke(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void stroke(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void stroke(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void stroke(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void stroke_immediate();
 					void stroke_immediate(const rgba_color& c);
 					void stroke_immediate(const ::std::experimental::io2d::brush& b);
-					void stroke_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void stroke_immediate(const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void stroke_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void stroke_immediate(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 
 					// \ref{\iotwod.surface.modifiers.maskrender}, mask render modifiers:
 					void mask(const ::std::experimental::io2d::brush& maskBrush);
 					void mask(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
 					void mask(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
-					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void mask(const surface& maskSurface);
 					void mask(const surface& maskSurface, const rgba_color& c);
 					void mask(const surface& maskSurface, const ::std::experimental::io2d::brush& b);
-					void mask(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void mask(const surface& maskSurface, const point& maskOrigin);
 					void mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
 					void mask(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b);
-					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush);
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void mask_immediate(const surface& maskSurface);
 					void mask_immediate(const surface& maskSurface, const rgba_color& c);
 					void mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::brush& b);
-					void mask_immediate(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
 					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b);
-					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 
 					// \ref{\iotwod.surface.modifiers.textrender}, text render modifiers:
 					point show_text(const ::std::string& utf8, const point& position);
 					point show_text(const ::std::string& utf8, const point& position, const rgba_color& c);
 					point show_text(const ::std::string& utf8, const point& position, const ::std::experimental::io2d::brush& b);
-					point show_text(const ::std::string& utf8, const point& position, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::default_extend, filter f = filter::default_filter);
-					point show_text(const ::std::string& utf8, const point& position, const surface& s, const matrix_2d& m, extend e = extend::default_extend, filter f = filter::default_filter);
+					point show_text(const ::std::string& utf8, const point& position, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					point show_text(const ::std::string& utf8, const point& position, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
 					void matrix(const matrix_2d& matrix);
 
