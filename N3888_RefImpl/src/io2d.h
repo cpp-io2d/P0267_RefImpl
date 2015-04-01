@@ -117,6 +117,7 @@ namespace std {
 					write_error,
 					surface_finished,
 					invalid_dash,
+					invalid_index,
 					clip_not_representable,
 					invalid_stride,
 					user_font_immutable,
@@ -1608,13 +1609,15 @@ namespace std {
 	struct is_error_condition_enum<::std::experimental::io2d::io2d_error>
 		: public ::std::true_type{ };
 
-	template<>
-	struct is_error_code_enum<::cairo_status_t>
-		: public ::std::true_type{ };
+	//template<>
+	//struct is_error_code_enum<::cairo_status_t>
+	//	: public ::std::true_type{ };
 
 	::std::error_condition make_error_condition(experimental::io2d::io2d_error e) noexcept;
 
-	::std::error_code make_error_code(cairo_status_t e) noexcept;
+//	::std::error_code make_error_code(cairo_status_t e) noexcept;
+
+	::std::error_code make_error_code(experimental::io2d::io2d_error e) noexcept;
 }
 
 #endif

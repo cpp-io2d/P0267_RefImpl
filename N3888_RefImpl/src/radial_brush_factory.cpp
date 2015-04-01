@@ -91,14 +91,14 @@ void radial_brush_factory::color_stop(unsigned int index, double offset, const r
 	assert(color.a() >= 0.0 && color.a() <= 1.0);
 
 	if (index >= _Color_stops.size()) {
-		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
 	}
 
 	try {
 		_Color_stops[index] = make_tuple(offset, color);
 	}
 	catch (const out_of_range&) {
-		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return;
 	}
 	ec.clear();
@@ -125,7 +125,7 @@ tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index) c
 
 tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index, error_code& ec) const noexcept {
 	if (index >= _Color_stops.size()) {
-		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return make_tuple(0.0, rgba_color::transparent_black());
 	}
 
@@ -135,7 +135,7 @@ tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index, e
 		return stop;
 	}
 	catch(const out_of_range&) {
-		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return make_tuple(0.0, rgba_color::transparent_black());
 	}
 }

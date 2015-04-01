@@ -28,7 +28,7 @@ void surface::_Ensure_state() {
 
 void surface::_Ensure_state(error_code& ec) noexcept {
 	if (_Surface == nullptr || _Context == nullptr) {
-		ec = make_error_code(CAIRO_STATUS_NULL_POINTER);
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NULL_POINTER);
 		return;
 	}
 }

@@ -8,6 +8,104 @@
 #include <limits>
 #include <cmath>
 
+// Creates the appropriate error_code for a given cairo_status_t value.
+// cairo_status_t values which are implementation detail errors are all mapped to make_error_code(io2d_error::invalid_status).
+inline ::std::error_code _Cairo_status_t_to_std_error_code(cairo_status_t cs) noexcept{
+	switch (cs) {
+#if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1, 14, 0)
+	case CAIRO_STATUS_JBIG2_GLOBAL_MISSING:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+#endif
+	case CAIRO_STATUS_SUCCESS:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::success);
+	case CAIRO_STATUS_NO_MEMORY:
+		return ::std::make_error_code(::std::errc::not_enough_memory);
+	case CAIRO_STATUS_INVALID_RESTORE:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_restore);
+	case CAIRO_STATUS_INVALID_POP_GROUP:
+		assert(false && "Unexpected value CAIRO_STATUS_INVALID_POP_GROUP.");
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_NO_CURRENT_POINT:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::no_current_point);
+	case CAIRO_STATUS_INVALID_MATRIX:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_matrix);
+	case CAIRO_STATUS_INVALID_STATUS:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_NULL_POINTER:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::null_pointer);
+	case CAIRO_STATUS_INVALID_STRING:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_string);
+	case CAIRO_STATUS_INVALID_PATH_DATA:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_path_data);
+	case CAIRO_STATUS_READ_ERROR:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::read_error);
+	case CAIRO_STATUS_WRITE_ERROR:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::write_error);
+	case CAIRO_STATUS_SURFACE_FINISHED:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::surface_finished);
+	case CAIRO_STATUS_SURFACE_TYPE_MISMATCH:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_PATTERN_TYPE_MISMATCH:
+		assert(false && "Unexpected value CAIRO_STATUS_PATTERN_TYPE_MISMATCH.");
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_INVALID_CONTENT:
+		return ::std::make_error_code(::std::errc::invalid_argument);
+	case CAIRO_STATUS_INVALID_FORMAT:
+		return ::std::make_error_code(::std::errc::invalid_argument);
+	case CAIRO_STATUS_INVALID_VISUAL:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_FILE_NOT_FOUND:
+		return ::std::make_error_code(::std::errc::no_such_file_or_directory);
+	case CAIRO_STATUS_INVALID_DASH:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_dash);
+	case CAIRO_STATUS_INVALID_DSC_COMMENT:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_INVALID_INDEX:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_index);
+	case CAIRO_STATUS_CLIP_NOT_REPRESENTABLE:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::clip_not_representable);
+	case CAIRO_STATUS_TEMP_FILE_ERROR:
+		// Even though it's an I/O error, this is an implementation detail error and as such is invalid_status.
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_INVALID_STRIDE:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_stride);
+	case CAIRO_STATUS_FONT_TYPE_MISMATCH:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_USER_FONT_IMMUTABLE:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::user_font_immutable);
+	case CAIRO_STATUS_USER_FONT_ERROR:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::user_font_error);
+	case CAIRO_STATUS_NEGATIVE_COUNT:
+		return ::std::make_error_code(::std::errc::invalid_argument);
+	case CAIRO_STATUS_INVALID_CLUSTERS:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_clusters);
+	case CAIRO_STATUS_INVALID_SLANT:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_INVALID_WEIGHT:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_INVALID_SIZE:
+		return ::std::make_error_code(::std::errc::invalid_argument);
+	case CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED:
+		assert(false && "CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED encountered but the API doesn't expose user fonts so this status should never occur. What happened?");
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_DEVICE_TYPE_MISMATCH:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_DEVICE_ERROR:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::device_error);
+	case CAIRO_STATUS_INVALID_MESH_CONSTRUCTION:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_mesh_construction);
+	case CAIRO_STATUS_DEVICE_FINISHED:
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	case CAIRO_STATUS_LAST_STATUS:
+		assert(false && "Unexpected value CAIRO_STATUS_LAST_STATUS. The runtime version of cairo is likely newer than the version of cairo this library was compiled against.");
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	default:
+		assert(false && "Unknown cairo_status_t value caught by default case. The runtime version of cairo is likely newer than the version of cairo this library was compiled against.");
+		return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+	}
+}
+
+
 // Throws a system_error with an error_code formed from the 's' argument with a category from io2d_category().
 inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 	assert(s != CAIRO_STATUS_LAST_STATUS && s != CAIRO_STATUS_INVALID_POP_GROUP);
@@ -28,28 +126,9 @@ inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 				if (s == CAIRO_STATUS_INVALID_INDEX || s == CAIRO_STATUS_INVALID_SIZE) {
 					throw ::std::out_of_range{ "An index or size parameter has an invalid value." };
 				}
-				else {
-					if (s == CAIRO_STATUS_SURFACE_TYPE_MISMATCH
-						|| s == CAIRO_STATUS_PATTERN_TYPE_MISMATCH
-						|| s == CAIRO_STATUS_FONT_TYPE_MISMATCH
-						|| s == CAIRO_STATUS_DEVICE_TYPE_MISMATCH
-						|| s == CAIRO_STATUS_DEVICE_FINISHED
-						|| s == CAIRO_STATUS_TEMP_FILE_ERROR
-						|| s == CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED
-						|| s == CAIRO_STATUS_INVALID_VISUAL
-						|| s == CAIRO_STATUS_INVALID_DSC_COMMENT
-						|| s == CAIRO_STATUS_INVALID_SLANT
-						|| s == CAIRO_STATUS_INVALID_WEIGHT) {
-						throw ::std::system_error(::std::make_error_code(CAIRO_STATUS_INVALID_STATUS));
-					}
-					else {
-						if (s == CAIRO_STATUS_FILE_NOT_FOUND) {
-							throw ::std::system_error(::std::make_error_code(::std::errc::no_such_file_or_directory));
-						}
-					}
-				}
 			}
-			throw ::std::system_error(::std::make_error_code(s));
+
+			throw ::std::system_error(_Cairo_status_t_to_std_error_code(s));
 		}
 	}
 }

@@ -39,44 +39,12 @@ namespace std {
 }
 
 namespace std {
-	::std::error_condition make_error_condition(io2d_error err) noexcept{
+	::std::error_condition make_error_condition(io2d_error err) noexcept {
 		return ::std::error_condition(static_cast<int>(err), io2d_category());
 	}
 
-		::std::error_code make_error_code(cairo_status_t code) noexcept{
-		if (code == CAIRO_STATUS_NO_MEMORY) {
-			return make_error_code(errc::not_enough_memory);
-		}
-		else {
-			if (code == CAIRO_STATUS_INVALID_FORMAT || code == CAIRO_STATUS_INVALID_CONTENT) {
-				return make_error_code(errc::invalid_argument);
-			}
-			else {
-				if (code == CAIRO_STATUS_INVALID_INDEX || code == CAIRO_STATUS_INVALID_SIZE) {
-					return make_error_code(errc::argument_out_of_domain);
-				}
-				else {
-					if (code == CAIRO_STATUS_SURFACE_TYPE_MISMATCH
-						|| code == CAIRO_STATUS_PATTERN_TYPE_MISMATCH
-						|| code == CAIRO_STATUS_FONT_TYPE_MISMATCH
-						|| code == CAIRO_STATUS_DEVICE_TYPE_MISMATCH
-						|| code == CAIRO_STATUS_DEVICE_FINISHED
-						|| code == CAIRO_STATUS_TEMP_FILE_ERROR
-						|| code == CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED
-						|| code == CAIRO_STATUS_INVALID_VISUAL
-						|| code == CAIRO_STATUS_INVALID_DSC_COMMENT
-						|| code == CAIRO_STATUS_INVALID_SLANT
-						|| code == CAIRO_STATUS_INVALID_WEIGHT) {
-						return error_code(CAIRO_STATUS_INVALID_STATUS, io2d_category());
-					}
-					else {
-						if (code == CAIRO_STATUS_FILE_NOT_FOUND) {
-							return make_error_code(::std::errc::no_such_file_or_directory);
-						}
-					}
-				}
-			}
-		}
-		return ::std::error_code(code, io2d_category());
+	::std::error_code make_error_code(io2d_error e) noexcept {
+		return ::std::error_code(static_cast<int>(e), io2d_category());
 	}
+
 }

@@ -141,7 +141,7 @@ matrix_2d& matrix_2d::invert(error_code& ec) noexcept {
 
 	if (det == 0.0 || !isfinite(det)) {
 		// A matrix_2d with a determinant of 0.0 is not invertible.
-		ec = make_error_code(CAIRO_STATUS_INVALID_MATRIX);
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MATRIX);
 		return *this;
 	}
 
@@ -186,7 +186,7 @@ double matrix_2d::determinant() const {
 
 double matrix_2d::determinant(error_code& ec) const noexcept {
 	if (isnan(_M00) || isnan(_M01) || isnan(_M10) || isnan(_M11) || isnan(_M20) || isnan(_M21)) {
-		ec = make_error_code(CAIRO_STATUS_INVALID_MATRIX);
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MATRIX);
 		return numeric_limits<double>::quiet_NaN();
 	}
 	ec.clear();
