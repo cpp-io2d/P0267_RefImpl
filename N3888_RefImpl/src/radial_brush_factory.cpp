@@ -111,8 +111,8 @@ void radial_brush_factory::radial_circles(const point& center0, double radius0, 
 	_Radius1 = radius1;
 }
 
-int radial_brush_factory::color_stop_count() const noexcept {
-	return static_cast<int>(_Color_stops.size());
+unsigned int radial_brush_factory::color_stop_count() const noexcept {
+	return static_cast<unsigned int>(_Color_stops.size());
 }
 
 tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index) const {

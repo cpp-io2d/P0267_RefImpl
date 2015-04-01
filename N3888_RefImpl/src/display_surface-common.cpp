@@ -239,11 +239,11 @@ void display_surface::user_scaling_fn(const function<experimental::io2d::rectang
 }
 
 void display_surface::clear_letterbox_brush() {
-	_Letterbox_brush = create_brush(solid_color_brush_factory(rgba_color::transparent_black()));
+	_Letterbox_brush = experimental::io2d::brush(solid_color_brush_factory(rgba_color::transparent_black()));
 }
 
 void display_surface::letterbox_brush(const rgba_color& c) {
-	_Letterbox_brush = create_brush(solid_color_brush_factory(c));
+	_Letterbox_brush = experimental::io2d::brush(solid_color_brush_factory(c));
 }
 
 void display_surface::letterbox_brush(const experimental::io2d::brush& b) {

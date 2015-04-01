@@ -1054,6 +1054,16 @@ namespace std {
 					brush& operator=(const brush&) noexcept = default;
 					brush(brush&& other) noexcept;
 					brush& operator=(brush&& other) noexcept;
+					brush(const solid_color_brush_factory& f);
+					brush(const solid_color_brush_factory& f, ::std::error_code& ec) noexcept;
+					brush(const linear_brush_factory& f);
+					brush(const linear_brush_factory& f, ::std::error_code& ec) noexcept;
+					brush(const radial_brush_factory& f);
+					brush(const radial_brush_factory& f, ::std::error_code& ec) noexcept;
+					brush(const mesh_brush_factory& f);
+					brush(const mesh_brush_factory& f, ::std::error_code& ec) noexcept;
+					brush(surface_brush_factory& f);
+					brush(surface_brush_factory& f, ::std::error_code& ec) noexcept;
 
 					void extend(::std::experimental::io2d::extend e) noexcept;
 					void filter(::std::experimental::io2d::filter f) noexcept;
@@ -1135,7 +1145,7 @@ namespace std {
 					void radial_circles(const point& center0, double radius0, const point& center1, double radius1) noexcept;
 
 					// Observers
-					int color_stop_count() const noexcept;
+					unsigned int color_stop_count() const noexcept;
 					::std::tuple<double, rgba_color> color_stop(unsigned int index) const;
 					::std::tuple<double, rgba_color> color_stop(unsigned int index, ::std::error_code& ec) const noexcept;
 					::std::tuple<point, double, point, double> radial_circles() const noexcept;
@@ -1378,11 +1388,6 @@ namespace std {
 
 					// \ref{\iotwod.surface.observers.stateobjects}, state object observers:
 					::std::experimental::io2d::path path(const path_factory& pf) const;
-					::std::experimental::io2d::brush create_brush(const solid_color_brush_factory& f) const;
-					::std::experimental::io2d::brush create_brush(const linear_brush_factory& f) const;
-					::std::experimental::io2d::brush create_brush(const radial_brush_factory& f) const;
-					::std::experimental::io2d::brush create_brush(const mesh_brush_factory& f) const;
-					::std::experimental::io2d::brush create_brush(surface_brush_factory& f) const;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
 					::std::experimental::io2d::content content() const;
@@ -1578,7 +1583,7 @@ namespace std {
 				class surface_brush_factory {
 					image_surface _Surface;
 
-					friend ::std::experimental::io2d::surface;
+					friend ::std::experimental::io2d::brush;
 
 				public:
 					surface_brush_factory();

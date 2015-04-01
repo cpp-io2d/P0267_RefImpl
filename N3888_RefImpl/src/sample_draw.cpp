@@ -74,7 +74,7 @@ void sample_draw::operator()(display_surface& rs) {
 }
 
 void draw_hello_world(surface& rs) {
-	rs.show_text("Hello world", { 100.0, 100.0 }, rs.create_brush(solid_color_brush_factory(rgba_color::white())));
+	rs.show_text("Hello world", { 100.0, 100.0 }, brush(solid_color_brush_factory(rgba_color::white())));
 }
 
 // For testing purposes only.
@@ -85,9 +85,9 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 	}
 	rs.save();
 
-	auto backgroundBrush = rs.create_brush(solid_color_brush_factory(backgroundColor));
-	auto firstBrush = rs.create_brush(solid_color_brush_factory(firstColor));
-	auto secondBrush = rs.create_brush(solid_color_brush_factory(secondColor));
+	auto backgroundBrush = brush(solid_color_brush_factory(backgroundColor));
+	auto firstBrush = brush(solid_color_brush_factory(firstColor));
+	auto secondBrush = brush(solid_color_brush_factory(secondColor));
 
 	auto pb = path_factory();
 
@@ -142,16 +142,16 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 		rs.line_width(2.0);
 
 		rs.path(firstRectPath);
-		rs.brush(rs.create_brush(solid_color_brush_factory(rgba_color::teal())));
+		rs.brush(brush(solid_color_brush_factory(rgba_color::teal())));
 		rs.stroke();
 
 		rs.path(secondRectPath);
-		rs.brush(rs.create_brush(solid_color_brush_factory(rgba_color::red())));
+		rs.brush(brush(solid_color_brush_factory(rgba_color::red())));
 		rs.stroke();
 
 		if (clipToTriangle) {
 			rs.path(triangleClipPath);
-			rs.brush(rs.create_brush(solid_color_brush_factory(rgba_color::yellow())));
+			rs.brush(brush(solid_color_brush_factory(rgba_color::yellow())));
 			rs.stroke();
 		}
 	}
@@ -193,7 +193,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	linearTest1.add_color_stop(0.8, rgba_color::yellow());
 	linearTest1.add_color_stop(1.0, rgba_color::white());
 	rs.immediate().rect({ 400.0, 400.0, 200.0, 200.0 });
-	rs.fill_immediate(rs.create_brush(linearTest1));
+	rs.fill_immediate(brush(linearTest1));
 
 	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.font_size(40.0);
@@ -258,7 +258,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	meshFactory.corner_color_rgba(1, rgba_color::lime());
 	meshFactory.corner_color_rgba(2, rgba_color::blue());
 	meshFactory.end_patch();
-	auto meshBrush = rs.create_brush(meshFactory);
+	auto meshBrush = brush(meshFactory);
 	meshBrush.matrix(matrix_2d::init_translate({ -200.0, -400.0 }));
 	rs.fill_immediate(meshBrush);
 
@@ -271,7 +271,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	imgSfc.fill_immediate(rgba_color::yellow());
 
 	auto sfcFactory = surface_brush_factory(imgSfc);
-	auto sfcBrush = rs.create_brush(sfcFactory);
+	auto sfcBrush = brush(sfcFactory);
 	sfcBrush.extend(extend::repeat);
 	rs.immediate().reset();
 	rs.immediate().rect({ 500.0, 450.0, 100.0, 100.0 });
@@ -285,7 +285,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	auto linearFactory = linear_brush_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
 	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
 	linearFactory.add_color_stop(1.0, rgba_color::salmon());
-	auto linearBrush = rs.create_brush(linearFactory);
+	auto linearBrush = brush(linearFactory);
 	linearBrush.extend(extend::repeat);
 	rs.immediate().reset();
 	rs.immediate().move_to({ 650.0, 400.0 });
@@ -325,7 +325,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	const auto phaseCount = vec.size();
 	assert(phaseCount > 0);
 	const size_t x = min(static_cast<size_t>(timer / phaseTime), max(phaseCount - 1U, 0U));
-	auto cornflowerBlueBrush = rs.create_brush(solid_color_brush_factory(rgba_color::cornflower_blue()));
+	auto cornflowerBlueBrush = brush(solid_color_brush_factory(rgba_color::cornflower_blue()));
 	rs.brush(cornflowerBlueBrush);
 	rs.paint(); // Paint background.
 
@@ -334,7 +334,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	const double beginX = trunc(clextents.width() * 0.1);
 	const double y = trunc(clextents.height() * 0.5);
 
-	auto whiteBrush = rs.create_brush(solid_color_brush_factory(rgba_color::white()));
+	auto whiteBrush = brush(solid_color_brush_factory(rgba_color::white()));
 	rs.brush(whiteBrush);
 	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.font_size(40.0);
@@ -363,7 +363,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 		}
 		rs.path(rs.path(pf));
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
-		auto greyBrush = rs.create_brush(solid_color_brush_factory({ greyColor, greyColor, greyColor, 1.0 }));
+		auto greyBrush = brush(solid_color_brush_factory({ greyColor, greyColor, greyColor, 1.0 }));
 		rs.brush(greyBrush);
 		rs.fill();
 	}
@@ -373,7 +373,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 	pf.rect({ 200.0, 400.0, 100.0, 100.0 });
 	rs.path(rs.path(pf));
-	auto redBrush = rs.create_brush(solid_color_brush_factory(rgba_color::red()));
+	auto redBrush = brush(solid_color_brush_factory(rgba_color::red()));
 	rs.brush(redBrush);
 	rs.line_width(3.0);
 	rs.stroke();
@@ -383,7 +383,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	radialFactory.add_color_stop(0.5, rgba_color::green());
 	radialFactory.add_color_stop(0.75, rgba_color::blue());
 	radialFactory.add_color_stop(1.0, rgba_color::white());
-	auto radialBrush = rs.create_brush(radialFactory);
+	auto radialBrush = brush(radialFactory);
 	radialBrush.extend(extend::reflect);
 	rs.brush(radialBrush);
 	rs.fill();
@@ -391,7 +391,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	auto linearFactory = linear_brush_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
 	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
 	linearFactory.add_color_stop(1.0, rgba_color::salmon());
-	auto linearBrush = rs.create_brush(linearFactory);
+	auto linearBrush = brush(linearFactory);
 	linearBrush.extend(extend::repeat);
 	pf.reset();
 	pf.rect({ 500.0, 450.0, 100.0, 100.0 });

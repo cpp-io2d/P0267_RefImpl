@@ -370,7 +370,7 @@ void surface::paint() {
 
 void surface::paint(const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	paint();
 }
 
@@ -406,7 +406,7 @@ void surface::paint(double alpha) {
 
 void surface::paint(const rgba_color& c, double alpha) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	paint(alpha);
 }
 
@@ -442,7 +442,7 @@ void surface::fill() {
 
 void surface::fill(const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	fill();
 }
 
@@ -481,7 +481,7 @@ void surface::fill_immediate() {
 
 void surface::fill_immediate(const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	fill_immediate();
 }
 
@@ -520,7 +520,7 @@ void surface::stroke() {
 
 void surface::stroke(const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	stroke();
 }
 
@@ -559,7 +559,7 @@ void surface::stroke_immediate() {
 
 void surface::stroke_immediate(const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	stroke_immediate();
 }
 
@@ -598,7 +598,7 @@ void surface::mask(const ::std::experimental::io2d::brush& maskBrush) {
 
 void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	mask(maskBrush);
 }
 
@@ -634,7 +634,7 @@ void surface::mask(const surface& maskSurface) {
 
 void surface::mask(const surface& maskSurface, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	mask(maskSurface);
 }
 
@@ -670,7 +670,7 @@ void surface::mask(const surface& maskSurface, const point& maskOrigin) {
 
 void surface::mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	mask(maskSurface, maskOrigin);
 }
 
@@ -709,7 +709,7 @@ void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush) 
 
 void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	mask(maskBrush);
 }
 
@@ -751,7 +751,7 @@ void surface::mask_immediate(const surface& maskSurface) {
 
 void surface::mask_immediate(const surface& maskSurface, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	mask_immediate(maskSurface);
 }
 
@@ -792,7 +792,7 @@ void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin
 
 void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	mask_immediate(maskSurface, maskOrigin);
 }
 
@@ -836,7 +836,7 @@ point surface::show_text(const string& utf8, const point& position) {
 
 point surface::show_text(const string& utf8, const point& position, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
-	brush(create_brush(factory));
+	brush(experimental::io2d::brush(factory));
 	return show_text(utf8, position);
 }
 
@@ -889,161 +889,6 @@ void surface::font_face(const ::std::experimental::io2d::font_face& font_face) {
 
 path surface::path(const path_factory& pf) const {
 	return ::std::experimental::io2d::path(pf, *this);
-}
-
-brush surface::create_brush(const solid_color_brush_factory& f) const {
-	auto color = f.color();
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_rgba(color.r(), color.g(), color.b(), color.a()), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	auto b = ::std::experimental::io2d::brush(pat.get());
-	pat.release();
-	return b;
-}
-
-brush surface::create_brush(const linear_brush_factory& f) const {
-	point lpt0 = f.begin_point();
-	point lpt1 = f.end_point();
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_linear(lpt0.x(), lpt0.y(), lpt1.x(), lpt1.y()), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	auto count = static_cast<unsigned int>(f.color_stop_count());
-	for (unsigned int i = 0; i < count; i++) {
-		auto stop = f.color_stop(i);
-		double& offset = get<0>(stop);
-		rgba_color& color = get<1>(stop);
-		cairo_pattern_add_color_stop_rgba(pat.get(), offset, color.r(), color.g(), color.b(), color.a());
-	}
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	auto b = ::std::experimental::io2d::brush(pat.get());
-	pat.release();
-	return b;
-}
-
-brush surface::create_brush(const radial_brush_factory& f) const {
-	auto points = f.radial_circles();
-	point& center0 = get<0>(points);
-	double& radius0 = get<1>(points);
-	point& center1 = get<2>(points);
-	double& radius1 = get<3>(points);
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_radial(center0.x(), center0.y(), radius0, center1.x(), center1.y(), radius1), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	auto count = static_cast<unsigned int>(f.color_stop_count());
-	for (unsigned int i = 0; i < count; i++) {
-		auto stop = f.color_stop(i);
-		double& offset = get<0>(stop);
-		rgba_color& color = get<1>(stop);
-		cairo_pattern_add_color_stop_rgba(pat.get(), offset, color.r(), color.g(), color.b(), color.a());
-	}
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	auto b = ::std::experimental::io2d::brush(pat.get());
-	pat.release();
-	return b;
-}
-
-brush surface::create_brush(const mesh_brush_factory& f) const {
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> upPat(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
-	auto pat = upPat.get();
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
-
-	auto count = f.patch_count();
-	for (auto patchNum = 0U; patchNum < count; patchNum++) {
-		cairo_mesh_pattern_begin_patch(pat);
-		auto pathFactory = f.path_factory(patchNum);
-		const auto& pathData = pathFactory.data_ref();
-		auto pdSize = pathData.size();
-		for (unsigned int pdIndex = 0; pdIndex < pdSize; pdIndex++) {
-			const auto& item = pathData[pdIndex];
-			auto type = item->type();
-			switch (type) {
-			case std::experimental::io2d::path_data_type::move_to:
-			{
-				auto pt = dynamic_cast<move_to*>(item.get())->to();
-				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
-			} break;
-			case std::experimental::io2d::path_data_type::line_to:
-			{
-				auto pt = dynamic_cast<line_to*>(item.get())->to();
-				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
-			} break;
-			case std::experimental::io2d::path_data_type::curve_to:
-			{
-				auto dataItem = dynamic_cast<curve_to*>(item.get());
-				cairo_mesh_pattern_curve_to(pat, dataItem->control_point_1().x(), dataItem->control_point_1().y(), dataItem->control_point_2().x(), dataItem->control_point_2().y(), dataItem->end_point().x(), dataItem->end_point().y());
-			} break;
-			case std::experimental::io2d::path_data_type::new_sub_path:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::close_path:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::rel_move_to:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::rel_line_to:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::rel_curve_to:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::arc:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::arc_negative:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::change_matrix:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::change_origin:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			default:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			}
-		}
-
-		for (auto pointNum = 0U; pointNum < 4U; pointNum++) {
-			point pt;
-			if (f.control_point(patchNum, pointNum, pt)) {
-				cairo_mesh_pattern_set_control_point(pat, pointNum, pt.x(), pt.y());
-			}
-		}
-		for (auto cornerNum = 0U; cornerNum < 4U; cornerNum++) {
-			rgba_color color;
-			if (f.corner_color_rgba(patchNum, cornerNum, color)) {
-				cairo_mesh_pattern_set_corner_color_rgba(pat, cornerNum, color.r(), color.g(), color.b(), color.a());
-			}
-		}
-		cairo_mesh_pattern_end_patch(pat);
-	}
-	auto b = ::std::experimental::io2d::brush(pat);
-	upPat.release(); // Release the cairo_pattern_t only after it has been safely transferred to b.
-	return b;
-}
-
-brush surface::create_brush(surface_brush_factory& f) const {
-	auto brushSurface = _Surface_create_image_surface_copy(f._Surface);
-	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_for_surface(brushSurface.native_handle().csfce), &cairo_pattern_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
-
-	auto b = ::std::experimental::io2d::brush(pat.get());
-	pat.release();
-	return b;
 }
 
 brush surface::brush() const {

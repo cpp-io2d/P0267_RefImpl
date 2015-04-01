@@ -13,7 +13,7 @@ int main() {
 	auto radialFactory = radial_brush_factory({ 0.0, 0.0 }, 0.0, { 0.0, 0.0 }, 50.0);
 	radialFactory.add_color_stop(0.0, rgba_color::orange());
 	radialFactory.add_color_stop(1.0, rgba_color::aquamarine());
-	auto letterboxBrush = ds.create_brush(radialFactory);
+	auto letterboxBrush = brush(radialFactory);
 	letterboxBrush.extend(extend::repeat);
 	ds.letterbox_brush(letterboxBrush);
 	sample_draw sd;
