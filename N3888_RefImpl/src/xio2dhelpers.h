@@ -114,17 +114,22 @@ inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
 			throw ::std::bad_alloc{ };
 		}
 		else {
-			if (s == CAIRO_STATUS_INVALID_FORMAT || s == CAIRO_STATUS_INVALID_CONTENT) {
+			if (s == CAIRO_STATUS_INVALID_FORMAT || s == CAIRO_STATUS_INVALID_CONTENT || s == CAIRO_STATUS_INVALID_SIZE) {
 				if (s == CAIRO_STATUS_INVALID_FORMAT) {
-					throw ::std::invalid_argument{ "A format type parameter is invalid." };
+					throw ::std::invalid_argument{ "The value of a format type argument is invalid." };
 				}
 				else {
-					throw ::std::invalid_argument{ "A content type parameter is invalid." };
+					if (s == CAIRO_STATUS_INVALID_CONTENT) {
+						throw ::std::invalid_argument{ "The value of a content type argument is invalid." };
+					}
+					else {
+						throw ::std::invalid_argument{ "A value of a size parameter is invalid." };
+					}
 				}
 			}
 			else {
-				if (s == CAIRO_STATUS_INVALID_INDEX || s == CAIRO_STATUS_INVALID_SIZE) {
-					throw ::std::out_of_range{ "An index or size parameter has an invalid value." };
+				if (s == CAIRO_STATUS_INVALID_INDEX) {
+					throw ::std::out_of_range{ "An index parameter has an invalid value." };
 				}
 			}
 
