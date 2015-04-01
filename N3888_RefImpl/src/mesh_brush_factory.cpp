@@ -278,7 +278,7 @@ void mesh_brush_factory::control_point(unsigned int point_num, const point& pt, 
 	ec.clear();
 }
 
-void mesh_brush_factory::corner_color_rgba(unsigned int corner_num, const rgba_color& color) {
+void mesh_brush_factory::corner_color(unsigned int corner_num, const rgba_color& color) {
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -289,7 +289,7 @@ void mesh_brush_factory::corner_color_rgba(unsigned int corner_num, const rgba_c
 	get<2>(patch)[corner_num] = make_tuple(true, color);
 }
 
-void mesh_brush_factory::corner_color_rgba(unsigned int corner_num, const rgba_color& color, error_code& ec) noexcept {
+void mesh_brush_factory::corner_color(unsigned int corner_num, const rgba_color& color, error_code& ec) noexcept {
 	if (!_Has_current_patch) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 		return;
@@ -384,7 +384,7 @@ bool mesh_brush_factory::control_point(unsigned int patch_num, unsigned int poin
 }
 
 // Note: This returns a bool and uses an out parameter because it's valid to have a corner which has not been assigned a color.
-bool mesh_brush_factory::corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const {
+bool mesh_brush_factory::corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const {
 	if (patch_num >= _Patches.size() || corner_num > 3) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -399,7 +399,7 @@ bool mesh_brush_factory::corner_color_rgba(unsigned int patch_num, unsigned int 
 }
 
 // Note: This returns a bool and uses an out parameter because it's valid to have a corner which has not been assigned a color.
-bool mesh_brush_factory::corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color, error_code& ec) const noexcept {
+bool mesh_brush_factory::corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color, error_code& ec) const noexcept {
 	if (patch_num >= _Patches.size() || corner_num > 3) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return false;

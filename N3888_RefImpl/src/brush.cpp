@@ -300,7 +300,7 @@ brush::brush(const mesh_brush_factory& f)
 		}
 		for (auto cornerNum = 0U; cornerNum < 4U; cornerNum++) {
 			rgba_color color;
-			if (f.corner_color_rgba(patchNum, cornerNum, color)) {
+			if (f.corner_color(patchNum, cornerNum, color)) {
 				cairo_mesh_pattern_set_corner_color_rgba(pat, cornerNum, color.r(), color.g(), color.b(), color.a());
 			}
 		}
@@ -422,7 +422,7 @@ brush::brush(const mesh_brush_factory& f, error_code& ec) noexcept
 		}
 		for (auto cornerNum = 0U; cornerNum < 4U; cornerNum++) {
 			rgba_color color;
-			if (f.corner_color_rgba(patchNum, cornerNum, color, ec)) {
+			if (f.corner_color(patchNum, cornerNum, color, ec)) {
 				if (static_cast<bool>(ec)) {
 					_Brush.reset();
 					return;

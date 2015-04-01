@@ -1184,8 +1184,8 @@ namespace std {
 					void curve_to(const point& pt0, const point& pt1, const point& pt2, ::std::error_code& ec) noexcept;
 					void control_point(unsigned int point_num, const point& pt);
 					void control_point(unsigned int point_num, const point& pt, ::std::error_code& ec) noexcept;
-					void corner_color_rgba(unsigned int corner_num, const rgba_color& color);
-					void corner_color_rgba(unsigned int corner_num, const rgba_color& color, ::std::error_code& ec) noexcept;
+					void corner_color(unsigned int corner_num, const rgba_color& color);
+					void corner_color(unsigned int corner_num, const rgba_color& color, ::std::error_code& ec) noexcept;
 
 					// Observers
 					unsigned int patch_count() const noexcept;
@@ -1193,8 +1193,8 @@ namespace std {
 					::std::experimental::io2d::path_factory path_factory(unsigned int patch_num, ::std::error_code& ec) const noexcept;
 					bool control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const;
 					bool control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint, ::std::error_code& ec) const noexcept;
-					bool corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
-					bool corner_color_rgba(unsigned int patch_num, unsigned int corner_num, rgba_color& color, ::std::error_code& ec) const noexcept;
+					bool corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
+					bool corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color, ::std::error_code& ec) const noexcept;
 				};
 
 				struct _Surface_native_handles {
