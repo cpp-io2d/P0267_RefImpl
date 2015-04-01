@@ -902,15 +902,14 @@ brush surface::create_brush(const solid_color_brush_factory& f) const {
 }
 
 brush surface::create_brush(const linear_brush_factory& f) const {
-	auto points = f.linear_points();
-	point& lpt0 = get<0>(points);
-	point& lpt1 = get<1>(points);
+	point lpt0 = f.begin_point();
+	point lpt1 = f.end_point();
 	unique_ptr<cairo_pattern_t, function<void(cairo_pattern_t*)>> pat(cairo_pattern_create_linear(lpt0.x(), lpt0.y(), lpt1.x(), lpt1.y()), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat.get()));
 
 	auto count = static_cast<unsigned int>(f.color_stop_count());
 	for (unsigned int i = 0; i < count; i++) {
-		auto stop = f.color_stop_rgba(i);
+		auto stop = f.color_stop(i);
 		double& offset = get<0>(stop);
 		rgba_color& color = get<1>(stop);
 		cairo_pattern_add_color_stop_rgba(pat.get(), offset, color.r(), color.g(), color.b(), color.a());
@@ -933,7 +932,7 @@ brush surface::create_brush(const radial_brush_factory& f) const {
 
 	auto count = static_cast<unsigned int>(f.color_stop_count());
 	for (unsigned int i = 0; i < count; i++) {
-		auto stop = f.color_stop_rgba(i);
+		auto stop = f.color_stop(i);
 		double& offset = get<0>(stop);
 		rgba_color& color = get<1>(stop);
 		cairo_pattern_add_color_stop_rgba(pat.get(), offset, color.r(), color.g(), color.b(), color.a());

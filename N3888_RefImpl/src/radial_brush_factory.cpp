@@ -44,7 +44,7 @@ radial_brush_factory::radial_brush_factory(const point& center0, double radius0,
 	, _Color_stops() {
 }
 
-void radial_brush_factory::add_color_stop_rgba(double offset, const rgba_color& color) {
+void radial_brush_factory::add_color_stop(double offset, const rgba_color& color) {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -53,7 +53,7 @@ void radial_brush_factory::add_color_stop_rgba(double offset, const rgba_color& 
 	_Color_stops.push_back(make_tuple(offset, color));
 }
 
-void radial_brush_factory::add_color_stop_rgba(double offset, const rgba_color& color, error_code& ec) noexcept {
+void radial_brush_factory::add_color_stop(double offset, const rgba_color& color, error_code& ec) noexcept {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -69,7 +69,7 @@ void radial_brush_factory::add_color_stop_rgba(double offset, const rgba_color& 
 	ec.clear();
 }
 
-void radial_brush_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
+void radial_brush_factory::color_stop(unsigned int index, double offset, const rgba_color& color) {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -83,7 +83,7 @@ void radial_brush_factory::color_stop_rgba(unsigned int index, double offset, co
 	_Color_stops[index] = make_tuple(offset, color);
 }
 
-void radial_brush_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color, error_code& ec) noexcept {
+void radial_brush_factory::color_stop(unsigned int index, double offset, const rgba_color& color, error_code& ec) noexcept {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -115,7 +115,7 @@ int radial_brush_factory::color_stop_count() const noexcept {
 	return static_cast<int>(_Color_stops.size());
 }
 
-tuple<double, rgba_color> radial_brush_factory::color_stop_rgba(unsigned int index) const {
+tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index) const {
 	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -123,7 +123,7 @@ tuple<double, rgba_color> radial_brush_factory::color_stop_rgba(unsigned int ind
 	return _Color_stops.at(index);
 }
 
-tuple<double, rgba_color> radial_brush_factory::color_stop_rgba(unsigned int index, error_code& ec) const noexcept {
+tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index, error_code& ec) const noexcept {
 	if (index >= _Color_stops.size()) {
 		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return make_tuple(0.0, rgba_color::transparent_black());

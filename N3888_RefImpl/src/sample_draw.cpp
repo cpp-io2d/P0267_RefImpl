@@ -179,6 +179,22 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	const double beginX = trunc(clextents.width() * 0.1);
 	const double y = trunc(clextents.height() * 0.5);
 
+	auto linearTest1 = linear_brush_factory({ 400.0, 400.0 }, { 400.0, 500.0 });
+	linearTest1.add_color_stop(0.0, rgba_color::black());
+	linearTest1.add_color_stop(0.3, rgba_color::yellow());
+	linearTest1.add_color_stop(0.5, rgba_color::blue());
+	linearTest1.add_color_stop(0.3, rgba_color::lime());
+	linearTest1.add_color_stop(0.5, rgba_color::black());
+	linearTest1.add_color_stop(0.7, rgba_color::purple());
+	linearTest1.add_color_stop(0.5, rgba_color::red());
+//	linearTest1.add_color_stop(1.0, rgba_color::black());
+	linearTest1.add_color_stop(0.7, rgba_color::orange());
+	linearTest1.add_color_stop(0.8, rgba_color::green());
+	linearTest1.add_color_stop(0.8, rgba_color::yellow());
+	linearTest1.add_color_stop(1.0, rgba_color::white());
+	rs.immediate().rect({ 400.0, 400.0, 200.0, 200.0 });
+	rs.fill_immediate(rs.create_brush(linearTest1));
+
 	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.font_size(40.0);
 	auto str = string("Phase ").append(to_string(x + 1));
@@ -214,11 +230,11 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.line_width(3.0);
 	rs.stroke_immediate(rgba_color::red());
 	//auto radialFactory = radial_brush_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
-	//radialFactory.add_color_stop_rgba(0.0, rgba_color::black());
-	//radialFactory.add_color_stop_rgba(0.25, rgba_color::red());
-	//radialFactory.add_color_stop_rgba(0.5, rgba_color::green());
-	//radialFactory.add_color_stop_rgba(0.75, rgba_color::blue());
-	//radialFactory.add_color_stop_rgba(1.0, rgba_color::white());
+	//radialFactory.add_color_stop(0.0, rgba_color::black());
+	//radialFactory.add_color_stop(0.25, rgba_color::red());
+	//radialFactory.add_color_stop(0.5, rgba_color::green());
+	//radialFactory.add_color_stop(0.75, rgba_color::blue());
+	//radialFactory.add_color_stop(1.0, rgba_color::white());
 	//auto radialBrush = rs.create_brush(radialFactory);
 	//radialBrush.extend(extend::reflect);
 	//rs.fill_immediate(radialBrush);
@@ -267,8 +283,8 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.fill_immediate(sfcBrush);
 
 	auto linearFactory = linear_brush_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
-	linearFactory.add_color_stop_rgba(0.0, rgba_color::chartreuse());
-	linearFactory.add_color_stop_rgba(1.0, rgba_color::salmon());
+	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
+	linearFactory.add_color_stop(1.0, rgba_color::salmon());
 	auto linearBrush = rs.create_brush(linearFactory);
 	linearBrush.extend(extend::repeat);
 	rs.immediate().reset();
@@ -362,19 +378,19 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.line_width(3.0);
 	rs.stroke();
 	auto radialFactory = radial_brush_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
-	radialFactory.add_color_stop_rgba(0.0, rgba_color::black());
-	radialFactory.add_color_stop_rgba(0.25, rgba_color::red());
-	radialFactory.add_color_stop_rgba(0.5, rgba_color::green());
-	radialFactory.add_color_stop_rgba(0.75, rgba_color::blue());
-	radialFactory.add_color_stop_rgba(1.0, rgba_color::white());
+	radialFactory.add_color_stop(0.0, rgba_color::black());
+	radialFactory.add_color_stop(0.25, rgba_color::red());
+	radialFactory.add_color_stop(0.5, rgba_color::green());
+	radialFactory.add_color_stop(0.75, rgba_color::blue());
+	radialFactory.add_color_stop(1.0, rgba_color::white());
 	auto radialBrush = rs.create_brush(radialFactory);
 	radialBrush.extend(extend::reflect);
 	rs.brush(radialBrush);
 	rs.fill();
 
 	auto linearFactory = linear_brush_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
-	linearFactory.add_color_stop_rgba(0.0, rgba_color::chartreuse());
-	linearFactory.add_color_stop_rgba(1.0, rgba_color::salmon());
+	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
+	linearFactory.add_color_stop(1.0, rgba_color::salmon());
 	auto linearBrush = rs.create_brush(linearFactory);
 	linearBrush.extend(extend::repeat);
 	pf.reset();

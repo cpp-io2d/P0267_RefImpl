@@ -1083,8 +1083,8 @@ namespace std {
 				};
 
 				class linear_brush_factory {
-					point _Point0;
-					point _Point1;
+					point _Begin_point;
+					point _End_point;
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
@@ -1093,20 +1093,22 @@ namespace std {
 					linear_brush_factory& operator=(const linear_brush_factory&) = default;
 					linear_brush_factory(linear_brush_factory&& other) noexcept;
 					linear_brush_factory& operator=(linear_brush_factory&& other) noexcept;
-					linear_brush_factory(const point& pt0, const point& pt1) noexcept;
+					linear_brush_factory(const point& begin, const point& end) noexcept;
 
 					// Modifiers
-					void add_color_stop_rgba(double offset, const rgba_color& color);
-					void add_color_stop_rgba(double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
-					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
-					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
-					void linear_points(const point& pt0, const point& pt1) noexcept;
+					void add_color_stop(double offset, const rgba_color& color);
+					void add_color_stop(double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
+					void color_stop(unsigned int index, double offset, const rgba_color& color);
+					void color_stop(unsigned int index, double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
+					void begin_point(const point& value) noexcept;
+					void end_point(const point& value) noexcept;
 
 					// Observers
-					int color_stop_count() const noexcept;
-					::std::tuple<double, rgba_color> color_stop_rgba(unsigned int index) const;
-					::std::tuple<double, rgba_color> color_stop_rgba(unsigned int index, ::std::error_code& ec) const noexcept;
-					::std::tuple<point, point> linear_points() const noexcept;
+					unsigned int color_stop_count() const noexcept;
+					::std::tuple<double, rgba_color> color_stop(unsigned int index) const;
+					::std::tuple<double, rgba_color> color_stop(unsigned int index, ::std::error_code& ec) const noexcept;
+					point begin_point() const noexcept;
+					point end_point() const noexcept;
 				};
 
 				class radial_brush_factory {
@@ -1125,16 +1127,16 @@ namespace std {
 					radial_brush_factory(const point& center0, double radius0, const point& center1, double radius1) noexcept;
 
 					// Modifiers
-					void add_color_stop_rgba(double offset, const rgba_color& color);
-					void add_color_stop_rgba(double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
-					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color);
-					void color_stop_rgba(unsigned int index, double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
+					void add_color_stop(double offset, const rgba_color& color);
+					void add_color_stop(double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
+					void color_stop(unsigned int index, double offset, const rgba_color& color);
+					void color_stop(unsigned int index, double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
 					void radial_circles(const point& center0, double radius0, const point& center1, double radius1) noexcept;
 
 					// Observers
 					int color_stop_count() const noexcept;
-					::std::tuple<double, rgba_color> color_stop_rgba(unsigned int index) const;
-					::std::tuple<double, rgba_color> color_stop_rgba(unsigned int index, ::std::error_code& ec) const noexcept;
+					::std::tuple<double, rgba_color> color_stop(unsigned int index) const;
+					::std::tuple<double, rgba_color> color_stop(unsigned int index, ::std::error_code& ec) const noexcept;
 					::std::tuple<point, double, point, double> radial_circles() const noexcept;
 				};
 

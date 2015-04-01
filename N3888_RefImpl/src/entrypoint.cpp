@@ -11,8 +11,8 @@ int main() {
 	assert(steady_clock::is_steady);
 	auto ds = make_display_surface(800, 600, format::argb32, scaling::letterbox);
 	auto radialFactory = radial_brush_factory({ 0.0, 0.0 }, 0.0, { 0.0, 0.0 }, 50.0);
-	radialFactory.add_color_stop_rgba(0.0, rgba_color::orange());
-	radialFactory.add_color_stop_rgba(1.0, rgba_color::aquamarine());
+	radialFactory.add_color_stop(0.0, rgba_color::orange());
+	radialFactory.add_color_stop(1.0, rgba_color::aquamarine());
 	auto letterboxBrush = ds.create_brush(radialFactory);
 	letterboxBrush.extend(extend::repeat);
 	ds.letterbox_brush(letterboxBrush);

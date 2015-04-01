@@ -6,36 +6,36 @@ using namespace std;
 using namespace std::experimental::io2d;
 
 linear_brush_factory::linear_brush_factory() noexcept
-	: _Point0()
-	, _Point1()
+	: _Begin_point()
+	, _End_point()
 	, _Color_stops() {
 }
 
 linear_brush_factory::linear_brush_factory(linear_brush_factory&& other) noexcept
-	: _Point0()
-	, _Point1()
+	: _Begin_point()
+	, _End_point()
 	, _Color_stops() {
-	_Point0 = move(other._Point0);
-	_Point1 = move(other._Point1);
+	_Begin_point = move(other._Begin_point);
+	_End_point = move(other._End_point);
 	_Color_stops = move(other._Color_stops);
 }
 
 linear_brush_factory& linear_brush_factory::operator=(linear_brush_factory&& other) noexcept {
 	if (this != &other) {
-		_Point0 = move(other._Point0);
-		_Point1 = move(other._Point1);
+		_Begin_point = move(other._Begin_point);
+		_End_point = move(other._End_point);
 		_Color_stops = move(other._Color_stops);
 	}
 	return *this;
 }
 
 linear_brush_factory::linear_brush_factory(const point& pt0, const point& pt1) noexcept
-	: _Point0(pt0)
-	, _Point1(pt1)
+	: _Begin_point(pt0)
+	, _End_point(pt1)
 	, _Color_stops() {
 }
 
-void linear_brush_factory::add_color_stop_rgba(double offset, const rgba_color& color) {
+void linear_brush_factory::add_color_stop(double offset, const rgba_color& color) {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -44,7 +44,7 @@ void linear_brush_factory::add_color_stop_rgba(double offset, const rgba_color& 
 	_Color_stops.push_back(make_tuple(offset, color));
 }
 
-void linear_brush_factory::add_color_stop_rgba(double offset, const rgba_color& color, error_code& ec) noexcept {
+void linear_brush_factory::add_color_stop(double offset, const rgba_color& color, error_code& ec) noexcept {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -60,7 +60,7 @@ void linear_brush_factory::add_color_stop_rgba(double offset, const rgba_color& 
 	ec.clear();
 }
 
-void linear_brush_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color) {
+void linear_brush_factory::color_stop(unsigned int index, double offset, const rgba_color& color) {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -74,7 +74,7 @@ void linear_brush_factory::color_stop_rgba(unsigned int index, double offset, co
 	_Color_stops[index] = make_tuple(offset, color);
 }
 
-void linear_brush_factory::color_stop_rgba(unsigned int index, double offset, const rgba_color& color, error_code& ec) noexcept {
+void linear_brush_factory::color_stop(unsigned int index, double offset, const rgba_color& color, error_code& ec) noexcept {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -95,16 +95,19 @@ void linear_brush_factory::color_stop_rgba(unsigned int index, double offset, co
 	ec.clear();
 }
 
-void linear_brush_factory::linear_points(const point& pt0, const point& pt1) noexcept {
-	_Point0 = pt0;
-	_Point1 = pt1;
+void linear_brush_factory::begin_point(const point& value) noexcept{
+	_Begin_point = value;
 }
 
-int linear_brush_factory::color_stop_count() const noexcept {
+void linear_brush_factory::end_point(const point& value) noexcept{
+	_End_point = value;
+}
+
+unsigned int linear_brush_factory::color_stop_count() const noexcept{
 	return static_cast<int>(_Color_stops.size());
 }
 
-tuple<double, rgba_color> linear_brush_factory::color_stop_rgba(unsigned int index) const {
+tuple<double, rgba_color> linear_brush_factory::color_stop(unsigned int index) const {
 	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -112,7 +115,7 @@ tuple<double, rgba_color> linear_brush_factory::color_stop_rgba(unsigned int ind
 	return _Color_stops.at(index);
 }
 
-tuple<double, rgba_color> linear_brush_factory::color_stop_rgba(unsigned int index, error_code& ec) const noexcept {
+tuple<double, rgba_color> linear_brush_factory::color_stop(unsigned int index, error_code& ec) const noexcept {
 	if (index >= _Color_stops.size()) {
 		ec = make_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return make_tuple(0.0, rgba_color::transparent_black());
@@ -129,6 +132,10 @@ tuple<double, rgba_color> linear_brush_factory::color_stop_rgba(unsigned int ind
 	}
 }
 
-tuple<point, point> linear_brush_factory::linear_points() const noexcept {
-	return make_tuple(_Point0, _Point1);
+point linear_brush_factory::begin_point() const noexcept{
+	return _Begin_point;
+}
+
+point linear_brush_factory::end_point() const noexcept{
+	return _End_point;
 }
