@@ -64,7 +64,7 @@ surface::native_handle_type surface::native_handle() const {
 	return{ _Surface.get(), _Context.get() };
 }
 
-surface::surface(surface&& other)
+surface::surface(surface&& other) noexcept
 	: _Lock_for_device()
 	, _Device(move(other._Device))
 	, _Surface(move(other._Surface))
@@ -90,7 +90,7 @@ surface::surface(surface&& other)
 	, _Saved_state(move(other._Saved_state)) {
 }
 
-surface& surface::operator=(surface&& other) {
+surface& surface::operator=(surface&& other) noexcept {
 	if (this != &other) {
 		_Device = move(other._Device);
 		_Surface = move(other._Surface);
@@ -270,12 +270,12 @@ void surface::brush(const ::std::experimental::io2d::brush& source) {
 	_Brush = source;
 }
 
-void surface::antialias(::std::experimental::io2d::antialias a) {
+void surface::antialias(::std::experimental::io2d::antialias a) noexcept {
 	_Antialias = a;
 	cairo_set_antialias(_Context.get(), _Antialias_to_cairo_antialias_t(a));
 }
 
-void surface::dashes() {
+void surface::clear_dashes() noexcept {
 	_Dashes = ::std::experimental::io2d::dashes(vector<double>(), 0.0);
 	cairo_set_dash(_Context.get(), nullptr, 0, 0.0);
 }
@@ -285,17 +285,29 @@ void surface::dashes(const ::std::experimental::io2d::dashes& d) {
 	cairo_set_dash(_Context.get(), get<0>(d).data(), _Container_size_to_int(get<0>(d)), get<1>(d));
 }
 
-void surface::fill_rule(::std::experimental::io2d::fill_rule fr) {
+void surface::dashes(const ::std::experimental::io2d::dashes& d, error_code& ec) noexcept {
+	try {
+		_Dashes = d;
+	}
+	catch (const bad_alloc&) {
+		ec = make_error_code(errc::not_enough_memory);
+		return;
+	}
+	cairo_set_dash(_Context.get(), get<0>(d).data(), _Container_size_to_int(get<0>(d)), get<1>(d));
+	ec.clear();
+}
+
+void surface::fill_rule(::std::experimental::io2d::fill_rule fr) noexcept {
 	_Fill_rule = fr;
 	cairo_set_fill_rule(_Context.get(), _Fill_rule_to_cairo_fill_rule_t(fr));
 }
 
-void surface::line_cap(::std::experimental::io2d::line_cap lc) {
+void surface::line_cap(::std::experimental::io2d::line_cap lc) noexcept {
 	_Line_cap = lc;
 	cairo_set_line_cap(_Context.get(), _Line_cap_to_cairo_line_cap_t(lc));
 }
 
-void surface::line_join(::std::experimental::io2d::line_join lj) {
+void surface::line_join(::std::experimental::io2d::line_join lj) noexcept {
 	_Line_join = lj;
 	cairo_set_line_join(_Context.get(), _Line_join_to_cairo_line_join_t(lj));
 	if (lj == ::std::experimental::io2d::line_join::miter_or_bevel) {
@@ -306,24 +318,24 @@ void surface::line_join(::std::experimental::io2d::line_join lj) {
 	}
 }
 
-void surface::line_width(double width) {
-	_Line_width = width;
-	cairo_set_line_width(_Context.get(), std::max(width, 0.0));
+void surface::line_width(double width) noexcept {
+	_Line_width = max(0.0, width);
+	cairo_set_line_width(_Context.get(), _Line_width);
 }
 
-void surface::miter_limit(double limit) {
-	_Miter_limit = limit;
+void surface::miter_limit(double limit) noexcept {
+	_Miter_limit = std::max(limit, 1.0);
 	if (_Line_join == ::std::experimental::io2d::line_join::miter_or_bevel) {
 		cairo_set_miter_limit(_Context.get(), std::min(std::max(limit, 1.0), _Line_join_miter_miter_limit));
 	}
 }
 
-void surface::compositing_operator(::std::experimental::io2d::compositing_operator co) {
+void surface::compositing_operator(::std::experimental::io2d::compositing_operator co) noexcept {
 	_Compositing_operator = co;
 	cairo_set_operator(_Context.get(), _Compositing_operator_to_cairo_operator_t(co));
 }
 
-void surface::tolerance(double t) {
+void surface::tolerance(double t) noexcept {
 	_Tolerance = t;
 	cairo_set_tolerance(_Context.get(), t);
 }

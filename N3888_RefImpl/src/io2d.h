@@ -1249,7 +1249,8 @@ namespace std {
 					::std::experimental::io2d::font_options _Font_options;
 					// The current scaled_font is created on demand from parameters that are already saved.
 
-					::std::stack<::std::tuple<_Device_offtype, ::std::experimental::io2d::brush, ::std::experimental::io2d::antialias, ::std::experimental::io2d::dashes, ::std::experimental::io2d::fill_rule, ::std::experimental::io2d::line_cap, ::std::experimental::io2d::line_join, _Line_width_type, _Miter_limit_type, ::std::experimental::io2d::compositing_operator, _Tolerance_type, ::std::experimental::io2d::path, ::std::experimental::io2d::path, ::std::experimental::io2d::path_factory, _Transform_matrix_type, ::std::experimental::io2d::font_face, _Font_matrix_type, ::std::experimental::io2d::font_options>> _Saved_state;
+					// We use vector here because of its C++17 default ctor noexcept guarantee.
+					::std::stack<::std::tuple<_Device_offtype, ::std::experimental::io2d::brush, ::std::experimental::io2d::antialias, ::std::experimental::io2d::dashes, ::std::experimental::io2d::fill_rule, ::std::experimental::io2d::line_cap, ::std::experimental::io2d::line_join, _Line_width_type, _Miter_limit_type, ::std::experimental::io2d::compositing_operator, _Tolerance_type, ::std::experimental::io2d::path, ::std::experimental::io2d::path, ::std::experimental::io2d::path_factory, _Transform_matrix_type, ::std::experimental::io2d::font_face, _Font_matrix_type, ::std::experimental::io2d::font_options>, ::std::vector<::std::tuple<_Device_offtype, ::std::experimental::io2d::brush, ::std::experimental::io2d::antialias, ::std::experimental::io2d::dashes, ::std::experimental::io2d::fill_rule, ::std::experimental::io2d::line_cap, ::std::experimental::io2d::line_join, _Line_width_type, _Miter_limit_type, ::std::experimental::io2d::compositing_operator, _Tolerance_type, ::std::experimental::io2d::path, ::std::experimental::io2d::path, ::std::experimental::io2d::path_factory, _Transform_matrix_type, ::std::experimental::io2d::font_face, _Font_matrix_type, ::std::experimental::io2d::font_options>>> _Saved_state;
 
 					void _Ensure_state();
 					void _Ensure_state(::std::error_code& ec) noexcept;
@@ -1263,8 +1264,8 @@ namespace std {
 					surface() = delete;
 					surface(const surface&) = delete;
 					surface& operator=(const surface&) = delete;
-					surface(surface&& other);
-					surface& operator=(surface&& other);
+					surface(surface&& other) noexcept;
+					surface& operator=(surface&& other) noexcept;
 
 					surface(native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::experimental::io2d::content ctnt);
 
@@ -1287,16 +1288,17 @@ namespace std {
 					virtual void restore();
 					void clear_brush();
 					void brush(const ::std::experimental::io2d::brush& source);
-					void antialias(::std::experimental::io2d::antialias a);
-					void dashes();
+					void antialias(::std::experimental::io2d::antialias a) noexcept;
+					void clear_dashes() noexcept;
 					void dashes(const ::std::experimental::io2d::dashes& d);
-					void fill_rule(::std::experimental::io2d::fill_rule fr);
-					void line_cap(::std::experimental::io2d::line_cap lc);
-					void line_join(::std::experimental::io2d::line_join lj);
-					void line_width(double width);
-					void miter_limit(double limit);
-					void compositing_operator(::std::experimental::io2d::compositing_operator co);
-					void tolerance(double t);
+					void dashes(const ::std::experimental::io2d::dashes& d, ::std::error_code& ec) noexcept;
+					void fill_rule(::std::experimental::io2d::fill_rule fr) noexcept;
+					void line_cap(::std::experimental::io2d::line_cap lc) noexcept;
+					void line_join(::std::experimental::io2d::line_join lj) noexcept;
+					void line_width(double width) noexcept;
+					void miter_limit(double limit) noexcept;
+					void compositing_operator(::std::experimental::io2d::compositing_operator co) noexcept;
+					void tolerance(double t) noexcept;
 					void clip();
 					void clip_immediate();
 					void reclip();
