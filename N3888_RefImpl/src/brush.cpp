@@ -232,22 +232,22 @@ brush::brush(const mesh_brush_factory& f)
 		auto pdSize = pathData.size();
 		for (unsigned int pdIndex = 0; pdIndex < pdSize; pdIndex++) {
 			const auto& item = pathData[pdIndex];
-			auto type = item->type();
+			auto type = item.type();
 			switch (type) {
 			case std::experimental::io2d::path_data_type::move_to:
 			{
-				auto pt = dynamic_cast<move_to*>(item.get())->to();
+				auto pt = item.get<move_to>().to();
 				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
 			} break;
 			case std::experimental::io2d::path_data_type::line_to:
 			{
-				auto pt = dynamic_cast<line_to*>(item.get())->to();
+				auto pt = item.get<line_to>().to();
 				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
 			} break;
 			case std::experimental::io2d::path_data_type::curve_to:
 			{
-				auto dataItem = dynamic_cast<curve_to*>(item.get());
-				cairo_mesh_pattern_curve_to(pat, dataItem->control_point_1().x(), dataItem->control_point_1().y(), dataItem->control_point_2().x(), dataItem->control_point_2().y(), dataItem->end_point().x(), dataItem->end_point().y());
+				auto dataItem = item.get<curve_to>();
+				cairo_mesh_pattern_curve_to(pat, dataItem.control_point_1().x(), dataItem.control_point_1().y(), dataItem.control_point_2().x(), dataItem.control_point_2().y(), dataItem.end_point().x(), dataItem.end_point().y());
 			} break;
 			case std::experimental::io2d::path_data_type::new_sub_path:
 			{
@@ -336,22 +336,22 @@ brush::brush(const mesh_brush_factory& f, error_code& ec) noexcept
 		auto pdSize = pathData.size();
 		for (unsigned int pdIndex = 0; pdIndex < pdSize; pdIndex++) {
 			const auto& item = pathData[pdIndex];
-			auto type = item->type();
+			auto type = item.type();
 			switch (type) {
 			case std::experimental::io2d::path_data_type::move_to:
 			{
-				auto pt = dynamic_cast<move_to*>(item.get())->to();
+				auto pt = item.get<move_to>().to();
 				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
 			} break;
 			case std::experimental::io2d::path_data_type::line_to:
 			{
-				auto pt = dynamic_cast<line_to*>(item.get())->to();
+				auto pt = item.get<line_to>().to();
 				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
 			} break;
 			case std::experimental::io2d::path_data_type::curve_to:
 			{
-				auto dataItem = dynamic_cast<curve_to*>(item.get());
-				cairo_mesh_pattern_curve_to(pat, dataItem->control_point_1().x(), dataItem->control_point_1().y(), dataItem->control_point_2().x(), dataItem->control_point_2().y(), dataItem->end_point().x(), dataItem->end_point().y());
+				auto dataItem = item.get<curve_to>();
+				cairo_mesh_pattern_curve_to(pat, dataItem.control_point_1().x(), dataItem.control_point_1().y(), dataItem.control_point_2().x(), dataItem.control_point_2().y(), dataItem.end_point().x(), dataItem.end_point().y());
 			} break;
 			case std::experimental::io2d::path_data_type::new_sub_path:
 			{

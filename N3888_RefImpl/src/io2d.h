@@ -863,13 +863,358 @@ namespace std {
 					virtual path_data_type type() const noexcept override;
 				};
 
+				class path_data_item {
+					bool _Has_data = false;
+					union {
+						struct {
+							double centerX;
+							double centerY;
+							double radius;
+							double angle1;
+							double angle2;
+						} arc;
+						struct {
+							double m00;
+							double m01;
+							double m10;
+							double m11;
+							double m20;
+							double m21;
+						} matrix;
+						struct {
+							double cpt1x;
+							double cpt1y;
+							double cpt2x;
+							double cpt2y;
+							double eptx;
+							double epty;
+						} curve;
+						struct {
+							double x;
+							double y;
+						} point;
+					} _Data;
+
+					path_data_type _Type;
+
+				public:
+					path_data_item() = default;
+					path_data_item(const path_data_item&) noexcept = default;
+					path_data_item& operator=(const path_data_item&) noexcept = default;
+					path_data_item(path_data_item&& other) noexcept;
+					path_data_item& operator=(path_data_item&& other) noexcept;
+					path_data_item(const arc& value) noexcept;
+					path_data_item(const arc_negative& value) noexcept;
+					path_data_item(const change_matrix& value) noexcept;
+					path_data_item(const change_origin& value) noexcept;
+					path_data_item(const close_path& value) noexcept;
+					path_data_item(const curve_to& value) noexcept;
+					path_data_item(const rel_curve_to& value) noexcept;
+					path_data_item(const new_sub_path& value) noexcept;
+					path_data_item(const line_to& value) noexcept;
+					path_data_item(const move_to& value) noexcept;
+					path_data_item(const rel_line_to& value) noexcept;
+					path_data_item(const rel_move_to& value) noexcept;
+
+					void assign(const arc& value) noexcept;
+					void assign(const arc_negative& value) noexcept;
+					void assign(const change_matrix& value) noexcept;
+					void assign(const change_origin& value) noexcept;
+					void assign(const close_path& value) noexcept;
+					void assign(const curve_to& value) noexcept;
+					void assign(const rel_curve_to& value) noexcept;
+					void assign(const new_sub_path& value) noexcept;
+					void assign(const line_to& value) noexcept;
+					void assign(const move_to& value) noexcept;
+					void assign(const rel_line_to& value) noexcept;
+					void assign(const rel_move_to& value) noexcept;
+
+					bool has_data() const noexcept;
+					path_data_type type() const;
+					path_data_type type(::std::error_code& ec) const noexcept;
+
+					::std::unique_ptr<path_data> get() const;
+					::std::unique_ptr<path_data> get(::std::error_code& ec) const noexcept;
+
+					template <class T>
+					T get() const;
+					template <class T>
+					T get(::std::error_code& ec) const noexcept;
+
+					template <>
+					arc get() const;
+					template <>
+					arc get(::std::error_code& ec) const noexcept;
+					template <>
+					arc_negative get() const;
+					template <>
+					arc_negative get(::std::error_code& ec) const noexcept;
+					template <>
+					change_matrix get() const;
+					template <>
+					change_matrix get(::std::error_code& ec) const noexcept;
+					template <>
+					change_origin get() const;
+					template <>
+					change_origin get(::std::error_code& ec) const noexcept;
+					template <>
+					close_path get() const;
+					template <>
+					close_path get(::std::error_code& ec) const noexcept;
+					template <>
+					curve_to get() const;
+					template <>
+					curve_to get(::std::error_code& ec) const noexcept;
+					template <>
+					rel_curve_to get() const;
+					template <>
+					rel_curve_to get(::std::error_code& ec) const noexcept;
+					template <>
+					new_sub_path get() const;
+					template <>
+					new_sub_path get(::std::error_code& ec) const noexcept;
+					template <>
+					line_to get() const;
+					template <>
+					line_to get(::std::error_code& ec) const noexcept;
+					template <>
+					move_to get() const;
+					template <>
+					move_to get(::std::error_code& ec) const noexcept;
+					template <>
+					rel_line_to get() const;
+					template <>
+					rel_line_to get(::std::error_code& ec) const noexcept;
+					template <>
+					rel_move_to get() const;
+					template <>
+					rel_move_to get(::std::error_code& ec) const noexcept;
+				};
+
+				template <>
+				arc path_data_item::get() const {
+					if (_Type != path_data_type::arc) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return arc{ point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+				}
+
+				template <>
+				arc path_data_item::get(::std::error_code& ec) const noexcept {
+					if (_Type != path_data_type::arc) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return arc{ };
+					}
+					ec.clear();
+					return arc{ point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+				}
+
+				template <>
+				arc_negative path_data_item::get() const {
+					if (_Type != path_data_type::arc_negative) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return arc_negative{ point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+				}
+
+				template <>
+				arc_negative path_data_item::get(::std::error_code& ec) const noexcept {
+					if (_Type != path_data_type::arc_negative) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return arc_negative{ };
+					}
+					ec.clear();
+					return arc_negative{ point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+				}
+
+				template <>
+				change_matrix path_data_item::get() const {
+					if (_Type != path_data_type::change_matrix) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return change_matrix{ matrix_2d{ _Data.matrix.m00, _Data.matrix.m01, _Data.matrix.m10, _Data.matrix.m11, _Data.matrix.m20, _Data.matrix.m21 } };
+				}
+
+				template <>
+				change_matrix path_data_item::get(::std::error_code& ec) const noexcept {
+					if (_Type != path_data_type::change_matrix) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return change_matrix{ };
+					}
+					ec.clear();
+					return change_matrix{ matrix_2d{ _Data.matrix.m00, _Data.matrix.m01, _Data.matrix.m10, _Data.matrix.m11, _Data.matrix.m20, _Data.matrix.m21 } };
+				}
+
+				template <>
+				change_origin path_data_item::get() const {
+					if (_Type != path_data_type::change_origin) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return change_origin{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+				template <>
+				change_origin path_data_item::get(::std::error_code& ec) const noexcept{
+					if (_Type != path_data_type::change_origin) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return change_origin{ };
+					}
+					ec.clear();
+					return change_origin{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+				template <>
+				close_path path_data_item::get() const {
+					if (_Type != path_data_type::close_path) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return close_path{ };
+				}
+
+				template <>
+				close_path path_data_item::get(::std::error_code& ec) const noexcept{
+					if (_Type != path_data_type::close_path) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return close_path{ };
+					}
+					ec.clear();
+					return close_path{ };
+				}
+
+				template <>
+				curve_to path_data_item::get() const {
+					if (_Type != path_data_type::curve_to) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return curve_to{ point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty } };
+				}
+
+				template <>
+				curve_to path_data_item::get(::std::error_code& ec) const noexcept{
+					if (_Type != path_data_type::curve_to) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return curve_to{ };
+					}
+					ec.clear();
+					return curve_to{ point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty } };
+				}
+
+				template <>
+				rel_curve_to path_data_item::get() const {
+					if (_Type != path_data_type::rel_curve_to) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return rel_curve_to{ point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty } };
+				}
+
+				template <>
+				rel_curve_to path_data_item::get(::std::error_code& ec) const noexcept{
+					if (_Type != path_data_type::rel_curve_to) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return rel_curve_to{ };
+					}
+					ec.clear();
+					return rel_curve_to{ point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty } };
+				}
+
+				template <>
+				new_sub_path path_data_item::get() const {
+					if (_Type != path_data_type::new_sub_path) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return new_sub_path{ };
+				}
+
+				template <>
+				new_sub_path path_data_item::get(::std::error_code& ec) const noexcept{
+					if (_Type != path_data_type::new_sub_path) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return new_sub_path{ };
+					}
+					ec.clear();
+					return new_sub_path{ };
+				}
+
+				template <>
+				line_to path_data_item::get() const {
+					if (_Type != path_data_type::line_to) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return line_to{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+				template <>
+				line_to path_data_item::get(::std::error_code& ec) const noexcept{
+					if (_Type != path_data_type::line_to) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return line_to{ };
+					}
+					ec.clear();
+					return line_to{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+				template <>
+				move_to path_data_item::get() const {
+					if (_Type != path_data_type::move_to) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return move_to{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+				template <>
+				move_to path_data_item::get(::std::error_code& ec) const noexcept{
+					if (_Type != path_data_type::move_to) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return move_to{ };
+					}
+					ec.clear();
+					return move_to{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+				template <>
+				rel_line_to path_data_item::get() const {
+					if (_Type != path_data_type::rel_line_to) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return rel_line_to{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+				template <>
+				rel_line_to path_data_item::get(::std::error_code& ec) const noexcept{
+					if (_Type != path_data_type::rel_line_to) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return rel_line_to{ };
+					}
+					ec.clear();
+					return rel_line_to{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+				template <>
+				rel_move_to path_data_item::get() const {
+					if (_Type != path_data_type::rel_move_to) {
+						throw ::std::invalid_argument{ "Incorrect type parameter." };
+					}
+					return rel_move_to{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+				template <>
+				rel_move_to path_data_item::get(::std::error_code& ec) const noexcept{
+					if (_Type != path_data_type::rel_move_to) {
+						ec = ::std::make_error_code(::std::errc::invalid_argument);
+						return rel_move_to{ };
+					}
+					ec.clear();
+					return rel_move_to{ point{ _Data.point.x, _Data.point.y } };
+				}
+
+
 				// Forward declaration.
 				class path_factory;
 				class surface;
 
 				class path {
 					friend path_factory;
-					::std::shared_ptr<::std::vector<::std::unique_ptr<path_data>>> _Data;
+					::std::shared_ptr<::std::vector<path_data_item>> _Data;
 					::std::shared_ptr<cairo_path_t> _Cairo_path;
 					bool _Has_current_point;
 					point _Current_point;
@@ -887,15 +1232,14 @@ namespace std {
 					path& operator=(path&& other);
 
 					// Observers
-					::std::vector<::std::unique_ptr<path_data>> data() const;
-					const ::std::vector<::std::unique_ptr<path_data>>& data_ref() const;
+					::std::vector<path_data_item> data() const;
+					const ::std::vector<path_data_item>& data_ref() const;
 					rectangle path_extents() const;
 				};
 
 				class path_factory {
 					friend path;
-					mutable ::std::recursive_mutex _Lock;
-					::std::vector<::std::unique_ptr<path_data>> _Data;
+					::std::vector<path_data_item> _Data;
 					bool _Has_current_point;
 					point _Current_point;
 					point _Last_move_to_point;
@@ -904,18 +1248,18 @@ namespace std {
 					matrix_2d _Transform_matrix;
 					point _Origin;
 
-					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<::std::unique_ptr<path_data>>& data);
+					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<path_data_item>& data);
 				public:
-					path_factory();
-					path_factory(const path_factory& other);
-					path_factory& operator=(const path_factory& other);
-					path_factory(path_factory&& other);
-					path_factory& operator=(path_factory&& other);
+					path_factory() = default;
+					path_factory(const path_factory& other) = default;
+					path_factory& operator=(const path_factory& other) = default;
+					path_factory(path_factory&& other) noexcept;
+					path_factory& operator=(path_factory&& other) noexcept;
 
 					// Modifiers
 					void append(const path& p);
 					void append(const path_factory& p);
-					void append(const ::std::vector<::std::unique_ptr<path_data>>& p);
+					void append(const ::std::vector<path_data_item>& p);
 					void new_sub_path();
 					void close_path();
 					void arc(const point& center, double radius, double angle1, double angle2);
@@ -929,7 +1273,7 @@ namespace std {
 					void rel_move_to(const point& dpt);
 					void transform_matrix(const matrix_2d& m);
 					void origin(const point& pt);
-					void reset();
+					void clear();
 
 					// Observers
 					rectangle path_extents() const;
@@ -937,9 +1281,9 @@ namespace std {
 					point current_point() const;
 					matrix_2d transform_matrix() const;
 					point origin() const;
-					::std::vector<::std::unique_ptr<path_data>> data() const;
-					::std::unique_ptr<path_data> data(unsigned int index) const;
-					const ::std::vector<::std::unique_ptr<path_data>>& data_ref() const;
+					::std::vector<path_data_item> data() const;
+					path_data_item data_item(unsigned int index) const;
+					const ::std::vector<path_data_item>& data_ref() const;
 				};
 
 				class device {

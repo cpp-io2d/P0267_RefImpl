@@ -94,16 +94,16 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 	pb.rect({ 10.0, 10.0, 120.0, 90.0 });
 	auto firstRectPath = rs.path(pb);
 
-	pb.reset();
+	pb.clear();
 	pb.rect({ 50.0, 40.0, 120.0, 90.0 });
 	auto secondRectPath = rs.path(pb);
 
-	pb.reset();
+	pb.clear();
 	pb.append(firstRectPath);
 	pb.append(secondRectPath);
 	auto bothRectsClipPath = rs.path(pb);
 
-	pb.reset();
+	pb.clear();
 	pb.move_to({ 85.0, 25.0 });
 	pb.line_to({ 150.0, 115.0 });
 	pb.line_to({ 30.0, 115.0 });
@@ -201,7 +201,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.show_text(str, { beginX, 50.0 }, rgba_color::white());
 
 	for (size_t i = 0; i < elementCount; ++i) {
-		rs.immediate().reset();
+		rs.immediate().clear();
 		const auto currVal = vec[x][i];
 		if (x < phaseCount - 1) {
 			const auto i2 = find(begin(vec[x + 1]), end(vec[x + 1]), currVal) - begin(vec[x + 1]);
@@ -223,7 +223,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 		rs.fill_immediate({ greyColor, greyColor, greyColor, 1.0 });
 	}
 
-	rs.immediate().reset();
+	rs.immediate().clear();
 	rs.immediate().origin({ 250.0, 450.0 });
 	rs.immediate().transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 2.5 }));
 	rs.immediate().rect({ 200.0, 400.0, 100.0, 100.0 });
@@ -273,7 +273,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	auto sfcFactory = surface_brush_factory(imgSfc);
 	auto sfcBrush = brush(sfcFactory);
 	sfcBrush.extend(extend::repeat);
-	rs.immediate().reset();
+	rs.immediate().clear();
 	rs.immediate().rect({ 500.0, 450.0, 100.0, 100.0 });
 	rs.immediate().rect({ 525.0, 425.0, 50.0, 150.0 });
 	rs.line_join(line_join::miter_or_bevel);
@@ -287,7 +287,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	linearFactory.add_color_stop(1.0, rgba_color::salmon());
 	auto linearBrush = brush(linearFactory);
 	linearBrush.extend(extend::repeat);
-	rs.immediate().reset();
+	rs.immediate().clear();
 	rs.immediate().move_to({ 650.0, 400.0 });
 	rs.immediate().rel_line_to({ 0.0, 100.0 });
 	rs.immediate().rel_line_to({ 10.0, -100.0 });
@@ -295,7 +295,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.stroke_immediate(rgba_color::red());
 	rs.fill_immediate(linearBrush);
 
-	rs.immediate().reset();
+	rs.immediate().clear();
 	rs.immediate().move_to({ 430.0, 60.0 });
 	rs.immediate().arc({ 500.0, 60.0 }, 30.0, pi, pi * 2.0);
 	rs.immediate().line_to({ 570.0, 60.0 });
@@ -343,7 +343,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	path_factory pf;
 
 	for (size_t i = 0; i < elementCount; ++i) {
-		pf.reset();
+		pf.clear();
 		const auto currVal = vec[x][i];
 		if (x < phaseCount - 1) {
 			const auto i2 = find(begin(vec[x + 1]), end(vec[x + 1]), currVal) - begin(vec[x + 1]);
@@ -368,7 +368,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 		rs.fill();
 	}
 
-	pf.reset();
+	pf.clear();
 	pf.origin({ 250.0, 450.0 });
 	pf.transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 	pf.rect({ 200.0, 400.0, 100.0, 100.0 });
@@ -393,7 +393,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	linearFactory.add_color_stop(1.0, rgba_color::salmon());
 	auto linearBrush = brush(linearFactory);
 	linearBrush.extend(extend::repeat);
-	pf.reset();
+	pf.clear();
 	pf.rect({ 500.0, 450.0, 100.0, 100.0 });
 	pf.rect({ 525.0, 425.0, 50.0, 150.0 });
 	rs.line_join(line_join::miter_or_bevel);
@@ -405,7 +405,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.brush(linearBrush);
 	rs.fill();
 
-	pf.reset();
+	pf.clear();
 	pf.move_to({ 650.0, 400.0 });
 	pf.rel_line_to({ 0.0, 100.0 });
 	pf.rel_line_to({ 10.0, -100.0 });
@@ -416,7 +416,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.brush(linearBrush);
 	rs.fill();
 
-	pf.reset();
+	pf.clear();
 	pf.move_to({ 430.0, 60.0 });
 	pf.arc({ 500.0, 60.0 }, 30.0, pi, pi * 2.0);
 	pf.line_to({ 570.0, 60.0 });

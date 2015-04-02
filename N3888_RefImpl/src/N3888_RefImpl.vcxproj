@@ -203,6 +203,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="matrix_2d.cpp" />
     <ClCompile Include="mesh_brush_factory.cpp" />
     <ClCompile Include="path.cpp" />
+    <ClCompile Include="path_data_item.cpp" />
     <ClCompile Include="path_factory.cpp" />
     <ClCompile Include="path_data.cpp" />
     <ClCompile Include="brush.cpp" />
