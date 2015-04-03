@@ -93,7 +93,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				cpdItem.point = { pt1.x(), pt1.y() };
 				vec.push_back(cpdItem);
 				currentPoint = dataItem.control_point_1();
-				lastMoveToPoint = pt3;
+				lastMoveToPoint = pt1;
 				hasCurrentPoint = true;
 			}
 			cpdItem.header.type = CAIRO_PATH_CURVE_TO;
@@ -134,7 +134,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
 			if (!hasCurrentPoint) {
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 			}
 			currentPoint = item.get<rel_move_to>().to() + currentPoint;
 			auto pt = matrix.transform_point(currentPoint - origin) + origin;
@@ -150,33 +150,21 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
 			if (!hasCurrentPoint) {
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 			}
 			currentPoint = item.get<rel_line_to>().to() + currentPoint;
 			auto pt = matrix.transform_point(currentPoint - origin) + origin;
-			if (hasCurrentPoint) {
-				cpdItem.header.type = CAIRO_PATH_LINE_TO;
-				cpdItem.header.length = 2;
-				vec.push_back(cpdItem);
-				cpdItem = { };
-				cpdItem.point = { pt.x(), pt.y() };
-				vec.push_back(cpdItem);
-			}
-			else {
-				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
-				cpdItem.header.length = 2;
-				vec.push_back(cpdItem);
-				cpdItem = { };
-				cpdItem.point = { pt.x(), pt.y() };
-				vec.push_back(cpdItem);
-				hasCurrentPoint = true;
-				lastMoveToPoint = pt;
-			}
+			cpdItem.header.type = CAIRO_PATH_LINE_TO;
+			cpdItem.header.length = 2;
+			vec.push_back(cpdItem);
+			cpdItem = { };
+			cpdItem.point = { pt.x(), pt.y() };
+			vec.push_back(cpdItem);
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
 			if (!hasCurrentPoint) {
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 			}
 			auto existingCurrentPoint = currentPoint;
 			auto dataItem = item.get<rel_curve_to>();
@@ -191,7 +179,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 				cpdItem.point = { pt1.x(), pt1.y() };
 				vec.push_back(cpdItem);
 				currentPoint = dataItem.control_point_1() + existingCurrentPoint;
-				lastMoveToPoint = pt3;
+				lastMoveToPoint = pt1;
 				hasCurrentPoint = true;
 			}
 			cpdItem.header.type = CAIRO_PATH_CURVE_TO;
@@ -264,7 +252,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 						cpdItem.point = { pt1.x(), pt1.y() };
 						vec.push_back(cpdItem);
 						currentPoint = curveItem.control_point_1();
-						lastMoveToPoint = pt3;
+						lastMoveToPoint = pt1;
 						hasCurrentPoint = true;
 					}
 					cpdItem.header.type = CAIRO_PATH_CURVE_TO;
@@ -382,7 +370,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 						cpdItem.point = { pt1.x(), pt1.y() };
 						vec.push_back(cpdItem);
 						currentPoint = curveItem.control_point_1();
-						lastMoveToPoint = pt3;
+						lastMoveToPoint = pt1;
 						hasCurrentPoint = true;
 					}
 					cpdItem.header.type = CAIRO_PATH_CURVE_TO;
@@ -569,7 +557,7 @@ path::path(const path_factory& pb, const surface& /*sf*/, error_code& ec) noexce
 					cpdItem.point = { pt1.x(), pt1.y() };
 					vec.push_back(cpdItem);
 					currentPoint = dataItem.control_point_1();
-					lastMoveToPoint = pt3;
+					lastMoveToPoint = pt1;
 					hasCurrentPoint = true;
 				}
 				cpdItem.header.type = CAIRO_PATH_CURVE_TO;
@@ -667,7 +655,7 @@ path::path(const path_factory& pb, const surface& /*sf*/, error_code& ec) noexce
 					cpdItem.point = { pt1.x(), pt1.y() };
 					vec.push_back(cpdItem);
 					currentPoint = dataItem.control_point_1() + existingCurrentPoint;
-					lastMoveToPoint = pt3;
+					lastMoveToPoint = pt1;
 					hasCurrentPoint = true;
 				}
 				cpdItem.header.type = CAIRO_PATH_CURVE_TO;
@@ -740,7 +728,7 @@ path::path(const path_factory& pb, const surface& /*sf*/, error_code& ec) noexce
 							cpdItem.point = { pt1.x(), pt1.y() };
 							vec.push_back(cpdItem);
 							currentPoint = curveItem.control_point_1();
-							lastMoveToPoint = pt3;
+							lastMoveToPoint = pt1;
 							hasCurrentPoint = true;
 						}
 						cpdItem.header.type = CAIRO_PATH_CURVE_TO;
@@ -858,7 +846,7 @@ path::path(const path_factory& pb, const surface& /*sf*/, error_code& ec) noexce
 							cpdItem.point = { pt1.x(), pt1.y() };
 							vec.push_back(cpdItem);
 							currentPoint = curveItem.control_point_1();
-							lastMoveToPoint = pt3;
+							lastMoveToPoint = pt1;
 							hasCurrentPoint = true;
 						}
 						cpdItem.header.type = CAIRO_PATH_CURVE_TO;

@@ -308,6 +308,11 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	// Reset dashes to be a solid line.
 	rs.dashes();
 
+	rs.immediate().clear();
+	rs.immediate().curve_to({ 610.0, 400.0 }, { 660.0, 300.0 }, { 710.0, 400.0 });
+	rs.immediate().close_path();
+	rs.stroke_immediate(rgba_color::yellow_green());
+
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }
 

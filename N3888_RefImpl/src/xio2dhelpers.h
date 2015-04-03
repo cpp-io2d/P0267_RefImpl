@@ -190,6 +190,10 @@ T _Degrees_to_radians(T degrees) {
 
 ::std::vector<::std::experimental::io2d::path_data_item> _Get_arc_as_beziers(const ::std::experimental::io2d::point& center, double radius, double angle1, double angle2, bool arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::io2d::point& currentPoint = { }, const ::std::experimental::io2d::point& origin = { }, const ::std::experimental::io2d::matrix_2d& matrix = ::std::experimental::io2d::matrix_2d::init_identity());
 
+::std::vector<::std::experimental::io2d::path_data_item> _Get_arc_as_beziers(const ::std::experimental::io2d::point& center, double radius, double angle1, double angle2, ::std::error_code& ec, bool arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::io2d::point& currentPoint = { }, const ::std::experimental::io2d::point& origin = { }, const ::std::experimental::io2d::matrix_2d& matrix = ::std::experimental::io2d::matrix_2d::init_identity()) noexcept;
+
+void _Get_arc_extents(const ::std::experimental::io2d::point& center, double radius, double angle1, double angle2, bool arcNegative, bool& hasCurrentPoint, ::std::experimental::io2d::point& currentPoint, bool& hasExtents, ::std::experimental::io2d::point& pt0, ::std::experimental::io2d::point& pt1, ::std::experimental::io2d::point& origin, ::std::experimental::io2d::matrix_2d& transformMatrix) noexcept;
+
 inline double _Clamp_to_normal(double value) {
 	return ::std::max(::std::min(value, 1.0), 0.0);
 }

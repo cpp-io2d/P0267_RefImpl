@@ -1250,9 +1250,9 @@ namespace std {
 					matrix_2d _Transform_matrix;
 					point _Origin;
 
-					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<path_data_item>& data);
+					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<path_data_item>& data) noexcept;
 				public:
-					path_factory() = default;
+					path_factory() noexcept = default;
 					path_factory(const path_factory& other) = default;
 					path_factory& operator=(const path_factory& other) = default;
 					path_factory(path_factory&& other) noexcept;
@@ -1260,32 +1260,51 @@ namespace std {
 
 					// Modifiers
 					void append(const path& p);
+					void append(const path& p, ::std::error_code& ec) noexcept;
 					void append(const path_factory& p);
+					void append(const path_factory& p, ::std::error_code& ec) noexcept;
 					void append(const ::std::vector<path_data_item>& p);
+					void append(const ::std::vector<path_data_item>& p, ::std::error_code& ec) noexcept;
 					void new_sub_path();
+					void new_sub_path(::std::error_code& ec) noexcept;
 					void close_path();
+					void close_path(::std::error_code& ec) noexcept;
 					void arc(const point& center, double radius, double angle1, double angle2);
+					void arc(const point& center, double radius, double angle1, double angle2, ::std::error_code& ec) noexcept;
 					void arc_negative(const point& center, double radius, double angle1, double angle2);
+					void arc_negative(const point& center, double radius, double angle1, double angle2, ::std::error_code& ec) noexcept;
 					void curve_to(const point& pt0, const point& pt1, const point& pt2);
+					void curve_to(const point& pt0, const point& pt1, const point& pt2, ::std::error_code& ec) noexcept;
 					void line_to(const point& pt);
+					void line_to(const point& pt, ::std::error_code& ec) noexcept;
 					void move_to(const point& pt);
+					void move_to(const point& pt, ::std::error_code& ec) noexcept;
 					void rect(const rectangle& r);
+					void rect(const rectangle& r, ::std::error_code& ec) noexcept;
 					void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
+					void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2, ::std::error_code& ec) noexcept;
 					void rel_line_to(const point& dpt);
+					void rel_line_to(const point& dpt, ::std::error_code& ec) noexcept;
 					void rel_move_to(const point& dpt);
+					void rel_move_to(const point& dpt, ::std::error_code& ec) noexcept;
 					void transform_matrix(const matrix_2d& m);
+					void transform_matrix(const matrix_2d& m, ::std::error_code& ec) noexcept;
 					void origin(const point& pt);
-					void clear();
+					void origin(const point& pt, ::std::error_code& ec) noexcept;
+					void clear() noexcept;
 
 					// Observers
-					rectangle path_extents() const;
-					bool has_current_point() const;
+					rectangle path_extents() const noexcept;
+					bool has_current_point() const noexcept;
 					point current_point() const;
-					matrix_2d transform_matrix() const;
-					point origin() const;
+					point current_point(::std::error_code& ec) const noexcept;
+					matrix_2d transform_matrix() const noexcept;
+					point origin() const noexcept;
 					::std::vector<path_data_item> data() const;
+					::std::vector<path_data_item> data(::std::error_code& ec) const noexcept;
 					path_data_item data_item(unsigned int index) const;
-					const ::std::vector<path_data_item>& data_ref() const;
+					path_data_item data_item(unsigned int index, ::std::error_code& ec) const noexcept;
+					const ::std::vector<path_data_item>& data_ref() const noexcept;
 				};
 
 				class device {
