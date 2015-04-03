@@ -1222,19 +1222,21 @@ namespace std {
 					rectangle _Extents;
 				public:
 					typedef cairo_path_t* native_handle_type;
-					native_handle_type native_handle() const;
+					native_handle_type native_handle() const noexcept;
 
 					path() = delete;
 					path(const path_factory& pb, const surface& sf);
+					path(const path_factory& pb, const surface& sf, ::std::error_code& ec) noexcept;
 					path(const path& other) = default;
 					path& operator=(const path& other) = default;
-					path(path&& other);
-					path& operator=(path&& other);
+					path(path&& other) noexcept;
+					path& operator=(path&& other) noexcept;
 
 					// Observers
 					::std::vector<path_data_item> data() const;
-					const ::std::vector<path_data_item>& data_ref() const;
-					rectangle path_extents() const;
+					::std::vector<path_data_item> data(::std::error_code& ec) const noexcept;
+					const ::std::vector<path_data_item>& data_ref() const noexcept;
+					rectangle path_extents() const noexcept;
 				};
 
 				class path_factory {
