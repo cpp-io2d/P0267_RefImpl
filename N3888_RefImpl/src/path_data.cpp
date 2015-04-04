@@ -31,7 +31,7 @@ _Point& _Point::operator=(_Point&& other) noexcept {
 	return *this;
 }
 
-_Point::_Point(const point& to) noexcept
+_Point::_Point(const vector_2d& to) noexcept
 	: path_data()
 	, _Data(to) {
 }
@@ -39,11 +39,11 @@ _Point::_Point(const point& to) noexcept
 _Point::~_Point() noexcept {
 }
 
-point _Point::to() const noexcept {
+vector_2d _Point::to() const noexcept {
 	return _Data;
 }
 
-void _Point::to(const point& value) noexcept {
+void _Point::to(const vector_2d& value) noexcept {
 	_Data = value;
 }
 
@@ -58,7 +58,7 @@ move_to& move_to::operator=(move_to&& other) noexcept {
 	return *this;
 }
 
-move_to::move_to(const point& to) noexcept
+move_to::move_to(const vector_2d& to) noexcept
 	: _Point(to) {
 }
 
@@ -77,7 +77,7 @@ line_to& line_to::operator=(line_to&& other) noexcept {
 	return *this;
 }
 
-line_to::line_to(const point& to) noexcept
+line_to::line_to(const vector_2d& to) noexcept
 	: _Point(to) {
 }
 path_data_type line_to::type() const noexcept {
@@ -95,7 +95,7 @@ rel_move_to& rel_move_to::operator=(rel_move_to&& other) noexcept {
 	return *this;
 }
 
-rel_move_to::rel_move_to(const point& to) noexcept
+rel_move_to::rel_move_to(const vector_2d& to) noexcept
 	: _Point(to) {
 }
 
@@ -114,7 +114,7 @@ rel_line_to& rel_line_to::operator=(rel_line_to&& other) noexcept {
 	return *this;
 }
 
-rel_line_to::rel_line_to(const point& to) noexcept
+rel_line_to::rel_line_to(const vector_2d& to) noexcept
 	: _Point(to) {
 }
 
@@ -146,7 +146,7 @@ _Curve_to& _Curve_to::operator=(_Curve_to&& other) noexcept {
 	return *this;
 }
 
-_Curve_to::_Curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint) noexcept
+_Curve_to::_Curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept
 	: path_data()
 	, _Control_pt1(controlPoint1)
 	, _Control_pt2(controlPoint2)
@@ -156,27 +156,27 @@ _Curve_to::_Curve_to(const point& controlPoint1, const point& controlPoint2, con
 _Curve_to::~_Curve_to() noexcept {
 }
 
-void _Curve_to::control_point_1(const point& value) noexcept {
+void _Curve_to::control_point_1(const vector_2d& value) noexcept {
 	_Control_pt1 = value;
 }
 
-void _Curve_to::control_point_2(const point& value) noexcept {
+void _Curve_to::control_point_2(const vector_2d& value) noexcept {
 	_Control_pt2 = value;
 }
 
-void _Curve_to::end_point(const point& value) noexcept {
+void _Curve_to::end_point(const vector_2d& value) noexcept {
 	_End_pt = value;
 }
 
-point _Curve_to::control_point_1() const noexcept {
+vector_2d _Curve_to::control_point_1() const noexcept {
 	return _Control_pt1;
 }
 
-point _Curve_to::control_point_2() const noexcept {
+vector_2d _Curve_to::control_point_2() const noexcept {
 	return _Control_pt2;
 }
 
-point _Curve_to::end_point() const noexcept {
+vector_2d _Curve_to::end_point() const noexcept {
 	return _End_pt;
 }
 
@@ -191,7 +191,7 @@ curve_to& curve_to::operator=(curve_to&& other) noexcept {
 	return *this;
 }
 
-curve_to::curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint) noexcept
+curve_to::curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept
 	: _Curve_to(controlPoint1, controlPoint2, endPoint) {
 }
 
@@ -210,7 +210,7 @@ rel_curve_to& rel_curve_to::operator=(rel_curve_to&& other) noexcept {
 	return *this;
 }
 
-rel_curve_to::rel_curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint) noexcept
+rel_curve_to::rel_curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept
 	: _Curve_to(controlPoint1, controlPoint2, endPoint) {
 }
 
@@ -253,7 +253,7 @@ _Arc& _Arc::operator=(_Arc&& other) noexcept {
 	return *this;
 }
 
-_Arc::_Arc(point center, double radius, double angle1, double angle2) noexcept
+_Arc::_Arc(vector_2d center, double radius, double angle1, double angle2) noexcept
 	: path_data()
 	, _Center(center)
 	, _Radius(radius)
@@ -264,7 +264,7 @@ _Arc::_Arc(point center, double radius, double angle1, double angle2) noexcept
 _Arc::~_Arc() noexcept {
 }
 
-void _Arc::center(const point& value) noexcept {
+void _Arc::center(const vector_2d& value) noexcept {
 	_Center = value;
 }
 
@@ -280,7 +280,7 @@ void _Arc::angle_2(double radians) noexcept {
 	_Angle_2 = radians;
 }
 
-point _Arc::center() const noexcept {
+vector_2d _Arc::center() const noexcept {
 	return _Center;
 }
 
@@ -307,7 +307,7 @@ arc& arc::operator=(arc&& other) noexcept {
 	return *this;
 }
 
-arc::arc(point center, double radius, double angle1, double angle2) noexcept
+arc::arc(vector_2d center, double radius, double angle1, double angle2) noexcept
 	: _Arc(center, radius, angle1, angle2) {
 }
 
@@ -326,7 +326,7 @@ arc_negative& arc_negative::operator=(arc_negative&& other) noexcept {
 	return *this;
 }
 
-arc_negative::arc_negative(point center, double radius, double angle1, double angle2) noexcept
+arc_negative::arc_negative(vector_2d center, double radius, double angle1, double angle2) noexcept
 	: _Arc(center, radius, angle1, angle2) {
 }
 
@@ -412,16 +412,16 @@ change_origin& change_origin::operator=(change_origin&& other) noexcept {
 	return *this;
 }
 
-change_origin::change_origin(const point& origin) noexcept
+change_origin::change_origin(const vector_2d& origin) noexcept
 	: path_data()
 	, _Origin(origin) {
 }
 
-void change_origin::origin(const point& value) noexcept {
+void change_origin::origin(const vector_2d& value) noexcept {
 	_Origin = value;
 }
 
-point change_origin::origin() const noexcept {
+vector_2d change_origin::origin() const noexcept {
 	return _Origin;
 }
 

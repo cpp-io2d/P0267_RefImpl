@@ -16,9 +16,9 @@ double _Curve_value_for_t(double a, double b, double c, double d, double t) noex
 	return pow(1.0 - t, 3.0) * a + 3.0 * pow(1.0 - t, 2.0) * t * b + 3.0 * (1.0 - t) * pow(t, 2.0) * c + pow(t, 3.0) * d;
 }
 
-inline point _Cubic_bezier_derivative_for_t(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t) noexcept;
-inline point _Cubic_bezier_derivative_for_t(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t) noexcept{
-	return point{ 3.0 * pow(1.0 - t, 2.0) * (pt1 - pt0).x(), 3.0 * pow(1.0 - t, 2.0) * (pt1 - pt0).y() } +point{ 6.0 * (1.0 - t) * t * (pt2 - pt1).x(), 6.0 * (1.0 - t) * t * (pt2 - pt1).y() } +point{ 3.0 * pow(t, 2.0) * (pt3 - pt2).x(), 3.0 * pow(t, 2.0) * (pt3 - pt2).y() };
+inline vector_2d _Cubic_bezier_derivative_for_t(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, const vector_2d& pt3, double t) noexcept;
+inline vector_2d _Cubic_bezier_derivative_for_t(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, const vector_2d& pt3, double t) noexcept{
+	return vector_2d{ 3.0 * pow(1.0 - t, 2.0) * (pt1 - pt0).x(), 3.0 * pow(1.0 - t, 2.0) * (pt1 - pt0).y() } +vector_2d{ 6.0 * (1.0 - t) * t * (pt2 - pt1).x(), 6.0 * (1.0 - t) * t * (pt2 - pt1).y() } +vector_2d{ 3.0 * pow(t, 2.0) * (pt3 - pt2).x(), 3.0 * pow(t, 2.0) * (pt3 - pt2).y() };
 }
 
 inline bool _Same_sign(double lhs, double rhs) noexcept;
@@ -26,8 +26,8 @@ inline bool _Same_sign(double lhs, double rhs) noexcept{
 	return ((lhs < 0.0) && (rhs < 0.0)) || ((lhs > 0.0) && (rhs > 0.0));
 }
 
-double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t0, double t2, const bool findX, const double epsilon = numeric_limits<double>::epsilon()) noexcept;
-double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const point& pt2, const point& pt3, double t0, double t2, const bool findX, const double epsilon) noexcept{
+double _Find_t_for_d_of_t_equal_zero(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, const vector_2d& pt3, double t0, double t2, const bool findX, const double epsilon = numeric_limits<double>::epsilon()) noexcept;
+double _Find_t_for_d_of_t_equal_zero(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, const vector_2d& pt3, double t0, double t2, const bool findX, const double epsilon) noexcept{
 	// Validate that t0 is the low value, t2 is the high value, t0 is not equal to t2, and that both are in the range [0.0, 1.0].
 	assert(t0 >= 0.0 && t0 < t2 && t2 <= 1.0);
 	// Find the midpoint.
@@ -92,8 +92,8 @@ double _Find_t_for_d_of_t_equal_zero(const point& pt0, const point& pt1, const p
 	return t1;
 }
 
-void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, const point& pt3, point& extents0, point& extents1) noexcept;
-void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, const point& pt3, point& extents0, point& extents1) noexcept{
+void _Curve_to_extents(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, const vector_2d& pt3, vector_2d& extents0, vector_2d& extents1) noexcept;
+void _Curve_to_extents(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, const vector_2d& pt3, vector_2d& extents0, vector_2d& extents1) noexcept{
 	// We know at a minimum that the extents are the two knots, pt0 and pt3. The only question is whether the extents go beyond those two points.
 	extents0.x(min(pt0.x(), pt3.x()));
 	extents0.y(min(pt0.y(), pt3.y()));
@@ -325,8 +325,8 @@ void _Curve_to_extents(const point& pt0, const point& pt1, const point& pt2, con
 	assert(foundLowX && foundLowY && foundHighX && foundHighY && numPoints == 4 && numXs == 2 && numYs == 2);
 }
 
-point _Rotate_point(const point& pt, double angle, bool clockwise = true) noexcept;
-point _Rotate_point(const point& pt, double angle, bool clockwise) noexcept{
+vector_2d _Rotate_point(const vector_2d& pt, double angle, bool clockwise = true) noexcept;
+vector_2d _Rotate_point(const vector_2d& pt, double angle, bool clockwise) noexcept{
 	if (clockwise) {
 		return{ pt.x() * cos(angle) + pt.y() * sin(angle), -(pt.x() * -(sin(angle)) + pt.y() * cos(angle)) };
 	}
@@ -335,7 +335,7 @@ point _Rotate_point(const point& pt, double angle, bool clockwise) noexcept{
 	}
 }
 
-vector<path_data_item> _Get_arc_as_beziers(const point& center, double radius, double angle1, double angle2, bool arcNegative, bool hasCurrentPoint, const point& currentPoint, const point& origin, const matrix_2d& matrix) {
+vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, bool arcNegative, bool hasCurrentPoint, const vector_2d& currentPoint, const vector_2d& origin, const matrix_2d& matrix) {
 	if (arcNegative) {
 		while (angle2 > angle1) {
 			angle2 -= _Pi * 2.0;
@@ -346,7 +346,7 @@ vector<path_data_item> _Get_arc_as_beziers(const point& center, double radius, d
 			angle2 += _Pi * 2.0;
 		}
 	}
-	point pt0, pt1, pt2, pt3;
+	vector_2d pt0, pt1, pt2, pt3;
 	int bezierCount = 1;
 	double theta;
 	if (arcNegative) {
@@ -437,7 +437,7 @@ vector<path_data_item> _Get_arc_as_beziers(const point& center, double radius, d
 	return pb.data();
 }
 
-vector<path_data_item> _Get_arc_as_beziers(const point& center, double radius, double angle1, double angle2, error_code& ec, bool arcNegative, bool hasCurrentPoint, const point& currentPoint, const point& origin, const matrix_2d& matrix) noexcept{
+vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec, bool arcNegative, bool hasCurrentPoint, const vector_2d& currentPoint, const vector_2d& origin, const matrix_2d& matrix) noexcept{
 	if (arcNegative) {
 		while (angle2 > angle1) {
 			angle2 -= _Pi * 2.0;
@@ -448,7 +448,7 @@ vector<path_data_item> _Get_arc_as_beziers(const point& center, double radius, d
 			angle2 += _Pi * 2.0;
 		}
 	}
-	point pt0, pt1, pt2, pt3;
+	vector_2d pt0, pt1, pt2, pt3;
 	int bezierCount = 1;
 	double theta;
 	if (arcNegative) {
@@ -571,7 +571,7 @@ vector<path_data_item> _Get_arc_as_beziers(const point& center, double radius, d
 	}
 }
 
-void _Get_arc_extents(const ::std::experimental::io2d::point& center, double radius, double angle1, double angle2, bool arcNegative, bool& hasCurrentPoint, ::std::experimental::io2d::point& currentPoint, bool& hasExtents, point& exPt0, point& exPt1, ::std::experimental::io2d::point& origin, ::std::experimental::io2d::matrix_2d& transformMatrix) noexcept{
+void _Get_arc_extents(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, bool arcNegative, bool& hasCurrentPoint, ::std::experimental::io2d::vector_2d& currentPoint, bool& hasExtents, vector_2d& exPt0, vector_2d& exPt1, ::std::experimental::io2d::vector_2d& origin, ::std::experimental::io2d::matrix_2d& transformMatrix) noexcept{
 	if (arcNegative) {
 		while (angle2 > angle1) {
 			angle2 -= _Pi * 2.0;
@@ -582,7 +582,7 @@ void _Get_arc_extents(const ::std::experimental::io2d::point& center, double rad
 			angle2 += _Pi * 2.0;
 		}
 	}
-	point pt0, pt1, pt2, pt3;
+	vector_2d pt0, pt1, pt2, pt3;
 	int bezierCount = 1;
 	double theta;
 	if (arcNegative) {
@@ -674,8 +674,8 @@ void _Get_arc_extents(const ::std::experimental::io2d::point& center, double rad
 	for (; bezierCount > 0; bezierCount--) {
 		// curve_to
 		assert(hasCurrentPoint);
-		point cte0{ };
-		point cte1{ };
+		vector_2d cte0{ };
+		vector_2d cte1{ };
 		auto ctrlPt1 = center + _Rotate_point({ pt1.x() * radius, pt1.y() * radius }, currentTheta);
 		auto ctrlPt2 = center + _Rotate_point({ pt2.x() * radius, pt2.y() * radius }, currentTheta);
 		auto endPt = center + _Rotate_point({ pt3.x() * radius, pt3.y() * radius }, currentTheta);
@@ -805,11 +805,11 @@ void path_factory::append(const path_factory& p, error_code& ec) noexcept{
 void path_factory::append(const vector<path_data_item>& p) {
 	// Validate data.
 	matrix_2d transformMatrix = _Transform_matrix;
-	point origin = _Origin;
+	vector_2d origin = _Origin;
 	bool hasCurrentPoint = _Has_current_point;
-	point currentPoint = _Current_point;
+	vector_2d currentPoint = _Current_point;
 	// Used to establish the proper current point when a close_path is encountered.
-	point lastMoveToPoint = _Last_move_to_point;
+	vector_2d lastMoveToPoint = _Last_move_to_point;
 
 	for (const auto& item : p) {
 		auto type = item.type();
@@ -950,11 +950,11 @@ void path_factory::append(const vector<path_data_item>& p) {
 void path_factory::append(const vector<path_data_item>& p, error_code& ec) noexcept {
 	// Validate data.
 	matrix_2d transformMatrix = _Transform_matrix;
-	point origin = _Origin;
+	vector_2d origin = _Origin;
 	bool hasCurrentPoint = _Has_current_point;
-	point currentPoint = _Current_point;
+	vector_2d currentPoint = _Current_point;
 	// Used to establish the proper current point when a close_path is encountered.
-	point lastMoveToPoint = _Last_move_to_point;
+	vector_2d lastMoveToPoint = _Last_move_to_point;
 
 	for (const auto& item : p) {
 		auto type = item.type();
@@ -1116,17 +1116,17 @@ bool path_factory::has_current_point() const noexcept{
 	return _Has_current_point;
 }
 
-point path_factory::current_point() const {
+vector_2d path_factory::current_point() const {
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
 	return _Current_point;
 }
 
-point path_factory::current_point(error_code& ec) const noexcept{
+vector_2d path_factory::current_point(error_code& ec) const noexcept{
 	if (!_Has_current_point) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NO_CURRENT_POINT);
-		return point{ };
+		return vector_2d{ };
 	}
 	ec.clear();
 	return _Current_point;
@@ -1192,7 +1192,7 @@ void path_factory::_Set_current_point_and_last_move_to_point_for_arc(const vecto
 	}
 }
 
-void path_factory::arc(const point& center, double radius, double angle1, double angle2) {
+void path_factory::arc(const vector_2d& center, double radius, double angle1, double angle2) {
 	_Data.emplace_back(std::experimental::io2d::arc(center, radius, angle1, angle2));
 	// Update the current point.
 	try {
@@ -1204,7 +1204,7 @@ void path_factory::arc(const point& center, double radius, double angle1, double
 	}
 }
 
-void path_factory::arc(const point& center, double radius, double angle1, double angle2, error_code& ec) noexcept{
+void path_factory::arc(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec) noexcept{
 	try {
 		_Data.emplace_back(std::experimental::io2d::arc(center, radius, angle1, angle2));
 	}
@@ -1223,7 +1223,7 @@ void path_factory::arc(const point& center, double radius, double angle1, double
 	ec.clear();
 }
 
-void path_factory::arc_negative(const point& center, double radius, double angle1, double angle2) {
+void path_factory::arc_negative(const vector_2d& center, double radius, double angle1, double angle2) {
 	_Data.emplace_back(std::experimental::io2d::arc_negative(center, radius, angle1, angle2));
 	// Update the current point.
 	try {
@@ -1235,7 +1235,7 @@ void path_factory::arc_negative(const point& center, double radius, double angle
 	}
 }
 
-void path_factory::arc_negative(const point& center, double radius, double angle1, double angle2, error_code& ec) noexcept {
+void path_factory::arc_negative(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec) noexcept {
 	try {
 		_Data.emplace_back(std::experimental::io2d::arc_negative(center, radius, angle1, angle2));
 	}
@@ -1255,7 +1255,7 @@ void path_factory::arc_negative(const point& center, double radius, double angle
 	ec.clear();
 }
 
-void path_factory::curve_to(const point& pt0, const point& pt1, const point& pt2) {
+void path_factory::curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2) {
 	if (!_Has_current_point) {
 		_Data.reserve(_Data.size() + 2U);
 		move_to(pt0);
@@ -1265,7 +1265,7 @@ void path_factory::curve_to(const point& pt0, const point& pt1, const point& pt2
 	_Current_point = pt2;
 }
 
-void path_factory::curve_to(const point& pt0, const point& pt1, const point& pt2, error_code& ec) noexcept {
+void path_factory::curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, error_code& ec) noexcept {
 	if (!_Has_current_point) {
 		try {
 			_Data.reserve(_Data.size() + 2U);
@@ -1295,13 +1295,13 @@ void path_factory::curve_to(const point& pt0, const point& pt1, const point& pt2
 	ec.clear();
 }
 
-void path_factory::line_to(const point& pt) {
+void path_factory::line_to(const vector_2d& pt) {
 	_Data.emplace_back(std::experimental::io2d::line_to(pt));
 	_Has_current_point = true;
 	_Current_point = pt;
 }
 
-void path_factory::line_to(const point& pt, error_code& ec) noexcept{
+void path_factory::line_to(const vector_2d& pt, error_code& ec) noexcept{
 	if (!_Has_current_point) {
 		move_to(pt, ec);
 		// move_to already sets or clears ec for us.
@@ -1319,13 +1319,13 @@ void path_factory::line_to(const point& pt, error_code& ec) noexcept{
 	ec.clear();
 }
 
-void path_factory::move_to(const point& pt) {
+void path_factory::move_to(const vector_2d& pt) {
 	_Data.emplace_back(std::experimental::io2d::move_to(pt));
 	_Has_current_point = true;
 	_Current_point = pt;
 }
 
-void path_factory::move_to(const point& pt, error_code& ec) noexcept{
+void path_factory::move_to(const vector_2d& pt, error_code& ec) noexcept{
 	try {
 		_Data.emplace_back(std::experimental::io2d::move_to(pt));
 	}
@@ -1374,7 +1374,7 @@ void path_factory::rect(const experimental::io2d::rectangle& r, error_code& ec) 
 	assert(!static_cast<bool>(ec));
 }
 
-void path_factory::rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2) {
+void path_factory::rel_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2) {
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
@@ -1383,7 +1383,7 @@ void path_factory::rel_curve_to(const point& dpt0, const point& dpt1, const poin
 	_Current_point = _Current_point + dpt2;
 }
 
-void path_factory::rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2, error_code& ec) noexcept{
+void path_factory::rel_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2, error_code& ec) noexcept{
 	if (!_Has_current_point) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NO_CURRENT_POINT);
 		return;
@@ -1400,7 +1400,7 @@ void path_factory::rel_curve_to(const point& dpt0, const point& dpt1, const poin
 	ec.clear();
 }
 
-void path_factory::rel_line_to(const point& dpt) {
+void path_factory::rel_line_to(const vector_2d& dpt) {
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
@@ -1409,7 +1409,7 @@ void path_factory::rel_line_to(const point& dpt) {
 	_Current_point = _Current_point + dpt;
 }
 
-void path_factory::rel_line_to(const point& dpt, error_code& ec) noexcept{
+void path_factory::rel_line_to(const vector_2d& dpt, error_code& ec) noexcept{
 	if (!_Has_current_point) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NO_CURRENT_POINT);
 		return;
@@ -1425,7 +1425,7 @@ void path_factory::rel_line_to(const point& dpt, error_code& ec) noexcept{
 	ec.clear();
 }
 
-void path_factory::rel_move_to(const point& dpt) {
+void path_factory::rel_move_to(const vector_2d& dpt) {
 	if (!_Has_current_point) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 	}
@@ -1434,7 +1434,7 @@ void path_factory::rel_move_to(const point& dpt) {
 	_Current_point = _Current_point + dpt;
 }
 
-void path_factory::rel_move_to(const point& dpt, error_code& ec) noexcept{
+void path_factory::rel_move_to(const vector_2d& dpt, error_code& ec) noexcept{
 	if (!_Has_current_point) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NO_CURRENT_POINT);
 		return;
@@ -1472,12 +1472,12 @@ matrix_2d path_factory::transform_matrix() const noexcept{
 	return _Transform_matrix;
 }
 
-void path_factory::origin(const point& pt) {
+void path_factory::origin(const vector_2d& pt) {
 	_Data.emplace_back(std::experimental::io2d::change_origin(pt));
 	_Origin = pt;
 }
 
-void path_factory::origin(const point& pt, error_code& ec) noexcept{
+void path_factory::origin(const vector_2d& pt, error_code& ec) noexcept{
 	try {
 		_Data.emplace_back(std::experimental::io2d::change_origin(pt));
 	}
@@ -1489,7 +1489,7 @@ void path_factory::origin(const point& pt, error_code& ec) noexcept{
 	ec.clear();
 }
 
-point path_factory::origin() const noexcept{
+vector_2d path_factory::origin() const noexcept{
 	return _Origin;
 }
 
@@ -1543,16 +1543,16 @@ const vector<path_data_item>& path_factory::data_ref() const noexcept {
 }
 
 rectangle path_factory::path_extents() const noexcept {
-	point pt0{ };
-	point pt1{ };
+	vector_2d pt0{ };
+	vector_2d pt1{ };
 
 	matrix_2d currMatrix = matrix_2d::init_identity();
-	point currOrigin{ };
+	vector_2d currOrigin{ };
 
 	bool hasCurrentPoint = false;
 	bool hasExtents = false;
 
-	point currentPoint{ };
+	vector_2d currentPoint{ };
 
 	// pt0 will hold min values; pt1 will hold max values.
 	for (auto i = 0U; i < _Data.size(); i++) {
@@ -1586,8 +1586,8 @@ rectangle path_factory::path_extents() const noexcept {
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
 			assert(hasCurrentPoint);
-			point cte0{ };
-			point cte1{ };
+			vector_2d cte0{ };
+			vector_2d cte1{ };
 			auto dataItem = item.get<experimental::io2d::curve_to>();
 			auto itemPt1 = currMatrix.transform_point(dataItem.control_point_1() - currOrigin) + currOrigin;
 			auto itemPt2 = currMatrix.transform_point(dataItem.control_point_2() - currOrigin) + currOrigin;
@@ -1642,8 +1642,8 @@ rectangle path_factory::path_extents() const noexcept {
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
 			assert(hasCurrentPoint);
-			point cte0{ };
-			point cte1{ };
+			vector_2d cte0{ };
+			vector_2d cte1{ };
 			auto dataItem = item.get<experimental::io2d::rel_curve_to>();
 			auto itemPt1 = currMatrix.transform_point((dataItem.control_point_1() + currentPoint) - currOrigin) + currOrigin;
 			auto itemPt2 = currMatrix.transform_point((dataItem.control_point_2() + currentPoint) - currOrigin) + currOrigin;

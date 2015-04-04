@@ -29,7 +29,7 @@ linear_brush_factory& linear_brush_factory::operator=(linear_brush_factory&& oth
 	return *this;
 }
 
-linear_brush_factory::linear_brush_factory(const point& pt0, const point& pt1) noexcept
+linear_brush_factory::linear_brush_factory(const vector_2d& pt0, const vector_2d& pt1) noexcept
 	: _Begin_point(pt0)
 	, _End_point(pt1)
 	, _Color_stops() {
@@ -95,11 +95,11 @@ void linear_brush_factory::color_stop(unsigned int index, double offset, const r
 	ec.clear();
 }
 
-void linear_brush_factory::begin_point(const point& value) noexcept{
+void linear_brush_factory::begin_point(const vector_2d& value) noexcept{
 	_Begin_point = value;
 }
 
-void linear_brush_factory::end_point(const point& value) noexcept{
+void linear_brush_factory::end_point(const vector_2d& value) noexcept{
 	_End_point = value;
 }
 
@@ -132,10 +132,10 @@ tuple<double, rgba_color> linear_brush_factory::color_stop(unsigned int index, e
 	}
 }
 
-point linear_brush_factory::begin_point() const noexcept{
+vector_2d linear_brush_factory::begin_point() const noexcept{
 	return _Begin_point;
 }
 
-point linear_brush_factory::end_point() const noexcept{
+vector_2d linear_brush_factory::end_point() const noexcept{
 	return _End_point;
 }

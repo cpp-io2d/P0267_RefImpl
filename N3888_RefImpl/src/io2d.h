@@ -54,7 +54,7 @@ namespace std {
 				class io2d_error_category;
 				class rectangle;
 				class rgba_color;
-				class point;
+				class vector_2d;
 				class font_extents;
 				class text_extents;
 				class matrix_2d;
@@ -507,16 +507,16 @@ namespace std {
 				}
 #endif
 
-				class point {
+				class vector_2d {
 					double _X = 0.0;
 					double _Y = 0.0;
 				public:
-					point() noexcept = default;
-					point(const point& other) noexcept = default;
-					point& operator=(const point& other) noexcept = default;
-					point(point&& other) noexcept;
-					point& operator=(point&& other) noexcept;
-					point(double x, double y) noexcept;
+					vector_2d() noexcept = default;
+					vector_2d(const vector_2d& other) noexcept = default;
+					vector_2d& operator=(const vector_2d& other) noexcept = default;
+					vector_2d(vector_2d&& other) noexcept;
+					vector_2d& operator=(vector_2d&& other) noexcept;
+					vector_2d(double x, double y) noexcept;
 
 					void x(double value) noexcept;
 					void y(double value) noexcept;
@@ -524,16 +524,16 @@ namespace std {
 					double x() const noexcept;
 					double y() const noexcept;
 
-					point& operator+=(const point& rhs) noexcept;
-					point& operator-=(const point& rhs) noexcept;
+					vector_2d& operator+=(const vector_2d& rhs) noexcept;
+					vector_2d& operator-=(const vector_2d& rhs) noexcept;
 				};
 
-				bool operator==(const point& lhs, const point& rhs) noexcept;
-				bool operator!=(const point& lhs, const point& rhs) noexcept;
-				point operator+(const point& lhs) noexcept;
-				point operator+(const point& lhs, const point& rhs) noexcept;
-				point operator-(const point& lhs) noexcept;
-				point operator-(const point& lhs, const point& rhs) noexcept;
+				bool operator==(const vector_2d& lhs, const vector_2d& rhs) noexcept;
+				bool operator!=(const vector_2d& lhs, const vector_2d& rhs) noexcept;
+				vector_2d operator+(const vector_2d& lhs) noexcept;
+				vector_2d operator+(const vector_2d& lhs, const vector_2d& rhs) noexcept;
+				vector_2d operator-(const vector_2d& lhs) noexcept;
+				vector_2d operator-(const vector_2d& lhs, const vector_2d& rhs) noexcept;
 
 				class font_extents {
 					cairo_font_extents_t _Font_extents;
@@ -602,8 +602,8 @@ namespace std {
 					matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21) noexcept;
 
 					static matrix_2d init_identity() noexcept;
-					static matrix_2d init_translate(const point& value) noexcept;
-					static matrix_2d init_scale(const point& value) noexcept;
+					static matrix_2d init_translate(const vector_2d& value) noexcept;
+					static matrix_2d init_scale(const vector_2d& value) noexcept;
 					static matrix_2d init_rotate(double radians) noexcept;
 					static matrix_2d init_shear_x(double factor) noexcept;
 					static matrix_2d init_shear_y(double factor) noexcept;
@@ -615,8 +615,8 @@ namespace std {
 					void m11(double value) noexcept;
 					void m20(double value) noexcept;
 					void m21(double value) noexcept;
-					matrix_2d& translate(const point& value) noexcept;
-					matrix_2d& scale(const point& value) noexcept;
+					matrix_2d& translate(const vector_2d& value) noexcept;
+					matrix_2d& scale(const vector_2d& value) noexcept;
 					matrix_2d& rotate(double radians) noexcept;
 					matrix_2d& shear_x(double factor) noexcept;
 					matrix_2d& shear_y(double factor) noexcept;
@@ -632,8 +632,8 @@ namespace std {
 					double m21() const noexcept;
 					double determinant() const;
 					double determinant(::std::error_code& ec) const noexcept;
-					point transform_distance(const point& dist) const noexcept;
-					point transform_point(const point& pt) const noexcept;
+					vector_2d transform_distance(const vector_2d& dist) const noexcept;
+					vector_2d transform_point(const vector_2d& pt) const noexcept;
 
 					matrix_2d& operator*=(const matrix_2d& rhs) noexcept;
 				};
@@ -655,19 +655,19 @@ namespace std {
 				};
 
 				class _Point : public path_data {
-					point _Data = { };
+					vector_2d _Data = { };
 				public:
 					_Point() noexcept = default;
 					_Point(const _Point& other) noexcept = default;
 					_Point& operator=(const _Point& other) noexcept = default;
 					_Point(_Point&& other) noexcept;
 					_Point& operator=(_Point&& other) noexcept;
-					_Point(const point& to) noexcept;
+					_Point(const vector_2d& to) noexcept;
 					virtual ~_Point() noexcept;
 					virtual path_data_type type() const noexcept override = 0;
 
-					point to() const noexcept;
-					void to(const point& value) noexcept;
+					vector_2d to() const noexcept;
+					void to(const vector_2d& value) noexcept;
 				};
 
 				class move_to : public _Point {
@@ -677,7 +677,7 @@ namespace std {
 					move_to& operator=(const move_to& other) noexcept = default;
 					move_to(move_to&& other) noexcept;
 					move_to& operator=(move_to&& other) noexcept;
-					move_to(const point& to) noexcept;
+					move_to(const vector_2d& to) noexcept;
 					virtual path_data_type type() const noexcept override;
 				};
 
@@ -688,7 +688,7 @@ namespace std {
 					line_to& operator=(const line_to& other) noexcept = default;
 					line_to(line_to&& other) noexcept;
 					line_to& operator=(line_to&& other) noexcept;
-					line_to(const point& to) noexcept;
+					line_to(const vector_2d& to) noexcept;
 					virtual path_data_type type() const noexcept override;
 				};
 
@@ -699,7 +699,7 @@ namespace std {
 					rel_move_to& operator=(const rel_move_to& other) noexcept = default;
 					rel_move_to(rel_move_to&& other) noexcept;
 					rel_move_to& operator=(rel_move_to&& other) noexcept;
-					rel_move_to(const point& to) noexcept;
+					rel_move_to(const vector_2d& to) noexcept;
 					virtual path_data_type type() const noexcept override;
 				};
 
@@ -710,31 +710,31 @@ namespace std {
 					rel_line_to& operator=(const rel_line_to& other) noexcept = default;
 					rel_line_to(rel_line_to&& other) noexcept;
 					rel_line_to& operator=(rel_line_to&& other) noexcept;
-					rel_line_to(const point& to) noexcept;
+					rel_line_to(const vector_2d& to) noexcept;
 					virtual path_data_type type() const noexcept override;
 				};
 
 				class _Curve_to : public path_data {
-					point _Control_pt1 = { };
-					point _Control_pt2 = { };
-					point _End_pt = { };
+					vector_2d _Control_pt1 = { };
+					vector_2d _Control_pt2 = { };
+					vector_2d _End_pt = { };
 				public:
 					_Curve_to() noexcept = default;
 					_Curve_to(const _Curve_to& other) noexcept = default;
 					_Curve_to& operator=(const _Curve_to& other) noexcept = default;
 					_Curve_to(_Curve_to&& other) noexcept;
 					_Curve_to& operator=(_Curve_to&& other) noexcept;
-					_Curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint) noexcept;
+					_Curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
 					virtual ~_Curve_to() noexcept;
 					virtual path_data_type type() const noexcept override = 0;
 
-					void control_point_1(const point& value) noexcept;
-					void control_point_2(const point& value) noexcept;
-					void end_point(const point& value) noexcept;
+					void control_point_1(const vector_2d& value) noexcept;
+					void control_point_2(const vector_2d& value) noexcept;
+					void end_point(const vector_2d& value) noexcept;
 
-					point control_point_1() const noexcept;
-					point control_point_2() const noexcept;
-					point end_point() const noexcept;
+					vector_2d control_point_1() const noexcept;
+					vector_2d control_point_2() const noexcept;
+					vector_2d end_point() const noexcept;
 				};
 
 				class curve_to : public _Curve_to {
@@ -744,7 +744,7 @@ namespace std {
 					curve_to& operator=(const curve_to& other) noexcept = default;
 					curve_to(curve_to&& other) noexcept;
 					curve_to& operator=(curve_to&& other) noexcept;
-					curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint) noexcept;
+					curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
 					virtual path_data_type type() const noexcept override;
 				};
 
@@ -755,12 +755,12 @@ namespace std {
 					rel_curve_to& operator=(const rel_curve_to& other) noexcept = default;
 					rel_curve_to(rel_curve_to&& other) noexcept;
 					rel_curve_to& operator=(rel_curve_to&& other) noexcept;
-					rel_curve_to(const point& controlPoint1, const point& controlPoint2, const point& endPoint) noexcept;
+					rel_curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
 					virtual path_data_type type() const noexcept override;
 				};
 
 				class _Arc : public path_data {
-					point _Center;
+					vector_2d _Center;
 					double _Radius;
 					double _Angle_1;
 					double _Angle_2;
@@ -770,16 +770,16 @@ namespace std {
 					_Arc& operator=(const _Arc& other) noexcept = default;
 					_Arc(_Arc&& other) noexcept;
 					_Arc& operator=(_Arc&& other) noexcept;
-					_Arc(point center, double radius, double angle1, double angle2) noexcept;
+					_Arc(vector_2d center, double radius, double angle1, double angle2) noexcept;
 					virtual ~_Arc() noexcept;
 					virtual path_data_type type() const noexcept override = 0;
 
-					void center(const point& value) noexcept;
+					void center(const vector_2d& value) noexcept;
 					void radius(double value) noexcept;
 					void angle_1(double radians) noexcept;
 					void angle_2(double radians) noexcept;
 
-					point center() const noexcept;
+					vector_2d center() const noexcept;
 					double radius() const noexcept;
 					double angle_1() const noexcept;
 					double angle_2() const noexcept;
@@ -792,7 +792,7 @@ namespace std {
 					arc& operator=(const arc& other) noexcept = default;
 					arc(arc&& other) noexcept;
 					arc& operator=(arc&& other) noexcept;
-					arc(point center, double radius, double angle1, double angle2) noexcept;
+					arc(vector_2d center, double radius, double angle1, double angle2) noexcept;
 
 					virtual path_data_type type() const noexcept override;
 				};
@@ -804,7 +804,7 @@ namespace std {
 					arc_negative& operator=(const arc_negative& other) noexcept = default;
 					arc_negative(arc_negative&& other) noexcept;
 					arc_negative& operator=(arc_negative&& other) noexcept;
-					arc_negative(point center, double radius, double angle1, double angle2) noexcept;
+					arc_negative(vector_2d center, double radius, double angle1, double angle2) noexcept;
 
 					virtual path_data_type type() const noexcept override;
 				};
@@ -848,18 +848,18 @@ namespace std {
 				};
 
 				class change_origin : public path_data {
-					point _Origin = { };
+					vector_2d _Origin = { };
 				public:
 					change_origin() noexcept = default;
 					change_origin(const change_origin& other) noexcept = default;
 					change_origin& operator=(const change_origin& other) noexcept = default;
 					change_origin(change_origin&& other) noexcept;
 					change_origin& operator=(change_origin&& other) noexcept;
-					change_origin(const point& origin) noexcept;
+					change_origin(const vector_2d& origin) noexcept;
 
-					void origin(const point& value) noexcept;
+					void origin(const vector_2d& value) noexcept;
 
-					point origin() const noexcept;
+					vector_2d origin() const noexcept;
 					virtual path_data_type type() const noexcept override;
 				};
 
@@ -996,7 +996,7 @@ namespace std {
 					if (_Type != path_data_type::arc) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return arc{ point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+					return arc{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
 				}
 
 				template <>
@@ -1006,7 +1006,7 @@ namespace std {
 						return arc{ };
 					}
 					ec.clear();
-					return arc{ point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+					return arc{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
 				}
 
 				template <>
@@ -1014,7 +1014,7 @@ namespace std {
 					if (_Type != path_data_type::arc_negative) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return arc_negative{ point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+					return arc_negative{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
 				}
 
 				template <>
@@ -1024,7 +1024,7 @@ namespace std {
 						return arc_negative{ };
 					}
 					ec.clear();
-					return arc_negative{ point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+					return arc_negative{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
 				}
 
 				template <>
@@ -1050,7 +1050,7 @@ namespace std {
 					if (_Type != path_data_type::change_origin) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return change_origin{ point{ _Data.point.x, _Data.point.y } };
+					return change_origin{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
@@ -1060,7 +1060,7 @@ namespace std {
 						return change_origin{ };
 					}
 					ec.clear();
-					return change_origin{ point{ _Data.point.x, _Data.point.y } };
+					return change_origin{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
@@ -1086,7 +1086,7 @@ namespace std {
 					if (_Type != path_data_type::curve_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return curve_to{ point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty } };
+					return curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
 				}
 
 				template <>
@@ -1096,7 +1096,7 @@ namespace std {
 						return curve_to{ };
 					}
 					ec.clear();
-					return curve_to{ point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty } };
+					return curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
 				}
 
 				template <>
@@ -1104,7 +1104,7 @@ namespace std {
 					if (_Type != path_data_type::rel_curve_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return rel_curve_to{ point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty } };
+					return rel_curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
 				}
 
 				template <>
@@ -1114,7 +1114,7 @@ namespace std {
 						return rel_curve_to{ };
 					}
 					ec.clear();
-					return rel_curve_to{ point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty } };
+					return rel_curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
 				}
 
 				template <>
@@ -1140,7 +1140,7 @@ namespace std {
 					if (_Type != path_data_type::line_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return line_to{ point{ _Data.point.x, _Data.point.y } };
+					return line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
@@ -1150,7 +1150,7 @@ namespace std {
 						return line_to{ };
 					}
 					ec.clear();
-					return line_to{ point{ _Data.point.x, _Data.point.y } };
+					return line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
@@ -1158,7 +1158,7 @@ namespace std {
 					if (_Type != path_data_type::move_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return move_to{ point{ _Data.point.x, _Data.point.y } };
+					return move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
@@ -1168,7 +1168,7 @@ namespace std {
 						return move_to{ };
 					}
 					ec.clear();
-					return move_to{ point{ _Data.point.x, _Data.point.y } };
+					return move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
@@ -1176,7 +1176,7 @@ namespace std {
 					if (_Type != path_data_type::rel_line_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return rel_line_to{ point{ _Data.point.x, _Data.point.y } };
+					return rel_line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
@@ -1186,7 +1186,7 @@ namespace std {
 						return rel_line_to{ };
 					}
 					ec.clear();
-					return rel_line_to{ point{ _Data.point.x, _Data.point.y } };
+					return rel_line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
@@ -1194,7 +1194,7 @@ namespace std {
 					if (_Type != path_data_type::rel_move_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return rel_move_to{ point{ _Data.point.x, _Data.point.y } };
+					return rel_move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
@@ -1204,7 +1204,7 @@ namespace std {
 						return rel_move_to{ };
 					}
 					ec.clear();
-					return rel_move_to{ point{ _Data.point.x, _Data.point.y } };
+					return rel_move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 
@@ -1217,8 +1217,8 @@ namespace std {
 					::std::shared_ptr<::std::vector<path_data_item>> _Data;
 					::std::shared_ptr<cairo_path_t> _Cairo_path;
 					bool _Has_current_point;
-					point _Current_point;
-					point _Last_move_to_point;
+					vector_2d _Current_point;
+					vector_2d _Last_move_to_point;
 					rectangle _Extents;
 				public:
 					typedef cairo_path_t* native_handle_type;
@@ -1243,12 +1243,12 @@ namespace std {
 					friend path;
 					::std::vector<path_data_item> _Data;
 					bool _Has_current_point;
-					point _Current_point;
-					point _Last_move_to_point;
-					point _Extents_pt0;
-					point _Extents_pt1;
+					vector_2d _Current_point;
+					vector_2d _Last_move_to_point;
+					vector_2d _Extents_pt0;
+					vector_2d _Extents_pt1;
 					matrix_2d _Transform_matrix;
-					point _Origin;
+					vector_2d _Origin;
 
 					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<path_data_item>& data) noexcept;
 				public:
@@ -1269,37 +1269,37 @@ namespace std {
 					void new_sub_path(::std::error_code& ec) noexcept;
 					void close_path();
 					void close_path(::std::error_code& ec) noexcept;
-					void arc(const point& center, double radius, double angle1, double angle2);
-					void arc(const point& center, double radius, double angle1, double angle2, ::std::error_code& ec) noexcept;
-					void arc_negative(const point& center, double radius, double angle1, double angle2);
-					void arc_negative(const point& center, double radius, double angle1, double angle2, ::std::error_code& ec) noexcept;
-					void curve_to(const point& pt0, const point& pt1, const point& pt2);
-					void curve_to(const point& pt0, const point& pt1, const point& pt2, ::std::error_code& ec) noexcept;
-					void line_to(const point& pt);
-					void line_to(const point& pt, ::std::error_code& ec) noexcept;
-					void move_to(const point& pt);
-					void move_to(const point& pt, ::std::error_code& ec) noexcept;
+					void arc(const vector_2d& center, double radius, double angle1, double angle2);
+					void arc(const vector_2d& center, double radius, double angle1, double angle2, ::std::error_code& ec) noexcept;
+					void arc_negative(const vector_2d& center, double radius, double angle1, double angle2);
+					void arc_negative(const vector_2d& center, double radius, double angle1, double angle2, ::std::error_code& ec) noexcept;
+					void curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2);
+					void curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, ::std::error_code& ec) noexcept;
+					void line_to(const vector_2d& pt);
+					void line_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
+					void move_to(const vector_2d& pt);
+					void move_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
 					void rect(const rectangle& r);
 					void rect(const rectangle& r, ::std::error_code& ec) noexcept;
-					void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2);
-					void rel_curve_to(const point& dpt0, const point& dpt1, const point& dpt2, ::std::error_code& ec) noexcept;
-					void rel_line_to(const point& dpt);
-					void rel_line_to(const point& dpt, ::std::error_code& ec) noexcept;
-					void rel_move_to(const point& dpt);
-					void rel_move_to(const point& dpt, ::std::error_code& ec) noexcept;
+					void rel_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2);
+					void rel_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2, ::std::error_code& ec) noexcept;
+					void rel_line_to(const vector_2d& dpt);
+					void rel_line_to(const vector_2d& dpt, ::std::error_code& ec) noexcept;
+					void rel_move_to(const vector_2d& dpt);
+					void rel_move_to(const vector_2d& dpt, ::std::error_code& ec) noexcept;
 					void transform_matrix(const matrix_2d& m);
 					void transform_matrix(const matrix_2d& m, ::std::error_code& ec) noexcept;
-					void origin(const point& pt);
-					void origin(const point& pt, ::std::error_code& ec) noexcept;
+					void origin(const vector_2d& pt);
+					void origin(const vector_2d& pt, ::std::error_code& ec) noexcept;
 					void clear() noexcept;
 
 					// Observers
 					rectangle path_extents() const noexcept;
 					bool has_current_point() const noexcept;
-					point current_point() const;
-					point current_point(::std::error_code& ec) const noexcept;
+					vector_2d current_point() const;
+					vector_2d current_point(::std::error_code& ec) const noexcept;
 					matrix_2d transform_matrix() const noexcept;
-					point origin() const noexcept;
+					vector_2d origin() const noexcept;
 					::std::vector<path_data_item> data() const;
 					::std::vector<path_data_item> data(::std::error_code& ec) const noexcept;
 					path_data_item data_item(unsigned int index) const;
@@ -1459,8 +1459,8 @@ namespace std {
 				};
 
 				class linear_brush_factory {
-					point _Begin_point;
-					point _End_point;
+					vector_2d _Begin_point;
+					vector_2d _End_point;
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
 				public:
@@ -1469,28 +1469,28 @@ namespace std {
 					linear_brush_factory& operator=(const linear_brush_factory&) = default;
 					linear_brush_factory(linear_brush_factory&& other) noexcept;
 					linear_brush_factory& operator=(linear_brush_factory&& other) noexcept;
-					linear_brush_factory(const point& begin, const point& end) noexcept;
+					linear_brush_factory(const vector_2d& begin, const vector_2d& end) noexcept;
 
 					// Modifiers
 					void add_color_stop(double offset, const rgba_color& color);
 					void add_color_stop(double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
 					void color_stop(unsigned int index, double offset, const rgba_color& color);
 					void color_stop(unsigned int index, double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
-					void begin_point(const point& value) noexcept;
-					void end_point(const point& value) noexcept;
+					void begin_point(const vector_2d& value) noexcept;
+					void end_point(const vector_2d& value) noexcept;
 
 					// Observers
 					unsigned int color_stop_count() const noexcept;
 					::std::tuple<double, rgba_color> color_stop(unsigned int index) const;
 					::std::tuple<double, rgba_color> color_stop(unsigned int index, ::std::error_code& ec) const noexcept;
-					point begin_point() const noexcept;
-					point end_point() const noexcept;
+					vector_2d begin_point() const noexcept;
+					vector_2d end_point() const noexcept;
 				};
 
 				class radial_brush_factory {
-					point _Center0;
+					vector_2d _Center0;
 					double _Radius0;
-					point _Center1;
+					vector_2d _Center1;
 					double _Radius1;
 					::std::vector<::std::tuple<double, rgba_color>> _Color_stops;
 
@@ -1500,29 +1500,29 @@ namespace std {
 					radial_brush_factory& operator=(const radial_brush_factory&) = default;
 					radial_brush_factory(radial_brush_factory&& other) noexcept;
 					radial_brush_factory& operator=(radial_brush_factory&& other) noexcept;
-					radial_brush_factory(const point& center0, double radius0, const point& center1, double radius1) noexcept;
+					radial_brush_factory(const vector_2d& center0, double radius0, const vector_2d& center1, double radius1) noexcept;
 
 					// Modifiers
 					void add_color_stop(double offset, const rgba_color& color);
 					void add_color_stop(double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
 					void color_stop(unsigned int index, double offset, const rgba_color& color);
 					void color_stop(unsigned int index, double offset, const rgba_color& color, ::std::error_code& ec) noexcept;
-					void radial_circles(const point& center0, double radius0, const point& center1, double radius1) noexcept;
+					void radial_circles(const vector_2d& center0, double radius0, const vector_2d& center1, double radius1) noexcept;
 
 					// Observers
 					unsigned int color_stop_count() const noexcept;
 					::std::tuple<double, rgba_color> color_stop(unsigned int index) const;
 					::std::tuple<double, rgba_color> color_stop(unsigned int index, ::std::error_code& ec) const noexcept;
-					::std::tuple<point, double, point, double> radial_circles() const noexcept;
+					::std::tuple<vector_2d, double, vector_2d, double> radial_circles() const noexcept;
 				};
 
 				class mesh_brush_factory {
 					bool _Has_current_patch;
 					unsigned int _Current_patch_index;
 					int _Current_patch_side_count;
-					point _Current_patch_initial_point;
+					vector_2d _Current_patch_initial_point;
 					bool _Has_current_point;
-					typedef ::std::array<::std::tuple<bool, point>, 4> _Control_points;
+					typedef ::std::array<::std::tuple<bool, vector_2d>, 4> _Control_points;
 					typedef ::std::array<::std::tuple<bool, rgba_color>, 4> _Corner_colors;
 					// <Patch data, control points, corner colors>
 					typedef ::std::tuple<::std::experimental::io2d::path_factory, _Control_points, _Corner_colors> _Patch;
@@ -1541,14 +1541,14 @@ namespace std {
 					void begin_replace_patch(unsigned int patch_num, ::std::error_code& ec) noexcept;
 					void end_patch();
 					void end_patch(::std::error_code& ec) noexcept;
-					void move_to(const point& pt);
-					void move_to(const point& pt, ::std::error_code& ec) noexcept;
-					void line_to(const point& pt);
-					void line_to(const point& pt, ::std::error_code& ec) noexcept;
-					void curve_to(const point& pt0, const point& pt1, const point& pt2);
-					void curve_to(const point& pt0, const point& pt1, const point& pt2, ::std::error_code& ec) noexcept;
-					void control_point(unsigned int point_num, const point& pt);
-					void control_point(unsigned int point_num, const point& pt, ::std::error_code& ec) noexcept;
+					void move_to(const vector_2d& pt);
+					void move_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
+					void line_to(const vector_2d& pt);
+					void line_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
+					void curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2);
+					void curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, ::std::error_code& ec) noexcept;
+					void control_point(unsigned int point_num, const vector_2d& pt);
+					void control_point(unsigned int point_num, const vector_2d& pt, ::std::error_code& ec) noexcept;
 					void corner_color(unsigned int corner_num, const rgba_color& color);
 					void corner_color(unsigned int corner_num, const rgba_color& color, ::std::error_code& ec) noexcept;
 
@@ -1556,8 +1556,8 @@ namespace std {
 					unsigned int patch_count() const noexcept;
 					::std::experimental::io2d::path_factory path_factory(unsigned int patch_num) const;
 					::std::experimental::io2d::path_factory path_factory(unsigned int patch_num, ::std::error_code& ec) const noexcept;
-					bool control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const;
-					bool control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint, ::std::error_code& ec) const noexcept;
+					bool control_point(unsigned int patch_num, unsigned int point_num, vector_2d& controlPoint) const;
+					bool control_point(unsigned int patch_num, unsigned int point_num, vector_2d& controlPoint, ::std::error_code& ec) const noexcept;
 					bool corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
 					bool corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color, ::std::error_code& ec) const noexcept;
 				};
@@ -1588,7 +1588,7 @@ namespace std {
 					::std::experimental::io2d::content _Content;
 
 					// State - saved
-					typedef point _Device_offtype;
+					typedef vector_2d _Device_offtype;
 					_Device_offtype _Device_offset = { 0.0, 0.0 };
 					::std::experimental::io2d::brush _Brush;
 					::std::experimental::io2d::antialias _Antialias;
@@ -1644,7 +1644,7 @@ namespace std {
 					::std::shared_ptr<::std::experimental::io2d::device> device();
 					void mark_dirty();
 					void mark_dirty(const rectangle& rect);
-					void device_offset(const point& offset);
+					void device_offset(const vector_2d& offset);
 					void write_to_file(const ::std::string& filename);
 					image_surface map_to_image();
 					image_surface map_to_image(const rectangle& extents);
@@ -1679,72 +1679,72 @@ namespace std {
 					void paint();
 					void paint(const rgba_color& c);
 					void paint(const ::std::experimental::io2d::brush& b);
-					void paint(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void paint(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void paint(double alpha);
 					void paint(const rgba_color& c, double alpha);
 					void paint(const ::std::experimental::io2d::brush& b, double alpha);
-					void paint(const surface& s, double alpha, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, double alpha, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void paint(const surface& s, double alpha, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void fill();
 					void fill(const rgba_color& c);
 					void fill(const ::std::experimental::io2d::brush& b);
-					void fill(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void fill(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void fill(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void fill_immediate();
 					void fill_immediate(const rgba_color& c);
 					void fill_immediate(const ::std::experimental::io2d::brush& b);
-					void fill_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void fill_immediate(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void fill_immediate(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void stroke();
 					void stroke(const rgba_color& c);
 					void stroke(const ::std::experimental::io2d::brush& b);
-					void stroke(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void stroke(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void stroke(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void stroke_immediate();
 					void stroke_immediate(const rgba_color& c);
 					void stroke_immediate(const ::std::experimental::io2d::brush& b);
-					void stroke_immediate(const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void stroke_immediate(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void stroke_immediate(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 
 					// \ref{\iotwod.surface.modifiers.maskrender}, mask render modifiers:
 					void mask(const ::std::experimental::io2d::brush& maskBrush);
 					void mask(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
 					void mask(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
-					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void mask(const surface& maskSurface);
 					void mask(const surface& maskSurface, const rgba_color& c);
 					void mask(const surface& maskSurface, const ::std::experimental::io2d::brush& b);
-					void mask(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask(const surface& maskSurface, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void mask(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
-					void mask(const surface& maskSurface, const point& maskOrigin);
-					void mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
-					void mask(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b);
-					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
-					void mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush);
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void mask_immediate(const surface& maskSurface);
 					void mask_immediate(const surface& maskSurface, const rgba_color& c);
 					void mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::brush& b);
-					void mask_immediate(const surface& maskSurface, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const surface& maskSurface, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
 					void mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
-					void mask_immediate(const surface& maskSurface, const point& maskOrigin);
-					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c);
-					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b);
-					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
-					void mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 
 					// \ref{\iotwod.surface.modifiers.textrender}, text render modifiers:
-					point show_text(const ::std::string& utf8, const point& position);
-					point show_text(const ::std::string& utf8, const point& position, const rgba_color& c);
-					point show_text(const ::std::string& utf8, const point& position, const ::std::experimental::io2d::brush& b);
-					point show_text(const ::std::string& utf8, const point& position, const surface& s, const point& origin = point{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
-					point show_text(const ::std::string& utf8, const point& position, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const rgba_color& c);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
 					void matrix(const matrix_2d& matrix);
 
@@ -1760,7 +1760,7 @@ namespace std {
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
 					::std::experimental::io2d::content content() const ;
-					point device_offset() const;
+					vector_2d device_offset() const;
 					bool has_surface_resource() const;
 					::std::experimental::io2d::brush brush() const;
 					::std::experimental::io2d::antialias antialias() const;
@@ -1774,28 +1774,28 @@ namespace std {
 					::std::experimental::io2d::compositing_operator compositing_operator() const;
 					double tolerance() const;
 					rectangle clip_extents() const;
-					bool in_clip(const point& pt) const;
+					bool in_clip(const vector_2d& pt) const;
 					::std::vector<rectangle> clip_rectangles() const;
 					::std::vector<rectangle> clip_rectangles(::std::error_code& ec) const noexcept;
 
 					// \ref{\iotwod.surface.observers.render}, render observers:
 					rectangle fill_extents() const;
 					rectangle fill_extents_immediate() const;
-					bool in_fill(const point& pt) const;
-					bool in_fill_immediate(const point& pt) const;
+					bool in_fill(const vector_2d& pt) const;
+					bool in_fill_immediate(const vector_2d& pt) const;
 					rectangle stroke_extents() const;
 					rectangle stroke_extents_immediate() const;
-					bool in_stroke(const point& pt) const;
-					bool in_stroke_immediate(const point& pt) const;
+					bool in_stroke(const vector_2d& pt) const;
+					bool in_stroke_immediate(const vector_2d& pt) const;
 					::std::experimental::io2d::font_extents font_extents() const;
 					::std::experimental::io2d::text_extents text_extents(const ::std::string& utf8) const;
 
 					// \ref{\iotwod.surface.observers.transform}, transformation observers:
 					matrix_2d matrix() const;
-					point user_to_surface(const point& pt) const;
-					point user_to_surface_distance(const point& dpt) const;
-					point surface_to_user(const point& pt) const;
-					point surface_to_user_distance(const point& dpt) const;
+					vector_2d user_to_surface(const vector_2d& pt) const;
+					vector_2d user_to_surface_distance(const vector_2d& dpt) const;
+					vector_2d surface_to_user(const vector_2d& pt) const;
+					vector_2d surface_to_user_distance(const vector_2d& dpt) const;
 
 					// \ref{\iotwod.surface.observers.font}, font observers:
 					matrix_2d font_matrix() const;

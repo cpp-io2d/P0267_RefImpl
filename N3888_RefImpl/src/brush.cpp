@@ -80,8 +80,8 @@ brush::brush(const linear_brush_factory& f)
 	, _Extend(::std::experimental::io2d::extend::none)
 	, _Filter(::std::experimental::io2d::filter::good)
 	, _Matrix(matrix_2d::init_identity()) {
-	point lpt0 = f.begin_point();
-	point lpt1 = f.end_point();
+	vector_2d lpt0 = f.begin_point();
+	vector_2d lpt1 = f.end_point();
 	_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(lpt0.x(), lpt0.y(), lpt1.x(), lpt1.y()), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
@@ -101,8 +101,8 @@ brush::brush(const linear_brush_factory& f, error_code& ec) noexcept
 	, _Extend(::std::experimental::io2d::extend::none)
 	, _Filter(::std::experimental::io2d::filter::good)
 	, _Matrix(matrix_2d::init_identity()) {
-	point lpt0 = f.begin_point();
-	point lpt1 = f.end_point();
+	vector_2d lpt0 = f.begin_point();
+	vector_2d lpt1 = f.end_point();
 	try {
 		_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(lpt0.x(), lpt0.y(), lpt1.x(), lpt1.y()), &cairo_pattern_destroy);
 	}
@@ -142,9 +142,9 @@ brush::brush(const radial_brush_factory& f)
 	, _Filter(::std::experimental::io2d::filter::good)
 	, _Matrix(matrix_2d::init_identity()) {
 	auto points = f.radial_circles();
-	point& center0 = get<0>(points);
+	vector_2d& center0 = get<0>(points);
 	double& radius0 = get<1>(points);
-	point& center1 = get<2>(points);
+	vector_2d& center1 = get<2>(points);
 	double& radius1 = get<3>(points);
 	_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(center0.x(), center0.y(), radius0, center1.x(), center1.y(), radius1), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
@@ -166,9 +166,9 @@ brush::brush(const radial_brush_factory& f, error_code& ec) noexcept
 	, _Filter(::std::experimental::io2d::filter::good)
 	, _Matrix(matrix_2d::init_identity()) {
 	auto points = f.radial_circles();
-	point& center0 = get<0>(points);
+	vector_2d& center0 = get<0>(points);
 	double& radius0 = get<1>(points);
-	point& center1 = get<2>(points);
+	vector_2d& center1 = get<2>(points);
 	double& radius1 = get<3>(points);
 	try {
 		_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(center0.x(), center0.y(), radius0, center1.x(), center1.y(), radius1), &cairo_pattern_destroy);
@@ -281,7 +281,7 @@ brush::brush(const mesh_brush_factory& f)
 		}
 
 		for (auto pointNum = 0U; pointNum < 4U; pointNum++) {
-			point pt;
+			vector_2d pt;
 			if (f.control_point(patchNum, pointNum, pt)) {
 				cairo_mesh_pattern_set_control_point(pat, pointNum, pt.x(), pt.y());
 			}
@@ -395,7 +395,7 @@ brush::brush(const mesh_brush_factory& f, error_code& ec) noexcept
 		}
 
 		for (auto pointNum = 0U; pointNum < 4U; pointNum++) {
-			point pt;
+			vector_2d pt;
 			if (f.control_point(patchNum, pointNum, pt, ec)) {
 				if (static_cast<bool>(ec)) {
 					_Brush.reset();

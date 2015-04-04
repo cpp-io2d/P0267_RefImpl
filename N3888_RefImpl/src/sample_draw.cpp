@@ -45,8 +45,8 @@ vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed) {
 	return result;
 }
 
-wostream& operator<<(wostream& os, const point& pt);
-wostream& operator<<(wostream& os, const point& pt) {
+wostream& operator<<(wostream& os, const vector_2d& pt);
+wostream& operator<<(wostream& os, const vector_2d& pt) {
 	os << L"(" << pt.x() << L"," << pt.y() << L")";
 	return os;
 }
@@ -206,13 +206,13 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 			const auto x1r = radius * i * 2.0 + radius + beginX, x2r = radius * i2 * 2.0 + radius + beginX;
 			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 				* (i % 2 == 1 ? 1.0 : -1.0));
-			const auto center = point{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
+			const auto center = vector_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
 			rs.immediate().transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
 			rs.immediate().origin(center);
 			rs.immediate().arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
 		else {
-			const point center{ radius * i * 2.0 + radius + beginX, y };
+			const vector_2d center{ radius * i * 2.0 + radius + beginX, y };
 			rs.immediate().transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0));
 			rs.immediate().origin(center);
 			rs.immediate().arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
@@ -366,13 +366,13 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 			const auto x1r = radius * i * 2.0 + radius + beginX, x2r = radius * i2 * 2.0 + radius + beginX;
 			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 				* (i % 2 == 1 ? 1.0 : -1.0));
-			const auto center = point{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
+			const auto center = vector_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
 			pf.transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
 			pf.origin(center);
 			pf.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
 		else {
-			const point center{ radius * i * 2.0 + radius + beginX, y };
+			const vector_2d center{ radius * i * 2.0 + radius + beginX, y };
 			pf.transform_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi / 4.0));
 			pf.origin(center);
 			pf.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);

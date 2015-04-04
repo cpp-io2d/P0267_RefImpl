@@ -62,11 +62,11 @@ matrix_2d matrix_2d::init_identity() noexcept {
 	return{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
 }
 
-matrix_2d matrix_2d::init_translate(const point& value) noexcept {
+matrix_2d matrix_2d::init_translate(const vector_2d& value) noexcept {
 	return{ 1.0, 0.0, 0.0, 1.0, value.x(), value.y() };
 }
 
-matrix_2d matrix_2d::init_scale(const point& value) noexcept {
+matrix_2d matrix_2d::init_scale(const vector_2d& value) noexcept {
 	return{ value.x(), 0.0, 0.0, value.y(), 0.0, 0.0 };
 }
 
@@ -84,12 +84,12 @@ matrix_2d matrix_2d::init_shear_y(double factor) noexcept {
 	return{ 1.0, factor, 0.0, 1.0, 0.0, 0.0 };
 }
 
-matrix_2d& matrix_2d::translate(const point& value) noexcept {
+matrix_2d& matrix_2d::translate(const vector_2d& value) noexcept {
 	*this = init_translate(value) * (*this);
 	return *this;
 }
 
-matrix_2d& matrix_2d::scale(const point& value) noexcept {
+matrix_2d& matrix_2d::scale(const vector_2d& value) noexcept {
 	*this = init_scale(value) * (*this);
 	return *this;
 }
@@ -193,12 +193,12 @@ double matrix_2d::determinant(error_code& ec) const noexcept {
 	return _M00 * _M11 - _M01 * _M10;
 }
 
-point matrix_2d::transform_distance(const point& dist) const noexcept {
+vector_2d matrix_2d::transform_distance(const vector_2d& dist) const noexcept {
 	return{ _M00 * dist.x() + _M10 * dist.y(), _M01 * dist.x() + _M11 * dist.y() };
 }
 
-point matrix_2d::transform_point(const point& pt) const noexcept {
-	return transform_distance(pt) + point{ _M20, _M21 };
+vector_2d matrix_2d::transform_point(const vector_2d& pt) const noexcept {
+	return transform_distance(pt) + vector_2d{ _M20, _M21 };
 }
 
 void matrix_2d::m00(double value) noexcept {

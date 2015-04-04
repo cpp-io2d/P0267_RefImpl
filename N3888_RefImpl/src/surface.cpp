@@ -222,7 +222,7 @@ void surface::mark_dirty(const rectangle& rect) {
 	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Double_to_int(rect.x(), false), _Double_to_int(rect.y(), false), _Double_to_int(rect.width()), _Double_to_int(rect.height()));
 }
 
-void surface::device_offset(const point& offset) {
+void surface::device_offset(const vector_2d& offset) {
 	_Device_offset = offset;
 	cairo_surface_set_device_offset(_Surface.get(), offset.x(), offset.y());
 }
@@ -461,7 +461,7 @@ void surface::paint(const ::std::experimental::io2d::brush& b) {
 	paint();
 }
 
-void surface::paint(const surface& s, const point& origin, extend e, filter f) {
+void surface::paint(const surface& s, const vector_2d& origin, extend e, filter f) {
 	paint(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -497,7 +497,7 @@ void surface::paint(const ::std::experimental::io2d::brush& b, double alpha) {
 	paint(alpha);
 }
 
-void surface::paint(const surface& s, double alpha, const point& origin, extend e, filter f) {
+void surface::paint(const surface& s, double alpha, const vector_2d& origin, extend e, filter f) {
 	paint(s, alpha, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -533,7 +533,7 @@ void surface::fill(const ::std::experimental::io2d::brush& b) {
 	fill();
 }
 
-void surface::fill(const surface& s, const point& origin, extend e, filter f) {
+void surface::fill(const surface& s, const vector_2d& origin, extend e, filter f) {
 	fill(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -572,7 +572,7 @@ void surface::fill_immediate(const ::std::experimental::io2d::brush& b) {
 	fill_immediate();
 }
 
-void surface::fill_immediate(const surface& s, const point& origin, extend e, filter f) {
+void surface::fill_immediate(const surface& s, const vector_2d& origin, extend e, filter f) {
 	fill_immediate(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -611,7 +611,7 @@ void surface::stroke(const ::std::experimental::io2d::brush& b) {
 	stroke();
 }
 
-void surface::stroke(const surface& s, const point& origin, extend e, filter f) {
+void surface::stroke(const surface& s, const vector_2d& origin, extend e, filter f) {
 	stroke(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -650,7 +650,7 @@ void surface::stroke_immediate(const ::std::experimental::io2d::brush& b) {
 	stroke_immediate();
 }
 
-void surface::stroke_immediate(const surface& s, const point& origin, extend e, filter f) {
+void surface::stroke_immediate(const surface& s, const vector_2d& origin, extend e, filter f) {
 	stroke_immediate(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -689,7 +689,7 @@ void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const ::st
 	mask(maskBrush);
 }
 
-void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin, extend e, filter f) {
+void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const vector_2d& origin, extend e, filter f) {
 	mask(maskBrush, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -725,7 +725,7 @@ void surface::mask(const surface& maskSurface, const ::std::experimental::io2d::
 	mask(maskSurface);
 }
 
-void surface::mask(const surface& maskSurface, const surface& s, const point& origin, extend e, filter f) {
+void surface::mask(const surface& maskSurface, const surface& s, const vector_2d& origin, extend e, filter f) {
 	mask(maskSurface, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -740,7 +740,7 @@ void surface::mask(const surface& maskSurface, const surface& s, const matrix_2d
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
-void surface::mask(const surface& maskSurface, const point& maskOrigin) {
+void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin) {
 	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
 	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
@@ -750,22 +750,22 @@ void surface::mask(const surface& maskSurface, const point& maskOrigin) {
 	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
 }
 
-void surface::mask(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
+void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
 	brush(experimental::io2d::brush(factory));
 	mask(maskSurface, maskOrigin);
 }
 
-void surface::mask(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b) {
+void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b) {
 	brush(b);
 	mask(maskSurface, maskOrigin);
 }
 
-void surface::mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin, extend e, filter f) {
+void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const vector_2d& origin, extend e, filter f) {
 	mask(maskSurface, maskOrigin, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
-void surface::mask(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e, filter f) {
+void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
 	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
@@ -800,7 +800,7 @@ void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, 
 	mask(maskBrush);
 }
 
-void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const point& origin, extend e, filter f) {
+void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const vector_2d& origin, extend e, filter f) {
 	mask_immediate(maskBrush, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -842,7 +842,7 @@ void surface::mask_immediate(const surface& maskSurface, const ::std::experiment
 	mask_immediate(maskSurface);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const surface& s, const point& origin, extend e, filter f) {
+void surface::mask_immediate(const surface& maskSurface, const surface& s, const vector_2d& origin, extend e, filter f) {
 	mask_immediate(maskSurface, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
@@ -859,7 +859,7 @@ void surface::mask_immediate(const surface& maskSurface, const surface& s, const
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin) {
+void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin) {
 	auto currPath = _Current_path;
 	path(path(_Immediate_path));
 	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
@@ -872,22 +872,22 @@ void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin
 	path(currPath);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const rgba_color& c) {
+void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
 	brush(experimental::io2d::brush(factory));
 	mask_immediate(maskSurface, maskOrigin);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const ::std::experimental::io2d::brush& b) {
+void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b) {
 	brush(b);
 	mask_immediate(maskSurface, maskOrigin);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const point& origin, extend e, filter f) {
+void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const vector_2d& origin, extend e, filter f) {
 	mask_immediate(maskSurface, maskOrigin, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin, const surface& s, const matrix_2d& m, extend e, filter f) {
+void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
 	path(path(_Immediate_path));
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
@@ -900,7 +900,7 @@ void surface::mask_immediate(const surface& maskSurface, const point& maskOrigin
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
-point surface::show_text(const string& utf8, const point& position) {
+vector_2d surface::show_text(const string& utf8, const vector_2d& position) {
 	cairo_new_path(_Context.get());
 	cairo_move_to(_Context.get(), position.x(), position.y());
 	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
@@ -913,25 +913,25 @@ point surface::show_text(const string& utf8, const point& position) {
 	double x, y;
 	cairo_get_current_point(_Context.get(), &x, &y);
 	path(_Current_path);
-	return point{ x, y };
+	return vector_2d{ x, y };
 }
 
-point surface::show_text(const string& utf8, const point& position, const rgba_color& c) {
+vector_2d surface::show_text(const string& utf8, const vector_2d& position, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
 	brush(experimental::io2d::brush(factory));
 	return show_text(utf8, position);
 }
 
-point surface::show_text(const string& utf8, const point& position, const ::std::experimental::io2d::brush& b) {
+vector_2d surface::show_text(const string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b) {
 	brush(b);
 	return show_text(utf8, position);
 }
 
-point surface::show_text(const string& utf8, const point& position, const surface& s, const point& origin, extend e, filter f) {
+vector_2d surface::show_text(const string& utf8, const vector_2d& position, const surface& s, const vector_2d& origin, extend e, filter f) {
 	return show_text(utf8, position, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
-point surface::show_text(const string& utf8, const point& position, const surface& s, const matrix_2d& m, extend e, filter f) {
+vector_2d surface::show_text(const string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
 	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
@@ -981,10 +981,10 @@ content surface::content() const {
 	return _Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get()));
 }
 
-point surface::device_offset() const {
+vector_2d surface::device_offset() const {
 	double x, y;
 	cairo_surface_get_device_offset(_Surface.get(), &x, &y);
-	return point{ x, y };
+	return vector_2d{ x, y };
 }
 
 bool surface::has_surface_resource() const {
@@ -1042,7 +1042,7 @@ rectangle surface::clip_extents() const {
 	return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
-bool surface::in_clip(const point& pt) const {
+bool surface::in_clip(const vector_2d& pt) const {
 	return cairo_in_clip(_Context.get(), pt.x(), pt.y()) != 0;
 }
 
@@ -1070,11 +1070,11 @@ rectangle surface::fill_extents_immediate() const {
 	//return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
-bool surface::in_fill(const point& pt) const {
+bool surface::in_fill(const vector_2d& pt) const {
 	return cairo_in_fill(_Context.get(), pt.x(), pt.y()) != 0;
 }
 
-bool surface::in_fill_immediate(const point& pt) const {
+bool surface::in_fill_immediate(const vector_2d& pt) const {
 	throw runtime_error("Not implemented.");
 	//return cairo_in_fill(_Context.get(), pt.x(), pt.y()) != 0;
 }
@@ -1095,11 +1095,11 @@ rectangle surface::stroke_extents_immediate() const {
 	//return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
-bool surface::in_stroke(const point& pt) const {
+bool surface::in_stroke(const vector_2d& pt) const {
 	return cairo_in_stroke(_Context.get(), pt.x(), pt.y()) != 0;
 }
 
-bool surface::in_stroke_immediate(const point& pt) const {
+bool surface::in_stroke_immediate(const vector_2d& pt) const {
 	throw runtime_error("Not implemented.");
 }
 
@@ -1261,21 +1261,21 @@ matrix_2d surface::matrix() const {
 	return _Transform_matrix;
 }
 
-point surface::user_to_surface(const point& pt) const {
+vector_2d surface::user_to_surface(const vector_2d& pt) const {
 	return _Transform_matrix.transform_point(pt);
 }
 
-point surface::user_to_surface_distance(const point& dpt) const {
+vector_2d surface::user_to_surface_distance(const vector_2d& dpt) const {
 	return _Transform_matrix.transform_distance(dpt);
 }
 
-point surface::surface_to_user(const point& pt) const {
+vector_2d surface::surface_to_user(const vector_2d& pt) const {
 	auto im = _Transform_matrix;
 	im.invert();
 	return im.transform_point(pt);
 }
 
-point surface::surface_to_user_distance(const point& dpt) const {
+vector_2d surface::surface_to_user_distance(const vector_2d& dpt) const {
 	auto im = _Transform_matrix;
 	im.invert();
 	return im.transform_distance(dpt);

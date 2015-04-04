@@ -279,15 +279,15 @@ unique_ptr<path_data> path_data_item::get() const {
 	switch (_Type) {
 	case std::experimental::io2d::path_data_type::move_to:
 	{
-		return make_unique<std::experimental::io2d::move_to>(point{ _Data.point.x, _Data.point.y });
+		return make_unique<std::experimental::io2d::move_to>(vector_2d{ _Data.point.x, _Data.point.y });
 	} break;
 	case std::experimental::io2d::path_data_type::line_to:
 	{
-		return make_unique<std::experimental::io2d::line_to>(point{ _Data.point.x, _Data.point.y });
+		return make_unique<std::experimental::io2d::line_to>(vector_2d{ _Data.point.x, _Data.point.y });
 	} break;
 	case std::experimental::io2d::path_data_type::curve_to:
 	{
-		return make_unique<std::experimental::io2d::curve_to>(point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty });
+		return make_unique<std::experimental::io2d::curve_to>(vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty });
 	} break;
 	case std::experimental::io2d::path_data_type::new_sub_path:
 	{
@@ -299,23 +299,23 @@ unique_ptr<path_data> path_data_item::get() const {
 	} break;
 	case std::experimental::io2d::path_data_type::rel_move_to:
 	{
-		return make_unique<std::experimental::io2d::rel_move_to>(point{ _Data.point.x, _Data.point.y });
+		return make_unique<std::experimental::io2d::rel_move_to>(vector_2d{ _Data.point.x, _Data.point.y });
 	} break;
 	case std::experimental::io2d::path_data_type::rel_line_to:
 	{
-		return make_unique<std::experimental::io2d::rel_line_to>(point{ _Data.point.x, _Data.point.y });
+		return make_unique<std::experimental::io2d::rel_line_to>(vector_2d{ _Data.point.x, _Data.point.y });
 	} break;
 	case std::experimental::io2d::path_data_type::rel_curve_to:
 	{
-		return make_unique<std::experimental::io2d::rel_curve_to>(point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty });
+		return make_unique<std::experimental::io2d::rel_curve_to>(vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty });
 	} break;
 	case std::experimental::io2d::path_data_type::arc:
 	{
-		return make_unique<std::experimental::io2d::arc>(point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2);
+		return make_unique<std::experimental::io2d::arc>(vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2);
 	} break;
 	case std::experimental::io2d::path_data_type::arc_negative:
 	{
-		return make_unique<std::experimental::io2d::arc_negative>(point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2);
+		return make_unique<std::experimental::io2d::arc_negative>(vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2);
 	} break;
 	case std::experimental::io2d::path_data_type::change_matrix:
 	{
@@ -323,7 +323,7 @@ unique_ptr<path_data> path_data_item::get() const {
 	} break;
 	case std::experimental::io2d::path_data_type::change_origin:
 	{
-		return make_unique<std::experimental::io2d::change_origin>(point{ _Data.point.x, _Data.point.y });
+		return make_unique<std::experimental::io2d::change_origin>(vector_2d{ _Data.point.x, _Data.point.y });
 	} break;
 	default:
 		assert("Unknown path_data_type" && false);
@@ -342,15 +342,15 @@ unique_ptr<path_data> path_data_item::get(::std::error_code& ec) const noexcept 
 		switch (_Type) {
 		case std::experimental::io2d::path_data_type::move_to:
 		{
-			return make_unique<std::experimental::io2d::move_to>(point{ _Data.point.x, _Data.point.y });
+			return make_unique<std::experimental::io2d::move_to>(vector_2d{ _Data.point.x, _Data.point.y });
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
-			return make_unique<std::experimental::io2d::line_to>(point{ _Data.point.x, _Data.point.y });
+			return make_unique<std::experimental::io2d::line_to>(vector_2d{ _Data.point.x, _Data.point.y });
 		} break;
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
-			return make_unique<std::experimental::io2d::curve_to>(point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty });
+			return make_unique<std::experimental::io2d::curve_to>(vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty });
 		} break;
 		case std::experimental::io2d::path_data_type::new_sub_path:
 		{
@@ -362,23 +362,23 @@ unique_ptr<path_data> path_data_item::get(::std::error_code& ec) const noexcept 
 		} break;
 		case std::experimental::io2d::path_data_type::rel_move_to:
 		{
-			return make_unique<std::experimental::io2d::rel_move_to>(point{ _Data.point.x, _Data.point.y });
+			return make_unique<std::experimental::io2d::rel_move_to>(vector_2d{ _Data.point.x, _Data.point.y });
 		} break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
-			return make_unique<std::experimental::io2d::rel_line_to>(point{ _Data.point.x, _Data.point.y });
+			return make_unique<std::experimental::io2d::rel_line_to>(vector_2d{ _Data.point.x, _Data.point.y });
 		} break;
 		case std::experimental::io2d::path_data_type::rel_curve_to:
 		{
-			return make_unique<std::experimental::io2d::rel_curve_to>(point{ _Data.curve.cpt1x, _Data.curve.cpt1y }, point{ _Data.curve.cpt2x, _Data.curve.cpt2y }, point{ _Data.curve.eptx, _Data.curve.epty });
+			return make_unique<std::experimental::io2d::rel_curve_to>(vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty });
 		} break;
 		case std::experimental::io2d::path_data_type::arc:
 		{
-			return make_unique<std::experimental::io2d::arc>(point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2);
+			return make_unique<std::experimental::io2d::arc>(vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2);
 		} break;
 		case std::experimental::io2d::path_data_type::arc_negative:
 		{
-			return make_unique<std::experimental::io2d::arc_negative>(point{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2);
+			return make_unique<std::experimental::io2d::arc_negative>(vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2);
 		} break;
 		case std::experimental::io2d::path_data_type::change_matrix:
 		{
@@ -386,7 +386,7 @@ unique_ptr<path_data> path_data_item::get(::std::error_code& ec) const noexcept 
 		} break;
 		case std::experimental::io2d::path_data_type::change_origin:
 		{
-			return make_unique<std::experimental::io2d::change_origin>(point{ _Data.point.x, _Data.point.y });
+			return make_unique<std::experimental::io2d::change_origin>(vector_2d{ _Data.point.x, _Data.point.y });
 		} break;
 		default:
 			assert("Unknown path_data_type" && false);

@@ -29,12 +29,12 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 , _Current_point()
 , _Extents() {
 	auto matrix = matrix_2d::init_identity();
-	point origin{ };
+	vector_2d origin{ };
 	bool hasCurrentPoint = false;
 	// Untransformed because we use it to add to raw relative points for transformation.
-	point currentPoint{ };
+	vector_2d currentPoint{ };
 	// Transformed because we need to know where the transformed last move to point is when we receive a close path instruction and the matrix and origin may have since changed such that we wouldn't be able to calculate it correctly anymore.
-	point lastMoveToPoint{ };
+	vector_2d lastMoveToPoint{ };
 	const auto& pathData = pb.data_ref();
 	auto pdSize = pathData.size();
 	vector<cairo_path_data_t> vec;
@@ -492,12 +492,12 @@ path::path(const path_factory& pb, const surface& /*sf*/, error_code& ec) noexce
 		return;
 	}
 	auto matrix = matrix_2d::init_identity();
-	point origin{ };
+	vector_2d origin{ };
 	bool hasCurrentPoint = false;
 	// Untransformed because we use it to add to raw relative points for transformation.
-	point currentPoint{ };
+	vector_2d currentPoint{ };
 	// Transformed because we need to know where the transformed last move to point is when we receive a close path instruction and the matrix and origin may have since changed such that we wouldn't be able to calculate it correctly anymore.
-	point lastMoveToPoint{ };
+	vector_2d lastMoveToPoint{ };
 	const auto& pathData = pb.data_ref();
 	auto pdSize = pathData.size();
 	try {

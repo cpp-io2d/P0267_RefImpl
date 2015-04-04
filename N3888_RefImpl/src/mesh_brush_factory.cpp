@@ -138,7 +138,7 @@ void mesh_brush_factory::end_patch(error_code& ec) noexcept {
 	ec.clear();
 }
 
-void mesh_brush_factory::move_to(const point& pt) {
+void mesh_brush_factory::move_to(const vector_2d& pt) {
 	if (!_Has_current_patch || _Current_patch_side_count > 0) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -148,7 +148,7 @@ void mesh_brush_factory::move_to(const point& pt) {
 	_Has_current_point = true;
 }
 
-void mesh_brush_factory::move_to(const point& pt, error_code& ec) noexcept {
+void mesh_brush_factory::move_to(const vector_2d& pt, error_code& ec) noexcept {
 	if (!_Has_current_patch || _Current_patch_side_count > 0) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 		return;
@@ -166,7 +166,7 @@ void mesh_brush_factory::move_to(const point& pt, error_code& ec) noexcept {
 	ec.clear();
 }
 
-void mesh_brush_factory::line_to(const point& pt) {
+void mesh_brush_factory::line_to(const vector_2d& pt) {
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -181,7 +181,7 @@ void mesh_brush_factory::line_to(const point& pt) {
 	}
 }
 
-void mesh_brush_factory::line_to(const point& pt, error_code& ec) noexcept {
+void mesh_brush_factory::line_to(const vector_2d& pt, error_code& ec) noexcept {
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 		return;
@@ -207,7 +207,7 @@ void mesh_brush_factory::line_to(const point& pt, error_code& ec) noexcept {
 	ec.clear();
 }
 
-void mesh_brush_factory::curve_to(const point& pt0, const point& pt1, const point& pt2) {
+void mesh_brush_factory::curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2) {
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -221,7 +221,7 @@ void mesh_brush_factory::curve_to(const point& pt0, const point& pt1, const poin
 	get<0>(patch).curve_to(pt0, pt1, pt2);
 }
 
-void mesh_brush_factory::curve_to(const point& pt0, const point& pt1, const point& pt2, error_code& ec) noexcept {
+void mesh_brush_factory::curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, error_code& ec) noexcept {
 	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 		return;
@@ -246,7 +246,7 @@ void mesh_brush_factory::curve_to(const point& pt0, const point& pt1, const poin
 	ec.clear();
 }
 
-void mesh_brush_factory::control_point(unsigned int point_num, const point& pt) {
+void mesh_brush_factory::control_point(unsigned int point_num, const vector_2d& pt) {
 	if (!_Has_current_patch) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 	}
@@ -257,7 +257,7 @@ void mesh_brush_factory::control_point(unsigned int point_num, const point& pt) 
 	get<1>(patch)[point_num] = make_tuple(true, pt);
 }
 
-void mesh_brush_factory::control_point(unsigned int point_num, const point& pt, error_code& ec) noexcept {
+void mesh_brush_factory::control_point(unsigned int point_num, const vector_2d& pt, error_code& ec) noexcept {
 	if (!_Has_current_patch) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 		return;
@@ -345,7 +345,7 @@ path_factory mesh_brush_factory::path_factory(unsigned int patch_num, error_code
 }
 
 // Note: This returns a bool and uses an out parameter because it's valid to have a control point which has not been assigned a value.
-bool mesh_brush_factory::control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint) const {
+bool mesh_brush_factory::control_point(unsigned int patch_num, unsigned int point_num, vector_2d& controlPoint) const {
 	if (patch_num >= _Patches.size() || point_num > 3) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -360,7 +360,7 @@ bool mesh_brush_factory::control_point(unsigned int patch_num, unsigned int poin
 }
 
 // Note: This returns a bool and uses an out parameter because it's valid to have a control point which has not been assigned a value.
-bool mesh_brush_factory::control_point(unsigned int patch_num, unsigned int point_num, point& controlPoint, error_code& ec) const noexcept {
+bool mesh_brush_factory::control_point(unsigned int patch_num, unsigned int point_num, vector_2d& controlPoint, error_code& ec) const noexcept {
 	if (patch_num >= _Patches.size() || point_num > 3) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return false;

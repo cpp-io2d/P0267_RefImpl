@@ -36,7 +36,7 @@ radial_brush_factory& radial_brush_factory::operator=(radial_brush_factory&& oth
 	return *this;
 }
 
-radial_brush_factory::radial_brush_factory(const point& center0, double radius0, const point& center1, double radius1) noexcept
+radial_brush_factory::radial_brush_factory(const vector_2d& center0, double radius0, const vector_2d& center1, double radius1) noexcept
 	: _Center0(center0)
 	, _Radius0(radius0)
 	, _Center1(center1)
@@ -104,7 +104,7 @@ void radial_brush_factory::color_stop(unsigned int index, double offset, const r
 	ec.clear();
 }
 
-void radial_brush_factory::radial_circles(const point& center0, double radius0, const point& center1, double radius1) noexcept {
+void radial_brush_factory::radial_circles(const vector_2d& center0, double radius0, const vector_2d& center1, double radius1) noexcept {
 	_Center0 = center0;
 	_Radius0 = radius0;
 	_Center1 = center1;
@@ -140,6 +140,6 @@ tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index, e
 	}
 }
 
-tuple<point, double, point, double> radial_brush_factory::radial_circles() const noexcept {
+tuple<vector_2d, double, vector_2d, double> radial_brush_factory::radial_circles() const noexcept {
 	return make_tuple(_Center0, _Radius0, _Center1, _Radius1);
 }
