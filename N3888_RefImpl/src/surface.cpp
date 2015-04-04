@@ -31,6 +31,24 @@ void surface::_Ensure_state(error_code& ec) noexcept {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NULL_POINTER);
 		return;
 	}
+	device_offset(_Device_offset);
+	brush(_Brush);
+	fill_rule(_Fill_rule);
+	line_cap(_Line_cap);
+	line_join(_Line_join);
+	line_width(_Line_width);
+	miter_limit(_Miter_limit);
+	compositing_operator(_Compositing_operator);
+	tolerance(_Tolerance);
+	path(_Current_path);
+	matrix(_Transform_matrix);
+	font_face(_Font_face);
+	font_matrix(_Font_matrix);
+	font_options(_Font_options);
+	dashes(_Dashes, ec);
+	if (static_cast<bool>(ec)) {
+		return;
+	}
 }
 
 surface::surface(format fmt, int width, int height)
@@ -233,14 +251,27 @@ void surface::save() {
 	_Saved_state.push(make_tuple(_Device_offset, _Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Tolerance, _Default_path, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
 }
 
+void surface::save(error_code& ec) noexcept {
+	cairo_save(_Context.get());
+	try {
+		_Saved_state.push(make_tuple(_Device_offset, _Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Tolerance, _Default_path, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
+	}
+	catch (const bad_alloc&) {
+		ec = make_error_code(errc::not_enough_memory);
+	}
+}
+
 void surface::restore() {
+	if (_Saved_state.size() == 0) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_RESTORE);
+	}
 	cairo_restore(_Context.get());
 	{
 		auto& t = _Saved_state.top();
 		_Device_offset = get<0>(t);
 		_Brush = get<1>(t);
 		_Antialias = get<2>(t);
-		_Dashes = get<3>(t);
+		_Dashes = move(get<3>(t));
 		_Fill_rule = get<4>(t);
 		_Line_cap = get<5>(t);
 		_Line_join = get<6>(t);
@@ -248,20 +279,56 @@ void surface::restore() {
 		_Miter_limit = get<8>(t);
 		_Compositing_operator = get<9>(t);
 		_Tolerance = get<10>(t);
-		_Default_path = get<11>(t);
-		_Current_path = get<12>(t);
-		_Immediate_path = get<13>(t);
+		_Default_path = move(get<11>(t));
+		_Current_path = move(get<12>(t));
+		_Immediate_path = move(get<13>(t));
 		_Transform_matrix = get<14>(t);
-		_Font_face = get<15>(t);
+		_Font_face = move(get<15>(t));
 		_Font_matrix = get<16>(t);
 		_Font_options = get<17>(t);
-
-		_Ensure_state();
 	}
 	_Saved_state.pop();
+
+	_Ensure_state();
 }
 
-void surface::clear_brush() {
+void surface::restore(error_code& ec) noexcept {
+	if (_Saved_state.size() == 0) {
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_RESTORE);
+		return;
+	}
+	cairo_restore(_Context.get());
+	{
+		auto& t = _Saved_state.top();
+		_Device_offset = get<0>(t);
+		_Brush = get<1>(t);
+		_Antialias = get<2>(t);
+		_Dashes = move(get<3>(t));
+		_Fill_rule = get<4>(t);
+		_Line_cap = get<5>(t);
+		_Line_join = get<6>(t);
+		_Line_width = get<7>(t);
+		_Miter_limit = get<8>(t);
+		_Compositing_operator = get<9>(t);
+		_Tolerance = get<10>(t);
+		_Default_path = move(get<11>(t));
+		_Current_path = move(get<12>(t));
+		_Immediate_path = move(get<13>(t));
+		_Transform_matrix = get<14>(t);
+		_Font_face = move(get<15>(t));
+		_Font_matrix = get<16>(t);
+		_Font_options = get<17>(t);
+	}
+	_Saved_state.pop();
+
+	_Ensure_state(ec);
+	if (static_cast<bool>(ec)) {
+		return;
+	}
+	ec.clear();
+}
+
+void surface::reset_brush() {
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 	_Brush = ::std::experimental::io2d::brush(cairo_pattern_reference(cairo_get_source(_Context.get())));
 }
@@ -275,7 +342,7 @@ void surface::antialias(::std::experimental::io2d::antialias a) noexcept {
 	cairo_set_antialias(_Context.get(), _Antialias_to_cairo_antialias_t(a));
 }
 
-void surface::clear_dashes() noexcept {
+void surface::reset_dashes() noexcept {
 	_Dashes = ::std::experimental::io2d::dashes(vector<double>(), 0.0);
 	cairo_set_dash(_Context.get(), nullptr, 0, 0.0);
 }
@@ -340,8 +407,11 @@ void surface::tolerance(double t) noexcept {
 	cairo_set_tolerance(_Context.get(), t);
 }
 
-void surface::clip() {
+void surface::clip(const experimental::io2d::path& p) {
+	auto currPath = _Current_path;
+	path(p);
 	cairo_clip(_Context.get());
+	path(currPath);
 }
 
 void surface::clip_immediate() {
@@ -351,16 +421,16 @@ void surface::clip_immediate() {
 	path(currPath);
 }
 
-void surface::reclip() {
+void surface::reset_clip() {
 	cairo_reset_clip(_Context.get());
 }
 
-void surface::path() {
+void surface::reset_path() {
 	_Current_path = _Default_path;
 	cairo_new_path(_Context.get());
 }
 
-void surface::path(const ::std::experimental::io2d::path& p) {
+void surface::path(const ::std::experimental::io2d::path& p) noexcept {
 	_Current_path = p;
 	cairo_new_path(_Context.get());
 	cairo_append_path(_Context.get(), p.native_handle());
@@ -1188,33 +1258,27 @@ bool surface::in_stroke_immediate(const point& pt) const {
 }
 
 matrix_2d surface::matrix() const {
-	cairo_matrix_t cm{ };
-	cairo_get_matrix(_Context.get(), &cm);
-	return{ cm.xx, cm.yx, cm.xy, cm.yy, cm.x0, cm.y0 };
+	return _Transform_matrix;
 }
 
-point surface::user_to_device() const {
-	double x, y;
-	cairo_user_to_device(_Context.get(), &x, &y);
-	return point{ x, y };
+point surface::user_to_surface(const point& pt) const {
+	return _Transform_matrix.transform_point(pt);
 }
 
-point surface::user_to_device_distance() const {
-	double x, y;
-	cairo_user_to_device_distance(_Context.get(), &x, &y);
-	return point{ x, y };
+point surface::user_to_surface_distance(const point& dpt) const {
+	return _Transform_matrix.transform_distance(dpt);
 }
 
-point surface::device_to_user() const {
-	double x, y;
-	cairo_device_to_user(_Context.get(), &x, &y);
-	return point{ x, y };
+point surface::surface_to_user(const point& pt) const {
+	auto im = _Transform_matrix;
+	im.invert();
+	return im.transform_point(pt);
 }
 
-point surface::device_to_user_distance() const {
-	double x, y;
-	cairo_device_to_user_distance(_Context.get(), &x, &y);
-	return point{ x, y };
+point surface::surface_to_user_distance(const point& dpt) const {
+	auto im = _Transform_matrix;
+	im.invert();
+	return im.transform_distance(dpt);
 }
 
 matrix_2d surface::font_matrix() const {

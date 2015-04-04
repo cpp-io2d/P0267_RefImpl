@@ -1227,8 +1227,8 @@ namespace std {
 					path() = delete;
 					path(const path_factory& pb, const surface& sf);
 					path(const path_factory& pb, const surface& sf, ::std::error_code& ec) noexcept;
-					path(const path& other) = default;
-					path& operator=(const path& other) = default;
+					path(const path& other) noexcept = default;
+					path& operator=(const path& other) noexcept = default;
 					path(path&& other) noexcept;
 					path& operator=(path&& other) noexcept;
 
@@ -1650,11 +1650,13 @@ namespace std {
 					image_surface map_to_image(const rectangle& extents);
 					void unmap_image(image_surface& image);
 					virtual void save();
+					virtual void save(::std::error_code& ec) noexcept;
 					virtual void restore();
-					void clear_brush();
-					void brush(const ::std::experimental::io2d::brush& source);
+					virtual void restore(::std::error_code& ec) noexcept;
+					void reset_brush() noexcept;
+					void brush(const ::std::experimental::io2d::brush& source) noexcept;
 					void antialias(::std::experimental::io2d::antialias a) noexcept;
-					void clear_dashes() noexcept;
+					void reset_dashes() noexcept;
 					void dashes(const ::std::experimental::io2d::dashes& d);
 					void dashes(const ::std::experimental::io2d::dashes& d, ::std::error_code& ec) noexcept;
 					void fill_rule(::std::experimental::io2d::fill_rule fr) noexcept;
@@ -1664,11 +1666,11 @@ namespace std {
 					void miter_limit(double limit) noexcept;
 					void compositing_operator(::std::experimental::io2d::compositing_operator co) noexcept;
 					void tolerance(double t) noexcept;
-					void clip();
+					void clip(const ::std::experimental::io2d::path& p);
 					void clip_immediate();
-					void reclip();
-					void path();
-					void path(const ::std::experimental::io2d::path& p);
+					void reset_clip();
+					void reset_path() noexcept;
+					void path(const ::std::experimental::io2d::path& p) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.immediatepath}, immediate path modifiers:
 					::std::experimental::io2d::path_factory& immediate();
@@ -1757,7 +1759,7 @@ namespace std {
 					::std::experimental::io2d::path path(const path_factory& pf) const;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
-					::std::experimental::io2d::content content() const;
+					::std::experimental::io2d::content content() const ;
 					point device_offset() const;
 					bool has_surface_resource() const;
 					::std::experimental::io2d::brush brush() const;
@@ -1774,6 +1776,7 @@ namespace std {
 					rectangle clip_extents() const;
 					bool in_clip(const point& pt) const;
 					::std::vector<rectangle> clip_rectangles() const;
+					::std::vector<rectangle> clip_rectangles(::std::error_code& ec) const noexcept;
 
 					// \ref{\iotwod.surface.observers.render}, render observers:
 					rectangle fill_extents() const;
@@ -1789,10 +1792,10 @@ namespace std {
 
 					// \ref{\iotwod.surface.observers.transform}, transformation observers:
 					matrix_2d matrix() const;
-					point user_to_device() const;
-					point user_to_device_distance() const;
-					point device_to_user() const;
-					point device_to_user_distance() const;
+					point user_to_surface(const point& pt) const;
+					point user_to_surface_distance(const point& dpt) const;
+					point surface_to_user(const point& pt) const;
+					point surface_to_user_distance(const point& dpt) const;
 
 					// \ref{\iotwod.surface.observers.font}, font observers:
 					matrix_2d font_matrix() const;

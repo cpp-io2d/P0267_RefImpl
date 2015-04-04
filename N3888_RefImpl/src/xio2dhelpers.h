@@ -178,7 +178,7 @@ inline int _Double_to_int(double value, bool nearestNeighbor = true) {
 }
 
 template <typename T>
-inline int _Container_size_to_int(const T& container) {
+inline int _Container_size_to_int(const T& container) noexcept {
 	assert(container.size() <= static_cast<unsigned int>(::std::numeric_limits<int>::max()));
 	return static_cast<int>(container.size());
 }

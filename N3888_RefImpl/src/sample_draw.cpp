@@ -121,13 +121,11 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 
 
 	if (clipToRects) {
-		rs.path(bothRectsClipPath);
-		rs.clip();
+		rs.clip(bothRectsClipPath);
 	}
 
 	if (clipToTriangle) {
-		rs.path(triangleClipPath);
-		rs.clip();
+		rs.clip(triangleClipPath);
 	}
 
 	rs.path(secondRectPath);
@@ -135,7 +133,7 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 	rs.brush(secondBrush);
 	rs.fill();
 
-	rs.reclip();
+	rs.reset_clip();
 
 	if (strokePaths) {
 		rs.compositing_operator(compositing_operator::source);
@@ -312,6 +310,19 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.immediate().curve_to({ 610.0, 400.0 }, { 660.0, 300.0 }, { 710.0, 400.0 });
 	rs.immediate().close_path();
 	rs.stroke_immediate(rgba_color::yellow_green());
+
+	//auto radialFactory = radial_brush_factory({ 115.2, 102.4 }, 25.6, { 102.4, 102.4 }, 128.0);
+	//radialFactory.add_color_stop(0.0, rgba_color::white());
+	////radialFactory.add_color_stop(0.25, rgba_color::red());
+	////radialFactory.add_color_stop(0.5, rgba_color::green());
+	////radialFactory.add_color_stop(0.75, rgba_color::blue());
+	//radialFactory.add_color_stop(1.0, rgba_color::black());
+	//auto radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::pad);
+	//rs.immediate().clear();
+	////rs.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * _Pi);
+	//rs.immediate().rect({ 0.0, 0.0, 250.0, 250.0 });
+	//rs.fill_immediate(radialBrush);
 
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }
