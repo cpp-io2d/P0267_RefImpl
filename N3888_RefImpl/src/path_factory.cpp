@@ -1137,7 +1137,7 @@ void path_factory::new_sub_path() {
 	_Has_current_point = false;
 }
 
-void path_factory::new_sub_path(error_code& ec) {
+void path_factory::new_sub_path(error_code& ec) noexcept {
 	try {
 		_Data.emplace_back(experimental::io2d::new_sub_path());
 	}

@@ -64,10 +64,6 @@ brush::brush(const solid_color_brush_factory& f, error_code& ec) noexcept
 		ec = make_error_code(errc::not_enough_memory);
 		return;
 	}
-	catch (const exception&) {
-		assert(false && "Need to handle whatever exception type this is... .");
-		throw;
-	}
 
 	auto status = cairo_pattern_status(_Brush.get());
 	if (status != CAIRO_STATUS_SUCCESS) {
@@ -114,10 +110,6 @@ brush::brush(const linear_brush_factory& f, error_code& ec) noexcept
 		ec = make_error_code(errc::not_enough_memory);
 		_Brush.reset();
 		return;
-	}
-	catch (const exception&) {
-		assert(false && "Need to handle whatever exception type this is... .");
-		throw;
 	}
 
 	auto status = cairo_pattern_status(_Brush.get());
@@ -185,10 +177,6 @@ brush::brush(const radial_brush_factory& f, error_code& ec) noexcept
 		ec = make_error_code(errc::not_enough_memory);
 		_Brush.reset();
 		return;
-	}
-	catch (const exception&) {
-		assert(false && "Need to handle whatever exception type this is... .");
-		throw;
 	}
 
 	auto status = cairo_pattern_status(_Brush.get());

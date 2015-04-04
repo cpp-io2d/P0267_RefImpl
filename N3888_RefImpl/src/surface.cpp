@@ -328,12 +328,12 @@ void surface::restore(error_code& ec) noexcept {
 	ec.clear();
 }
 
-void surface::reset_brush() {
+void surface::reset_brush() noexcept {
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 	_Brush = ::std::experimental::io2d::brush(cairo_pattern_reference(cairo_get_source(_Context.get())));
 }
 
-void surface::brush(const ::std::experimental::io2d::brush& source) {
+void surface::brush(const ::std::experimental::io2d::brush& source) noexcept {
 	_Brush = source;
 }
 
@@ -425,7 +425,7 @@ void surface::reset_clip() {
 	cairo_reset_clip(_Context.get());
 }
 
-void surface::reset_path() {
+void surface::reset_path() noexcept {
 	_Current_path = _Default_path;
 	cairo_new_path(_Context.get());
 }
