@@ -28,7 +28,6 @@ N3888_RefImpl_SOURCES =	brush.cpp \
 				path.cpp \
 				path_data.cpp \
 				path_factory.cpp \
-				point.cpp \
 				radial_brush_factory.cpp \
 				rectangle.cpp \
 				rgba_color.cpp \
@@ -38,7 +37,8 @@ N3888_RefImpl_SOURCES =	brush.cpp \
 				standalone_functions.cpp \
 				surface.cpp \
 				surface_brush_factory.cpp \
-				text_extents.cpp
+				text_extents.cpp \
+				vector_2d.cpp
 ##				refimpl-resources.c \
 ##				RefImplApp.c \
 ##				RefImplWindow.c \

@@ -43,6 +43,20 @@ double vector_2d::y() const noexcept {
 	return _Y;
 }
 
+double vector_2d::length() const noexcept {
+	return sqrt(_X * _X + _Y * _Y);
+}
+
+double vector_2d::dot(const vector_2d& other) const noexcept {
+	return _X * other._X + _Y * other._Y;
+}
+
+vector_2d vector_2d::to_unit() const noexcept {
+	auto leng = length();
+
+	return vector_2d{ _X / leng, _Y / leng };
+}
+
 namespace std {
 	namespace experimental {
 		namespace io2d {
@@ -84,6 +98,21 @@ namespace std {
 					_Y = _Y - rhs.y();
 					return *this;
 				}
+
+				vector_2d& vector_2d::operator*=(double rhs) noexcept {
+					_X *= rhs;
+					_Y *= rhs;
+					return *this;
+				}
+
+				vector_2d operator*(const vector_2d& lhs, double rhs) noexcept{
+					return vector_2d{ lhs.x() * rhs, lhs.y() * rhs };
+				}
+
+				vector_2d operator*(double lhs, const vector_2d& rhs) noexcept{
+					return vector_2d{ lhs * rhs.x(), lhs * rhs.y() };
+				}
+
 #if _Inline_namespace_conditional_support_test
 			}
 #endif

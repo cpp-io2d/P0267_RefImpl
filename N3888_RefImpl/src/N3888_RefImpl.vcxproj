@@ -207,7 +207,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="path_factory.cpp" />
     <ClCompile Include="path_data.cpp" />
     <ClCompile Include="brush.cpp" />
-    <ClCompile Include="point.cpp" />
+    <ClCompile Include="vector_2d.cpp" />
     <ClCompile Include="radial_brush_factory.cpp" />
     <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="rgba_color.cpp" />

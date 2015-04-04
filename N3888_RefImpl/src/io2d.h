@@ -524,8 +524,13 @@ namespace std {
 					double x() const noexcept;
 					double y() const noexcept;
 
+					double length() const noexcept;
+					double dot(const vector_2d& other) const noexcept;
+					vector_2d to_unit() const noexcept;
+
 					vector_2d& operator+=(const vector_2d& rhs) noexcept;
 					vector_2d& operator-=(const vector_2d& rhs) noexcept;
+					vector_2d& operator*=(double rhs) noexcept;
 				};
 
 				bool operator==(const vector_2d& lhs, const vector_2d& rhs) noexcept;
@@ -534,6 +539,8 @@ namespace std {
 				vector_2d operator+(const vector_2d& lhs, const vector_2d& rhs) noexcept;
 				vector_2d operator-(const vector_2d& lhs) noexcept;
 				vector_2d operator-(const vector_2d& lhs, const vector_2d& rhs) noexcept;
+				vector_2d operator*(const vector_2d& lhs, double rhs) noexcept;
+				vector_2d operator*(double lhs, const vector_2d& rhs) noexcept;
 
 				class font_extents {
 					cairo_font_extents_t _Font_extents;
