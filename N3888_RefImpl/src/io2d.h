@@ -1232,8 +1232,8 @@ namespace std {
 					native_handle_type native_handle() const noexcept;
 
 					path() = delete;
-					path(const path_factory& pb, const surface& sf);
-					path(const path_factory& pb, const surface& sf, ::std::error_code& ec) noexcept;
+					explicit path(const path_factory& pb);
+					path(const path_factory& pb, ::std::error_code& ec) noexcept;
 					path(const path& other) noexcept = default;
 					path& operator=(const path& other) noexcept = default;
 					path(path&& other) noexcept;
@@ -1653,16 +1653,24 @@ namespace std {
 					virtual ~surface();
 
 					// \ref{\iotwod.surface.modifiers.state}, state modifiers:
-					virtual void finish();
+					virtual void finish() noexcept;
 					void flush();
+					void flush(::std::error_code& ec) noexcept;
 					::std::shared_ptr<::std::experimental::io2d::device> device();
+					::std::shared_ptr<::std::experimental::io2d::device> device(::std::error_code& ec) noexcept;
 					void mark_dirty();
+					void mark_dirty(::std::error_code& ec) noexcept;
 					void mark_dirty(const rectangle& rect);
+					void mark_dirty(const rectangle& rect, ::std::error_code& ec) noexcept;
 					void device_offset(const vector_2d& offset);
-					void write_to_file(const ::std::string& filename);
+					void device_offset(const vector_2d& offset, ::std::error_code& ec) noexcept;
+//					void write_to_file(const ::std::string& filename);
 					image_surface map_to_image();
+					image_surface map_to_image(::std::error_code& ec) noexcept;
 					image_surface map_to_image(const rectangle& extents);
+					image_surface map_to_image(const rectangle& extents, ::std::error_code& ec) noexcept;
 					void unmap_image(image_surface& image);
+					void unmap_image(image_surface& image, ::std::error_code& ec) noexcept;
 					virtual void save();
 					virtual void save(::std::error_code& ec) noexcept;
 					virtual void restore();
@@ -1681,140 +1689,209 @@ namespace std {
 					void compositing_operator(::std::experimental::io2d::compositing_operator co) noexcept;
 					void tolerance(double t) noexcept;
 					void clip(const ::std::experimental::io2d::path& p);
+					void clip(const ::std::experimental::io2d::path& p, ::std::error_code& ec) noexcept;
 					void clip_immediate();
-					void reset_clip();
+					void clip_immediate(::std::error_code& ec) noexcept;
 					void reset_path() noexcept;
 					void path(const ::std::experimental::io2d::path& p) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.immediatepath}, immediate path modifiers:
-					::std::experimental::io2d::path_factory& immediate();
+					::std::experimental::io2d::path_factory& immediate() noexcept;
 
 					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
 					void paint();
+					void paint(::std::error_code& ec) noexcept;
 					void paint(const rgba_color& c);
+					void paint(const rgba_color& c, ::std::error_code& ec) noexcept;
 					void paint(const ::std::experimental::io2d::brush& b);
+					void paint(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void paint(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void paint(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void paint(double alpha);
+					void paint(double alpha, ::std::error_code& ec) noexcept;
 					void paint(const rgba_color& c, double alpha);
+					void paint(const rgba_color& c, double alpha, ::std::error_code& ec) noexcept;
 					void paint(const ::std::experimental::io2d::brush& b, double alpha);
+					void paint(const ::std::experimental::io2d::brush& b, double alpha, ::std::error_code& ec) noexcept;
 					void paint(const surface& s, double alpha, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, double alpha, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void paint(const surface& s, double alpha, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, double alpha, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void fill();
+					void fill(::std::error_code& ec) noexcept;
 					void fill(const rgba_color& c);
+					void fill(const rgba_color& c, ::std::error_code& ec) noexcept;
 					void fill(const ::std::experimental::io2d::brush& b);
+					void fill(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void fill(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void fill(const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void fill(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void fill(const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void fill_immediate();
+					void fill_immediate(::std::error_code& ec) noexcept;
 					void fill_immediate(const rgba_color& c);
+					void fill_immediate(const rgba_color& c, ::std::error_code& ec) noexcept;
 					void fill_immediate(const ::std::experimental::io2d::brush& b);
+					void fill_immediate(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void fill_immediate(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void fill_immediate(const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void fill_immediate(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void fill_immediate(const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void stroke();
+					void stroke(::std::error_code& ec) noexcept;
 					void stroke(const rgba_color& c);
+					void stroke(const rgba_color& c, ::std::error_code& ec) noexcept;
 					void stroke(const ::std::experimental::io2d::brush& b);
+					void stroke(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void stroke(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void stroke(const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void stroke(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void stroke(const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void stroke_immediate();
+					void stroke_immediate(::std::error_code& ec) noexcept;
 					void stroke_immediate(const rgba_color& c);
+					void stroke_immediate(const rgba_color& c, ::std::error_code& ec) noexcept;
 					void stroke_immediate(const ::std::experimental::io2d::brush& b);
+					void stroke_immediate(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void stroke_immediate(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void stroke_immediate(const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void stroke_immediate(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void stroke_immediate(const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.maskrender}, mask render modifiers:
 					void mask(const ::std::experimental::io2d::brush& maskBrush);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, ::std::error_code& ec) noexcept;
 					void mask(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c, ::std::error_code& ec) noexcept;
 					void mask(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask(const surface& maskSurface);
+					void mask(const surface& maskSurface, ::std::error_code& ec) noexcept;
 					void mask(const surface& maskSurface, const rgba_color& c);
+					void mask(const surface& maskSurface, const rgba_color& c, ::std::error_code& ec) noexcept;
 					void mask(const surface& maskSurface, const ::std::experimental::io2d::brush& b);
+					void mask(const surface& maskSurface, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void mask(const surface& maskSurface, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask(const surface& maskSurface, const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void mask(const surface& maskSurface, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask(const surface& maskSurface, const vector_2d& maskOrigin);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin, ::std::error_code& ec) noexcept;
 					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c, ::std::error_code& ec) noexcept;
 					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, ::std::error_code& ec) noexcept;
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c, ::std::error_code& ec) noexcept;
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask_immediate(const surface& maskSurface);
+					void mask_immediate(const surface& maskSurface, ::std::error_code& ec) noexcept;
 					void mask_immediate(const surface& maskSurface, const rgba_color& c);
+					void mask_immediate(const surface& maskSurface, const rgba_color& c, ::std::error_code& ec) noexcept;
 					void mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::brush& b);
+					void mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void mask_immediate(const surface& maskSurface, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const surface& maskSurface, const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, ::std::error_code& ec) noexcept;
 					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c, ::std::error_code& ec) noexcept;
 					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.textrender}, text render modifiers:
 					vector_2d show_text(const ::std::string& utf8, const vector_2d& position);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, ::std::error_code& ec) noexcept;
 					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const rgba_color& c);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const rgba_color& c, ::std::error_code& ec) noexcept;
 					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
+
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
-					void matrix(const matrix_2d& matrix);
+					void matrix(const matrix_2d& matrix) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.font}, font modifiers:
 					void font_face(const ::std::string& family, font_slant sl, font_weight w);
-					void font_face(const ::std::experimental::io2d::font_face& f);
-					void font_size(double s);
-					void font_matrix(const matrix_2d& m);
-					void font_options(const font_options& fo);
-
-					// \ref{\iotwod.surface.observers.stateobjects}, state object observers:
-					::std::experimental::io2d::path path(const path_factory& pf) const;
+					void font_face(const ::std::string& family, font_slant sl, font_weight w, ::std::error_code& ec) noexcept;
+					void font_face(const ::std::experimental::io2d::font_face& f) noexcept;
+					void font_size(double s) noexcept;
+					void font_matrix(const matrix_2d& m) noexcept;
+					void font_options(const font_options& fo) noexcept;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
-					::std::experimental::io2d::content content() const ;
-					vector_2d device_offset() const;
-					bool has_surface_resource() const;
-					::std::experimental::io2d::brush brush() const;
-					::std::experimental::io2d::antialias antialias() const;
-					int dashes_count() const;
+					::std::experimental::io2d::content content() const noexcept;
+					vector_2d device_offset() const noexcept;
+					bool has_surface_resource() const noexcept;
+					::std::experimental::io2d::brush brush() const noexcept;
+					::std::experimental::io2d::antialias antialias() const noexcept;
+					unsigned int dashes_count() const noexcept;
 					::std::experimental::io2d::dashes dashes() const;
-					::std::experimental::io2d::fill_rule fill_rule() const;
-					::std::experimental::io2d::line_cap line_cap() const;
-					::std::experimental::io2d::line_join line_join() const;
-					double line_width() const;
-					double miter_limit() const;
-					::std::experimental::io2d::compositing_operator compositing_operator() const;
-					double tolerance() const;
-					rectangle clip_extents() const;
-					bool in_clip(const vector_2d& pt) const;
+					::std::experimental::io2d::dashes dashes(::std::error_code& ec) const noexcept;
+					::std::experimental::io2d::fill_rule fill_rule() const noexcept;
+					::std::experimental::io2d::line_cap line_cap() const noexcept;
+					::std::experimental::io2d::line_join line_join() const noexcept;
+					double line_width() const noexcept;
+					double miter_limit() const noexcept;
+					::std::experimental::io2d::compositing_operator compositing_operator() const noexcept;
+					double tolerance() const noexcept;
+					rectangle clip_extents() const noexcept;
+					bool in_clip(const vector_2d& pt) const noexcept;
 					::std::vector<rectangle> clip_rectangles() const;
 					::std::vector<rectangle> clip_rectangles(::std::error_code& ec) const noexcept;
 
 					// \ref{\iotwod.surface.observers.render}, render observers:
-					rectangle fill_extents() const;
-					rectangle fill_extents_immediate() const;
-					bool in_fill(const vector_2d& pt) const;
-					bool in_fill_immediate(const vector_2d& pt) const;
-					rectangle stroke_extents() const;
-					rectangle stroke_extents_immediate() const;
-					bool in_stroke(const vector_2d& pt) const;
-					bool in_stroke_immediate(const vector_2d& pt) const;
-					::std::experimental::io2d::font_extents font_extents() const;
+					rectangle fill_extents() const noexcept;
+					rectangle fill_extents_immediate() const noexcept;
+					bool in_fill(const vector_2d& pt) const noexcept;
+					bool in_fill_immediate(const vector_2d& pt) const noexcept;
+					rectangle stroke_extents() const noexcept;
+					rectangle stroke_extents_immediate() const noexcept;
+					bool in_stroke(const vector_2d& pt) const noexcept;
+					bool in_stroke_immediate(const vector_2d& pt) const noexcept;
+					::std::experimental::io2d::font_extents font_extents() const noexcept;
 					::std::experimental::io2d::text_extents text_extents(const ::std::string& utf8) const;
+					::std::experimental::io2d::text_extents text_extents(const ::std::string& utf8, ::std::error_code& ec) const noexcept;
 
 					// \ref{\iotwod.surface.observers.transform}, transformation observers:
-					matrix_2d matrix() const;
-					vector_2d user_to_surface(const vector_2d& pt) const;
-					vector_2d user_to_surface_distance(const vector_2d& dpt) const;
+					matrix_2d matrix() const noexcept;
+					vector_2d user_to_surface(const vector_2d& pt) const noexcept;
+					vector_2d user_to_surface_distance(const vector_2d& dpt) const noexcept;
 					vector_2d surface_to_user(const vector_2d& pt) const;
+					vector_2d surface_to_user(const vector_2d& pt, ::std::error_code& ec) const noexcept;
 					vector_2d surface_to_user_distance(const vector_2d& dpt) const;
+					vector_2d surface_to_user_distance(const vector_2d& dpt, ::std::error_code& ec) const noexcept;
 
 					// \ref{\iotwod.surface.observers.font}, font observers:
-					matrix_2d font_matrix() const;
-					::std::experimental::io2d::font_options font_options() const;
-					::std::experimental::io2d::font_face font_face() const;
+					matrix_2d font_matrix() const noexcept;
+					::std::experimental::io2d::font_options font_options() const noexcept;
+					::std::experimental::io2d::font_face font_face() const noexcept;
 				};
 
 				class image_surface : public surface {

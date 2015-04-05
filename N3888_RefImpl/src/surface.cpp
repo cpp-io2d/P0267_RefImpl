@@ -69,7 +69,7 @@ surface::surface(format fmt, int width, int height)
 	, _Miter_limit(10.0)
 	, _Compositing_operator(::std::experimental::io2d::compositing_operator::default_op)
 	, _Tolerance(0.1)
-	, _Default_path(path(path_factory()))
+	, _Default_path(path_factory())
 	, _Current_path(_Default_path)
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
@@ -159,7 +159,7 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	, _Miter_limit(10.0)
 	, _Compositing_operator(::std::experimental::io2d::compositing_operator::default_op)
 	, _Tolerance(0.1)
-	, _Default_path(path(path_factory()))
+	, _Default_path(path_factory())
 	, _Current_path(_Default_path)
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
@@ -194,7 +194,7 @@ surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, 
 	, _Miter_limit(10.0)
 	, _Compositing_operator(::std::experimental::io2d::compositing_operator::default_op)
 	, _Tolerance(0.1)
-	, _Default_path(path(path_factory()))
+	, _Default_path(path_factory())
 	, _Current_path(_Default_path)
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
@@ -207,7 +207,7 @@ surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, 
 surface::~surface() {
 }
 
-void surface::finish() {
+void surface::finish() noexcept {
 	cairo_surface_finish(_Surface.get());
 }
 
@@ -238,10 +238,6 @@ void surface::mark_dirty(const rectangle& rect) {
 void surface::device_offset(const vector_2d& offset) {
 	_Device_offset = offset;
 	cairo_surface_set_device_offset(_Surface.get(), offset.x(), offset.y());
-}
-
-void surface::write_to_file(const string& filename) {
-	_Throw_if_failed_cairo_status_t(cairo_surface_write_to_png(_Surface.get(), filename.c_str()));
 }
 
 image_surface surface::map_to_image() {
@@ -429,13 +425,9 @@ void surface::clip(const experimental::io2d::path& p) {
 
 void surface::clip_immediate() {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_clip(_Context.get());
 	path(currPath);
-}
-
-void surface::reset_clip() {
-	cairo_reset_clip(_Context.get());
 }
 
 void surface::reset_path() noexcept {
@@ -449,7 +441,7 @@ void surface::path(const ::std::experimental::io2d::path& p) noexcept {
 	cairo_append_path(_Context.get(), p.native_handle());
 }
 
-path_factory& surface::immediate() {
+path_factory& surface::immediate() noexcept {
 	return _Immediate_path;
 }
 
@@ -563,7 +555,7 @@ void surface::fill(const surface& s, const matrix_2d& m, extend e, filter f) {
 
 void surface::fill_immediate() {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
 	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
@@ -591,7 +583,7 @@ void surface::fill_immediate(const surface& s, const vector_2d& origin, extend e
 
 void surface::fill_immediate(const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
 	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
@@ -641,7 +633,7 @@ void surface::stroke(const surface& s, const matrix_2d& m, extend e, filter f) {
 
 void surface::stroke_immediate() {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
 	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
@@ -669,7 +661,7 @@ void surface::stroke_immediate(const surface& s, const vector_2d& origin, extend
 
 void surface::stroke_immediate(const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
 	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
@@ -791,7 +783,7 @@ void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin, cons
 
 void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush) {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
 	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
@@ -819,7 +811,7 @@ void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, 
 
 void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
 	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
@@ -833,7 +825,7 @@ void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, 
 
 void surface::mask_immediate(const surface& maskSurface) {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
 	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
@@ -861,7 +853,7 @@ void surface::mask_immediate(const surface& maskSurface, const surface& s, const
 
 void surface::mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
 	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
@@ -874,7 +866,7 @@ void surface::mask_immediate(const surface& maskSurface, const surface& s, const
 
 void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin) {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
 	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
@@ -902,7 +894,7 @@ void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOr
 
 void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
-	path(path(_Immediate_path));
+	path(experimental::io2d::path(_Immediate_path));
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
 	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
@@ -956,7 +948,7 @@ vector_2d surface::show_text(const string& utf8, const vector_2d& position, cons
 	return result;
 }
 
-void surface::matrix(const matrix_2d& m) {
+void surface::matrix(const matrix_2d& m) noexcept {
 	cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
 	cairo_set_matrix(_Context.get(), &cm);
 }
@@ -965,53 +957,49 @@ void surface::font_face(const string& family, font_slant slant, font_weight weig
 	cairo_select_font_face(_Context.get(), family.c_str(), _Font_slant_to_cairo_font_slant_t(slant), _Font_weight_to_cairo_font_weight_t(weight));
 }
 
-void surface::font_size(double size) {
+void surface::font_size(double size) noexcept {
 	cairo_set_font_size(_Context.get(), size);
 }
 
-void surface::font_matrix(const matrix_2d& m) {
+void surface::font_matrix(const matrix_2d& m) noexcept {
 	cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
 	cairo_set_font_matrix(_Context.get(), &cm);
 }
 
-void surface::font_options(const ::std::experimental::io2d::font_options& options) {
+void surface::font_options(const ::std::experimental::io2d::font_options& options) noexcept {
 	cairo_font_options_set_antialias(_Native_font_options.get(), _Antialias_to_cairo_antialias_t(options.antialias()));
 	cairo_font_options_set_subpixel_order(_Native_font_options.get(), _Subpixel_order_to_cairo_subpixel_order_t(options.subpixel_order()));
 	cairo_set_font_options(_Context.get(), _Native_font_options.get());
 }
 
-void surface::font_face(const ::std::experimental::io2d::font_face& font_face) {
+void surface::font_face(const ::std::experimental::io2d::font_face& font_face) noexcept {
 	cairo_set_font_face(_Context.get(), font_face.native_handle());
 }
 
-path surface::path(const path_factory& pf) const {
-	return ::std::experimental::io2d::path(pf, *this);
-}
-
-brush surface::brush() const {
+brush surface::brush() const noexcept {
 	return _Brush;
 }
 
-content surface::content() const {
+content surface::content() const noexcept {
 	return _Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get()));
 }
 
-vector_2d surface::device_offset() const {
+vector_2d surface::device_offset() const noexcept {
 	double x, y;
 	cairo_surface_get_device_offset(_Surface.get(), &x, &y);
 	return vector_2d{ x, y };
 }
 
-bool surface::has_surface_resource() const {
+bool surface::has_surface_resource() const noexcept {
 	return _Surface != nullptr;
 }
 
-antialias surface::antialias() const {
+antialias surface::antialias() const noexcept {
 	return _Cairo_antialias_t_to_antialias(cairo_get_antialias(_Context.get()));
 }
 
-int surface::dashes_count() const {
-	return cairo_get_dash_count(_Context.get());
+unsigned int surface::dashes_count() const noexcept {
+	return static_cast<unsigned int>(cairo_get_dash_count(_Context.get()));
 }
 
 ::std::experimental::io2d::dashes surface::dashes() const {
@@ -1023,41 +1011,41 @@ int surface::dashes_count() const {
 	return result;
 }
 
-fill_rule surface::fill_rule() const {
+fill_rule surface::fill_rule() const noexcept {
 	return _Cairo_fill_rule_t_to_fill_rule(cairo_get_fill_rule(_Context.get()));
 }
 
-line_cap surface::line_cap() const {
+line_cap surface::line_cap() const noexcept {
 	return _Cairo_line_cap_t_to_line_cap(cairo_get_line_cap(_Context.get()));
 }
 
-line_join surface::line_join() const {
+line_join surface::line_join() const noexcept {
 	return _Line_join;
 }
 
-double surface::line_width() const {
+double surface::line_width() const noexcept {
 	return cairo_get_line_width(_Context.get());
 }
 
-double surface::miter_limit() const {
+double surface::miter_limit() const noexcept {
 	return _Miter_limit;
 }
 
-compositing_operator surface::compositing_operator() const {
+compositing_operator surface::compositing_operator() const noexcept {
 	return _Cairo_operator_t_to_compositing_operator(cairo_get_operator(_Context.get()));
 }
 
-double surface::tolerance() const {
+double surface::tolerance() const noexcept {
 	return cairo_get_tolerance(_Context.get());
 }
 
-rectangle surface::clip_extents() const {
+rectangle surface::clip_extents() const noexcept {
 	double pt0x, pt0y, pt1x, pt1y;
 	cairo_clip_extents(_Context.get(), &pt0x, &pt0y, &pt1x, &pt1y);
 	return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
-bool surface::in_clip(const vector_2d& pt) const {
+bool surface::in_clip(const vector_2d& pt) const noexcept {
 	return cairo_in_clip(_Context.get(), pt.x(), pt.y()) != 0;
 }
 
@@ -1072,35 +1060,35 @@ vector<rectangle> surface::clip_rectangles() const {
 	return results;
 }
 
-rectangle surface::fill_extents() const {
+rectangle surface::fill_extents() const noexcept {
 	double pt0x, pt0y, pt1x, pt1y;
 	cairo_fill_extents(_Context.get(), &pt0x, &pt0y, &pt1x, &pt1y);
 	return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
-rectangle surface::fill_extents_immediate() const {
+rectangle surface::fill_extents_immediate() const noexcept {
 	throw runtime_error("Not implemented.");
 	//double pt0x, pt0y, pt1x, pt1y;
 	//cairo_fill_extents(_Context.get(), &pt0x, &pt0y, &pt1x, &pt1y);
 	//return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
-bool surface::in_fill(const vector_2d& pt) const {
+bool surface::in_fill(const vector_2d& pt) const noexcept {
 	return cairo_in_fill(_Context.get(), pt.x(), pt.y()) != 0;
 }
 
-bool surface::in_fill_immediate(const vector_2d& pt) const {
+bool surface::in_fill_immediate(const vector_2d& pt) const noexcept {
 	throw runtime_error("Not implemented.");
 	//return cairo_in_fill(_Context.get(), pt.x(), pt.y()) != 0;
 }
 
-rectangle surface::stroke_extents() const {
+rectangle surface::stroke_extents() const noexcept {
 	double pt0x, pt0y, pt1x, pt1y;
 	cairo_stroke_extents(_Context.get(), &pt0x, &pt0y, &pt1x, &pt1y);
 	return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
-rectangle surface::stroke_extents_immediate() const {
+rectangle surface::stroke_extents_immediate() const noexcept {
 	throw runtime_error("Not implemented.");
 	//auto currPath = _Current_path;
 	//path(path(_Immediate_path));
@@ -1110,15 +1098,15 @@ rectangle surface::stroke_extents_immediate() const {
 	//return{ min(pt0x, pt1x), min(pt0y, pt1y), max(pt0x, pt1x) - min(pt0x, pt1x), max(pt0y, pt1y) - min(pt0y, pt1y) };
 }
 
-bool surface::in_stroke(const vector_2d& pt) const {
+bool surface::in_stroke(const vector_2d& pt) const noexcept {
 	return cairo_in_stroke(_Context.get(), pt.x(), pt.y()) != 0;
 }
 
-bool surface::in_stroke_immediate(const vector_2d& pt) const {
+bool surface::in_stroke_immediate(const vector_2d& pt) const noexcept {
 	throw runtime_error("Not implemented.");
 }
 
-::std::experimental::io2d::font_extents surface::font_extents() const {
+::std::experimental::io2d::font_extents surface::font_extents() const noexcept {
 	::std::experimental::io2d::font_extents result;
 	cairo_font_extents_t cfe{ };
 	cairo_font_extents(_Context.get(), &cfe);
@@ -1272,15 +1260,15 @@ bool surface::in_stroke_immediate(const vector_2d& pt) const {
 	return result;
 }
 
-matrix_2d surface::matrix() const {
+matrix_2d surface::matrix() const noexcept {
 	return _Transform_matrix;
 }
 
-vector_2d surface::user_to_surface(const vector_2d& pt) const {
+vector_2d surface::user_to_surface(const vector_2d& pt) const noexcept {
 	return _Transform_matrix.transform_point(pt);
 }
 
-vector_2d surface::user_to_surface_distance(const vector_2d& dpt) const {
+vector_2d surface::user_to_surface_distance(const vector_2d& dpt) const noexcept {
 	return _Transform_matrix.transform_distance(dpt);
 }
 
@@ -1296,14 +1284,14 @@ vector_2d surface::surface_to_user_distance(const vector_2d& dpt) const {
 	return im.transform_distance(dpt);
 }
 
-matrix_2d surface::font_matrix() const {
+matrix_2d surface::font_matrix() const noexcept {
 	cairo_matrix_t cm{ };
 	cairo_get_font_matrix(_Context.get(), &cm);
 	return{ cm.xx, cm.yx, cm.xy, cm.yy, cm.x0, cm.y0 };
 }
 
 // Note: This deviates from cairo in that we return the values that will actually wind up being used.
-::std::experimental::io2d::font_options surface::font_options() const {
+::std::experimental::io2d::font_options surface::font_options() const noexcept {
 	::std::experimental::io2d::font_options fo(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order);
 	unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)> up(nullptr, &cairo_font_options_destroy);
 	cairo_get_font_options(_Context.get(), up.get());
@@ -1319,7 +1307,7 @@ matrix_2d surface::font_matrix() const {
 		);
 }
 
-::std::experimental::io2d::font_face surface::font_face() const {
+::std::experimental::io2d::font_face surface::font_face() const noexcept {
 	auto ff = cairo_get_font_face(_Context.get());
 	_Throw_if_failed_cairo_status_t(cairo_font_face_status(ff));
 	// Cairo doesn't increase the font face's reference count when you call cairo_get_font_face so we do it manually.

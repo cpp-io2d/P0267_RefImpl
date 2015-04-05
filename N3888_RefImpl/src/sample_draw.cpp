@@ -92,23 +92,23 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 	auto pb = path_factory();
 
 	pb.rect({ 10.0, 10.0, 120.0, 90.0 });
-	auto firstRectPath = rs.path(pb);
+	auto firstRectPath = path(pb);
 
 	pb.clear();
 	pb.rect({ 50.0, 40.0, 120.0, 90.0 });
-	auto secondRectPath = rs.path(pb);
+	auto secondRectPath = path(pb);
 
 	pb.clear();
 	pb.append(firstRectPath);
 	pb.append(secondRectPath);
-	auto bothRectsClipPath = rs.path(pb);
+	auto bothRectsClipPath = path(pb);
 
 	pb.clear();
 	pb.move_to({ 85.0, 25.0 });
 	pb.line_to({ 150.0, 115.0 });
 	pb.line_to({ 30.0, 115.0 });
 	pb.close_path();
-	auto triangleClipPath = rs.path(pb);
+	auto triangleClipPath = path(pb);
 
 	rs.brush(backgroundBrush);
 	rs.compositing_operator(compositing_operator::source);
@@ -119,7 +119,7 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 	rs.path(firstRectPath);
 	rs.fill();
 
-
+	rs.save(); // Preserve old clip.
 	if (clipToRects) {
 		rs.clip(bothRectsClipPath);
 	}
@@ -133,7 +133,7 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 	rs.brush(secondBrush);
 	rs.fill();
 
-	rs.reset_clip();
+	rs.restore(); // Restore old clip
 
 	if (strokePaths) {
 		rs.compositing_operator(compositing_operator::source);
@@ -377,7 +377,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 			pf.origin(center);
 			pf.arc_negative(center, radius - 3.0, pi / 2.0, -pi / 2.0);
 		}
-		rs.path(rs.path(pf));
+		rs.path(path(pf));
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
 		auto greyBrush = brush(solid_color_brush_factory({ greyColor, greyColor, greyColor, 1.0 }));
 		rs.brush(greyBrush);
@@ -388,7 +388,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.origin({ 250.0, 450.0 });
 	pf.transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 	pf.rect({ 200.0, 400.0, 100.0, 100.0 });
-	rs.path(rs.path(pf));
+	rs.path(path(pf));
 	auto redBrush = brush(solid_color_brush_factory(rgba_color::red()));
 	rs.brush(redBrush);
 	rs.line_width(3.0);
@@ -415,7 +415,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.line_join(line_join::miter_or_bevel);
 	rs.miter_limit(1.0);
 	rs.line_width(10.0);
-	rs.path(rs.path(pf));
+	rs.path(path(pf));
 	rs.brush(redBrush);
 	rs.stroke();
 	rs.brush(linearBrush);
@@ -426,7 +426,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.rel_line_to({ 0.0, 100.0 });
 	pf.rel_line_to({ 10.0, -100.0 });
 	rs.line_join(line_join::miter);
-	rs.path(rs.path(pf));
+	rs.path(path(pf));
 	rs.brush(redBrush);
 	rs.stroke();
 	rs.brush(linearBrush);
@@ -439,7 +439,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.new_sub_path();
 	pf.arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi * 3.0 / 4.0);
 	pf.new_sub_path();
-	rs.path(rs.path(pf));
+	rs.path(path(pf));
 	rs.line_width(2.0);
 	rs.brush(redBrush);
 	rs.stroke();

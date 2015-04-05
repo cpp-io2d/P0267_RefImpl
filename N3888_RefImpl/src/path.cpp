@@ -22,7 +22,7 @@ path::native_handle_type path::native_handle() const noexcept {
 	return _Cairo_path.get();
 }
 
-path::path(const path_factory& pb, const surface& /*sf*/)
+path::path(const path_factory& pb)
 : _Data(new vector<path_data_item>)
 , _Cairo_path(new cairo_path_t, &_Free_manual_cairo_path)
 , _Has_current_point()
@@ -465,7 +465,7 @@ path::path(const path_factory& pb, const surface& /*sf*/)
 	_Extents = pb.path_extents();
 }
 
-path::path(const path_factory& pb, const surface& /*sf*/, error_code& ec) noexcept
+path::path(const path_factory& pb, error_code& ec) noexcept
 	: _Data()
 	, _Cairo_path()
 	, _Has_current_point()
