@@ -56,6 +56,7 @@ surface::surface(format fmt, int width, int height)
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
+	, _Native_font_options(unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)>(cairo_font_options_create(), &cairo_font_options_destroy))
 	, _Dirty_rect()
 	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get())))
 	, _Content(_Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get())))
@@ -76,6 +77,9 @@ surface::surface(format fmt, int width, int height)
 	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
 	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	_Throw_if_failed_cairo_status_t(cairo_font_options_status(_Native_font_options.get()));
 }
 
 surface::native_handle_type surface::native_handle() const {
@@ -87,6 +91,7 @@ surface::surface(surface&& other) noexcept
 	, _Device(move(other._Device))
 	, _Surface(move(other._Surface))
 	, _Context(move(other._Context))
+	, _Native_font_options(move(other._Native_font_options))
 	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get())))
 	, _Content(_Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get())))
 	, _Device_offset(move(other._Device_offset))
@@ -113,6 +118,7 @@ surface& surface::operator=(surface&& other) noexcept {
 		_Device = move(other._Device);
 		_Surface = move(other._Surface);
 		_Context = move(other._Context);
+		_Native_font_options = move(other._Native_font_options);
 		_Format = _Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get()));
 		_Content = _Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get()));
 		_Device_offset = move(other._Device_offset);
@@ -141,6 +147,7 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	, _Device()
 	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy))
+	, _Native_font_options(unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)>(cairo_font_options_create(), &cairo_font_options_destroy))
 	, _Format(fmt)
 	, _Content(ctnt)
 	, _Device_offset(0.0, 0.0)
@@ -160,6 +167,11 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
 	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
+	if (nh.csfce != nullptr) {
+		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+		_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	}
+	_Throw_if_failed_cairo_status_t(cairo_font_options_status(_Native_font_options.get()));
 	if (_Context.get() != nullptr) {
 		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 	}
@@ -168,8 +180,9 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, int width, int height)
 	: _Lock_for_device()
 	, _Device()
-	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(ctnt), width, height), &cairo_surface_destroy))
-	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
+	, _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_surface_create_similar(other._Surface.get(), _Content_to_cairo_content_t(ctnt), width, height), &cairo_surface_destroy))
+	, _Context(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy))
+	, _Native_font_options(unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)>(cairo_font_options_create(), &cairo_font_options_destroy))
 	, _Format(other._Format)
 	, _Content(ctnt)
 	, _Device_offset(0.0, 0.0)
@@ -962,7 +975,9 @@ void surface::font_matrix(const matrix_2d& m) {
 }
 
 void surface::font_options(const ::std::experimental::io2d::font_options& options) {
-	cairo_set_font_options(_Context.get(), options.native_handle());
+	cairo_font_options_set_antialias(_Native_font_options.get(), _Antialias_to_cairo_antialias_t(options.antialias()));
+	cairo_font_options_set_subpixel_order(_Native_font_options.get(), _Subpixel_order_to_cairo_subpixel_order_t(options.subpixel_order()));
+	cairo_set_font_options(_Context.get(), _Native_font_options.get());
 }
 
 void surface::font_face(const ::std::experimental::io2d::font_face& font_face) {
@@ -1290,14 +1305,17 @@ matrix_2d surface::font_matrix() const {
 // Note: This deviates from cairo in that we return the values that will actually wind up being used.
 ::std::experimental::io2d::font_options surface::font_options() const {
 	::std::experimental::io2d::font_options fo(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order);
-	cairo_get_font_options(_Context.get(), fo.native_handle());
-	auto ca = fo.antialias();
-	auto cso = fo.subpixel_order();
-	cairo_surface_get_font_options(_Surface.get(), fo.native_handle());
+	unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)> up(nullptr, &cairo_font_options_destroy);
+	cairo_get_font_options(_Context.get(), up.get());
+	_Throw_if_failed_cairo_status_t(cairo_font_options_status(up.get()));
+	auto ca = _Cairo_antialias_t_to_antialias(cairo_font_options_get_antialias(up.get()));
+	auto cso = _Cairo_subpixel_order_t_to_subpixel_order(cairo_font_options_get_subpixel_order(up.get()));
+	cairo_get_font_options(_Context.get(), up.get());
+	_Throw_if_failed_cairo_status_t(cairo_font_options_status(up.get()));
 
 	return ::std::experimental::io2d::font_options(
-		(ca == ::std::experimental::io2d::antialias::default_antialias) ? fo.antialias() : ca,
-		(cso == ::std::experimental::io2d::subpixel_order::default_subpixel_order) ? fo.subpixel_order() : cso
+		(ca == ::std::experimental::io2d::antialias::default_antialias) ? _Cairo_antialias_t_to_antialias(cairo_font_options_get_antialias(up.get())) : ca,
+		(cso == ::std::experimental::io2d::subpixel_order::default_subpixel_order) ? _Cairo_subpixel_order_t_to_subpixel_order(cairo_font_options_get_subpixel_order(up.get())) : cso
 		);
 }
 

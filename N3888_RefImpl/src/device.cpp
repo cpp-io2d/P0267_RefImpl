@@ -54,6 +54,11 @@ void device::lock(error_code& ec) noexcept {
 	}
 }
 
-void device::unlock() noexcept {
+void device::unlock() {
 	cairo_device_release(_Device.get());
+}
+
+void device::unlock(error_code& ec) noexcept {
+	cairo_device_release(_Device.get());
+	ec.clear();
 }

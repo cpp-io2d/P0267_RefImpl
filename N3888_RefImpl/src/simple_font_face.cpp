@@ -25,8 +25,23 @@ simple_font_face& simple_font_face::operator=(simple_font_face&& other) noexcept
 simple_font_face::~simple_font_face() {
 }
 
-string simple_font_face::family() const noexcept {
+string simple_font_face::font_family() const {
 	return string(cairo_toy_font_face_get_family(_Font_face.get()));
+}
+
+void simple_font_face::font_family(string& str, error_code& ec) const noexcept {
+	try {
+		ec.clear();
+		str = move(string(cairo_toy_font_face_get_family(_Font_face.get())));
+	}
+	catch (const length_error&) {
+		str.clear();
+		ec = make_error_code(errc::not_enough_memory);
+	}
+	catch (const bad_alloc&) {
+		str.clear();
+		ec = make_error_code(errc::not_enough_memory);
+	}
 }
 
 ::std::experimental::io2d::font_slant simple_font_face::font_slant() const noexcept {

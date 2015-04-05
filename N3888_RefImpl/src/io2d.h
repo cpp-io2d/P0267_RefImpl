@@ -494,12 +494,12 @@ namespace std {
 #if _Inline_namespace_conditional_support_test && _User_defined_literal_conditional_support_test
 				inline namespace literals {
 					// Note: The _ prefix is added because certain compilers reject attempts to add a non-user-defined literal
-					inline double operator""_ubyte(unsigned long long value) {
+					inline double operator""_ubyte(unsigned long long value) noexcept {
 						return ::std::max(0.0, ::std::min(1.0, static_cast<double>(value) / 255.0));
 					}
 
 					// Note: The _ prefix is added because certain compilers reject attempts to add a non-user-defined literal
-					inline double operator "" _unorm(long double value) {
+					inline double operator "" _unorm(long double value) noexcept {
 						auto result = ::std::max(0.0, ::std::min(1.0, static_cast<double>(value)));
 						result = ::std::nearbyint(result * 255.0); // We need to ensure it is one of the discrete values between 0 and 255.
 						return result / 255.0;
@@ -905,7 +905,7 @@ namespace std {
 					path_data_type _Type;
 
 				public:
-					path_data_item() = default;
+					path_data_item() noexcept = default;
 					path_data_item(const path_data_item&) noexcept = default;
 					path_data_item& operator=(const path_data_item&) noexcept = default;
 					path_data_item(path_data_item&& other) noexcept;
@@ -1315,10 +1315,15 @@ namespace std {
 				};
 
 				class device {
+				public:
+					typedef cairo_device_t* native_handle_type;
+				private:
+					friend surface;
+					explicit device(native_handle_type nh);
+					device(native_handle_type nh, error_code& ec) noexcept;
 				protected:
 					::std::shared_ptr<cairo_device_t> _Device;
 				public:
-					typedef cairo_device_t* native_handle_type;
 					native_handle_type native_handle() const noexcept;
 
 					device() = delete;
@@ -1326,33 +1331,33 @@ namespace std {
 					device& operator=(const device&) = delete;
 					device(device&& other) noexcept;
 					device& operator=(device&& other) noexcept;
-					explicit device(native_handle_type nh);
-					device(native_handle_type nh, error_code& ec) noexcept;
 
 					// Modifiers
 					void flush() noexcept;
 					void lock();
 					void lock(::std::error_code& ec) noexcept;
-					void unlock() noexcept;
+					void unlock();
+					void unlock(::std::error_code& ec) noexcept;
 				};
 
 				class font_options {
-					::std::shared_ptr<cairo_font_options_t> _Font_options;
+					::std::experimental::io2d::antialias _Antialias = ::std::experimental::io2d::antialias::default_antialias;
+					::std::experimental::io2d::subpixel_order _Subpixel_order = ::std::experimental::io2d::subpixel_order::default_subpixel_order;
 				public:
-					typedef cairo_font_options_t* native_handle_type;
-					native_handle_type native_handle() const;
+					font_options() noexcept = default;
+					font_options(const font_options&) noexcept = default;
+					font_options& operator=(const font_options&) noexcept = default;
+					font_options(font_options&& other) noexcept;
+					font_options& operator=(font_options&& other) noexcept;
+					font_options(::std::experimental::io2d::antialias a, ::std::experimental::io2d::subpixel_order so) noexcept;
 
-					font_options() = delete;
-					font_options(const font_options&) = default;
-					font_options& operator=(const font_options&) = default;
-					font_options(font_options&& other);
-					font_options& operator=(font_options&& other);
-					font_options(::std::experimental::io2d::antialias a, ::std::experimental::io2d::subpixel_order so);
-					explicit font_options(native_handle_type nh);
+					// Modifiers
+					void antialias(::std::experimental::io2d::antialias a) noexcept;
+					void subpixel_order(::std::experimental::io2d::subpixel_order so) noexcept;
 
 					// Observers
-					::std::experimental::io2d::antialias antialias() const;
-					::std::experimental::io2d::subpixel_order subpixel_order() const;
+					::std::experimental::io2d::antialias antialias() const noexcept;
+					::std::experimental::io2d::subpixel_order subpixel_order() const noexcept;
 				};
 
 				class font_face {
@@ -1382,7 +1387,8 @@ namespace std {
 					virtual ~simple_font_face();
 
 					// Observers
-					::std::string family() const noexcept;
+					::std::string font_family() const;
+					void font_family(::std::string& str, ::std::error_code& ec) const noexcept;
 					::std::experimental::io2d::font_slant font_slant() const noexcept;
 					::std::experimental::io2d::font_weight font_weight() const noexcept;
 				};
@@ -1585,6 +1591,7 @@ namespace std {
 				protected:
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
+					::std::unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)> _Native_font_options;
 
 					const double _Line_join_miter_miter_limit = 10000.0;
 
