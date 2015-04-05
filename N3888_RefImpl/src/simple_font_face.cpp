@@ -5,8 +5,23 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-simple_font_face::simple_font_face(const string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw) noexcept : font_face(nullptr) {
+simple_font_face::simple_font_face(const string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw)
+	: font_face(nullptr) {
 	_Font_face = shared_ptr<cairo_font_face_t>(cairo_toy_font_face_create(family.c_str(), _Font_slant_to_cairo_font_slant_t(fs), _Font_weight_to_cairo_font_weight_t(fw)), &cairo_font_face_destroy);
+}
+
+simple_font_face::simple_font_face(const string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw, error_code& ec) noexcept
+	: font_face(nullptr, ec) {
+	if (static_cast<bool>(ec)) {
+		return;
+	}
+	try {
+		_Font_face = shared_ptr<cairo_font_face_t>(cairo_toy_font_face_create(family.c_str(), _Font_slant_to_cairo_font_slant_t(fs), _Font_weight_to_cairo_font_weight_t(fw)), &cairo_font_face_destroy);
+	}
+	catch (const bad_alloc&) {
+		ec = make_error_code(errc::not_enough_memory);
+	}
+	ec.clear();
 }
 
 simple_font_face::simple_font_face(simple_font_face&& other) noexcept : font_face(nullptr) {

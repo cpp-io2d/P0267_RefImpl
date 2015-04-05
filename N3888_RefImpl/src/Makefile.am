@@ -23,6 +23,7 @@ N3888_RefImpl_SOURCES =	brush.cpp \
 				image_surface.cpp \
 				io2d_error_category.cpp \
 				linear_brush_factory.cpp \
+				mapped_surface.cpp \
 				matrix_2d.cpp \
 				mesh_brush_factory.cpp \
 				path.cpp \

@@ -131,6 +131,9 @@
     <ClCompile Include="vector_2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mapped_surface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="N3888_RefImpl.rc">

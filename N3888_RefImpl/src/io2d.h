@@ -78,7 +78,7 @@ namespace std {
 				class path_factory;
 				class device;
 				class font_options;
-				class font_fact;
+				class font_face;
 				class simple_font_face;
 				class brush;
 				class solid_color_brush_factory;
@@ -1361,10 +1361,14 @@ namespace std {
 				};
 
 				class font_face {
-				protected:
-					::std::shared_ptr<cairo_font_face_t> _Font_face;
+					friend surface;
 				public:
 					typedef cairo_font_face_t* native_handle_type;
+				protected:
+					::std::shared_ptr<cairo_font_face_t> _Font_face;
+					explicit font_face(native_handle_type nh);
+					font_face(native_handle_type nh, ::std::error_code& ec) noexcept;
+				public:
 					native_handle_type native_handle() const noexcept;
 
 					font_face() = delete;
@@ -1372,7 +1376,6 @@ namespace std {
 					font_face& operator=(const font_face&) noexcept = default;
 					font_face(font_face&& other) noexcept;
 					font_face& operator=(font_face&& other) noexcept;
-					explicit font_face(native_handle_type nh) noexcept;
 					virtual ~font_face();
 				};
 
@@ -1381,7 +1384,8 @@ namespace std {
 					simple_font_face() = delete;
 					simple_font_face(const simple_font_face&) noexcept = default;
 					simple_font_face& operator=(const simple_font_face&) noexcept = default;
-					simple_font_face(const ::std::string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw) noexcept;
+					simple_font_face(const ::std::string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw);
+					simple_font_face(const ::std::string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw, ::std::error_code& ec) noexcept;
 					simple_font_face(simple_font_face&& other) noexcept;
 					simple_font_face& operator=(simple_font_face&& other) noexcept;
 					virtual ~simple_font_face();
@@ -1580,17 +1584,20 @@ namespace std {
 					::cairo_t* cctxt;
 				};
 
+				class mapped_surface;
+
+				// tuple<dashes, offset>
 				typedef ::std::tuple<::std::vector<double>, double> dashes;
 
 				class surface {
 				public:
-					// tuple<dashes, offset>
+					typedef _Surface_native_handles native_handle_type;
 				private:
 					::std::mutex _Lock_for_device;
 					::std::weak_ptr<::std::experimental::io2d::device> _Device;
 				protected:
-					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Surface;
-					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Context;
+					::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> _Surface;
+					::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Context;
 					::std::unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)> _Native_font_options;
 
 					const double _Line_join_miter_miter_limit = 10000.0;
@@ -1604,6 +1611,7 @@ namespace std {
 					// State - saved
 					typedef vector_2d _Device_offtype;
 					_Device_offtype _Device_offset = { 0.0, 0.0 };
+					::std::error_code _Brush_error_code;
 					::std::experimental::io2d::brush _Brush;
 					::std::experimental::io2d::antialias _Antialias;
 					::std::experimental::io2d::dashes _Dashes;
@@ -1617,27 +1625,69 @@ namespace std {
 					::std::experimental::io2d::compositing_operator _Compositing_operator;
 					typedef double _Tolerance_type;
 					_Tolerance_type _Tolerance = 0.1;
-					::std::experimental::io2d::path _Default_path;
-					::std::experimental::io2d::path _Current_path;
+					::std::shared_ptr<::std::experimental::io2d::path> _Current_path;
 					::std::experimental::io2d::path_factory _Immediate_path;
 					typedef matrix_2d _Transform_matrix_type;
 					_Transform_matrix_type _Transform_matrix;
-					::std::experimental::io2d::font_face _Font_face; // Altered by select_font_face and font_face
+					::std::shared_ptr<::std::experimental::io2d::font_face> _Font_face;
 					typedef matrix_2d _Font_matrix_type;
-					_Font_matrix_type _Font_matrix; // Covers both size and full matrix - size is just a uniform scale matrix.
+					_Font_matrix_type _Font_matrix; // Covers both font size and full font matrix - font size is just a uniform scale matrix.
 					::std::experimental::io2d::font_options _Font_options;
-					// The current scaled_font is created on demand from parameters that are already saved.
 
 					// We use vector here because of its C++17 default ctor noexcept guarantee.
-					::std::stack<::std::tuple<_Device_offtype, ::std::experimental::io2d::brush, ::std::experimental::io2d::antialias, ::std::experimental::io2d::dashes, ::std::experimental::io2d::fill_rule, ::std::experimental::io2d::line_cap, ::std::experimental::io2d::line_join, _Line_width_type, _Miter_limit_type, ::std::experimental::io2d::compositing_operator, _Tolerance_type, ::std::experimental::io2d::path, ::std::experimental::io2d::path, ::std::experimental::io2d::path_factory, _Transform_matrix_type, ::std::experimental::io2d::font_face, _Font_matrix_type, ::std::experimental::io2d::font_options>, ::std::vector<::std::tuple<_Device_offtype, ::std::experimental::io2d::brush, ::std::experimental::io2d::antialias, ::std::experimental::io2d::dashes, ::std::experimental::io2d::fill_rule, ::std::experimental::io2d::line_cap, ::std::experimental::io2d::line_join, _Line_width_type, _Miter_limit_type, ::std::experimental::io2d::compositing_operator, _Tolerance_type, ::std::experimental::io2d::path, ::std::experimental::io2d::path, ::std::experimental::io2d::path_factory, _Transform_matrix_type, ::std::experimental::io2d::font_face, _Font_matrix_type, ::std::experimental::io2d::font_options>>> _Saved_state;
+					::std::stack<::std::tuple<
+						_Device_offtype,
+						::std::experimental::io2d::brush,
+						::std::experimental::io2d::antialias,
+						::std::experimental::io2d::dashes,
+						::std::experimental::io2d::fill_rule,
+						::std::experimental::io2d::line_cap,
+						::std::experimental::io2d::line_join,
+						_Line_width_type,
+						_Miter_limit_type,
+						::std::experimental::io2d::compositing_operator,
+						_Tolerance_type,
+						::std::shared_ptr<::std::experimental::io2d::path>,
+						::std::experimental::io2d::path_factory,
+						_Transform_matrix_type,
+						::std::shared_ptr<::std::experimental::io2d::font_face>,
+						_Font_matrix_type,
+						::std::experimental::io2d::font_options
+					>, ::std::vector<::std::tuple<
+						_Device_offtype,
+						::std::experimental::io2d::brush,
+						::std::experimental::io2d::antialias,
+						::std::experimental::io2d::dashes,
+						::std::experimental::io2d::fill_rule,
+						::std::experimental::io2d::line_cap,
+						::std::experimental::io2d::line_join,
+						_Line_width_type,
+						_Miter_limit_type,
+						::std::experimental::io2d::compositing_operator,
+						_Tolerance_type,
+						::std::shared_ptr<::std::experimental::io2d::path>,
+						::std::experimental::io2d::path_factory,
+						_Transform_matrix_type,
+						::std::shared_ptr<::std::experimental::io2d::font_face>,
+						_Font_matrix_type,
+						::std::experimental::io2d::font_options>>> _Saved_state;
 
 					void _Ensure_state();
 					void _Ensure_state(::std::error_code& ec) noexcept;
 
 					surface(::std::experimental::io2d::format fmt, int width, int height);
-				public:
+					surface(::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
 
-					typedef _Surface_native_handles native_handle_type;
+					surface(native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::experimental::io2d::content ctnt);
+					surface(native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::experimental::io2d::content ctnt, ::std::error_code& ec) noexcept;
+
+					// create_similar
+					surface(const surface& other, ::std::experimental::io2d::content ctnt, int width, int height);
+					surface(const surface& other, ::std::experimental::io2d::content ctnt, int width, int height, ::std::error_code& ec) noexcept;
+
+					void path(const ::std::shared_ptr<::std::experimental::io2d::path>& p);
+					void path(const ::std::shared_ptr<::std::experimental::io2d::path>& p, ::std::error_code& ec) noexcept;
+				public:
 					native_handle_type native_handle() const;
 
 					surface() = delete;
@@ -1646,10 +1696,6 @@ namespace std {
 					surface(surface&& other) noexcept;
 					surface& operator=(surface&& other) noexcept;
 
-					surface(native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::experimental::io2d::content ctnt);
-
-					// create_similar
-					surface(const surface& other, ::std::experimental::io2d::content ctnt, int width, int height);
 					virtual ~surface();
 
 					// \ref{\iotwod.surface.modifiers.state}, state modifiers:
@@ -1665,18 +1711,17 @@ namespace std {
 					void device_offset(const vector_2d& offset);
 					void device_offset(const vector_2d& offset, ::std::error_code& ec) noexcept;
 //					void write_to_file(const ::std::string& filename);
-					image_surface map_to_image();
-					image_surface map_to_image(::std::error_code& ec) noexcept;
-					image_surface map_to_image(const rectangle& extents);
-					image_surface map_to_image(const rectangle& extents, ::std::error_code& ec) noexcept;
-					void unmap_image(image_surface& image);
-					void unmap_image(image_surface& image, ::std::error_code& ec) noexcept;
+					void map(const ::std::function<void(mapped_surface&)>& action);
+					void map(const ::std::function<void(mapped_surface&, error_code&)>& action, ::std::error_code& ec);
+					void map(const rectangle& extents, const ::std::function<void(mapped_surface&)>& action);
+					void map(const rectangle& extents, const ::std::function<void(mapped_surface&, error_code&)>& action, ::std::error_code& ec);
 					virtual void save();
 					virtual void save(::std::error_code& ec) noexcept;
 					virtual void restore();
 					virtual void restore(::std::error_code& ec) noexcept;
 					void reset_brush() noexcept;
-					void brush(const ::std::experimental::io2d::brush& source) noexcept;
+					void brush(const ::std::experimental::io2d::brush& source);
+					void brush(const ::std::experimental::io2d::brush& source, ::std::error_code& ec) noexcept;
 					void antialias(::std::experimental::io2d::antialias a) noexcept;
 					void reset_dashes() noexcept;
 					void dashes(const ::std::experimental::io2d::dashes& d);
@@ -1693,7 +1738,8 @@ namespace std {
 					void clip_immediate();
 					void clip_immediate(::std::error_code& ec) noexcept;
 					void reset_path() noexcept;
-					void path(const ::std::experimental::io2d::path& p) noexcept;
+					void path(const ::std::experimental::io2d::path& p);
+					void path(const ::std::experimental::io2d::path& p, ::std::error_code& ec) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.immediatepath}, immediate path modifiers:
 					::std::experimental::io2d::path_factory& immediate() noexcept;
@@ -1840,7 +1886,8 @@ namespace std {
 					// \ref{\iotwod.surface.modifiers.font}, font modifiers:
 					void font_face(const ::std::string& family, font_slant sl, font_weight w);
 					void font_face(const ::std::string& family, font_slant sl, font_weight w, ::std::error_code& ec) noexcept;
-					void font_face(const ::std::experimental::io2d::font_face& f) noexcept;
+					void font_face(const ::std::experimental::io2d::font_face& f);
+					void font_face(const ::std::experimental::io2d::font_face& f, ::std::error_code& ec) noexcept;
 					void font_size(double s) noexcept;
 					void font_matrix(const matrix_2d& m) noexcept;
 					void font_options(const font_options& fo) noexcept;
@@ -1891,38 +1938,70 @@ namespace std {
 					// \ref{\iotwod.surface.observers.font}, font observers:
 					matrix_2d font_matrix() const noexcept;
 					::std::experimental::io2d::font_options font_options() const noexcept;
-					::std::experimental::io2d::font_face font_face() const noexcept;
+					::std::experimental::io2d::font_face font_face() const;
+					::std::experimental::io2d::font_face font_face(::std::error_code& ec) const noexcept;
 				};
 
 				class image_surface : public surface {
 					friend surface;
-				protected:
-					image_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
 				public:
 					image_surface() = delete;
 					image_surface(const image_surface&) = delete;
 					image_surface& operator=(const image_surface&) = delete;
-					image_surface(image_surface&& other);
-					image_surface& operator=(image_surface&& other);
+					image_surface(image_surface&& other) noexcept;
+					image_surface& operator=(image_surface&& other) noexcept;
 					image_surface(::std::experimental::io2d::format fmt, int width, int height);
+					image_surface(::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
 					image_surface(vector<unsigned char>& data, ::std::experimental::io2d::format fmt, int width, int height);
+					image_surface(vector<unsigned char>& data, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
 					// create_similar_image
 					image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height);
-					// create_from_png
-					image_surface(const ::std::string& filename);
+					image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
+					//// create_from_png
+					//image_surface(const ::std::string& filename);
 					virtual ~image_surface();
 
 					// Modifiers
 					void data(const ::std::vector<unsigned char>& data);
+					void data(const ::std::vector<unsigned char>& data, ::std::error_code& ec) noexcept;
 					::std::vector<unsigned char> data();
+					::std::vector<unsigned char> data(::std::error_code& ec) noexcept;
 
 					// Observers
-					::std::experimental::io2d::format format() const;
-					int width() const;
-					int height() const;
-					int stride() const;
+					::std::experimental::io2d::format format() const noexcept;
+					int width() const noexcept;
+					int height() const noexcept;
+					int stride() const noexcept;
 				};
+				
+				class mapped_surface {
+					surface::native_handle_type _Mapped_surface;
+					surface::native_handle_type _Map_of;
 
+					friend surface;
+					mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
+					mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, ::std::error_code& ec) noexcept;
+
+				public:
+					mapped_surface() = delete;
+					mapped_surface(const mapped_surface&) = delete;
+					mapped_surface& operator=(const mapped_surface&) = delete;
+					mapped_surface(mapped_surface&& other) = delete;
+					mapped_surface& operator=(mapped_surface&& other) = delete;
+					~mapped_surface();
+
+					// Modifiers
+					void data(const ::std::vector<unsigned char>& data);
+					void data(const ::std::vector<unsigned char>& data, ::std::error_code& ec) noexcept;
+					::std::vector<unsigned char> data();
+					::std::vector<unsigned char> data(::std::error_code& ec) noexcept;
+
+					// Observers
+					::std::experimental::io2d::format format() const noexcept;
+					int width() const noexcept;
+					int height() const noexcept;
+					int stride() const noexcept;
+				};
 #ifdef _WIN32_WINNT
 				struct _Win32_display_surface_native_handle {
 					_Surface_native_handles sfc_nh;
@@ -1956,7 +2035,7 @@ namespace std {
 					::std::function<void(display_surface& sfc)> _Draw_fn;
 					::std::function<void(display_surface& sfc)> _Size_change_fn;
 					typedef ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> _User_scaling_fn_type;
-					 _User_scaling_fn_type _User_scaling_fn = nullptr;
+					 _User_scaling_fn_type _User_scaling_fn;
 					 ::std::experimental::io2d::brush _Letterbox_brush;
 
 					void _Make_native_surface_and_context();
@@ -1972,7 +2051,14 @@ namespace std {
 						_Display_width_type,
 						_Display_height_type,
 						_User_scaling_fn_type,
-						::std::experimental::io2d::brush>> _Display_saved_state;
+						::std::experimental::io2d::brush>, ::std::vector<::std::tuple<
+						::std::experimental::io2d::scaling,
+						_Width_type,
+						_Height_type,
+						_Display_width_type,
+						_Display_height_type,
+						_User_scaling_fn_type,
+						::std::experimental::io2d::brush>>> _Display_saved_state;
 #ifdef _WIN32_WINNT
 					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 					DWORD _Window_style;
@@ -2063,7 +2149,6 @@ namespace std {
 
 				int format_stride_for_width(format format, int width);
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox);
-				surface make_surface(surface::native_handle_type nh, format fmt); // parameters are exposition only.
 				image_surface make_image_surface(format format, int width, int height);
 #if _Inline_namespace_conditional_support_test
 			}

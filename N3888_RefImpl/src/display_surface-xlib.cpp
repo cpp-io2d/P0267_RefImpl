@@ -188,7 +188,7 @@ namespace {
 }
 
 void display_surface::_Make_native_surface_and_context() {
-	_Native_surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_xlib_surface_create(_Display.get(), _Wndw, DefaultVisual(_Display.get(), DefaultScreen(_Display.get())), _Display_width, _Display_height), &cairo_surface_destroy);
+	_Native_surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_xlib_surface_create(_Display.get(), _Wndw, DefaultVisual(_Display.get(), DefaultScreen(_Display.get())), _Display_width, _Display_height), &cairo_surface_destroy);
 	_Native_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Native_surface.get()), &cairo_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Native_surface.get()));
 	_Throw_if_failed_cairo_status_t(cairo_status(_Native_context.get()));
@@ -264,7 +264,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	XSelectInput(display, _Wndw, ExposureMask | StructureNotifyMask);
 	XSetWMProtocols(display, _Wndw, &_Wm_delete_window, 1);
 	XMapWindow(display, _Wndw);
-	_Surface = unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
+	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
 	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
 }
 

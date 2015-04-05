@@ -20,10 +20,6 @@ namespace std {
 					return display_surface(preferredWidth, preferredHeight, preferredFormat, scl);
 				}
 
-				surface make_surface(surface::native_handle_type nh, format fmt) {
-					return surface(nh, fmt, _Content_for_format(fmt));
-				}
-
 				image_surface make_image_surface(format fmt, int width, int height) {
 					return image_surface(fmt, width, height);
 				}

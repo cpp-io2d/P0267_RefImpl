@@ -19,9 +19,19 @@ void surface::_Ensure_state() {
 	miter_limit(_Miter_limit);
 	compositing_operator(_Compositing_operator);
 	tolerance(_Tolerance);
-	path(_Current_path);
+	if (_Current_path.get() != nullptr) {
+		path(*_Current_path);
+	}
+	else {
+		cairo_new_path(_Context.get());
+	}
 	matrix(_Transform_matrix);
-	font_face(_Font_face);
+	if (_Font_face.get() != nullptr) {
+		font_face(*_Font_face);
+	}
+	else {
+		cairo_set_font_face(_Context.get(), nullptr); // Restore default font.
+	}
 	font_matrix(_Font_matrix);
 	font_options(_Font_options);
 }
@@ -32,7 +42,10 @@ void surface::_Ensure_state(error_code& ec) noexcept {
 		return;
 	}
 	device_offset(_Device_offset);
-	brush(_Brush);
+	brush(_Brush, ec);
+	if (static_cast<bool>(ec)) {
+		return;
+	}
 	fill_rule(_Fill_rule);
 	line_cap(_Line_cap);
 	line_join(_Line_join);
@@ -40,27 +53,45 @@ void surface::_Ensure_state(error_code& ec) noexcept {
 	miter_limit(_Miter_limit);
 	compositing_operator(_Compositing_operator);
 	tolerance(_Tolerance);
-	path(_Current_path);
+	if (_Current_path.get() != nullptr) {
+		path(*_Current_path, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
+	}
+	else {
+		cairo_new_path(_Context.get());
+	}
 	matrix(_Transform_matrix);
-	font_face(_Font_face);
+	if (_Font_face.get() != nullptr) {
+		font_face(*_Font_face, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
+	}
+	else {
+		cairo_set_font_face(_Context.get(), nullptr); // Restore default font.
+	}
 	font_matrix(_Font_matrix);
 	font_options(_Font_options);
 	dashes(_Dashes, ec);
 	if (static_cast<bool>(ec)) {
 		return;
 	}
+	ec.clear();
 }
 
 surface::surface(format fmt, int width, int height)
 	: _Lock_for_device()
 	, _Device()
-	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
-	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(cairo_create(_Surface.get()), &cairo_destroy))
+	, _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
+	, _Context(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy))
 	, _Native_font_options(unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)>(cairo_font_options_create(), &cairo_font_options_destroy))
 	, _Dirty_rect()
 	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get())))
 	, _Content(_Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get())))
 	, _Device_offset(0.0, 0.0)
+	, _Brush_error_code()
 	, _Brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0))
 	, _Fill_rule(::std::experimental::io2d::fill_rule::winding)
 	, _Line_cap(::std::experimental::io2d::line_cap::butt)
@@ -69,17 +100,17 @@ surface::surface(format fmt, int width, int height)
 	, _Miter_limit(10.0)
 	, _Compositing_operator(::std::experimental::io2d::compositing_operator::default_op)
 	, _Tolerance(0.1)
-	, _Default_path(path_factory())
-	, _Current_path(_Default_path)
+	, _Current_path()
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
-	, _Font_face(simple_font_face("sans", font_slant::normal, font_weight::normal))
+	, _Font_face()
 	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
 	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 	_Throw_if_failed_cairo_status_t(cairo_font_options_status(_Native_font_options.get()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.native_handle()));
 }
 
 surface::native_handle_type surface::native_handle() const {
@@ -95,6 +126,7 @@ surface::surface(surface&& other) noexcept
 	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get())))
 	, _Content(_Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get())))
 	, _Device_offset(move(other._Device_offset))
+	, _Brush_error_code(move(other._Brush_error_code))
 	, _Brush(move(other._Brush))
 	, _Fill_rule(move(other._Fill_rule))
 	, _Line_cap(move(other._Line_cap))
@@ -103,7 +135,6 @@ surface::surface(surface&& other) noexcept
 	, _Miter_limit(move(other._Miter_limit))
 	, _Compositing_operator(move(other._Compositing_operator))
 	, _Tolerance(move(other._Tolerance))
-	, _Default_path(move(other._Default_path))
 	, _Current_path(move(other._Current_path))
 	, _Immediate_path(move(other._Immediate_path))
 	, _Transform_matrix(move(other._Transform_matrix))
@@ -122,6 +153,7 @@ surface& surface::operator=(surface&& other) noexcept {
 		_Format = _Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get()));
 		_Content = _Cairo_content_t_to_content(cairo_surface_get_content(_Surface.get()));
 		_Device_offset = move(other._Device_offset);
+		_Brush_error_code = move(other._Brush_error_code);
 		_Brush = move(other._Brush);
 		_Fill_rule = move(other._Fill_rule);
 		_Line_cap = move(other._Line_cap);
@@ -130,7 +162,6 @@ surface& surface::operator=(surface&& other) noexcept {
 		_Miter_limit = move(other._Miter_limit);
 		_Compositing_operator = move(other._Compositing_operator);
 		_Tolerance = move(other._Tolerance);
-		_Default_path = move(other._Default_path);
 		_Current_path = move(other._Current_path);
 		_Immediate_path = move(other._Immediate_path);
 		_Transform_matrix = move(other._Transform_matrix);
@@ -145,12 +176,13 @@ surface& surface::operator=(surface&& other) noexcept {
 surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::experimental::io2d::content ctnt)
 	: _Lock_for_device()
 	, _Device()
-	, _Surface(unique_ptr<cairo_surface_t, function<void(cairo_surface_t*)>>(nh.csfce, &cairo_surface_destroy))
-	, _Context(unique_ptr<cairo_t, function<void(cairo_t*)>>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy))
+	, _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(nh.csfce, &cairo_surface_destroy))
+	, _Context(unique_ptr<cairo_t, decltype(&cairo_destroy)>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy))
 	, _Native_font_options(unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)>(cairo_font_options_create(), &cairo_font_options_destroy))
 	, _Format(fmt)
 	, _Content(ctnt)
 	, _Device_offset(0.0, 0.0)
+	, _Brush_error_code()
 	, _Brush(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
 	, _Fill_rule(::std::experimental::io2d::fill_rule::winding)
 	, _Line_cap(::std::experimental::io2d::line_cap::butt)
@@ -159,11 +191,10 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	, _Miter_limit(10.0)
 	, _Compositing_operator(::std::experimental::io2d::compositing_operator::default_op)
 	, _Tolerance(0.1)
-	, _Default_path(path_factory())
-	, _Current_path(_Default_path)
+	, _Current_path()
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
-	, _Font_face(simple_font_face("sans", font_slant::normal, font_weight::normal))
+	, _Font_face()
 	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
 	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
@@ -172,6 +203,7 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 		_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 	}
 	_Throw_if_failed_cairo_status_t(cairo_font_options_status(_Native_font_options.get()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.native_handle()));
 	if (_Context.get() != nullptr) {
 		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 	}
@@ -186,7 +218,8 @@ surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, 
 	, _Format(other._Format)
 	, _Content(ctnt)
 	, _Device_offset(0.0, 0.0)
-	, _Brush(_Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(_Context.get())))
+	, _Brush_error_code()
+	, _Brush(other._Context.get() == nullptr ? cairo_pattern_create_rgba(0.0, 0.0, 0.0, 0.0) : cairo_pattern_reference(cairo_get_source(other._Context.get())))
 	, _Fill_rule(::std::experimental::io2d::fill_rule::winding)
 	, _Line_cap(::std::experimental::io2d::line_cap::butt)
 	, _Line_join(::std::experimental::io2d::line_join::miter)
@@ -194,14 +227,17 @@ surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, 
 	, _Miter_limit(10.0)
 	, _Compositing_operator(::std::experimental::io2d::compositing_operator::default_op)
 	, _Tolerance(0.1)
-	, _Default_path(path_factory())
-	, _Current_path(_Default_path)
+	, _Current_path()
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
-	, _Font_face(simple_font_face("sans", font_slant::normal, font_weight::normal))
+	, _Font_face()
 	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
 	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	_Throw_if_failed_cairo_status_t(cairo_font_options_status(_Native_font_options.get()));
+	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.native_handle()));
 }
 
 surface::~surface() {
@@ -240,32 +276,49 @@ void surface::device_offset(const vector_2d& offset) {
 	cairo_surface_set_device_offset(_Surface.get(), offset.x(), offset.y());
 }
 
-image_surface surface::map_to_image() {
-	return image_surface({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), _Context.get() });
+void surface::map(const ::std::function<void(mapped_surface&)>& action) {
+	if (action != nullptr) {
+		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr });
+		action(m);
+	}
 }
 
-image_surface surface::map_to_image(const rectangle& extents) {
-	cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
-
-	return image_surface({ cairo_surface_map_to_image(_Surface.get(), (_Almost_equal_relative(extents.x(), 0.0) && _Almost_equal_relative(extents.y(), 0.0) && _Almost_equal_relative(extents.width(), 0.0) && _Almost_equal_relative(extents.height(), 0.0)) ? nullptr : &cextents), nullptr }, { _Surface.get(), _Context.get() });
+void surface::map(const ::std::function<void(mapped_surface&, error_code&)>& action, error_code& ec) {
+	if (action != nullptr) {
+		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr });
+		action(m, ec);
+	}
 }
 
-void surface::unmap_image(image_surface& image) {
-	image._Context = nullptr;
-	image._Surface = nullptr;
+void surface::map(const rectangle& extents, const ::std::function<void(mapped_surface&)>& action) {
+	if (action != nullptr) {
+		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr });
+		action(m);
+	}
+}
+
+void surface::map(const rectangle& extents, const ::std::function<void(mapped_surface&, error_code&)>& action, error_code& ec) {
+	if (action != nullptr) {
+		cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
+		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr });
+		action(m, ec);
+	}
 }
 
 void surface::save() {
 	cairo_save(_Context.get());
-	_Saved_state.push(make_tuple(_Device_offset, _Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Tolerance, _Default_path, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
+	_Saved_state.push(make_tuple(_Device_offset, _Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Tolerance, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
 }
 
 void surface::save(error_code& ec) noexcept {
 	cairo_save(_Context.get());
 	try {
-		_Saved_state.push(make_tuple(_Device_offset, _Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Tolerance, _Default_path, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
+		_Saved_state.push(make_tuple(_Device_offset, _Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Tolerance, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
 	}
 	catch (const bad_alloc&) {
+		ec = make_error_code(errc::not_enough_memory);
+	}
+	catch (const length_error&) {
 		ec = make_error_code(errc::not_enough_memory);
 	}
 }
@@ -288,13 +341,12 @@ void surface::restore() {
 		_Miter_limit = get<8>(t);
 		_Compositing_operator = get<9>(t);
 		_Tolerance = get<10>(t);
-		_Default_path = move(get<11>(t));
-		_Current_path = move(get<12>(t));
-		_Immediate_path = move(get<13>(t));
-		_Transform_matrix = get<14>(t);
-		_Font_face = move(get<15>(t));
-		_Font_matrix = get<16>(t);
-		_Font_options = get<17>(t);
+		_Current_path = move(get<11>(t));
+		_Immediate_path = move(get<12>(t));
+		_Transform_matrix = get<13>(t);
+		_Font_face = move(get<14>(t));
+		_Font_matrix = get<15>(t);
+		_Font_options = get<16>(t);
 	}
 	_Saved_state.pop();
 
@@ -320,13 +372,12 @@ void surface::restore(error_code& ec) noexcept {
 		_Miter_limit = get<8>(t);
 		_Compositing_operator = get<9>(t);
 		_Tolerance = get<10>(t);
-		_Default_path = move(get<11>(t));
-		_Current_path = move(get<12>(t));
-		_Immediate_path = move(get<13>(t));
-		_Transform_matrix = get<14>(t);
-		_Font_face = move(get<15>(t));
-		_Font_matrix = get<16>(t);
-		_Font_options = get<17>(t);
+		_Current_path = move(get<11>(t));
+		_Immediate_path = move(get<12>(t));
+		_Transform_matrix = get<13>(t);
+		_Font_face = move(get<14>(t));
+		_Font_matrix = get<15>(t);
+		_Font_options = get<16>(t);
 	}
 	_Saved_state.pop();
 
@@ -342,7 +393,12 @@ void surface::reset_brush() noexcept {
 	_Brush = ::std::experimental::io2d::brush(cairo_pattern_reference(cairo_get_source(_Context.get())));
 }
 
-void surface::brush(const ::std::experimental::io2d::brush& source) noexcept {
+void surface::brush(const ::std::experimental::io2d::brush& source) {
+	_Brush = source;
+}
+
+void surface::brush(const::std::experimental::io2d::brush & source, ::std::error_code & ec) noexcept {
+	// This overload exists for backends where brushes are device-specific and will require resource allocation, etc., when using them on a different device for the first time.
 	_Brush = source;
 }
 
@@ -431,14 +487,49 @@ void surface::clip_immediate() {
 }
 
 void surface::reset_path() noexcept {
-	_Current_path = _Default_path;
+	_Current_path.reset();
 	cairo_new_path(_Context.get());
 }
 
-void surface::path(const ::std::experimental::io2d::path& p) noexcept {
-	_Current_path = p;
+void surface::path(const shared_ptr<experimental::io2d::path>& p) {
+	if (p.get() != nullptr) {
+		path(*p);
+	}
+	else {
+		cairo_new_path(_Context.get());
+	}
+}
+
+void surface::path(const shared_ptr<experimental::io2d::path>& p, error_code& ec) noexcept {
+	if (p.get() != nullptr) {
+		path(*p, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
+	}
+	else {
+		cairo_new_path(_Context.get());
+	}
+	ec.clear();
+}
+
+void surface::path(const ::std::experimental::io2d::path& p) {
+	_Current_path = make_shared<experimental::io2d::path>(p);
 	cairo_new_path(_Context.get());
-	cairo_append_path(_Context.get(), p.native_handle());
+	cairo_append_path(_Context.get(), _Current_path->native_handle());
+}
+
+void surface::path(const experimental::io2d::path& p, error_code& ec) noexcept {
+	try {
+		_Current_path = make_shared<experimental::io2d::path>(p);
+	}
+	catch (const bad_alloc&) {
+		ec = make_error_code(errc::not_enough_memory);
+		return;
+	}
+	cairo_new_path(_Context.get());
+	cairo_append_path(_Context.get(), _Current_path->native_handle());
+	ec.clear();
 }
 
 path_factory& surface::immediate() noexcept {
@@ -972,8 +1063,21 @@ void surface::font_options(const ::std::experimental::io2d::font_options& option
 	cairo_set_font_options(_Context.get(), _Native_font_options.get());
 }
 
-void surface::font_face(const ::std::experimental::io2d::font_face& font_face) noexcept {
+void surface::font_face(const ::std::experimental::io2d::font_face& font_face) {
+	_Font_face = make_shared<experimental::io2d::font_face>(font_face);
 	cairo_set_font_face(_Context.get(), font_face.native_handle());
+}
+
+void surface::font_face(const::std::experimental::io2d::font_face & f, ::std::error_code & ec) noexcept {
+	try {
+		_Font_face = make_shared<experimental::io2d::font_face>(f);
+	}
+	catch (const bad_alloc&) {
+		ec = make_error_code(errc::not_enough_memory);
+		return;
+	}
+	cairo_set_font_face(_Context.get(), f.native_handle());
+	ec.clear();
 }
 
 brush surface::brush() const noexcept {
@@ -1307,7 +1411,7 @@ matrix_2d surface::font_matrix() const noexcept {
 		);
 }
 
-::std::experimental::io2d::font_face surface::font_face() const noexcept {
+::std::experimental::io2d::font_face surface::font_face() const {
 	auto ff = cairo_get_font_face(_Context.get());
 	_Throw_if_failed_cairo_status_t(cairo_font_face_status(ff));
 	// Cairo doesn't increase the font face's reference count when you call cairo_get_font_face so we do it manually.
