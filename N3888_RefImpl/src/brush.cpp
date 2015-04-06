@@ -439,7 +439,10 @@ brush::brush(surface_brush_factory& f)
 	, _Extend(::std::experimental::io2d::extend::none)
 	, _Filter(::std::experimental::io2d::filter::good)
 	, _Matrix(matrix_2d::init_identity()) {
-	auto brushSurface = _Surface_create_image_surface_copy(f._Surface);
+	if (!f.has_surface()) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
+	}
+	auto brushSurface = _Surface_create_image_surface_copy(*f._Surface.get());
 	_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(brushSurface.native_handle().csfce), &cairo_pattern_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 }

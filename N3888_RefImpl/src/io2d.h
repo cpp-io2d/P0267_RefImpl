@@ -2159,22 +2159,26 @@ namespace std {
 				};
 
 				class surface_brush_factory {
-					image_surface _Surface;
+					::std::unique_ptr<image_surface> _Surface;
 
 					friend ::std::experimental::io2d::brush;
 
 				public:
-					surface_brush_factory();
+					surface_brush_factory() noexcept;
 					surface_brush_factory(const surface_brush_factory&) = delete;
 					surface_brush_factory& operator=(const surface_brush_factory&) = delete;
-					surface_brush_factory(surface_brush_factory&& other);
-					surface_brush_factory& operator=(surface_brush_factory&& other);
+					surface_brush_factory(surface_brush_factory&& other) noexcept;
+					surface_brush_factory& operator=(surface_brush_factory&& other) noexcept;
 					surface_brush_factory(::std::experimental::io2d::surface& s);
+					surface_brush_factory(::std::experimental::io2d::surface& s, ::std::error_code& ec) noexcept;
 
 					// Modifiers
 					image_surface surface(::std::experimental::io2d::surface& s);
+					void surface(::std::experimental::io2d::surface& s, image_surface& oldSurface, ::std::error_code& ec) noexcept;
+					void surface(::std::experimental::io2d::surface& s, ::std::error_code& ec) noexcept;
 
 					// Observers
+					bool has_surface() const noexcept;
 					const image_surface& surface() const;
 				};
 
