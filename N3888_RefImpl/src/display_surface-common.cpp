@@ -168,14 +168,43 @@ void display_surface::_Render_to_native_surface() {
 
 void display_surface::save() {
 	surface::save();
-	_Display_saved_state.push(make_tuple(_Scaling, _Width, _Height, _Display_width, _Display_height, _User_scaling_fn, _Letterbox_brush));
+	// We shouldn't be saving most of this to begin with (esp. the display width and height) and the rest can be saved by the user and saving it doesn't seem consistent with the purpose of save.
+	//_Display_saved_state.push(make_tuple(_Scaling, _Width, _Height, _Display_width, _Display_height, _User_scaling_fn, _Letterbox_brush));
+}
+
+void display_surface::save(error_code& ec) noexcept {
+	surface::save(ec);
+	if (static_cast<bool>(ec)) {
+		return;
+	}
+	ec.clear();
+	//try {
+	//	_Display_saved_state.push(make_tuple(_Scaling, _Width, _Height, _Display_width, _Display_height, _User_scaling_fn, _Letterbox_brush));
+	//}
+	//catch (const length_error&) {
+	//	ec = make_error_code(errc::not_enough_memory);
+	//	return;
+	//}
+	//catch (const bad_alloc&) {
+	//	ec = make_error_code(errc::not_enough_memory);
+	//	return;
+	//}
+	//ec.clear();
 }
 
 void display_surface::restore() {
 	surface::restore();
-	auto& top = _Display_saved_state.top();
-	_Scaling = get<0>(top);
-	_All_dimensions(get<1>(top), get<2>(top), get<3>(top), get<4>(top));
+	//auto& top = _Display_saved_state.top();
+	//_Scaling = get<0>(top);
+	//_All_dimensions(get<1>(top), get<2>(top), get<3>(top), get<4>(top));
+}
+
+void display_surface::restore(error_code& ec) noexcept {
+	surface::restore(ec);
+	if (static_cast<bool>(ec)) {
+		return;
+	}
+	ec.clear();
 }
 
 void display_surface::draw_fn(const ::std::function<void(display_surface& sfc)>& fn) {
@@ -230,7 +259,7 @@ void display_surface::display_dimensions(int dw, int dh) {
 	_Make_native_surface_and_context();
 }
 
-void display_surface::scaling(experimental::io2d::scaling scl) {
+void display_surface::scaling(experimental::io2d::scaling scl) noexcept {
 	_Scaling = scl;
 }
 
@@ -238,8 +267,8 @@ void display_surface::user_scaling_fn(const function<experimental::io2d::rectang
 	_User_scaling_fn = fn;
 }
 
-void display_surface::clear_letterbox_brush() {
-	_Letterbox_brush = experimental::io2d::brush(solid_color_brush_factory(rgba_color::transparent_black()));
+void display_surface::reset_letterbox_brush() noexcept {
+	_Letterbox_brush = _Default_brush;
 }
 
 void display_surface::letterbox_brush(const rgba_color& c) {
@@ -250,42 +279,42 @@ void display_surface::letterbox_brush(const experimental::io2d::brush& b) {
 	_Letterbox_brush = b;
 }
 
-format display_surface::format() const {
+format display_surface::format() const noexcept {
 	return _Format;
 }
 
-int display_surface::width() const {
+int display_surface::width() const noexcept {
 	return _Width;
 }
 
-int display_surface::height() const {
+int display_surface::height() const noexcept {
 	return _Height;
 }
 
-int display_surface::display_width() const {
+int display_surface::display_width() const noexcept {
 	return _Display_width;
 }
 
-int display_surface::display_height() const {
+int display_surface::display_height() const noexcept {
 	return _Display_height;
 }
 
-tuple<int, int> display_surface::dimensions() const {
+tuple<int, int> display_surface::dimensions() const noexcept {
 	return make_tuple(_Width, _Height);
 }
 
-tuple<int, int> display_surface::display_dimensions() const {
+tuple<int, int> display_surface::display_dimensions() const noexcept {
 	return make_tuple(_Display_width, _Display_height);
 }
 
-experimental::io2d::scaling display_surface::scaling() const {
+experimental::io2d::scaling display_surface::scaling() const noexcept {
 	return _Scaling;
 }
 
-const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& display_surface::user_scaling_fn() const {
+const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& display_surface::user_scaling_fn() const noexcept {
 	return _User_scaling_fn;
 }
 
-experimental::io2d::brush display_surface::letterbox_brush() const {
+experimental::io2d::brush display_surface::letterbox_brush() const noexcept {
 	return _Letterbox_brush;
 }

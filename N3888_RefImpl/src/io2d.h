@@ -2023,6 +2023,10 @@ namespace std {
 #endif
 				class display_surface : public surface {
 					friend surface;
+					// Unsaved state.
+					::std::experimental::io2d::brush _Default_brush;
+
+					//// Saved state.
 					::std::experimental::io2d::scaling _Scaling;
 					typedef int _Width_type;
 					_Width_type _Width;
@@ -2035,30 +2039,24 @@ namespace std {
 					::std::function<void(display_surface& sfc)> _Draw_fn;
 					::std::function<void(display_surface& sfc)> _Size_change_fn;
 					typedef ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> _User_scaling_fn_type;
-					 _User_scaling_fn_type _User_scaling_fn;
-					 ::std::experimental::io2d::brush _Letterbox_brush;
+					_User_scaling_fn_type _User_scaling_fn;
+					::std::experimental::io2d::brush _Letterbox_brush;
 
-					void _Make_native_surface_and_context();
-					void _All_dimensions(int w, int h, int dw, int dh);
-					void _Render_to_native_surface();
-					void _Resize_window();
-					void _Render_for_scaling_uniform_or_letterbox();
-
-					::std::stack<::std::tuple<
-						::std::experimental::io2d::scaling,
-						_Width_type,
-						_Height_type,
-						_Display_width_type,
-						_Display_height_type,
-						_User_scaling_fn_type,
-						::std::experimental::io2d::brush>, ::std::vector<::std::tuple<
-						::std::experimental::io2d::scaling,
-						_Width_type,
-						_Height_type,
-						_Display_width_type,
-						_Display_height_type,
-						_User_scaling_fn_type,
-						::std::experimental::io2d::brush>>> _Display_saved_state;
+					//::std::stack<::std::tuple<
+					//	::std::experimental::io2d::scaling,
+					//	_Width_type,
+					//	_Height_type,
+					//	_Display_width_type,
+					//	_Display_height_type,
+					//	_User_scaling_fn_type,
+					//	::std::experimental::io2d::brush>, ::std::vector<::std::tuple<
+					//	::std::experimental::io2d::scaling,
+					//	_Width_type,
+					//	_Height_type,
+					//	_Display_width_type,
+					//	_Display_height_type,
+					//	_User_scaling_fn_type,
+					//	::std::experimental::io2d::brush>>> _Display_saved_state;
 #ifdef _WIN32_WINNT
 					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 					DWORD _Window_style;
@@ -2077,6 +2075,17 @@ namespace std {
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Native_surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Native_context;
 
+					void _Make_native_surface_and_context();
+					void _Make_native_surface_and_context(::std::error_code& ec) noexcept;
+					void _All_dimensions(int w, int h, int dw, int dh);
+					void _All_dimensions(int w, int h, int dw, int dh, ::std::error_code& ec) noexcept;
+					void _Render_to_native_surface();
+					void _Render_to_native_surface(::std::error_code& ec) noexcept;
+					void _Resize_window();
+					void _Resize_window(::std::error_code& ec) noexcept;
+					void _Render_for_scaling_uniform_or_letterbox();
+					void _Render_for_scaling_uniform_or_letterbox(::std::error_code& ec) noexcept;
+
 				public:
 #ifdef _WIN32_WINNT
 					typedef _Win32_display_surface_native_handle native_handle_type;
@@ -2088,43 +2097,65 @@ namespace std {
 					display_surface() = delete;
 					display_surface(const display_surface&) = delete;
 					display_surface& operator=(const display_surface&) = delete;
-					display_surface(display_surface&& other);
-					display_surface& operator=(display_surface&& other);
-					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox);
+					display_surface(display_surface&& other) noexcept;
+					display_surface& operator=(display_surface&& other) noexcept;
+
+					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox);
+					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::error_code& ec,
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox) noexcept;
+
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
 						int preferredDisplayWidth, int preferredDisplayHeight,
 						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox);
+					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
+						int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec,
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox) noexcept;
 
 					virtual ~display_surface();
 
 					virtual void save() override;
+					virtual void save(::std::error_code& ec) noexcept override;
 					virtual void restore() override;
+					virtual void restore(::std::error_code& ec) noexcept override;
 
 					void draw_fn(const ::std::function<void(display_surface& sfc)>& fn);
+					void draw_fn(const ::std::function<void(display_surface& sfc)>& fn, ::std::error_code& ec) noexcept;
 					void size_change_fn(const ::std::function<void(display_surface& sfc)>& fn);
+					void size_change_fn(const ::std::function<void(display_surface& sfc)>& fn, ::std::error_code& ec) noexcept;
 					void width(int w);
+					void width(int w, ::std::error_code& ec) noexcept;
 					void height(int h);
+					void height(int h, ::std::error_code& ec) noexcept;
 					void display_width(int w);
+					void display_width(int w, ::std::error_code& ec) noexcept;
 					void display_height(int h);
+					void display_height(int h, ::std::error_code& ec) noexcept;
 					void dimensions(int w, int h);
+					void dimensions(int w, int h, ::std::error_code& ec) noexcept;
 					void display_dimensions(int dw, int dh);
-					void scaling(::std::experimental::io2d::scaling scl);
+					void display_dimensions(int dw, int dh, ::std::error_code& ec) noexcept;
+					void scaling(::std::experimental::io2d::scaling scl) noexcept;
 					void user_scaling_fn(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn);
-					void clear_letterbox_brush();
+					void user_scaling_fn(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn, ::std::error_code& ec) noexcept;
+					void reset_letterbox_brush() noexcept;
 					void letterbox_brush(const rgba_color& c);
+					void letterbox_brush(const rgba_color& c, ::std::error_code& ec) noexcept;
 					void letterbox_brush(const ::std::experimental::io2d::brush& b);
+					void letterbox_brush(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					int join();
+					int join(::std::error_code& ec); // Not noexcept because if the user-provided functions throw they will propagate, but otherwise is non-throwing.
 
-					::std::experimental::io2d::format format() const;
-					int width() const;
-					int height() const;
-					int display_width() const;
-					int display_height() const;
-					::std::tuple<int, int> dimensions() const;
-					::std::tuple<int, int> display_dimensions() const;
-					::std::experimental::io2d::scaling scaling() const;
-					const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& user_scaling_fn() const;
-					::std::experimental::io2d::brush letterbox_brush() const;
+					::std::experimental::io2d::format format() const noexcept;
+					int width() const noexcept;
+					int height() const noexcept;
+					int display_width() const noexcept;
+					int display_height() const noexcept;
+					::std::tuple<int, int> dimensions() const noexcept;
+					::std::tuple<int, int> display_dimensions() const noexcept;
+					::std::experimental::io2d::scaling scaling() const noexcept;
+					const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& user_scaling_fn() const noexcept;
+					::std::experimental::io2d::brush letterbox_brush() const noexcept;
 				};
 
 				class surface_brush_factory {

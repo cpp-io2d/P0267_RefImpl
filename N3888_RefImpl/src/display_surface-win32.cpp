@@ -180,8 +180,9 @@ display_surface::native_handle_type display_surface::native_handle() const {
 	return{ { _Surface.get(), _Context.get() }, _Hwnd, { _Native_surface.get(), _Native_context.get() } };
 }
 
-display_surface::display_surface(display_surface&& other)
+display_surface::display_surface(display_surface&& other) noexcept
 	: surface(move(other))
+	, _Default_brush(move(other._Default_brush))
 	, _Scaling(move(other._Scaling))
 	, _Width(move(other._Width))
 	, _Height(move(other._Height))
@@ -200,9 +201,10 @@ display_surface::display_surface(display_surface&& other)
 	other._Hwnd = nullptr;
 }
 
-display_surface& display_surface::operator=(display_surface&& other) {
+display_surface& display_surface::operator=(display_surface&& other) noexcept {
 	if (this != &other) {
 		surface::operator=(move(other));
+		_Default_brush = move(other._Default_brush);
 		_Scaling = move(other._Scaling);
 		_Width = move(other._Width);
 		_Height = move(other._Height);
@@ -235,6 +237,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl)
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
+	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Scaling(scl)
 	, _Width(preferredWidth)
 	, _Height(preferredHeight)

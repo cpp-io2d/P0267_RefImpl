@@ -285,14 +285,22 @@ void surface::map(const ::std::function<void(mapped_surface&)>& action) {
 
 void surface::map(const ::std::function<void(mapped_surface&, error_code&)>& action, error_code& ec) {
 	if (action != nullptr) {
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr });
+		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr }, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
 		action(m, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
 	}
+	ec.clear();
 }
 
 void surface::map(const rectangle& extents, const ::std::function<void(mapped_surface&)>& action) {
 	if (action != nullptr) {
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr });
+		cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
+		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr });
 		action(m);
 	}
 }
@@ -300,9 +308,16 @@ void surface::map(const rectangle& extents, const ::std::function<void(mapped_su
 void surface::map(const rectangle& extents, const ::std::function<void(mapped_surface&, error_code&)>& action, error_code& ec) {
 	if (action != nullptr) {
 		cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr });
+		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr }, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
 		action(m, ec);
+		if (static_cast<bool>(ec)) {
+			return;
+		}
 	}
+	ec.clear();
 }
 
 void surface::save() {
@@ -400,6 +415,7 @@ void surface::brush(const ::std::experimental::io2d::brush& source) {
 void surface::brush(const::std::experimental::io2d::brush & source, ::std::error_code & ec) noexcept {
 	// This overload exists for backends where brushes are device-specific and will require resource allocation, etc., when using them on a different device for the first time.
 	_Brush = source;
+	ec.clear();
 }
 
 void surface::antialias(::std::experimental::io2d::antialias a) noexcept {

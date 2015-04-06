@@ -8,34 +8,34 @@ using namespace std::experimental::io2d;
 mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of)
 	: _Mapped_surface(nh)
 	, _Map_of(map_of) {
-	assert(nh.csfce != nullptr && map_of.csfce != nullptr);
-	auto status = cairo_surface_status(nh.csfce);
+	assert(_Mapped_surface.csfce != nullptr && _Map_of.csfce != nullptr);
+	auto status = cairo_surface_status(_Mapped_surface.csfce);
 	if (status != CAIRO_STATUS_SUCCESS) {
-		cairo_surface_unmap_image(nh.csfce, map_of.csfce);
-	}
-	if (map_of.csfce == nullptr) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
+		cairo_surface_unmap_image(_Mapped_surface.csfce, _Map_of.csfce);
+		_Mapped_surface = { nullptr, nullptr };
+		_Map_of = { nullptr, nullptr };
+		_Throw_if_failed_cairo_status_t(status);
 	}
 	// Reference the surface that is mapped to ensure it isn't accidentally destroyed while the map still exists.
 	cairo_surface_reference(_Map_of.csfce);
 }
 
-//mapped_surface::mapped_surface(mapped_surface&& other) noexcept
-//	: _Mapped_surface(move(other._Mapped_surface))
-//	, _Map_of(move(other._Map_of)) {
-//	other._Mapped_surface = { nullptr, nullptr };
-//	other._Map_of = { nullptr, nullptr };
-//}
-//
-//mapped_surface& mapped_surface::operator=(mapped_surface&& other) noexcept {
-//	if (this != &other) {
-//		_Mapped_surface = move(other._Mapped_surface);
-//		_Map_of = move(other._Map_of);
-//		other._Mapped_surface = { nullptr, nullptr };
-//		other._Map_of = { nullptr, nullptr };
-//	}
-//	return *this;
-//}
+mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, error_code& ec) noexcept
+	: _Mapped_surface(nh)
+	, _Map_of(map_of) {
+	assert(_Mapped_surface.csfce != nullptr && _Map_of.csfce != nullptr);
+	auto status = cairo_surface_status(_Mapped_surface.csfce);
+	if (status != CAIRO_STATUS_SUCCESS) {
+		cairo_surface_unmap_image(_Mapped_surface.csfce, _Map_of.csfce);
+		_Mapped_surface = { nullptr, nullptr };
+		_Map_of = { nullptr, nullptr };
+		ec = _Cairo_status_t_to_std_error_code(status);
+		return;
+	}
+	// Reference the surface that is mapped to ensure it isn't accidentally destroyed while the map still exists.
+	cairo_surface_reference(_Map_of.csfce);
+	ec.clear();
+}
 
 mapped_surface::~mapped_surface() {
 	if (_Mapped_surface.csfce != nullptr) {
