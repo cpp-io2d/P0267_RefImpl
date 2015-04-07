@@ -335,7 +335,7 @@ vector_2d _Rotate_point(const vector_2d& pt, double angle, bool clockwise) noexc
 	}
 }
 
-vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, bool arcNegative, bool hasCurrentPoint, const vector_2d& currentPoint, const vector_2d& origin, const matrix_2d& matrix) {
+vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, bool arcNegative, bool hasCurrentPoint, const vector_2d& /*currentPoint*/, const vector_2d& origin, const matrix_2d& matrix) {
 	if (arcNegative) {
 		while (angle2 > angle1) {
 			angle2 -= _Pi * 2.0;
@@ -411,7 +411,7 @@ vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radiu
 
 	const auto startPoint = center + _Rotate_point({ pt0.x() * radius, pt0.y() * radius }, currentTheta);
 	if (hasCurrentPoint) {
-		pb.move_to(currentPoint);
+//		pb.move_to(currentPoint);
 		pb.line_to(startPoint);
 	}
 	else {
@@ -437,7 +437,7 @@ vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radiu
 	return pb.data();
 }
 
-vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec, bool arcNegative, bool hasCurrentPoint, const vector_2d& currentPoint, const vector_2d& origin, const matrix_2d& matrix) noexcept{
+vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec, bool arcNegative, bool hasCurrentPoint, const vector_2d& /*currentPoint*/, const vector_2d& origin, const matrix_2d& matrix) noexcept{
 	if (arcNegative) {
 		while (angle2 > angle1) {
 			angle2 -= _Pi * 2.0;
@@ -521,11 +521,11 @@ vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radiu
 
 	const auto startPoint = center + _Rotate_point({ pt0.x() * radius, pt0.y() * radius }, currentTheta);
 	if (hasCurrentPoint) {
-		pb.move_to(currentPoint, ec);
-		if (static_cast<bool>(ec)) {
-			// Relies on C++17 nothrow vector default ctor
-			return vector<path_data_item>();
-		}
+		//pb.move_to(currentPoint, ec);
+		//if (static_cast<bool>(ec)) {
+		//	// Relies on C++17 nothrow vector default ctor
+		//	return vector<path_data_item>();
+		//}
 		pb.line_to(startPoint, ec);
 		if (static_cast<bool>(ec)) {
 			// Relies on C++17 nothrow vector default ctor

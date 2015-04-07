@@ -297,14 +297,15 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.immediate().move_to({ 430.0, 60.0 });
 	rs.immediate().arc({ 500.0, 60.0 }, 30.0, pi, pi * 2.0);
 	rs.immediate().line_to({ 570.0, 60.0 });
+//	rs.immediate().new_sub_path();
+	rs.immediate().arc({ 500.0, 130.0 }, 30.0, pi * 2.0, pi * 3.0 / 4.0);
 	rs.immediate().new_sub_path();
-	rs.immediate().arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi * 3.0 / 4.0);
-	rs.immediate().new_sub_path();
-	rs.dashes(dashes{ { 1.0, 0.0, 2.0, 0.0 } , 0.0 });
+	rs.dashes(dashes{ { 1.0, 1.0, 2.0, 2.0 } , 0.0 });
 	rs.line_width(2.0);
-	rs.stroke_immediate(rgba_color::red());
+	rs.stroke_immediate(rgba_color::orange());
+	rs.fill_immediate(rgba_color::blue());
 	// Reset dashes to be a solid line.
-	rs.dashes();
+	rs.reset_dashes();
 
 	rs.immediate().clear();
 	rs.immediate().curve_to({ 610.0, 400.0 }, { 660.0, 300.0 }, { 710.0, 400.0 });

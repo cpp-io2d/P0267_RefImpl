@@ -777,7 +777,7 @@ namespace std {
 					_Arc& operator=(const _Arc& other) noexcept = default;
 					_Arc(_Arc&& other) noexcept;
 					_Arc& operator=(_Arc&& other) noexcept;
-					_Arc(vector_2d center, double radius, double angle1, double angle2) noexcept;
+					_Arc(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
 					virtual ~_Arc() noexcept;
 					virtual path_data_type type() const noexcept override = 0;
 
@@ -799,7 +799,7 @@ namespace std {
 					arc& operator=(const arc& other) noexcept = default;
 					arc(arc&& other) noexcept;
 					arc& operator=(arc&& other) noexcept;
-					arc(vector_2d center, double radius, double angle1, double angle2) noexcept;
+					arc(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
 
 					virtual path_data_type type() const noexcept override;
 				};
@@ -811,7 +811,7 @@ namespace std {
 					arc_negative& operator=(const arc_negative& other) noexcept = default;
 					arc_negative(arc_negative&& other) noexcept;
 					arc_negative& operator=(arc_negative&& other) noexcept;
-					arc_negative(vector_2d center, double radius, double angle1, double angle2) noexcept;
+					arc_negative(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
 
 					virtual path_data_type type() const noexcept override;
 				};
@@ -940,9 +940,6 @@ namespace std {
 					path_data_type type() const;
 					path_data_type type(::std::error_code& ec) const noexcept;
 
-					::std::unique_ptr<path_data> get() const;
-					::std::unique_ptr<path_data> get(::std::error_code& ec) const noexcept;
-
 					template <class T>
 					T get() const;
 					template <class T>
@@ -1000,6 +997,9 @@ namespace std {
 
 				template <>
 				arc path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::arc) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1008,6 +1008,10 @@ namespace std {
 
 				template <>
 				arc path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return arc{ };
+					}
 					if (_Type != path_data_type::arc) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return arc{ };
@@ -1018,6 +1022,9 @@ namespace std {
 
 				template <>
 				arc_negative path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::arc_negative) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1026,6 +1033,10 @@ namespace std {
 
 				template <>
 				arc_negative path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return arc_negative{ };
+					}
 					if (_Type != path_data_type::arc_negative) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return arc_negative{ };
@@ -1036,6 +1047,9 @@ namespace std {
 
 				template <>
 				change_matrix path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::change_matrix) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1044,6 +1058,10 @@ namespace std {
 
 				template <>
 				change_matrix path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return change_matrix{ };
+					}
 					if (_Type != path_data_type::change_matrix) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return change_matrix{ };
@@ -1054,6 +1072,9 @@ namespace std {
 
 				template <>
 				change_origin path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::change_origin) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1061,7 +1082,11 @@ namespace std {
 				}
 
 				template <>
-				change_origin path_data_item::get(::std::error_code& ec) const noexcept{
+				change_origin path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return change_origin{ };
+					}
 					if (_Type != path_data_type::change_origin) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return change_origin{ };
@@ -1072,6 +1097,9 @@ namespace std {
 
 				template <>
 				close_path path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::close_path) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1079,7 +1107,11 @@ namespace std {
 				}
 
 				template <>
-				close_path path_data_item::get(::std::error_code& ec) const noexcept{
+				close_path path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return close_path{ };
+					}
 					if (_Type != path_data_type::close_path) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return close_path{ };
@@ -1090,6 +1122,9 @@ namespace std {
 
 				template <>
 				curve_to path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::curve_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1097,7 +1132,11 @@ namespace std {
 				}
 
 				template <>
-				curve_to path_data_item::get(::std::error_code& ec) const noexcept{
+				curve_to path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return curve_to{ };
+					}
 					if (_Type != path_data_type::curve_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return curve_to{ };
@@ -1108,6 +1147,9 @@ namespace std {
 
 				template <>
 				rel_curve_to path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::rel_curve_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1115,7 +1157,11 @@ namespace std {
 				}
 
 				template <>
-				rel_curve_to path_data_item::get(::std::error_code& ec) const noexcept{
+				rel_curve_to path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return rel_curve_to{ };
+					}
 					if (_Type != path_data_type::rel_curve_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return rel_curve_to{ };
@@ -1126,6 +1172,9 @@ namespace std {
 
 				template <>
 				new_sub_path path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::new_sub_path) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1133,7 +1182,11 @@ namespace std {
 				}
 
 				template <>
-				new_sub_path path_data_item::get(::std::error_code& ec) const noexcept{
+				new_sub_path path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return new_sub_path{ };
+					}
 					if (_Type != path_data_type::new_sub_path) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return new_sub_path{ };
@@ -1144,6 +1197,9 @@ namespace std {
 
 				template <>
 				line_to path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::line_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1151,7 +1207,11 @@ namespace std {
 				}
 
 				template <>
-				line_to path_data_item::get(::std::error_code& ec) const noexcept{
+				line_to path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return line_to{ };
+					}
 					if (_Type != path_data_type::line_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return line_to{ };
@@ -1162,6 +1222,9 @@ namespace std {
 
 				template <>
 				move_to path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::move_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1169,7 +1232,11 @@ namespace std {
 				}
 
 				template <>
-				move_to path_data_item::get(::std::error_code& ec) const noexcept{
+				move_to path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return move_to{ };
+					}
 					if (_Type != path_data_type::move_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return move_to{ };
@@ -1180,6 +1247,9 @@ namespace std {
 
 				template <>
 				rel_line_to path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::rel_line_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1187,7 +1257,11 @@ namespace std {
 				}
 
 				template <>
-				rel_line_to path_data_item::get(::std::error_code& ec) const noexcept{
+				rel_line_to path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return rel_line_to{ };
+					}
 					if (_Type != path_data_type::rel_line_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return rel_line_to{ };
@@ -1198,6 +1272,9 @@ namespace std {
 
 				template <>
 				rel_move_to path_data_item::get() const {
+					if (!_Has_data) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
+					}
 					if (_Type != path_data_type::rel_move_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
@@ -1205,7 +1282,11 @@ namespace std {
 				}
 
 				template <>
-				rel_move_to path_data_item::get(::std::error_code& ec) const noexcept{
+				rel_move_to path_data_item::get(::std::error_code& ec) const noexcept {
+					if (!_Has_data) {
+						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
+						return rel_move_to{ };
+					}
 					if (_Type != path_data_type::rel_move_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
 						return rel_move_to{ };
@@ -1234,6 +1315,8 @@ namespace std {
 					path() = delete;
 					explicit path(const path_factory& pb);
 					path(const path_factory& pb, ::std::error_code& ec) noexcept;
+					//path(const ::std::vector<path_data_item>& p);
+					//path(const ::std::vector<path_data_item>& p, ::std::error_code& ec) noexcept;
 					path(const path& other) noexcept = default;
 					path& operator=(const path& other) noexcept = default;
 					path(path&& other) noexcept;

@@ -253,7 +253,7 @@ _Arc& _Arc::operator=(_Arc&& other) noexcept {
 	return *this;
 }
 
-_Arc::_Arc(vector_2d center, double radius, double angle1, double angle2) noexcept
+_Arc::_Arc(const vector_2d& center, double radius, double angle1, double angle2) noexcept
 	: path_data()
 	, _Center(center)
 	, _Radius(radius)
@@ -307,7 +307,7 @@ arc& arc::operator=(arc&& other) noexcept {
 	return *this;
 }
 
-arc::arc(vector_2d center, double radius, double angle1, double angle2) noexcept
+arc::arc(const vector_2d& center, double radius, double angle1, double angle2) noexcept
 	: _Arc(center, radius, angle1, angle2) {
 }
 
@@ -326,7 +326,7 @@ arc_negative& arc_negative::operator=(arc_negative&& other) noexcept {
 	return *this;
 }
 
-arc_negative::arc_negative(vector_2d center, double radius, double angle1, double angle2) noexcept
+arc_negative::arc_negative(const vector_2d& center, double radius, double angle1, double angle2) noexcept
 	: _Arc(center, radius, angle1, angle2) {
 }
 
