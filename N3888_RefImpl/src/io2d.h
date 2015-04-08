@@ -1321,12 +1321,6 @@ namespace std {
 					path& operator=(const path& other) noexcept = default;
 					path(path&& other) noexcept;
 					path& operator=(path&& other) noexcept;
-
-					// Observers
-					::std::vector<path_data_item> data() const;
-					::std::vector<path_data_item> data(::std::error_code& ec) const noexcept;
-					const ::std::vector<path_data_item>& data_ref() const noexcept;
-					rectangle path_extents() const noexcept;
 				};
 
 				class path_factory {
@@ -1335,12 +1329,8 @@ namespace std {
 					bool _Has_current_point;
 					vector_2d _Current_point;
 					vector_2d _Last_move_to_point;
-					vector_2d _Extents_pt0;
-					vector_2d _Extents_pt1;
 					matrix_2d _Transform_matrix;
 					vector_2d _Origin;
-
-					void _Set_current_point_and_last_move_to_point_for_arc(const ::std::vector<path_data_item>& data) noexcept;
 				public:
 					path_factory() noexcept = default;
 					path_factory(const path_factory& other) = default;
@@ -1349,8 +1339,6 @@ namespace std {
 					path_factory& operator=(path_factory&& other) noexcept;
 
 					// Modifiers
-					void append(const path& p);
-					void append(const path& p, ::std::error_code& ec) noexcept;
 					void append(const path_factory& p);
 					void append(const path_factory& p, ::std::error_code& ec) noexcept;
 					void append(const ::std::vector<path_data_item>& p);
@@ -1369,8 +1357,8 @@ namespace std {
 					void line_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
 					void move_to(const vector_2d& pt);
 					void move_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
-					void rect(const rectangle& r);
-					void rect(const rectangle& r, ::std::error_code& ec) noexcept;
+					void rectangle(const ::std::experimental::io2d::rectangle& r);
+					void rectangle(const ::std::experimental::io2d::rectangle& r, ::std::error_code& ec) noexcept;
 					void rel_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2);
 					void rel_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2, ::std::error_code& ec) noexcept;
 					void rel_line_to(const vector_2d& dpt);
@@ -1384,7 +1372,7 @@ namespace std {
 					void clear() noexcept;
 
 					// Observers
-					rectangle path_extents() const noexcept;
+					::std::experimental::io2d::rectangle path_extents() const noexcept;
 					bool has_current_point() const noexcept;
 					vector_2d current_point() const;
 					vector_2d current_point(::std::error_code& ec) const noexcept;

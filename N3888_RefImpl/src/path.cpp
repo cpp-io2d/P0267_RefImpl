@@ -962,34 +962,34 @@ path& path::operator=(path&& other) noexcept {
 	return *this;
 }
 
-vector<path_data_item> path::data() const {
-	vector<path_data_item> result;
-	for (const auto& item : *_Data) {
-		result.push_back(item);
-	}
-	return result;
-}
-
-vector<path_data_item> path::data(error_code& ec) const noexcept {
-	// Relies on C++17 noexcept default ctor.
-	vector<path_data_item> result;
-	try {
-		for (const auto& item : *_Data) {
-			result.push_back(item);
-		}
-		ec.clear();
-		return result;
-	}
-	catch (const bad_alloc&) {
-		ec = make_error_code(errc::not_enough_memory);
-		return result;
-	}
-}
-
-const vector<path_data_item>& path::data_ref() const noexcept {
-	return *_Data;
-}
-
-rectangle path::path_extents() const noexcept {
-	return _Extents;
-}
+//vector<path_data_item> path::data() const {
+//	vector<path_data_item> result;
+//	for (const auto& item : *_Data) {
+//		result.push_back(item);
+//	}
+//	return result;
+//}
+//
+//vector<path_data_item> path::data(error_code& ec) const noexcept {
+//	// Relies on C++17 noexcept default ctor.
+//	vector<path_data_item> result;
+//	try {
+//		for (const auto& item : *_Data) {
+//			result.push_back(item);
+//		}
+//		ec.clear();
+//		return result;
+//	}
+//	catch (const bad_alloc&) {
+//		ec = make_error_code(errc::not_enough_memory);
+//		return result;
+//	}
+//}
+//
+//const vector<path_data_item>& path::data_ref() const noexcept {
+//	return *_Data;
+//}
+//
+//rectangle path::path_extents() const noexcept {
+//	return _Extents;
+//}

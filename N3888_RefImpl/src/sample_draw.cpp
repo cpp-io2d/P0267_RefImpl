@@ -91,16 +91,16 @@ void draw_test_compositing_operators(surface& rs, double /*elapsedTimeInMillisec
 
 	auto pb = path_factory();
 
-	pb.rect({ 10.0, 10.0, 120.0, 90.0 });
+	pb.rectangle({ 10.0, 10.0, 120.0, 90.0 });
 	auto firstRectPath = path(pb);
 
 	pb.clear();
-	pb.rect({ 50.0, 40.0, 120.0, 90.0 });
+	pb.rectangle({ 50.0, 40.0, 120.0, 90.0 });
 	auto secondRectPath = path(pb);
 
 	pb.clear();
-	pb.append(firstRectPath);
-	pb.append(secondRectPath);
+	//pb.append(firstRectPath);
+	//pb.append(secondRectPath);
 	auto bothRectsClipPath = path(pb);
 
 	pb.clear();
@@ -190,7 +190,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	linearTest1.add_color_stop(0.8, rgba_color::green());
 	linearTest1.add_color_stop(0.8, rgba_color::yellow());
 	linearTest1.add_color_stop(1.0, rgba_color::white());
-	rs.immediate().rect({ 400.0, 400.0, 200.0, 200.0 });
+	rs.immediate().rectangle({ 400.0, 400.0, 200.0, 200.0 });
 	rs.fill_immediate(brush(linearTest1));
 
 	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
@@ -224,7 +224,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.immediate().clear();
 	rs.immediate().origin({ 250.0, 450.0 });
 	rs.immediate().transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 2.5 }));
-	rs.immediate().rect({ 200.0, 400.0, 100.0, 100.0 });
+	rs.immediate().rectangle({ 200.0, 400.0, 100.0, 100.0 });
 	rs.line_width(3.0);
 	rs.stroke_immediate(rgba_color::red());
 	//auto radialFactory = radial_brush_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
@@ -272,8 +272,8 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	auto sfcBrush = brush(sfcFactory);
 	sfcBrush.extend(extend::repeat);
 	rs.immediate().clear();
-	rs.immediate().rect({ 500.0, 450.0, 100.0, 100.0 });
-	rs.immediate().rect({ 525.0, 425.0, 50.0, 150.0 });
+	rs.immediate().rectangle({ 500.0, 450.0, 100.0, 100.0 });
+	rs.immediate().rectangle({ 525.0, 425.0, 50.0, 150.0 });
 	rs.line_join(line_join::miter_or_bevel);
 	rs.miter_limit(1.0);
 	rs.line_width(10.0);
@@ -300,12 +300,14 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 //	rs.immediate().new_sub_path();
 	rs.immediate().arc({ 500.0, 130.0 }, 30.0, pi * 2.0, pi * 3.0 / 4.0);
 	rs.immediate().new_sub_path();
-	rs.dashes(dashes{ { 1.0, 1.0, 2.0, 2.0 } , 0.0 });
-	rs.line_width(2.0);
-	rs.stroke_immediate(rgba_color::orange());
+	rs.dashes(dashes{ { 0.0, 10.0 } , 0.0 });
+	rs.line_width(5.0);
+	rs.line_cap(line_cap::round);
 	rs.fill_immediate(rgba_color::blue());
+	rs.stroke_immediate(rgba_color::orange());
 	// Reset dashes to be a solid line.
 	rs.reset_dashes();
+	rs.line_cap(line_cap::butt);
 
 	rs.immediate().clear();
 	rs.immediate().curve_to({ 610.0, 400.0 }, { 660.0, 300.0 }, { 710.0, 400.0 });
@@ -388,7 +390,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.clear();
 	pf.origin({ 250.0, 450.0 });
 	pf.transform_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
-	pf.rect({ 200.0, 400.0, 100.0, 100.0 });
+	pf.rectangle({ 200.0, 400.0, 100.0, 100.0 });
 	rs.path(path(pf));
 	auto redBrush = brush(solid_color_brush_factory(rgba_color::red()));
 	rs.brush(redBrush);
@@ -411,8 +413,8 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	auto linearBrush = brush(linearFactory);
 	linearBrush.extend(extend::repeat);
 	pf.clear();
-	pf.rect({ 500.0, 450.0, 100.0, 100.0 });
-	pf.rect({ 525.0, 425.0, 50.0, 150.0 });
+	pf.rectangle({ 500.0, 450.0, 100.0, 100.0 });
+	pf.rectangle({ 525.0, 425.0, 50.0, 150.0 });
 	rs.line_join(line_join::miter_or_bevel);
 	rs.miter_limit(1.0);
 	rs.line_width(10.0);
