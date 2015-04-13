@@ -1161,9 +1161,9 @@ void path_factory::arc_negative(const vector_2d& center, double radius, double a
 	_Data.emplace_back(std::experimental::io2d::arc_negative(center, radius, angle1, angle2));
 	// Update the current point.
 	if (!_Has_current_point) {
-		_Last_move_to_point = _Rotate_point({ radius, 0.0 }, angle2, false) + center;
+		_Last_move_to_point = _Rotate_point({ radius, 0.0 }, angle1, false) + center;
 	}
-	_Current_point = _Rotate_point({ radius, 0.0 }, angle1, false) + center;
+	_Current_point = _Rotate_point({ radius, 0.0 }, angle2, false) + center;
 }
 
 void path_factory::arc_negative(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec) noexcept {
@@ -1177,9 +1177,9 @@ void path_factory::arc_negative(const vector_2d& center, double radius, double a
 
 	// Update the current point.
 	if (!_Has_current_point) {
-		_Last_move_to_point = _Rotate_point({ radius, 0.0 }, angle2, false) + center;
+		_Last_move_to_point = _Rotate_point({ radius, 0.0 }, angle1, false) + center;
 	}
-	_Current_point = _Rotate_point({ radius, 0.0 }, angle1, false) + center;
+	_Current_point = _Rotate_point({ radius, 0.0 }, angle2, false) + center;
 
 	ec.clear();
 }
@@ -1471,7 +1471,13 @@ const vector<path_data_item>& path_factory::data_ref() const noexcept{
 	return _Data;
 }
 
-::std::experimental::io2d::rectangle path_factory::path_extents() const noexcept{
+::std::experimental::io2d::rectangle path_factory::path_extents() const {
+	//_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STATUS);
+
+	//
+	// The code in this function is wrong but salvageable.
+	//
+
 	vector_2d pt0{ };
 	vector_2d pt1{ };
 
@@ -1620,7 +1626,7 @@ const vector<path_data_item>& path_factory::data_ref() const noexcept{
 
 void path_factory::clear() noexcept{
 	_Data.clear();
-	_Has_current_point = { };
+	_Has_current_point = false;
 	_Current_point = { };
 	_Transform_matrix = matrix_2d::init_identity();
 	_Origin = { };

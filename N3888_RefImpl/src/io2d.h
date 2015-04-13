@@ -292,16 +292,21 @@ namespace std {
 					rectangle(rectangle&& other) noexcept ;
 					rectangle& operator=(rectangle&& other) noexcept ;
 					rectangle(double x, double y, double width, double height) noexcept;
+					rectangle(const vector_2d& tl, const vector_2d& br) noexcept;
 
 					void x(double value) noexcept;
 					void y(double value) noexcept;
 					void width(double value) noexcept;
 					void height(double value) noexcept;
+					void top_left(const vector_2d& value) noexcept;
+					void bottom_right(const vector_2d& value) noexcept;
 
 					double x() const noexcept;
 					double y() const noexcept;
 					double width() const noexcept;
 					double height() const noexcept;
+					vector_2d top_left() const noexcept;
+					vector_2d bottom_right() const noexcept;
 				};
 
 				class rgba_color {
@@ -1372,7 +1377,8 @@ namespace std {
 					void clear() noexcept;
 
 					// Observers
-					::std::experimental::io2d::rectangle path_extents() const noexcept;
+					::std::experimental::io2d::rectangle path_extents() const;
+					::std::experimental::io2d::rectangle path_extents(::std::error_code& ec) const noexcept;
 					bool has_current_point() const noexcept;
 					vector_2d current_point() const;
 					vector_2d current_point(::std::error_code& ec) const noexcept;

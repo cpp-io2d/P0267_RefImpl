@@ -38,6 +38,14 @@ rectangle::rectangle(double x, double y, double width, double height) noexcept
 	, _Height(height) {
 }
 
+rectangle::rectangle(const vector_2d& tl, const vector_2d& br) noexcept
+	: _X(tl.x())
+	, _Y(tl.y())
+	, _Width(max(0.0, br.x() - tl.x()))
+	, _Height(max(0.0, br.y() - tl.y())) {
+
+}
+
 void rectangle::x(double value) noexcept {
 	_X = value;
 }
@@ -54,6 +62,16 @@ void rectangle::height(double value) noexcept {
 	_Height = value;
 }
 
+void rectangle::top_left(const vector_2d& value) noexcept {
+	_X = value.x();
+	_Y = value.y();
+}
+
+void rectangle::bottom_right(const vector_2d& value) noexcept {
+	_Width = max(0.0, value.x() - _X);
+	_Height = max(0.0, value.y() - _Y);
+}
+
 double rectangle::x() const noexcept {
 	return _X;
 }
@@ -68,4 +86,12 @@ double rectangle::width() const noexcept {
 
 double rectangle::height() const noexcept {
 	return _Height;
+}
+
+vector_2d rectangle::top_left() const noexcept {
+	return{ _X, _Y };
+}
+
+vector_2d rectangle::bottom_right() const noexcept {
+	return{ _X + _Width, _Y + _Height };
 }

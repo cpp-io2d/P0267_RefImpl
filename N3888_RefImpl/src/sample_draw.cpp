@@ -12,7 +12,227 @@ using namespace std;
 using namespace std::chrono;
 using namespace std::experimental::io2d;
 
+namespace {
+	static const double pi = 3.14159265358979323846264338327950288;
+}
+
+// Declaration
+
+void draw_radial_circles(display_surface& rs);
+
+// Declaration
+wostream& operator<<(wostream& os, const vector_2d& pt);
+// Declaration
 vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL);
+// Declaration
+void draw_hello_world(surface& rs);
+// Declaration
+void draw_test_compositing_operators(surface& rs, double elapsedTimeInMilliseconds, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp = compositing_operator::over, bool strokePaths = false, const rgba_color& backgroundColor = rgba_color::transparent_black(), const rgba_color& firstColor = rgba_color::red() * 0.8, const rgba_color& secondColor = rgba_color::teal() * 0.4, bool clipToRects = false, bool clipToTriangle = false);
+// Declaration
+void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMilliseconds);
+// Declaration
+void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds);
+
+// Drawing entry point.
+void sample_draw::operator()(display_surface& rs) {
+	//draw_radial_circles(rs);
+
+	static auto previousTime = steady_clock::now();
+	auto currentTime = steady_clock::now();
+	auto elapsedTime = currentTime - previousTime;
+	previousTime = currentTime;
+	draw_sort_visualization_immediate(rs, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
+	//draw_test_compositing_operators(rs, elapsedTimeInMilliseconds, compositing_operator::over);
+}
+
+//rgba_color interpolated_color(const radial_brush_factory& f, double t) {
+//	while (t > 1.0) {
+//		t -= 1.0;
+//	}
+//	while (t < 0.0) {
+//		t += 1.0;
+//	}
+//	auto lowColorValue = rgba_color{ };
+//	auto lowColorOffset = -1.0;
+//	auto lowColorIndex = 0U;
+//	auto highColorValue = rgba_color{ };
+//	auto highColorOffset = -1.0;
+//	auto highColorIndex = 0U;
+//	auto lastOffset = -1.0;
+//	auto sameOffset = true;
+//	for (auto i = 0U; i < f.color_stop_count(); i++) {
+//		auto stop = f.color_stop(i);
+//		if (lastOffset < 0.0) {
+//			lastOffset = get<0>(stop);
+//		}
+//		else {
+//			if (lastOffset != get<0>(stop)) {
+//				sameOffset = false;
+//			}
+//		}
+//		if (lowColorOffset < 0.0) {
+//			if (get<0>(stop) <= t) {
+//				lowColorIndex = i;
+//				lowColorOffset = get<0>(stop);
+//				lowColorValue = get<1>(stop);
+//			}
+//		}
+//		else {
+//			if (get<0>(stop) <= t && get<0>(stop) > lowColorOffset) {
+//				lowColorIndex = i;
+//				lowColorOffset = get<0>(stop);
+//				lowColorValue = get<1>(stop);
+//			}
+//		}
+//	}
+//	return rgba_color{ };
+//}
+
+rgba_color test_draw_circle(display_surface& /*rs*/, const vector_2d& coords, const radial_brush_factory& f) {
+	// Can get t for s_fn via a simple magnitude. Determine the rotation angle of coords around center0, determine the point on circle 0 with that angle then the point on cirle 1 with that angle then get the distances from circle 0 pt to coords and from circle 0 pt to circle 1 pt and t = (dist(circ0, coords) / dist(circ0, circ1).
+	auto circles = f.radial_circles();
+	auto center0 = get<0>(circles);
+	auto radius0 = get<1>(circles);
+	auto center1 = get<2>(circles);
+	auto radius1 = get<3>(circles);
+	auto coordsAtZeroOrigin = coords - center0;
+	auto angle = (coordsAtZeroOrigin.x() == coordsAtZeroOrigin.y() == 0.0) ? 0.0 : atan2(coordsAtZeroOrigin.y(), coordsAtZeroOrigin.x());
+	auto circ0 = _Rotate_point_absolute_angle(center0, radius0, angle);
+	auto circ1 = _Rotate_point_absolute_angle(center1, radius1, angle);
+	auto dist_fn = [](const vector_2d& from, const vector_2d& to) -> double { return (to - from).length(); };
+	if (_Almost_equal_relative(dist_fn(circ0, circ1), 0.0)) {
+		return{ };
+	}
+	auto t = dist_fn(circ0, coords) / dist_fn(circ0, circ1);
+	auto s_fn = [](double t) -> double { return (t - 0.0) / (1.0 - 0.0); };
+	auto x_fn = [&circles](double s) -> double { auto x0 = get<0>(circles).x(); return x0 + s * (get<2>(circles).x() - x0); };
+	auto y_fn = [&circles](double s) -> double { auto y0 = get<0>(circles).y(); return y0 + s * (get<2>(circles).y() - y0); };
+	auto r_fn = [&circles](double s) -> double { auto r0 = get<1>(circles); return r0 + s * (get<3>(circles) - r0); };
+	auto s = s_fn(t);
+	auto x = x_fn(s);
+	auto y = y_fn(s);
+	auto r = r_fn(s);
+	(void)x;
+	(void)y;
+	(void)r;
+	return{ };
+}
+
+void draw_radial_circles(display_surface& rs) {
+	// Clear to background color.
+	rs.paint(rgba_color::cornflower_blue());
+
+	auto radialFactory = radial_brush_factory();
+	radialFactory.add_color_stop(0.0, rgba_color::white());
+	//radialFactory.add_color_stop(0.25, rgba_color::red());
+	//radialFactory.add_color_stop(0.5, rgba_color::green());
+	//radialFactory.add_color_stop(0.75, rgba_color::blue());
+	//radialFactory.add_color_stop(1.0, rgba_color::black());
+	radialFactory.add_color_stop(1.0, rgba_color::blue());
+	//radialFactory.radial_circles({ 400.0, 200.0 }, 100.0, { 600.0, 200.0 }, 50.0);
+	auto radialBrush = brush(radialFactory);
+	//radialFactory.radial_circles({ 115.2, 102.4 }, 25.6, { 102.4, 102.4 }, 128.0);
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::pad);
+	//rs.immediate().clear();
+	//rs.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * pi);
+	////rs.immediate().rectangle({ 0.0, 0.0, 250.0, 250.0 });
+	//rs.fill_immediate(radialBrush);
+
+	//radialFactory.radial_circles({ 400.0, 200.0 }, 100.0, { 600.0, 200.0 }, 100.0);
+	//auto color = test_draw_circle(rs, { 400.0, 200.0 }, radialFactory);
+	auto linearFactory = linear_brush_factory();
+	linearFactory.begin_point({ 200.0, 0.0 });
+	linearFactory.end_point({ 601.0, 0.0 });
+	linearFactory.add_color_stop(0.0, rgba_color::white());
+	linearFactory.add_color_stop(0.25, rgba_color::red());
+	linearFactory.add_color_stop(0.5, rgba_color::lime());
+	linearFactory.add_color_stop(0.6, rgba_color::red());
+	linearFactory.add_color_stop(0.5, rgba_color::blue());
+	linearFactory.add_color_stop(1.0, rgba_color::white());
+
+	rs.immediate().clear();
+	rs.immediate().rectangle({ { 200.0, 280.0 }, { 602.0, 520.0 } });
+	rs.fill_immediate(brush(linearFactory));
+
+	//radialFactory.radial_circles({ 600.0, 200.0 }, 100.0, { 400.0, 200.0 }, 100.0);
+	//rs.immediate().clear();
+	//rs.immediate().rectangle({ { 280.0, 80.0 }, { 720.0, 320.0 } });
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::pad);
+	//rs.fill_immediate(radialBrush);
+
+	//radialFactory.radial_circles({ 400.0, 450.0 }, 100.0, { 600.0, 450.0 }, 100.0);
+	//rs.immediate().clear();
+	//rs.immediate().rectangle({ { 280.0, 330.0 }, { 720.0, 570.0 } });
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::none);
+	//rs.fill_immediate(radialBrush);
+
+	//radialFactory.radial_circles({ 1000.0, 200.0 }, 100.0, { 1000.0, 200.0 }, 20.0);
+	//rs.immediate().clear();
+	//rs.immediate().rectangle({ { 880.0, 80.0 }, { 1120.0, 320.0 } });
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::reflect);
+	//rs.fill_immediate(radialBrush);
+
+	//radialFactory.radial_circles({ 1000.0, 450.0 }, 20.0, { 1000.0, 450.0 }, 100.0);
+	//rs.immediate().clear();
+	//rs.immediate().rectangle({ { 880.0, 330.0 }, { 1120.0, 570.0 } });
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::repeat);
+	//rs.fill_immediate(radialBrush);
+
+	//radialFactory.radial_circles({ 105.0, 100.0 }, 0.0, { 200.0, 100.0 }, 100.0);
+	//rs.immediate().clear();
+	//rs.immediate().rectangle({ { 0.0, 0.0 }, { 520.0, 200.0 } });
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::repeat);
+	//rs.fill_immediate(radialBrush);
+
+
+	//radialFactory.radial_circles({ 200.0, 200.0 }, 100.0, { 400.0, 200.0 }, 100.0);
+	//rs.immediate().clear();
+	//rs.immediate().rectangle({ { 80.0, 80.0 }, { 520.0, 320.0 } });
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::none);
+	//rs.fill_immediate(radialBrush);
+
+	//radialFactory.radial_circles({ 200.0, 450.0 }, 100.0, { 400.0, 450.0 }, 100.0);
+	//rs.immediate().clear();
+	//rs.immediate().rectangle({ { 80.0, 330.0 }, { 520.0, 570.0 } });
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::pad);
+	//rs.fill_immediate(radialBrush);
+
+	////radialFactory.radial_circles({ 200.0, 450.0 }, 100.0, { 400.0, 450.0 }, 100.0);
+	////rs.immediate().clear();
+	////rs.immediate().rectangle({ { 80.0, 330.0 }, { 520.0, 570.0 } });
+	////radialBrush = brush(radialFactory);
+	////radialBrush.extend(extend::pad);
+	////rs.fill_immediate(radialBrush);
+
+	//radialFactory.radial_circles({ 700.0, 200.0 }, 100.0, { 900.0, 200.0 }, 100.0);
+	//rs.immediate().clear();
+	//rs.immediate().rectangle({ { 580.0, 80.0 }, { 1020.0, 320.0 } });
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::reflect);
+	//rs.fill_immediate(radialBrush);
+
+	//radialFactory.radial_circles({ 700.0, 450.0 }, 100.0, { 900.0, 450.0 }, 100.0);
+	//rs.immediate().clear();
+	//rs.immediate().rectangle({ { 580.0, 330.0 }, { 1020.0, 570.0 } });
+	//radialBrush = brush(radialFactory);
+	//radialBrush.extend(extend::repeat);
+	//rs.fill_immediate(radialBrush);
+
+
+}
+
+wostream& operator<<(wostream& os, const vector_2d& pt) {
+	os << L"(" << pt.x() << L"," << pt.y() << L")";
+	return os;
+}
 
 vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed) {
 	vector<vector<int>> result;
@@ -43,34 +263,6 @@ vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed) {
 		}
 	}
 	return result;
-}
-
-wostream& operator<<(wostream& os, const vector_2d& pt);
-wostream& operator<<(wostream& os, const vector_2d& pt) {
-	os << L"(" << pt.x() << L"," << pt.y() << L")";
-	return os;
-}
-
-// Declaration
-void draw_hello_world(surface& rs);
-
-// Declaration
-void draw_test_compositing_operators(surface& rs, double elapsedTimeInMilliseconds, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp = compositing_operator::over, bool strokePaths = false, const rgba_color& backgroundColor = rgba_color::transparent_black(), const rgba_color& firstColor = rgba_color::red() * 0.8, const rgba_color& secondColor = rgba_color::teal() * 0.4, bool clipToRects = false, bool clipToTriangle = false);
-
-// Declaration
-void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMilliseconds);
-
-// Declaration
-void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds);
-
-// Drawing entry point.
-void sample_draw::operator()(display_surface& rs) {
-	static auto previousTime = steady_clock::now();
-	auto currentTime = steady_clock::now();
-	auto elapsedTime = currentTime - previousTime;
-	previousTime = currentTime;
-	draw_sort_visualization_immediate(rs, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
-	//draw_test_compositing_operators(rs, elapsedTimeInMilliseconds, compositing_operator::over);
 }
 
 void draw_hello_world(surface& rs) {
@@ -162,7 +354,6 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	const double power = 3.0;
 	const double lerpTime = 1250.0;
 	const double phaseTime = lerpTime + 500.0;
-	const double pi = 3.1415926535897932;
 	const double normalizedTime = min(fmod(timer, phaseTime) / lerpTime, 1.0);
 	const double adjustment = (normalizedTime < 0.5) ? pow(normalizedTime * 2.0, power) / 2.0 :
 		((1.0 - pow(1.0 - ((normalizedTime - 0.5) * 2.0), power)) * 0.5) + 0.5;
@@ -171,6 +362,17 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	const auto phaseCount = vec.size();
 	const size_t x = min(static_cast<size_t>(timer / phaseTime), max(phaseCount - 1U, 0U));
 	rs.paint(rgba_color::cornflower_blue()); // Paint background.
+
+	rs.immediate().clear();
+	rs.immediate().arc({ 100.0, 100.0 }, 50.0, 0.0, pi / 2.0);
+	auto initLineWidth = rs.line_width();
+	rs.line_width(8.0);
+	rs.stroke_immediate(rgba_color::black());
+	rs.immediate().clear();
+	rs.immediate().arc_negative({ 300.0, 100.0 }, 50.0, 0.0, pi / 2.0);
+	rs.stroke_immediate(rgba_color::brown());
+	rs.immediate().clear();
+	rs.line_width(initLineWidth);
 
 	auto clextents = rs.clip_extents();
 	const double radius = trunc(min(clextents.width() * 0.8 / elementCount, clextents.height() + 120.0) / 2.0);
@@ -323,7 +525,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	//auto radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::pad);
 	//rs.immediate().clear();
-	////rs.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * _Pi);
+	////rs.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * pi);
 	//rs.immediate().rect({ 0.0, 0.0, 250.0, 250.0 });
 	//rs.fill_immediate(radialBrush);
 
@@ -335,7 +537,6 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	const double power = 3.0;
 	const double lerpTime = 1250.0;
 	const double phaseTime = lerpTime + 500.0;
-	const double pi = 3.1415926535897932;
 	const double normalizedTime = min(fmod(timer, phaseTime) / lerpTime, 1.0);
 	const double adjustment = (normalizedTime < 0.5) ? pow(normalizedTime * 2.0, power) / 2.0 :
 		((1.0 - pow(1.0 - ((normalizedTime - 0.5) * 2.0), power)) * 0.5) + 0.5;

@@ -9,7 +9,7 @@ using namespace std::experimental::io2d;
 
 int main() {
 	assert(steady_clock::is_steady);
-	auto ds = make_display_surface(800, 600, format::argb32, scaling::letterbox);
+	auto ds = make_display_surface(1280, 720, format::argb32, scaling::letterbox);
 	auto radialFactory = radial_brush_factory({ 0.0, 0.0 }, 0.0, { 0.0, 0.0 }, 50.0);
 	radialFactory.add_color_stop(0.0, rgba_color::orange());
 	radialFactory.add_color_stop(1.0, rgba_color::aquamarine());
