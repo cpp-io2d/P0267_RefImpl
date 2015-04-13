@@ -9,7 +9,8 @@ radial_brush_factory::radial_brush_factory() noexcept
 	: _Center0()
 	, _Radius0()
 	, _Center1()
-	, _Radius1() {
+	, _Radius1()
+	, _Color_stops() {
 }
 
 radial_brush_factory::radial_brush_factory(radial_brush_factory&& other) noexcept
@@ -69,7 +70,7 @@ void radial_brush_factory::add_color_stop(double offset, const rgba_color& color
 	ec.clear();
 }
 
-void radial_brush_factory::color_stop(unsigned int index, double offset, const rgba_color& color) {
+void radial_brush_factory::color_stop(radial_brush_factory::size_type index, double offset, const rgba_color& color) {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -80,10 +81,10 @@ void radial_brush_factory::color_stop(unsigned int index, double offset, const r
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 
-	_Color_stops[index] = make_tuple(offset, color);
+	_Color_stops.at(index) = make_tuple(offset, color);
 }
 
-void radial_brush_factory::color_stop(unsigned int index, double offset, const rgba_color& color, error_code& ec) noexcept {
+void radial_brush_factory::color_stop(radial_brush_factory::size_type index, double offset, const rgba_color& color, error_code& ec) noexcept {
 	assert(offset >= 0.0 && offset <= 1.0);
 	assert(color.r() >= 0.0 && color.r() <= 1.0);
 	assert(color.g() >= 0.0 && color.g() <= 1.0);
@@ -92,30 +93,54 @@ void radial_brush_factory::color_stop(unsigned int index, double offset, const r
 
 	if (index >= _Color_stops.size()) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
+		return;
 	}
 
 	try {
-		_Color_stops[index] = make_tuple(offset, color);
+		_Color_stops.at(index) = make_tuple(offset, color);
 	}
 	catch (const out_of_range&) {
+		assert(false && "Unexpected invalid index; possible data race?");
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return;
 	}
 	ec.clear();
 }
 
-void radial_brush_factory::radial_circles(const vector_2d& center0, double radius0, const vector_2d& center1, double radius1) noexcept {
+void radial_brush_factory::remove_color_stop(radial_brush_factory::size_type index) {
+	auto size = _Color_stops.size();
+	if (index >= size) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
+	}
+
+	_Color_stops.erase(_Color_stops.begin() + index);
+	assert(_Color_stops.size() + 1 == size);
+}
+
+void radial_brush_factory::remove_color_stop(radial_brush_factory::size_type index, error_code& ec) noexcept {
+	auto size = _Color_stops.size();
+	if (index >= size) {
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
+		return;
+	}
+
+	_Color_stops.erase(_Color_stops.begin() + index);
+	assert(_Color_stops.size() + 1 == size);
+	ec.clear();
+}
+
+void radial_brush_factory::radial_circles(const vector_2d& center0, double radius0, const vector_2d& center1, double radius1) noexcept{
 	_Center0 = center0;
 	_Radius0 = radius0;
 	_Center1 = center1;
 	_Radius1 = radius1;
 }
 
-unsigned int radial_brush_factory::color_stop_count() const noexcept {
-	return static_cast<unsigned int>(_Color_stops.size());
+radial_brush_factory::size_type radial_brush_factory::color_stop_count() const noexcept {
+	return _Color_stops.size();
 }
 
-tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index) const {
+tuple<double, rgba_color> radial_brush_factory::color_stop(radial_brush_factory::size_type index) const {
 	if (index >= _Color_stops.size()) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
@@ -123,7 +148,7 @@ tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index) c
 	return _Color_stops.at(index);
 }
 
-tuple<double, rgba_color> radial_brush_factory::color_stop(unsigned int index, error_code& ec) const noexcept {
+tuple<double, rgba_color> radial_brush_factory::color_stop(radial_brush_factory::size_type index, error_code& ec) const noexcept{
 	if (index >= _Color_stops.size()) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);
 		return make_tuple(0.0, rgba_color::transparent_black());
