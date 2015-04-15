@@ -165,6 +165,14 @@ tuple<double, rgba_color> radial_brush_factory::color_stop(radial_brush_factory:
 	}
 }
 
+vector<tuple<double, rgba_color>>& radial_brush_factory::color_stops() noexcept {
+	return _Color_stops;
+}
+
+const vector<tuple<double, rgba_color>>& radial_brush_factory::color_stops() const noexcept {
+	return _Color_stops;
+}
+
 tuple<vector_2d, double, vector_2d, double> radial_brush_factory::radial_circles() const noexcept {
 	return make_tuple(_Center0, _Radius0, _Center1, _Radius1);
 }

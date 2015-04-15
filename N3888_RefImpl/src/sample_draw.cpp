@@ -16,107 +16,30 @@ namespace {
 	static const double pi = 3.14159265358979323846264338327950288;
 }
 
-// Declaration
-
+// Declarations
 void draw_radial_circles(display_surface& rs);
-
-// Declaration
 wostream& operator<<(wostream& os, const vector_2d& pt);
-// Declaration
 vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL);
-// Declaration
 void draw_hello_world(surface& rs);
-// Declaration
 void draw_test_compositing_operators(surface& rs, double elapsedTimeInMilliseconds, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp = compositing_operator::over, bool strokePaths = false, const rgba_color& backgroundColor = rgba_color::transparent_black(), const rgba_color& firstColor = rgba_color::red() * 0.8, const rgba_color& secondColor = rgba_color::teal() * 0.4, bool clipToRects = false, bool clipToTriangle = false);
-// Declaration
 void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMilliseconds);
-// Declaration
 void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds);
 
+//
 // Drawing entry point.
+//
 void sample_draw::operator()(display_surface& rs) {
-	//draw_radial_circles(rs);
+	draw_radial_circles(rs);
 
-	static auto previousTime = steady_clock::now();
-	auto currentTime = steady_clock::now();
-	auto elapsedTime = currentTime - previousTime;
-	previousTime = currentTime;
-	draw_sort_visualization_immediate(rs, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
-	//draw_test_compositing_operators(rs, elapsedTimeInMilliseconds, compositing_operator::over);
+	//static auto previousTime = steady_clock::now();
+	//auto currentTime = steady_clock::now();
+	//auto elapsedTime = currentTime - previousTime;
+	//previousTime = currentTime;
+	//draw_sort_visualization_immediate(rs, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
+	////draw_test_compositing_operators(rs, elapsedTimeInMilliseconds, compositing_operator::over);
 }
 
-//rgba_color interpolated_color(const radial_brush_factory& f, double t) {
-//	while (t > 1.0) {
-//		t -= 1.0;
-//	}
-//	while (t < 0.0) {
-//		t += 1.0;
-//	}
-//	auto lowColorValue = rgba_color{ };
-//	auto lowColorOffset = -1.0;
-//	auto lowColorIndex = 0U;
-//	auto highColorValue = rgba_color{ };
-//	auto highColorOffset = -1.0;
-//	auto highColorIndex = 0U;
-//	auto lastOffset = -1.0;
-//	auto sameOffset = true;
-//	for (auto i = 0U; i < f.color_stop_count(); i++) {
-//		auto stop = f.color_stop(i);
-//		if (lastOffset < 0.0) {
-//			lastOffset = get<0>(stop);
-//		}
-//		else {
-//			if (lastOffset != get<0>(stop)) {
-//				sameOffset = false;
-//			}
-//		}
-//		if (lowColorOffset < 0.0) {
-//			if (get<0>(stop) <= t) {
-//				lowColorIndex = i;
-//				lowColorOffset = get<0>(stop);
-//				lowColorValue = get<1>(stop);
-//			}
-//		}
-//		else {
-//			if (get<0>(stop) <= t && get<0>(stop) > lowColorOffset) {
-//				lowColorIndex = i;
-//				lowColorOffset = get<0>(stop);
-//				lowColorValue = get<1>(stop);
-//			}
-//		}
-//	}
-//	return rgba_color{ };
-//}
-
-rgba_color test_draw_circle(display_surface& /*rs*/, const vector_2d& coords, const radial_brush_factory& f) {
-	// Can get t for s_fn via a simple magnitude. Determine the rotation angle of coords around center0, determine the point on circle 0 with that angle then the point on cirle 1 with that angle then get the distances from circle 0 pt to coords and from circle 0 pt to circle 1 pt and t = (dist(circ0, coords) / dist(circ0, circ1).
-	auto circles = f.radial_circles();
-	auto center0 = get<0>(circles);
-	auto radius0 = get<1>(circles);
-	auto center1 = get<2>(circles);
-	auto radius1 = get<3>(circles);
-	auto coordsAtZeroOrigin = coords - center0;
-	auto angle = (coordsAtZeroOrigin.x() == coordsAtZeroOrigin.y() == 0.0) ? 0.0 : atan2(coordsAtZeroOrigin.y(), coordsAtZeroOrigin.x());
-	auto circ0 = _Rotate_point_absolute_angle(center0, radius0, angle);
-	auto circ1 = _Rotate_point_absolute_angle(center1, radius1, angle);
-	auto dist_fn = [](const vector_2d& from, const vector_2d& to) -> double { return (to - from).length(); };
-	if (_Almost_equal_relative(dist_fn(circ0, circ1), 0.0)) {
-		return{ };
-	}
-	auto t = dist_fn(circ0, coords) / dist_fn(circ0, circ1);
-	auto s_fn = [](double t) -> double { return (t - 0.0) / (1.0 - 0.0); };
-	auto x_fn = [&circles](double s) -> double { auto x0 = get<0>(circles).x(); return x0 + s * (get<2>(circles).x() - x0); };
-	auto y_fn = [&circles](double s) -> double { auto y0 = get<0>(circles).y(); return y0 + s * (get<2>(circles).y() - y0); };
-	auto r_fn = [&circles](double s) -> double { auto r0 = get<1>(circles); return r0 + s * (get<3>(circles) - r0); };
-	auto s = s_fn(t);
-	auto x = x_fn(s);
-	auto y = y_fn(s);
-	auto r = r_fn(s);
-	(void)x;
-	(void)y;
-	(void)r;
-	return{ };
-}
+void render_radial_fill_immediate_software(display_surface& ds, const radial_brush_factory& rbf, extend e = extend::none, matrix_2d m = matrix_2d::init_identity(), filter f = filter::nearest);
 
 void draw_radial_circles(display_surface& rs) {
 	// Clear to background color.
@@ -128,9 +51,17 @@ void draw_radial_circles(display_surface& rs) {
 	//radialFactory.add_color_stop(0.5, rgba_color::green());
 	//radialFactory.add_color_stop(0.75, rgba_color::blue());
 	//radialFactory.add_color_stop(1.0, rgba_color::black());
-	radialFactory.add_color_stop(1.0, rgba_color::blue());
+	radialFactory.add_color_stop(1.0, rgba_color::black());
 	//radialFactory.radial_circles({ 400.0, 200.0 }, 100.0, { 600.0, 200.0 }, 50.0);
+
+	radialFactory.radial_circles({ 200.5, 300.0 }, 0.0, { 300.0, 300.0 }, 100.0);
 	auto radialBrush = brush(radialFactory);
+	radialBrush.extend(extend::repeat);
+	//radialBrush.matrix(matrix_2d::init_scale({ 2.0, 2.0 }));
+	rs.immediate().clear();
+	rs.immediate().rectangle({ { 100.0, 100.0 }, { 500.0, 500.0 } });
+	rs.fill_immediate(radialBrush);
+
 	//radialFactory.radial_circles({ 115.2, 102.4 }, 25.6, { 102.4, 102.4 }, 128.0);
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::pad);
@@ -141,19 +72,22 @@ void draw_radial_circles(display_surface& rs) {
 
 	//radialFactory.radial_circles({ 400.0, 200.0 }, 100.0, { 600.0, 200.0 }, 100.0);
 	//auto color = test_draw_circle(rs, { 400.0, 200.0 }, radialFactory);
-	auto linearFactory = linear_brush_factory();
-	linearFactory.begin_point({ 200.0, 0.0 });
-	linearFactory.end_point({ 601.0, 0.0 });
-	linearFactory.add_color_stop(0.0, rgba_color::white());
-	linearFactory.add_color_stop(0.25, rgba_color::red());
-	linearFactory.add_color_stop(0.5, rgba_color::lime());
-	linearFactory.add_color_stop(0.6, rgba_color::red());
-	linearFactory.add_color_stop(0.5, rgba_color::blue());
-	linearFactory.add_color_stop(1.0, rgba_color::white());
 
-	rs.immediate().clear();
-	rs.immediate().rectangle({ { 200.0, 280.0 }, { 602.0, 520.0 } });
-	rs.fill_immediate(brush(linearFactory));
+	//{
+	//	auto linearFactory = linear_brush_factory();
+	//	linearFactory.begin_point({ 200.0, 0.0 });
+	//	linearFactory.end_point({ 601.0, 0.0 });
+	//	linearFactory.add_color_stop(0.0, rgba_color::white());
+	//	linearFactory.add_color_stop(0.25, rgba_color::red());
+	//	linearFactory.add_color_stop(0.5, rgba_color::lime());
+	//	linearFactory.add_color_stop(0.6, rgba_color::red());
+	//	linearFactory.add_color_stop(0.5, rgba_color::blue());
+	//	linearFactory.add_color_stop(1.0, rgba_color::white());
+
+	//	rs.immediate().clear();
+	//	rs.immediate().rectangle({ { 200.0, 280.0 }, { 602.0, 520.0 } });
+	//	rs.fill_immediate(brush(linearFactory));
+	//}
 
 	//radialFactory.radial_circles({ 600.0, 200.0 }, 100.0, { 400.0, 200.0 }, 100.0);
 	//rs.immediate().clear();
@@ -225,8 +159,6 @@ void draw_radial_circles(display_surface& rs) {
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::repeat);
 	//rs.fill_immediate(radialBrush);
-
-
 }
 
 wostream& operator<<(wostream& os, const vector_2d& pt) {
@@ -649,4 +581,165 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.stroke();
 
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
+}
+
+namespace {
+	rgba_color interpolate(const rgba_color& lc, double loff, const rgba_color& hc, double hoff, double t) {
+		// loff must be the lower value and cannot equal hoff (avoids improper results and divide by zero).
+		assert(loff < hoff);
+
+		// We're just doing a strict linear interpolation instead of a color space interpolation.
+		auto channelMultiplier = (t - loff) / (hoff - loff);
+		assert(channelMultiplier >= 0.0 && channelMultiplier <= 1.0);
+		// We're working with premultiplied alpha so we don't need to do alpha adjustments.
+		return{
+			max(0.0, min(1.0, lc.r() + (hc.r() - lc.r()) * channelMultiplier)),
+			max(0.0, min(1.0, lc.g() + (hc.g() - lc.g()) * channelMultiplier)),
+			max(0.0, min(1.0, lc.b() + (hc.b() - lc.b()) * channelMultiplier)),
+			max(0.0, min(1.0, lc.a() + (hc.a() - lc.a()) * channelMultiplier))
+		};
+	}
+
+	rgba_color get_interpolated_color(const radial_brush_factory& f, double t) {
+		assert(t <= 1.0 && t >= 0.0);
+
+		if (f.color_stop_count() < 2) {
+			return rgba_color::transparent_black();
+		}
+
+		auto lowColorOffset = -1.0;
+		auto lowColorIndex = 0U;
+		auto highColorOffset = -1.0;
+		auto highColorIndex = 0U;
+
+		// If all stops have the same offset, the color is transparent black.
+		auto lastOffset = -1.0;
+		auto sameOffset = true;
+
+		// Note: code in this loop depends on traversing the stops incrementally from 0.
+		for (auto i = 0U; i < f.color_stop_count(); i++) {
+			const auto& stop = f.color_stops()[i];
+			if (lastOffset < 0.0) {
+				lastOffset = get<0>(stop);
+			}
+			else {
+				if (lastOffset != get<0>(stop)) {
+					sameOffset = false;
+				}
+			}
+			auto stopOffset = get<0>(stop);
+			if (stopOffset == t) {
+				// If one stop has an offset equal to t, its color is the color.
+				// If multiple stops have an offset equal to t, the lowest index stop's color is the color. Because we're incrementing from lowest index to highest, this is the color.
+				return get<1>(stop);
+			}
+
+			// When we get here it's because we haven't found an exact offset match. As such we are looking for the two adjacent color stops whose offsets 't' lands between. We are calling these
+			// the "low" color stop and the "high" color stop. The low stop is the stop with an offset that is closest to 't' without being greater than 't' and must be able to have a stop to its
+			// right by the rules of adjacency. The high stop is the stop with an offset that is closest to 't' without being less than 't' and must be able to have a stop to its left by the rules
+			// of adjacency. The rules of adjacency require that if two stops would tie for being the low stop because they have the same offset, the stop with the higher index is the low stop
+			// since only the higher index stop can have a stop adjacent to it to its right. The rules of adjacency require that if two stops would tie for being the high stop because they have
+			// the same offset, the stop with the lower index is the high stop since only the lower index stop can have a stop adjacent to it to its left.
+			if (lowColorOffset < 0.0) {
+				lowColorIndex = i;
+				lowColorOffset = stopOffset;
+			}
+			else {
+				if (stopOffset < t && stopOffset >= lowColorOffset) {
+					lowColorIndex = i;
+					lowColorOffset = stopOffset;
+				}
+			}
+			if (highColorOffset < 0.0) {
+				highColorIndex = i;
+				highColorOffset = stopOffset;
+			}
+			else {
+				if (stopOffset > t && stopOffset < highColorOffset) {
+					highColorIndex = i;
+					highColorOffset = stopOffset;
+				}
+			}
+		}
+
+		// Now we figure out if 't' falls into a realm where it must be transparent black.
+		// If it's lower than the low offset then there was no '0.0' stop and 't' is in the [0,n) range such that the result color is transparent black.
+		if (t < lowColorOffset) {
+			return rgba_color::transparent_black();
+		}
+		// If it's higher than the high offset then there was no '1.0' stop and 't' is in the (n,1] range such that the result color is transparent black.
+		if (t > highColorOffset) {
+			return rgba_color::transparent_black();
+		}
+
+		// Having gotten here, we lerp between the low stop and high stop to get the color for 't'.
+		return interpolate(get<1>(f.color_stop(lowColorIndex)), lowColorOffset, get<1>(f.color_stop(highColorIndex)), highColorOffset, t);
+	}
+}
+
+void render_radial_fill_immediate_software(display_surface& ds, const radial_brush_factory& rbf, extend e, matrix_2d m, filter f) {
+	assert(f == filter::nearest); // We aren't handling antialiasing currently; this is just a test.
+	for (const auto& stop : rbf.color_stops()) {
+		auto offset = get<0>(stop);
+		assert(offset >= 0.0 && offset <= 1.0);
+	}
+
+	auto circles = rbf.radial_circles();
+	auto center0 = get<0>(circles);
+	auto radius0 = get<1>(circles);
+	auto center1 = get<2>(circles);
+	auto radius1 = get<3>(circles);
+	if (radius0 < 0.0 || radius1 < 0.0) {
+		// Degenerate; do nothing.
+		return;
+	}
+	if (_Almost_equal_relative((center1 - center0).length(), 0.0) && _Almost_equal_relative(radius0, radius1)) {
+		// Degenerate; do nothing.
+		return;
+	}
+
+	m.invert();
+
+	double angle = 0.0;
+
+	//if (coordsAtZeroOrigin.x() != 0.0 || coordsAtZeroOrigin.y() != 0.0) {
+	//	angle = atan2(coordsAtZeroOrigin.y(), coordsAtZeroOrigin.x());
+	//}
+	auto circ0 = _Rotate_point_absolute_angle(center0, radius0, angle);
+	auto circ1 = _Rotate_point_absolute_angle(center1, radius1, angle);
+}
+
+void test_draw_circle(display_surface& ds, const vector_2d& coords, const radial_brush_factory& f) {
+	// Can get t for s_fn via a simple magnitude. Determine the rotation angle of coords around center0, determine the point on circle 0 with that angle then the point on cirle 1 with that angle then get the distances from circle 0 pt to coords and from circle 0 pt to circle 1 pt and t = (dist(circ0, coords) / dist(circ0, circ1).
+	auto circles = f.radial_circles();
+	auto center0 = get<0>(circles);
+	auto radius0 = get<1>(circles);
+	auto center1 = get<2>(circles);
+	auto radius1 = get<3>(circles);
+	auto coordsAtZeroOrigin = coords - center0;
+	double angle = 0.0;
+	if (coordsAtZeroOrigin.x() != 0.0 || coordsAtZeroOrigin.y() != 0.0) {
+		angle = atan2(coordsAtZeroOrigin.y(), coordsAtZeroOrigin.x());
+	}
+	auto circ0 = _Rotate_point_absolute_angle(center0, radius0, angle);
+	auto circ1 = _Rotate_point_absolute_angle(center1, radius1, angle);
+	auto dist_fn = [](const vector_2d& from, const vector_2d& to) -> double { return to.length() > from.length() ? (to - from).length() : -(to - from).length(); };
+	if (_Almost_equal_relative(dist_fn(circ0, circ1), 0.0)) {
+		return;
+	}
+	auto t = dist_fn(circ0, coords) / dist_fn(circ0, circ1);
+	auto s_fn = [](double t) -> double { return (t - 0.0) / (1.0 - 0.0); };
+	auto x_fn = [&circles](double s) -> double { auto x0 = get<0>(circles).x(); return x0 + s * (get<2>(circles).x() - x0); };
+	auto y_fn = [&circles](double s) -> double { auto y0 = get<0>(circles).y(); return y0 + s * (get<2>(circles).y() - y0); };
+	auto r_fn = [&circles](double s) -> double { auto r0 = get<1>(circles); return r0 + s * (get<3>(circles) -r0); };
+	auto s = s_fn(t);
+	auto x = x_fn(s); // center x of circle for s
+	auto y = y_fn(s); // center y of circle for s
+	auto r = r_fn(s); // radius of circle for s
+	(void)x;
+	(void)y;
+	(void)r;
+	auto cs0 = get<1>(f.color_stop(0));
+	auto length = (circ1 - circ0).length();
+	rgba_color result{ 1.0 - ((r / length) * cs0.r()), 1.0 - ((r / length) * cs0.g()), 1.0 - ((r / length) * cs0.b()) };
 }

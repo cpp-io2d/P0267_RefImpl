@@ -940,7 +940,7 @@ namespace std {
 				}
 
 				bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
-					return lhs.r() ==  rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
+					return lhs.r() == rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
 				}
 
 				bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {

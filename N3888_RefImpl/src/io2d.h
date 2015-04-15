@@ -1582,6 +1582,8 @@ namespace std {
 					size_type color_stop_count() const noexcept;
 					::std::tuple<double, rgba_color> color_stop(size_type index) const;
 					::std::tuple<double, rgba_color> color_stop(size_type index, ::std::error_code& ec) const noexcept;
+					::std::vector<::std::tuple<double, rgba_color>>& color_stops() noexcept;
+					const ::std::vector<::std::tuple<double, rgba_color>>& color_stops() const noexcept;
 					vector_2d begin_point() const noexcept;
 					vector_2d end_point() const noexcept;
 				};
@@ -1617,6 +1619,8 @@ namespace std {
 					size_type color_stop_count() const noexcept;
 					::std::tuple<double, rgba_color> color_stop(size_type index) const;
 					::std::tuple<double, rgba_color> color_stop(size_type index, ::std::error_code& ec) const noexcept;
+					::std::vector<::std::tuple<double, rgba_color>>& color_stops() noexcept;
+					const ::std::vector<::std::tuple<double, rgba_color>>& color_stops() const noexcept;
 					::std::tuple<vector_2d, double, vector_2d, double> radial_circles() const noexcept;
 				};
 

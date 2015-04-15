@@ -156,6 +156,14 @@ tuple<double, rgba_color> linear_brush_factory::color_stop(linear_brush_factory:
 	}
 }
 
+vector<tuple<double, rgba_color>>& linear_brush_factory::color_stops() noexcept{
+	return _Color_stops;
+}
+
+const vector<tuple<double, rgba_color>>& linear_brush_factory::color_stops() const noexcept{
+	return _Color_stops;
+}
+
 vector_2d linear_brush_factory::begin_point() const noexcept{
 	return _Begin_point;
 }
