@@ -71,7 +71,7 @@ void path_builder::append_path(const path_builder& p) {
 
 point path_builder::get_current_point() {
 	assert(has_current_point());
-	return point((*_Data.crend()).pt);
+	return _Current_point;
 }
 
 void path_builder::new_sub_path() {
@@ -120,7 +120,7 @@ void _Add_arc_as_beziers_to_path_builder(const point& center, double radius, dou
 	double phi;
 
 	{
-		// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
+		// See: DeVeneza, Richard A., "How to determine the control points of a BÃ©zier curve that approximates a small circular arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
 
 		while (theta >= (_PI / 2.0)) {
 			theta /= 2.0;
