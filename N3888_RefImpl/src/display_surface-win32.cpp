@@ -164,6 +164,9 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		}
 		// Run user draw function:
 		if (_Draw_fn != nullptr) {
+			if (_Auto_clear) {
+				clear();
+			}
 			_Draw_fn(*this);
 		}
 
@@ -192,6 +195,7 @@ display_surface::display_surface(display_surface&& other) noexcept
 	, _Size_change_fn(move(other._Size_change_fn))
 	, _User_scaling_fn(move(other._User_scaling_fn))
 	, _Letterbox_brush(move(other._Letterbox_brush))
+	, _Auto_clear(move(other._Auto_clear))
 	, _Window_style(move(other._Window_style))
 	, _Hwnd(move(other._Hwnd))
 	, _Native_surface(move(other._Native_surface))
@@ -214,6 +218,7 @@ display_surface& display_surface::operator=(display_surface&& other) noexcept {
 		_Size_change_fn = move(other._Size_change_fn);
 		_User_scaling_fn = move(other._User_scaling_fn);
 		_Letterbox_brush = move(other._Letterbox_brush);
+		_Auto_clear = move(other._Auto_clear);
 		_Window_style = move(other._Window_style);
 		_Hwnd = move(other._Hwnd);
 		_Native_surface = move(other._Native_surface);
@@ -247,6 +252,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Size_change_fn()
 	, _User_scaling_fn()
 	, _Letterbox_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Auto_clear(false)
 	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
@@ -335,6 +341,9 @@ int display_surface::join() {
 				else {
 					// Run user draw function:
 					if (_Draw_fn != nullptr) {
+						if (_Auto_clear) {
+							clear();
+						}
 						_Draw_fn(*this);
 					}
 

@@ -45,6 +45,9 @@
     <ClInclude Include="xio2dhelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="test_renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="surface.cpp">
@@ -132,6 +135,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapped_surface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_renderer_fill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

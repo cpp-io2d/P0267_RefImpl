@@ -37,15 +37,36 @@ surface_brush_factory::surface_brush_factory(::std::experimental::io2d::surface&
 	_Surface = make_unique<image_surface>(move(_Surface_create_image_surface_copy(s)));
 }
 
-image_surface surface_brush_factory::surface(::std::experimental::io2d::surface& s) {
+void surface_brush_factory::surface(::std::experimental::io2d::surface& s) {
 	// Create an image_surface copy of the new surface.
 	auto sfc = _Surface_create_image_surface_copy(s);
-	// Move the old surface to a return value variable.
-	auto result = move(_Surface);
 	// Move the copy of the new surface to be the current surface
 	_Surface = make_unique<image_surface>(move(sfc));
-	// Return the old surface.
-	return move(*result.release());
+}
+
+void surface_brush_factory::surface(::std::experimental::io2d::surface& s, ::std::error_code & ec) noexcept {
+	image_surface sfc{format::argb32, 1, 1, ec};
+	if (static_cast<bool>(ec)) {
+		return;
+	}
+
+	// Create an image_surface copy of the new surface.
+	_Surface_create_image_surface_copy(s, sfc, ec);
+
+	if (static_cast<bool>(ec)) {
+		return;
+	}
+
+	// Move the copy of the new surface to be the current surface
+	try {
+		auto heapSfc = make_unique<image_surface>(move(sfc));
+		swap(heapSfc, _Surface);
+	}
+	catch (bad_alloc) {
+		ec = make_error_code(errc::not_enough_memory);
+		return;
+	}
+	ec.clear();
 }
 
 bool surface_brush_factory::has_surface() const noexcept {

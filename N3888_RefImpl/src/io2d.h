@@ -3,7 +3,7 @@
 #ifndef _IO2D_
 #define _IO2D_
 
-#define __cpp_lib_experimental_io2d 201505
+#define __cpp_lib_experimental_io2d 201507
 
 #include "xio2d.h"
 
@@ -14,6 +14,7 @@
 #include <string>
 #include <algorithm>
 #include <system_error>
+#include <cstdint>
 
 #ifdef _WIN32_WINNT
 #define NOMINMAX
@@ -58,22 +59,22 @@ namespace std {
 				class font_extents;
 				class text_extents;
 				class matrix_2d;
-				class path_data;
+				//class path_data;
 				class _Point;
-				class move_to;
-				class line_to;
-				class rel_move_to;
-				class rel_line_to;
+				//class move_to;
+				//class line_to;
+				//class rel_move_to;
+				//class rel_line_to;
 				class _Curve_to;
-				class curve_to;
-				class rel_curve_to;
+				//class curve_to;
+				//class rel_curve_to;
 				class _Arc;
-				class arc;
-				class arc_negative;
-				class new_sub_path;
-				class close_path;
-				class change_matrix;
-				class change_origin;
+				//class arc;
+				//class arc_negative;
+				//class new_sub_path;
+				//class close_path;
+				//class change_matrix;
+				//class change_origin;
 				class path;
 				class path_factory;
 				class device;
@@ -84,7 +85,7 @@ namespace std {
 				class solid_color_brush_factory;
 				class linear_brush_factory;
 				class radial_brush_factory;
-				class mesh_brush_factory;
+				//class mesh_brush_factory;
 				struct _Surface_native_handles;
 				class surface;
 				class image_surface;
@@ -162,9 +163,9 @@ namespace std {
 				};
 
 				enum class compositing_operator {
+					over,
 					clear,
 					source,
-					over,
 					in,
 					out,
 					atop,
@@ -190,14 +191,13 @@ namespace std {
 					hsl_hue,
 					hsl_saturation,
 					hsl_color,
-					hsl_luminosity,
-					default_op = over
+					hsl_luminosity
 				};
 
 				enum class format {
 					invalid,
 					argb32,
-					rgb24,
+					xrgb32,
 					a8,
 					a1,
 					rgb16_565,
@@ -223,8 +223,7 @@ namespace std {
 					solid_color,
 					surface,
 					linear,
-					radial,
-					mesh
+					radial
 				};
 
 				enum class font_slant {
@@ -300,13 +299,19 @@ namespace std {
 					void height(double value) noexcept;
 					void top_left(const vector_2d& value) noexcept;
 					void bottom_right(const vector_2d& value) noexcept;
+					void top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept;
 
 					double x() const noexcept;
 					double y() const noexcept;
 					double width() const noexcept;
 					double height() const noexcept;
+					double left() const noexcept;
+					double right() const noexcept;
+					double top() const noexcept;
+					double bottom() const noexcept;
 					vector_2d top_left() const noexcept;
 					vector_2d bottom_right() const noexcept;
+					tuple<vector_2d, vector_2d> top_left_bottom_right() const noexcept;
 				};
 
 				class rgba_color {
@@ -529,8 +534,11 @@ namespace std {
 					double x() const noexcept;
 					double y() const noexcept;
 
-					double length() const noexcept;
+					double magnitude() const noexcept;
+					double magnitude_squared() const noexcept;
 					double dot(const vector_2d& other) const noexcept;
+					double angular_direction(const vector_2d& to) const noexcept;
+
 					vector_2d to_unit() const noexcept;
 
 					vector_2d& operator+=(const vector_2d& rhs) noexcept;
@@ -645,7 +653,7 @@ namespace std {
 					double determinant() const;
 					double determinant(::std::error_code& ec) const noexcept;
 					vector_2d transform_distance(const vector_2d& dist) const noexcept;
-					vector_2d transform_point(const vector_2d& pt) const noexcept;
+					vector_2d transform_coords(const vector_2d& pt) const noexcept;
 
 					matrix_2d& operator*=(const matrix_2d& rhs) noexcept;
 				};
@@ -653,227 +661,6 @@ namespace std {
 				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
 				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
 				bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
-
-				class path_data {
-				public:
-					path_data() noexcept = default;
-					path_data(const path_data& other) noexcept = default;
-					path_data& operator=(const path_data& other) noexcept = default;
-					path_data(path_data&& other) noexcept;
-					path_data& operator=(path_data&& other) noexcept;
-					virtual ~path_data() noexcept;
-
-					virtual path_data_type type() const noexcept = 0;
-				};
-
-				class _Point : public path_data {
-					vector_2d _Data = { };
-				public:
-					_Point() noexcept = default;
-					_Point(const _Point& other) noexcept = default;
-					_Point& operator=(const _Point& other) noexcept = default;
-					_Point(_Point&& other) noexcept;
-					_Point& operator=(_Point&& other) noexcept;
-					_Point(const vector_2d& to) noexcept;
-					virtual ~_Point() noexcept;
-					virtual path_data_type type() const noexcept override = 0;
-
-					vector_2d to() const noexcept;
-					void to(const vector_2d& value) noexcept;
-				};
-
-				class move_to : public _Point {
-				public:
-					move_to() noexcept = default;
-					move_to(const move_to& other) noexcept = default;
-					move_to& operator=(const move_to& other) noexcept = default;
-					move_to(move_to&& other) noexcept;
-					move_to& operator=(move_to&& other) noexcept;
-					move_to(const vector_2d& to) noexcept;
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class line_to : public _Point {
-				public:
-					line_to() noexcept = default;
-					line_to(const line_to& other) noexcept = default;
-					line_to& operator=(const line_to& other) noexcept = default;
-					line_to(line_to&& other) noexcept;
-					line_to& operator=(line_to&& other) noexcept;
-					line_to(const vector_2d& to) noexcept;
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class rel_move_to : public _Point {
-				public:
-					rel_move_to() noexcept = default;
-					rel_move_to(const rel_move_to& other) noexcept = default;
-					rel_move_to& operator=(const rel_move_to& other) noexcept = default;
-					rel_move_to(rel_move_to&& other) noexcept;
-					rel_move_to& operator=(rel_move_to&& other) noexcept;
-					rel_move_to(const vector_2d& to) noexcept;
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class rel_line_to : public _Point {
-				public:
-					rel_line_to() noexcept = default;
-					rel_line_to(const rel_line_to& other) noexcept = default;
-					rel_line_to& operator=(const rel_line_to& other) noexcept = default;
-					rel_line_to(rel_line_to&& other) noexcept;
-					rel_line_to& operator=(rel_line_to&& other) noexcept;
-					rel_line_to(const vector_2d& to) noexcept;
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class _Curve_to : public path_data {
-					vector_2d _Control_pt1 = { };
-					vector_2d _Control_pt2 = { };
-					vector_2d _End_pt = { };
-				public:
-					_Curve_to() noexcept = default;
-					_Curve_to(const _Curve_to& other) noexcept = default;
-					_Curve_to& operator=(const _Curve_to& other) noexcept = default;
-					_Curve_to(_Curve_to&& other) noexcept;
-					_Curve_to& operator=(_Curve_to&& other) noexcept;
-					_Curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
-					virtual ~_Curve_to() noexcept;
-					virtual path_data_type type() const noexcept override = 0;
-
-					void control_point_1(const vector_2d& value) noexcept;
-					void control_point_2(const vector_2d& value) noexcept;
-					void end_point(const vector_2d& value) noexcept;
-
-					vector_2d control_point_1() const noexcept;
-					vector_2d control_point_2() const noexcept;
-					vector_2d end_point() const noexcept;
-				};
-
-				class curve_to : public _Curve_to {
-				public:
-					curve_to() noexcept = default;
-					curve_to(const curve_to& other) noexcept = default;
-					curve_to& operator=(const curve_to& other) noexcept = default;
-					curve_to(curve_to&& other) noexcept;
-					curve_to& operator=(curve_to&& other) noexcept;
-					curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class rel_curve_to : public _Curve_to {
-				public:
-					rel_curve_to() noexcept = default;
-					rel_curve_to(const rel_curve_to& other) noexcept = default;
-					rel_curve_to& operator=(const rel_curve_to& other) noexcept = default;
-					rel_curve_to(rel_curve_to&& other) noexcept;
-					rel_curve_to& operator=(rel_curve_to&& other) noexcept;
-					rel_curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class _Arc : public path_data {
-					vector_2d _Center;
-					double _Radius;
-					double _Angle_1;
-					double _Angle_2;
-				public:
-					_Arc() noexcept;
-					_Arc(const _Arc& other) noexcept = default;
-					_Arc& operator=(const _Arc& other) noexcept = default;
-					_Arc(_Arc&& other) noexcept;
-					_Arc& operator=(_Arc&& other) noexcept;
-					_Arc(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
-					virtual ~_Arc() noexcept;
-					virtual path_data_type type() const noexcept override = 0;
-
-					void center(const vector_2d& value) noexcept;
-					void radius(double value) noexcept;
-					void angle_1(double radians) noexcept;
-					void angle_2(double radians) noexcept;
-
-					vector_2d center() const noexcept;
-					double radius() const noexcept;
-					double angle_1() const noexcept;
-					double angle_2() const noexcept;
-				};
-
-				class arc : public _Arc {
-				public:
-					arc() noexcept = default;
-					arc(const arc& other) noexcept = default;
-					arc& operator=(const arc& other) noexcept = default;
-					arc(arc&& other) noexcept;
-					arc& operator=(arc&& other) noexcept;
-					arc(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
-
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class arc_negative : public _Arc {
-				public:
-					arc_negative() noexcept = default;
-					arc_negative(const arc_negative& other) noexcept = default;
-					arc_negative& operator=(const arc_negative& other) noexcept = default;
-					arc_negative(arc_negative&& other) noexcept;
-					arc_negative& operator=(arc_negative&& other) noexcept;
-					arc_negative(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
-
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class new_sub_path : public path_data {
-				public:
-					new_sub_path() noexcept = default;
-					new_sub_path(const new_sub_path& other) noexcept = default;
-					new_sub_path& operator=(const new_sub_path& other) noexcept = default;
-					new_sub_path(new_sub_path&& other) noexcept;
-					new_sub_path& operator=(new_sub_path&& other) noexcept;
-
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class close_path : public path_data {
-				public:
-					close_path() noexcept = default;
-					close_path(const close_path& other) noexcept = default;
-					close_path& operator=(const close_path& other) noexcept = default;
-					close_path(close_path&& other) noexcept;
-					close_path& operator=(close_path&& other) noexcept;
-
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class change_matrix : public path_data {
-					matrix_2d _Matrix = { };
-				public:
-					change_matrix() noexcept = default;
-					change_matrix(const change_matrix& other) noexcept = default;
-					change_matrix& operator=(const change_matrix& other) noexcept = default;
-					change_matrix(change_matrix&& other) noexcept;
-					change_matrix& operator=(change_matrix&& other) noexcept;
-					change_matrix(const matrix_2d& m) noexcept;
-
-					void matrix(const matrix_2d& value) noexcept;
-
-					matrix_2d matrix() const noexcept;
-					virtual path_data_type type() const noexcept override;
-				};
-
-				class change_origin : public path_data {
-					vector_2d _Origin = { };
-				public:
-					change_origin() noexcept = default;
-					change_origin(const change_origin& other) noexcept = default;
-					change_origin& operator=(const change_origin& other) noexcept = default;
-					change_origin(change_origin&& other) noexcept;
-					change_origin& operator=(change_origin&& other) noexcept;
-					change_origin(const vector_2d& origin) noexcept;
-
-					void origin(const vector_2d& value) noexcept;
-
-					vector_2d origin() const noexcept;
-					virtual path_data_type type() const noexcept override;
-				};
 
 				class path_data_item {
 					bool _Has_data = false;
@@ -910,36 +697,50 @@ namespace std {
 					path_data_type _Type;
 
 				public:
+					class path_data;
+					class arc;
+					class arc_negative;
+					class change_matrix;
+					class change_origin;
+					class close_path;
+					class curve_to;
+					class rel_curve_to;
+					class new_sub_path;
+					class line_to;
+					class move_to;
+					class rel_line_to;
+					class rel_move_to;
+
 					path_data_item() noexcept = default;
 					path_data_item(const path_data_item&) noexcept = default;
 					path_data_item& operator=(const path_data_item&) noexcept = default;
 					path_data_item(path_data_item&& other) noexcept;
 					path_data_item& operator=(path_data_item&& other) noexcept;
-					path_data_item(const arc& value) noexcept;
-					path_data_item(const arc_negative& value) noexcept;
-					path_data_item(const change_matrix& value) noexcept;
-					path_data_item(const change_origin& value) noexcept;
-					path_data_item(const close_path& value) noexcept;
-					path_data_item(const curve_to& value) noexcept;
-					path_data_item(const rel_curve_to& value) noexcept;
-					path_data_item(const new_sub_path& value) noexcept;
-					path_data_item(const line_to& value) noexcept;
-					path_data_item(const move_to& value) noexcept;
-					path_data_item(const rel_line_to& value) noexcept;
-					path_data_item(const rel_move_to& value) noexcept;
+					path_data_item(const path_data_item::arc& value) noexcept;
+					path_data_item(const path_data_item::arc_negative& value) noexcept;
+					path_data_item(const path_data_item::change_matrix& value) noexcept;
+					path_data_item(const path_data_item::change_origin& value) noexcept;
+					path_data_item(const path_data_item::close_path& value) noexcept;
+					path_data_item(const path_data_item::curve_to& value) noexcept;
+					path_data_item(const path_data_item::rel_curve_to& value) noexcept;
+					path_data_item(const path_data_item::new_sub_path& value) noexcept;
+					path_data_item(const path_data_item::line_to& value) noexcept;
+					path_data_item(const path_data_item::move_to& value) noexcept;
+					path_data_item(const path_data_item::rel_line_to& value) noexcept;
+					path_data_item(const path_data_item::rel_move_to& value) noexcept;
 
-					void assign(const arc& value) noexcept;
-					void assign(const arc_negative& value) noexcept;
-					void assign(const change_matrix& value) noexcept;
-					void assign(const change_origin& value) noexcept;
-					void assign(const close_path& value) noexcept;
-					void assign(const curve_to& value) noexcept;
-					void assign(const rel_curve_to& value) noexcept;
-					void assign(const new_sub_path& value) noexcept;
-					void assign(const line_to& value) noexcept;
-					void assign(const move_to& value) noexcept;
-					void assign(const rel_line_to& value) noexcept;
-					void assign(const rel_move_to& value) noexcept;
+					void assign(const path_data_item::arc& value) noexcept;
+					void assign(const path_data_item::arc_negative& value) noexcept;
+					void assign(const path_data_item::change_matrix& value) noexcept;
+					void assign(const path_data_item::change_origin& value) noexcept;
+					void assign(const path_data_item::close_path& value) noexcept;
+					void assign(const path_data_item::curve_to& value) noexcept;
+					void assign(const path_data_item::rel_curve_to& value) noexcept;
+					void assign(const path_data_item::new_sub_path& value) noexcept;
+					void assign(const path_data_item::line_to& value) noexcept;
+					void assign(const path_data_item::move_to& value) noexcept;
+					void assign(const path_data_item::rel_line_to& value) noexcept;
+					void assign(const path_data_item::rel_move_to& value) noexcept;
 
 					bool has_data() const noexcept;
 					path_data_type type() const;
@@ -951,353 +752,574 @@ namespace std {
 					T get(::std::error_code& ec) const noexcept;
 
 					template <>
-					arc get() const;
+					path_data_item::arc get() const;
 					template <>
-					arc get(::std::error_code& ec) const noexcept;
+					path_data_item::arc get(::std::error_code& ec) const noexcept;
 					template <>
-					arc_negative get() const;
+					path_data_item::arc_negative get() const;
 					template <>
-					arc_negative get(::std::error_code& ec) const noexcept;
+					path_data_item::arc_negative get(::std::error_code& ec) const noexcept;
 					template <>
-					change_matrix get() const;
+					path_data_item::change_matrix get() const;
 					template <>
-					change_matrix get(::std::error_code& ec) const noexcept;
+					path_data_item::change_matrix get(::std::error_code& ec) const noexcept;
 					template <>
-					change_origin get() const;
+					path_data_item::change_origin get() const;
 					template <>
-					change_origin get(::std::error_code& ec) const noexcept;
+					path_data_item::change_origin get(::std::error_code& ec) const noexcept;
 					template <>
-					close_path get() const;
+					path_data_item::close_path get() const;
 					template <>
-					close_path get(::std::error_code& ec) const noexcept;
+					path_data_item::close_path get(::std::error_code& ec) const noexcept;
 					template <>
-					curve_to get() const;
+					path_data_item::curve_to get() const;
 					template <>
-					curve_to get(::std::error_code& ec) const noexcept;
+					path_data_item::curve_to get(::std::error_code& ec) const noexcept;
 					template <>
-					rel_curve_to get() const;
+					path_data_item::rel_curve_to get() const;
 					template <>
-					rel_curve_to get(::std::error_code& ec) const noexcept;
+					path_data_item::rel_curve_to get(::std::error_code& ec) const noexcept;
 					template <>
-					new_sub_path get() const;
+					path_data_item::new_sub_path get() const;
 					template <>
-					new_sub_path get(::std::error_code& ec) const noexcept;
+					path_data_item::new_sub_path get(::std::error_code& ec) const noexcept;
 					template <>
-					line_to get() const;
+					path_data_item::line_to get() const;
 					template <>
-					line_to get(::std::error_code& ec) const noexcept;
+					path_data_item::line_to get(::std::error_code& ec) const noexcept;
 					template <>
-					move_to get() const;
+					path_data_item::move_to get() const;
 					template <>
-					move_to get(::std::error_code& ec) const noexcept;
+					path_data_item::move_to get(::std::error_code& ec) const noexcept;
 					template <>
-					rel_line_to get() const;
+					path_data_item::rel_line_to get() const;
 					template <>
-					rel_line_to get(::std::error_code& ec) const noexcept;
+					path_data_item::rel_line_to get(::std::error_code& ec) const noexcept;
 					template <>
-					rel_move_to get() const;
+					path_data_item::rel_move_to get() const;
 					template <>
-					rel_move_to get(::std::error_code& ec) const noexcept;
+					path_data_item::rel_move_to get(::std::error_code& ec) const noexcept;
+				};
+
+				class path_data_item::path_data {
+				public:
+					path_data() noexcept = default;
+					path_data(const path_data& other) noexcept = default;
+					path_data& operator=(const path_data& other) noexcept = default;
+					path_data(path_data&& other) noexcept;
+					path_data& operator=(path_data&& other) noexcept;
+					virtual ~path_data() noexcept;
+
+					virtual path_data_type type() const noexcept = 0;
+				};
+
+				class _Point : public path_data_item::path_data {
+					vector_2d _Data = { };
+				public:
+					_Point() noexcept = default;
+					_Point(const _Point& other) noexcept = default;
+					_Point& operator=(const _Point& other) noexcept = default;
+					_Point(_Point&& other) noexcept;
+					_Point& operator=(_Point&& other) noexcept;
+					_Point(const vector_2d& to) noexcept;
+					virtual ~_Point() noexcept;
+					virtual path_data_type type() const noexcept override = 0;
+
+					vector_2d to() const noexcept;
+					void to(const vector_2d& value) noexcept;
+				};
+
+				class path_data_item::move_to : public _Point {
+				public:
+					move_to() noexcept = default;
+					move_to(const move_to& other) noexcept = default;
+					move_to& operator=(const move_to& other) noexcept = default;
+					move_to(move_to&& other) noexcept;
+					move_to& operator=(move_to&& other) noexcept;
+					move_to(const vector_2d& to) noexcept;
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class path_data_item::line_to : public _Point {
+				public:
+					line_to() noexcept = default;
+					line_to(const line_to& other) noexcept = default;
+					line_to& operator=(const line_to& other) noexcept = default;
+					line_to(line_to&& other) noexcept;
+					line_to& operator=(line_to&& other) noexcept;
+					line_to(const vector_2d& to) noexcept;
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class path_data_item::rel_move_to : public _Point {
+				public:
+					rel_move_to() noexcept = default;
+					rel_move_to(const rel_move_to& other) noexcept = default;
+					rel_move_to& operator=(const rel_move_to& other) noexcept = default;
+					rel_move_to(rel_move_to&& other) noexcept;
+					rel_move_to& operator=(rel_move_to&& other) noexcept;
+					rel_move_to(const vector_2d& to) noexcept;
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class path_data_item::rel_line_to : public _Point {
+				public:
+					rel_line_to() noexcept = default;
+					rel_line_to(const rel_line_to& other) noexcept = default;
+					rel_line_to& operator=(const rel_line_to& other) noexcept = default;
+					rel_line_to(rel_line_to&& other) noexcept;
+					rel_line_to& operator=(rel_line_to&& other) noexcept;
+					rel_line_to(const vector_2d& to) noexcept;
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class _Curve_to : public path_data_item::path_data {
+					vector_2d _Control_pt1 = { };
+					vector_2d _Control_pt2 = { };
+					vector_2d _End_pt = { };
+				public:
+					_Curve_to() noexcept = default;
+					_Curve_to(const _Curve_to& other) noexcept = default;
+					_Curve_to& operator=(const _Curve_to& other) noexcept = default;
+					_Curve_to(_Curve_to&& other) noexcept;
+					_Curve_to& operator=(_Curve_to&& other) noexcept;
+					_Curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
+					virtual ~_Curve_to() noexcept;
+					virtual path_data_type type() const noexcept override = 0;
+
+					void control_point_1(const vector_2d& value) noexcept;
+					void control_point_2(const vector_2d& value) noexcept;
+					void end_point(const vector_2d& value) noexcept;
+
+					vector_2d control_point_1() const noexcept;
+					vector_2d control_point_2() const noexcept;
+					vector_2d end_point() const noexcept;
+				};
+
+				class path_data_item::curve_to : public _Curve_to {
+				public:
+					curve_to() noexcept = default;
+					curve_to(const curve_to& other) noexcept = default;
+					curve_to& operator=(const curve_to& other) noexcept = default;
+					curve_to(curve_to&& other) noexcept;
+					curve_to& operator=(curve_to&& other) noexcept;
+					curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class path_data_item::rel_curve_to : public _Curve_to {
+				public:
+					rel_curve_to() noexcept = default;
+					rel_curve_to(const rel_curve_to& other) noexcept = default;
+					rel_curve_to& operator=(const rel_curve_to& other) noexcept = default;
+					rel_curve_to(rel_curve_to&& other) noexcept;
+					rel_curve_to& operator=(rel_curve_to&& other) noexcept;
+					rel_curve_to(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class _Arc : public path_data_item::path_data {
+					vector_2d _Center;
+					double _Radius;
+					double _Angle_1;
+					double _Angle_2;
+				public:
+					_Arc() noexcept;
+					_Arc(const _Arc& other) noexcept = default;
+					_Arc& operator=(const _Arc& other) noexcept = default;
+					_Arc(_Arc&& other) noexcept;
+					_Arc& operator=(_Arc&& other) noexcept;
+					_Arc(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
+					virtual ~_Arc() noexcept;
+					virtual path_data_type type() const noexcept override = 0;
+
+					void center(const vector_2d& value) noexcept;
+					void radius(double value) noexcept;
+					void angle_1(double radians) noexcept;
+					void angle_2(double radians) noexcept;
+
+					vector_2d center() const noexcept;
+					double radius() const noexcept;
+					double angle_1() const noexcept;
+					double angle_2() const noexcept;
+				};
+
+				class path_data_item::arc : public _Arc {
+				public:
+					arc() noexcept = default;
+					arc(const arc& other) noexcept = default;
+					arc& operator=(const arc& other) noexcept = default;
+					arc(arc&& other) noexcept;
+					arc& operator=(arc&& other) noexcept;
+					arc(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
+
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class path_data_item::arc_negative : public _Arc {
+				public:
+					arc_negative() noexcept = default;
+					arc_negative(const arc_negative& other) noexcept = default;
+					arc_negative& operator=(const arc_negative& other) noexcept = default;
+					arc_negative(arc_negative&& other) noexcept;
+					arc_negative& operator=(arc_negative&& other) noexcept;
+					arc_negative(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
+
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class path_data_item::new_sub_path : public path_data_item::path_data {
+				public:
+					new_sub_path() noexcept = default;
+					new_sub_path(const new_sub_path& other) noexcept = default;
+					new_sub_path& operator=(const new_sub_path& other) noexcept = default;
+					new_sub_path(new_sub_path&& other) noexcept;
+					new_sub_path& operator=(new_sub_path&& other) noexcept;
+
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class path_data_item::close_path : public path_data_item::path_data {
+				public:
+					close_path() noexcept = default;
+					close_path(const close_path& other) noexcept = default;
+					close_path& operator=(const close_path& other) noexcept = default;
+					close_path(close_path&& other) noexcept;
+					close_path& operator=(close_path&& other) noexcept;
+
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class path_data_item::change_matrix : public path_data_item::path_data {
+					matrix_2d _Matrix = { };
+				public:
+					change_matrix() noexcept = default;
+					change_matrix(const change_matrix& other) noexcept = default;
+					change_matrix& operator=(const change_matrix& other) noexcept = default;
+					change_matrix(change_matrix&& other) noexcept;
+					change_matrix& operator=(change_matrix&& other) noexcept;
+					change_matrix(const matrix_2d& m) noexcept;
+
+					void matrix(const matrix_2d& value) noexcept;
+
+					matrix_2d matrix() const noexcept;
+					virtual path_data_type type() const noexcept override;
+				};
+
+				class path_data_item::change_origin : public path_data_item::path_data {
+					vector_2d _Origin = { };
+				public:
+					change_origin() noexcept = default;
+					change_origin(const change_origin& other) noexcept = default;
+					change_origin& operator=(const change_origin& other) noexcept = default;
+					change_origin(change_origin&& other) noexcept;
+					change_origin& operator=(change_origin&& other) noexcept;
+					change_origin(const vector_2d& origin) noexcept;
+
+					void origin(const vector_2d& value) noexcept;
+
+					vector_2d origin() const noexcept;
+					virtual path_data_type type() const noexcept override;
 				};
 
 				template <>
-				arc path_data_item::get() const {
+				path_data_item::arc path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::arc) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return arc{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+					return path_data_item::arc{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
 				}
 
 				template <>
-				arc path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::arc path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return arc{ };
+						return path_data_item::arc{ };
 					}
 					if (_Type != path_data_type::arc) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return arc{ };
+						return path_data_item::arc{ };
 					}
 					ec.clear();
-					return arc{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+					return path_data_item::arc{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
 				}
 
 				template <>
-				arc_negative path_data_item::get() const {
+				path_data_item::arc_negative path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::arc_negative) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return arc_negative{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+					return path_data_item::arc_negative{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
 				}
 
 				template <>
-				arc_negative path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::arc_negative path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return arc_negative{ };
+						return path_data_item::arc_negative{ };
 					}
 					if (_Type != path_data_type::arc_negative) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return arc_negative{ };
+						return path_data_item::arc_negative{ };
 					}
 					ec.clear();
-					return arc_negative{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
+					return path_data_item::arc_negative{ vector_2d{ _Data.arc.centerX, _Data.arc.centerY }, _Data.arc.radius, _Data.arc.angle1, _Data.arc.angle2 };
 				}
 
 				template <>
-				change_matrix path_data_item::get() const {
+				path_data_item::change_matrix path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::change_matrix) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return change_matrix{ matrix_2d{ _Data.matrix.m00, _Data.matrix.m01, _Data.matrix.m10, _Data.matrix.m11, _Data.matrix.m20, _Data.matrix.m21 } };
+					return path_data_item::change_matrix{ matrix_2d{ _Data.matrix.m00, _Data.matrix.m01, _Data.matrix.m10, _Data.matrix.m11, _Data.matrix.m20, _Data.matrix.m21 } };
 				}
 
 				template <>
-				change_matrix path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::change_matrix path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return change_matrix{ };
+						return path_data_item::change_matrix{ };
 					}
 					if (_Type != path_data_type::change_matrix) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return change_matrix{ };
+						return path_data_item::change_matrix{ };
 					}
 					ec.clear();
-					return change_matrix{ matrix_2d{ _Data.matrix.m00, _Data.matrix.m01, _Data.matrix.m10, _Data.matrix.m11, _Data.matrix.m20, _Data.matrix.m21 } };
+					return path_data_item::change_matrix{ matrix_2d{ _Data.matrix.m00, _Data.matrix.m01, _Data.matrix.m10, _Data.matrix.m11, _Data.matrix.m20, _Data.matrix.m21 } };
 				}
 
 				template <>
-				change_origin path_data_item::get() const {
+				path_data_item::change_origin path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::change_origin) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return change_origin{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::change_origin{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
-				change_origin path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::change_origin path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return change_origin{ };
+						return path_data_item::change_origin{ };
 					}
 					if (_Type != path_data_type::change_origin) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return change_origin{ };
+						return path_data_item::change_origin{ };
 					}
 					ec.clear();
-					return change_origin{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::change_origin{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
-				close_path path_data_item::get() const {
+				path_data_item::close_path path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::close_path) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return close_path{ };
+					return path_data_item::close_path{ };
 				}
 
 				template <>
-				close_path path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::close_path path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return close_path{ };
+						return path_data_item::close_path{ };
 					}
 					if (_Type != path_data_type::close_path) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return close_path{ };
+						return path_data_item::close_path{ };
 					}
 					ec.clear();
-					return close_path{ };
+					return path_data_item::close_path{ };
 				}
 
 				template <>
-				curve_to path_data_item::get() const {
+				path_data_item::curve_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::curve_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
+					return path_data_item::curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
 				}
 
 				template <>
-				curve_to path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::curve_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return curve_to{ };
+						return path_data_item::curve_to{ };
 					}
 					if (_Type != path_data_type::curve_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return curve_to{ };
+						return path_data_item::curve_to{ };
 					}
 					ec.clear();
-					return curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
+					return path_data_item::curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
 				}
 
 				template <>
-				rel_curve_to path_data_item::get() const {
+				path_data_item::rel_curve_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::rel_curve_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return rel_curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
+					return path_data_item::rel_curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
 				}
 
 				template <>
-				rel_curve_to path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::rel_curve_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return rel_curve_to{ };
+						return path_data_item::rel_curve_to{ };
 					}
 					if (_Type != path_data_type::rel_curve_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return rel_curve_to{ };
+						return path_data_item::rel_curve_to{ };
 					}
 					ec.clear();
-					return rel_curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
+					return path_data_item::rel_curve_to{ vector_2d{ _Data.curve.cpt1x, _Data.curve.cpt1y }, vector_2d{ _Data.curve.cpt2x, _Data.curve.cpt2y }, vector_2d{ _Data.curve.eptx, _Data.curve.epty } };
 				}
 
 				template <>
-				new_sub_path path_data_item::get() const {
+				path_data_item::new_sub_path path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::new_sub_path) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return new_sub_path{ };
+					return path_data_item::new_sub_path{ };
 				}
 
 				template <>
-				new_sub_path path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::new_sub_path path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return new_sub_path{ };
+						return path_data_item::new_sub_path{ };
 					}
 					if (_Type != path_data_type::new_sub_path) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return new_sub_path{ };
+						return path_data_item::new_sub_path{ };
 					}
 					ec.clear();
-					return new_sub_path{ };
+					return path_data_item::new_sub_path{ };
 				}
 
 				template <>
-				line_to path_data_item::get() const {
+				path_data_item::line_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::line_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
-				line_to path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::line_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return line_to{ };
+						return path_data_item::line_to{ };
 					}
 					if (_Type != path_data_type::line_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return line_to{ };
+						return path_data_item::line_to{ };
 					}
 					ec.clear();
-					return line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
-				move_to path_data_item::get() const {
+				path_data_item::move_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::move_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
-				move_to path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::move_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return move_to{ };
+						return path_data_item::move_to{ };
 					}
 					if (_Type != path_data_type::move_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return move_to{ };
+						return path_data_item::move_to{ };
 					}
 					ec.clear();
-					return move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
-				rel_line_to path_data_item::get() const {
+				path_data_item::rel_line_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::rel_line_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return rel_line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::rel_line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
-				rel_line_to path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::rel_line_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return rel_line_to{ };
+						return path_data_item::rel_line_to{ };
 					}
 					if (_Type != path_data_type::rel_line_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return rel_line_to{ };
+						return path_data_item::rel_line_to{ };
 					}
 					ec.clear();
-					return rel_line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::rel_line_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
-				rel_move_to path_data_item::get() const {
+				path_data_item::rel_move_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
 					if (_Type != path_data_type::rel_move_to) {
 						throw ::std::invalid_argument{ "Incorrect type parameter." };
 					}
-					return rel_move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::rel_move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 				template <>
-				rel_move_to path_data_item::get(::std::error_code& ec) const noexcept {
+				path_data_item::rel_move_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
-						return rel_move_to{ };
+						return path_data_item::rel_move_to{ };
 					}
 					if (_Type != path_data_type::rel_move_to) {
 						ec = ::std::make_error_code(::std::errc::invalid_argument);
-						return rel_move_to{ };
+						return path_data_item::rel_move_to{ };
 					}
 					ec.clear();
-					return rel_move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
+					return path_data_item::rel_move_to{ vector_2d{ _Data.point.x, _Data.point.y } };
 				}
 
 
@@ -1309,10 +1331,6 @@ namespace std {
 					friend path_factory;
 					::std::shared_ptr<::std::vector<path_data_item>> _Data;
 					::std::shared_ptr<cairo_path_t> _Cairo_path;
-					bool _Has_current_point;
-					vector_2d _Current_point;
-					vector_2d _Last_move_to_point;
-					rectangle _Extents;
 				public:
 					typedef cairo_path_t* native_handle_type;
 					native_handle_type native_handle() const noexcept;
@@ -1320,8 +1338,8 @@ namespace std {
 					path() = delete;
 					explicit path(const path_factory& pb);
 					path(const path_factory& pb, ::std::error_code& ec) noexcept;
-					//path(const ::std::vector<path_data_item>& p);
-					//path(const ::std::vector<path_data_item>& p, ::std::error_code& ec) noexcept;
+					explicit path(const ::std::vector<path_data_item>& p);
+					path(const ::std::vector<path_data_item>& p, ::std::error_code& ec) noexcept;
 					path(const path& other) noexcept = default;
 					path& operator=(const path& other) noexcept = default;
 					path(path&& other) noexcept;
@@ -1362,18 +1380,18 @@ namespace std {
 					void line_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
 					void move_to(const vector_2d& pt);
 					void move_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
-					void rectangle(const ::std::experimental::io2d::rectangle& r);
-					void rectangle(const ::std::experimental::io2d::rectangle& r, ::std::error_code& ec) noexcept;
+					void rectangle(const ::std::experimental::io2d::rectangle& r, bool cw = true);
+					void rectangle(const ::std::experimental::io2d::rectangle& r, ::std::error_code& ec, bool cw = true) noexcept;
 					void rel_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2);
 					void rel_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2, ::std::error_code& ec) noexcept;
 					void rel_line_to(const vector_2d& dpt);
 					void rel_line_to(const vector_2d& dpt, ::std::error_code& ec) noexcept;
 					void rel_move_to(const vector_2d& dpt);
 					void rel_move_to(const vector_2d& dpt, ::std::error_code& ec) noexcept;
-					void transform_matrix(const matrix_2d& m);
-					void transform_matrix(const matrix_2d& m, ::std::error_code& ec) noexcept;
-					void origin(const vector_2d& pt);
-					void origin(const vector_2d& pt, ::std::error_code& ec) noexcept;
+					void change_matrix(const matrix_2d& m);
+					void change_matrix(const matrix_2d& m, ::std::error_code& ec) noexcept;
+					void change_origin(const vector_2d& pt);
+					void change_origin(const vector_2d& pt, ::std::error_code& ec) noexcept;
 					void clear() noexcept;
 
 					// Observers
@@ -1382,8 +1400,8 @@ namespace std {
 					bool has_current_point() const noexcept;
 					vector_2d current_point() const;
 					vector_2d current_point(::std::error_code& ec) const noexcept;
-					matrix_2d transform_matrix() const noexcept;
-					vector_2d origin() const noexcept;
+					matrix_2d current_matrix() const noexcept;
+					vector_2d current_origin() const noexcept;
 					::std::vector<path_data_item> data() const;
 					::std::vector<path_data_item> data(::std::error_code& ec) const noexcept;
 					path_data_item data_item(unsigned int index) const;
@@ -1476,7 +1494,7 @@ namespace std {
 
 				// Forward declaration.
 				class linear_brush_factory;
-				class mesh_brush_factory;
+				//class mesh_brush_factory;
 				class radial_brush_factory;
 				class solid_color_brush_factory;
 				class surface_brush_factory;
@@ -1490,7 +1508,7 @@ namespace std {
 
 				private:
 					friend linear_brush_factory;
-					friend mesh_brush_factory;
+					//friend mesh_brush_factory;
 					friend radial_brush_factory;
 					friend solid_color_brush_factory;
 					friend surface_brush_factory;
@@ -1519,8 +1537,8 @@ namespace std {
 					brush(const linear_brush_factory& f, ::std::error_code& ec) noexcept;
 					brush(const radial_brush_factory& f);
 					brush(const radial_brush_factory& f, ::std::error_code& ec) noexcept;
-					brush(const mesh_brush_factory& f);
-					brush(const mesh_brush_factory& f, ::std::error_code& ec) noexcept;
+					//brush(const mesh_brush_factory& f);
+					//brush(const mesh_brush_factory& f, ::std::error_code& ec) noexcept;
 					brush(surface_brush_factory& f);
 					brush(surface_brush_factory& f, ::std::error_code& ec) noexcept;
 
@@ -1624,51 +1642,51 @@ namespace std {
 					::std::tuple<vector_2d, double, vector_2d, double> radial_circles() const noexcept;
 				};
 
-				class mesh_brush_factory {
-					bool _Has_current_patch;
-					unsigned int _Current_patch_index;
-					int _Current_patch_side_count;
-					vector_2d _Current_patch_initial_point;
-					bool _Has_current_point;
-					typedef ::std::array<::std::tuple<bool, vector_2d>, 4> _Control_points;
-					typedef ::std::array<::std::tuple<bool, rgba_color>, 4> _Corner_colors;
-					// <Patch data, control points, corner colors>
-					typedef ::std::tuple<::std::experimental::io2d::path_factory, _Control_points, _Corner_colors> _Patch;
-					::std::vector<_Patch> _Patches;
-				public:
-					mesh_brush_factory() noexcept;
-					mesh_brush_factory(const mesh_brush_factory&) = default;
-					mesh_brush_factory& operator=(const mesh_brush_factory&) = default;
-					mesh_brush_factory(mesh_brush_factory&& other) noexcept;
-					mesh_brush_factory& operator=(mesh_brush_factory&& other) noexcept;
+				//class mesh_brush_factory {
+				//	bool _Has_current_patch;
+				//	unsigned int _Current_patch_index;
+				//	int _Current_patch_side_count;
+				//	vector_2d _Current_patch_initial_point;
+				//	bool _Has_current_point;
+				//	typedef ::std::array<::std::tuple<bool, vector_2d>, 4> _Control_points;
+				//	typedef ::std::array<::std::tuple<bool, rgba_color>, 4> _Corner_colors;
+				//	// <Patch data, control points, corner colors>
+				//	typedef ::std::tuple<::std::experimental::io2d::path_factory, _Control_points, _Corner_colors> _Patch;
+				//	::std::vector<_Patch> _Patches;
+				//public:
+				//	mesh_brush_factory() noexcept;
+				//	mesh_brush_factory(const mesh_brush_factory&) = default;
+				//	mesh_brush_factory& operator=(const mesh_brush_factory&) = default;
+				//	mesh_brush_factory(mesh_brush_factory&& other) noexcept;
+				//	mesh_brush_factory& operator=(mesh_brush_factory&& other) noexcept;
 
-					// Modifiers
-					void begin_patch();
-					void begin_patch(::std::error_code& ec) noexcept;
-					void begin_replace_patch(unsigned int patch_num);
-					void begin_replace_patch(unsigned int patch_num, ::std::error_code& ec) noexcept;
-					void end_patch();
-					void end_patch(::std::error_code& ec) noexcept;
-					void move_to(const vector_2d& pt);
-					void move_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
-					void line_to(const vector_2d& pt);
-					void line_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
-					void curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2);
-					void curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, ::std::error_code& ec) noexcept;
-					void control_point(unsigned int point_num, const vector_2d& pt);
-					void control_point(unsigned int point_num, const vector_2d& pt, ::std::error_code& ec) noexcept;
-					void corner_color(unsigned int corner_num, const rgba_color& color);
-					void corner_color(unsigned int corner_num, const rgba_color& color, ::std::error_code& ec) noexcept;
+				//	// Modifiers
+				//	void begin_patch();
+				//	void begin_patch(::std::error_code& ec) noexcept;
+				//	void begin_replace_patch(unsigned int patch_num);
+				//	void begin_replace_patch(unsigned int patch_num, ::std::error_code& ec) noexcept;
+				//	void end_patch();
+				//	void end_patch(::std::error_code& ec) noexcept;
+				//	void move_to(const vector_2d& pt);
+				//	void move_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
+				//	void line_to(const vector_2d& pt);
+				//	void line_to(const vector_2d& pt, ::std::error_code& ec) noexcept;
+				//	void curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2);
+				//	void curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, ::std::error_code& ec) noexcept;
+				//	void control_point(unsigned int point_num, const vector_2d& pt);
+				//	void control_point(unsigned int point_num, const vector_2d& pt, ::std::error_code& ec) noexcept;
+				//	void corner_color(unsigned int corner_num, const rgba_color& color);
+				//	void corner_color(unsigned int corner_num, const rgba_color& color, ::std::error_code& ec) noexcept;
 
-					// Observers
-					unsigned int patch_count() const noexcept;
-					::std::experimental::io2d::path_factory path_factory(unsigned int patch_num) const;
-					::std::experimental::io2d::path_factory path_factory(unsigned int patch_num, ::std::error_code& ec) const noexcept;
-					bool control_point(unsigned int patch_num, unsigned int point_num, vector_2d& controlPoint) const;
-					bool control_point(unsigned int patch_num, unsigned int point_num, vector_2d& controlPoint, ::std::error_code& ec) const noexcept;
-					bool corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
-					bool corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color, ::std::error_code& ec) const noexcept;
-				};
+				//	// Observers
+				//	unsigned int patch_count() const noexcept;
+				//	::std::experimental::io2d::path_factory path_factory(unsigned int patch_num) const;
+				//	::std::experimental::io2d::path_factory path_factory(unsigned int patch_num, ::std::error_code& ec) const noexcept;
+				//	bool control_point(unsigned int patch_num, unsigned int point_num, vector_2d& controlPoint) const;
+				//	bool control_point(unsigned int patch_num, unsigned int point_num, vector_2d& controlPoint, ::std::error_code& ec) const noexcept;
+				//	bool corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color) const;
+				//	bool corner_color(unsigned int patch_num, unsigned int corner_num, rgba_color& color, ::std::error_code& ec) const noexcept;
+				//};
 
 				struct _Surface_native_handles {
 					::cairo_surface_t* csfce;
@@ -1700,9 +1718,6 @@ namespace std {
 					::std::experimental::io2d::content _Content;
 
 					// State - saved
-					typedef vector_2d _Device_offtype;
-					_Device_offtype _Device_offset = { 0.0, 0.0 };
-					::std::error_code _Brush_error_code;
 					::std::experimental::io2d::brush _Brush;
 					::std::experimental::io2d::antialias _Antialias;
 					::std::experimental::io2d::dashes _Dashes;
@@ -1727,7 +1742,6 @@ namespace std {
 
 					// We use vector here because of its C++17 default ctor noexcept guarantee.
 					::std::stack<::std::tuple<
-						_Device_offtype,
 						::std::experimental::io2d::brush,
 						::std::experimental::io2d::antialias,
 						::std::experimental::io2d::dashes,
@@ -1745,7 +1759,6 @@ namespace std {
 						_Font_matrix_type,
 						::std::experimental::io2d::font_options
 					>, ::std::vector<::std::tuple<
-						_Device_offtype,
 						::std::experimental::io2d::brush,
 						::std::experimental::io2d::antialias,
 						::std::experimental::io2d::dashes,
@@ -1799,13 +1812,10 @@ namespace std {
 					void mark_dirty(::std::error_code& ec) noexcept;
 					void mark_dirty(const rectangle& rect);
 					void mark_dirty(const rectangle& rect, ::std::error_code& ec) noexcept;
-					void device_offset(const vector_2d& offset);
-					void device_offset(const vector_2d& offset, ::std::error_code& ec) noexcept;
-//					void write_to_file(const ::std::string& filename);
 					void map(const ::std::function<void(mapped_surface&)>& action);
 					void map(const ::std::function<void(mapped_surface&, error_code&)>& action, ::std::error_code& ec);
-					void map(const rectangle& extents, const ::std::function<void(mapped_surface&)>& action);
-					void map(const rectangle& extents, const ::std::function<void(mapped_surface&, error_code&)>& action, ::std::error_code& ec);
+					void map(const ::std::function<void(mapped_surface&)>& action, const rectangle& extents);
+					void map(const ::std::function<void(mapped_surface&, error_code&)>& action, const rectangle& extents, ::std::error_code& ec);
 					virtual void save();
 					virtual void save(::std::error_code& ec) noexcept;
 					virtual void restore();
@@ -1836,26 +1846,7 @@ namespace std {
 					::std::experimental::io2d::path_factory& immediate() noexcept;
 
 					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
-					void paint();
-					void paint(::std::error_code& ec) noexcept;
-					void paint(const rgba_color& c);
-					void paint(const rgba_color& c, ::std::error_code& ec) noexcept;
-					void paint(const ::std::experimental::io2d::brush& b);
-					void paint(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
-					void paint(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
-					void paint(const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
-					void paint(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
-					void paint(const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
-					void paint(double alpha);
-					void paint(double alpha, ::std::error_code& ec) noexcept;
-					void paint(const rgba_color& c, double alpha);
-					void paint(const rgba_color& c, double alpha, ::std::error_code& ec) noexcept;
-					void paint(const ::std::experimental::io2d::brush& b, double alpha);
-					void paint(const ::std::experimental::io2d::brush& b, double alpha, ::std::error_code& ec) noexcept;
-					void paint(const surface& s, double alpha, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
-					void paint(const surface& s, double alpha, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
-					void paint(const surface& s, double alpha, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
-					void paint(const surface& s, double alpha, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
+					void clear();
 					void fill();
 					void fill(::std::error_code& ec) noexcept;
 					void fill(const rgba_color& c);
@@ -1876,6 +1867,26 @@ namespace std {
 					void fill_immediate(const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
 					void fill_immediate(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
 					void fill_immediate(const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
+					void paint();
+					void paint(::std::error_code& ec) noexcept;
+					void paint(const rgba_color& c);
+					void paint(const rgba_color& c, ::std::error_code& ec) noexcept;
+					void paint(const ::std::experimental::io2d::brush& b);
+					void paint(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
+					void paint(const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
+					void paint(const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
+					void paint(double alpha);
+					void paint(double alpha, ::std::error_code& ec) noexcept;
+					void paint(const rgba_color& c, double alpha);
+					void paint(const rgba_color& c, double alpha, ::std::error_code& ec) noexcept;
+					void paint(const ::std::experimental::io2d::brush& b, double alpha);
+					void paint(const ::std::experimental::io2d::brush& b, double alpha, ::std::error_code& ec) noexcept;
+					void paint(const surface& s, double alpha, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, double alpha, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
+					void paint(const surface& s, double alpha, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					void paint(const surface& s, double alpha, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 					void stroke();
 					void stroke(::std::error_code& ec) noexcept;
 					void stroke(const rgba_color& c);
@@ -1984,8 +1995,8 @@ namespace std {
 					void font_options(const font_options& fo) noexcept;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
+					bool is_finished() const noexcept;
 					::std::experimental::io2d::content content() const noexcept;
-					vector_2d device_offset() const noexcept;
 					bool has_surface_resource() const noexcept;
 					::std::experimental::io2d::brush brush() const noexcept;
 					::std::experimental::io2d::antialias antialias() const noexcept;
@@ -2082,17 +2093,30 @@ namespace std {
 					~mapped_surface();
 
 					// Modifiers
-					void data(const ::std::vector<unsigned char>& data);
-					void data(const ::std::vector<unsigned char>& data, ::std::error_code& ec) noexcept;
-					::std::vector<unsigned char> data();
-					::std::vector<unsigned char> data(::std::error_code& ec) noexcept;
+					void commit_changes();
+					void commit_changes(::std::error_code& ec) noexcept;
+					void commit_changes(const rectangle& area);
+					void commit_changes(const rectangle& area, ::std::error_code& ec) noexcept;
+
+					unsigned char* data();
+					unsigned char* data(::std::error_code& ec) noexcept;
+					//void rgba_data(const ::std::vector<rgba_color>& v);
+					//void rgba_data(const ::std::vector<rgba_color>& v, ::std::error_code& ec) noexcept;
+					//void rgba_data(const ::std::vector<rgba_color>& v, unsigned int offset);
+					//void rgba_data(const ::std::vector<rgba_color>& v, unsigned int offset, ::std::error_code& ec) noexcept;
 
 					// Observers
+					const unsigned char* data() const;
+					const unsigned char* data(::std::error_code& ec) const noexcept;
+					//::std::vector<rgba_color> rgba_data() const;
+					//::std::vector<rgba_color> rgba_data(::std::error_code& ec) const noexcept;
+
 					::std::experimental::io2d::format format() const noexcept;
 					int width() const noexcept;
 					int height() const noexcept;
 					int stride() const noexcept;
 				};
+
 #ifdef _WIN32_WINNT
 				struct _Win32_display_surface_native_handle {
 					_Surface_native_handles sfc_nh;
@@ -2116,36 +2140,33 @@ namespace std {
 					friend surface;
 					// Unsaved state.
 					::std::experimental::io2d::brush _Default_brush;
-
-					//// Saved state.
+					typedef int _Display_width_type;
+					_Display_width_type _Display_width;
+					typedef int _Display_height_type;
+					_Display_height_type _Display_height;
 					::std::experimental::io2d::scaling _Scaling;
 					typedef int _Width_type;
 					_Width_type _Width;
 					typedef int _Height_type;
 					_Height_type _Height;
-					typedef int _Display_width_type;
-					_Display_width_type _Display_width;
-					typedef int _Display_height_type;
-					_Display_height_type _Display_height;
 					::std::function<void(display_surface& sfc)> _Draw_fn;
 					::std::function<void(display_surface& sfc)> _Size_change_fn;
 					typedef ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> _User_scaling_fn_type;
 					_User_scaling_fn_type _User_scaling_fn;
 					::std::experimental::io2d::brush _Letterbox_brush;
+					typedef bool _Auto_clear_type;
+					_Auto_clear_type _Auto_clear;
 
 					//::std::stack<::std::tuple<
 					//	::std::experimental::io2d::scaling,
 					//	_Width_type,
 					//	_Height_type,
-					//	_Display_width_type,
-					//	_Display_height_type,
 					//	_User_scaling_fn_type,
-					//	::std::experimental::io2d::brush>, ::std::vector<::std::tuple<
+					//	::std::experimental::io2d::brush
+					//>, ::std::vector<::std::tuple<
 					//	::std::experimental::io2d::scaling,
 					//	_Width_type,
 					//	_Height_type,
-					//	_Display_width_type,
-					//	_Display_height_type,
 					//	_User_scaling_fn_type,
 					//	::std::experimental::io2d::brush>>> _Display_saved_state;
 #ifdef _WIN32_WINNT
@@ -2234,6 +2255,7 @@ namespace std {
 					void letterbox_brush(const rgba_color& c, ::std::error_code& ec) noexcept;
 					void letterbox_brush(const ::std::experimental::io2d::brush& b);
 					void letterbox_brush(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
+					void auto_clear(bool val) noexcept;
 					int join();
 					int join(::std::error_code& ec); // Not noexcept because if the user-provided functions throw they will propagate, but otherwise is non-throwing.
 
@@ -2247,6 +2269,7 @@ namespace std {
 					::std::experimental::io2d::scaling scaling() const noexcept;
 					const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& user_scaling_fn() const noexcept;
 					::std::experimental::io2d::brush letterbox_brush() const noexcept;
+					bool auto_clear() const noexcept;
 				};
 
 				class surface_brush_factory {
@@ -2264,14 +2287,45 @@ namespace std {
 					surface_brush_factory(::std::experimental::io2d::surface& s, ::std::error_code& ec) noexcept;
 
 					// Modifiers
-					image_surface surface(::std::experimental::io2d::surface& s);
-					void surface(::std::experimental::io2d::surface& s, image_surface& oldSurface, ::std::error_code& ec) noexcept;
+					void surface(::std::experimental::io2d::surface& s);
 					void surface(::std::experimental::io2d::surface& s, ::std::error_code& ec) noexcept;
 
 					// Observers
 					bool has_surface() const noexcept;
 					const image_surface& surface() const;
 				};
+
+				template <class T>
+#if _Constexpr_conditional_support_test
+				constexpr
+#endif
+				T pi() noexcept {
+					return static_cast<T>(3.14159265358979323846264338327950288419716939937510L);
+				}
+
+				template <class T>
+#if _Constexpr_conditional_support_test
+				constexpr
+#endif
+				T two_pi() noexcept{
+					return static_cast<T>(6.28318530717958647692528676655900576839433879875020L);
+				}
+
+				template <class T>
+#if _Constexpr_conditional_support_test
+				constexpr
+#endif
+				T half_pi() noexcept{
+					return static_cast<T>(1.57079632679489661923132169163975144209858469968755L);
+				}
+
+				template <class T>
+#if _Constexpr_conditional_support_test
+				constexpr
+#endif
+				T three_pi_over_two() noexcept{
+					return static_cast<T>(4.71238898038468985769396507491925432629575409906265L);
+				}
 
 				int format_stride_for_width(format format, int width);
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox);

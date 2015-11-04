@@ -47,103 +47,87 @@ mapped_surface::~mapped_surface() {
 	}
 }
 
-// Modifiers
-void mapped_surface::data(const ::std::vector<unsigned char>& data) {
-	auto expected_size = static_cast<size_t>(stride() * height());
-	if (data.size() != static_cast<uint64_t>(expected_size)) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STRIDE);
-	}
-	if (_Mapped_surface.csfce == nullptr) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
-	}
-	cairo_surface_flush(_Mapped_surface.csfce);
-	auto imageData = cairo_image_surface_get_data(_Mapped_surface.csfce);
-	if (imageData == nullptr) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
-	}
-	::std::memcpy(imageData, data.data(), expected_size);
+void mapped_surface::commit_changes() {
 	cairo_surface_mark_dirty(_Mapped_surface.csfce);
 }
 
-void mapped_surface::data(const ::std::vector<unsigned char>& data, ::std::error_code& ec) noexcept {
-	auto expected_size = static_cast<size_t>(stride() * height());
-	if (data.size() != static_cast<uint64_t>(expected_size)) {
-		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_STRIDE);
-		return;
-	}
-	if (_Mapped_surface.csfce == nullptr) {
-		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NULL_POINTER);
-		return;
-	}
-
-	cairo_surface_flush(_Mapped_surface.csfce);
-	auto imageData = cairo_image_surface_get_data(_Mapped_surface.csfce);
-	if (imageData == nullptr) {
-		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NULL_POINTER);
-		return;
-	}
-
-	::std::memcpy(imageData, data.data(), expected_size);
+void mapped_surface::commit_changes(::std::error_code& ec) noexcept {
 	cairo_surface_mark_dirty(_Mapped_surface.csfce);
 	ec.clear();
 }
 
-
-::std::vector<unsigned char> mapped_surface::data() {
-	auto requiredSize = stride() * height();
-	vector<unsigned char> data;
-	data.reserve(static_cast<size_t>(requiredSize));
-	cairo_surface_flush(_Mapped_surface.csfce);
-	auto imageData = cairo_image_surface_get_data(_Mapped_surface.csfce);
-	if (imageData == nullptr) {
-		data.clear();
-	}
-	else {
-		data.assign(imageData, imageData + requiredSize);
-	}
-	return data;
+void mapped_surface::commit_changes(const rectangle& area) {
+	cairo_surface_mark_dirty_rectangle(_Mapped_surface.csfce, static_cast<int>(area.x()), static_cast<int>(area.y()),
+		static_cast<int>(area.width()), static_cast<int>(area.height()));
 }
 
-::std::vector<unsigned char> mapped_surface::data(::std::error_code& ec) noexcept {
-	auto requiredSize = stride() * height();
-	// Relies on C++17 vector noexcept default ctor.
-	vector<unsigned char> data;
-	try {
-		data.reserve(static_cast<size_t>(requiredSize));
-		cairo_surface_flush(_Mapped_surface.csfce);
-		auto imageData = cairo_image_surface_get_data(_Mapped_surface.csfce);
-		if (imageData == nullptr) {
-			data.clear();
-		}
-		else {
-			data.assign(imageData, imageData + requiredSize);
-		}
+void mapped_surface::commit_changes(const rectangle& area, error_code& ec) noexcept {
+	cairo_surface_mark_dirty_rectangle(_Mapped_surface.csfce, static_cast<int>(area.x()), static_cast<int>(area.y()),
+		static_cast<int>(area.width()), static_cast<int>(area.height()));
+	ec.clear();
+}
+
+unsigned char* mapped_surface::data() {
+	auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
+	if (result == nullptr) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
 	}
-	catch (const length_error&) {
-		ec = make_error_code(errc::not_enough_memory);
-		return data;
-	}
-	catch (const bad_alloc&) {
-		ec = make_error_code(errc::not_enough_memory);
-		return data;
+	return result;
+}
+
+unsigned char* mapped_surface::data(error_code& ec) noexcept {
+	auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
+	if (result == nullptr) {
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NULL_POINTER);
+		return result;
 	}
 	ec.clear();
-	return data;
+	return result;
 }
 
 // Observers
+const unsigned char* mapped_surface::data() const {
+	auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
+	if (result == nullptr) {
+		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
+	}
+	return result;
+}
+
+const unsigned char* mapped_surface::data(error_code& ec) const noexcept {
+	auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
+	if (result == nullptr) {
+		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NULL_POINTER);
+		return result;
+	}
+	ec.clear();
+	return result;
+}
+
 ::std::experimental::io2d::format mapped_surface::format() const noexcept {
+	if (cairo_surface_status(_Mapped_surface.csfce) != CAIRO_STATUS_SUCCESS) {
+		return experimental::io2d::format::invalid;
+	}
 	return _Cairo_format_t_to_format(cairo_image_surface_get_format(_Mapped_surface.csfce));
 }
 
 int mapped_surface::width() const noexcept {
+	if (format() == experimental::io2d::format::invalid) {
+		return 0;
+	}
 	return cairo_image_surface_get_width(_Mapped_surface.csfce);
 }
 
 int mapped_surface::height() const noexcept {
+	if (format() == experimental::io2d::format::invalid) {
+		return 0;
+	}
 	return cairo_image_surface_get_height(_Mapped_surface.csfce);
 }
 
 int mapped_surface::stride() const noexcept {
+	if (format() == experimental::io2d::format::invalid) {
+		return 0;
+	}
 	return cairo_image_surface_get_stride(_Mapped_surface.csfce);
 }

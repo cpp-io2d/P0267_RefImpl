@@ -35,7 +35,7 @@ rgba_color::rgba_color(double red, double green, double blue, double alpha)
 , _G(green)
 , _B(blue)
 , _A(alpha) {
-	if (red > 1.0 || red < 0.0 || green > 1.0 || green < 0.0 || blue > 1.0 || blue < 0.0 || alpha > 1.0 || alpha < 1.0) {
+	if (red > 1.0 || red < 0.0 || green > 1.0 || green < 0.0 || blue > 1.0 || blue < 0.0 || alpha > 1.0 || alpha < 0.0) {
 		throw out_of_range("The arguments must each fall between 0.0 and 1.0, inclusive.");
 	}
 }
@@ -63,7 +63,7 @@ rgba_color::rgba_color(double red, double green, double blue, double alpha, erro
 	, _G(green)
 	, _B(blue)
 	, _A(alpha) {
-	if (red > 1.0 || red < 0.0 || green > 1.0 || green < 0.0 || blue > 1.0 || blue < 0.0 || alpha > 1.0 || alpha < 1.0) {
+	if (red > 1.0 || red < 0.0 || green > 1.0 || green < 0.0 || blue > 1.0 || blue < 0.0 || alpha > 1.0 || alpha < 0.0) {
 		// Default to magenta for error visibility in case people don't check the ec.
 		_R = 1.0;
 		_G = 0.0;

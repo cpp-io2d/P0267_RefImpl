@@ -68,8 +68,21 @@ void rectangle::top_left(const vector_2d& value) noexcept {
 }
 
 void rectangle::bottom_right(const vector_2d& value) noexcept {
-	_Width = max(0.0, value.x() - _X);
-	_Height = max(0.0, value.y() - _Y);
+	auto x = value.x();
+	auto y = value.y();
+	_Width = max(0.0, x - _X);
+	_Height = max(0.0, y - _Y);
+}
+
+void rectangle::top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept {
+	auto tlx = tl.x();
+	auto tly = tl.y();
+	auto brx = br.x();
+	auto bry = br.y();
+	_X = tlx;
+	_Y = tly;
+	_Width = max(0.0, brx - tlx);
+	_Height = max(0.0, bry - tly);
 }
 
 double rectangle::x() const noexcept {
@@ -88,10 +101,30 @@ double rectangle::height() const noexcept {
 	return _Height;
 }
 
+double rectangle::left() const noexcept {
+	return _X;
+}
+
+double rectangle::right() const noexcept {
+	return _X + _Width;
+}
+
+double rectangle::top() const noexcept {
+	return _Y;
+}
+
+double rectangle::bottom() const noexcept {
+	return _Y + _Height;
+}
+
 vector_2d rectangle::top_left() const noexcept {
 	return{ _X, _Y };
 }
 
 vector_2d rectangle::bottom_right() const noexcept {
 	return{ _X + _Width, _Y + _Height };
+}
+
+tuple<vector_2d, vector_2d> rectangle::top_left_bottom_right() const noexcept {
+	return make_tuple<vector_2d, vector_2d>({ _X, _Y }, { _X + _Width, _Y + _Height });
 }

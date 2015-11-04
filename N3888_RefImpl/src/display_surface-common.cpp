@@ -54,7 +54,8 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 void display_surface::_Render_to_native_surface() {
 	const cairo_filter_t cairoFilter = CAIRO_FILTER_BEST;
 	cairo_surface_flush(_Surface.get());
-
+	cairo_save(_Native_context.get());
+	cairo_set_operator(_Native_context.get(), CAIRO_OPERATOR_SOURCE);
 	if (_User_scaling_fn != nullptr) {
 		bool letterbox = false;
 		auto userRect = _User_scaling_fn(*this, letterbox);
@@ -162,6 +163,7 @@ void display_surface::_Render_to_native_surface() {
 		}
 	}
 
+	cairo_restore(_Native_context.get());
 	// This call to cairo_surface_flush is needed for Win32 surfaces to update.
 	cairo_surface_flush(_Native_surface.get());
 }
@@ -244,6 +246,7 @@ void display_surface::dimensions(int w, int h) {
 	}
 
 	if (recreate) {
+		// Recreate the render target that is drawn to the displayed surface
 		_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
 		_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
 		_Ensure_state();
@@ -277,6 +280,10 @@ void display_surface::letterbox_brush(const rgba_color& c) {
 
 void display_surface::letterbox_brush(const experimental::io2d::brush& b) {
 	_Letterbox_brush = b;
+}
+
+void display_surface::auto_clear(bool val) noexcept {
+	_Auto_clear = val;
 }
 
 format display_surface::format() const noexcept {
@@ -317,4 +324,8 @@ const ::std::function<::std::experimental::io2d::rectangle(const display_surface
 
 experimental::io2d::brush display_surface::letterbox_brush() const noexcept {
 	return _Letterbox_brush;
+}
+
+bool display_surface::auto_clear() const noexcept {
+	return _Auto_clear;
 }

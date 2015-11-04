@@ -202,236 +202,236 @@ brush::brush(const radial_brush_factory& f, error_code& ec) noexcept
 	ec.clear();
 }
 
-brush::brush(const mesh_brush_factory& f)
-	: _Brush()
-	, _Brush_type(brush_type::mesh)
-	, _Extend(::std::experimental::io2d::extend::none)
-	, _Filter(::std::experimental::io2d::filter::good)
-	, _Matrix(matrix_2d::init_identity()) {
-	_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
-	auto pat = _Brush.get();
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
-
-	auto count = f.patch_count();
-	for (auto patchNum = 0U; patchNum < count; patchNum++) {
-		cairo_mesh_pattern_begin_patch(pat);
-		auto pathFactory = f.path_factory(patchNum);
-		const auto& pathData = pathFactory.data_ref();
-		auto pdSize = pathData.size();
-		for (unsigned int pdIndex = 0; pdIndex < pdSize; pdIndex++) {
-			const auto& item = pathData[pdIndex];
-			auto type = item.type();
-			switch (type) {
-			case std::experimental::io2d::path_data_type::move_to:
-			{
-				auto pt = item.get<move_to>().to();
-				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
-			} break;
-			case std::experimental::io2d::path_data_type::line_to:
-			{
-				auto pt = item.get<line_to>().to();
-				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
-			} break;
-			case std::experimental::io2d::path_data_type::curve_to:
-			{
-				auto dataItem = item.get<curve_to>();
-				cairo_mesh_pattern_curve_to(pat, dataItem.control_point_1().x(), dataItem.control_point_1().y(), dataItem.control_point_2().x(), dataItem.control_point_2().y(), dataItem.end_point().x(), dataItem.end_point().y());
-			} break;
-			case std::experimental::io2d::path_data_type::new_sub_path:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::close_path:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::rel_move_to:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::rel_line_to:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::rel_curve_to:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::arc:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::arc_negative:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::change_matrix:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			case std::experimental::io2d::path_data_type::change_origin:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			default:
-			{
-				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-			} break;
-			}
-		}
-
-		for (auto pointNum = 0U; pointNum < 4U; pointNum++) {
-			vector_2d pt;
-			if (f.control_point(patchNum, pointNum, pt)) {
-				cairo_mesh_pattern_set_control_point(pat, pointNum, pt.x(), pt.y());
-			}
-		}
-		for (auto cornerNum = 0U; cornerNum < 4U; cornerNum++) {
-			rgba_color color;
-			if (f.corner_color(patchNum, cornerNum, color)) {
-				cairo_mesh_pattern_set_corner_color_rgba(pat, cornerNum, color.r(), color.g(), color.b(), color.a());
-			}
-		}
-		cairo_mesh_pattern_end_patch(pat);
-	}
-	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
-}
-
-brush::brush(const mesh_brush_factory& f, error_code& ec) noexcept
-	: _Brush()
-	, _Brush_type(brush_type::mesh)
-	, _Extend(::std::experimental::io2d::extend::none)
-	, _Filter(::std::experimental::io2d::filter::good)
-	, _Matrix(matrix_2d::init_identity()) {
-	_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
-	auto pat = _Brush.get();
-	auto status = cairo_pattern_status(pat);
-	if (status != CAIRO_STATUS_SUCCESS) {
-		ec = _Cairo_status_t_to_std_error_code(status);
-		_Brush.reset();
-		return;
-	}
-
-	auto count = f.patch_count();
-	for (auto patchNum = 0U; patchNum < count; patchNum++) {
-		cairo_mesh_pattern_begin_patch(pat);
-		auto pathFactory = f.path_factory(patchNum, ec);
-		if (static_cast<bool>(ec)) {
-			_Brush.reset();
-			return;
-		}
-		const auto& pathData = pathFactory.data_ref();
-		auto pdSize = pathData.size();
-		for (unsigned int pdIndex = 0; pdIndex < pdSize; pdIndex++) {
-			const auto& item = pathData[pdIndex];
-			auto type = item.type();
-			switch (type) {
-			case std::experimental::io2d::path_data_type::move_to:
-			{
-				auto pt = item.get<move_to>().to();
-				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
-			} break;
-			case std::experimental::io2d::path_data_type::line_to:
-			{
-				auto pt = item.get<line_to>().to();
-				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
-			} break;
-			case std::experimental::io2d::path_data_type::curve_to:
-			{
-				auto dataItem = item.get<curve_to>();
-				cairo_mesh_pattern_curve_to(pat, dataItem.control_point_1().x(), dataItem.control_point_1().y(), dataItem.control_point_2().x(), dataItem.control_point_2().y(), dataItem.end_point().x(), dataItem.end_point().y());
-			} break;
-			case std::experimental::io2d::path_data_type::new_sub_path:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			case std::experimental::io2d::path_data_type::close_path:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			case std::experimental::io2d::path_data_type::rel_move_to:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			case std::experimental::io2d::path_data_type::rel_line_to:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			case std::experimental::io2d::path_data_type::rel_curve_to:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			case std::experimental::io2d::path_data_type::arc:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			case std::experimental::io2d::path_data_type::arc_negative:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			case std::experimental::io2d::path_data_type::change_matrix:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			case std::experimental::io2d::path_data_type::change_origin:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			default:
-			{
-				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
-				_Brush.reset();
-			} return;
-			}
-		}
-
-		for (auto pointNum = 0U; pointNum < 4U; pointNum++) {
-			vector_2d pt;
-			if (f.control_point(patchNum, pointNum, pt, ec)) {
-				if (static_cast<bool>(ec)) {
-					_Brush.reset();
-					return;
-				}
-				cairo_mesh_pattern_set_control_point(pat, pointNum, pt.x(), pt.y());
-			}
-			if (static_cast<bool>(ec)) {
-				_Brush.reset();
-				return;
-			}
-		}
-		for (auto cornerNum = 0U; cornerNum < 4U; cornerNum++) {
-			rgba_color color;
-			if (f.corner_color(patchNum, cornerNum, color, ec)) {
-				if (static_cast<bool>(ec)) {
-					_Brush.reset();
-					return;
-				}
-				cairo_mesh_pattern_set_corner_color_rgba(pat, cornerNum, color.r(), color.g(), color.b(), color.a());
-			}
-			if (static_cast<bool>(ec)) {
-				_Brush.reset();
-				return;
-			}
-		}
-		cairo_mesh_pattern_end_patch(pat);
-	}
-	status = cairo_pattern_status(pat);
-	if (status != CAIRO_STATUS_SUCCESS) {
-		ec = _Cairo_status_t_to_std_error_code(status);
-		_Brush.reset();
-		return;
-	}
-	ec.clear();
-}
+//brush::brush(const mesh_brush_factory& f)
+//	: _Brush()
+//	, _Brush_type(brush_type::mesh)
+//	, _Extend(::std::experimental::io2d::extend::none)
+//	, _Filter(::std::experimental::io2d::filter::good)
+//	, _Matrix(matrix_2d::init_identity()) {
+//	_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
+//	auto pat = _Brush.get();
+//	_Throw_if_failed_cairo_status_t(cairo_pattern_status(pat));
+//
+//	auto count = f.patch_count();
+//	for (auto patchNum = 0U; patchNum < count; patchNum++) {
+//		cairo_mesh_pattern_begin_patch(pat);
+//		auto pathFactory = f.path_factory(patchNum);
+//		const auto& pathData = pathFactory.data_ref();
+//		auto pdSize = pathData.size();
+//		for (unsigned int pdIndex = 0; pdIndex < pdSize; pdIndex++) {
+//			const auto& item = pathData[pdIndex];
+//			auto type = item.type();
+//			switch (type) {
+//			case std::experimental::io2d::path_data_type::move_to:
+//			{
+//				auto pt = item.get<path_data_item::move_to>().to();
+//				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
+//			} break;
+//			case std::experimental::io2d::path_data_type::line_to:
+//			{
+//				auto pt = item.get<path_data_item::line_to>().to();
+//				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
+//			} break;
+//			case std::experimental::io2d::path_data_type::curve_to:
+//			{
+//				auto dataItem = item.get<path_data_item::curve_to>();
+//				cairo_mesh_pattern_curve_to(pat, dataItem.control_point_1().x(), dataItem.control_point_1().y(), dataItem.control_point_2().x(), dataItem.control_point_2().y(), dataItem.end_point().x(), dataItem.end_point().y());
+//			} break;
+//			case std::experimental::io2d::path_data_type::new_sub_path:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			case std::experimental::io2d::path_data_type::close_path:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			case std::experimental::io2d::path_data_type::rel_move_to:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			case std::experimental::io2d::path_data_type::rel_line_to:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			case std::experimental::io2d::path_data_type::rel_curve_to:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			case std::experimental::io2d::path_data_type::arc:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			case std::experimental::io2d::path_data_type::arc_negative:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			case std::experimental::io2d::path_data_type::change_matrix:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			case std::experimental::io2d::path_data_type::change_origin:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			default:
+//			{
+//				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//			} break;
+//			}
+//		}
+//
+//		for (auto pointNum = 0U; pointNum < 4U; pointNum++) {
+//			vector_2d pt;
+//			if (f.control_point(patchNum, pointNum, pt)) {
+//				cairo_mesh_pattern_set_control_point(pat, pointNum, pt.x(), pt.y());
+//			}
+//		}
+//		for (auto cornerNum = 0U; cornerNum < 4U; cornerNum++) {
+//			rgba_color color;
+//			if (f.corner_color(patchNum, cornerNum, color)) {
+//				cairo_mesh_pattern_set_corner_color_rgba(pat, cornerNum, color.r(), color.g(), color.b(), color.a());
+//			}
+//		}
+//		cairo_mesh_pattern_end_patch(pat);
+//	}
+//	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+//}
+//
+//brush::brush(const mesh_brush_factory& f, error_code& ec) noexcept
+//	: _Brush()
+//	, _Brush_type(brush_type::mesh)
+//	, _Extend(::std::experimental::io2d::extend::none)
+//	, _Filter(::std::experimental::io2d::filter::good)
+//	, _Matrix(matrix_2d::init_identity()) {
+//	_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_mesh(), &cairo_pattern_destroy);
+//	auto pat = _Brush.get();
+//	auto status = cairo_pattern_status(pat);
+//	if (status != CAIRO_STATUS_SUCCESS) {
+//		ec = _Cairo_status_t_to_std_error_code(status);
+//		_Brush.reset();
+//		return;
+//	}
+//
+//	auto count = f.patch_count();
+//	for (auto patchNum = 0U; patchNum < count; patchNum++) {
+//		cairo_mesh_pattern_begin_patch(pat);
+//		auto pathFactory = f.path_factory(patchNum, ec);
+//		if (static_cast<bool>(ec)) {
+//			_Brush.reset();
+//			return;
+//		}
+//		const auto& pathData = pathFactory.data_ref();
+//		auto pdSize = pathData.size();
+//		for (unsigned int pdIndex = 0; pdIndex < pdSize; pdIndex++) {
+//			const auto& item = pathData[pdIndex];
+//			auto type = item.type();
+//			switch (type) {
+//			case std::experimental::io2d::path_data_type::move_to:
+//			{
+//				auto pt = item.get<path_data_item::move_to>().to();
+//				cairo_mesh_pattern_move_to(pat, pt.x(), pt.y());
+//			} break;
+//			case std::experimental::io2d::path_data_type::line_to:
+//			{
+//				auto pt = item.get<path_data_item::line_to>().to();
+//				cairo_mesh_pattern_line_to(pat, pt.x(), pt.y());
+//			} break;
+//			case std::experimental::io2d::path_data_type::curve_to:
+//			{
+//				auto dataItem = item.get<path_data_item::curve_to>();
+//				cairo_mesh_pattern_curve_to(pat, dataItem.control_point_1().x(), dataItem.control_point_1().y(), dataItem.control_point_2().x(), dataItem.control_point_2().y(), dataItem.end_point().x(), dataItem.end_point().y());
+//			} break;
+//			case std::experimental::io2d::path_data_type::new_sub_path:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			case std::experimental::io2d::path_data_type::close_path:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			case std::experimental::io2d::path_data_type::rel_move_to:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			case std::experimental::io2d::path_data_type::rel_line_to:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			case std::experimental::io2d::path_data_type::rel_curve_to:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			case std::experimental::io2d::path_data_type::arc:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			case std::experimental::io2d::path_data_type::arc_negative:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			case std::experimental::io2d::path_data_type::change_matrix:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			case std::experimental::io2d::path_data_type::change_origin:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			default:
+//			{
+//				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+//				_Brush.reset();
+//			} return;
+//			}
+//		}
+//
+//		for (auto pointNum = 0U; pointNum < 4U; pointNum++) {
+//			vector_2d pt;
+//			if (f.control_point(patchNum, pointNum, pt, ec)) {
+//				if (static_cast<bool>(ec)) {
+//					_Brush.reset();
+//					return;
+//				}
+//				cairo_mesh_pattern_set_control_point(pat, pointNum, pt.x(), pt.y());
+//			}
+//			if (static_cast<bool>(ec)) {
+//				_Brush.reset();
+//				return;
+//			}
+//		}
+//		for (auto cornerNum = 0U; cornerNum < 4U; cornerNum++) {
+//			rgba_color color;
+//			if (f.corner_color(patchNum, cornerNum, color, ec)) {
+//				if (static_cast<bool>(ec)) {
+//					_Brush.reset();
+//					return;
+//				}
+//				cairo_mesh_pattern_set_corner_color_rgba(pat, cornerNum, color.r(), color.g(), color.b(), color.a());
+//			}
+//			if (static_cast<bool>(ec)) {
+//				_Brush.reset();
+//				return;
+//			}
+//		}
+//		cairo_mesh_pattern_end_patch(pat);
+//	}
+//	status = cairo_pattern_status(pat);
+//	if (status != CAIRO_STATUS_SUCCESS) {
+//		ec = _Cairo_status_t_to_std_error_code(status);
+//		_Brush.reset();
+//		return;
+//	}
+//	ec.clear();
+//}
 
 brush::brush(surface_brush_factory& f)
 	: _Brush()

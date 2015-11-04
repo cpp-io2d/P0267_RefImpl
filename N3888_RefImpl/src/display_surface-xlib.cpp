@@ -145,6 +145,7 @@ display_surface::display_surface(display_surface&& other) noexcept
 	, _Size_change_fn(move(other._Size_change_fn))
 	, _User_scaling_fn(move(other._User_scaling_fn))
 	, _Letterbox_brush(move(other._Letterbox_brush))
+	, _Auto_clear(move(other._Auto_clear))
 	, _Wndw(move(other._Wndw))
 	, _Can_draw(move(other._Can_draw))
 	, _Native_surface(move(other._Native_surface))
@@ -167,6 +168,7 @@ display_surface& display_surface::operator=(display_surface&& other) {
 		_Size_change_fn = move(other._Size_change_fn);
 		_User_scaling_fn = move(other._User_scaling_fn);
 		_Letterbox_brush = move(other._Letterbox_brush);
+		_Auto_clear = move(other._Auto_clear);
 		_Wndw = move(other._Wndw);
 		_Can_draw = move(other._Can_draw);
 		_Native_surface = move(other._Native_surface);
@@ -232,6 +234,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Size_change_fn()
 	, _User_scaling_fn()
 	, _Letterbox_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Auto_clear(false)
 	, _Wndw(None)
 	, _Can_draw(false)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
@@ -303,6 +306,9 @@ int display_surface::join() {
 				assert(_Native_surface != nullptr && _Native_context != nullptr);
 				_Can_draw = true;
 				if (_Draw_fn != nullptr) {
+					if (_Auto_clear) {
+						clear();
+					}
 					_Draw_fn(*this);
 				}
 
@@ -356,6 +362,9 @@ int display_surface::join() {
 			{
 				if (_Can_draw) {
 					if (_Draw_fn != nullptr) {
+						if (_Auto_clear) {
+							clear();
+						}
 						_Draw_fn(*this);
 					}
 
@@ -438,6 +447,9 @@ int display_surface::join() {
 		if (_Can_draw) {
 			// Run user draw function:
 			if (_Draw_fn != nullptr) {
+				if (_Auto_clear) {
+					clear();
+				}
 				_Draw_fn(*this);
 			}
 

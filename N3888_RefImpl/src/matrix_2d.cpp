@@ -197,8 +197,8 @@ vector_2d matrix_2d::transform_distance(const vector_2d& dist) const noexcept {
 	return{ _M00 * dist.x() + _M10 * dist.y(), _M01 * dist.x() + _M11 * dist.y() };
 }
 
-vector_2d matrix_2d::transform_point(const vector_2d& pt) const noexcept {
-	return transform_distance(pt) + vector_2d{ _M20, _M21 };
+vector_2d matrix_2d::transform_coords(const vector_2d& pt) const noexcept {
+	return{ _M00 * pt.x() + _M10 * pt.y() + _M20, _M01 * pt.x() + _M11 * pt.y() + _M21 };
 }
 
 void matrix_2d::m00(double value) noexcept {
@@ -266,8 +266,8 @@ namespace std {
 						(lhs.m00() * rhs.m01()) + (lhs.m01() * rhs.m11()),
 						(lhs.m10() * rhs.m00()) + (lhs.m11() * rhs.m10()),
 						(lhs.m10() * rhs.m01()) + (lhs.m11() * rhs.m11()),
-						(lhs.m20() * rhs.m00()) + (lhs.m21() * rhs.m10()) + lhs.m20(),
-						(lhs.m20() * rhs.m01()) + (lhs.m21() * rhs.m11()) + lhs.m21()
+						(lhs.m20() * rhs.m00()) + (lhs.m21() * rhs.m10()) + rhs.m20(),
+						(lhs.m20() * rhs.m01()) + (lhs.m21() * rhs.m11()) + rhs.m21()
 					};
 				}
 

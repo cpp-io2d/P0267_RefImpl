@@ -468,7 +468,7 @@ namespace std {
 					return CAIRO_FORMAT_INVALID;
 				case ::std::experimental::io2d::format::argb32:
 					return CAIRO_FORMAT_ARGB32;
-				case ::std::experimental::io2d::format::rgb24:
+				case ::std::experimental::io2d::format::xrgb32:
 					return CAIRO_FORMAT_RGB24;
 				case ::std::experimental::io2d::format::a8:
 					return CAIRO_FORMAT_A8;
@@ -490,7 +490,7 @@ namespace std {
 				case CAIRO_FORMAT_ARGB32:
 					return ::std::experimental::io2d::format::argb32;
 				case CAIRO_FORMAT_RGB24:
-					return ::std::experimental::io2d::format::rgb24;
+					return ::std::experimental::io2d::format::xrgb32;
 				case CAIRO_FORMAT_A8:
 					return ::std::experimental::io2d::format::a8;
 				case CAIRO_FORMAT_A1:
@@ -533,7 +533,7 @@ namespace std {
 					throw ::std::runtime_error("format::invalid has no content equivalent.");
 				case std::experimental::io2d::format::argb32:
 					return ::std::experimental::io2d::content::color_alpha;
-				case std::experimental::io2d::format::rgb24:
+				case std::experimental::io2d::format::xrgb32:
 					return ::std::experimental::io2d::content::color;
 				case std::experimental::io2d::format::a8:
 					return ::std::experimental::io2d::content::alpha;
@@ -639,8 +639,8 @@ namespace std {
 					return CAIRO_PATTERN_TYPE_LINEAR;
 				case ::std::experimental::io2d::brush_type::radial:
 					return CAIRO_PATTERN_TYPE_RADIAL;
-				case ::std::experimental::io2d::brush_type::mesh:
-					return CAIRO_PATTERN_TYPE_MESH;
+				//case ::std::experimental::io2d::brush_type::mesh:
+				//	return CAIRO_PATTERN_TYPE_MESH;
 				default:
 					throw ::std::runtime_error("Unknown brush_type value.");
 				}
@@ -657,7 +657,8 @@ namespace std {
 				case CAIRO_PATTERN_TYPE_RADIAL:
 					return ::std::experimental::io2d::brush_type::radial;
 				case CAIRO_PATTERN_TYPE_MESH:
-					return ::std::experimental::io2d::brush_type::mesh;
+					throw ::std::runtime_error("Unsupported cairo_pattern_type_t value 'CAIRO_PATTERN_TYPE_MESH'.");
+					//return ::std::experimental::io2d::brush_type::mesh;
 				case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
 					throw ::std::runtime_error("Unsupported cairo_pattern_type_t value 'CAIRO_PATTERN_TYPE_RASTER_SOURCE'.");
 				default:
