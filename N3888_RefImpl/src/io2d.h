@@ -750,57 +750,57 @@ namespace std {
 					T get() const;
 					template <class T>
 					T get(::std::error_code& ec) const noexcept;
-
-					template <>
-					path_data_item::arc get() const;
-					template <>
-					path_data_item::arc get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::arc_negative get() const;
-					template <>
-					path_data_item::arc_negative get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::change_matrix get() const;
-					template <>
-					path_data_item::change_matrix get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::change_origin get() const;
-					template <>
-					path_data_item::change_origin get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::close_path get() const;
-					template <>
-					path_data_item::close_path get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::curve_to get() const;
-					template <>
-					path_data_item::curve_to get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::rel_curve_to get() const;
-					template <>
-					path_data_item::rel_curve_to get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::new_sub_path get() const;
-					template <>
-					path_data_item::new_sub_path get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::line_to get() const;
-					template <>
-					path_data_item::line_to get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::move_to get() const;
-					template <>
-					path_data_item::move_to get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::rel_line_to get() const;
-					template <>
-					path_data_item::rel_line_to get(::std::error_code& ec) const noexcept;
-					template <>
-					path_data_item::rel_move_to get() const;
-					template <>
-					path_data_item::rel_move_to get(::std::error_code& ec) const noexcept;
 				};
-
+/*
+                                template <>
+				path_data_item::arc path_data_item::get() const;
+				template <>
+				path_data_item::arc path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::arc_negative path_data_item::get() const;
+				template <>
+				path_data_item::arc_negative path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::change_matrix path_data_item::get() const;
+				template <>
+				path_data_item::change_matrix path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::change_origin path_data_item::get() const;
+				template <>
+				path_data_item::change_origin path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::close_path path_data_item::get() const;
+				template <>
+				path_data_item::close_path path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::curve_to path_data_item::get() const;
+				template <>
+				path_data_item::curve_to path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::rel_curve_to path_data_item::get() const;
+				template <>
+				path_data_item::rel_curve_to path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::new_sub_path path_data_item::get() const;
+				template <>
+				path_data_item::new_sub_path path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::line_to path_data_item::get() const;
+				template <>
+				path_data_item::line_to path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::move_to path_data_item::get() const;
+				template <>
+				path_data_item::move_to path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::rel_line_to path_data_item::get() const;
+				template <>
+				path_data_item::rel_line_to path_data_item::get(::std::error_code& ec) const noexcept;
+				template <>
+				path_data_item::rel_move_to path_data_item::get() const;
+				template <>
+				path_data_item::rel_move_to path_data_item::get(::std::error_code& ec) const noexcept;
+*/
 				class path_data_item::path_data {
 				public:
 					path_data() noexcept = default;
@@ -1023,7 +1023,7 @@ namespace std {
 				};
 
 				template <>
-				path_data_item::arc path_data_item::get() const {
+				inline path_data_item::arc path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1034,7 +1034,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::arc path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::arc path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::arc{ };
@@ -1048,7 +1048,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::arc_negative path_data_item::get() const {
+				inline path_data_item::arc_negative path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1059,7 +1059,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::arc_negative path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::arc_negative path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::arc_negative{ };
@@ -1073,7 +1073,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::change_matrix path_data_item::get() const {
+				inline path_data_item::change_matrix path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1084,7 +1084,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::change_matrix path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::change_matrix path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::change_matrix{ };
@@ -1098,7 +1098,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::change_origin path_data_item::get() const {
+				inline path_data_item::change_origin path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1109,7 +1109,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::change_origin path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::change_origin path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::change_origin{ };
@@ -1123,7 +1123,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::close_path path_data_item::get() const {
+				inline path_data_item::close_path path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1134,7 +1134,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::close_path path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::close_path path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::close_path{ };
@@ -1148,7 +1148,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::curve_to path_data_item::get() const {
+				inline path_data_item::curve_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1159,7 +1159,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::curve_to path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::curve_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::curve_to{ };
@@ -1173,7 +1173,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::rel_curve_to path_data_item::get() const {
+				inline path_data_item::rel_curve_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1184,7 +1184,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::rel_curve_to path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::rel_curve_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::rel_curve_to{ };
@@ -1198,7 +1198,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::new_sub_path path_data_item::get() const {
+				inline path_data_item::new_sub_path path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1209,7 +1209,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::new_sub_path path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::new_sub_path path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::new_sub_path{ };
@@ -1223,7 +1223,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::line_to path_data_item::get() const {
+				inline path_data_item::line_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1234,7 +1234,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::line_to path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::line_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::line_to{ };
@@ -1248,7 +1248,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::move_to path_data_item::get() const {
+				inline path_data_item::move_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1259,7 +1259,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::move_to path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::move_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::move_to{ };
@@ -1273,7 +1273,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::rel_line_to path_data_item::get() const {
+				inline path_data_item::rel_line_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1284,7 +1284,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::rel_line_to path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::rel_line_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::rel_line_to{ };
@@ -1298,7 +1298,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::rel_move_to path_data_item::get() const {
+				inline path_data_item::rel_move_to path_data_item::get() const {
 					if (!_Has_data) {
 						throw ::std::system_error(::std::make_error_code(::std::errc::operation_not_permitted));
 					}
@@ -1309,7 +1309,7 @@ namespace std {
 				}
 
 				template <>
-				path_data_item::rel_move_to path_data_item::get(::std::error_code& ec) const noexcept {
+				inline path_data_item::rel_move_to path_data_item::get(::std::error_code& ec) const noexcept {
 					if (!_Has_data) {
 						ec = ::std::make_error_code(::std::errc::operation_not_permitted);
 						return path_data_item::rel_move_to{ };
@@ -1575,6 +1575,7 @@ namespace std {
 					vector_2d _End_point;
 					typedef ::std::vector<::std::tuple<double, rgba_color>> _Color_stop_collection_type;
 					_Color_stop_collection_type _Color_stops;
+					typedef _Color_stop_collection_type::difference_type difference_type;
 
 				public:
 					typedef _Color_stop_collection_type::size_type size_type;
@@ -1613,6 +1614,7 @@ namespace std {
 					double _Radius1;
 					typedef ::std::vector<::std::tuple<double, rgba_color>> _Color_stop_collection_type;
 					_Color_stop_collection_type _Color_stops;
+					typedef _Color_stop_collection_type::difference_type difference_type;
 
 				public:
 					typedef _Color_stop_collection_type::size_type size_type;

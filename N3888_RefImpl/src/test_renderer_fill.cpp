@@ -586,11 +586,12 @@ namespace not_proposed {
 			return interpolate(get<1>(f.color_stop(lowColorIndex)), lowColorOffset, get<1>(f.color_stop(highColorIndex)), highColorOffset, t);
 		}
 
+		rectangle fill_extents_from_paths(const vector<vector<path_data_item>>&);
 		rectangle fill_extents_from_paths(const vector<vector<path_data_item>>& data) {
 			vector_2d pt0;
 			vector_2d pt1;
 
-			matrix_2d currMatrix = matrix_2d::init_identity();
+			//matrix_2d currMatrix = matrix_2d::init_identity();
 			vector_2d currOrigin;
 
 			bool hasCurrentPoint = false;
@@ -657,43 +658,43 @@ namespace not_proposed {
 					} break;
 					case std::experimental::io2d::path_data_type::new_sub_path:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					case std::experimental::io2d::path_data_type::close_path:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					case std::experimental::io2d::path_data_type::rel_move_to:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					case std::experimental::io2d::path_data_type::rel_line_to:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					case std::experimental::io2d::path_data_type::rel_curve_to:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					case std::experimental::io2d::path_data_type::arc:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					case std::experimental::io2d::path_data_type::arc_negative:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					case std::experimental::io2d::path_data_type::change_matrix:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					case std::experimental::io2d::path_data_type::change_origin:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					default:
 					{
-						assert("Unexpected path_data_type.");
+						assert("Unexpected path_data_type." && false);
 					} break;
 					}
 				}

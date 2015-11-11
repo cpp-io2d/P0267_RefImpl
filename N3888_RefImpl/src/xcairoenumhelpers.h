@@ -36,6 +36,9 @@ namespace std {
 					return CAIRO_STATUS_SURFACE_FINISHED;
 				case ::std::experimental::io2d::io2d_error::invalid_dash:
 					return CAIRO_STATUS_INVALID_DASH;
+				case ::std::experimental::io2d::io2d_error::invalid_index:
+					assert("Unexpected value io2d_error::invalid_index." && false);
+					return CAIRO_STATUS_INVALID_INDEX;
 				case ::std::experimental::io2d::io2d_error::clip_not_representable:
 					return CAIRO_STATUS_CLIP_NOT_REPRESENTABLE;
 				case ::std::experimental::io2d::io2d_error::invalid_stride:

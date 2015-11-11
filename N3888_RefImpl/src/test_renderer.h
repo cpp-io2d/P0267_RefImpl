@@ -1,4 +1,4 @@
-#include "io2d.h"
+﻿#include "io2d.h"
 #include "xio2dhelpers.h"
 #include <array>
 #include <stdexcept>
@@ -88,16 +88,10 @@ namespace not_proposed {
 
 			template <class T>
 			T get() const;
-
-			template <>
-			fill_line get() const;
-
-			template <>
-			fill_curve get() const;
 		};
 
 		template <>
-		fill_line fill_path_data_item::get() const {
+		inline fill_line fill_path_data_item::get() const {
 			if (m_type != fill_path_data_item_type::line) {
 				throw ::std::logic_error("Wrong type.");
 			}
@@ -105,7 +99,7 @@ namespace not_proposed {
 		}
 
 		template <>
-		fill_curve fill_path_data_item::get() const {
+		inline fill_curve fill_path_data_item::get() const {
 			if (m_type != fill_path_data_item_type::curve) {
 				throw ::std::logic_error("Wrong type.");
 			}

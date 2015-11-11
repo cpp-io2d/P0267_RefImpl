@@ -28,6 +28,7 @@ N3888_RefImpl_SOURCES =	brush.cpp \
 				mesh_brush_factory.cpp \
 				path.cpp \
 				path_data.cpp \
+				path_data_item.cpp \
 				path_factory.cpp \
 				radial_brush_factory.cpp \
 				rectangle.cpp \
@@ -38,13 +39,9 @@ N3888_RefImpl_SOURCES =	brush.cpp \
 				standalone_functions.cpp \
 				surface.cpp \
 				surface_brush_factory.cpp \
+				test_renderer_fill.cpp \
 				text_extents.cpp \
 				vector_2d.cpp
-##				refimpl-resources.c \
-##				RefImplApp.c \
-##				RefImplWindow.c \
-##				RefImplDraw.cpp
-##				signals.cpp \
 
 N3888_RefImpl_LDADD = 		@GTKCAIRO_LIBS@
 

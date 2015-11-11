@@ -102,7 +102,7 @@ void linear_brush_factory::remove_color_stop(linear_brush_factory::size_type ind
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_INDEX);
 	}
 
-	_Color_stops.erase(_Color_stops.begin() + index);
+	_Color_stops.erase(_Color_stops.begin() + static_cast<difference_type>(index));
 	assert(_Color_stops.size() + 1 == size);
 }
 
@@ -113,7 +113,7 @@ void linear_brush_factory::remove_color_stop(linear_brush_factory::size_type ind
 		return;
 	}
 
-	_Color_stops.erase(_Color_stops.begin() + index);
+	_Color_stops.erase(_Color_stops.begin() + static_cast<difference_type>(index));
 	assert(_Color_stops.size() + 1 == size);
 	ec.clear();
 }

@@ -171,8 +171,6 @@ void test_compositing_operators_different_pixel_formats(surface& rs, compositing
 	rs.fill_immediate(dstSfc, matrix_2d::init_translate({ -50.0, -40.0 }));
 }
 
-void render_radial_fill_immediate_software(display_surface& ds, const radial_brush_factory& rbf, extend e = extend::none, matrix_2d m = matrix_2d::init_identity(), filter f = filter::nearest);
-
 void test_draw_radial_circles(display_surface& rs) {
 	rs.paint(rgba_color::cornflower_blue());
 	rs.fill_rule(fill_rule::winding);
@@ -549,7 +547,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	const int elementCount = 12;
 	const static auto vec = init_sort_steps(elementCount);
 	const auto phaseCount = vec.size();
-	const size_t x = min(static_cast<size_t>(timer / phaseTime), max(phaseCount - 1U, 0U));
+	const size_t x = ::std::min(static_cast<size_t>(timer / phaseTime), ::std::max(static_cast<size_t>(phaseCount - 1U), static_cast<size_t>(0U)));
 	rs.paint(rgba_color::cornflower_blue()); // Paint background.
 
 	rs.immediate().clear();
@@ -734,7 +732,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	const static auto vec = init_sort_steps(elementCount);
 	const auto phaseCount = vec.size();
 	assert(phaseCount > 0);
-	const size_t x = min(static_cast<size_t>(timer / phaseTime), max(phaseCount - 1U, 0U));
+	const size_t x = min(static_cast<size_t>(timer / phaseTime), max(static_cast<size_t>(phaseCount - 1U), static_cast<size_t>(0U)));
 	auto cornflowerBlueBrush = brush(solid_color_brush_factory(rgba_color::cornflower_blue()));
 	rs.brush(cornflowerBlueBrush);
 	rs.paint(); // Paint background.
@@ -888,56 +886,6 @@ namespace {
 	//vector<tuple<bool, bool, vector<path_data_item>>> transformed_fill_only_sub_paths_to_winding_bool_even_odd_bool_transformed_non_intersecting_filled_sub_paths(const vector<vector<path_data_item>>& pathData) {
 	//	// Need to 
 	//}
-}
-
-// Ok. So I need to render a series of 1px wide, aliased circles. Given a center and a radius, I need to choose what pixels are and are not on the circle without letting any gaps appear.
-
-void render_radial_fill_immediate_software(display_surface& ds, const radial_brush_factory& rbf, extend e, matrix_2d m, filter f) {
-	assert(f == filter::nearest); // We aren't handling antialiasing currently; this is just a test.
-	for (const auto& stop : rbf.color_stops()) {
-		auto offset = get<0>(stop);
-		assert(offset >= 0.0 && offset <= 1.0);
-	}
-
-	auto circles = rbf.radial_circles();
-	auto center0 = get<0>(circles);
-	auto radius0 = get<1>(circles);
-	auto center1 = get<2>(circles);
-	auto radius1 = get<3>(circles);
-	if (radius0 < 0.0 || radius1 < 0.0) {
-		// Degenerate; do nothing.
-		return;
-	}
-	if (_Almost_equal_relative((center1 - center0).magnitude(), 0.0) && _Almost_equal_relative(radius0, radius1)) {
-		// Degenerate; do nothing.
-		return;
-	}
-
-	auto surfaceMatrixInverted = ds.matrix().invert();
-	// The brush matrix needs to be inverted since we're moving from brush space to surface space.
-	m.invert();
-
-	double angle = 0.0;
-
-	//if (coordsAtZeroOrigin.x() != 0.0 || coordsAtZeroOrigin.y() != 0.0) {
-	//	angle = atan2(coordsAtZeroOrigin.y(), coordsAtZeroOrigin.x());
-	//}
-	auto circ0 = _Rotate_point_absolute_angle(center0, radius0, angle);
-	auto circ1 = _Rotate_point_absolute_angle(center1, radius1, angle);
-
-	auto s_fn = [](double t) -> double { return (t - 0.0) / (1.0 - 0.0); };
-	auto x_fn = [&circles](double s) -> double { auto x0 = get<0>(circles).x(); return x0 + s * (get<2>(circles).x() - x0); };
-	auto y_fn = [&circles](double s) -> double { auto y0 = get<0>(circles).y(); return y0 + s * (get<2>(circles).y() - y0); };
-	auto r_fn = [&circles](double s) -> double { auto r0 = get<1>(circles); return r0 + s * (get<3>(circles) -r0); };
-
-	// So we know several things. If the extend mode is none we only have to paint from t [0,1], making sure we cover every pixel along the longest transformed line from start to end. Matrices can have weird effects so figuring out what is the longest line may be a bit tricky, but since at worst it becomes uniformly distorted elipses, we can simply examine the rotations at 0, half_pi, pi, and three_pi_over_two and use those numbers to narrow down where we are going. Further since we know we're drawing from begin to end, we actually know the quadrant and even the vector of line we need total coverage on. So as long as we cover all points that covers we are all set.
-	// If it's another extend mode then we know that unless the radii are the same, there is an s for which r_fn will return a value < 0.0 and so we can stop there. We also know we only need to fill, at most, the fill extents and within those only the points that are actually filled (probably we should implement it as a paint that uses the geometries that are filled as a mask). That's true even for extend::none, btw. We further know that if the either circle is contained by the other, the pattern will extend out infinitely whereas if not it's a cone shape that will only grow in one direction. Either way we need to turn the current geometry into a fill-only geometry by culling anything that wouldn't be filled based on the current fill rule. Remember that each sub path implicitly closes itself at the end of every move and thus is a candidate for inclusion it it's not 1D only. Applying the fill rule correctly to each subpath will be hard especially since some will only be culled as a result of other subpaths. Reflect requires reversing the t for every other domain in order to get proper circles. Repeat lets us just keep going on t unless/until r_fn returns negative then we only continue the other direction.
-
-	// So I need to know two things to start rendering: the vector from start to end, and the width of the biggest transformed section.
-
-	// If I take the surface coordinate and transform it into an untransformed brush coordinate, I can work with the brush like it's circles. What if I then create a matrix to translate the begin cirle to the end circle? Doesn't that just make it a problem of subtracting the center of the circles from the transformed surface coordinate then plug that into atan2 to get the angle? And once I have that I can 
-
-	// Once I have the untransformed brush coordinate, if it's on the line running from start to end, then I have to solve for s 
 }
 
 void test_draw_circle(display_surface& ds, const vector_2d& coords, const radial_brush_factory& f) {

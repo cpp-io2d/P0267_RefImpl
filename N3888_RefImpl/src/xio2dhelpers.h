@@ -7,6 +7,7 @@
 #include <system_error>
 #include <limits>
 #include <cmath> // Needed for atan2
+#include <cstring> // Needed for memcpy
 
 namespace std {
 	namespace experimental {
@@ -270,7 +271,7 @@ namespace std {
 					auto result = ::std::experimental::io2d::image_surface(original, fmt, width, height);
 					assert((width == result.width()) && (height == result.height()) && (stride == result.stride()));
 					result.data(data);
-					return ::std::move(result);
+					return result;//return ::std::move(result);
 				}
 
 				// Error codes:
@@ -296,7 +297,7 @@ namespace std {
 					int height = 0;
 					::std::experimental::io2d::format fmt = ::std::experimental::io2d::format::invalid;
 					int stride = 0;
-					original.map([&data, &width, &height, &fmt, &stride](::std::experimental::io2d::mapped_surface& ms, ::std::error_code& ec) -> void {
+					original.map([&data, &width, &height, &fmt, &stride, &ec](::std::experimental::io2d::mapped_surface& ms, ::std::error_code&) -> void {
 						width = ms.width();
 						height = ms.height();
 						stride = ms.stride();

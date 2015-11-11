@@ -136,11 +136,11 @@ display_surface::native_handle_type display_surface::native_handle() const {
 display_surface::display_surface(display_surface&& other) noexcept
 	: surface(move(other))
 	, _Default_brush(move(other._Default_brush))
+	, _Display_width(move(other._Display_width))
+	, _Display_height(move(other._Display_height))
 	, _Scaling(move(other._Scaling))
 	, _Width(move(other._Width))
 	, _Height(move(other._Height))
-	, _Display_width(move(other._Display_width))
-	, _Display_height(move(other._Display_height))
 	, _Draw_fn(move(other._Draw_fn))
 	, _Size_change_fn(move(other._Size_change_fn))
 	, _User_scaling_fn(move(other._User_scaling_fn))
@@ -155,15 +155,15 @@ display_surface::display_surface(display_surface&& other) noexcept
 	other._Wndw = None;
 }
 
-display_surface& display_surface::operator=(display_surface&& other) {
+display_surface& display_surface::operator=(display_surface&& other) noexcept {
 	if (this != &other) {
 		surface::operator=(move(other));
 		_Default_brush = move(other._Default_brush);
+		_Display_width = move(other._Display_width);
+		_Display_height = move(other._Display_height);
 		_Scaling = move(other._Scaling);
 		_Width = move(other._Width);
 		_Height = move(other._Height);
-		_Display_width = move(other._Display_width);
-		_Display_height = move(other._Display_height);
 		_Draw_fn = move(other._Draw_fn);
 		_Size_change_fn = move(other._Size_change_fn);
 		_User_scaling_fn = move(other._User_scaling_fn);
@@ -227,8 +227,8 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Scaling(scl)
 	, _Width(preferredWidth)
-	, _Height(preferredHeight)
 	, _Display_width(preferredDisplayWidth)
+	, _Height(preferredHeight)
 	, _Display_height(preferredDisplayHeight)
 	, _Draw_fn()
 	, _Size_change_fn()

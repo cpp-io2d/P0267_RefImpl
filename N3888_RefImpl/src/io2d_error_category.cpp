@@ -37,6 +37,8 @@ const char* io2d_error_category::name() const noexcept {
 		return "An attempt was made to use or manipulate a surface object or surface-derived object which is no longer valid.";
 	case io2d_error::invalid_dash:
 		return "An invalid dash value was specified in a call to surface::dashes.";
+	case io2d_error::invalid_index:
+		return "An invalid index value was specified.";
 	case io2d_error::clip_not_representable:
 		return "A call was made to surface::clip_rectangles when the surface object's current clipping region could not be represented with rectangles.";
 	case io2d_error::invalid_stride:
