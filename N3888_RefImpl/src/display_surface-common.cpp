@@ -27,27 +27,45 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 			cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
 			cairo_paint(_Native_context.get());
 		}
-
-		auto widthRatio = static_cast<double>(_Display_width) / static_cast<double>(_Width);
-		auto heightRatio = static_cast<double>(_Display_height) / static_cast<double>(_Height);
-
+		const auto whRatio = static_cast<double>(_Width) / static_cast<double>(_Height);
+		const auto displayWHRatio = static_cast<double>(_Display_width) / static_cast<double>(_Display_height);
 		cairo_matrix_t ctm;
+		auto nativeContext = _Native_context.get();
+		cairo_save(nativeContext);
+		double rectX, rectY, rectWidth, rectHeight;
+		if (whRatio < displayWHRatio) {
+			cairo_new_path(nativeContext);
+			const auto displayHeightAsDouble = static_cast<double>(_Display_height);
+			rectWidth = trunc(displayHeightAsDouble * whRatio);
+			rectHeight = displayHeightAsDouble;
+			rectX = trunc(abs(rectWidth - static_cast<double>(_Display_width)) / 2.0);
+			rectY = 0.0;
+			cairo_rectangle(nativeContext, rectX, rectY, rectWidth, rectHeight);
 
-		if (widthRatio < heightRatio) {
-			cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / widthRatio);
-			cairo_matrix_translate(&ctm, 0.0, -trunc(abs(static_cast<double>(_Display_height - (_Height * widthRatio)) / 2.0)));
+			const auto heightRatio = static_cast<double>(_Height) / static_cast<double>(_Display_height);
+			cairo_matrix_init_scale(&ctm, heightRatio, heightRatio);
+			cairo_matrix_translate(&ctm, -rectX, 0.0);
 		}
 		else {
-			cairo_matrix_init_scale(&ctm, 1.0 / heightRatio, 1.0 / heightRatio);
-			cairo_matrix_translate(&ctm, -trunc(abs(static_cast<double>(_Display_width - (_Width * heightRatio)) / 2.0)), 0.0);
-		}
+			cairo_new_path(nativeContext);
+			const auto displayWidthAsDouble = static_cast<double>(_Display_width);
+			rectWidth = displayWidthAsDouble;
+			rectHeight = trunc(displayWidthAsDouble / whRatio);
+			rectX = 0.0;
+			rectY = trunc(abs(rectHeight - static_cast<double>(_Display_height)) / 2.0);
+			cairo_rectangle(nativeContext, rectX, rectY, rectWidth, rectHeight);
 
+			const auto widthRatio = static_cast<double>(_Width) / static_cast<double>(_Display_width);
+			cairo_matrix_init_scale(&ctm, widthRatio, widthRatio);
+			cairo_matrix_translate(&ctm, 0.0, -rectY);
+		}
 		unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
 		cairo_pattern_set_matrix(pat.get(), &ctm);
 		cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
 		cairo_pattern_set_filter(pat.get(), cairoFilter);
 		cairo_set_source(_Native_context.get(), pat.get());
-		cairo_paint(_Native_context.get());
+		cairo_fill(_Native_context.get());
+		cairo_restore(nativeContext);
 	}
 }
 
