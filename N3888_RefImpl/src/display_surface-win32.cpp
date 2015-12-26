@@ -6,13 +6,14 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
+[[noreturn]]
 inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const char* message) {
 	if (message != nullptr) {
-		// Note: C-style cast because system_error requires an int but GetLastError returns a DWORD (i.e. unsigned long) but ordinary WinError.h values never exceed the max value of an int.
-		throw system_error((int)getLastErrorValue, system_category(), message);
+		// Updated Note: Changed to static_cast due to 4.7/3 [conv.integral]. // Old Note: C-style cast because system_error requires an int but GetLastError returns a DWORD (i.e. unsigned long) but ordinary WinError.h values never exceed the max value of an int.
+		throw system_error(static_cast<int>(getLastErrorValue), system_category(), message);
 	}
 	else {
-		throw system_error((int)getLastErrorValue, system_category());
+		throw system_error(static_cast<int>(getLastErrorValue), system_category());
 	}
 }
 
@@ -43,6 +44,7 @@ namespace {
 	const wchar_t* _Refimpl_window_class_name = L"_RefImplWndwCls";
 }
 
+ATOM _MyRegisterClass(HINSTANCE);
 ATOM _MyRegisterClass(HINSTANCE hInstance) {
 	WNDCLASSEX wcex{ };
 
@@ -54,12 +56,12 @@ ATOM _MyRegisterClass(HINSTANCE hInstance) {
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = sizeof(display_surface*);
 	wcex.hInstance = hInstance;
-	wcex.hIcon = nullptr;
+	wcex.hIcon = static_cast<HICON>(nullptr);
 	wcex.hCursor = LoadCursorW(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	wcex.lpszMenuName = nullptr;
+	wcex.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
+	wcex.lpszMenuName = static_cast<LPCWSTR>(nullptr);
 	wcex.lpszClassName = _Refimpl_window_class_name;
-	wcex.hIconSm = nullptr;
+	wcex.hIconSm = static_cast<HICON>(nullptr);
 
 	return RegisterClassEx(&wcex);
 }
@@ -109,12 +111,15 @@ void display_surface::_Resize_window() {
 LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	const static auto lrZero = static_cast<LRESULT>(0);
 	switch (msg) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code-break"
 	case WM_CREATE:
 	{
 		_Resize_window();
 		// Return 0 to allow the window to proceed in the creation process.
 		return lrZero;
 	} break;
+#pragma clang diagnostic pop
 
 	case WM_CLOSE:
 	{
@@ -122,12 +127,15 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		// terminate.
 	} break;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code-break"
 	case WM_DESTROY:
 	{
 		// This message is sent when a window has been destroyed.
 		PostQuitMessage(0);
 		return lrZero;
 	} break;
+#pragma clang diagnostic pop
 
 	case WM_SIZE:
 	{
@@ -186,11 +194,11 @@ display_surface::native_handle_type display_surface::native_handle() const {
 display_surface::display_surface(display_surface&& other) noexcept
 	: surface(move(other))
 	, _Default_brush(move(other._Default_brush))
+	, _Display_width(move(other._Display_width))
+	, _Display_height(move(other._Display_height))
 	, _Scaling(move(other._Scaling))
 	, _Width(move(other._Width))
 	, _Height(move(other._Height))
-	, _Display_width(move(other._Display_width))
-	, _Display_height(move(other._Display_height))
 	, _Draw_fn(move(other._Draw_fn))
 	, _Size_change_fn(move(other._Size_change_fn))
 	, _User_scaling_fn(move(other._User_scaling_fn))
@@ -278,17 +286,17 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 
 	// Create an instance of the window
 	_Hwnd = CreateWindowExW(
-		NULL,								// extended style
+		static_cast<DWORD>(0),				// extended style
 		_Refimpl_window_class_name,			// class name
 		L"",								// instance title
 		(WS_OVERLAPPEDWINDOW | WS_VISIBLE),	// window style
 		lleft, ltop,						// initial x, y
 		lwidth,								// initial width
 		lheight,							// initial height
-		NULL,								// handle to parent
-		NULL,								// handle to menu
-		NULL,								// instance of this application
-		NULL);								// extra creation parms
+		static_cast<HWND>(nullptr),			// handle to parent
+		static_cast<HMENU>(nullptr),		// handle to menu
+		static_cast<HINSTANCE>(nullptr),	// instance of this application
+		static_cast<LPVOID>(nullptr));		// extra creation parms
 
 	if (_Hwnd == nullptr) {
 		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to CreateWindowEx in display_surface::display_surface(int, int, format, int, int, scaling)");

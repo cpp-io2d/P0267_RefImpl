@@ -801,6 +801,12 @@ namespace std {
 				template <>
 				path_data_item::rel_move_to path_data_item::get(::std::error_code& ec) const noexcept;
 */
+
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
 				class path_data_item::path_data {
 				public:
 					path_data() noexcept = default;
@@ -1021,6 +1027,10 @@ namespace std {
 					vector_2d origin() const noexcept;
 					virtual path_data_type type() const noexcept override;
 				};
+
+#ifdef _WIN32
+#pragma clang diagnostic pop
+#endif
 
 				template <>
 				inline path_data_item::arc path_data_item::get() const {
