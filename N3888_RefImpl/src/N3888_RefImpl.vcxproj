@@ -189,6 +189,7 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.pd
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ExceptionHandling>Enabled</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UndefinePreprocessorDefinitions>NDEBUG</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

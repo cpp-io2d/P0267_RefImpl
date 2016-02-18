@@ -78,9 +78,9 @@ namespace not_proposed {
 				return;
 			}
 			stride /= sizeof(uint16_t);
-			uint16_t value = static_cast<uint16_t>(nearbyint(color.r() * 31)) << 11 |
-				static_cast<uint16_t>(nearbyint(color.g() * 63)) << 5 |
-				static_cast<uint16_t>(nearbyint(color.b() * 31));
+			uint16_t value = static_cast<uint16_t>(static_cast<uint16_t>(nearbyint(color.r() * 31U)) << 11U |
+				static_cast<uint16_t>(nearbyint(color.g() * 63U)) << 5U |
+				static_cast<uint16_t>(nearbyint(color.b() * 31U)));
 			reinterpret_cast<uint16_t *>(data)[x + y * stride] = value;
 		}
 
@@ -99,6 +99,7 @@ namespace not_proposed {
 			reinterpret_cast<uint32_t *>(data)[x + y * stride] = value;
 		}
 
+		bool t_is_valid_for_extend(double, extend);
 		bool t_is_valid_for_extend(double t, extend e) {
 			switch (e)
 			{
@@ -440,6 +441,7 @@ namespace not_proposed {
 			});
 		}
 
+		rgba_color interpolate(const rgba_color&, double, const rgba_color&, double, double);
 		rgba_color interpolate(const rgba_color& lc, double loff, const rgba_color& hc, double hoff, double t) {
 			// loff must be the lower value and cannot equal hoff (avoids improper results and divide by zero).
 			assert(loff < hoff);
@@ -702,6 +704,7 @@ namespace not_proposed {
 			return{ pt0, pt1 };
 		}
 
+		bool point_is_on_line(const vector_2d&, const vector_2d&, const vector_2d&);
 		bool point_is_on_line(const vector_2d& linePt1, const vector_2d& linePt2, const vector_2d& point) {
 			if (_Almost_equal_relative(linePt1.x(), linePt2.x())) {
 				if (_Almost_equal_relative(linePt1.x(), point.x()) || _Almost_equal_relative(linePt2.x(), point.x())) {
@@ -742,6 +745,7 @@ namespace not_proposed {
 			return result;
 		}
 
+		vector<vector<fill_path_data_item>> path_data_to_transformed_fill_only_sub_paths(const vector<path_data_item>&);
 		vector<vector<fill_path_data_item>> path_data_to_transformed_fill_only_sub_paths(const vector<path_data_item>& pathData) {
 			auto matrix = matrix_2d::init_identity();
 			vector_2d origin;
@@ -779,7 +783,7 @@ namespace not_proposed {
 				if (isFilled) {
 					vec.push_back(fill_line(lineEndPoint, lastMoveToPoint));
 					auto inverseMatrix = matrix_2d(matrix).invert();
-					currentPoint = inverseMatrix.transform_coords(lastMoveToPoint - origin) + origin;
+					currentPoint = inverseMatrix.transform_point(lastMoveToPoint - origin) + origin;
 					lineEndPoint = lastMoveToPoint;
 					subPaths.emplace_back(move(vec));
 				}
@@ -797,12 +801,12 @@ namespace not_proposed {
 				switch (pdt) {
 				case std::experimental::io2d::path_data_type::move_to:
 				{
-					auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+					auto pt = matrix.transform_point(currentPoint - origin) + origin;
 					if (hasCurrentPoint) {
 						add_path_conditional_and_reset_vec_and_vars_fn();
 					}
 					currentPoint = item.get<path_data_item::move_to>().to();
-					pt = matrix.transform_coords(currentPoint - origin) + origin;
+					pt = matrix.transform_point(currentPoint - origin) + origin;
 					hasCurrentPoint = true;
 					hasCurrentLine = false;
 					lastMoveToPoint = pt;
@@ -811,7 +815,7 @@ namespace not_proposed {
 				case std::experimental::io2d::path_data_type::line_to:
 				{
 					currentPoint = item.get<path_data_item::line_to>().to();
-					auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+					auto pt = matrix.transform_point(currentPoint - origin) + origin;
 					if (hasCurrentPoint) {
 						if (!points_are_the_same(lineEndPoint, pt)) {
 							vec.push_back(fill_line(lineEndPoint, pt));
@@ -825,7 +829,7 @@ namespace not_proposed {
 					}
 					else {
 						currentPoint = item.get<path_data_item::line_to>().to();
-						auto ltpt = matrix.transform_coords(currentPoint - origin) + origin;
+						auto ltpt = matrix.transform_point(currentPoint - origin) + origin;
 						hasCurrentPoint = true;
 						hasCurrentLine = false;
 						lastMoveToPoint = ltpt;
@@ -835,9 +839,9 @@ namespace not_proposed {
 				case std::experimental::io2d::path_data_type::curve_to:
 				{
 					auto dataItem = item.get<path_data_item::curve_to>();
-					auto pt1 = matrix.transform_coords(dataItem.control_point_1() - origin) + origin;
-					auto pt2 = matrix.transform_coords(dataItem.control_point_2() - origin) + origin;
-					auto pt3 = matrix.transform_coords(dataItem.end_point() - origin) + origin;
+					auto pt1 = matrix.transform_point(dataItem.control_point_1() - origin) + origin;
+					auto pt2 = matrix.transform_point(dataItem.control_point_2() - origin) + origin;
+					auto pt3 = matrix.transform_point(dataItem.end_point() - origin) + origin;
 					if (!hasCurrentPoint) {
 						currentPoint = dataItem.control_point_1();
 						hasCurrentPoint = true;
@@ -882,7 +886,7 @@ namespace not_proposed {
 						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 					}
 					currentPoint = item.get<path_data_item::rel_move_to>().to() + currentPoint;
-					auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+					auto pt = matrix.transform_point(currentPoint - origin) + origin;
 					hasCurrentPoint = true;
 					hasCurrentLine = false;
 					lastMoveToPoint = pt;
@@ -894,7 +898,7 @@ namespace not_proposed {
 						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 					}
 					currentPoint = item.get<path_data_item::rel_line_to>().to() + currentPoint;
-					auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+					auto pt = matrix.transform_point(currentPoint - origin) + origin;
 					if (!points_are_the_same(lineEndPoint, pt)) {
 						vec.push_back(fill_line(lineEndPoint, pt));
 						if (!isFilled && hasCurrentLine) {
@@ -911,9 +915,9 @@ namespace not_proposed {
 						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 					}
 					auto dataItem = item.get<path_data_item::rel_curve_to>();
-					auto pt1 = matrix.transform_coords(dataItem.control_point_1() + currentPoint - origin) + origin;
-					auto pt2 = matrix.transform_coords(dataItem.control_point_2() + currentPoint - origin) + origin;
-					auto pt3 = matrix.transform_coords(dataItem.end_point() + currentPoint - origin) + origin;
+					auto pt1 = matrix.transform_point(dataItem.control_point_1() + currentPoint - origin) + origin;
+					auto pt2 = matrix.transform_point(dataItem.control_point_2() + currentPoint - origin) + origin;
+					auto pt3 = matrix.transform_point(dataItem.end_point() + currentPoint - origin) + origin;
 					if (points_are_the_same(lineEndPoint, pt3)) {
 						// There's no curve at all if the begin and end of the curve are the same point; control points cannot manipulate a line that doesn't exist. 
 						break;
@@ -975,7 +979,7 @@ namespace not_proposed {
 						ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
 
 					if (hasCurrentPoint) {
-						auto pt = matrix.transform_coords(startPt - origin) + origin;
+						auto pt = matrix.transform_point(startPt - origin) + origin;
 						if (!points_are_the_same(lineEndPoint, pt)) {
 							vec.push_back(fill_line(lineEndPoint, pt));
 							if (!isFilled && hasCurrentLine) {
@@ -988,7 +992,7 @@ namespace not_proposed {
 						}
 					}
 					else {
-						auto pt = matrix.transform_coords(startPt - origin) + origin;
+						auto pt = matrix.transform_point(startPt - origin) + origin;
 						currentPoint = startPt;
 						hasCurrentPoint = true;
 						hasCurrentLine = false;
@@ -1001,9 +1005,9 @@ namespace not_proposed {
 						auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad }, currTheta);
 						auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad }, currTheta);
 						currentPoint = cpt3;
-						cpt1 = matrix.transform_coords(cpt1 - origin) + origin;
-						cpt2 = matrix.transform_coords(cpt2 - origin) + origin;
-						cpt3 = matrix.transform_coords(cpt3 - origin) + origin;
+						cpt1 = matrix.transform_point(cpt1 - origin) + origin;
+						cpt2 = matrix.transform_point(cpt2 - origin) + origin;
+						cpt3 = matrix.transform_point(cpt3 - origin) + origin;
 						if (points_are_the_same(lineEndPoint, cpt3)) {
 							// This likely should never happen but I don't have time to investigate just now and this is a safe way of handling it.
 							continue;
@@ -1071,7 +1075,7 @@ namespace not_proposed {
 						ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
 
 					if (hasCurrentPoint) {
-						auto pt = matrix.transform_coords(startPt - origin) + origin;
+						auto pt = matrix.transform_point(startPt - origin) + origin;
 						if (!points_are_the_same(lineEndPoint, pt)) {
 							vec.push_back(fill_line(lineEndPoint, pt));
 							if (!isFilled && hasCurrentLine) {
@@ -1084,7 +1088,7 @@ namespace not_proposed {
 						}
 					}
 					else {
-						auto pt = matrix.transform_coords(startPt - origin) + origin;
+						auto pt = matrix.transform_point(startPt - origin) + origin;
 						currentPoint = startPt;
 						hasCurrentPoint = true;
 						hasCurrentLine = false;
@@ -1097,9 +1101,9 @@ namespace not_proposed {
 						auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad }, currTheta);
 						auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad }, currTheta);
 						currentPoint = cpt3;
-						cpt1 = matrix.transform_coords(cpt1 - origin) + origin;
-						cpt2 = matrix.transform_coords(cpt2 - origin) + origin;
-						cpt3 = matrix.transform_coords(cpt3 - origin) + origin;
+						cpt1 = matrix.transform_point(cpt1 - origin) + origin;
+						cpt2 = matrix.transform_point(cpt2 - origin) + origin;
+						cpt3 = matrix.transform_point(cpt3 - origin) + origin;
 						if (points_are_the_same(lineEndPoint, cpt3)) {
 							// This likely should never happen but I don't have time to investigate just now and this is a safe way of handling it.
 							continue;
@@ -1136,6 +1140,7 @@ namespace not_proposed {
 			return subPaths;
 		}
 
+		bool rectangle_intersects_rectangle(const rectangle&, const rectangle&);
 		bool rectangle_intersects_rectangle(const rectangle& first, const rectangle& second) {
 			if (first.right() < second.left()) {
 				return false;
@@ -1153,7 +1158,8 @@ namespace not_proposed {
 		}
 
 		// Note: This function returns false if the line segments are collinear.
-		bool line_segment_intersects_line_segment(const vector_2d& firstStart, const vector_2d& firstEnd, const vector_2d& secondStart, const vector_2d& secondEnd, vector_2d& intersectionPoint, bool&) {
+		bool line_segment_intersects_line_segment(const vector_2d&, const vector_2d&, const vector_2d&, const vector_2d&, vector_2d&);
+		bool line_segment_intersects_line_segment(const vector_2d& firstStart, const vector_2d& firstEnd, const vector_2d& secondStart, const vector_2d& secondEnd, vector_2d& intersectionPoint) {
 			if (!rectangle_intersects_rectangle({ min(firstStart.x(), firstEnd.x()), min(firstStart.y(), firstEnd.y()), abs(firstStart.x() - firstEnd.x()), abs(firstStart.y() - firstEnd.y()) },
 			{ min(secondStart.x(), secondEnd.x()), min(secondStart.y(), secondEnd.y()), abs(secondStart.x() - secondEnd.x()), abs(secondStart.y() - secondEnd.y()) })) {
 				intersectionPoint = {};

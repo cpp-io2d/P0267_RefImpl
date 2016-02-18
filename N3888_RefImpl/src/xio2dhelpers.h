@@ -221,7 +221,7 @@ namespace std {
 
 				// Note: The resulting image_surface does not maintain its own memory store.
 				inline ::std::experimental::io2d::image_surface _Surface_create_image_surface_copy(::std::experimental::io2d::surface& original) {
-					if (!original.has_surface_resource()) {
+					if (!original._Has_surface_resource()) {
 						throw invalid_argument("Surface to be copied has no surface resource.");
 					}
 					if (original.is_finished()) {
@@ -268,17 +268,19 @@ namespace std {
 							throw logic_error("Unknown format type.");
 						}
 					});
-					auto result = ::std::experimental::io2d::image_surface(original, fmt, width, height);
+					auto result = ::std::experimental::io2d::image_surface(fmt, width, height);
 					assert((width == result.width()) && (height == result.height()) && (stride == result.stride()));
 					result.data(data);
-					return result;//return ::std::move(result);
+					return result;
 				}
 
 				// Error codes:
-				// errc::not_enough_memory
+				// errc::invalid_argument		- original._Has_surface_resource() == false
+				// errc::not_enough_memory		- original.is_finished() == true
+				// result of original.flush(ec)	- currently nothing; this always succeeds but this might need to change if implementators need the possibility for failure in surface::flush(error_code&).
 				// 
 				inline void _Surface_create_image_surface_copy(::std::experimental::io2d::surface& original, ::std::experimental::io2d::image_surface& result, ::std::error_code& ec) noexcept {
-					if (!original.has_surface_resource()) {
+					if (!original._Has_surface_resource()) {
 						ec = make_error_code(errc::invalid_argument);
 						return;
 					}
@@ -292,6 +294,7 @@ namespace std {
 						return;
 					}
 
+					// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 					::std::vector<unsigned char> data;
 					int width = 0;
 					int height = 0;
@@ -303,20 +306,19 @@ namespace std {
 						stride = ms.stride();
 						fmt = ms.format();
 						auto size = static_cast<vector<unsigned char>::size_type>(height * stride);
-						if (size > data.max_size()) {
-							ec = ::std::make_error_code(::std::errc::not_enough_memory);
-							return;
-						}
 						try {
 							data.resize(size);
+						}
+						catch (const ::std::length_error&) {
+							ec = ::std::make_error_code(::std::errc::not_enough_memory);
+							return;
 						}
 						catch (const ::std::bad_alloc&) {
 							ec = ::std::make_error_code(::std::errc::not_enough_memory);
 							return;
 						}
 						
-						switch (fmt)
-						{
+						switch (fmt) {
 						case std::experimental::io2d::format::invalid:
 							ec = ::std::make_error_code(::std::errc::invalid_argument);
 							break;
@@ -352,7 +354,7 @@ namespace std {
 						return;
 					}
 
-					result = ::std::experimental::io2d::image_surface(original, fmt, width, height, ec);
+					result = ::std::experimental::io2d::image_surface(fmt, width, height, ec);
 					if (static_cast<bool>(ec)) {
 						return;
 					}

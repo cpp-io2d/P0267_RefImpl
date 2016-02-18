@@ -31,4 +31,6 @@
 
 // Designed to be used to conditionally define compiler support for constexpr using a #if
 #define _Constexpr_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190022203))
+
+#define _Variable_templates_conditional_support_test ((__cplusplus >= 201402L) || _MSC_FULL_VER > 190023506)
 #endif

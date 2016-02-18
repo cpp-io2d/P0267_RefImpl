@@ -3,6 +3,7 @@
 #include "xcairoenumhelpers.h"
 
 using namespace std;
+using namespace std::experimental;
 using namespace std::experimental::io2d;
 
 void display_surface::_All_dimensions(int w, int h, int dw, int dh) {
@@ -227,11 +228,11 @@ void display_surface::restore(error_code& ec) noexcept {
 	ec.clear();
 }
 
-void display_surface::draw_fn(const ::std::function<void(display_surface& sfc)>& fn) {
+void display_surface::draw_callback(const ::std::function<void(display_surface& sfc)>& fn) {
 	_Draw_fn = fn;
 }
 
-void display_surface::size_change_fn(const ::std::function<void(display_surface& sfc)>& fn) {
+void display_surface::size_change_callback(const ::std::function<void(display_surface& sfc)>& fn) {
 	_Size_change_fn = fn;
 }
 
@@ -284,11 +285,11 @@ void display_surface::scaling(experimental::io2d::scaling scl) noexcept {
 	_Scaling = scl;
 }
 
-void display_surface::user_scaling_fn(const function<experimental::io2d::rectangle(const display_surface&, bool&)>& fn) {
+void display_surface::user_scaling_callback(const function<experimental::io2d::rectangle(const display_surface&, bool&)>& fn) {
 	_User_scaling_fn = fn;
 }
 
-void display_surface::reset_letterbox_brush() noexcept {
+void display_surface::letterbox_brush(nullopt_t) noexcept {
 	_Letterbox_brush = _Default_brush;
 }
 
@@ -336,8 +337,19 @@ experimental::io2d::scaling display_surface::scaling() const noexcept {
 	return _Scaling;
 }
 
-const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& display_surface::user_scaling_fn() const noexcept {
+::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> display_surface::user_scaling_callback() const {
 	return _User_scaling_fn;
+}
+
+::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> display_surface::user_scaling_callback(error_code& ec) const noexcept {
+	try {
+		ec.clear();
+		return _User_scaling_fn;
+	}
+	catch (const bad_alloc&) {
+		ec = make_error_code(errc::not_enough_memory);
+		return nullptr;
+	}
 }
 
 experimental::io2d::brush display_surface::letterbox_brush() const noexcept {

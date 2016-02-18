@@ -322,7 +322,7 @@
 //	return get<0>(patch);
 //}
 //
-//// Note: This and various other code relies on C++17's provision that the default vector ctor is noexcept (N4258, adopted 2014-11).
+//// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 //path_factory mesh_brush_factory::path_factory(unsigned int patch_num, error_code& ec) const noexcept {
 //	if (patch_num >= _Patches.size()) {
 //		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_INDEX);

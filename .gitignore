@@ -228,3 +228,6 @@ missing
 stamp-h1
 compile
 *.opendb
+/N3888_RefImpl/src/Debug_Clang_C2/N3888_RefImpl.tlog
+*.exe
+/N3888_RefImpl/src/Debug_Clang_C2/N3888_RefImpl.res

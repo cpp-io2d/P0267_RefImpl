@@ -111,31 +111,38 @@ void display_surface::_Resize_window() {
 LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	const static auto lrZero = static_cast<LRESULT>(0);
 	switch (msg) {
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code-break"
+#endif
 	case WM_CREATE:
 	{
 		_Resize_window();
 		// Return 0 to allow the window to proceed in the creation process.
 		return lrZero;
 	} break;
+#ifdef __clang__
 #pragma clang diagnostic pop
-
+#endif
 	case WM_CLOSE:
 	{
 		// This message is sent when a window or an application should
 		// terminate.
 	} break;
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code-break"
+#endif
 	case WM_DESTROY:
 	{
 		// This message is sent when a window has been destroyed.
 		PostQuitMessage(0);
 		return lrZero;
 	} break;
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 
 	case WM_SIZE:
 	{
@@ -251,11 +258,11 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl)
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
 	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Display_width(preferredDisplayWidth)
+	, _Display_height(preferredDisplayHeight)
 	, _Scaling(scl)
 	, _Width(preferredWidth)
 	, _Height(preferredHeight)
-	, _Display_width(preferredDisplayWidth)
-	, _Display_height(preferredDisplayHeight)
 	, _Draw_fn()
 	, _Size_change_fn()
 	, _User_scaling_fn()
@@ -266,7 +273,11 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Native_surface(nullptr, &cairo_surface_destroy)
 	, _Native_context(nullptr, &cairo_destroy) {
 	call_once(_Window_class_registered_flag, _MyRegisterClass, static_cast<HINSTANCE>(GetModuleHandleW(nullptr)));
+
 	// Record the desired client window size
+	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
+		throw invalid_argument("Invalid parameter.");
+	}
 	RECT rc;
 	rc.top = rc.left = 0;
 	rc.right = preferredDisplayWidth;
@@ -305,7 +316,21 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	SetLastError(ERROR_SUCCESS);
 	// Set in the "extra" bytes the pointer to the 'this' pointer
 	// so it can handle messages for itself.
+	// I know that the C-style cast works and have not had a chance to come up with a safer C++-style cast that I can be sure also works so I'm disabling the warning.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#endif
+#endif
+
 	if (!SetWindowLongPtrW(_Hwnd, _Display_surface_ptr_window_data_byte_offset, (LONG_PTR)this)) {
+		// I know that the C-style cast works and have not had a chance to come up with a safer C++-style cast that I can be sure also works so I'm disabling the warning.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
 		DWORD lastError = GetLastError();
 		if (lastError != ERROR_SUCCESS) {
 			_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in display_surface::display_surface(int, int, format, int, int, scaling)");
@@ -331,9 +356,12 @@ display_surface::~display_surface() {
 	}
 }
 
-int display_surface::join() {
+int display_surface::show() {
 	MSG msg{ };
 	msg.message = WM_NULL;
+	if (_Draw_fn == nullptr) {
+		throw system_error(make_error_code(errc::operation_would_block));
+	}
 
 	while (msg.message != WM_QUIT) {
 		if (!PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -354,7 +382,9 @@ int display_surface::join() {
 						}
 						_Draw_fn(*this);
 					}
-
+					else {
+						throw system_error(make_error_code(errc::operation_would_block));
+					}
 					_Render_to_native_surface();
 				}
 			}
@@ -367,5 +397,22 @@ int display_surface::join() {
 		}
 	}
 
+	// I know that the C-style cast works and have not had a chance to come up with a safer C++-style cast that I can be sure also works so I'm disabling the warning.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#endif
+#endif
 	return (int)msg.wParam;
+	// I know that the C-style cast works and have not had a chance to come up with a safer C++-style cast that I can be sure also works so I'm disabling the warning.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
+}
+
+void display_surface::exit_show(int ms) noexcept {
+	PostQuitMessage(0);
 }

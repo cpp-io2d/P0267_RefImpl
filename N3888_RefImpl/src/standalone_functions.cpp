@@ -24,7 +24,7 @@ namespace std {
 					return image_surface(fmt, width, height);
 				}
 
-				int format_stride_for_width(format format, int width) {
+				int format_stride_for_width(format format, int width) noexcept {
 					return cairo_format_stride_for_width(_Format_to_cairo_format_t(format), width);
 				}
 #if _Inline_namespace_conditional_support_test
@@ -331,12 +331,12 @@ namespace std {
 					path_factory pb;
 					pb.change_origin(origin, ec);
 					if (static_cast<bool>(ec)) {
-						// Relies on C++17 nothrow vector default ctor
+						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 						return vector<path_data_item>();
 					}
 					pb.change_matrix(matrix, ec);
 					if (static_cast<bool>(ec)) {
-						// Relies on C++17 nothrow vector default ctor
+						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 						return vector<path_data_item>();
 					}
 
@@ -344,19 +344,19 @@ namespace std {
 					if (hasCurrentPoint) {
 						//pb.move_to(currentPoint, ec);
 						//if (static_cast<bool>(ec)) {
-						//	// Relies on C++17 nothrow vector default ctor
+						//	// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 						//	return vector<path_data_item>();
 						//}
 						pb.line_to(startPoint, ec);
 						if (static_cast<bool>(ec)) {
-							// Relies on C++17 nothrow vector default ctor
+							// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 							return vector<path_data_item>();
 						}
 					}
 					else {
 						pb.move_to(startPoint, ec);
 						if (static_cast<bool>(ec)) {
-							// Relies on C++17 nothrow vector default ctor
+							// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 							return vector<path_data_item>();
 						}
 					}
@@ -371,7 +371,7 @@ namespace std {
 							ec
 							);
 						if (static_cast<bool>(ec)) {
-							// Relies on C++17 nothrow vector default ctor
+							// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 							return vector<path_data_item>();
 						}
 						if (arcNegative) {
@@ -387,7 +387,7 @@ namespace std {
 					}
 					catch (const bad_alloc&) {
 						ec = make_error_code(errc::not_enough_memory);
-						// Relies on C++17 nothrow vector default ctor
+						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 						return vector<path_data_item>();
 					}
 				}
@@ -466,7 +466,7 @@ namespace std {
 					const auto startPoint = center + _Rotate_point({ pt0.x() * radius, pt0.y() * radius }, currentTheta);
 					if (hasCurrentPoint) {
 						// line_to
-						auto itemPt = transformMatrix.transform_coords(startPoint - origin) + origin;
+						auto itemPt = transformMatrix.transform_point(startPoint - origin) + origin;
 						if (!hasExtents) {
 							hasExtents = true;
 							exPt0.x(min(transformedCurrentPoint.x(), itemPt.x()));
@@ -486,7 +486,7 @@ namespace std {
 					else {
 						// move_to
 						currentPoint = startPoint;
-						transformedCurrentPoint = transformMatrix.transform_coords(startPoint - origin) + origin;
+						transformedCurrentPoint = transformMatrix.transform_point(startPoint - origin) + origin;
 						lastMoveToPoint = startPoint;
 						hasCurrentPoint = true;
 					}
@@ -501,9 +501,9 @@ namespace std {
 						auto ctrlPt1 = center + _Rotate_point({ pt1.x() * radius, pt1.y() * radius }, currentTheta);
 						auto ctrlPt2 = center + _Rotate_point({ pt2.x() * radius, pt2.y() * radius }, currentTheta);
 						auto endPt = center + _Rotate_point({ pt3.x() * radius, pt3.y() * radius }, currentTheta);
-						auto itemPt1 = transformMatrix.transform_coords(ctrlPt1 - origin) + origin;
-						auto itemPt2 = transformMatrix.transform_coords(ctrlPt2 - origin) + origin;
-						auto itemPt3 = transformMatrix.transform_coords(endPt - origin) + origin;
+						auto itemPt1 = transformMatrix.transform_point(ctrlPt1 - origin) + origin;
+						auto itemPt2 = transformMatrix.transform_point(ctrlPt2 - origin) + origin;
+						auto itemPt3 = transformMatrix.transform_point(endPt - origin) + origin;
 						_Curve_to_extents(transformedCurrentPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
 						if (!hasExtents) {
 							hasExtents = true;

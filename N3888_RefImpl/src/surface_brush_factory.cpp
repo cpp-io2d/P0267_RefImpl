@@ -34,7 +34,7 @@ surface_brush_factory& surface_brush_factory::operator=(surface_brush_factory&& 
 
 surface_brush_factory::surface_brush_factory(::std::experimental::io2d::surface& s)
 	: _Surface() {
-	_Surface = make_unique<image_surface>(move(_Surface_create_image_surface_copy(s)));
+	_Surface = make_unique<image_surface>(_Surface_create_image_surface_copy(s));
 }
 
 void surface_brush_factory::surface(::std::experimental::io2d::surface& s) {

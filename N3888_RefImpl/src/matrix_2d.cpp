@@ -178,14 +178,14 @@ matrix_2d& matrix_2d::invert(error_code& ec) noexcept {
 }
 
 double matrix_2d::determinant() const {
-	if (isnan(_M00) || isnan(_M01) || isnan(_M10) || isnan(_M11) || isnan(_M20) || isnan(_M21)) {
+	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MATRIX);
 	}
 	return _M00 * _M11 - _M01 * _M10;
 }
 
 double matrix_2d::determinant(error_code& ec) const noexcept {
-	if (isnan(_M00) || isnan(_M01) || isnan(_M10) || isnan(_M11) || isnan(_M20) || isnan(_M21)) {
+	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MATRIX);
 		return numeric_limits<double>::quiet_NaN();
 	}
@@ -197,7 +197,7 @@ vector_2d matrix_2d::transform_distance(const vector_2d& dist) const noexcept {
 	return{ _M00 * dist.x() + _M10 * dist.y(), _M01 * dist.x() + _M11 * dist.y() };
 }
 
-vector_2d matrix_2d::transform_coords(const vector_2d& pt) const noexcept {
+vector_2d matrix_2d::transform_point(const vector_2d& pt) const noexcept {
 	return{ _M00 * pt.x() + _M10 * pt.y() + _M20, _M01 * pt.x() + _M11 * pt.y() + _M21 };
 }
 
@@ -247,6 +247,13 @@ double matrix_2d::m20() const noexcept {
 
 double matrix_2d::m21() const noexcept {
 	return _M21;
+}
+
+bool matrix_2d::is_invertible() const noexcept {
+	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
+		return false;
+	}
+	return (_M00 * _M11 - _M01 * _M10) != 0.0;
 }
 
 matrix_2d& matrix_2d::operator*=(const matrix_2d& rhs) noexcept {

@@ -453,12 +453,30 @@ brush::brush(surface_brush_factory& f, error_code& ec) noexcept
 	, _Extend(::std::experimental::io2d::extend::none)
 	, _Filter(::std::experimental::io2d::filter::good)
 	, _Matrix(matrix_2d::init_identity()) {
-	// I haven't implemented noexcept in image_surface yet...
-	ec = make_error_code(errc::not_supported);
-
-	//auto brushSurface = _Surface_create_image_surface_copy(f._Surface);
-	//_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(brushSurface.native_handle().csfce), &cairo_pattern_destroy);
-	//_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+	image_surface imgSfc{ format::argb32, 0, 0, ec };
+	if (static_cast<bool>(ec)) {
+		_Brush.reset();
+		return;
+	}
+	_Surface_create_image_surface_copy(*f._Surface.get(), imgSfc, ec);
+	if (static_cast<bool>(ec)) {
+		_Brush.reset();
+		return;
+	}
+	try {
+		_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(f.surface().native_handle().csfce), &cairo_pattern_destroy);
+	}
+	catch (const ::std::bad_alloc&) {
+		_Brush.reset();
+		ec = ::std::make_error_code(::std::errc::not_enough_memory);
+		return;
+	}
+	catch (const ::std::length_error&) {
+		_Brush.reset();
+		ec = ::std::make_error_code(::std::errc::not_enough_memory);
+		return;
+	}
+	ec.clear();
 }
 
 void brush::extend(::std::experimental::io2d::extend e) noexcept {

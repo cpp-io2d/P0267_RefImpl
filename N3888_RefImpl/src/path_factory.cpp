@@ -769,12 +769,12 @@ vector<path_data_item> path_factory::data(error_code& ec) const noexcept {
 	}
 	catch (const length_error&) {
 		ec = make_error_code(errc::not_enough_memory);
-		// Relies on C++17 vector default ctor noexcept.
+		// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 		return vector<path_data_item>();
 	}
 	catch (const bad_alloc&) {
 		ec = make_error_code(errc::not_enough_memory);
-		// Relies on C++17 vector default ctor noexcept.
+		// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 		return vector<path_data_item>();
 	}
 	for (const auto& item : _Data) {
@@ -830,13 +830,13 @@ const vector<path_data_item>& path_factory::data_ref() const noexcept {
 		{
 			currentPoint = item.get<experimental::io2d::path_data_item::move_to>().to();
 			lastMoveToPoint = currentPoint;
-			transformedCurrentPoint = currMatrix.transform_coords(currentPoint - currOrigin) + currOrigin;
+			transformedCurrentPoint = currMatrix.transform_point(currentPoint - currOrigin) + currOrigin;
 			hasCurrentPoint = true;
 		} break;
 		case std::experimental::io2d::path_data_type::line_to:
 		{
 			currentPoint = item.get<experimental::io2d::path_data_item::line_to>().to();
-			auto itemPt = currMatrix.transform_coords(currentPoint - currOrigin) + currOrigin;
+			auto itemPt = currMatrix.transform_point(currentPoint - currOrigin) + currOrigin;
 			if (!hasCurrentPoint) {
 				transformedCurrentPoint = itemPt;
 				lastMoveToPoint = currentPoint;
@@ -865,9 +865,9 @@ const vector<path_data_item>& path_factory::data_ref() const noexcept {
 			vector_2d cte0{ };
 			vector_2d cte1{ };
 			auto dataItem = item.get<experimental::io2d::path_data_item::curve_to>();
-			auto itemPt1 = currMatrix.transform_coords(dataItem.control_point_1() - currOrigin) + currOrigin;
-			auto itemPt2 = currMatrix.transform_coords(dataItem.control_point_2() - currOrigin) + currOrigin;
-			auto itemPt3 = currMatrix.transform_coords(dataItem.end_point() - currOrigin) + currOrigin;
+			auto itemPt1 = currMatrix.transform_point(dataItem.control_point_1() - currOrigin) + currOrigin;
+			auto itemPt2 = currMatrix.transform_point(dataItem.control_point_2() - currOrigin) + currOrigin;
+			auto itemPt3 = currMatrix.transform_point(dataItem.end_point() - currOrigin) + currOrigin;
 			if (!hasCurrentPoint) {
 				currentPoint = dataItem.control_point_1();
 				lastMoveToPoint = currentPoint;
@@ -899,8 +899,8 @@ const vector<path_data_item>& path_factory::data_ref() const noexcept {
 			// Close path cannot change the path extents since it either does nothing or it adds a line from an existing point to an existing point.
 			if (hasCurrentPoint) {
 				auto inverseMatrix = matrix_2d(currMatrix).invert();
-				currentPoint = inverseMatrix.transform_coords(lastMoveToPoint - currOrigin) + currOrigin;
-				transformedCurrentPoint = currMatrix.transform_coords(currentPoint - currOrigin) + currOrigin;
+				currentPoint = inverseMatrix.transform_point(lastMoveToPoint - currOrigin) + currOrigin;
+				transformedCurrentPoint = currMatrix.transform_point(currentPoint - currOrigin) + currOrigin;
 				lastMoveToPoint = currentPoint;
 			}
 			break;
@@ -908,12 +908,12 @@ const vector<path_data_item>& path_factory::data_ref() const noexcept {
 			assert(hasCurrentPoint);
 			currentPoint = item.get<experimental::io2d::path_data_item::rel_move_to>().to() + currentPoint;
 			lastMoveToPoint = currentPoint;
-			transformedCurrentPoint = currMatrix.transform_coords(currentPoint - currOrigin) + currOrigin;
+			transformedCurrentPoint = currMatrix.transform_point(currentPoint - currOrigin) + currOrigin;
 			break;
 		case std::experimental::io2d::path_data_type::rel_line_to:
 		{
 			assert(hasCurrentPoint);
-			auto itemPt = currMatrix.transform_coords((item.get<experimental::io2d::path_data_item::rel_line_to>().to() + currentPoint) - currOrigin) + currOrigin;
+			auto itemPt = currMatrix.transform_point((item.get<experimental::io2d::path_data_item::rel_line_to>().to() + currentPoint) - currOrigin) + currOrigin;
 			if (!hasExtents) {
 				hasExtents = true;
 				pt0.x(min(transformedCurrentPoint.x(), itemPt.x()));
@@ -936,9 +936,9 @@ const vector<path_data_item>& path_factory::data_ref() const noexcept {
 			vector_2d cte0{ };
 			vector_2d cte1{ };
 			auto dataItem = item.get<experimental::io2d::path_data_item::rel_curve_to>();
-			auto itemPt1 = currMatrix.transform_coords((dataItem.control_point_1() + currentPoint) - currOrigin) + currOrigin;
-			auto itemPt2 = currMatrix.transform_coords((dataItem.control_point_2() + currentPoint) - currOrigin) + currOrigin;
-			auto itemPt3 = currMatrix.transform_coords((dataItem.end_point() + currentPoint) - currOrigin) + currOrigin;
+			auto itemPt1 = currMatrix.transform_point((dataItem.control_point_1() + currentPoint) - currOrigin) + currOrigin;
+			auto itemPt2 = currMatrix.transform_point((dataItem.control_point_2() + currentPoint) - currOrigin) + currOrigin;
+			auto itemPt3 = currMatrix.transform_point((dataItem.end_point() + currentPoint) - currOrigin) + currOrigin;
 			_Curve_to_extents(currentPoint, itemPt1, itemPt2, itemPt3, cte0, cte1);
 			if (!hasExtents) {
 				hasExtents = true;

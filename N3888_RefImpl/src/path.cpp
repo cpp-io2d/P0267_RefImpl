@@ -46,7 +46,7 @@ path::path(const vector<path_data_item>& pathData)
 		case std::experimental::io2d::path_data_type::move_to:
 		{
 			currentPoint = item.get<path_data_item::move_to>().to();
-			auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+			auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 			cpdItem.header.length = 2;
 			vec.push_back(cpdItem);
@@ -59,7 +59,7 @@ path::path(const vector<path_data_item>& pathData)
 		case std::experimental::io2d::path_data_type::line_to:
 		{
 			currentPoint = item.get<path_data_item::line_to>().to();
-			auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+			auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			if (hasCurrentPoint) {
 				cpdItem.header.type = CAIRO_PATH_LINE_TO;
 				cpdItem.header.length = 2;
@@ -82,9 +82,9 @@ path::path(const vector<path_data_item>& pathData)
 		case std::experimental::io2d::path_data_type::curve_to:
 		{
 			auto dataItem = item.get<path_data_item::curve_to>();
-			auto pt1 = matrix.transform_coords(dataItem.control_point_1() - origin) + origin;
-			auto pt2 = matrix.transform_coords(dataItem.control_point_2() - origin) + origin;
-			auto pt3 = matrix.transform_coords(dataItem.end_point() - origin) + origin;
+			auto pt1 = matrix.transform_point(dataItem.control_point_1() - origin) + origin;
+			auto pt2 = matrix.transform_point(dataItem.control_point_2() - origin) + origin;
+			auto pt3 = matrix.transform_point(dataItem.end_point() - origin) + origin;
 			if (!hasCurrentPoint) {
 				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 				cpdItem.header.length = 2;
@@ -128,7 +128,7 @@ path::path(const vector<path_data_item>& pathData)
 				vec.push_back(cpdItem);
 				// Calculate the untransformed current point from the transformed lastMoveToPoint.
 				auto inverseMatrix = matrix_2d(matrix).invert();
-				currentPoint = inverseMatrix.transform_coords(lastMoveToPoint - origin) + origin;
+				currentPoint = inverseMatrix.transform_point(lastMoveToPoint - origin) + origin;
 				lastMoveToPoint = currentPoint;
 			}
 		} break;
@@ -138,7 +138,7 @@ path::path(const vector<path_data_item>& pathData)
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 			}
 			currentPoint = item.get<path_data_item::rel_move_to>().to() + currentPoint;
-			auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+			auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 			cpdItem.header.length = 2;
 			vec.push_back(cpdItem);
@@ -154,7 +154,7 @@ path::path(const vector<path_data_item>& pathData)
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 			}
 			currentPoint = item.get<path_data_item::rel_line_to>().to() + currentPoint;
-			auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+			auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			cpdItem.header.type = CAIRO_PATH_LINE_TO;
 			cpdItem.header.length = 2;
 			vec.push_back(cpdItem);
@@ -168,9 +168,9 @@ path::path(const vector<path_data_item>& pathData)
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 			}
 			auto dataItem = item.get<path_data_item::rel_curve_to>();
-			auto pt1 = matrix.transform_coords(dataItem.control_point_1() + currentPoint - origin) + origin;
-			auto pt2 = matrix.transform_coords(dataItem.control_point_2() + currentPoint - origin) + origin;
-			auto pt3 = matrix.transform_coords(dataItem.end_point() + currentPoint - origin) + origin;
+			auto pt1 = matrix.transform_point(dataItem.control_point_1() + currentPoint - origin) + origin;
+			auto pt2 = matrix.transform_point(dataItem.control_point_2() + currentPoint - origin) + origin;
+			auto pt3 = matrix.transform_point(dataItem.end_point() + currentPoint - origin) + origin;
 			cpdItem.header.type = CAIRO_PATH_CURVE_TO;
 			cpdItem.header.length = 4;
 			vec.push_back(cpdItem);
@@ -228,7 +228,7 @@ path::path(const vector<path_data_item>& pathData)
 			const auto startPt =
 				ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
 			if (hasCurrentPoint) {
-				auto pt = matrix.transform_coords(startPt - origin) + origin;
+				auto pt = matrix.transform_point(startPt - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_LINE_TO;
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
@@ -238,7 +238,7 @@ path::path(const vector<path_data_item>& pathData)
 				currentPoint = startPt;
 			}
 			else {
-				auto pt = matrix.transform_coords(startPt - origin) + origin;
+				auto pt = matrix.transform_point(startPt - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
@@ -254,9 +254,9 @@ path::path(const vector<path_data_item>& pathData)
 				auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad }, currTheta);
 				auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad }, currTheta);
 				currentPoint = cpt3;
-				cpt1 = matrix.transform_coords(cpt1 - origin) + origin;
-				cpt2 = matrix.transform_coords(cpt2 - origin) + origin;
-				cpt3 = matrix.transform_coords(cpt3 - origin) + origin;
+				cpt1 = matrix.transform_point(cpt1 - origin) + origin;
+				cpt2 = matrix.transform_point(cpt2 - origin) + origin;
+				cpt3 = matrix.transform_point(cpt3 - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_CURVE_TO;
 				cpdItem.header.length = 4;
 				vec.push_back(cpdItem);
@@ -321,7 +321,7 @@ path::path(const vector<path_data_item>& pathData)
 			const auto startPt =
 				ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
 			if (hasCurrentPoint) {
-				auto pt = matrix.transform_coords(startPt - origin) + origin;
+				auto pt = matrix.transform_point(startPt - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_LINE_TO;
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
@@ -331,7 +331,7 @@ path::path(const vector<path_data_item>& pathData)
 				currentPoint = startPt;
 			}
 			else {
-				auto pt = matrix.transform_coords(startPt - origin) + origin;
+				auto pt = matrix.transform_point(startPt - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
@@ -347,9 +347,9 @@ path::path(const vector<path_data_item>& pathData)
 				auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad }, currTheta);
 				auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad }, currTheta);
 				currentPoint = cpt3;
-				cpt1 = matrix.transform_coords(cpt1 - origin) + origin;
-				cpt2 = matrix.transform_coords(cpt2 - origin) + origin;
-				cpt3 = matrix.transform_coords(cpt3 - origin) + origin;
+				cpt1 = matrix.transform_point(cpt1 - origin) + origin;
+				cpt2 = matrix.transform_point(cpt2 - origin) + origin;
+				cpt3 = matrix.transform_point(cpt3 - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_CURVE_TO;
 				cpdItem.header.length = 4;
 				vec.push_back(cpdItem);
@@ -372,7 +372,7 @@ path::path(const vector<path_data_item>& pathData)
 			//	case std::experimental::io2d::path_data_type::move_to:
 			//	{
 			//		currentPoint = arcItem.get<move_to>().to();
-			//		auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+			//		auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			//		cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 			//		cpdItem.header.length = 2;
 			//		vec.push_back(cpdItem);
@@ -385,7 +385,7 @@ path::path(const vector<path_data_item>& pathData)
 			//	case std::experimental::io2d::path_data_type::line_to:
 			//	{
 			//		currentPoint = arcItem.get<line_to>().to();
-			//		auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+			//		auto pt = matrix.transform_point(currentPoint - origin) + origin;
 			//		if (hasCurrentPoint) {
 			//			cpdItem.header.type = CAIRO_PATH_LINE_TO;
 			//			cpdItem.header.length = 2;
@@ -408,9 +408,9 @@ path::path(const vector<path_data_item>& pathData)
 			//	case std::experimental::io2d::path_data_type::curve_to:
 			//	{
 			//		auto curveItem = arcItem.get<curve_to>();
-			//		auto pt1 = matrix.transform_coords(curveItem.control_point_1() - origin) + origin;
-			//		auto pt2 = matrix.transform_coords(curveItem.control_point_2() - origin) + origin;
-			//		auto pt3 = matrix.transform_coords(curveItem.end_point() - origin) + origin;
+			//		auto pt1 = matrix.transform_point(curveItem.control_point_1() - origin) + origin;
+			//		auto pt2 = matrix.transform_point(curveItem.control_point_2() - origin) + origin;
+			//		auto pt3 = matrix.transform_point(curveItem.end_point() - origin) + origin;
 			//		if (!hasCurrentPoint) {
 			//			cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 			//			cpdItem.header.length = 2;
@@ -556,7 +556,7 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 			case std::experimental::io2d::path_data_type::move_to:
 			{
 				currentPoint = item.get<path_data_item::move_to>().to();
-				auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+				auto pt = matrix.transform_point(currentPoint - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
@@ -569,7 +569,7 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 			case std::experimental::io2d::path_data_type::line_to:
 			{
 				currentPoint = item.get<path_data_item::line_to>().to();
-				auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+				auto pt = matrix.transform_point(currentPoint - origin) + origin;
 				if (hasCurrentPoint) {
 					cpdItem.header.type = CAIRO_PATH_LINE_TO;
 					cpdItem.header.length = 2;
@@ -592,9 +592,9 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 			case std::experimental::io2d::path_data_type::curve_to:
 			{
 				auto dataItem = item.get<path_data_item::curve_to>();
-				auto pt1 = matrix.transform_coords(dataItem.control_point_1() - origin) + origin;
-				auto pt2 = matrix.transform_coords(dataItem.control_point_2() - origin) + origin;
-				auto pt3 = matrix.transform_coords(dataItem.end_point() - origin) + origin;
+				auto pt1 = matrix.transform_point(dataItem.control_point_1() - origin) + origin;
+				auto pt2 = matrix.transform_point(dataItem.control_point_2() - origin) + origin;
+				auto pt3 = matrix.transform_point(dataItem.end_point() - origin) + origin;
 				if (!hasCurrentPoint) {
 					cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 					cpdItem.header.length = 2;
@@ -643,7 +643,7 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 						_Cairo_path.reset();
 						return;
 					}
-					currentPoint = inverseMatrix.transform_coords(lastMoveToPoint - origin) + origin;
+					currentPoint = inverseMatrix.transform_point(lastMoveToPoint - origin) + origin;
 					lastMoveToPoint = currentPoint;
 				}
 			} break;
@@ -656,7 +656,7 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 					return;
 				}
 				currentPoint = item.get<path_data_item::rel_move_to>().to() + currentPoint;
-				auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+				auto pt = matrix.transform_point(currentPoint - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
@@ -675,7 +675,7 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 					return;
 				}
 				currentPoint = item.get<path_data_item::rel_line_to>().to() + currentPoint;
-				auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+				auto pt = matrix.transform_point(currentPoint - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_LINE_TO;
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
@@ -692,9 +692,9 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 					return;
 				}
 				auto dataItem = item.get<path_data_item::rel_curve_to>();
-				auto pt1 = matrix.transform_coords(dataItem.control_point_1() + currentPoint - origin) + origin;
-				auto pt2 = matrix.transform_coords(dataItem.control_point_2() + currentPoint - origin) + origin;
-				auto pt3 = matrix.transform_coords(dataItem.end_point() + currentPoint - origin) + origin;
+				auto pt1 = matrix.transform_point(dataItem.control_point_1() + currentPoint - origin) + origin;
+				auto pt2 = matrix.transform_point(dataItem.control_point_2() + currentPoint - origin) + origin;
+				auto pt3 = matrix.transform_point(dataItem.end_point() + currentPoint - origin) + origin;
 				cpdItem.header.type = CAIRO_PATH_CURVE_TO;
 				cpdItem.header.length = 4;
 				vec.push_back(cpdItem);
@@ -723,7 +723,7 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 					case std::experimental::io2d::path_data_type::move_to:
 					{
 						currentPoint = arcItem.get<path_data_item::move_to>().to();
-						auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+						auto pt = matrix.transform_point(currentPoint - origin) + origin;
 						cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 						cpdItem.header.length = 2;
 						vec.push_back(cpdItem);
@@ -736,7 +736,7 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 					case std::experimental::io2d::path_data_type::line_to:
 					{
 						currentPoint = arcItem.get<path_data_item::line_to>().to();
-						auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+						auto pt = matrix.transform_point(currentPoint - origin) + origin;
 						if (hasCurrentPoint) {
 							cpdItem.header.type = CAIRO_PATH_LINE_TO;
 							cpdItem.header.length = 2;
@@ -759,9 +759,9 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 					case std::experimental::io2d::path_data_type::curve_to:
 					{
 						auto curveItem = arcItem.get<path_data_item::curve_to>();
-						auto pt1 = matrix.transform_coords(curveItem.control_point_1() - origin) + origin;
-						auto pt2 = matrix.transform_coords(curveItem.control_point_2() - origin) + origin;
-						auto pt3 = matrix.transform_coords(curveItem.end_point() - origin) + origin;
+						auto pt1 = matrix.transform_point(curveItem.control_point_1() - origin) + origin;
+						auto pt2 = matrix.transform_point(curveItem.control_point_2() - origin) + origin;
+						auto pt3 = matrix.transform_point(curveItem.end_point() - origin) + origin;
 						if (!hasCurrentPoint) {
 							cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 							cpdItem.header.length = 2;
@@ -846,7 +846,7 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 					case std::experimental::io2d::path_data_type::move_to:
 					{
 						currentPoint = arcItem.get<path_data_item::move_to>().to();
-						auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+						auto pt = matrix.transform_point(currentPoint - origin) + origin;
 						cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 						cpdItem.header.length = 2;
 						vec.push_back(cpdItem);
@@ -859,7 +859,7 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 					case std::experimental::io2d::path_data_type::line_to:
 					{
 						currentPoint = arcItem.get<path_data_item::line_to>().to();
-						auto pt = matrix.transform_coords(currentPoint - origin) + origin;
+						auto pt = matrix.transform_point(currentPoint - origin) + origin;
 						if (hasCurrentPoint) {
 							cpdItem.header.type = CAIRO_PATH_LINE_TO;
 							cpdItem.header.length = 2;
@@ -882,9 +882,9 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 					case std::experimental::io2d::path_data_type::curve_to:
 					{
 						auto curveItem = arcItem.get<path_data_item::curve_to>();
-						auto pt1 = matrix.transform_coords(curveItem.control_point_1() - origin) + origin;
-						auto pt2 = matrix.transform_coords(curveItem.control_point_2() - origin) + origin;
-						auto pt3 = matrix.transform_coords(curveItem.end_point() - origin) + origin;
+						auto pt1 = matrix.transform_point(curveItem.control_point_1() - origin) + origin;
+						auto pt2 = matrix.transform_point(curveItem.control_point_2() - origin) + origin;
+						auto pt3 = matrix.transform_point(curveItem.end_point() - origin) + origin;
 						if (!hasCurrentPoint) {
 							cpdItem.header.type = CAIRO_PATH_MOVE_TO;
 							cpdItem.header.length = 2;
@@ -963,6 +963,10 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 			{
 				origin = item.get<path_data_item::change_origin>().origin();
 			} break;
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code-break"
+#endif
 			default:
 			{
 				ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_PATH_DATA);
@@ -970,6 +974,9 @@ path::path(const vector<path_data_item>& pathData, error_code& ec) noexcept
 				_Cairo_path.reset();
 				return;
 			} break;
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 			}
 		}
 
@@ -1016,7 +1023,7 @@ path& path::operator=(path&& other) noexcept {
 //}
 //
 //vector<path_data_item> path::data(error_code& ec) const noexcept {
-//	// Relies on C++17 noexcept default ctor.
+//	// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 //	vector<path_data_item> result;
 //	try {
 //		for (const auto& item : *_Data) {

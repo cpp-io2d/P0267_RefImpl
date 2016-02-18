@@ -47,7 +47,7 @@ string simple_font_face::font_family() const {
 void simple_font_face::font_family(string& str, error_code& ec) const noexcept {
 	try {
 		ec.clear();
-		str = move(string(cairo_toy_font_face_get_family(_Font_face.get())));
+		str = string(cairo_toy_font_face_get_family(_Font_face.get()));
 	}
 	catch (const length_error&) {
 		str.clear();

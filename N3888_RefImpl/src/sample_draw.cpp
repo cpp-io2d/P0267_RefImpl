@@ -11,10 +11,12 @@
 
 using namespace std;
 using namespace std::chrono;
+using namespace std::experimental;
 using namespace std::experimental::io2d;
 using namespace not_proposed::test_renderer;
 
 // Declarations
+void test_stroke_rules(display_surface& rs);
 void draw_radial_circles(display_surface& rs);
 void test_draw_radial_circles(display_surface& rs);
 wostream& operator<<(wostream& os, const vector_2d& pt);
@@ -26,18 +28,25 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds);
 void test_compositing_operators_different_pixel_formats(surface& rs, compositing_operator co);
 void test_paint_surface_extend_modes(surface& rs, double elapsedTimeInMilliseconds);
 void test_fill_rules(surface& rs);
+void test_paint(surface& rs);
+void test_mask(display_surface& rs);
 
 //
 // Drawing entry point.
 //
 void sample_draw::operator()(display_surface& rs) {
-	//test_draw_radial_circles(rs);
-
 	static auto previousTime = steady_clock::now();
 	auto currentTime = steady_clock::now();
 	auto elapsedTime = currentTime - previousTime;
 	previousTime = currentTime;
 	draw_sort_visualization_immediate(rs, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
+
+	//test_paint(rs);
+	//test_stroke_rules(rs);
+	//test_mask(rs);
+
+	//test_draw_radial_circles(rs);
+
 	
 	//draw_test_compositing_operators(rs, compositing_operator::in, compositing_operator::over, true, false, false, true);
 	
@@ -50,6 +59,88 @@ void sample_draw::operator()(display_surface& rs) {
 	//test_paint_surface_extend_modes(rs, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
 
 	//test_fill_rules(rs);
+}
+
+void test_mask(display_surface& rs) {
+	image_surface imgSfc{ format::argb32, 500, 500 };
+	imgSfc.paint(rgba_color::white(), 0.5);
+	imgSfc.immediate().move_to({ 0.0, 250.0 });
+	imgSfc.immediate().line_to({ 250.0, 0.0 });
+	imgSfc.immediate().line_to({ 500.0,250.0 });
+	imgSfc.immediate().line_to({ 250.0,500.0 });
+	imgSfc.immediate().close_path();
+	imgSfc.fill_immediate(rgba_color::white());
+
+	rs.clear();
+	rs.immediate().clear();
+	rs.paint(rgba_color::red());
+	rs.immediate().rectangle({ 0.0, 0.0, static_cast<double>(rs.width()), static_cast<double>(rs.height()) });
+	rs.mask_immediate(imgSfc, rgba_color::blue());
+}
+
+void test_paint(surface& rs) {
+	rs.save();
+	rs.clear();
+	rs.immediate().rectangle({ { 50.0, 50.0}, {500.0, 500.0} });
+	rs.clip_immediate();
+	rs.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0));
+	auto lbf = linear_brush_factory({ 0.0, 0.0 }, { 50.0, 50.0 });
+	lbf.add_color_stop(0.0, rgba_color::red());
+	lbf.add_color_stop(0.5, rgba_color::lime());
+	lbf.add_color_stop(1.0, rgba_color::blue());
+	auto linBrush = brush(lbf);
+	linBrush.extend(extend::repeat);
+	linBrush.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0));
+	rs.brush(linBrush);
+	rs.paint();
+	rs.restore();
+}
+
+void test_stroke_rules(display_surface& rs) {
+	rs.save();
+	rs.clear();
+	rs.paint(rgba_color::red());
+
+	rs.immediate().clear();
+
+	//rs.line_width(40.0);
+	//rs.line_cap(line_cap::butt);
+	//rs.line_join(line_join::miter_or_bevel);
+	//rs.immediate().arc({ rs.width() / 2.0, rs.height() / 2.0 }, 200.0, 0.0, two_pi<double>());
+	//rs.matrix(matrix_2d::init_translate({ rs.width() / 2.0, rs.height() / 2.0 }).rotate(half_pi<double>() / 2.0).scale({ 0.5, 1.0 }).translate({ -rs.width() / 2.0, -rs.height() / 2.0 }));
+	rs.dashes(nullopt);
+	rs.line_width(2.0);
+	rs.immediate().move_to({ 0.0, 199.0 });
+	rs.immediate().line_to({ 1280.9, 199.0 });
+	rs.stroke_immediate(rgba_color::azure());
+	rs.immediate().clear();
+
+	rs.line_width(40.0);
+	dashes dsh(vector<double>{ 40.0, 50.0, 40.0, 50.0, 40.0, 50.0, 40.0, 50.0, 40.0, 50.0 }, 150.0);
+	rs.dashes(dsh);
+	rs.line_cap(line_cap::round);
+	rs.line_join(line_join::miter_or_bevel);
+	rs.immediate().move_to({ 700.0, 200.0 });
+	rs.immediate().close_path();
+
+	rs.line_width(40.0);
+	rs.line_cap(line_cap::round);
+	rs.line_join(line_join::miter_or_bevel);
+	rs.immediate().move_to({ 200.0, 200.0 });
+	rs.immediate().rel_line_to({ 0.0, 100.0 });
+	rs.immediate().move_to({ 200.0, 335.0 });
+	rs.immediate().rel_line_to({ 0.0, 200.0 });
+
+	//rs.matrix(matrix_2d::init_scale({ 0.5, 1.0 }).rotate(half_pi<double>() / 2.0));
+	//rs.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0).scale({ 0.5, 1.0 }));
+	//rs.immediate().rel_move_to({ 20.0, 0.0 });
+	//rs.immediate().rel_move_to({ 0.0, 10.0 });
+	//rs.immediate().close_path();
+	//rs.immediate().rel_line_to({ 5.0, 10.0 });
+	//rs.immediate().rel_line_to({ -20.0, 0.0 });
+	rs.stroke_immediate(rgba_color::black());
+
+	rs.restore();
 }
 
 void test_fill_rules(surface& rs) {
@@ -246,10 +337,14 @@ void draw_radial_circles(display_surface& rs) {
 	path p(pf);
 	rs.path(p);
 	rs.brush(radialBrush);
-	auto fe = rs.fill_extents();
-	auto se = rs.stroke_extents();
-	vector_2d pt{ 110.0, 300.0 };
-	auto inFill = rs.in_fill(pt);
+
+	//// For debug inspection testing only; uncomment if needed.
+	//auto fe = rs.fill_extents();
+	//auto se = rs.stroke_extents();
+	//vector_2d pt{ 110.0, 300.0 };
+	//auto inFill = rs.in_fill(pt);
+	//// End for debug inspection testing only.
+
 	rs.fill();
 	rs.brush(brush(solid_color_brush_factory(rgba_color::red())));
 	rs.stroke();
@@ -417,6 +512,7 @@ vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed) {
 	return result;
 }
 
+void init_mask_surface(image_surface&);
 void init_mask_surface(image_surface& imsfc) {
 	// { 30.0, 25.0, 70.0, 70.0 } - clip
 	imsfc.immediate().move_to({ 40.0, 0.0 });
@@ -427,7 +523,7 @@ void init_mask_surface(image_surface& imsfc) {
 }
 
 void draw_hello_world(surface& rs) {
-	rs.show_text("Hello world", { 100.0, 100.0 }, brush(solid_color_brush_factory(rgba_color::white())));
+	rs.render_text("Hello world", { 100.0, 100.0 }, brush(solid_color_brush_factory(rgba_color::white())));
 }
 
 // For testing purposes only.
@@ -585,7 +681,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.font_size(40.0);
 	auto str = string("Phase ").append(to_string(x + 1));
-	rs.show_text(str, { beginX, 50.0 }, rgba_color::white());
+	rs.render_text(str, { beginX, 50.0 }, rgba_color::white());
 
 	for (size_t i = 0; i < elementCount; ++i) {
 		rs.immediate().clear();
@@ -696,7 +792,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	rs.fill_immediate(rgba_color::blue());
 	rs.stroke_immediate(rgba_color::orange());
 	// Reset dashes to be a solid line.
-	rs.reset_dashes();
+	rs.dashes(nullopt);
 	rs.line_cap(line_cap::butt);
 
 	rs.immediate().clear();
@@ -746,7 +842,7 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	rs.brush(whiteBrush);
 	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
 	rs.font_size(40.0);
-	rs.show_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 });
+	rs.render_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 });
 
 	path_factory pf;
 
@@ -888,7 +984,8 @@ namespace {
 	//}
 }
 
-void test_draw_circle(display_surface& ds, const vector_2d& coords, const radial_brush_factory& f) {
+void test_draw_circle(display_surface&, const vector_2d&, const radial_brush_factory&);
+void test_draw_circle(display_surface& /*ds*/, const vector_2d& coords, const radial_brush_factory& f) {
 	// Can get t for s_fn via a simple magnitude. Determine the rotation angle of coords around center0, determine the point on circle 0 with that angle then the point on cirle 1 with that angle then get the distances from circle 0 pt to coords and from circle 0 pt to circle 1 pt and t = (dist(circ0, coords) / dist(circ0, circ1).
 	auto circles = f.radial_circles();
 	auto center0 = get<0>(circles);
@@ -907,7 +1004,7 @@ void test_draw_circle(display_surface& ds, const vector_2d& coords, const radial
 		return;
 	}
 	auto t = dist_fn(circ0, coords) / dist_fn(circ0, circ1);
-	auto s_fn = [](double t) -> double { return (t - 0.0) / (1.0 - 0.0); };
+	auto s_fn = [](double tForSFn) -> double { return (tForSFn - 0.0) / (1.0 - 0.0); };
 	auto x_fn = [&circles](double s) -> double { auto x0 = get<0>(circles).x(); return x0 + s * (get<2>(circles).x() - x0); };
 	auto y_fn = [&circles](double s) -> double { auto y0 = get<0>(circles).y(); return y0 + s * (get<2>(circles).y() - y0); };
 	auto r_fn = [&circles](double s) -> double { auto r0 = get<1>(circles); return r0 + s * (get<3>(circles) -r0); };

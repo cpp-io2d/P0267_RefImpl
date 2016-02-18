@@ -30,76 +30,91 @@
 #define noexcept
 #endif
 
-namespace std {
-	namespace experimental {
-		namespace io2d {
-#if _Inline_namespace_conditional_support_test
-			inline namespace v1 {
-#endif
-				enum class io2d_error;
-				enum class antialias;
-				enum class content;
-				enum class fill_rule;
-				enum class line_cap;
-				enum class line_join;
-				enum class compositing_operator;
-				enum class format;
-				enum class extend;
-				enum class filter;
-				enum class brush_type;
-				enum class font_slant;
-				enum class font_weight;
-				enum class subpixel_order;
-				enum class path_data_type;
-				enum class scaling;
-				class io2d_error_category;
-				class rectangle;
-				class rgba_color;
-				class vector_2d;
-				class font_extents;
-				class text_extents;
-				class matrix_2d;
-				//class path_data;
-				class _Point;
-				//class move_to;
-				//class line_to;
-				//class rel_move_to;
-				//class rel_line_to;
-				class _Curve_to;
-				//class curve_to;
-				//class rel_curve_to;
-				class _Arc;
-				//class arc;
-				//class arc_negative;
-				//class new_sub_path;
-				//class close_path;
-				//class change_matrix;
-				//class change_origin;
-				class path;
-				class path_factory;
-				class device;
-				class font_options;
-				class font_face;
-				class simple_font_face;
-				class brush;
-				class solid_color_brush_factory;
-				class linear_brush_factory;
-				class radial_brush_factory;
-				//class mesh_brush_factory;
-				struct _Surface_native_handles;
-				class surface;
-				class image_surface;
-				class display_surface;
-				class surface_brush_factory;
-#if _Inline_namespace_conditional_support_test
-			}
-#endif
-		}
-	}
-}
+//namespace std {
+//	namespace experimental {
+//		////// From C++ Extensions for Library Fundamentals, N4335
+//		//struct nullopt_t {
+//		//	constexpr explicit nullopt_t(int) noexcept {
+//		//	}
+//		//};
+//		//constexpr nullopt_t nullopt{ 0 };
+//
+////		namespace io2d {
+////#if _Inline_namespace_conditional_support_test
+////			inline namespace v1 {
+////#endif
+////				enum class io2d_error;
+////				enum class antialias;
+////				enum class content;
+////				enum class fill_rule;
+////				enum class line_cap;
+////				enum class line_join;
+////				enum class compositing_operator;
+////				enum class format;
+////				enum class extend;
+////				enum class filter;
+////				enum class brush_type;
+////				enum class font_slant;
+////				enum class font_weight;
+////				enum class subpixel_order;
+////				enum class path_data_type;
+////				enum class scaling;
+////				class io2d_error_category;
+////				class rectangle;
+////				class rgba_color;
+////				class vector_2d;
+////				class font_extents;
+////				class text_extents;
+////				class matrix_2d;
+////				//class path_data;
+////				class _Point;
+////				//class move_to;
+////				//class line_to;
+////				//class rel_move_to;
+////				//class rel_line_to;
+////				class _Curve_to;
+////				//class curve_to;
+////				//class rel_curve_to;
+////				class _Arc;
+////				//class arc;
+////				//class arc_negative;
+////				//class new_sub_path;
+////				//class close_path;
+////				//class change_matrix;
+////				//class change_origin;
+////				class path;
+////				class path_factory;
+////				class device;
+////				class font_options;
+////				class font_face;
+////				class simple_font_face;
+////				class brush;
+////				class solid_color_brush_factory;
+////				class linear_brush_factory;
+////				class radial_brush_factory;
+////				//class mesh_brush_factory;
+////				struct _Surface_native_handles;
+////				class surface;
+////				class image_surface;
+////				class display_surface;
+////				class surface_brush_factory;
+////#if _Inline_namespace_conditional_support_test
+////			}
+////#endif
+////		}
+//	}
+//}
 
 namespace std {
 	namespace experimental {
+
+		//// From C++ Extensions for Library Fundamentals, N4335
+		struct nullopt_t {
+			constexpr explicit nullopt_t(int) noexcept {
+			}
+		};
+		constexpr nullopt_t nullopt{ 0 };
+
 		namespace io2d {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
@@ -268,6 +283,14 @@ namespace std {
 					none // Do not scale.
 				};
 
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+#endif
+
 				class io2d_error_category : public ::std::error_category {
 				public:
 					// Observers
@@ -277,7 +300,52 @@ namespace std {
 					virtual bool equivalent(const ::std::error_code& ec, int condition) const noexcept override;
 				};
 
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
+
 				const ::std::error_category& io2d_category() noexcept;
+
+				class vector_2d {
+					double _X = 0.0;
+					double _Y = 0.0;
+				public:
+					vector_2d() noexcept = default;
+					vector_2d(const vector_2d& other) noexcept = default;
+					vector_2d& operator=(const vector_2d& other) noexcept = default;
+					vector_2d(vector_2d&& other) noexcept;
+					vector_2d& operator=(vector_2d&& other) noexcept;
+					vector_2d(double x, double y) noexcept;
+
+					void x(double value) noexcept;
+					void y(double value) noexcept;
+
+					double x() const noexcept;
+					double y() const noexcept;
+
+					double magnitude() const noexcept;
+					double magnitude_squared() const noexcept;
+					double dot(const vector_2d& other) const noexcept;
+					double angular_direction(const vector_2d& to) const noexcept;
+
+					vector_2d to_unit() const noexcept;
+
+					vector_2d& operator+=(const vector_2d& rhs) noexcept;
+					vector_2d& operator-=(const vector_2d& rhs) noexcept;
+					vector_2d& operator*=(double rhs) noexcept;
+				};
+
+				bool operator==(const vector_2d& lhs, const vector_2d& rhs) noexcept;
+				bool operator!=(const vector_2d& lhs, const vector_2d& rhs) noexcept;
+				vector_2d operator+(const vector_2d& lhs) noexcept;
+				vector_2d operator+(const vector_2d& lhs, const vector_2d& rhs) noexcept;
+				vector_2d operator-(const vector_2d& lhs) noexcept;
+				vector_2d operator-(const vector_2d& lhs, const vector_2d& rhs) noexcept;
+				vector_2d operator*(const vector_2d& lhs, double rhs) noexcept;
+				vector_2d operator*(double lhs, const vector_2d& rhs) noexcept;
 
 				class rectangle {
 					double _X = 0.0;
@@ -517,44 +585,6 @@ namespace std {
 				}
 #endif
 
-				class vector_2d {
-					double _X = 0.0;
-					double _Y = 0.0;
-				public:
-					vector_2d() noexcept = default;
-					vector_2d(const vector_2d& other) noexcept = default;
-					vector_2d& operator=(const vector_2d& other) noexcept = default;
-					vector_2d(vector_2d&& other) noexcept;
-					vector_2d& operator=(vector_2d&& other) noexcept;
-					vector_2d(double x, double y) noexcept;
-
-					void x(double value) noexcept;
-					void y(double value) noexcept;
-
-					double x() const noexcept;
-					double y() const noexcept;
-
-					double magnitude() const noexcept;
-					double magnitude_squared() const noexcept;
-					double dot(const vector_2d& other) const noexcept;
-					double angular_direction(const vector_2d& to) const noexcept;
-
-					vector_2d to_unit() const noexcept;
-
-					vector_2d& operator+=(const vector_2d& rhs) noexcept;
-					vector_2d& operator-=(const vector_2d& rhs) noexcept;
-					vector_2d& operator*=(double rhs) noexcept;
-				};
-
-				bool operator==(const vector_2d& lhs, const vector_2d& rhs) noexcept;
-				bool operator!=(const vector_2d& lhs, const vector_2d& rhs) noexcept;
-				vector_2d operator+(const vector_2d& lhs) noexcept;
-				vector_2d operator+(const vector_2d& lhs, const vector_2d& rhs) noexcept;
-				vector_2d operator-(const vector_2d& lhs) noexcept;
-				vector_2d operator-(const vector_2d& lhs, const vector_2d& rhs) noexcept;
-				vector_2d operator*(const vector_2d& lhs, double rhs) noexcept;
-				vector_2d operator*(double lhs, const vector_2d& rhs) noexcept;
-
 				class font_extents {
 					cairo_font_extents_t _Font_extents;
 				public:
@@ -650,10 +680,11 @@ namespace std {
 					double m11() const noexcept;
 					double m20() const noexcept;
 					double m21() const noexcept;
+					bool is_invertible() const noexcept;
 					double determinant() const;
 					double determinant(::std::error_code& ec) const noexcept;
 					vector_2d transform_distance(const vector_2d& dist) const noexcept;
-					vector_2d transform_coords(const vector_2d& pt) const noexcept;
+					vector_2d transform_point(const vector_2d& pt) const noexcept;
 
 					matrix_2d& operator*=(const matrix_2d& rhs) noexcept;
 				};
@@ -804,8 +835,10 @@ namespace std {
 
 				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
 #ifdef _WIN32
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
 #endif
 				class path_data_item::path_data {
 				public:
@@ -1029,7 +1062,9 @@ namespace std {
 				};
 
 #ifdef _WIN32
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 #endif
 
 				template <>
@@ -1465,6 +1500,14 @@ namespace std {
 					::std::experimental::io2d::subpixel_order subpixel_order() const noexcept;
 				};
 
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+#endif
+
 				class font_face {
 					friend surface;
 				public:
@@ -1484,6 +1527,21 @@ namespace std {
 					virtual ~font_face();
 				};
 
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
+
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+#endif
+
 				class simple_font_face : public font_face {
 				public:
 					simple_font_face() = delete;
@@ -1501,6 +1559,13 @@ namespace std {
 					::std::experimental::io2d::font_slant font_slant() const noexcept;
 					::std::experimental::io2d::font_weight font_weight() const noexcept;
 				};
+
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
 
 				// Forward declaration.
 				class linear_brush_factory;
@@ -1710,6 +1775,14 @@ namespace std {
 				// tuple<dashes, offset>
 				typedef ::std::tuple<::std::vector<double>, double> dashes;
 
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+#endif
+
 				class surface {
 				public:
 					typedef _Surface_native_handles native_handle_type;
@@ -1741,8 +1814,6 @@ namespace std {
 					typedef double _Miter_limit_type;
 					_Miter_limit_type _Miter_limit = 10.0;
 					::std::experimental::io2d::compositing_operator _Compositing_operator;
-					typedef double _Tolerance_type;
-					_Tolerance_type _Tolerance = 0.1;
 					::std::shared_ptr<::std::experimental::io2d::path> _Current_path;
 					::std::experimental::io2d::path_factory _Immediate_path;
 					typedef matrix_2d _Transform_matrix_type;
@@ -1752,7 +1823,7 @@ namespace std {
 					_Font_matrix_type _Font_matrix; // Covers both font size and full font matrix - font size is just a uniform scale matrix.
 					::std::experimental::io2d::font_options _Font_options;
 
-					// We use vector here because of its C++17 default ctor noexcept guarantee.
+					// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 					::std::stack<::std::tuple<
 						::std::experimental::io2d::brush,
 						::std::experimental::io2d::antialias,
@@ -1763,7 +1834,6 @@ namespace std {
 						_Line_width_type,
 						_Miter_limit_type,
 						::std::experimental::io2d::compositing_operator,
-						_Tolerance_type,
 						::std::shared_ptr<::std::experimental::io2d::path>,
 						::std::experimental::io2d::path_factory,
 						_Transform_matrix_type,
@@ -1780,7 +1850,6 @@ namespace std {
 						_Line_width_type,
 						_Miter_limit_type,
 						::std::experimental::io2d::compositing_operator,
-						_Tolerance_type,
 						::std::shared_ptr<::std::experimental::io2d::path>,
 						::std::experimental::io2d::path_factory,
 						_Transform_matrix_type,
@@ -1804,6 +1873,7 @@ namespace std {
 					void path(const ::std::shared_ptr<::std::experimental::io2d::path>& p);
 					void path(const ::std::shared_ptr<::std::experimental::io2d::path>& p, ::std::error_code& ec) noexcept;
 				public:
+					bool _Has_surface_resource() const noexcept;
 					native_handle_type native_handle() const;
 
 					surface() = delete;
@@ -1832,11 +1902,11 @@ namespace std {
 					virtual void save(::std::error_code& ec) noexcept;
 					virtual void restore();
 					virtual void restore(::std::error_code& ec) noexcept;
-					void reset_brush() noexcept;
+					void brush(experimental::nullopt_t) noexcept;
 					void brush(const ::std::experimental::io2d::brush& source);
 					void brush(const ::std::experimental::io2d::brush& source, ::std::error_code& ec) noexcept;
 					void antialias(::std::experimental::io2d::antialias a) noexcept;
-					void reset_dashes() noexcept;
+					void dashes(experimental::nullopt_t) noexcept;
 					void dashes(const ::std::experimental::io2d::dashes& d);
 					void dashes(const ::std::experimental::io2d::dashes& d, ::std::error_code& ec) noexcept;
 					void fill_rule(::std::experimental::io2d::fill_rule fr) noexcept;
@@ -1845,12 +1915,12 @@ namespace std {
 					void line_width(double width) noexcept;
 					void miter_limit(double limit) noexcept;
 					void compositing_operator(::std::experimental::io2d::compositing_operator co) noexcept;
-					void tolerance(double t) noexcept;
+					//void clip(experimental::nullopt_t) noexcept;
 					void clip(const ::std::experimental::io2d::path& p);
 					void clip(const ::std::experimental::io2d::path& p, ::std::error_code& ec) noexcept;
 					void clip_immediate();
 					void clip_immediate(::std::error_code& ec) noexcept;
-					void reset_path() noexcept;
+					void path(experimental::nullopt_t) noexcept;
 					void path(const ::std::experimental::io2d::path& p);
 					void path(const ::std::experimental::io2d::path& p, ::std::error_code& ec) noexcept;
 
@@ -1983,36 +2053,37 @@ namespace std {
 					void mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.textrender}, text render modifiers:
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position);
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, ::std::error_code& ec) noexcept;
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const rgba_color& c);
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const rgba_color& c, ::std::error_code& ec) noexcept;
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b);
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
-					vector_2d show_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position);
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, ::std::error_code& ec) noexcept;
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const rgba_color& c);
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const rgba_color& c, ::std::error_code& ec) noexcept;
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b);
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good);
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const surface& s, ::std::error_code& ec, const vector_2d& origin = vector_2d{ 0.0, 0.0 }, extend e = extend::none, filter f = filter::good) noexcept;
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m, extend e = extend::none, filter f = filter::good);
+					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m, ::std::error_code& ec, extend e = extend::none, filter f = filter::good) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
-					void matrix(const matrix_2d& matrix) noexcept;
+					void matrix(const matrix_2d& matrix);
+					void matrix(const matrix_2d& matrix, ::std::error_code& ec) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.font}, font modifiers:
 					void font_face(const ::std::string& family, font_slant sl, font_weight w);
 					void font_face(const ::std::string& family, font_slant sl, font_weight w, ::std::error_code& ec) noexcept;
 					void font_face(const ::std::experimental::io2d::font_face& f);
 					void font_face(const ::std::experimental::io2d::font_face& f, ::std::error_code& ec) noexcept;
-					void font_size(double s) noexcept;
-					void font_matrix(const matrix_2d& m) noexcept;
+					void font_size(double s);
+					void font_size(double s, ::std::error_code& ec) noexcept;
+					void font_matrix(const matrix_2d& m);
+					void font_matrix(const matrix_2d& m, ::std::error_code& ec) noexcept;
 					void font_options(const font_options& fo) noexcept;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
 					bool is_finished() const noexcept;
 					::std::experimental::io2d::content content() const noexcept;
-					bool has_surface_resource() const noexcept;
 					::std::experimental::io2d::brush brush() const noexcept;
 					::std::experimental::io2d::antialias antialias() const noexcept;
-					unsigned int dashes_count() const noexcept;
 					::std::experimental::io2d::dashes dashes() const;
 					::std::experimental::io2d::dashes dashes(::std::error_code& ec) const noexcept;
 					::std::experimental::io2d::fill_rule fill_rule() const noexcept;
@@ -2021,7 +2092,6 @@ namespace std {
 					double line_width() const noexcept;
 					double miter_limit() const noexcept;
 					::std::experimental::io2d::compositing_operator compositing_operator() const noexcept;
-					double tolerance() const noexcept;
 					rectangle clip_extents() const noexcept;
 					bool in_clip(const vector_2d& pt) const noexcept;
 					::std::vector<rectangle> clip_rectangles() const;
@@ -2056,6 +2126,20 @@ namespace std {
 					::std::experimental::io2d::font_face font_face(::std::error_code& ec) const noexcept;
 				};
 
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
+
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+#endif
 				class image_surface : public surface {
 					friend surface;
 				public:
@@ -2066,11 +2150,11 @@ namespace std {
 					image_surface& operator=(image_surface&& other) noexcept;
 					image_surface(::std::experimental::io2d::format fmt, int width, int height);
 					image_surface(::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
-					image_surface(vector<unsigned char>& data, ::std::experimental::io2d::format fmt, int width, int height);
-					image_surface(vector<unsigned char>& data, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
-					// create_similar_image
-					image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height);
-					image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
+					image_surface(::std::vector<unsigned char>& data, ::std::experimental::io2d::format fmt, int width, int height);
+					image_surface(::std::vector<unsigned char>& data, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
+					//// create_similar_image
+					//image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height);
+					//image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
 					//// create_from_png
 					//image_surface(const ::std::string& filename);
 					virtual ~image_surface();
@@ -2087,7 +2171,14 @@ namespace std {
 					int height() const noexcept;
 					int stride() const noexcept;
 				};
-				
+
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
+
 				class mapped_surface {
 					surface::native_handle_type _Mapped_surface;
 					surface::native_handle_type _Map_of;
@@ -2147,6 +2238,14 @@ namespace std {
 					::std::mutex& display_mutex;
 					int& display_ref_count;
 				};
+#endif
+
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
 #endif
 				class display_surface : public surface {
 					friend surface;
@@ -2243,10 +2342,10 @@ namespace std {
 					virtual void restore() override;
 					virtual void restore(::std::error_code& ec) noexcept override;
 
-					void draw_fn(const ::std::function<void(display_surface& sfc)>& fn);
-					void draw_fn(const ::std::function<void(display_surface& sfc)>& fn, ::std::error_code& ec) noexcept;
-					void size_change_fn(const ::std::function<void(display_surface& sfc)>& fn);
-					void size_change_fn(const ::std::function<void(display_surface& sfc)>& fn, ::std::error_code& ec) noexcept;
+					void draw_callback(const ::std::function<void(display_surface& sfc)>& fn);
+					void draw_callback(const ::std::function<void(display_surface& sfc)>& fn, ::std::error_code& ec) noexcept;
+					void size_change_callback(const ::std::function<void(display_surface& sfc)>& fn);
+					void size_change_callback(const ::std::function<void(display_surface& sfc)>& fn, ::std::error_code& ec) noexcept;
 					void width(int w);
 					void width(int w, ::std::error_code& ec) noexcept;
 					void height(int h);
@@ -2260,16 +2359,17 @@ namespace std {
 					void display_dimensions(int dw, int dh);
 					void display_dimensions(int dw, int dh, ::std::error_code& ec) noexcept;
 					void scaling(::std::experimental::io2d::scaling scl) noexcept;
-					void user_scaling_fn(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn);
-					void user_scaling_fn(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn, ::std::error_code& ec) noexcept;
-					void reset_letterbox_brush() noexcept;
+					void user_scaling_callback(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn);
+					void user_scaling_callback(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn, ::std::error_code& ec) noexcept;
+					void letterbox_brush(experimental::nullopt_t) noexcept;
 					void letterbox_brush(const rgba_color& c);
 					void letterbox_brush(const rgba_color& c, ::std::error_code& ec) noexcept;
 					void letterbox_brush(const ::std::experimental::io2d::brush& b);
 					void letterbox_brush(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void auto_clear(bool val) noexcept;
-					int join();
-					int join(::std::error_code& ec); // Not noexcept because if the user-provided functions throw they will propagate, but otherwise is non-throwing.
+					int show();
+					int show(::std::error_code& ec); // Not noexcept because if the user-provided functions throw they will propagate, but otherwise is non-throwing.
+					void exit_show(int ms) noexcept;
 
 					::std::experimental::io2d::format format() const noexcept;
 					int width() const noexcept;
@@ -2279,10 +2379,18 @@ namespace std {
 					::std::tuple<int, int> dimensions() const noexcept;
 					::std::tuple<int, int> display_dimensions() const noexcept;
 					::std::experimental::io2d::scaling scaling() const noexcept;
-					const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& user_scaling_fn() const noexcept;
+					::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback() const;
+					::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback(::std::error_code& ec) const noexcept;
 					::std::experimental::io2d::brush letterbox_brush() const noexcept;
 					bool auto_clear() const noexcept;
 				};
+
+				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
+#ifdef _WIN32
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
 
 				class surface_brush_factory {
 					::std::unique_ptr<image_surface> _Surface;
@@ -2306,7 +2414,19 @@ namespace std {
 					bool has_surface() const noexcept;
 					const image_surface& surface() const;
 				};
+#if _Variable_templates_condition_support_test
+				template <class T>
+				constexpr T pi = T(3.14159265358979323846264338327950288419716939937510L);
 
+				template <class T>
+				constexpr T two_pi = T(6.28318530717958647692528676655900576839433879875020L);
+
+				template <class T>
+				constexpr T half_pi = T(1.57079632679489661923132169163975144209858469968755L);
+
+				template <class T>
+				constexpr T three_pi_over_two = T(4.71238898038468985769396507491925432629575409906265L);
+#else
 				template <class T>
 #if _Constexpr_conditional_support_test
 				constexpr
@@ -2319,7 +2439,7 @@ namespace std {
 #if _Constexpr_conditional_support_test
 				constexpr
 #endif
-				T two_pi() noexcept{
+				T two_pi() noexcept {
 					return static_cast<T>(6.28318530717958647692528676655900576839433879875020L);
 				}
 
@@ -2327,7 +2447,7 @@ namespace std {
 #if _Constexpr_conditional_support_test
 				constexpr
 #endif
-				T half_pi() noexcept{
+				T half_pi() noexcept {
 					return static_cast<T>(1.57079632679489661923132169163975144209858469968755L);
 				}
 
@@ -2335,13 +2455,18 @@ namespace std {
 #if _Constexpr_conditional_support_test
 				constexpr
 #endif
-				T three_pi_over_two() noexcept{
+				T three_pi_over_two() noexcept {
 					return static_cast<T>(4.71238898038468985769396507491925432629575409906265L);
 				}
-
-				int format_stride_for_width(format format, int width);
+#endif
+				int format_stride_for_width(format format, int width) noexcept;
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, ::std::error_code& ec, scaling scl = scaling::letterbox) noexcept;
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat,
+					int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec, scaling scl = scaling::letterbox) noexcept;
 				image_surface make_image_surface(format format, int width, int height);
+				image_surface make_image_surface(format format, int width, int height, ::std::error_code& ec) noexcept;
 #if _Inline_namespace_conditional_support_test
 			}
 #endif

@@ -240,6 +240,9 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Can_draw(false)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
 	, _Native_context(nullptr, &cairo_destroy) {
+	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
+		throw invalid_argument("Invalid parameter.");
+	}
 	Display* display = nullptr;
 	// Lock to increment the ref count.
 	{
@@ -291,7 +294,7 @@ display_surface::~display_surface() {
 	}
 }
 
-int display_surface::join() {
+int display_surface::show() {
 	bool exit = false;
 	XEvent event;
 
@@ -312,7 +315,9 @@ int display_surface::join() {
 					}
 					_Draw_fn(*this);
 				}
-
+				else {
+					throw system_error(make_error_code(errc::operation_would_block));
+				}
 				_Render_to_native_surface();
 			} break;
 			// StructureNotifyMask events:
@@ -368,7 +373,9 @@ int display_surface::join() {
 						}
 						_Draw_fn(*this);
 					}
-
+					else {
+						throw system_error(make_error_code(errc::operation_would_block));
+					}
 					_Render_to_native_surface();
 				}
 			} break;
@@ -453,7 +460,9 @@ int display_surface::join() {
 				}
 				_Draw_fn(*this);
 			}
-
+			else {
+				throw system_error(make_error_code(errc::operation_would_block));
+			}
 			_Render_to_native_surface();
 		}
 	}

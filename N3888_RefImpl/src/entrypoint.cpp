@@ -17,12 +17,12 @@ int main() {
 	letterboxBrush.extend(extend::repeat);
 	ds.letterbox_brush(letterboxBrush);
 	sample_draw sd;
-	ds.draw_fn(sd);
-	//ds.draw_fn([](display_surface& sfc) {
+	ds.draw_callback(sd);
+	//ds.draw_callback([](display_surface& sfc) {
 	//	sfc.paint(rgba_color::cornflower_blue);
 	//	sfc.font_size(48.0);
-	//	sfc.show_text("Hello ISO C++!", { 50.0, 50.0 }, rgba_color::white);
+	//	sfc.render_text("Hello ISO C++!", { 50.0, 50.0 }, rgba_color::white);
 	//});
-	return ds.join();
+	return ds.show();
 }
 

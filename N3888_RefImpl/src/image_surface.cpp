@@ -68,46 +68,46 @@ image_surface::image_surface(vector<unsigned char>& data, experimental::io2d::fo
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 }
 
-image_surface::image_surface(const surface& other, experimental::io2d::format fmt, int width, int height)
-	: surface({ nullptr, nullptr }, fmt, _Content_for_format(fmt)) {
-	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_surface_create_similar_image(other.native_handle().csfce, _Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
-	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
-}
-
-image_surface::image_surface(const surface& other, experimental::io2d::format fmt, int width, int height, error_code& ec)  noexcept
-	: surface({ nullptr, nullptr }, fmt, _Content_for_format(fmt), ec) {
-	if (static_cast<bool>(ec)) {
-		_Surface = nullptr;
-		_Context = nullptr;
-		return;
-	}
-	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_surface_create_similar_image(other.native_handle().csfce, _Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy);
-	ec = _Cairo_status_t_to_std_error_code(cairo_surface_status(_Surface.get()));
-	if (static_cast<bool>(ec)) {
-		_Surface = nullptr;
-		_Context = nullptr;
-		return;
-	}
-	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-	ec = _Cairo_status_t_to_std_error_code(cairo_status(_Context.get()));
-	if (static_cast<bool>(ec)) {
-		_Surface = nullptr;
-		_Context = nullptr;
-		return;
-	}
-	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
-	ec.clear();
-}
+//image_surface::image_surface(const surface& other, experimental::io2d::format fmt, int width, int height)
+//	: surface({ nullptr, nullptr }, fmt, _Content_for_format(fmt)) {
+//	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_surface_create_similar_image(other.native_handle().csfce, _Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy);
+//	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+//	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
+//	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+//	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
+//}
+//
+//image_surface::image_surface(const surface& other, experimental::io2d::format fmt, int width, int height, error_code& ec)  noexcept
+//	: surface({ nullptr, nullptr }, fmt, _Content_for_format(fmt), ec) {
+//	if (static_cast<bool>(ec)) {
+//		_Surface = nullptr;
+//		_Context = nullptr;
+//		return;
+//	}
+//	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_surface_create_similar_image(other.native_handle().csfce, _Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy);
+//	ec = _Cairo_status_t_to_std_error_code(cairo_surface_status(_Surface.get()));
+//	if (static_cast<bool>(ec)) {
+//		_Surface = nullptr;
+//		_Context = nullptr;
+//		return;
+//	}
+//	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
+//	ec = _Cairo_status_t_to_std_error_code(cairo_status(_Context.get()));
+//	if (static_cast<bool>(ec)) {
+//		_Surface = nullptr;
+//		_Context = nullptr;
+//		return;
+//	}
+//	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
+//	ec.clear();
+//}
 
 image_surface::~image_surface() {
 }
 
 void image_surface::data(const vector<unsigned char>& data) {
-	auto expected_size = static_cast<size_t>(stride() * height());
-	if (data.size() != static_cast<uint64_t>(expected_size)) {
+	auto expected_size = static_cast<vector<unsigned char>::size_type>(stride() * height());
+	if (data.size() != static_cast<vector<unsigned char>::size_type>(expected_size)) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STRIDE);
 	}
 	if (_Surface.get() == nullptr) {
@@ -123,9 +123,9 @@ void image_surface::data(const vector<unsigned char>& data) {
 }
 
 void image_surface::data(const vector<unsigned char>& data, error_code& ec) noexcept {
-	auto expected_size = static_cast<size_t>(stride() * height());
-	if (data.size() != static_cast<uint64_t>(expected_size)) {
-		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_STRIDE);
+	auto expected_size = static_cast<vector<unsigned char>::size_type>(stride() * height());
+	if (data.size() != static_cast<vector<unsigned char>::size_type>(expected_size)) {
+		ec = make_error_code(io2d_error::invalid_stride);
 		return;
 	}
 	if (_Surface.get() == nullptr) {
@@ -146,14 +146,42 @@ void image_surface::data(const vector<unsigned char>& data, error_code& ec) noex
 vector<unsigned char> image_surface::data() {
 	auto required_size = stride() * height();
 	vector<unsigned char> data;
+	//if (_Surface.get() == nullptr) {
+	//	_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
+	//}
 	cairo_surface_flush(_Surface.get());
 	auto imageData = cairo_image_surface_get_data(_Surface.get());
-	if (imageData == nullptr) {
-		data.clear();
-	}
-	else {
+	assert(imageData != nullptr && "Error calling cairo_image_surface_get_data.");
+	data.assign(imageData, imageData + required_size);
+	return data;
+}
+
+vector<unsigned char> image_surface::data(error_code& ec) noexcept {
+	auto required_size = stride() * height();
+	// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
+	vector<unsigned char> data;
+	//if (_Surface.get() == nullptr) {
+	//	ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NULL_POINTER);
+	//	return data;
+	//}
+	cairo_surface_flush(_Surface.get());
+	auto imageData = cairo_image_surface_get_data(_Surface.get());
+	assert(imageData != nullptr && "Error calling cairo_image_surface_get_data.");
+	try {
+		data.reserve(required_size);
 		data.assign(imageData, imageData + required_size);
 	}
+	catch (const length_error&) {
+		data.clear();
+		ec = make_error_code(errc::not_enough_memory);
+		return data;
+	}
+	catch (const bad_alloc&) {
+		data.clear();
+		ec = make_error_code(errc::not_enough_memory);
+		return data;
+	}
+	ec.clear();
 	return data;
 }
 
