@@ -991,6 +991,12 @@ void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush) 
 	cairo_matrix_t cPttnMatrix;
 	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
 	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+
+	cairo_pattern_set_extend(maskBrush.native_handle(), _Extend_to_cairo_extend_t(maskBrush.extend()));
+	cairo_pattern_set_filter(maskBrush.native_handle(), _Filter_to_cairo_filter_t(maskBrush.filter()));
+	cairo_matrix_init(&cPttnMatrix, maskBrush.matrix().m00(), maskBrush.matrix().m01(), maskBrush.matrix().m10(), maskBrush.matrix().m11(), maskBrush.matrix().m20(), maskBrush.matrix().m21());
+	cairo_pattern_set_matrix(maskBrush.native_handle(), &cPttnMatrix);
+
 	cairo_set_source(_Context.get(), _Brush.native_handle());
 	cairo_mask(_Context.get(), maskBrush.native_handle());
 	path(currPath);
@@ -999,12 +1005,12 @@ void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush) 
 void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c) {
 	solid_color_brush_factory factory(c);
 	brush(experimental::io2d::brush(factory));
-	mask(maskBrush);
+	mask_immediate(maskBrush);
 }
 
 void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b) {
 	brush(b);
-	mask(maskBrush);
+	mask_immediate(maskBrush);
 }
 
 void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const vector_2d& origin, extend e, filter f) {
@@ -1020,6 +1026,12 @@ void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, 
 	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
 	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
 	cairo_pattern_set_matrix(pat, &cmat);
+
+	cairo_pattern_set_extend(maskBrush.native_handle(), _Extend_to_cairo_extend_t(maskBrush.extend()));
+	cairo_pattern_set_filter(maskBrush.native_handle(), _Filter_to_cairo_filter_t(maskBrush.filter()));
+	cairo_matrix_init(&cmat, maskBrush.matrix().m00(), maskBrush.matrix().m01(), maskBrush.matrix().m10(), maskBrush.matrix().m11(), maskBrush.matrix().m20(), maskBrush.matrix().m21());
+	cairo_pattern_set_matrix(maskBrush.native_handle(), &cmat);
+
 	cairo_mask(_Context.get(), maskBrush.native_handle());
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 	path(currPath);
