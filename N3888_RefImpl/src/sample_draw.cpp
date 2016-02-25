@@ -16,52 +16,100 @@ using namespace std::experimental::io2d;
 using namespace not_proposed::test_renderer;
 
 // Declarations
-void test_stroke_rules(display_surface& rs);
-void draw_radial_circles(display_surface& rs);
-void test_draw_radial_circles(display_surface& rs);
+void test_stroke_rules(display_surface& ds);
+void draw_radial_circles(display_surface& ds);
+void test_draw_radial_circles(display_surface& ds);
 wostream& operator<<(wostream& os, const vector_2d& pt);
 vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL);
-void draw_hello_world(surface& rs);
-void draw_test_compositing_operators(surface& rs, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp = compositing_operator::over, bool clipToRects = false, bool clipToTriangle = false, bool strokePaths = false, bool mask = false, const rgba_color& backgroundColor = rgba_color::transparent_black(), const rgba_color& firstColor = rgba_color::red() * 0.8, const rgba_color& secondColor = rgba_color::teal() * 0.4);
-void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMilliseconds);
-void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds);
-void test_compositing_operators_different_pixel_formats(surface& rs, compositing_operator co);
-void test_paint_surface_extend_modes(surface& rs, double elapsedTimeInMilliseconds);
-void test_fill_rules(surface& rs);
-void test_paint(surface& rs);
-void test_mask(display_surface& rs);
+void draw_hello_world(display_surface& ds);
+void draw_test_compositing_operators(display_surface& ds, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp = compositing_operator::over, bool clipToRects = false, bool clipToTriangle = false, bool strokePaths = false, bool mask = false, const rgba_color& backgroundColor = rgba_color::transparent_black(), const rgba_color& firstColor = rgba_color::red() * 0.8, const rgba_color& secondColor = rgba_color::teal() * 0.4);
+void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeInMilliseconds);
+void draw_sort_visualization(display_surface& ds, double elapsedTimeInMilliseconds);
+void test_compositing_operators_different_pixel_formats(display_surface& ds, compositing_operator co);
+void test_paint_surface_extend_modes(display_surface& ds, double elapsedTimeInMilliseconds);
+void test_fill_rules(display_surface& ds);
+void test_paint(display_surface& ds);
+void test_mask(display_surface& ds);
+void test_extend_none_on_boundary(display_surface& ds);
+void test_clip_transformation(display_surface& ds);
 
 //
 // Drawing entry point.
 //
-void sample_draw::operator()(display_surface& rs) {
-	static auto previousTime = steady_clock::now();
-	auto currentTime = steady_clock::now();
-	auto elapsedTime = currentTime - previousTime;
-	previousTime = currentTime;
-	draw_sort_visualization_immediate(rs, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
+void sample_draw::operator()(display_surface& ds) {
+	//static auto previousTime = steady_clock::now();
+	//auto currentTime = steady_clock::now();
+	//auto elapsedTime = currentTime - previousTime;
+	//previousTime = currentTime;
+	//draw_sort_visualization_immediate(ds, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
 
-	//test_paint(rs);
-	//test_stroke_rules(rs);
-	//test_mask(rs);
+	//test_clip_transformation(ds);
+	//test_paint(ds);
+	//test_stroke_rules(ds);
+	test_mask(ds);
+	//test_extend_none_on_boundary(ds);
 
-	//test_draw_radial_circles(rs);
+	//test_draw_radial_circles(ds);
 
 	
-	//draw_test_compositing_operators(rs, compositing_operator::in, compositing_operator::over, true, false, false, true);
+	//draw_test_compositing_operators(ds, compositing_operator::in, compositing_operator::over, true, false, false, true);
 	
-	//test_compositing_operators_different_pixel_formats(rs, compositing_operator::out);
+	//test_compositing_operators_different_pixel_formats(ds, compositing_operator::out);
 	
 	//static auto previousTime = steady_clock::now();
 	//auto currentTime = steady_clock::now();
 	//auto elapsedTime = currentTime - previousTime;
 	//previousTime = currentTime;
-	//test_paint_surface_extend_modes(rs, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
+	//test_paint_surface_extend_modes(ds, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
 
-	//test_fill_rules(rs);
+	//test_fill_rules(ds);
 }
 
-void test_mask(display_surface& rs) {
+void test_clip_transformation(display_surface& ds) {
+	ds.save();
+
+	image_surface imgSfc{ format::argb32, 500, 500 };
+	imgSfc.paint(rgba_color::green());
+	imgSfc.immediate().move_to({ 0.0, 250.0 });
+	imgSfc.immediate().line_to({ 250.0, 0.0 });
+	imgSfc.immediate().line_to({ 500.0,250.0 });
+	imgSfc.immediate().line_to({ 250.0,500.0 });
+	imgSfc.immediate().close_path();
+	imgSfc.fill_immediate(rgba_color::white());
+
+	ds.matrix(matrix_2d::init_translate({ 0.0, 0.0 }));
+	//ds.matrix(matrix_2d::init_translate({ 100.0, 100.0 }));
+	ds.immediate().clear();
+	ds.immediate().rectangle({ 0.0, 0.0, 500.0, 500.0 });
+	ds.clip_immediate();
+
+	ds.matrix(matrix_2d::init_translate({ 100.0, 100.0 }));
+	//ds.matrix(matrix_2d::init_translate({ 0.0, 0.0 }));
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ 0.0, 0.0, 500.0, 500.0 });
+	ds.paint(imgSfc, matrix_2d::init_identity());
+
+	ds.restore();
+}
+
+void test_extend_none_on_boundary(display_surface& ds) {
+	image_surface imgSfc{ format::argb32, 500, 500 };
+	imgSfc.paint(rgba_color::green());
+	imgSfc.immediate().move_to({ 0.0, 250.0 });
+	imgSfc.immediate().line_to({ 250.0, 0.0 });
+	imgSfc.immediate().line_to({ 500.0,250.0 });
+	imgSfc.immediate().line_to({ 250.0,500.0 });
+	imgSfc.immediate().close_path();
+	imgSfc.fill_immediate(rgba_color::white());
+
+	ds.clear();
+	ds.immediate().clear();
+	ds.paint(rgba_color::red());
+	ds.immediate().rectangle({ 20.0, 20.0, static_cast<double>(ds.width()), static_cast<double>(ds.height()) });
+	ds.fill_immediate(imgSfc, matrix_2d::init_translate({ -20.0, -20.0 }), extend::none, filter::bilinear);
+}
+
+void test_mask(display_surface& ds) {
 	image_surface imgSfc{ format::argb32, 500, 500 };
 	imgSfc.paint(rgba_color::white(), 0.5);
 	imgSfc.immediate().move_to({ 0.0, 250.0 });
@@ -70,125 +118,179 @@ void test_mask(display_surface& rs) {
 	imgSfc.immediate().line_to({ 250.0,500.0 });
 	imgSfc.immediate().close_path();
 	imgSfc.fill_immediate(rgba_color::white());
+	//imgSfc.matrix(matrix_2d::init_translate({ -50.0, 50.0 }));
+	//imgSfc.matrix(matrix_2d::init_scale({ 0.5, 1.5 }));
+	surface_brush_factory sbf(imgSfc);
+	brush br(sbf);
+	br.matrix(matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double>() * 0.25));
+	br.filter(filter::nearest);
+	br.extend(extend::none);
 
-	rs.clear();
-	rs.immediate().clear();
-	rs.paint(rgba_color::red());
-	rs.immediate().rectangle({ 0.0, 0.0, static_cast<double>(rs.width()), static_cast<double>(rs.height()) });
-	rs.mask_immediate(imgSfc, rgba_color::blue());
+	//radial_brush_factory rbf{ {250.0, 250.0}, 0.0, {250.0, 250.0}, 250.0 };
+	//rbf.add_color_stop(0.0, rgba_color::red());
+	//rbf.add_color_stop(0.5, rgba_color::lime() * 0.5);
+	//rbf.add_color_stop(1.0, rgba_color::blue());
+	//brush br{ rbf };
+	//br.extend(extend::repeat);
+	//br.filter(filter::nearest);
+
+	ds.save();
+	ds.clear();
+	ds.immediate().clear();
+	ds.paint(rgba_color::red());
+	ds.immediate().rectangle({ 0.0, 0.0, static_cast<double>(ds.width()), static_cast<double>(ds.height())});
+	//ds.matrix(matrix_2d::init_scale({ 0.5, 1.5 }));
+	ds.mask_immediate(br, rgba_color::blue());
+	//ds.fill_immediate(br);
+	ds.restore();
 }
 
-void test_paint(surface& rs) {
-	rs.save();
-	rs.clear();
-	rs.immediate().rectangle({ { 50.0, 50.0}, {500.0, 500.0} });
-	rs.clip_immediate();
-	rs.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0));
-	auto lbf = linear_brush_factory({ 0.0, 0.0 }, { 50.0, 50.0 });
-	lbf.add_color_stop(0.0, rgba_color::red());
-	lbf.add_color_stop(0.5, rgba_color::lime());
-	lbf.add_color_stop(1.0, rgba_color::blue());
-	auto linBrush = brush(lbf);
-	linBrush.extend(extend::repeat);
-	linBrush.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0));
-	rs.brush(linBrush);
-	rs.paint();
-	rs.restore();
+void test_paint(display_surface& ds) {
+	ds.save();
+	ds.clear();
+
+	image_surface imgSfc{ format::argb32, 500, 500 };
+	imgSfc.paint(rgba_color::green());
+	imgSfc.immediate().move_to({ 0.0, 250.0 });
+	imgSfc.immediate().line_to({ 250.0, 0.0 });
+	imgSfc.immediate().line_to({ 500.0,250.0 });
+	imgSfc.immediate().line_to({ 250.0,500.0 });
+	imgSfc.immediate().close_path();
+	imgSfc.fill_immediate(rgba_color::white());
+	auto m = matrix_2d::init_scale({ 1.5, 1.0 }).translate({ 20.0, 20.0 });// .invert().translate({ -10.0, -10.0 });
+	auto scsm = m;
+	auto ucsm = matrix_2d::init_identity();
+	auto bcsm = matrix_2d::init_translate({ -10.0, -10.0 });
+	auto invScsm = scsm;
+	invScsm.invert();
+	auto invBcsm = bcsm;
+	invBcsm.invert();
+
+	//auto pt = m.invert().transform_point({ 0.0, 0.0 });
+	//auto pt2 = m.transform_point({ 10.0, 10.0 });
+	auto pt = m.transform_point({ 0.0, 0.0 });
+	auto pt2 = invScsm.transform_point({ 45.0, 30.0 });
+	auto pt3 = vector_2d{ -26.6666666666666, -30.0 };
+	auto pt4 = vector_2d{ -16.6666666666666, -20.0 };
+	auto pt5 = vector_2d{ 45.0, 30.0 };
+	ds.matrix(m);
+	ds.paint(imgSfc, matrix_2d::init_translate({ -10.0, -10.0 })/*init_identity()*//*init_scale({ 1.0, 1.5 }).translate({ -20.0, -20.0 })*/, extend::repeat, filter::nearest);
+	//ds.paint(rgba_color::red());
+	//auto br = brush(solid_color_brush_factory(rgba_color::red()));
+	//br.extend(extend::none);
+	//ds.brush(br);
+	ds.paint();
+
+
+	//auto lbf = linear_brush_factory({ 0.0, 0.0 }, { 50.0, 50.0 });
+	//lbf.add_color_stop(0.0, rgba_color::red());
+	//lbf.add_color_stop(0.5, rgba_color::lime());
+	//lbf.add_color_stop(1.0, rgba_color::blue());
+	//auto linBrush = brush(lbf);
+	//linBrush.extend(extend::repeat);
+	//linBrush.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0));
+	//ds.immediate().rectangle({ { 50.0, 50.0}, {500.0, 500.0} });
+	//ds.clip_immediate();
+	//ds.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0));
+	//ds.brush(linBrush);
+	//ds.paint();
+
+	ds.restore();
 }
 
-void test_stroke_rules(display_surface& rs) {
-	rs.save();
-	rs.clear();
-	rs.paint(rgba_color::red());
+void test_stroke_rules(display_surface& ds) {
+	ds.save();
+	ds.clear();
+	ds.paint(rgba_color::red());
 
-	rs.immediate().clear();
+	ds.immediate().clear();
 
-	//rs.line_width(40.0);
-	//rs.line_cap(line_cap::butt);
-	//rs.line_join(line_join::miter_or_bevel);
-	//rs.immediate().arc({ rs.width() / 2.0, rs.height() / 2.0 }, 200.0, 0.0, two_pi<double>());
-	//rs.matrix(matrix_2d::init_translate({ rs.width() / 2.0, rs.height() / 2.0 }).rotate(half_pi<double>() / 2.0).scale({ 0.5, 1.0 }).translate({ -rs.width() / 2.0, -rs.height() / 2.0 }));
-	rs.dashes(nullopt);
-	rs.line_width(2.0);
-	rs.immediate().move_to({ 0.0, 199.0 });
-	rs.immediate().line_to({ 1280.9, 199.0 });
-	rs.stroke_immediate(rgba_color::azure());
-	rs.immediate().clear();
+	//ds.line_width(40.0);
+	//ds.line_cap(line_cap::butt);
+	//ds.line_join(line_join::miter_or_bevel);
+	//ds.immediate().arc({ ds.width() / 2.0, ds.height() / 2.0 }, 200.0, 0.0, two_pi<double>());
+	//ds.matrix(matrix_2d::init_translate({ ds.width() / 2.0, ds.height() / 2.0 }).rotate(half_pi<double>() / 2.0).scale({ 0.5, 1.0 }).translate({ -ds.width() / 2.0, -ds.height() / 2.0 }));
+	ds.dashes(nullopt);
+	ds.line_width(2.0);
+	ds.immediate().move_to({ 0.0, 199.0 });
+	ds.immediate().line_to({ 1280.9, 199.0 });
+	ds.stroke_immediate(rgba_color::azure());
+	ds.immediate().clear();
 
-	rs.line_width(40.0);
+	ds.line_width(40.0);
 	dashes dsh(vector<double>{ 40.0, 50.0, 40.0, 50.0, 40.0, 50.0, 40.0, 50.0, 40.0, 50.0 }, 150.0);
-	rs.dashes(dsh);
-	rs.line_cap(line_cap::round);
-	rs.line_join(line_join::miter_or_bevel);
-	rs.immediate().move_to({ 700.0, 200.0 });
-	rs.immediate().close_path();
+	ds.dashes(dsh);
+	ds.line_cap(line_cap::round);
+	ds.line_join(line_join::miter_or_bevel);
+	ds.immediate().move_to({ 700.0, 200.0 });
+	ds.immediate().close_path();
 
-	rs.line_width(40.0);
-	rs.line_cap(line_cap::round);
-	rs.line_join(line_join::miter_or_bevel);
-	rs.immediate().move_to({ 200.0, 200.0 });
-	rs.immediate().rel_line_to({ 0.0, 100.0 });
-	rs.immediate().move_to({ 200.0, 335.0 });
-	rs.immediate().rel_line_to({ 0.0, 200.0 });
+	ds.line_width(40.0);
+	ds.line_cap(line_cap::round);
+	ds.line_join(line_join::miter_or_bevel);
+	ds.immediate().move_to({ 200.0, 200.0 });
+	ds.immediate().rel_line_to({ 0.0, 100.0 });
+	ds.immediate().move_to({ 200.0, 335.0 });
+	ds.immediate().rel_line_to({ 0.0, 200.0 });
 
-	//rs.matrix(matrix_2d::init_scale({ 0.5, 1.0 }).rotate(half_pi<double>() / 2.0));
-	//rs.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0).scale({ 0.5, 1.0 }));
-	//rs.immediate().rel_move_to({ 20.0, 0.0 });
-	//rs.immediate().rel_move_to({ 0.0, 10.0 });
-	//rs.immediate().close_path();
-	//rs.immediate().rel_line_to({ 5.0, 10.0 });
-	//rs.immediate().rel_line_to({ -20.0, 0.0 });
-	rs.stroke_immediate(rgba_color::black());
+	//ds.matrix(matrix_2d::init_scale({ 0.5, 1.0 }).rotate(half_pi<double>() / 2.0));
+	//ds.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0).scale({ 0.5, 1.0 }));
+	//ds.immediate().rel_move_to({ 20.0, 0.0 });
+	//ds.immediate().rel_move_to({ 0.0, 10.0 });
+	//ds.immediate().close_path();
+	//ds.immediate().rel_line_to({ 5.0, 10.0 });
+	//ds.immediate().rel_line_to({ -20.0, 0.0 });
+	ds.stroke_immediate(rgba_color::black());
 
-	rs.restore();
+	ds.restore();
 }
 
-void test_fill_rules(surface& rs) {
-	rs.clear();
-	auto prevFr = rs.fill_rule();
+void test_fill_rules(display_surface& ds) {
+	ds.clear();
+	auto prevFr = ds.fill_rule();
 
 	bool clockwise = true;
 
 	auto rect = rectangle{ 10.0, 10.0, 120.0, 90.0 };
 
-	rs.fill_rule(fill_rule::winding);
+	ds.fill_rule(fill_rule::winding);
 	clockwise = true;
-	rs.immediate().clear();
+	ds.immediate().clear();
 	rect.top_left({ 10.0, 10.0 });
-	rs.immediate().rectangle(rect, clockwise);
+	ds.immediate().rectangle(rect, clockwise);
 	rect.top_left({ 50.0, 40.0 });
-	rs.immediate().rectangle(rect, clockwise);
-	rs.fill_immediate(rgba_color::red() * 0.5);
+	ds.immediate().rectangle(rect, clockwise);
+	ds.fill_immediate(rgba_color::red() * 0.5);
 
-	rs.immediate().clear();
+	ds.immediate().clear();
 	rect.top_left({ 10.0, 150.0 });
-	rs.immediate().rectangle(rect, clockwise);
+	ds.immediate().rectangle(rect, clockwise);
 	rect.top_left({ 50.0, 190.0 });
 	clockwise = false;
-	rs.immediate().rectangle(rect, clockwise);
-	rs.fill_immediate(rgba_color::red() * 0.5);
+	ds.immediate().rectangle(rect, clockwise);
+	ds.fill_immediate(rgba_color::red() * 0.5);
 
-	rs.fill_rule(fill_rule::even_odd);
+	ds.fill_rule(fill_rule::even_odd);
 	clockwise = true;
-	rs.immediate().clear();
+	ds.immediate().clear();
 	rect.top_left({ 190.0, 10.0 });
-	rs.immediate().rectangle(rect, clockwise);
+	ds.immediate().rectangle(rect, clockwise);
 	rect.top_left({ 240.0, 40.0 });
-	rs.immediate().rectangle(rect, clockwise);
-	rs.fill_immediate(rgba_color::red() * 0.5);
+	ds.immediate().rectangle(rect, clockwise);
+	ds.fill_immediate(rgba_color::red() * 0.5);
 
-	rs.immediate().clear();
+	ds.immediate().clear();
 	rect.top_left({ 190.0, 150.0 });
-	rs.immediate().rectangle(rect, clockwise);
+	ds.immediate().rectangle(rect, clockwise);
 	rect.top_left({ 240.0, 190.0 });
 	clockwise = false;
-	rs.immediate().rectangle(rect, clockwise);
-	rs.fill_immediate(rgba_color::red() * 0.5);
+	ds.immediate().rectangle(rect, clockwise);
+	ds.fill_immediate(rgba_color::red() * 0.5);
 
-	rs.fill_rule(prevFr);
+	ds.fill_rule(prevFr);
 }
 
-void test_paint_surface_extend_modes(surface& rs, double elapsedTimeInMilliseconds) {
+void test_paint_surface_extend_modes(display_surface& ds, double elapsedTimeInMilliseconds) {
 	static image_surface imgSfc{ format::argb32, 120, 90 };
 	static bool imgSfcInitialized = false;
 	if (!imgSfcInitialized) {
@@ -224,48 +326,48 @@ void test_paint_surface_extend_modes(surface& rs, double elapsedTimeInMillisecon
 		imgSfcInitialized = true;
 	}
 	static double totalElapsedTime = 0.0;
-	rs.compositing_operator(compositing_operator::source);
-	rs.immediate().rectangle({ 400.0, 0.0, 100.0, 100.0 });
-	rs.fill_immediate(rgba_color::orange());
-	rs.immediate().clear();
+	ds.compositing_operator(compositing_operator::source);
+	ds.immediate().rectangle({ 400.0, 0.0, 100.0, 100.0 });
+	ds.fill_immediate(rgba_color::orange());
+	ds.immediate().clear();
 	if (totalElapsedTime < 1000.0) {
 		// Do nothing.
 	}
 	else {
 		if (totalElapsedTime < 3000.0) {
-			rs.paint(imgSfc, { 0.0, 0.0 }, extend::none);
+			ds.paint(imgSfc, { 0.0, 0.0 }, extend::none);
 		}
 		else {
-			rs.paint(imgSfc, { 0.0, 0.0 }, extend::repeat);
+			ds.paint(imgSfc, { 0.0, 0.0 }, extend::repeat);
 		}
 	}
 	totalElapsedTime += elapsedTimeInMilliseconds;
 }
 
-void test_compositing_operators_different_pixel_formats(surface& rs, compositing_operator co) {
+void test_compositing_operators_different_pixel_formats(display_surface& ds, compositing_operator co) {
 	image_surface srcSfc{ format::a8, 120, 90 };
 	image_surface dstSfc{ format::argb32, 120, 90 };
 	srcSfc.clear();
 	srcSfc.paint(rgba_color::blue(), 0.6);
 	dstSfc.clear();
 	dstSfc.paint(rgba_color::lime(), 0.4);
-	rs.clear();
+	ds.clear();
 	
 	//auto data = srcSfc.data();
-	//rs.paint(rgba_color::white());
-	rs.compositing_operator(compositing_operator::over);
-	rs.immediate().rectangle({ 10.0, 10.0, 120.0, 90.0 });
-	rs.fill_immediate(srcSfc, matrix_2d::init_translate({ -10.0, -10.0 }));
-	rs.compositing_operator(co);
-	rs.immediate().clear();
-	rs.immediate().rectangle({ 50.0, 40.0, 120.0, 90.0 });
-	rs.fill_immediate(dstSfc, matrix_2d::init_translate({ -50.0, -40.0 }));
+	//ds.paint(rgba_color::white());
+	ds.compositing_operator(compositing_operator::over);
+	ds.immediate().rectangle({ 10.0, 10.0, 120.0, 90.0 });
+	ds.fill_immediate(srcSfc, matrix_2d::init_translate({ -10.0, -10.0 }));
+	ds.compositing_operator(co);
+	ds.immediate().clear();
+	ds.immediate().rectangle({ 50.0, 40.0, 120.0, 90.0 });
+	ds.fill_immediate(dstSfc, matrix_2d::init_translate({ -50.0, -40.0 }));
 }
 
-void test_draw_radial_circles(display_surface& rs) {
-	rs.paint(rgba_color::cornflower_blue());
-	rs.fill_rule(fill_rule::winding);
-	rs.matrix(matrix_2d::init_identity());
+void test_draw_radial_circles(display_surface& ds) {
+	ds.paint(rgba_color::cornflower_blue());
+	ds.fill_rule(fill_rule::winding);
+	ds.matrix(matrix_2d::init_identity());
 	auto radialFactory = radial_brush_factory();
 	radialFactory.add_color_stop(0.0, rgba_color::white());
 	radialFactory.add_color_stop(0.25, rgba_color::red());
@@ -286,9 +388,9 @@ void test_draw_radial_circles(display_surface& rs) {
 	rectangle drawArea = { { 100.0, 100.0 }, { 500.0, 500.0 } };
 	pf.rectangle(drawArea);
 	path p(pf);
-	rs.path(p);
-	rs.brush(radialBrush);
-	rs.fill();
+	ds.path(p);
+	ds.brush(radialBrush);
+	ds.fill();
 
 	auto dx = 500.0;
 	auto dy = 0.0;
@@ -298,14 +400,14 @@ void test_draw_radial_circles(display_surface& rs) {
 	radialFactory.radial_circles(center0, radius0, center1, radius1);
 	drawArea.x(drawArea.x() + dx);
 	drawArea.y(drawArea.y() + dy);
-	render_fill_rect_radial_gradient(rs, drawArea, radialFactory, extendMode);
+	render_fill_rect_radial_gradient(ds, drawArea, radialFactory, extendMode);
 }
 
-void draw_radial_circles(display_surface& rs) {
+void draw_radial_circles(display_surface& ds) {
 	// Clear to background color.
-	rs.paint(rgba_color::cornflower_blue());
-	rs.fill_rule(fill_rule::winding);
-	rs.matrix(matrix_2d::init_identity());
+	ds.paint(rgba_color::cornflower_blue());
+	ds.fill_rule(fill_rule::winding);
+	ds.matrix(matrix_2d::init_identity());
 	auto radialFactory = radial_brush_factory();
 	radialFactory.add_color_stop(0.0, rgba_color::white());
 	//radialFactory.add_color_stop(0.25, rgba_color::red());
@@ -335,19 +437,19 @@ void draw_radial_circles(display_surface& rs) {
 	pf.move_to({ 520.0, 10.0 });
 	pf.curve_to({ 480.0, 60.0 }, { 560.0, 60.0 }, { 520.0, 10.0 });
 	path p(pf);
-	rs.path(p);
-	rs.brush(radialBrush);
+	ds.path(p);
+	ds.brush(radialBrush);
 
 	//// For debug inspection testing only; uncomment if needed.
-	//auto fe = rs.fill_extents();
-	//auto se = rs.stroke_extents();
+	//auto fe = ds.fill_extents();
+	//auto se = ds.stroke_extents();
 	//vector_2d pt{ 110.0, 300.0 };
-	//auto inFill = rs.in_fill(pt);
+	//auto inFill = ds.in_fill(pt);
 	//// End for debug inspection testing only.
 
-	rs.fill();
-	rs.brush(brush(solid_color_brush_factory(rgba_color::red())));
-	rs.stroke();
+	ds.fill();
+	ds.brush(brush(solid_color_brush_factory(rgba_color::red())));
+	ds.stroke();
 	pf.clear();
 	pf.new_sub_path();
 	pf.arc({ 900.0, 200.0 }, 50.0, 0.0, two_pi<double>());
@@ -360,33 +462,33 @@ void draw_radial_circles(display_surface& rs) {
 	pf.new_sub_path();
 	pf.arc({ 900.0, 200.0 }, 150.0, 0.0, two_pi<double>());
 	p = path(pf);
-	rs.path(p);
-	rs.fill();
-	rs.matrix(matrix_2d::init_translate({ 0.0, 310.0 }));
-	rs.path(p);
-	rs.fill_rule(fill_rule::even_odd);
-	rs.fill();
+	ds.path(p);
+	ds.fill();
+	ds.matrix(matrix_2d::init_translate({ 0.0, 310.0 }));
+	ds.path(p);
+	ds.fill_rule(fill_rule::even_odd);
+	ds.fill();
 
-	//render_ellipse(rs, { 200.0, 600.0 }, 250.0, 100.0, rgba_color(0.0, 1.0, 1.0, 1.0));
+	//render_ellipse(ds, { 200.0, 600.0 }, 250.0, 100.0, rgba_color(0.0, 1.0, 1.0, 1.0));
 
 	//radialFactory.radial_circles({ 200.5, 300.0 }, 0.0, { 300.0, 300.0 }, 100.0);
 	//auto radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::repeat);
 	////radialBrush.matrix(matrix_2d::init_scale({ 2.0, 2.0 }));
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 100.0, 100.0 }, { 500.0, 500.0 } });
-	//rs.fill_immediate(radialBrush);
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 100.0, 100.0 }, { 500.0, 500.0 } });
+	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 115.2, 102.4 }, 25.6, { 102.4, 102.4 }, 128.0);
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::pad);
-	//rs.immediate().clear();
-	//rs.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * pi);
-	////rs.immediate().rectangle({ 0.0, 0.0, 250.0, 250.0 });
-	//rs.fill_immediate(radialBrush);
+	//ds.immediate().clear();
+	//ds.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * pi);
+	////ds.immediate().rectangle({ 0.0, 0.0, 250.0, 250.0 });
+	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 400.0, 200.0 }, 100.0, { 600.0, 200.0 }, 100.0);
-	//auto color = test_draw_circle(rs, { 400.0, 200.0 }, radialFactory);
+	//auto color = test_draw_circle(ds, { 400.0, 200.0 }, radialFactory);
 	//
 	//{
 	//	auto linearFactory = linear_brush_factory();
@@ -399,81 +501,81 @@ void draw_radial_circles(display_surface& rs) {
 	//	linearFactory.add_color_stop(0.5, rgba_color::blue());
 	//	linearFactory.add_color_stop(1.0, rgba_color::white());
 	//
-	//	rs.immediate().clear();
-	//	rs.immediate().rectangle({ { 200.0, 280.0 }, { 602.0, 520.0 } });
-	//	rs.fill_immediate(brush(linearFactory));
+	//	ds.immediate().clear();
+	//	ds.immediate().rectangle({ { 200.0, 280.0 }, { 602.0, 520.0 } });
+	//	ds.fill_immediate(brush(linearFactory));
 	//}
 	//
 	//radialFactory.radial_circles({ 600.0, 200.0 }, 100.0, { 400.0, 200.0 }, 100.0);
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 280.0, 80.0 }, { 720.0, 320.0 } });
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 280.0, 80.0 }, { 720.0, 320.0 } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::pad);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 400.0, 450.0 }, 100.0, { 600.0, 450.0 }, 100.0);
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 280.0, 330.0 }, { 720.0, 570.0 } });
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 280.0, 330.0 }, { 720.0, 570.0 } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::none);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 1000.0, 200.0 }, 100.0, { 1000.0, 200.0 }, 20.0);
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 880.0, 80.0 }, { 1120.0, 320.0 } });
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 880.0, 80.0 }, { 1120.0, 320.0 } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::reflect);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 1000.0, 450.0 }, 20.0, { 1000.0, 450.0 }, 100.0);
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 880.0, 330.0 }, { 1120.0, 570.0 } });
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 880.0, 330.0 }, { 1120.0, 570.0 } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::repeat);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 105.0, 100.0 }, 0.0, { 200.0, 100.0 }, 100.0);
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 0.0, 0.0 }, { 520.0, 200.0 } });
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 0.0, 0.0 }, { 520.0, 200.0 } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::repeat);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 	//
 	//
 	//radialFactory.radial_circles({ 200.0, 200.0 }, 100.0, { 400.0, 200.0 }, 100.0);
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 80.0, 80.0 }, { 520.0, 320.0 } });
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 80.0, 80.0 }, { 520.0, 320.0 } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::none);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 200.0, 450.0 }, 100.0, { 400.0, 450.0 }, 100.0);
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 80.0, 330.0 }, { 520.0, 570.0 } });
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 80.0, 330.0 }, { 520.0, 570.0 } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::pad);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 	//
 	////radialFactory.radial_circles({ 200.0, 450.0 }, 100.0, { 400.0, 450.0 }, 100.0);
-	////rs.immediate().clear();
-	////rs.immediate().rectangle({ { 80.0, 330.0 }, { 520.0, 570.0 } });
+	////ds.immediate().clear();
+	////ds.immediate().rectangle({ { 80.0, 330.0 }, { 520.0, 570.0 } });
 	////radialBrush = brush(radialFactory);
 	////radialBrush.extend(extend::pad);
-	////rs.fill_immediate(radialBrush);
+	////ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 700.0, 200.0 }, 100.0, { 900.0, 200.0 }, 100.0);
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 580.0, 80.0 }, { 1020.0, 320.0 } });
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 580.0, 80.0 }, { 1020.0, 320.0 } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::reflect);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 700.0, 450.0 }, 100.0, { 900.0, 450.0 }, 100.0);
-	//rs.immediate().clear();
-	//rs.immediate().rectangle({ { 580.0, 330.0 }, { 1020.0, 570.0 } });
+	//ds.immediate().clear();
+	//ds.immediate().rectangle({ { 580.0, 330.0 }, { 1020.0, 570.0 } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::repeat);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 }
 
 wostream& operator<<(wostream& os, const vector_2d& pt) {
@@ -522,17 +624,17 @@ void init_mask_surface(image_surface& imsfc) {
 	imsfc.fill_immediate();
 }
 
-void draw_hello_world(surface& rs) {
-	rs.render_text("Hello world", { 100.0, 100.0 }, brush(solid_color_brush_factory(rgba_color::white())));
+void draw_hello_world(display_surface& ds) {
+	ds.render_text("Hello world", { 100.0, 100.0 }, brush(solid_color_brush_factory(rgba_color::white())));
 }
 
 // For testing purposes only.
-void draw_test_compositing_operators(surface& rs, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp, bool clipToRects, bool clipToTriangle, bool strokePaths, bool mask, const rgba_color& backgroundColor, const rgba_color& firstColor, const rgba_color& secondColor) {
+void draw_test_compositing_operators(display_surface& ds, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp, bool clipToRects, bool clipToTriangle, bool strokePaths, bool mask, const rgba_color& backgroundColor, const rgba_color& firstColor, const rgba_color& secondColor) {
 	// Parameter validation.
 	if (clipToRects && clipToTriangle) {
 		throw invalid_argument("clipToRects and clipToTriangle cannot both be set to true.");
 	}
-	rs.save();
+	ds.save();
 
 	auto backgroundBrush = brush(solid_color_brush_factory(backgroundColor));
 	auto firstBrush = brush(solid_color_brush_factory(firstColor));
@@ -558,27 +660,27 @@ void draw_test_compositing_operators(surface& rs, compositing_operator secondRec
 	pb.close_path();
 	auto triangleClipPath = path(pb);
 
-	rs.brush(backgroundBrush);
-	rs.compositing_operator(compositing_operator::clear);
-	rs.paint();
+	ds.brush(backgroundBrush);
+	ds.compositing_operator(compositing_operator::clear);
+	ds.paint();
 
-	rs.brush(firstBrush);
-	rs.compositing_operator(firstRectCompOp);
-	rs.path(firstRectPath);
-	rs.fill();
+	ds.brush(firstBrush);
+	ds.compositing_operator(firstRectCompOp);
+	ds.path(firstRectPath);
+	ds.fill();
 
-	rs.save(); // Preserve old clip.
+	ds.save(); // Preserve old clip.
 	if (clipToRects) {
-		rs.clip(bothRectsClipPath);
+		ds.clip(bothRectsClipPath);
 	}
 
 	if (clipToTriangle) {
-		rs.clip(triangleClipPath);
+		ds.clip(triangleClipPath);
 	}
 
-	rs.path(secondRectPath);
-	rs.compositing_operator(secondRectCompOp);
-	rs.brush(secondBrush);
+	ds.path(secondRectPath);
+	ds.compositing_operator(secondRectCompOp);
+	ds.brush(secondBrush);
 	if (mask) {
 		static image_surface maskSurface(format::a8, 200, 200);
 		static once_flag drawMaskOnceFlag;
@@ -602,37 +704,37 @@ void draw_test_compositing_operators(surface& rs, compositing_operator secondRec
 		////	return move(imsfc);
 		////}, 
 		//	//move(maskSurface));
-		rs.mask(maskSurface);
+		ds.mask(maskSurface);
 	}
 	else {
-		rs.fill();
+		ds.fill();
 	}
 
-	rs.restore(); // Restore old clip
+	ds.restore(); // Restore old clip
 
 	if (strokePaths) {
-		rs.compositing_operator(compositing_operator::source);
-		rs.line_width(2.0);
+		ds.compositing_operator(compositing_operator::source);
+		ds.line_width(2.0);
 
-		rs.path(firstRectPath);
-		rs.brush(brush(solid_color_brush_factory(rgba_color::teal())));
-		rs.stroke();
+		ds.path(firstRectPath);
+		ds.brush(brush(solid_color_brush_factory(rgba_color::teal())));
+		ds.stroke();
 
-		rs.path(secondRectPath);
-		rs.brush(brush(solid_color_brush_factory(rgba_color::red())));
-		rs.stroke();
+		ds.path(secondRectPath);
+		ds.brush(brush(solid_color_brush_factory(rgba_color::red())));
+		ds.stroke();
 
 		if (clipToTriangle) {
-			rs.path(triangleClipPath);
-			rs.brush(brush(solid_color_brush_factory(rgba_color::yellow())));
-			rs.stroke();
+			ds.path(triangleClipPath);
+			ds.brush(brush(solid_color_brush_factory(rgba_color::yellow())));
+			ds.stroke();
 		}
 	}
 
-	rs.restore();
+	ds.restore();
 }
 
-void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMilliseconds) {
+void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeInMilliseconds) {
 	static double timer = 0.0;
 	const double power = 3.0;
 	const double lerpTime = 1250.0;
@@ -644,20 +746,20 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	const static auto vec = init_sort_steps(elementCount);
 	const auto phaseCount = vec.size();
 	const size_t x = ::std::min(static_cast<size_t>(timer / phaseTime), ::std::max(static_cast<size_t>(phaseCount - 1U), static_cast<size_t>(0U)));
-	rs.paint(rgba_color::cornflower_blue()); // Paint background.
+	ds.paint(rgba_color::cornflower_blue()); // Paint background.
 
-	rs.immediate().clear();
-	rs.immediate().arc({ 100.0, 100.0 }, 50.0, 0.0, half_pi<double>());
-	auto initLineWidth = rs.line_width();
-	rs.line_width(8.0);
-	rs.stroke_immediate(rgba_color::black());
-	rs.immediate().clear();
-	rs.immediate().arc_negative({ 300.0, 100.0 }, 50.0, 0.0, half_pi<double>());
-	rs.stroke_immediate(rgba_color::brown());
-	rs.immediate().clear();
-	rs.line_width(initLineWidth);
+	ds.immediate().clear();
+	ds.immediate().arc({ 100.0, 100.0 }, 50.0, 0.0, half_pi<double>());
+	auto initLineWidth = ds.line_width();
+	ds.line_width(8.0);
+	ds.stroke_immediate(rgba_color::black());
+	ds.immediate().clear();
+	ds.immediate().arc_negative({ 300.0, 100.0 }, 50.0, 0.0, half_pi<double>());
+	ds.stroke_immediate(rgba_color::brown());
+	ds.immediate().clear();
+	ds.line_width(initLineWidth);
 
-	auto clextents = rs.clip_extents();
+	auto clextents = ds.clip_extents();
 	const double radius = trunc(min(clextents.width() * 0.8 / elementCount, clextents.height() + 120.0) / 2.0);
 	const double beginX = trunc(clextents.width() * 0.1);
 	const double y = trunc(clextents.height() * 0.5);
@@ -675,16 +777,16 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	linearTest1.add_color_stop(0.8, rgba_color::green());
 	linearTest1.add_color_stop(0.8, rgba_color::yellow());
 	linearTest1.add_color_stop(1.0, rgba_color::white());
-	rs.immediate().rectangle({ 400.0, 400.0, 200.0, 200.0 });
-	rs.fill_immediate(brush(linearTest1));
+	ds.immediate().rectangle({ 400.0, 400.0, 200.0, 200.0 });
+	ds.fill_immediate(brush(linearTest1));
 
-	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
-	rs.font_size(40.0);
+	ds.font_face("Segoe UI", font_slant::normal, font_weight::normal);
+	ds.font_size(40.0);
 	auto str = string("Phase ").append(to_string(x + 1));
-	rs.render_text(str, { beginX, 50.0 }, rgba_color::white());
+	ds.render_text(str, { beginX, 50.0 }, rgba_color::white());
 
 	for (size_t i = 0; i < elementCount; ++i) {
-		rs.immediate().clear();
+		ds.immediate().clear();
 		const auto currVal = vec[x][i];
 		if (x < phaseCount - 1) {
 			const auto i2 = find(begin(vec[x + 1]), end(vec[x + 1]), currVal) - begin(vec[x + 1]);
@@ -692,35 +794,35 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 				* (i % 2 == 1 ? 1.0 : -1.0));
 			const auto center = vector_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
-			rs.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
-			rs.immediate().change_origin(center);
-			rs.immediate().arc_negative(center, radius - 3.0, half_pi<double>(), -half_pi<double>());
+			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+			ds.immediate().change_origin(center);
+			ds.immediate().arc_negative(center, radius - 3.0, half_pi<double>(), -half_pi<double>());
 		}
 		else {
 			const vector_2d center{ radius * i * 2.0 + radius + beginX, y };
-			rs.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0));
-			rs.immediate().change_origin(center);
-			rs.immediate().arc_negative(center, radius - 3.0, half_pi<double>(), -half_pi<double>());
+			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0));
+			ds.immediate().change_origin(center);
+			ds.immediate().arc_negative(center, radius - 3.0, half_pi<double>(), -half_pi<double>());
 		}
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
-		rs.fill_immediate({ greyColor, greyColor, greyColor, 1.0 });
+		ds.fill_immediate({ greyColor, greyColor, greyColor, 1.0 });
 	}
 
-	rs.immediate().clear();
-	rs.immediate().change_origin({ 250.0, 450.0 });
-	rs.immediate().change_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 2.5 }));
-	rs.immediate().rectangle({ 200.0, 400.0, 100.0, 100.0 });
-	rs.line_width(3.0);
-	rs.stroke_immediate(rgba_color::red());
+	ds.immediate().clear();
+	ds.immediate().change_origin({ 250.0, 450.0 });
+	ds.immediate().change_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 2.5 }));
+	ds.immediate().rectangle({ 200.0, 400.0, 100.0, 100.0 });
+	ds.line_width(3.0);
+	ds.stroke_immediate(rgba_color::red());
 	//auto radialFactory = radial_brush_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
 	//radialFactory.add_color_stop(0.0, rgba_color::black());
 	//radialFactory.add_color_stop(0.25, rgba_color::red());
 	//radialFactory.add_color_stop(0.5, rgba_color::green());
 	//radialFactory.add_color_stop(0.75, rgba_color::blue());
 	//radialFactory.add_color_stop(1.0, rgba_color::white());
-	//auto radialBrush = rs.create_brush(radialFactory);
+	//auto radialBrush = ds.create_brush(radialFactory);
 	//radialBrush.extend(extend::reflect);
-	//rs.fill_immediate(radialBrush);
+	//ds.fill_immediate(radialBrush);
 
 	//auto meshFactory = mesh_brush_factory();
 	//meshFactory.begin_patch();
@@ -744,7 +846,7 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	//meshFactory.end_patch();
 	//auto meshBrush = brush(meshFactory);
 	//meshBrush.matrix(matrix_2d::init_translate({ -200.0, -400.0 }));
-	//rs.fill_immediate(meshBrush);
+	//ds.fill_immediate(meshBrush);
 
 	auto imgSfc = image_surface(format::argb32, 40, 40);
 	imgSfc.immediate().move_to({ 0.0, 0.0 });
@@ -757,48 +859,48 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	auto sfcFactory = surface_brush_factory(imgSfc);
 	auto sfcBrush = brush(sfcFactory);
 	sfcBrush.extend(extend::repeat);
-	rs.immediate().clear();
-	rs.immediate().rectangle({ 500.0, 450.0, 100.0, 100.0 });
-	rs.immediate().rectangle({ 525.0, 425.0, 50.0, 150.0 });
-	rs.line_join(line_join::miter_or_bevel);
-	rs.miter_limit(1.0);
-	rs.line_width(10.0);
-	rs.stroke_immediate(rgba_color::red());
-	rs.fill_immediate(sfcBrush);
+	ds.immediate().clear();
+	ds.immediate().rectangle({ 500.0, 450.0, 100.0, 100.0 });
+	ds.immediate().rectangle({ 525.0, 425.0, 50.0, 150.0 });
+	ds.line_join(line_join::miter_or_bevel);
+	ds.miter_limit(1.0);
+	ds.line_width(10.0);
+	ds.stroke_immediate(rgba_color::red());
+	ds.fill_immediate(sfcBrush);
 
 	auto linearFactory = linear_brush_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
 	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
 	linearFactory.add_color_stop(1.0, rgba_color::salmon());
 	auto linearBrush = brush(linearFactory);
 	linearBrush.extend(extend::repeat);
-	rs.immediate().clear();
-	rs.immediate().move_to({ 650.0, 400.0 });
-	rs.immediate().rel_line_to({ 0.0, 100.0 });
-	rs.immediate().rel_line_to({ 10.0, -100.0 });
-	rs.line_join(line_join::miter);
-	rs.stroke_immediate(rgba_color::red());
-	rs.fill_immediate(linearBrush);
+	ds.immediate().clear();
+	ds.immediate().move_to({ 650.0, 400.0 });
+	ds.immediate().rel_line_to({ 0.0, 100.0 });
+	ds.immediate().rel_line_to({ 10.0, -100.0 });
+	ds.line_join(line_join::miter);
+	ds.stroke_immediate(rgba_color::red());
+	ds.fill_immediate(linearBrush);
 
-	rs.immediate().clear();
-	rs.immediate().move_to({ 430.0, 60.0 });
-	rs.immediate().arc({ 500.0, 60.0 }, 30.0, pi<double>(), two_pi<double>());
-	rs.immediate().line_to({ 570.0, 60.0 });
-	//	rs.immediate().new_sub_path();
-	rs.immediate().arc({ 500.0, 130.0 }, 30.0, two_pi<double>(), pi<double>() * 3.0 / 4.0);
-	rs.immediate().new_sub_path();
-	rs.dashes(dashes{ { 0.0, 10.0 }, 0.0 });
-	rs.line_width(5.0);
-	rs.line_cap(line_cap::round);
-	rs.fill_immediate(rgba_color::blue());
-	rs.stroke_immediate(rgba_color::orange());
+	ds.immediate().clear();
+	ds.immediate().move_to({ 430.0, 60.0 });
+	ds.immediate().arc({ 500.0, 60.0 }, 30.0, pi<double>(), two_pi<double>());
+	ds.immediate().line_to({ 570.0, 60.0 });
+	//	ds.immediate().new_sub_path();
+	ds.immediate().arc({ 500.0, 130.0 }, 30.0, two_pi<double>(), pi<double>() * 3.0 / 4.0);
+	ds.immediate().new_sub_path();
+	ds.dashes(dashes{ { 0.0, 10.0 }, 0.0 });
+	ds.line_width(5.0);
+	ds.line_cap(line_cap::round);
+	ds.fill_immediate(rgba_color::blue());
+	ds.stroke_immediate(rgba_color::orange());
 	// Reset dashes to be a solid line.
-	rs.dashes(nullopt);
-	rs.line_cap(line_cap::butt);
+	ds.dashes(nullopt);
+	ds.line_cap(line_cap::butt);
 
-	rs.immediate().clear();
-	rs.immediate().curve_to({ 610.0, 400.0 }, { 660.0, 300.0 }, { 710.0, 400.0 });
-	rs.immediate().close_path();
-	rs.stroke_immediate(rgba_color::yellow_green());
+	ds.immediate().clear();
+	ds.immediate().curve_to({ 610.0, 400.0 }, { 660.0, 300.0 }, { 710.0, 400.0 });
+	ds.immediate().close_path();
+	ds.stroke_immediate(rgba_color::yellow_green());
 
 	//auto radialFactory = radial_brush_factory({ 115.2, 102.4 }, 25.6, { 102.4, 102.4 }, 128.0);
 	//radialFactory.add_color_stop(0.0, rgba_color::white());
@@ -808,15 +910,15 @@ void draw_sort_visualization_immediate(surface& rs, double elapsedTimeInMillisec
 	//radialFactory.add_color_stop(1.0, rgba_color::black());
 	//auto radialBrush = brush(radialFactory);
 	//radialBrush.extend(extend::pad);
-	//rs.immediate().clear();
-	////rs.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * pi);
-	//rs.immediate().rectangle({ 0.0, 0.0, 250.0, 250.0 });
-	//rs.fill_immediate(radialBrush);
+	//ds.immediate().clear();
+	////ds.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * pi);
+	//ds.immediate().rectangle({ 0.0, 0.0, 250.0, 250.0 });
+	//ds.fill_immediate(radialBrush);
 
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }
 
-void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
+void draw_sort_visualization(display_surface& ds, double elapsedTimeInMilliseconds) {
 	static double timer = 0.0;
 	const double power = 3.0;
 	const double lerpTime = 1250.0;
@@ -830,19 +932,19 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	assert(phaseCount > 0);
 	const size_t x = min(static_cast<size_t>(timer / phaseTime), max(static_cast<size_t>(phaseCount - 1U), static_cast<size_t>(0U)));
 	auto cornflowerBlueBrush = brush(solid_color_brush_factory(rgba_color::cornflower_blue()));
-	rs.brush(cornflowerBlueBrush);
-	rs.paint(); // Paint background.
+	ds.brush(cornflowerBlueBrush);
+	ds.paint(); // Paint background.
 
-	auto clextents = rs.clip_extents();
+	auto clextents = ds.clip_extents();
 	const double radius = trunc(min(clextents.width() * 0.8 / elementCount, clextents.height() + 120.0) / 2.0);
 	const double beginX = trunc(clextents.width() * 0.1);
 	const double y = trunc(clextents.height() * 0.5);
 
 	auto whiteBrush = brush(solid_color_brush_factory(rgba_color::white()));
-	rs.brush(whiteBrush);
-	rs.font_face("Segoe UI", font_slant::normal, font_weight::normal);
-	rs.font_size(40.0);
-	rs.render_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 });
+	ds.brush(whiteBrush);
+	ds.font_face("Segoe UI", font_slant::normal, font_weight::normal);
+	ds.font_size(40.0);
+	ds.render_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 });
 
 	path_factory pf;
 
@@ -865,22 +967,22 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 			pf.change_origin(center);
 			pf.arc_negative(center, radius - 3.0, half_pi<double>(), -half_pi<double>());
 		}
-		rs.path(path(pf));
+		ds.path(path(pf));
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
 		auto greyBrush = brush(solid_color_brush_factory({ greyColor, greyColor, greyColor, 1.0 }));
-		rs.brush(greyBrush);
-		rs.fill();
+		ds.brush(greyBrush);
+		ds.fill();
 	}
 
 	pf.clear();
 	pf.change_origin({ 250.0, 450.0 });
 	pf.change_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 	pf.rectangle({ 200.0, 400.0, 100.0, 100.0 });
-	rs.path(path(pf));
+	ds.path(path(pf));
 	auto redBrush = brush(solid_color_brush_factory(rgba_color::red()));
-	rs.brush(redBrush);
-	rs.line_width(3.0);
-	rs.stroke();
+	ds.brush(redBrush);
+	ds.line_width(3.0);
+	ds.stroke();
 	auto radialFactory = radial_brush_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
 	radialFactory.add_color_stop(0.0, rgba_color::black());
 	radialFactory.add_color_stop(0.25, rgba_color::red());
@@ -889,8 +991,8 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	radialFactory.add_color_stop(1.0, rgba_color::white());
 	auto radialBrush = brush(radialFactory);
 	radialBrush.extend(extend::reflect);
-	rs.brush(radialBrush);
-	rs.fill();
+	ds.brush(radialBrush);
+	ds.fill();
 
 	auto linearFactory = linear_brush_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
 	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
@@ -900,25 +1002,25 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.clear();
 	pf.rectangle({ 500.0, 450.0, 100.0, 100.0 });
 	pf.rectangle({ 525.0, 425.0, 50.0, 150.0 });
-	rs.line_join(line_join::miter_or_bevel);
-	rs.miter_limit(1.0);
-	rs.line_width(10.0);
-	rs.path(path(pf));
-	rs.brush(redBrush);
-	rs.stroke();
-	rs.brush(linearBrush);
-	rs.fill();
+	ds.line_join(line_join::miter_or_bevel);
+	ds.miter_limit(1.0);
+	ds.line_width(10.0);
+	ds.path(path(pf));
+	ds.brush(redBrush);
+	ds.stroke();
+	ds.brush(linearBrush);
+	ds.fill();
 
 	pf.clear();
 	pf.move_to({ 650.0, 400.0 });
 	pf.rel_line_to({ 0.0, 100.0 });
 	pf.rel_line_to({ 10.0, -100.0 });
-	rs.line_join(line_join::miter);
-	rs.path(path(pf));
-	rs.brush(redBrush);
-	rs.stroke();
-	rs.brush(linearBrush);
-	rs.fill();
+	ds.line_join(line_join::miter);
+	ds.path(path(pf));
+	ds.brush(redBrush);
+	ds.stroke();
+	ds.brush(linearBrush);
+	ds.fill();
 
 	pf.clear();
 	pf.move_to({ 430.0, 60.0 });
@@ -927,10 +1029,10 @@ void draw_sort_visualization(surface& rs, double elapsedTimeInMilliseconds) {
 	pf.new_sub_path();
 	pf.arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi<double>() * 3.0 / 4.0);
 	pf.new_sub_path();
-	rs.path(path(pf));
-	rs.line_width(2.0);
-	rs.brush(redBrush);
-	rs.stroke();
+	ds.path(path(pf));
+	ds.line_width(2.0);
+	ds.brush(redBrush);
+	ds.stroke();
 
 	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0 : timer + elapsedTimeInMilliseconds;
 }
