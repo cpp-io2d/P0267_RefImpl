@@ -28,7 +28,7 @@ target_include_directories(pixman PRIVATE
 )
 
 option(USE_SSE2 "use SSE2 compiler intrinsics" ON)
-if (USE_SSE2)
+if (USE_SSE2 AND CMAKE_COMPILER_IS_GNU_C)
     list(APPEND PIXMAN_SRC pixman/pixman-sse2.c)
     target_compile_definitions(pixman PRIVATE USE_SSE2)
 endif()
