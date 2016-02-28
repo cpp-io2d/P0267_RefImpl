@@ -24,7 +24,8 @@ in the `/pixman/COPYING` file. For more information about the pixman library,
 please see [pixman.org](http://www.pixman.org/) or [cgit.freedesktop.org/pixman/](http://cgit.freedesktop.org/pixman/).
 
 
-```The MIT License (MIT)
+```
+The MIT License (MIT)
 
 Copyright (c) 2014 Michael B. McLaughlin
 
