@@ -668,10 +668,6 @@ void surface::paint(const ::std::experimental::io2d::brush& b) {
 	paint();
 }
 
-void surface::paint(const surface& s, const vector_2d& origin, extend e, filter f) {
-	paint(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
 void surface::paint(const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
@@ -704,10 +700,6 @@ void surface::paint(const ::std::experimental::io2d::brush& b, double alpha) {
 	paint(alpha);
 }
 
-void surface::paint(const surface& s, double alpha, const vector_2d& origin, extend e, filter f) {
-	paint(s, alpha, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
 void surface::paint(const surface& s, double alpha, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
@@ -738,10 +730,6 @@ void surface::fill(const rgba_color& c) {
 void surface::fill(const ::std::experimental::io2d::brush& b) {
 	brush(b);
 	fill();
-}
-
-void surface::fill(const surface& s, const vector_2d& origin, extend e, filter f) {
-	fill(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
 void surface::fill(const surface& s, const matrix_2d& m, extend e, filter f) {
@@ -779,10 +767,6 @@ void surface::fill_immediate(const ::std::experimental::io2d::brush& b) {
 	fill_immediate();
 }
 
-void surface::fill_immediate(const surface& s, const vector_2d& origin, extend e, filter f) {
-	fill_immediate(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
 void surface::fill_immediate(const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
 	path(experimental::io2d::path(_Immediate_path));
@@ -816,10 +800,6 @@ void surface::stroke(const rgba_color& c) {
 void surface::stroke(const ::std::experimental::io2d::brush& b) {
 	brush(b);
 	stroke();
-}
-
-void surface::stroke(const surface& s, const vector_2d& origin, extend e, filter f) {
-	stroke(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
 void surface::stroke(const surface& s, const matrix_2d& m, extend e, filter f) {
@@ -857,10 +837,6 @@ void surface::stroke_immediate(const ::std::experimental::io2d::brush& b) {
 	stroke_immediate();
 }
 
-void surface::stroke_immediate(const surface& s, const vector_2d& origin, extend e, filter f) {
-	stroke_immediate(s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
 void surface::stroke_immediate(const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
 	path(experimental::io2d::path(_Immediate_path));
@@ -896,10 +872,6 @@ void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const ::st
 	mask(maskBrush);
 }
 
-void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const vector_2d& origin, extend e, filter f) {
-	mask(maskBrush, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
 void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e, filter f) {
 	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
 	auto pat = cairo_get_source(_Context.get());
@@ -911,76 +883,60 @@ void surface::mask(const ::std::experimental::io2d::brush& maskBrush, const surf
 	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
-void surface::mask(const surface& maskSurface) {
+void surface::mask(surface& maskSurface, const matrix_2d& maskMatrix, extend maskExtend, filter maskFilter) {
 	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
 	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
 	cairo_matrix_t cPttnMatrix;
 	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
 	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
 	cairo_set_source(_Context.get(), _Brush.native_handle());
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
+
+	surface_brush_factory sbf(maskSurface);
+	experimental::io2d::brush maskBrush(sbf);
+	maskBrush.matrix(maskMatrix);
+	maskBrush.extend(maskExtend);
+	maskBrush.filter(maskFilter);
+
+	mask(maskBrush);
 }
 
-void surface::mask(const surface& maskSurface, const rgba_color& c) {
-	solid_color_brush_factory factory(c);
-	brush(experimental::io2d::brush(factory));
-	mask(maskSurface);
+void surface::mask(surface& maskSurface, const rgba_color& c, const matrix_2d& maskMatrix, extend maskExtend, filter maskFilter) {
+	surface_brush_factory sbf(maskSurface);
+	experimental::io2d::brush maskBrush(sbf);
+	maskBrush.matrix(maskMatrix);
+	maskBrush.extend(maskExtend);
+	maskBrush.filter(maskFilter);
+
+	mask(maskBrush);
+	mask(maskBrush, c);
 }
 
-void surface::mask(const surface& maskSurface, const ::std::experimental::io2d::brush& b) {
-	brush(b);
-	mask(maskSurface);
+void surface::mask(surface& maskSurface, const ::std::experimental::io2d::brush& b, const matrix_2d& maskMatrix, extend maskExtend, filter maskFilter) {
+	surface_brush_factory sbf(maskSurface);
+	experimental::io2d::brush maskBrush(sbf);
+	maskBrush.matrix(maskMatrix);
+	maskBrush.extend(maskExtend);
+	maskBrush.filter(maskFilter);
+
+	mask(maskBrush, b);
 }
 
-void surface::mask(const surface& maskSurface, const surface& s, const vector_2d& origin, extend e, filter f) {
-	mask(maskSurface, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
+void surface::mask(surface& maskSurface, const surface& s, const matrix_2d& maskMatrix, const matrix_2d& m, extend maskExtend, extend e, filter maskFilter, filter f) {
+	//cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	//auto pat = cairo_get_source(_Context.get());
+	//cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	//cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	//cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	//cairo_pattern_set_matrix(pat, &cmat);
+	//cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
+	//cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
+	surface_brush_factory sbf(maskSurface);
+	experimental::io2d::brush maskBrush(sbf);
+	maskBrush.matrix(maskMatrix);
+	maskBrush.extend(maskExtend);
+	maskBrush.filter(maskFilter);
 
-void surface::mask(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e, filter f) {
-	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	auto pat = cairo_get_source(_Context.get());
-	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
-	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
-	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-	cairo_pattern_set_matrix(pat, &cmat);
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
-	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
-}
-
-void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin) {
-	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
-	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
-	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
-	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Brush.native_handle());
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
-}
-
-void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c) {
-	solid_color_brush_factory factory(c);
-	brush(experimental::io2d::brush(factory));
-	mask(maskSurface, maskOrigin);
-}
-
-void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b) {
-	brush(b);
-	mask(maskSurface, maskOrigin);
-}
-
-void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const vector_2d& origin, extend e, filter f) {
-	mask(maskSurface, maskOrigin, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
-void surface::mask(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, extend e, filter f) {
-	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	auto pat = cairo_get_source(_Context.get());
-	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
-	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
-	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-	cairo_pattern_set_matrix(pat, &cmat);
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
-	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
+	mask(maskBrush, s, m, e, f);
 }
 
 void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush) {
@@ -1013,10 +969,6 @@ void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, 
 	mask_immediate(maskBrush);
 }
 
-void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const vector_2d& origin, extend e, filter f) {
-	mask_immediate(maskBrush, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
 void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m, extend e, filter f) {
 	auto currPath = _Current_path;
 	path(experimental::io2d::path(_Immediate_path));
@@ -1037,86 +989,64 @@ void surface::mask_immediate(const ::std::experimental::io2d::brush& maskBrush, 
 	path(currPath);
 }
 
-void surface::mask_immediate(const surface& maskSurface) {
-	auto currPath = _Current_path;
-	path(experimental::io2d::path(_Immediate_path));
-	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
-	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
-	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
-	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Brush.native_handle());
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
-	path(currPath);
+void surface::mask_immediate(surface& maskSurface, const matrix_2d& maskMatrix, extend maskExtend, filter maskFilter) {
+	//auto currPath = _Current_path;
+	//path(experimental::io2d::path(_Immediate_path));
+	//cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	//cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
+	//cairo_matrix_t cPttnMatrix;
+	//cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	//cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	//cairo_set_source(_Context.get(), _Brush.native_handle());
+	//cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
+	//path(currPath);
+	surface_brush_factory sbf(maskSurface);
+	experimental::io2d::brush maskBrush(sbf);
+	maskBrush.matrix(maskMatrix);
+	maskBrush.extend(maskExtend);
+	maskBrush.filter(maskFilter);
+
+	mask_immediate(maskBrush);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const rgba_color& c) {
-	solid_color_brush_factory factory(c);
-	brush(experimental::io2d::brush(factory));
-	mask_immediate(maskSurface);
+void surface::mask_immediate(surface& maskSurface, const rgba_color& c, const matrix_2d& maskMatrix, extend maskExtend, filter maskFilter) {
+	surface_brush_factory sbf(maskSurface);
+	experimental::io2d::brush maskBrush(sbf);
+	maskBrush.matrix(maskMatrix);
+	maskBrush.extend(maskExtend);
+	maskBrush.filter(maskFilter);
+
+	mask_immediate(maskBrush, c);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const ::std::experimental::io2d::brush& b) {
-	brush(b);
-	mask_immediate(maskSurface);
+void surface::mask_immediate(surface& maskSurface, const ::std::experimental::io2d::brush& b, const matrix_2d& maskMatrix, extend maskExtend, filter maskFilter) {
+	surface_brush_factory sbf(maskSurface);
+	experimental::io2d::brush maskBrush(sbf);
+	maskBrush.matrix(maskMatrix);
+	maskBrush.extend(maskExtend);
+	maskBrush.filter(maskFilter);
+
+	mask_immediate(maskBrush, b);
 }
 
-void surface::mask_immediate(const surface& maskSurface, const surface& s, const vector_2d& origin, extend e, filter f) {
-	mask_immediate(maskSurface, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
+void surface::mask_immediate(surface& maskSurface, const surface& s, const matrix_2d& maskMatrix, const matrix_2d& m, extend maskExtend, extend e, filter maskFilter, filter f) {
+	//auto currPath = _Current_path;
+	//path(experimental::io2d::path(_Immediate_path));
+	//cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	//auto pat = cairo_get_source(_Context.get());
+	//cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	//cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	//cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	//cairo_pattern_set_matrix(pat, &cmat);
+	//cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
+	//cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
+	surface_brush_factory sbf(maskSurface);
+	experimental::io2d::brush maskBrush(sbf);
+	maskBrush.matrix(maskMatrix);
+	maskBrush.extend(maskExtend);
+	maskBrush.filter(maskFilter);
 
-void surface::mask_immediate(const surface& maskSurface, const surface& s, const matrix_2d& m, extend e, filter f) {
-	auto currPath = _Current_path;
-	path(experimental::io2d::path(_Immediate_path));
-	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	auto pat = cairo_get_source(_Context.get());
-	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
-	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
-	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-	cairo_pattern_set_matrix(pat, &cmat);
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, 0.0, 0.0);
-	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
-}
-
-void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin) {
-	auto currPath = _Current_path;
-	path(experimental::io2d::path(_Immediate_path));
-	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
-	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
-	cairo_matrix_t cPttnMatrix;
-	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
-	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
-	cairo_set_source(_Context.get(), _Brush.native_handle());
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
-	path(currPath);
-}
-
-void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const rgba_color& c) {
-	solid_color_brush_factory factory(c);
-	brush(experimental::io2d::brush(factory));
-	mask_immediate(maskSurface, maskOrigin);
-}
-
-void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const ::std::experimental::io2d::brush& b) {
-	brush(b);
-	mask_immediate(maskSurface, maskOrigin);
-}
-
-void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const vector_2d& origin, extend e, filter f) {
-	mask_immediate(maskSurface, maskOrigin, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
-}
-
-void surface::mask_immediate(const surface& maskSurface, const vector_2d& maskOrigin, const surface& s, const matrix_2d& m, extend e, filter f) {
-	auto currPath = _Current_path;
-	path(experimental::io2d::path(_Immediate_path));
-	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
-	auto pat = cairo_get_source(_Context.get());
-	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
-	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
-	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-	cairo_pattern_set_matrix(pat, &cmat);
-	cairo_mask_surface(_Context.get(), maskSurface.native_handle().csfce, maskOrigin.x(), maskOrigin.y());
-	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
+	mask_immediate(maskBrush, s, m, e, f);
 }
 
 vector_2d surface::render_text(const string& utf8, const vector_2d& position) {
@@ -1144,10 +1074,6 @@ vector_2d surface::render_text(const string& utf8, const vector_2d& position, co
 vector_2d surface::render_text(const string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b) {
 	brush(b);
 	return render_text(utf8, position);
-}
-
-vector_2d surface::render_text(const string& utf8, const vector_2d& position, const surface& s, const vector_2d& origin, extend e, filter f) {
-	return render_text(utf8, position, s, matrix_2d{ 1.0, 0.0, 0.0, 1.0, origin.x(), origin.y() }, e, f);
 }
 
 vector_2d surface::render_text(const string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m, extend e, filter f) {

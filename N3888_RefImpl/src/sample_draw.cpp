@@ -87,7 +87,7 @@ void test_clip_transformation(display_surface& ds) {
 	//ds.matrix(matrix_2d::init_translate({ 0.0, 0.0 }));
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ 0.0, 0.0, 500.0, 500.0 });
-	ds.paint(imgSfc, matrix_2d::init_identity());
+	ds.paint(imgSfc);
 
 	ds.restore();
 }
@@ -120,11 +120,11 @@ void test_mask(display_surface& ds) {
 	imgSfc.fill_immediate(rgba_color::white());
 	//imgSfc.matrix(matrix_2d::init_translate({ -50.0, 50.0 }));
 	//imgSfc.matrix(matrix_2d::init_scale({ 0.5, 1.5 }));
-	surface_brush_factory sbf(imgSfc);
-	brush br(sbf);
-	br.matrix(matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double>() * 0.25));
-	br.filter(filter::nearest);
-	br.extend(extend::none);
+	//surface_brush_factory sbf(imgSfc);
+	//brush br(sbf);
+	//br.matrix(matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double>() * 0.25));
+	//br.filter(filter::nearest);
+	//br.extend(extend::none);
 
 	//radial_brush_factory rbf{ {250.0, 250.0}, 0.0, {250.0, 250.0}, 250.0 };
 	//rbf.add_color_stop(0.0, rgba_color::red());
@@ -140,7 +140,8 @@ void test_mask(display_surface& ds) {
 	ds.paint(rgba_color::red());
 	ds.immediate().rectangle({ 0.0, 0.0, static_cast<double>(ds.width()), static_cast<double>(ds.height())});
 	//ds.matrix(matrix_2d::init_scale({ 0.5, 1.5 }));
-	ds.mask_immediate(br, rgba_color::blue());
+	//ds.mask_immediate(br, rgba_color::blue());
+	ds.mask_immediate(imgSfc, rgba_color::blue(), matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double>() * 0.25));
 	//ds.fill_immediate(br);
 	ds.restore();
 }
@@ -335,10 +336,10 @@ void test_paint_surface_extend_modes(display_surface& ds, double elapsedTimeInMi
 	}
 	else {
 		if (totalElapsedTime < 3000.0) {
-			ds.paint(imgSfc, { 0.0, 0.0 }, extend::none);
+			ds.paint(imgSfc);
 		}
 		else {
-			ds.paint(imgSfc, { 0.0, 0.0 }, extend::repeat);
+			ds.paint(imgSfc, matrix_2d::init_identity(), extend::repeat);
 		}
 	}
 	totalElapsedTime += elapsedTimeInMilliseconds;
