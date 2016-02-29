@@ -1,4 +1,4 @@
-N4073 Reference Implementation
+P0267 Reference Implementation
 =============
 
 Please read the [LICENSE](https://github.com/mikebmcl/N3888_RefImpl/blob/master/LICENSE.md) before cloning or forking the code as there is important information there!
@@ -8,12 +8,12 @@ Please see the [wiki](https://github.com/mikebmcl/N3888_RefImpl/wiki) for links 
 Overview
 -------------
 
-This is a reference implementations of [N4073: A Proposal to Add 2D Rendering and Display to C++](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4073.pdf).
+This is a reference implementations of [P0267: A Proposal to Add 2D Rendering and Display to C++](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0267r0.pdf).
 
 Requirements
 -------------
 
-For Windows platforms, it currently requires Visual Studio 2013 (the free Express for Windows Desktop version should suffice) and Windows Vista or newer.
+For Windows platforms, it currently requires Visual Studio 2015 (the free Community edition should suffice) and Windows Vista or newer.
 
 For GNU/Linux platforms, it currently requires a non-ancient version of GNU autotools, cairo (>= 1.12.16), GTK+3.0 (>= 3.8.0), gmodule-2.0, gobject-2.0, and related libraries (autotools will tell you about any missing dependencies). By default it builds using GCC (>= 4.9.0), but you can configure it to use recent versions of Clang.
 
@@ -26,12 +26,12 @@ Feedback
 -------------
 If you have found a bug in the reference implementation or have a suggestion for improving N3888 please read the following. Note that any contributions must comply with the ISO patent and copyright policy, an overview of which is available in the ISO document [Participating in International Standardization](http://www.iso.org/iso/joining_in_2012.pdf).
 
-* If you want to suggest a change to N4073 please file an [issue](https://github.com/mikebmcl/N3888_RefImpl/issues) with the tag [enhancement](https://github.com/mikebmcl/N3888_RefImpl/issues?labels=enhancement&page=1&state=open). We will consider these for future revisions of N4073. Pull requests for suggested changes will not be accepted because this is a reference implementation.
+* If you want to suggest a change to P0267 please file an [issue](https://github.com/mikebmcl/N3888_RefImpl/issues) with the tag [enhancement](https://github.com/mikebmcl/N3888_RefImpl/issues?labels=enhancement&page=1&state=open). We will consider these for future revisions of N4073. Pull requests for suggested changes will not be accepted because this is a reference implementation.
 * If you have found a bug in the reference implementation, please file an issue with the tag [bug](https://github.com/mikebmcl/N3888_RefImpl/issues?labels=bug&page=1&state=open). Pull requests that fix bugs are welcome.
-* If you have found any sort of error in N4073 (be it a typo, an omission, a contradiction, or some other non-subjective problem), please file an issue with the tag [proposal-bug](https://github.com/mikebmcl/N3888_RefImpl/issues?labels=proposal-bug&page=1&state=open). We will do our best to address these in the next revision of N4073.
+* If you have found any sort of error in P0267 (be it a typo, an omission, a contradiction, or some other non-subjective problem), please file an issue with the tag [proposal-bug](https://github.com/mikebmcl/N3888_RefImpl/issues?labels=proposal-bug&page=1&state=open). We will do our best to address these in the next revision of N4073.
 * If you have created a reference implementation for another platform or tool-chain, please let us know. We welcome these types of pull requests provided that the implementation conforms to N4073 and the licensing terms are acceptable.
 
-Subsequent revisions to N4073 will be maintained in branches or in separate repositories, depending on which strategy seems appropriate at that time.
+Subsequent revisions to P0267 will be maintained in branches or in separate repositories, depending on which strategy seems appropriate at that time.
 
 Licenses and Contributions (Important!)
 -------------
