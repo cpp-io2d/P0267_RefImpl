@@ -1,41 +1,85 @@
-#include "signals.h"
 #include <cairo.h>
 #include <gtk/gtk.h>
-#include "N3888_RefImpl.ui.h"
 #include <assert.h>
 #include <stdexcept>
+#include <clocale>
 
-GtkBuilder* g_builder;
-GtkWidget* g_main_window;
-GtkWidget* g_drawingarea;
-GtkWidget* g_about_dialog;
-GtkWidget* g_screenshotcapture_filechooserdialog;
+#include "RefImplApp.h"
+#include "RefImplWindow.h"
 
-gboolean redraw_callback(gpointer user_data) {
-    gtk_widget_queue_draw(GTK_WIDGET(g_drawingarea));
-    return G_SOURCE_CONTINUE;
+using namespace std;
+
+static gboolean option_new_window;
+static gboolean option_quit;
+static gboolean option_version;
+
+static GOptionEntry options[] = {
+    { "new-window", 'n', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &option_new_window, "Opens a new N3888_RefImpl window", NULL },
+    { "version", 'v', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &option_version, "Display the version and exit", NULL },
+    { "quit", 'q', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &option_quit, "Quit any running N3888_RefImpl", NULL },
+    { NULL }
+};
+
+static void run_action (RefImplApp* application, gboolean isRemote) {
+    if (option_new_window) {
+	if (isRemote) {
+	    refimpl_app_new_window(application);
+	}
+    }
+    else {
+	if (option_quit) {
+	    refimpl_app_quit(application);
+	}
+	else {
+	    if (isRemote) {
+		refimpl_app_raise(application);
+	    }
+	}
+    }
+}
+
+static void activate_callback(GtkApplication* application) {
+    refimpl_app_new_window(REFIMPL_APP(application));
+
+    run_action(REFIMPL_APP(application), FALSE);
 }
 
 int main(int argc, char** argv) {
-    gtk_init(&argc, &argv);
+    RefImplApp* application;
+    GError* error = nullptr;
+    int retVal;
 
-    g_builder = gtk_builder_new();
+    setlocale(LC_ALL, "");
 
-    auto result = gtk_builder_add_from_string(g_builder, g_n3888_ui_as_string, -1, nullptr);
-    if (result == 0) {
-      throw ::std::runtime_error("Failed call to gtk_builder_add_from_string.");
+    if (!gtk_init_with_args(&argc, &argv, nullptr, options, nullptr, &error)) {
+	g_printerr("%s\n", error->message);
+	return EXIT_FAILURE;
     }
 
-    g_main_window = GTK_WIDGET(gtk_builder_get_object(g_builder, "window"));
-    assert(g_main_window != nullptr);
-    g_drawingarea = GTK_WIDGET(gtk_builder_get_object(g_builder, "drawingarea"));
-    assert(g_drawingarea != nullptr);
-    gtk_builder_connect_signals(g_builder, NULL);
-    g_timeout_add(1000/50, &redraw_callback, nullptr);
-    gtk_widget_show(g_main_window);
-    gtk_main();
-    
-    g_object_unref(G_OBJECT(g_builder));
+    if (option_version) {
+	g_print("%s\n", RefImplAppFullVersion);
+	return EXIT_SUCCESS;
+    }
 
-    return 0;
+    application = refimpl_app_new();
+    g_signal_connect(application, "activate", G_CALLBACK(activate_callback), nullptr);
+
+    g_application_set_default(G_APPLICATION(application));
+
+    if (!g_application_register (G_APPLICATION (application), nullptr, &error)) {
+	g_printerr("Couldn't register N3888_RefImpl instance: '%s'\n", error != nullptr ? error->message : "");
+	g_object_unref (application);
+	return EXIT_FAILURE;
+    }
+
+    if (g_application_get_is_remote (G_APPLICATION (application))) {
+	run_action(application, TRUE);
+	g_object_unref (application);
+	return EXIT_SUCCESS;
+    }
+
+    retVal = g_application_run (G_APPLICATION (application), argc, argv);
+    g_object_unref (application);
+
+    return retVal;
 }

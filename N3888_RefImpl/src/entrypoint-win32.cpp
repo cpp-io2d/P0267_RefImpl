@@ -11,7 +11,7 @@
 #include <atomic>
 #include <wrl.h>
 #include "throw_helpers.h"
-#include "drawing.h"
+#include "io2d.h"
 #include "Win32RenderWindow.h"
 #include "sample_draw.h"
 
@@ -22,7 +22,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 using namespace Microsoft::WRL;
 using namespace std;
 using namespace std::experimental;
-using namespace std::experimental::drawing;
+using namespace std::experimental::io2d;
 
 #define MAX_LOADSTRING 100
 
@@ -54,7 +54,6 @@ int WINAPI wWinMain(
 	LoadString(hInstance, IDC_N3888_REFIMPL, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
 
-
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_N3888_REFIMPL));
 
 	Win32RenderWindow window(800, 600, L"N3888_RefImpl Main Window");
@@ -76,7 +75,7 @@ int WINAPI wWinMain(
 			auto hdc = GetDC(window.GetHandle());
 			{
 				auto rs = make_surface({ cairo_win32_surface_create(hdc), nullptr });
-				const auto& sfce = *window.GetSurface();
+				auto& sfce = *window.GetSurface();
 				rs.paint(sfce);
 				rs.flush();
 			}
@@ -132,7 +131,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
 	wcex.hInstance = hInstance;
 	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_N3888_REFIMPL));
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);//(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = MAKEINTRESOURCE(IDC_N3888_REFIMPL);
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
