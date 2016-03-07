@@ -18,7 +18,7 @@ path_data_item& path_data_item::operator=(path_data_item&& other) noexcept {
 		_Type = move(other._Type);
 	}
 	return *this;
-};
+}
 
 path_data_item::path_data_item(const arc& value) noexcept
 	: _Has_data()
