@@ -2372,7 +2372,7 @@ namespace std {
 					bool has_surface() const noexcept;
 					const image_surface& surface() const;
 				};
-#if _Variable_templates_condition_support_test
+#if _Variable_templates_conditional_support_test
 				template <class T>
 				constexpr T pi = T(3.14159265358979323846264338327950288419716939937510L);
 
