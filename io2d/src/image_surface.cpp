@@ -66,41 +66,8 @@ image_surface::image_surface(vector<unsigned char>& data, experimental::io2d::fo
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	_Ensure_state();
 }
-
-//image_surface::image_surface(const surface& other, experimental::io2d::format fmt, int width, int height)
-//	: surface({ nullptr, nullptr }, fmt, _Content_for_format(fmt)) {
-//	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_surface_create_similar_image(other.native_handle().csfce, _Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy);
-//	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-//	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-//	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
-//	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
-//}
-//
-//image_surface::image_surface(const surface& other, experimental::io2d::format fmt, int width, int height, error_code& ec)  noexcept
-//	: surface({ nullptr, nullptr }, fmt, _Content_for_format(fmt), ec) {
-//	if (static_cast<bool>(ec)) {
-//		_Surface = nullptr;
-//		_Context = nullptr;
-//		return;
-//	}
-//	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_surface_create_similar_image(other.native_handle().csfce, _Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy);
-//	ec = _Cairo_status_t_to_std_error_code(cairo_surface_status(_Surface.get()));
-//	if (static_cast<bool>(ec)) {
-//		_Surface = nullptr;
-//		_Context = nullptr;
-//		return;
-//	}
-//	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-//	ec = _Cairo_status_t_to_std_error_code(cairo_status(_Context.get()));
-//	if (static_cast<bool>(ec)) {
-//		_Surface = nullptr;
-//		_Context = nullptr;
-//		return;
-//	}
-//	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
-//	ec.clear();
-//}
 
 image_surface::~image_surface() {
 }

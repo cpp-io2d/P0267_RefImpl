@@ -6,6 +6,10 @@ using namespace std;
 using namespace std::experimental;
 using namespace std::experimental::io2d;
 
+namespace {
+	const vector_2d _Font_default_size{ 16.0, 16.0 };
+}
+
 void surface::_Ensure_state() {
 	if (_Surface == nullptr || _Context == nullptr) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
@@ -101,13 +105,14 @@ surface::surface(format fmt, int width, int height)
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
 	, _Font_face()
-	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
+	, _Font_matrix(matrix_2d::init_scale(_Font_default_size))
 	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 	_Throw_if_failed_cairo_status_t(cairo_font_options_status(_Native_font_options.get()));
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.native_handle()));
+	_Ensure_state();
 }
 
 surface::native_handle_type surface::native_handle() const {
@@ -187,12 +192,13 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	, _Immediate_path()
 	, _Transform_matrix()
 	, _Font_face()
-	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
+	, _Font_matrix(matrix_2d::init_scale(_Font_default_size))
 	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 	if (nh.csfce != nullptr) {
 		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 		_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+		_Ensure_state();
 	}
 	_Throw_if_failed_cairo_status_t(cairo_font_options_status(_Native_font_options.get()));
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.native_handle()));
@@ -220,7 +226,7 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
 	, _Font_face()
-	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
+	, _Font_matrix(matrix_2d::init_scale(_Font_default_size))
 	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 	if (nh.csfce != nullptr) {
@@ -257,6 +263,12 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	if (_Context.get() != nullptr) {
 		cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 	}
+	_Ensure_state(ec);
+	if (static_cast<bool>(ec)) {
+		_Surface = nullptr;
+		_Context = nullptr;
+		return;
+	}
 	ec.clear();
 }
 
@@ -279,13 +291,14 @@ surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, 
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
 	, _Font_face()
-	, _Font_matrix(matrix_2d::init_scale({ 10.0, 10.0 }))
+	, _Font_matrix(matrix_2d::init_scale(_Font_default_size))
 	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
 	, _Saved_state() {
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 	_Throw_if_failed_cairo_status_t(cairo_font_options_status(_Native_font_options.get()));
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.native_handle()));
+	_Ensure_state();
 }
 
 surface::~surface() {
