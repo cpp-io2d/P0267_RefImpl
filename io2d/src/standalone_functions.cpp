@@ -159,12 +159,20 @@ namespace std {
 				vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, bool arcNegative, bool hasCurrentPoint, const vector_2d& /*currentPoint*/, const vector_2d& origin, const matrix_2d& matrix) {
 					if (arcNegative) {
 						while (angle2 > angle1) {
+#if _Variable_templates_conditional_support_test
+							angle2 -= two_pi<double>;
+#else
 							angle2 -= two_pi<double>();
+#endif
 						}
 					}
 					else {
 						while (angle2 < angle1) {
+#if _Variable_templates_conditional_support_test
+							angle2 += two_pi<double>;
+#else
 							angle2 += two_pi<double>();
+#endif
 						}
 					}
 					vector_2d pt0, pt1, pt2, pt3;
@@ -181,10 +189,17 @@ namespace std {
 					{
 						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
 
+#if _Variable_templates_conditional_support_test
+						while (theta >= half_pi<double>) {
+							theta /= 2.0;
+							bezierCount += bezierCount;
+						}
+#else
 						while (theta >= half_pi<double>()) {
 							theta /= 2.0;
 							bezierCount += bezierCount;
 						}
+#endif
 
 						phi = theta / 2.0;
 
@@ -261,12 +276,20 @@ namespace std {
 				vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec, bool arcNegative, bool hasCurrentPoint, const vector_2d& /*currentPoint*/, const vector_2d& origin, const matrix_2d& matrix) noexcept {
 					if (arcNegative) {
 						while (angle2 > angle1) {
+#if _Variable_templates_conditional_support_test
+							angle2 -= two_pi<double>;
+#else
 							angle2 -= two_pi<double>();
+#endif
 						}
 					}
 					else {
 						while (angle2 < angle1) {
+#if _Variable_templates_conditional_support_test
+							angle2 += two_pi<double>;
+#else
 							angle2 += two_pi<double>();
+#endif
 						}
 					}
 					vector_2d pt0, pt1, pt2, pt3;
@@ -283,10 +306,17 @@ namespace std {
 					{
 						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
 
+#if _Variable_templates_conditional_support_test
+						while (theta >= half_pi<double>) {
+							theta /= 2.0;
+							bezierCount += bezierCount;
+						}
+#else
 						while (theta >= half_pi<double>()) {
 							theta /= 2.0;
 							bezierCount += bezierCount;
 						}
+#endif
 
 						phi = theta / 2.0;
 
@@ -395,12 +425,20 @@ namespace std {
 				void _Get_arc_extents(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, bool arcNegative, bool& hasCurrentPoint, ::std::experimental::io2d::vector_2d& currentPoint, ::std::experimental::io2d::vector_2d& transformedCurrentPoint, ::std::experimental::io2d::vector_2d& lastMoveToPoint, bool& hasExtents, vector_2d& exPt0, vector_2d& exPt1, ::std::experimental::io2d::vector_2d& origin, ::std::experimental::io2d::matrix_2d& transformMatrix) noexcept {
 					if (arcNegative) {
 						while (angle2 > angle1) {
+#if _Variable_templates_conditional_support_test
+							angle2 -= two_pi<double>;
+#else
 							angle2 -= two_pi<double>();
+#endif
 						}
 					}
 					else {
 						while (angle2 < angle1) {
+#if _Variable_templates_conditional_support_test
+							angle2 += two_pi<double>;
+#else
 							angle2 += two_pi<double>();
+#endif
 						}
 					}
 					vector_2d pt0, pt1, pt2, pt3;
@@ -417,10 +455,17 @@ namespace std {
 					{
 						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
 
-						while (theta >= (half_pi<double>())) {
+#if _Variable_templates_conditional_support_test
+						while (theta >= half_pi<double>) {
 							theta /= 2.0;
 							bezierCount += bezierCount;
 						}
+#else
+						while (theta >= half_pi<double>()) {
+							theta /= 2.0;
+							bezierCount += bezierCount;
+						}
+#endif
 
 						phi = theta / 2.0;
 

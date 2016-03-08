@@ -111,7 +111,7 @@ void image_surface::data(const vector<unsigned char>& data, error_code& ec) noex
 }
 
 vector<unsigned char> image_surface::data() {
-	auto required_size = stride() * height();
+	auto required_size = static_cast<vector<unsigned char>::size_type>(stride() * height());
 	vector<unsigned char> data;
 	//if (_Surface.get() == nullptr) {
 	//	_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
@@ -124,7 +124,7 @@ vector<unsigned char> image_surface::data() {
 }
 
 vector<unsigned char> image_surface::data(error_code& ec) noexcept {
-	auto required_size = stride() * height();
+	auto required_size = static_cast<vector<unsigned char>::size_type>(stride() * height());
 	// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 	vector<unsigned char> data;
 	//if (_Surface.get() == nullptr) {
