@@ -943,16 +943,27 @@ namespace not_proposed {
 					auto ang1 = ad.angle_1();
 					auto ang2 = ad.angle_2();
 					while (ang2 < ang1) {
+#if _Variable_templates_conditional_support_test
+						ang2 += two_pi<double>;
+#else
 						ang2 += two_pi<double>();
+#endif
 					}
 					vector_2d pt0, pt1, pt2, pt3;
 					int bezCount = 1;
 					double theta = ang2 - ang1;
 					double phi;
+#if _Variable_templates_conditional_support_test
+					while (theta >= half_pi<double>) {
+						theta /= 2.0;
+						bezCount += bezCount;
+					}
+#else
 					while (theta >= half_pi<double>()) {
 						theta /= 2.0;
 						bezCount += bezCount;
 					}
+#endif
 					phi = theta / 2.0;
 					auto cosPhi = cos(phi);
 					auto sinPhi = sin(phi);
@@ -1035,16 +1046,27 @@ namespace not_proposed {
 					auto ang1 = ad.angle_1();
 					auto ang2 = ad.angle_2();
 					while (ang2 > ang1) {
+#if _Variable_templates_conditional_support_test
+						ang2 -= two_pi<double>;
+#else
 						ang2 -= two_pi<double>();
+#endif
 					}
 					vector_2d pt0, pt1, pt2, pt3;
 					int bezCount = 1;
 					double theta = ang1 - ang2;
 					double phi;
+#if _Variable_templates_conditional_support_test
+					while (theta >= half_pi<double>) {
+						theta /= 2.0;
+						bezCount += bezCount;
+					}
+#else
 					while (theta >= half_pi<double>()) {
 						theta /= 2.0;
 						bezCount += bezCount;
 					}
+#endif
 					phi = theta / 2.0;
 					auto cosPhi = cos(phi);
 					auto sinPhi = sin(phi);

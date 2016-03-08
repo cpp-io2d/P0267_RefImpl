@@ -122,7 +122,11 @@ void test_mask(display_surface& ds) {
 	//imgSfc.matrix(matrix_2d::init_scale({ 0.5, 1.5 }));
 	//surface_brush_factory sbf(imgSfc);
 	//brush br(sbf);
+#if _Variable_templates_conditional_support_test
+	//br.matrix(matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double> * 0.25));
+#else
 	//br.matrix(matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double>() * 0.25));
+#endif
 	//br.filter(filter::nearest);
 	//br.extend(extend::none);
 
@@ -141,7 +145,11 @@ void test_mask(display_surface& ds) {
 	ds.immediate().rectangle({ 0.0, 0.0, static_cast<double>(ds.width()), static_cast<double>(ds.height())});
 	//ds.matrix(matrix_2d::init_scale({ 0.5, 1.5 }));
 	//ds.mask_immediate(br, rgba_color::blue());
+#if _Variable_templates_conditional_support_test
+	ds.mask_immediate(imgSfc, rgba_color::blue(), matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double> * 0.25));
+#else
 	ds.mask_immediate(imgSfc, rgba_color::blue(), matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double>() * 0.25));
+#endif
 	//ds.fill_immediate(br);
 	ds.restore();
 }
@@ -189,10 +197,18 @@ void test_paint(display_surface& ds) {
 	//lbf.add_color_stop(1.0, rgba_color::blue());
 	//auto linBrush = brush(lbf);
 	//linBrush.extend(extend::repeat);
+#if _Variable_templates_conditional_support_test
+	//linBrush.matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
+#else
 	//linBrush.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0));
+#endif
 	//ds.immediate().rectangle({ { 50.0, 50.0}, {500.0, 500.0} });
 	//ds.clip_immediate();
+#if _Variable_templates_conditional_support_test
+	//ds.matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
+#else
 	//ds.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0));
+#endif
 	//ds.brush(linBrush);
 	//ds.paint();
 
@@ -209,8 +225,16 @@ void test_stroke_rules(display_surface& ds) {
 	//ds.line_width(40.0);
 	//ds.line_cap(line_cap::butt);
 	//ds.line_join(line_join::miter_or_bevel);
+#if _Variable_templates_conditional_support_test
+	//ds.immediate().arc({ ds.width() / 2.0, ds.height() / 2.0 }, 200.0, 0.0, two_pi<double>);
+#else
 	//ds.immediate().arc({ ds.width() / 2.0, ds.height() / 2.0 }, 200.0, 0.0, two_pi<double>());
+#endif
+#if _Variable_templates_conditional_support_test
+	//ds.matrix(matrix_2d::init_translate({ ds.width() / 2.0, ds.height() / 2.0 }).rotate(half_pi<double> / 2.0).scale({ 0.5, 1.0 }).translate({ -ds.width() / 2.0, -ds.height() / 2.0 }));
+#else
 	//ds.matrix(matrix_2d::init_translate({ ds.width() / 2.0, ds.height() / 2.0 }).rotate(half_pi<double>() / 2.0).scale({ 0.5, 1.0 }).translate({ -ds.width() / 2.0, -ds.height() / 2.0 }));
+#endif
 	ds.dashes(nullopt);
 	ds.line_width(2.0);
 	ds.immediate().move_to({ 0.0, 199.0 });
@@ -234,8 +258,16 @@ void test_stroke_rules(display_surface& ds) {
 	ds.immediate().move_to({ 200.0, 335.0 });
 	ds.immediate().rel_line_to({ 0.0, 200.0 });
 
+#if _Variable_templates_conditional_support_test
+	//ds.matrix(matrix_2d::init_scale({ 0.5, 1.0 }).rotate(half_pi<double> / 2.0));
+#else
 	//ds.matrix(matrix_2d::init_scale({ 0.5, 1.0 }).rotate(half_pi<double>() / 2.0));
+#endif
+#if _Variable_templates_conditional_support_test
+	//ds.matrix(matrix_2d::init_rotate(half_pi<double> / 2.0).scale({ 0.5, 1.0 }));
+#else
 	//ds.matrix(matrix_2d::init_rotate(half_pi<double>() / 2.0).scale({ 0.5, 1.0 }));
+#endif
 	//ds.immediate().rel_move_to({ 20.0, 0.0 });
 	//ds.immediate().rel_move_to({ 0.0, 10.0 });
 	//ds.immediate().close_path();
@@ -433,7 +465,11 @@ void draw_radial_circles(display_surface& ds) {
 	pf.move_to({ 520.0, 520.0 });
 	pf.line_to({ 600.0, 600.0 });
 	pf.change_matrix(matrix_2d::init_scale({ 2.0, 1.0 }));
+#if _Variable_templates_conditional_support_test
+	pf.arc({ 300.0, 700.0 }, 100.0, three_pi_over_two<double>, two_pi<double>);
+#else
 	pf.arc({ 300.0, 700.0 }, 100.0, three_pi_over_two<double>(), two_pi<double>());
+#endif
 	pf.change_matrix(matrix_2d::init_identity());
 	pf.move_to({ 520.0, 10.0 });
 	pf.curve_to({ 480.0, 60.0 }, { 560.0, 60.0 }, { 520.0, 10.0 });
@@ -453,15 +489,35 @@ void draw_radial_circles(display_surface& ds) {
 	ds.stroke();
 	pf.clear();
 	pf.new_sub_path();
+#if _Variable_templates_conditional_support_test
+	pf.arc({ 900.0, 200.0 }, 50.0, 0.0, two_pi<double>);
+#else
 	pf.arc({ 900.0, 200.0 }, 50.0, 0.0, two_pi<double>());
+#endif
 	pf.new_sub_path();
+#if _Variable_templates_conditional_support_test
+	pf.arc_negative({ 900.0, 200.0 }, 75.0, 0.0, two_pi<double>);
+#else
 	pf.arc_negative({ 900.0, 200.0 }, 75.0, 0.0, two_pi<double>());
+#endif
 	pf.new_sub_path();
+#if _Variable_templates_conditional_support_test
+	pf.arc({ 900.0, 200.0 }, 100.0, 0.0, two_pi<double>);
+#else
 	pf.arc({ 900.0, 200.0 }, 100.0, 0.0, two_pi<double>());
+#endif
 	pf.new_sub_path();
+#if _Variable_templates_conditional_support_test
+	pf.arc_negative({ 900.0, 200.0 }, 125.0, 0.0, two_pi<double>);
+#else
 	pf.arc_negative({ 900.0, 200.0 }, 125.0, 0.0, two_pi<double>());
+#endif
 	pf.new_sub_path();
+#if _Variable_templates_conditional_support_test
+	pf.arc({ 900.0, 200.0 }, 150.0, 0.0, two_pi<double>);
+#else
 	pf.arc({ 900.0, 200.0 }, 150.0, 0.0, two_pi<double>());
+#endif
 	p = path(pf);
 	ds.path(p);
 	ds.fill();
@@ -750,12 +806,20 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 	ds.paint(rgba_color::cornflower_blue()); // Paint background.
 
 	ds.immediate().clear();
+#if _Variable_templates_conditional_support_test
+	ds.immediate().arc({ 100.0, 100.0 }, 50.0, 0.0, half_pi<double>);
+#else
 	ds.immediate().arc({ 100.0, 100.0 }, 50.0, 0.0, half_pi<double>());
+#endif
 	auto initLineWidth = ds.line_width();
 	ds.line_width(8.0);
 	ds.stroke_immediate(rgba_color::black());
 	ds.immediate().clear();
+#if _Variable_templates_conditional_support_test
+	ds.immediate().arc_negative({ 300.0, 100.0 }, 50.0, 0.0, half_pi<double>);
+#else
 	ds.immediate().arc_negative({ 300.0, 100.0 }, 50.0, 0.0, half_pi<double>());
+#endif
 	ds.stroke_immediate(rgba_color::brown());
 	ds.immediate().clear();
 	ds.line_width(initLineWidth);
@@ -795,15 +859,31 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 				* (i % 2 == 1 ? 1.0 : -1.0));
 			const auto center = vector_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
+#if _Variable_templates_conditional_support_test
+			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+#else
 			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+#endif
 			ds.immediate().change_origin(center);
+#if _Variable_templates_conditional_support_test
+			ds.immediate().arc_negative(center, radius - 3.0, half_pi<double>, -half_pi<double>);
+#else
 			ds.immediate().arc_negative(center, radius - 3.0, half_pi<double>(), -half_pi<double>());
+#endif
 		}
 		else {
 			const vector_2d center{ radius * i * 2.0 + radius + beginX, y };
+#if _Variable_templates_conditional_support_test
+			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0));
+#else
 			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0));
+#endif
 			ds.immediate().change_origin(center);
+#if _Variable_templates_conditional_support_test
+			ds.immediate().arc_negative(center, radius - 3.0, half_pi<double>, -half_pi<double>);
+#else
 			ds.immediate().arc_negative(center, radius - 3.0, half_pi<double>(), -half_pi<double>());
+#endif
 		}
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
 		ds.fill_immediate({ greyColor, greyColor, greyColor, 1.0 });
@@ -884,10 +964,18 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 
 	ds.immediate().clear();
 	ds.immediate().move_to({ 430.0, 60.0 });
+#if _Variable_templates_conditional_support_test
+	ds.immediate().arc({ 500.0, 60.0 }, 30.0, pi<double>, two_pi<double>);
+#else
 	ds.immediate().arc({ 500.0, 60.0 }, 30.0, pi<double>(), two_pi<double>());
+#endif
 	ds.immediate().line_to({ 570.0, 60.0 });
 	//	ds.immediate().new_sub_path();
+#if _Variable_templates_conditional_support_test
+	ds.immediate().arc({ 500.0, 130.0 }, 30.0, two_pi<double>, pi<double> * 3.0 / 4.0);
+#else
 	ds.immediate().arc({ 500.0, 130.0 }, 30.0, two_pi<double>(), pi<double>() * 3.0 / 4.0);
+#endif
 	ds.immediate().new_sub_path();
 	ds.dashes(dashes{ { 0.0, 10.0 }, 0.0 });
 	ds.line_width(5.0);
@@ -958,15 +1046,31 @@ void draw_sort_visualization(display_surface& ds, double elapsedTimeInMillisecon
 			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 				* (i % 2 == 1 ? 1.0 : -1.0));
 			const auto center = vector_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
+#if _Variable_templates_conditional_support_test
+			pf.change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+#else
 			pf.change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+#endif
 			pf.change_origin(center);
+#if _Variable_templates_conditional_support_test
+			pf.arc_negative(center, radius - 3.0, half_pi<double>, -half_pi<double>);
+#else
 			pf.arc_negative(center, radius - 3.0, half_pi<double>(), -half_pi<double>());
+#endif
 		}
 		else {
 			const vector_2d center{ radius * i * 2.0 + radius + beginX, y };
+#if _Variable_templates_conditional_support_test
+			pf.change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0));
+#else
 			pf.change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0));
+#endif
 			pf.change_origin(center);
+#if _Variable_templates_conditional_support_test
+			pf.arc_negative(center, radius - 3.0, half_pi<double>, -half_pi<double>);
+#else
 			pf.arc_negative(center, radius - 3.0, half_pi<double>(), -half_pi<double>());
+#endif
 		}
 		ds.path(path(pf));
 		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
@@ -1025,10 +1129,18 @@ void draw_sort_visualization(display_surface& ds, double elapsedTimeInMillisecon
 
 	pf.clear();
 	pf.move_to({ 430.0, 60.0 });
+#if _Variable_templates_conditional_support_test
+	pf.arc({ 500.0, 60.0 }, 30.0, pi<double>, two_pi<double>);
+#else
 	pf.arc({ 500.0, 60.0 }, 30.0, pi<double>(), two_pi<double>());
+#endif
 	pf.line_to({ 570.0, 60.0 });
 	pf.new_sub_path();
+#if _Variable_templates_conditional_support_test
+	pf.arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi<double> * 3.0 / 4.0);
+#else
 	pf.arc_negative({ 500.0, 130.0 }, 30.0, 0.0, pi<double>() * 3.0 / 4.0);
+#endif
 	pf.new_sub_path();
 	ds.path(path(pf));
 	ds.line_width(2.0);
