@@ -16,8 +16,12 @@ namespace std {
 					return ec;
 				}
 
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl) {
-					return display_surface(preferredWidth, preferredHeight, preferredFormat, scl);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, double desiredFramerate) {
+					return display_surface(preferredWidth, preferredHeight, preferredFormat, scl, rr, desiredFramerate);
+				}
+
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, double desiredFramerate) {
+					return display_surface(preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight,scl, rr, desiredFramerate);
 				}
 
 				image_surface make_image_surface(format fmt, int width, int height) {

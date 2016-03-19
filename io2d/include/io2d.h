@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <system_error>
 #include <cstdint>
+#include <atomic>
 
 #ifdef _WIN32_WINNT
 #define NOMINMAX
@@ -281,6 +282,12 @@ namespace std {
 					fill_uniform, // Maintain aspect ratio but fill entire display (some content may not be shown)
 					fill_exact, // Ignore aspect ratio and use (possibly non-uniform) scale to fill exactly
 					none // Do not scale.
+				};
+
+				enum class refresh_rate {
+					as_needed,
+					as_fast_as_possible,
+					fixed
 				};
 
 				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
@@ -2253,6 +2260,12 @@ namespace std {
 
 					static Bool _X11_if_event_pred(Display* display, XEvent* event, XPointer arg);
 #endif
+					refresh_rate _Refresh_rate;
+					double _Desired_frame_rate;
+					::std::atomic<bool> _Redraw_requested;
+					double _Elapsed_draw_time;
+					const double _Minimum_frame_rate = 0.01;
+					const double _Maximum_frame_rate = 120.0;
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Native_surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Native_context;
 
@@ -2282,16 +2295,16 @@ namespace std {
 					display_surface& operator=(display_surface&& other) noexcept;
 
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
-						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox);
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0);
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::error_code& ec,
-						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox) noexcept;
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0) noexcept;
 
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
 						int preferredDisplayWidth, int preferredDisplayHeight,
-						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox);
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0);
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
 						int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec,
-						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox) noexcept;
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0) noexcept;
 
 					virtual ~display_surface();
 
@@ -2325,6 +2338,10 @@ namespace std {
 					void letterbox_brush(const ::std::experimental::io2d::brush& b);
 					void letterbox_brush(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					void auto_clear(bool val) noexcept;
+					void refresh_rate(::std::experimental::io2d::refresh_rate rr) noexcept;
+					bool desired_frame_rate(double fps) noexcept;
+					void redraw_required() noexcept;
+
 					int show();
 					int show(::std::error_code& ec); // Not noexcept because if the user-provided functions throw they will propagate, but otherwise is non-throwing.
 					void exit_show(int ms) noexcept;
@@ -2341,6 +2358,9 @@ namespace std {
 					::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback(::std::error_code& ec) const noexcept;
 					::std::experimental::io2d::brush letterbox_brush() const noexcept;
 					bool auto_clear() const noexcept;
+					::std::experimental::io2d::refresh_rate refresh_rate() const noexcept;
+					double desired_frame_rate() const noexcept;
+					double elapsed_draw_time() const noexcept;
 				};
 
 				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
@@ -2418,11 +2438,11 @@ namespace std {
 				}
 #endif
 				int format_stride_for_width(format format, int width) noexcept;
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox);
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, ::std::error_code& ec, scaling scl = scaling::letterbox) noexcept;
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0) noexcept;
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0);
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat,
-					int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec, scaling scl = scaling::letterbox) noexcept;
+					int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0) noexcept;
 				image_surface make_image_surface(format format, int width, int height);
 				image_surface make_image_surface(format format, int width, int height, ::std::error_code& ec) noexcept;
 #if _Inline_namespace_conditional_support_test
