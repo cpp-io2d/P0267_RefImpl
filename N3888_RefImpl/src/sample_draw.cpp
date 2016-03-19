@@ -7,6 +7,8 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include <numeric>
+#include <iomanip>
 #include "test_renderer.h"
 
 using namespace std;
@@ -41,12 +43,12 @@ void sample_draw::operator()(display_surface& ds) {
 	//auto currentTime = steady_clock::now();
 	//auto elapsedTime = currentTime - previousTime;
 	//previousTime = currentTime;
-	//draw_sort_visualization_immediate(ds, duration_cast<microseconds>(elapsedTime).count() / 1000.0);
+	draw_sort_visualization_immediate(ds, ds.elapsed_draw_time());
 
 	//test_clip_transformation(ds);
 	//test_paint(ds);
 	//test_stroke_rules(ds);
-	test_mask(ds);
+	//test_mask(ds);
 	//test_extend_none_on_boundary(ds);
 
 	//test_draw_radial_circles(ds);
@@ -803,6 +805,11 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 	const static auto vec = init_sort_steps(elementCount);
 	const auto phaseCount = vec.size();
 	const size_t x = ::std::min(static_cast<size_t>(timer / phaseTime), ::std::max(static_cast<size_t>(phaseCount - 1U), static_cast<size_t>(0U)));
+
+	static deque<double> elapsedTimes(static_cast<size_t>(30), elapsedTimeInMilliseconds);
+	elapsedTimes.pop_front();
+	elapsedTimes.push_back(elapsedTimeInMilliseconds);
+
 	ds.paint(rgba_color::cornflower_blue()); // Paint background.
 
 	ds.immediate().clear();
@@ -990,6 +997,12 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 	ds.immediate().curve_to({ 610.0, 400.0 }, { 660.0, 300.0 }, { 710.0, 400.0 });
 	ds.immediate().close_path();
 	ds.stroke_immediate(rgba_color::yellow_green());
+	auto sumOfElapsedTimes = accumulate(begin(elapsedTimes), end(elapsedTimes), 0.0);
+	auto countOfElapsedTimes = static_cast<double>(elapsedTimes.size());
+	auto fps = 1000.0 / (sumOfElapsedTimes / countOfElapsedTimes);
+	stringstream fpsStr;
+	fpsStr << "FPS: " << setprecision(3) << fps;
+	ds.render_text(fpsStr.str(), { static_cast<double>(ds.width()) - 200.0, 50.0 }, rgba_color::dark_red());
 
 	//auto radialFactory = radial_brush_factory({ 115.2, 102.4 }, 25.6, { 102.4, 102.4 }, 128.0);
 	//radialFactory.add_color_stop(0.0, rgba_color::white());

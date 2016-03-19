@@ -5,11 +5,13 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <chrono>
 
 // Only uncomment this if you need to do debugging. This will cause XSynchronize to be called for the _Display connection.
 //#define USE_X_SYNC_FOR_DEBUGGING
 
 using namespace std;
+using namespace std::chrono;
 using namespace std::experimental::io2d;
 
 Bool display_surface::_X11_if_event_pred(::Display* display, ::XEvent* event, XPointer arg) {
@@ -20,8 +22,8 @@ Bool display_surface::_X11_if_event_pred(::Display* display, ::XEvent* event, XP
 		return False;
 	}
 	// Need to check for ExposureMask events, StructureNotifyMask events, and unmaskable events.
-	switch(event->type) {
-	// ExposureMask events:
+	switch (event->type) {
+		// ExposureMask events:
 	case Expose:
 	{
 		if (event->xexpose.window == sfc->_Wndw) {
@@ -148,6 +150,10 @@ display_surface::display_surface(display_surface&& other) noexcept
 	, _Auto_clear(move(other._Auto_clear))
 	, _Wndw(move(other._Wndw))
 	, _Can_draw(move(other._Can_draw))
+	, _Refresh_rate(move(other._Refresh_rate))
+	, _Desired_frame_rate(move(other._Desired_frame_rate))
+	, _Redraw_requested(other._Redraw_requested.load())
+	, _Elapsed_draw_time(move(other._Elapsed_draw_time))
 	, _Native_surface(move(other._Native_surface))
 	, _Native_context(move(other._Native_context)) {
 	other._Draw_fn = nullptr;
@@ -171,6 +177,10 @@ display_surface& display_surface::operator=(display_surface&& other) noexcept {
 		_Auto_clear = move(other._Auto_clear);
 		_Wndw = move(other._Wndw);
 		_Can_draw = move(other._Can_draw);
+		_Refresh_rate = move(other._Refresh_rate);
+		_Desired_frame_rate = move(other._Desired_frame_rate);
+		_Redraw_requested = other._Redraw_requested.load();
+		_Elapsed_draw_time = move(other._Elapsed_draw_time);
 		_Native_surface = move(other._Native_surface);
 		_Native_context = move(other._Native_context);
 
@@ -212,18 +222,18 @@ void display_surface::_Resize_window() {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STATUS);
 	}
 	if (width != static_cast<unsigned int>(_Display_width) || height != static_cast<unsigned int>(_Display_height)) {
-		XWindowChanges xwc{ };
+		XWindowChanges xwc{};
 		xwc.width = _Display_width;
 		xwc.height = _Display_height;
 		XConfigureWindow(_Display.get(), _Wndw, CWWidth | CWHeight, &xwc);
 	}
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl)
-	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl) {
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
+	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, fps) {
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl)
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
 	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Display_width(preferredDisplayWidth)
@@ -238,10 +248,16 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Auto_clear(false)
 	, _Wndw(None)
 	, _Can_draw(false)
+	, _Refresh_rate(rr)
+	, _Redraw_requested(true)
+	, _Desired_frame_rate(fps)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
 	, _Native_context(nullptr, &cairo_destroy) {
 	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
 		throw invalid_argument("Invalid parameter.");
+	}
+	if (fps <= _Minimum_framerate || !isfinite(fps)) {
+		throw system_error(make_error_code(errc::argument_out_of_domain));
 	}
 	Display* display = nullptr;
 	// Lock to increment the ref count.
@@ -259,10 +275,10 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 			}
 			_Display = unique_ptr<Display, decltype(&::XCloseDisplay)>(display, &XCloseDisplay);
 			_Wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
-			#ifdef USE_X_SYNC_FOR_DEBUGGING
+#ifdef USE_X_SYNC_FOR_DEBUGGING
 			// DEBUGGING ONLY!!!!!!
 			XSynchronize(display, True);
-			#endif
+#endif
 		}
 	}
 	display = _Display.get();
@@ -299,10 +315,17 @@ int display_surface::show() {
 	bool exit = false;
 	XEvent event;
 
+	auto previousTime = steady_clock::now();
+	_Elapsed_draw_time = 0.0;
 	while (!exit) {
+		auto currentTime = steady_clock::now();
+		auto elapsedTimeIncrement = duration_cast<microseconds>(currentTime - previousTime).count() / 1000.0;
+		_Elapsed_draw_time += elapsedTimeIncrement;
+		previousTime = currentTime;
+
 		while (XCheckIfEvent(_Display.get(), &event, &display_surface::_X11_if_event_pred, reinterpret_cast<XPointer>(this))) {
-			switch(event.type) {
-			// ExposureMask events:
+			switch (event.type) {
+				// ExposureMask events:
 			case Expose:
 			{
 				if (!_Can_draw && _Wndw != None) {
@@ -320,6 +343,14 @@ int display_surface::show() {
 					throw system_error(make_error_code(errc::operation_would_block));
 				}
 				_Render_to_native_surface();
+
+				_Elapsed_draw_time = 0.0;
+				//if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+				//	_Elapsed_draw_time -= elapsedTimeIncrement;
+				//}
+				//else {
+				//	_Elapsed_draw_time = 0.0;
+				//}
 			} break;
 			// StructureNotifyMask events:
 			case CirculateNotify:
@@ -338,6 +369,9 @@ int display_surface::show() {
 				}
 				if (resized) {
 					cairo_xlib_surface_set_size(_Native_surface.get(), _Display_width, _Display_height);
+					if (_Size_change_fn != nullptr) {
+						_Size_change_fn(*this);
+					}
 				}
 			} break;
 			case DestroyNotify:
@@ -378,6 +412,14 @@ int display_surface::show() {
 						throw system_error(make_error_code(errc::operation_would_block));
 					}
 					_Render_to_native_surface();
+
+					_Elapsed_draw_time = 0.0;
+					//if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+					//	_Elapsed_draw_time -= elapsedTimeIncrement;
+					//}
+					//else {
+					//	_Elapsed_draw_time = 0.0;
+					//}
 				}
 			} break;
 			case NoExpose:
@@ -402,13 +444,13 @@ int display_surface::show() {
 						try {
 							clientMsgStr << " (" << atomName << ")";
 						}
-						catch(...) {
+						catch (...) {
 							XFree(atomName);
 						}
 						XFree(atomName);
 					}
 					clientMsgStr << ". Format is '" << event.xclient.format << "' and first value is '";
-					switch(event.xclient.format) {
+					switch (event.xclient.format) {
 					case 8:
 					{
 						clientMsgStr << to_string(static_cast<int>(event.xclient.data.b[0])).c_str();
@@ -450,22 +492,40 @@ int display_surface::show() {
 				errorString << "Unexpected event.type. Value is '" << event.type << "'.";
 				cerr << errorString.str().c_str();
 				assert(event.type >= 64 && event.type <= 127);
-			}
+			} break;
 			}
 		}
 		if (_Can_draw) {
-			// Run user draw function:
-			if (_Draw_fn != nullptr) {
-				if (_Auto_clear) {
-					clear();
+			bool redraw = true;
+			if (_Refresh_rate == experimental::io2d::refresh_rate::as_needed) {
+				redraw = _Redraw_requested.exchange(false, std::memory_order_acquire);
+			}
+			if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+				// desiredElapsed is the amount of time, in milliseconds, that must have passed before we should redraw.
+				auto desiredElapsed = 1000.0 / _Desired_frame_rate;
+				redraw = _Elapsed_draw_time >= desiredElapsed;
+			}
+			if (redraw) {
+				// Run user draw function:
+				if (_Draw_fn != nullptr) {
+					if (_Auto_clear) {
+						clear();
+					}
+					_Draw_fn(*this);
 				}
-				_Draw_fn(*this);
+				else {
+					throw system_error(make_error_code(errc::operation_would_block));
+				}
+				_Render_to_native_surface();
+				if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+					_Elapsed_draw_time -= 1000.0 / _Desired_frame_rate;
+				}
+				else {
+					_Elapsed_draw_time = 0.0;
+				}
 			}
-			else {
-				throw system_error(make_error_code(errc::operation_would_block));
-			}
-			_Render_to_native_surface();
 		}
 	}
+	_Elapsed_draw_time = 0.0;
 	return 0;
 }

@@ -305,6 +305,34 @@ void display_surface::auto_clear(bool val) noexcept {
 	_Auto_clear = val;
 }
 
+void display_surface::refresh_rate(experimental::io2d::refresh_rate rr) noexcept {
+	if (rr == experimental::io2d::refresh_rate::fixed && _Refresh_rate != rr) {
+		_Elapsed_draw_time = 0.0;
+	}
+	_Refresh_rate = rr;
+}
+
+bool display_surface::desired_frame_rate(double fps) noexcept {
+	if (!isfinite(fps)) {
+		return true;
+	}
+	if (fps < _Minimum_frame_rate) {
+		_Desired_frame_rate = _Minimum_frame_rate;
+		return true;
+	}
+	if (fps > _Maximum_frame_rate) {
+		_Desired_frame_rate = _Maximum_frame_rate;
+		return true;
+	}
+	_Desired_frame_rate = fps;
+
+	return false;
+}
+
+void display_surface::redraw_required() noexcept {
+	_Redraw_requested.store(true, std::memory_order_release);
+}
+
 format display_surface::format() const noexcept {
 	return _Format;
 }
@@ -358,4 +386,16 @@ experimental::io2d::brush display_surface::letterbox_brush() const noexcept {
 
 bool display_surface::auto_clear() const noexcept {
 	return _Auto_clear;
+}
+
+experimental::io2d::refresh_rate display_surface::refresh_rate() const noexcept {
+	return _Refresh_rate;
+}
+
+double display_surface::desired_frame_rate() const noexcept {
+	return _Desired_frame_rate;
+}
+
+double display_surface::elapsed_draw_time() const noexcept {
+	return _Elapsed_draw_time;
 }

@@ -2,8 +2,10 @@
 #include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 #include "cairo-win32.h"
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 using namespace std::experimental::io2d;
 
 [[noreturn]]
@@ -213,6 +215,10 @@ display_surface::display_surface(display_surface&& other) noexcept
 	, _Auto_clear(move(other._Auto_clear))
 	, _Window_style(move(other._Window_style))
 	, _Hwnd(move(other._Hwnd))
+	, _Refresh_rate(move(other._Refresh_rate))
+	, _Desired_frame_rate(move(other._Desired_frame_rate))
+	, _Redraw_requested(other._Redraw_requested.load())
+	, _Elapsed_draw_time(move(other._Elapsed_draw_time))
 	, _Native_surface(move(other._Native_surface))
 	, _Native_context(move(other._Native_context)) {
 	other._Draw_fn = nullptr;
@@ -236,6 +242,10 @@ display_surface& display_surface::operator=(display_surface&& other) noexcept {
 		_Auto_clear = move(other._Auto_clear);
 		_Window_style = move(other._Window_style);
 		_Hwnd = move(other._Hwnd);
+		_Refresh_rate = move(other._Refresh_rate);
+		_Desired_frame_rate = move(other._Desired_frame_rate);
+		_Redraw_requested = other._Redraw_requested.load();
+		_Elapsed_draw_time = move(other._Elapsed_draw_time);
 		_Native_surface = move(other._Native_surface);
 		_Native_context = move(other._Native_context);
 
@@ -251,11 +261,11 @@ namespace {
 	once_flag _Window_class_registered_flag;
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl)
-	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl) {	
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double desiredFramerate)
+	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, desiredFramerate) {	
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl)
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
 	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
 	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Display_width(preferredDisplayWidth)
@@ -270,6 +280,9 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Auto_clear(false)
 	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
+	, _Refresh_rate(rr)
+	, _Redraw_requested(true)
+	, _Desired_frame_rate(fps)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
 	, _Native_context(nullptr, &cairo_destroy) {
 	call_once(_Window_class_registered_flag, _MyRegisterClass, static_cast<HINSTANCE>(GetModuleHandleW(nullptr)));
@@ -277,6 +290,9 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	// Record the desired client window size
 	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
 		throw invalid_argument("Invalid parameter.");
+	}
+	if (fps <= _Minimum_frame_rate || !isfinite(fps)) {
+		throw system_error(make_error_code(errc::argument_out_of_domain));
 	}
 	RECT rc;
 	rc.top = rc.left = 0;
@@ -363,30 +379,61 @@ int display_surface::show() {
 	if (_Draw_fn == nullptr) {
 		throw system_error(make_error_code(errc::operation_would_block));
 	}
+	auto previousTime = steady_clock::now();
+	_Elapsed_draw_time = 0.0;
 
 	while (msg.message != WM_QUIT) {
+		auto currentTime = steady_clock::now();
+		auto elapsedTimeIncrement = duration_cast<microseconds>(currentTime - previousTime).count() / 1000.0;
+		_Elapsed_draw_time += elapsedTimeIncrement;
+		previousTime = currentTime;
+
 		if (!PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
 			if (_Native_surface.get() != nullptr) {
 				RECT clientRect;
 				GetClientRect(_Hwnd, &clientRect);
 				if (clientRect.right - clientRect.left != _Display_width || clientRect.bottom - clientRect.top != _Display_height) {
 					// If there is a size mismatch we skip painting and resize the window instead.
+					auto dw = _Display_width;
+					auto dh = _Display_height;
 					_Resize_window();
 					_Make_native_surface_and_context();
+					if (dw != _Display_width || dh != _Display_height) {
+						if (_Size_change_fn != nullptr) {
+							_Size_change_fn(*this);
+						}
+					}
 					continue;
 				}
 				else {
-					// Run user draw function:
-					if (_Draw_fn != nullptr) {
-						if (_Auto_clear) {
-							clear();
+					bool redraw = true;
+					if (_Refresh_rate == experimental::io2d::refresh_rate::as_needed) {
+						redraw = _Redraw_requested.exchange(false, std::memory_order_acquire);
+					}
+					if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+						// desiredElapsed is the amount of time, in milliseconds, that must have passed before we should redraw.
+						auto desiredElapsed = 1000.0 / _Desired_frame_rate;
+						redraw = _Elapsed_draw_time >= desiredElapsed;
+					}
+					if (redraw) {
+						// Run user draw function:
+						if (_Draw_fn != nullptr) {
+							if (_Auto_clear) {
+								clear();
+							}
+							_Draw_fn(*this);
 						}
-						_Draw_fn(*this);
+						else {
+							throw system_error(make_error_code(errc::operation_would_block));
+						}
+						_Render_to_native_surface();
+						if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+							_Elapsed_draw_time -= 1000.0 / _Desired_frame_rate;
+						}
+						else {
+							_Elapsed_draw_time = 0.0;
+						}
 					}
-					else {
-						throw system_error(make_error_code(errc::operation_would_block));
-					}
-					_Render_to_native_surface();
 				}
 			}
 		}
@@ -394,10 +441,20 @@ int display_surface::show() {
 			if (msg.message != WM_QUIT) {
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
+
+				if (msg.message == WM_PAINT) {
+					_Elapsed_draw_time = 0.0;
+					//if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+					//	_Elapsed_draw_time -= elapsedTimeIncrement;
+					//}
+					//else {
+					//	_Elapsed_draw_time = 0.0;
+					//}
+				}
 			}
 		}
 	}
-
+	_Elapsed_draw_time = 0.0;
 	// I know that the C-style cast works and have not had a chance to come up with a safer C++-style cast that I can be sure also works so I'm disabling the warning.
 #ifdef _WIN32
 #ifdef __clang__
