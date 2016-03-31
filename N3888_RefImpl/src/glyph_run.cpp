@@ -73,6 +73,20 @@ int glyph_run::cluster::byte_count() const noexcept {
 	return _Byte_count;
 }
 
+glyph_run& glyph_run::operator=(glyph_run&& other) noexcept {
+	if (this != &other) {
+		_Text_string.swap(other._Text_string);
+		_Font_resource = move(other._Font_resource);
+		_Glyphs = move(other._Glyphs);
+		_Clusters = move(other._Clusters);
+		_Cairo_glyphs = move(other._Cairo_glyphs);
+		_Cairo_text_clusters = move(other._Cairo_text_clusters);
+		_Position = move(other._Position);
+		_Text_cluster_flags = move(other._Text_cluster_flags);
+	}
+	return *this;
+}
+
 glyph_run::glyph_run(const experimental::io2d::font_resource& fr, const ::std::string& utf8, const vector_2d& pos)
 	: _Text_string(utf8)
 	, _Font_resource(fr)

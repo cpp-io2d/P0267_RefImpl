@@ -1,9 +1,22 @@
 #include "io2d.h"
 #include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
+#include <type_traits>
 
 using namespace std;
 using namespace std::experimental::io2d;
+
+font_resource_factory& font_resource_factory::operator=(font_resource_factory&& other) noexcept {
+	if (this != &other) {
+		_Family.swap(other._Family);
+		_Font_slant = move(other._Font_slant);
+		_Font_weight = move(other._Font_weight);
+		_Font_options = move(other._Font_options);
+		_Font_matrix = move(other._Font_matrix);
+		_Surface_matrix = move(other._Surface_matrix);
+	}
+	return *this;
+}
 
 font_resource_factory::font_resource_factory(const ::std::string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw,
 	const ::std::experimental::io2d::matrix_2d& fm, const ::std::experimental::io2d::font_options& fo, const ::std::experimental::io2d::matrix_2d& sm)

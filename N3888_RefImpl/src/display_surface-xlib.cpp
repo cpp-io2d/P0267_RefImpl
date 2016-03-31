@@ -126,6 +126,7 @@ Bool display_surface::_X11_if_event_pred(::Display* display, ::XEvent* event, XP
 			// Return True so we can inspect it in the event loop for diagnostic purposes.
 			return True;
 		}
+		return false;
 	}
 	}
 	return False;
@@ -256,7 +257,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
 		throw invalid_argument("Invalid parameter.");
 	}
-	if (fps <= _Minimum_framerate || !isfinite(fps)) {
+	if (fps <= _Minimum_frame_rate || !isfinite(fps)) {
 		throw system_error(make_error_code(errc::argument_out_of_domain));
 	}
 	Display* display = nullptr;
@@ -322,7 +323,6 @@ int display_surface::show() {
 		auto elapsedTimeIncrement = static_cast<double>(duration_cast<nanoseconds>(currentTime - previousTime).count());
 		_Elapsed_draw_time += elapsedTimeIncrement;
 		previousTime = currentTime;
-
 		while (XCheckIfEvent(_Display.get(), &event, &display_surface::_X11_if_event_pred, reinterpret_cast<XPointer>(this))) {
 			switch (event.type) {
 				// ExposureMask events:
