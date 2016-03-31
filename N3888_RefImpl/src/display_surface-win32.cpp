@@ -281,8 +281,8 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
 	, _Refresh_rate(rr)
-	, _Redraw_requested(true)
 	, _Desired_frame_rate(fps)
+	, _Redraw_requested(true)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
 	, _Native_context(nullptr, &cairo_destroy) {
 	call_once(_Window_class_registered_flag, _MyRegisterClass, static_cast<HINSTANCE>(GetModuleHandleW(nullptr)));
@@ -384,7 +384,7 @@ int display_surface::show() {
 
 	while (msg.message != WM_QUIT) {
 		auto currentTime = steady_clock::now();
-		auto elapsedTimeIncrement = duration_cast<microseconds>(currentTime - previousTime).count() / 1000.0;
+		auto elapsedTimeIncrement = static_cast<double>(duration_cast<nanoseconds>(currentTime - previousTime).count());
 		_Elapsed_draw_time += elapsedTimeIncrement;
 		previousTime = currentTime;
 
@@ -410,9 +410,11 @@ int display_surface::show() {
 					if (_Refresh_rate == experimental::io2d::refresh_rate::as_needed) {
 						redraw = _Redraw_requested.exchange(false, std::memory_order_acquire);
 					}
+
+					const auto desiredElapsed = 1'000'000'000.0 / _Desired_frame_rate;
+
 					if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
-						// desiredElapsed is the amount of time, in milliseconds, that must have passed before we should redraw.
-						auto desiredElapsed = 1000.0 / _Desired_frame_rate;
+						// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
 						redraw = _Elapsed_draw_time >= desiredElapsed;
 					}
 					if (redraw) {
@@ -428,7 +430,9 @@ int display_surface::show() {
 						}
 						_Render_to_native_surface();
 						if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
-							_Elapsed_draw_time -= 1000.0 / _Desired_frame_rate;
+							while (_Elapsed_draw_time >= desiredElapsed) {
+								_Elapsed_draw_time -= desiredElapsed;
+							}
 						}
 						else {
 							_Elapsed_draw_time = 0.0;

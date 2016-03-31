@@ -170,20 +170,20 @@ void test_paint(display_surface& ds) {
 	imgSfc.fill_immediate(rgba_color::white());
 	auto m = matrix_2d::init_scale({ 1.5, 1.0 }).translate({ 20.0, 20.0 });// .invert().translate({ -10.0, -10.0 });
 	auto scsm = m;
-	auto ucsm = matrix_2d::init_identity();
+	//auto ucsm = matrix_2d::init_identity();
 	auto bcsm = matrix_2d::init_translate({ -10.0, -10.0 });
 	auto invScsm = scsm;
 	invScsm.invert();
 	auto invBcsm = bcsm;
 	invBcsm.invert();
 
-	//auto pt = m.invert().transform_point({ 0.0, 0.0 });
-	//auto pt2 = m.transform_point({ 10.0, 10.0 });
-	auto pt = m.transform_point({ 0.0, 0.0 });
-	auto pt2 = invScsm.transform_point({ 45.0, 30.0 });
-	auto pt3 = vector_2d{ -26.6666666666666, -30.0 };
-	auto pt4 = vector_2d{ -16.6666666666666, -20.0 };
-	auto pt5 = vector_2d{ 45.0, 30.0 };
+	////auto pt = m.invert().transform_point({ 0.0, 0.0 });
+	////auto pt2 = m.transform_point({ 10.0, 10.0 });
+	//auto pt = m.transform_point({ 0.0, 0.0 });
+	//auto pt2 = invScsm.transform_point({ 45.0, 30.0 });
+	//auto pt3 = vector_2d{ -26.6666666666666, -30.0 };
+	//auto pt4 = vector_2d{ -16.6666666666666, -20.0 };
+	//auto pt5 = vector_2d{ 45.0, 30.0 };
 	ds.matrix(m);
 	ds.paint(imgSfc, matrix_2d::init_translate({ -10.0, -10.0 })/*init_identity()*//*init_scale({ 1.0, 1.5 }).translate({ -20.0, -20.0 })*/, extend::repeat, filter::nearest);
 	//ds.paint(rgba_color::red());
@@ -806,7 +806,7 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 	const auto phaseCount = vec.size();
 	const size_t x = ::std::min(static_cast<size_t>(timer / phaseTime), ::std::max(static_cast<size_t>(phaseCount - 1U), static_cast<size_t>(0U)));
 
-	static deque<double> elapsedTimes(static_cast<size_t>(30), elapsedTimeInMilliseconds);
+	static deque<double> elapsedTimes(static_cast<size_t>(30), 1000.0 / ds.desired_frame_rate());
 	elapsedTimes.pop_front();
 	elapsedTimes.push_back(elapsedTimeInMilliseconds);
 
@@ -852,8 +852,7 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 	ds.immediate().rectangle({ 400.0, 400.0, 200.0, 200.0 });
 	ds.fill_immediate(brush(linearTest1));
 
-	ds.font_face("Segoe UI", font_slant::normal, font_weight::normal);
-	ds.font_size(40.0);
+	ds.font_resource("Segoe UI", 40.0);
 	auto str = string("Phase ").append(to_string(x + 1));
 	ds.render_text(str, { beginX, 50.0 }, rgba_color::white());
 
@@ -881,9 +880,9 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 		else {
 			const vector_2d center{ radius * i * 2.0 + radius + beginX, y };
 #if _Variable_templates_conditional_support_test
-			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0));
+			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
 #else
-			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0));
+			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double>() / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
 #endif
 			ds.immediate().change_origin(center);
 #if _Variable_templates_conditional_support_test
@@ -1002,7 +1001,28 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 	auto fps = 1000.0 / (sumOfElapsedTimes / countOfElapsedTimes);
 	stringstream fpsStr;
 	fpsStr << "FPS: " << setprecision(3) << fps;
-	ds.render_text(fpsStr.str(), { static_cast<double>(ds.width()) - 200.0, 50.0 }, rgba_color::dark_red());
+	
+	auto origM = ds.matrix();
+	
+	//ds.matrix(matrix_2d::init_scale({ 1.0, 0.5 }));
+	font_resource_factory frf{ "Segoe UI", font_slant::normal, font_weight::normal, matrix_2d::init_scale({40.0, 40.0}) };//, font_options{}, matrix_2d::init_scale({ 1.0, 1.5 }) };
+	ds.font_resource(experimental::io2d::font_resource{ frf });
+	auto gr = ds.font_resource().make_glyph_run(fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 50.0 });
+	//vector<glyph_run::glyph>::size_type idx = 0;
+	//gr.glyphs()[idx].x(gr.glyphs()[idx].x() - 20.0);
+	//gr.glyphs()[idx + 1].x(gr.glyphs()[idx + 1].x() - 10.0);
+	ds.immediate().clear();
+	//ds.immediate().add_text(ds.font_resource(), fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 50.0 });
+	ds.immediate().add_glyph_run(ds.font_resource(), gr);
+	//ds.fill_immediate(rgba_color::dark_red());
+	ds.render_glyph_run(gr, rgba_color::dark_red());
+	
+	////ds.render_text(fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 50.0 }, rgba_color::dark_red());
+	////fpsStr = stringstream();
+	////fpsStr << static_cast<int>(timer) << " " << elapsedTimeInMilliseconds;
+	////ds.render_text(fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 150.0 }, rgba_color::dark_red());
+	
+	ds.matrix(origM);
 
 	//auto radialFactory = radial_brush_factory({ 115.2, 102.4 }, 25.6, { 102.4, 102.4 }, 128.0);
 	//radialFactory.add_color_stop(0.0, rgba_color::white());
@@ -1044,8 +1064,7 @@ void draw_sort_visualization(display_surface& ds, double elapsedTimeInMillisecon
 
 	auto whiteBrush = brush(solid_color_brush_factory(rgba_color::white()));
 	ds.brush(whiteBrush);
-	ds.font_face("Segoe UI", font_slant::normal, font_weight::normal);
-	ds.font_size(40.0);
+	ds.font_resource("Segoe UI", 40.0);
 	ds.render_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 });
 
 	path_factory pf;

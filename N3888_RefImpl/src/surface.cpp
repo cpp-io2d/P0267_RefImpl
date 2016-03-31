@@ -30,14 +30,7 @@ void surface::_Ensure_state() {
 		cairo_new_path(_Context.get());
 	}
 	matrix(_Transform_matrix);
-	if (_Font_face.get() != nullptr) {
-		font_face(*_Font_face);
-	}
-	else {
-		cairo_set_font_face(_Context.get(), nullptr); // Restore default font.
-	}
-	font_matrix(_Font_matrix);
-	font_options(_Font_options);
+	font_resource(_Font_resource);
 }
 
 void surface::_Ensure_state(error_code& ec) noexcept {
@@ -66,21 +59,11 @@ void surface::_Ensure_state(error_code& ec) noexcept {
 		cairo_new_path(_Context.get());
 	}
 	matrix(_Transform_matrix);
-	if (_Font_face.get() != nullptr) {
-		font_face(*_Font_face, ec);
-		if (static_cast<bool>(ec)) {
-			return;
-		}
-	}
-	else {
-		cairo_set_font_face(_Context.get(), nullptr); // Restore default font.
-	}
-	font_matrix(_Font_matrix);
-	font_options(_Font_options);
 	dashes(_Dashes, ec);
 	if (static_cast<bool>(ec)) {
 		return;
 	}
+	font_resource(_Font_resource);
 	ec.clear();
 }
 
@@ -104,9 +87,7 @@ surface::surface(format fmt, int width, int height)
 	, _Current_path()
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
-	, _Font_face()
-	, _Font_matrix(matrix_2d::init_scale(_Font_default_size))
-	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
+	, _Font_resource(font_resource_factory())
 	, _Saved_state() {
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
@@ -138,9 +119,7 @@ surface::surface(surface&& other) noexcept
 	, _Current_path(move(other._Current_path))
 	, _Immediate_path(move(other._Immediate_path))
 	, _Transform_matrix(move(other._Transform_matrix))
-	, _Font_face(move(other._Font_face))
-	, _Font_matrix(move(other._Font_matrix))
-	, _Font_options(move(other._Font_options))
+	, _Font_resource(move(other._Font_resource))
 	, _Saved_state(move(other._Saved_state)) {
 }
 
@@ -163,9 +142,7 @@ surface& surface::operator=(surface&& other) noexcept {
 		_Current_path = move(other._Current_path);
 		_Immediate_path = move(other._Immediate_path);
 		_Transform_matrix = move(other._Transform_matrix);
-		_Font_face = move(other._Font_face);
-		_Font_matrix = move(other._Font_matrix);
-		_Font_options = move(other._Font_options);
+		_Font_resource = move(other._Font_resource);
 		_Saved_state = move(other._Saved_state);
 	}
 	return *this;
@@ -191,13 +168,18 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	, _Current_path()
 	, _Immediate_path()
 	, _Transform_matrix()
-	, _Font_face()
-	, _Font_matrix(matrix_2d::init_scale(_Font_default_size))
-	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
+	, _Font_resource(font_resource_factory())
 	, _Saved_state() {
 	if (nh.csfce != nullptr) {
 		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 		_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+		auto pf = path_factory{};
+		unique_ptr<cairo_path_t, decltype(&cairo_path_destroy)> upcpt{ cairo_copy_path(_Context.get()), &cairo_path_destroy };
+		if (upcpt.get() == nullptr) {
+			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
+		}
+		pf.append(_Cairo_path_data_t_array_to_path_data_item_vector(*(upcpt.get())));
+		_Current_path = make_shared<experimental::io2d::path>(pf);
 		_Ensure_state();
 	}
 	_Throw_if_failed_cairo_status_t(cairo_font_options_status(_Native_font_options.get()));
@@ -225,9 +207,7 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	, _Current_path()
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
-	, _Font_face()
-	, _Font_matrix(matrix_2d::init_scale(_Font_default_size))
-	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
+	, _Font_resource(font_resource_factory())
 	, _Saved_state() {
 	if (nh.csfce != nullptr) {
 		if (static_cast<bool>(ec)) {
@@ -290,9 +270,7 @@ surface::surface(const surface& other, ::std::experimental::io2d::content ctnt, 
 	, _Current_path()
 	, _Immediate_path()
 	, _Transform_matrix(matrix_2d::init_identity())
-	, _Font_face()
-	, _Font_matrix(matrix_2d::init_scale(_Font_default_size))
-	, _Font_options(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order)
+	, _Font_resource(font_resource_factory())
 	, _Saved_state() {
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
@@ -420,13 +398,13 @@ void surface::map(const ::std::function<void(mapped_surface&, error_code&)>& act
 
 void surface::save() {
 	cairo_save(_Context.get());
-	_Saved_state.push(make_tuple(_Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
+	_Saved_state.push(make_tuple(_Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Current_path, _Immediate_path, _Transform_matrix, _Font_resource));
 }
 
 void surface::save(error_code& ec) noexcept {
 	cairo_save(_Context.get());
 	try {
-		_Saved_state.push(make_tuple(_Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Current_path, _Immediate_path, _Transform_matrix, _Font_face, _Font_matrix, _Font_options));
+		_Saved_state.push(make_tuple(_Brush, _Antialias, _Dashes, _Fill_rule, _Line_cap, _Line_join, _Line_width, _Miter_limit, _Compositing_operator, _Current_path, _Immediate_path, _Transform_matrix, _Font_resource));
 	}
 	catch (const bad_alloc&) {
 		ec = make_error_code(errc::not_enough_memory);
@@ -455,9 +433,7 @@ void surface::restore() {
 		_Current_path = move(get<9>(t));
 		_Immediate_path = move(get<10>(t));
 		_Transform_matrix = get<11>(t);
-		_Font_face = move(get<12>(t));
-		_Font_matrix = get<13>(t);
-		_Font_options = get<14>(t);
+		_Font_resource = move(get<12>(t));
 	}
 	_Saved_state.pop();
 
@@ -484,9 +460,7 @@ void surface::restore(error_code& ec) noexcept {
 		_Current_path = move(get<9>(t));
 		_Immediate_path = move(get<10>(t));
 		_Transform_matrix = get<11>(t);
-		_Font_face = move(get<12>(t));
-		_Font_matrix = get<13>(t);
-		_Font_options = get<14>(t);
+		_Font_resource = move(get<12>(t));
 	}
 	_Saved_state.pop();
 
@@ -1101,6 +1075,38 @@ vector_2d surface::render_text(const string& utf8, const vector_2d& position, co
 	return result;
 }
 
+void surface::render_glyph_run(const glyph_run& gr) {
+	cairo_pattern_set_extend(_Brush.native_handle(), _Extend_to_cairo_extend_t(_Brush.extend()));
+	cairo_pattern_set_filter(_Brush.native_handle(), _Filter_to_cairo_filter_t(_Brush.filter()));
+	cairo_matrix_t cPttnMatrix;
+	cairo_matrix_init(&cPttnMatrix, _Brush.matrix().m00(), _Brush.matrix().m01(), _Brush.matrix().m10(), _Brush.matrix().m11(), _Brush.matrix().m20(), _Brush.matrix().m21());
+	cairo_pattern_set_matrix(_Brush.native_handle(), &cPttnMatrix);
+	cairo_set_source(_Context.get(), _Brush.native_handle());
+	cairo_show_text_glyphs(_Context.get(), gr.original_text().c_str(), static_cast<int>(gr.original_text().length()), gr._Cairo_glyphs.get(), static_cast<int>(gr.glyphs().size()), gr._Cairo_text_clusters.get(), static_cast<int>(gr.clusters().size()), gr._Text_cluster_flags);
+}
+
+void surface::render_glyph_run(const glyph_run& gr, const rgba_color& c) {
+	solid_color_brush_factory factory(c);
+	brush(experimental::io2d::brush(factory));
+	render_glyph_run(gr);
+}
+
+void surface::render_glyph_run(const glyph_run& gr, const ::std::experimental::io2d::brush& b) {
+	brush(b);
+	render_glyph_run(gr);
+}
+
+void surface::render_glyph_run(const glyph_run& gr, const surface& s, const matrix_2d& m, extend e, filter f) {
+	cairo_set_source_surface(_Context.get(), s.native_handle().csfce, 0.0, 0.0);
+	auto pat = cairo_get_source(_Context.get());
+	cairo_pattern_set_extend(pat, _Extend_to_cairo_extend_t(e));
+	cairo_pattern_set_filter(pat, _Filter_to_cairo_filter_t(f));
+	cairo_matrix_t cmat{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+	cairo_pattern_set_matrix(pat, &cmat);
+	render_glyph_run(gr);
+	cairo_set_source_rgba(_Context.get(), 0.0, 0.0, 0.0, 0.0);
+}
+
 void surface::matrix(const matrix_2d& m) {
 	auto det = m.determinant();
 	if (det == 0.0) {
@@ -1126,70 +1132,14 @@ void surface::matrix(const matrix_2d& m, error_code& ec) noexcept {
 	ec.clear();
 }
 
-void surface::font_face(const string& family, font_slant slant, font_weight weight) {
-	cairo_select_font_face(_Context.get(), family.c_str(), _Font_slant_to_cairo_font_slant_t(slant), _Font_weight_to_cairo_font_weight_t(weight));
+void surface::font_resource(const experimental::io2d::font_resource& f) noexcept {
+	_Font_resource = f;
+	cairo_set_scaled_font(_Context.get(), f._Scaled_font.get());
 }
 
-void surface::font_size(double size) {
-	if (size <= 0.0) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_SIZE);
-	}
-	cairo_set_font_size(_Context.get(), size);
-}
-
-void surface::font_size(double size, error_code& ec) noexcept {
-	if (size <= 0.0) {
-		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_SIZE);
-		return;
-	}
-	cairo_set_font_size(_Context.get(), size);
-	ec.clear();
-}
-
-void surface::font_matrix(const matrix_2d& m) {
-	auto det = m.determinant();
-	if (det == 0.0) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MATRIX);
-	}
-	cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-	cairo_set_font_matrix(_Context.get(), &cm);
-}
-
-void surface::font_matrix(const matrix_2d& m, error_code& ec) noexcept {
-	auto det = m.determinant(ec);
-	if (static_cast<bool>(ec)) {
-		return;
-	}
-	if (det == 0.0) {
-		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MATRIX);
-		return;
-	}
-	cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-	cairo_set_font_matrix(_Context.get(), &cm);
-	ec.clear();
-}
-
-void surface::font_options(const ::std::experimental::io2d::font_options& options) noexcept {
-	cairo_font_options_set_antialias(_Native_font_options.get(), _Antialias_to_cairo_antialias_t(options.antialias()));
-	cairo_font_options_set_subpixel_order(_Native_font_options.get(), _Subpixel_order_to_cairo_subpixel_order_t(options.subpixel_order()));
-	cairo_set_font_options(_Context.get(), _Native_font_options.get());
-}
-
-void surface::font_face(const ::std::experimental::io2d::font_face& font_face) {
-	_Font_face = make_shared<experimental::io2d::font_face>(font_face);
-	cairo_set_font_face(_Context.get(), font_face.native_handle());
-}
-
-void surface::font_face(const::std::experimental::io2d::font_face & f, ::std::error_code & ec) noexcept {
-	try {
-		_Font_face = make_shared<experimental::io2d::font_face>(f);
-	}
-	catch (const bad_alloc&) {
-		ec = make_error_code(errc::not_enough_memory);
-		return;
-	}
-	cairo_set_font_face(_Context.get(), f.native_handle());
-	ec.clear();
+void surface::font_resource(const ::std::string& family, double size, font_slant sl, font_weight w) {
+	_Font_resource = experimental::io2d::font_resource(font_resource_factory(family, sl, w, matrix_2d::init_scale({ size, size })));
+	cairo_set_scaled_font(_Context.get(), _Font_resource._Scaled_font.get());
 }
 
 brush surface::brush() const noexcept {
@@ -1512,32 +1462,6 @@ vector_2d surface::surface_to_user_distance(const vector_2d& dpt) const {
 	return im.transform_distance(dpt);
 }
 
-matrix_2d surface::font_matrix() const noexcept {
-	cairo_matrix_t cm{};
-	cairo_get_font_matrix(_Context.get(), &cm);
-	return{ cm.xx, cm.yx, cm.xy, cm.yy, cm.x0, cm.y0 };
-}
-
-// Note: This deviates from cairo in that we return the values that will actually wind up being used.
-::std::experimental::io2d::font_options surface::font_options() const noexcept {
-	::std::experimental::io2d::font_options fo(::std::experimental::io2d::antialias::default_antialias, ::std::experimental::io2d::subpixel_order::default_subpixel_order);
-	unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)> up(nullptr, &cairo_font_options_destroy);
-	cairo_get_font_options(_Context.get(), up.get());
-	_Throw_if_failed_cairo_status_t(cairo_font_options_status(up.get()));
-	auto ca = _Cairo_antialias_t_to_antialias(cairo_font_options_get_antialias(up.get()));
-	auto cso = _Cairo_subpixel_order_t_to_subpixel_order(cairo_font_options_get_subpixel_order(up.get()));
-	cairo_get_font_options(_Context.get(), up.get());
-	_Throw_if_failed_cairo_status_t(cairo_font_options_status(up.get()));
-
-	return ::std::experimental::io2d::font_options(
-		(ca == ::std::experimental::io2d::antialias::default_antialias) ? _Cairo_antialias_t_to_antialias(cairo_font_options_get_antialias(up.get())) : ca,
-		(cso == ::std::experimental::io2d::subpixel_order::default_subpixel_order) ? _Cairo_subpixel_order_t_to_subpixel_order(cairo_font_options_get_subpixel_order(up.get())) : cso
-		);
-}
-
-::std::experimental::io2d::font_face surface::font_face() const {
-	auto ff = cairo_get_font_face(_Context.get());
-	_Throw_if_failed_cairo_status_t(cairo_font_face_status(ff));
-	// Cairo doesn't increase the font face's reference count when you call cairo_get_font_face so we do it manually.
-	return ::std::experimental::io2d::font_face(cairo_font_face_reference(ff));
+experimental::io2d::font_resource surface::font_resource() const noexcept {
+	return _Font_resource;
 }

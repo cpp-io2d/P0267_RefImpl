@@ -992,3 +992,39 @@ void path_factory::clear() noexcept {
 	_Origin = { };
 }
 
+void path_factory::add_text(const font_resource& fr, const string& utf8, const vector_2d& pt) {
+	auto gr = fr.make_glyph_run(utf8, pt);
+	auto ext = gr.extents();
+	double w = ext.width();
+	double h = ext.height();
+	cairo_matrix_t cm{};
+	cairo_matrix_init_translate(&cm, -(pt.x() + ext.x_bearing()), -(pt.y() + ext.y_bearing()));
+	unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> upimgSfc(
+		cairo_image_surface_create(CAIRO_FORMAT_ARGB32, _Double_to_int(w + 0.5), _Double_to_int(h + 0.5)), &cairo_surface_destroy
+		);
+	unique_ptr<cairo_t, decltype(&cairo_destroy)> upctxt(cairo_create(upimgSfc.get()), &cairo_destroy);
+	cairo_set_matrix(upctxt.get(), &cm);
+	cairo_new_path(upctxt.get());
+	cairo_set_scaled_font(upctxt.get(), fr._Scaled_font.get());
+	cairo_glyph_path(upctxt.get(), gr._Cairo_glyphs.get(), static_cast<int>(gr.glyphs().size()));
+	unique_ptr<cairo_path_t, decltype(&cairo_path_destroy)> uppth(cairo_copy_path(upctxt.get()), &cairo_path_destroy);
+	append(_Cairo_path_data_t_array_to_path_data_item_vector(*(uppth.get())));
+}
+
+void path_factory::add_glyph_run(const font_resource& fr, const glyph_run& gr) {
+	auto ext = gr.extents();
+	double w = ext.width();
+	double h = ext.height();
+	cairo_matrix_t cm{};
+	cairo_matrix_init_translate(&cm, -(gr.position().x() + ext.x_bearing()), -(gr.position().y() + ext.y_bearing()));
+	unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> upimgSfc(
+		cairo_image_surface_create(CAIRO_FORMAT_ARGB32, _Double_to_int(w + 0.5), _Double_to_int(h + 0.5)), &cairo_surface_destroy
+		);
+	unique_ptr<cairo_t, decltype(&cairo_destroy)> upctxt(cairo_create(upimgSfc.get()), &cairo_destroy);
+	cairo_set_matrix(upctxt.get(), &cm);
+	cairo_new_path(upctxt.get());
+	cairo_set_scaled_font(upctxt.get(), fr._Scaled_font.get());
+	cairo_glyph_path(upctxt.get(), gr._Cairo_glyphs.get(), static_cast<int>(gr.glyphs().size()));
+	unique_ptr<cairo_path_t, decltype(&cairo_path_destroy)> uppth(cairo_copy_path(upctxt.get()), &cairo_path_destroy);
+	append(_Cairo_path_data_t_array_to_path_data_item_vector(*(uppth.get())));
+}

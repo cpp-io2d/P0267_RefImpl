@@ -231,3 +231,4 @@ compile
 /N3888_RefImpl/src/Debug_Clang_C2/N3888_RefImpl.tlog
 *.exe
 /N3888_RefImpl/src/Debug_Clang_C2/N3888_RefImpl.res
+/N3888_RefImpl/N3888_RefImpl.VC.db

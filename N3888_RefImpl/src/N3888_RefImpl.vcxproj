@@ -386,8 +386,10 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="display_surface-win32.cpp" />
     <ClCompile Include="entrypoint.cpp" />
     <ClCompile Include="font_extents.cpp" />
-    <ClCompile Include="font_face.cpp" />
     <ClCompile Include="font_options.cpp" />
+    <ClCompile Include="font_resource.cpp" />
+    <ClCompile Include="font_resource_factory.cpp" />
+    <ClCompile Include="glyph_run.cpp" />
     <ClCompile Include="image_surface.cpp" />
     <ClCompile Include="io2d_error_category.cpp" />
     <ClCompile Include="linear_brush_factory.cpp" />
@@ -408,7 +410,6 @@ cmd /c copy "$(ProjectDir)win32\DLLs\$(PlatformTarget)\$(Configuration)\zlib1.dl
     <ClCompile Include="solid_color_brush_factory.cpp" />
     <ClCompile Include="standalone_functions.cpp" />
     <ClCompile Include="surface.cpp" />
-    <ClCompile Include="simple_font_face.cpp" />
     <ClCompile Include="surface_brush_factory.cpp" />
     <ClCompile Include="text_extents.cpp" />
   </ItemGroup>

@@ -18,8 +18,10 @@ N3888_RefImpl_SOURCES =	brush.cpp \
 				display_surface-xlib.cpp \
 				entrypoint.cpp \
 				font_extents.cpp \
-				font_face.cpp \
 				font_options.cpp \
+				font_resource.cpp \
+				font_resource_factory.cpp \
+				glyph_run.cpp \
 				image_surface.cpp \
 				io2d_error_category.cpp \
 				linear_brush_factory.cpp \
@@ -34,7 +36,6 @@ N3888_RefImpl_SOURCES =	brush.cpp \
 				rectangle.cpp \
 				rgba_color.cpp \
 				sample_draw.cpp \
-				simple_font_face.cpp \
 				solid_color_brush_factory.cpp \
 				standalone_functions.cpp \
 				surface.cpp \

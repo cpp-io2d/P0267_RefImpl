@@ -374,6 +374,93 @@ namespace std {
 				rgba_color operator*(const rgba_color& lhs, double rhs);
 				rgba_color operator*(double lhs, const rgba_color& rhs);
 				rgba_color& operator*=(rgba_color& lhs, double rhs);
+
+				inline ::std::vector<path_data_item> _Cairo_path_data_t_array_to_path_data_item_vector(const cairo_path_t& cpt) {
+					::std::vector<path_data_item> vec;
+					_Throw_if_failed_cairo_status_t(cpt.status);
+					for (auto i = 0; i < cpt.num_data; i += cpt.data[i].header.length) {
+						auto type = cpt.data[i].header.type;
+						switch (type)
+						{
+						case CAIRO_PATH_CLOSE_PATH:
+						{
+							vec.emplace_back(path_data_item::close_path());
+						} break;
+						case CAIRO_PATH_CURVE_TO:
+						{
+							vec.emplace_back(path_data_item::curve_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }, { cpt.data[i + 2].point.x, cpt.data[i + 2].point.y }, { cpt.data[i + 3].point.x, cpt.data[i + 3].point.y }));
+						} break;
+						case CAIRO_PATH_LINE_TO:
+						{
+							vec.emplace_back(path_data_item::line_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
+						} break;
+						case CAIRO_PATH_MOVE_TO:
+						{
+							vec.emplace_back(path_data_item::move_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
+						} break;
+						default:
+						{
+							_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_PATH_DATA);
+						} break;
+						}
+					}
+
+					return vec;
+				}
+
+				inline ::std::vector<path_data_item> _Cairo_path_data_t_array_to_path_data_item_vector(const cairo_path_t& cpt, ::std::error_code& ec) noexcept {
+					::std::vector<path_data_item> vec;
+					ec = _Cairo_status_t_to_std_error_code(cpt.status);
+					if (static_cast<bool>(ec)) {
+						return vec;
+					}
+					::std::vector<path_data_item>::size_type reqSize{};
+					for (auto i = 0; i < cpt.num_data; i += cpt.data[i].header.length) {
+						reqSize++;
+					}
+					try {
+						vec.reserve(reqSize);
+					}
+					catch (const ::std::length_error&) {
+						ec = ::std::make_error_code(::std::errc::not_enough_memory);
+						return vec;
+					}
+					catch (const ::std::bad_alloc&) {
+						ec = ::std::make_error_code(::std::errc::not_enough_memory);
+						return vec;
+					}
+
+					for (auto i = 0; i < cpt.num_data; i += cpt.data[i].header.length) {
+						auto type = cpt.data[i].header.type;
+						switch (type)
+						{
+						case CAIRO_PATH_CLOSE_PATH:
+						{
+							vec.emplace_back(path_data_item::close_path());
+						} break;
+						case CAIRO_PATH_CURVE_TO:
+						{
+							vec.emplace_back(path_data_item::curve_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }, { cpt.data[i + 2].point.x, cpt.data[i + 2].point.y }, { cpt.data[i + 3].point.x, cpt.data[i + 3].point.y }));
+						} break;
+						case CAIRO_PATH_LINE_TO:
+						{
+							vec.emplace_back(path_data_item::line_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
+						} break;
+						case CAIRO_PATH_MOVE_TO:
+						{
+							vec.emplace_back(path_data_item::move_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
+						} break;
+						default:
+						{
+							ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_PATH_DATA);
+							return vec;
+						} break;
+						}
+					}
+
+					ec.clear();
+					return vec;
+				}
 #if _Inline_namespace_conditional_support_test
 			}
 #endif

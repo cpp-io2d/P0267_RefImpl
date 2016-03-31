@@ -61,7 +61,9 @@ image_surface::image_surface(vector<unsigned char>& data, experimental::io2d::fo
 	if (imageData == nullptr) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
 	}
-	::std::memcpy(imageData, data.data(), expected_size);
+	else {
+		::std::memcpy(imageData, data.data(), expected_size);
+	}
 	cairo_surface_mark_dirty(_Surface.get());
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
@@ -85,7 +87,9 @@ void image_surface::data(const vector<unsigned char>& data) {
 	if (imageData == nullptr) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
 	}
-	::std::memcpy(imageData, data.data(), expected_size);
+	else {
+		::std::memcpy(imageData, data.data(), expected_size);
+	}
 	cairo_surface_mark_dirty(_Surface.get());
 }
 

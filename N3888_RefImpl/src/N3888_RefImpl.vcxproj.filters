@@ -59,9 +59,6 @@
     <ClCompile Include="font_options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="font_face.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="image_surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,9 +75,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="io2d_error_category.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="simple_font_face.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="path_data.cpp">
@@ -138,6 +132,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_renderer_fill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="font_resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="font_resource_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glyph_run.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
