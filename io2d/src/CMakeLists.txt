@@ -14,8 +14,10 @@ set(IO2D_SRC
     device.cpp
     display_surface-common.cpp
     font_extents.cpp
-    font_face.cpp
+    font_resource.cpp 
+    font_resource_factory.cpp 
     font_options.cpp
+    glyph_run.cpp 
     image_surface.cpp
     io2d_error_category.cpp
     linear_brush_factory.cpp
@@ -29,7 +31,6 @@ set(IO2D_SRC
     radial_brush_factory.cpp
     rectangle.cpp
     rgba_color.cpp
-    simple_font_face.cpp
     solid_color_brush_factory.cpp
     standalone_functions.cpp
     surface.cpp

@@ -28,10 +28,8 @@ int main ()
 {
     io2d::image_surface image(io2d::format::argb32, 240, 80);
 
-    io2d::simple_font_face consolas("Consolas", io2d::font_slant::normal,
-                                    io2d::font_weight::bold);
-    image.font_face(consolas);
-    image.font_size(32.0);
+    image.font_resource("Consolas", 32.0, io2d::font_slant::normal,
+                        io2d::font_weight::bold);
 
     io2d::brush cyan(io2d::rgba_color::cyan());
     image.brush(cyan);

@@ -31,81 +31,6 @@
 #define noexcept
 #endif
 
-//namespace std {
-//	namespace experimental {
-//		////// From C++ Extensions for Library Fundamentals, N4335
-//		//struct nullopt_t {
-//		//	constexpr explicit nullopt_t(int) noexcept {
-//		//	}
-//		//};
-//		//constexpr nullopt_t nullopt{ 0 };
-//
-////		namespace io2d {
-////#if _Inline_namespace_conditional_support_test
-////			inline namespace v1 {
-////#endif
-////				enum class io2d_error;
-////				enum class antialias;
-////				enum class content;
-////				enum class fill_rule;
-////				enum class line_cap;
-////				enum class line_join;
-////				enum class compositing_operator;
-////				enum class format;
-////				enum class extend;
-////				enum class filter;
-////				enum class brush_type;
-////				enum class font_slant;
-////				enum class font_weight;
-////				enum class subpixel_order;
-////				enum class path_data_type;
-////				enum class scaling;
-////				class io2d_error_category;
-////				class rectangle;
-////				class rgba_color;
-////				class vector_2d;
-////				class font_extents;
-////				class text_extents;
-////				class matrix_2d;
-////				//class path_data;
-////				class _Point;
-////				//class move_to;
-////				//class line_to;
-////				//class rel_move_to;
-////				//class rel_line_to;
-////				class _Curve_to;
-////				//class curve_to;
-////				//class rel_curve_to;
-////				class _Arc;
-////				//class arc;
-////				//class arc_negative;
-////				//class new_sub_path;
-////				//class close_path;
-////				//class change_matrix;
-////				//class change_origin;
-////				class path;
-////				class path_factory;
-////				class device;
-////				class font_options;
-////				class font_face;
-////				class simple_font_face;
-////				class brush;
-////				class solid_color_brush_factory;
-////				class linear_brush_factory;
-////				class radial_brush_factory;
-////				//class mesh_brush_factory;
-////				struct _Surface_native_handles;
-////				class surface;
-////				class image_surface;
-////				class display_surface;
-////				class surface_brush_factory;
-////#if _Inline_namespace_conditional_support_test
-////			}
-////#endif
-////		}
-//	}
-//}
-
 namespace std {
 	namespace experimental {
 
@@ -1398,6 +1323,10 @@ namespace std {
 					path& operator=(path&& other) noexcept;
 				};
 
+				// Forward declaration
+				class font_resource;
+				class glyph_run;
+
 				class path_factory {
 					friend path;
 					::std::vector<path_data_item> _Data;
@@ -1445,6 +1374,10 @@ namespace std {
 					void change_origin(const vector_2d& pt);
 					void change_origin(const vector_2d& pt, ::std::error_code& ec) noexcept;
 					void clear() noexcept;
+					void add_text(const font_resource& fr, const ::std::string& utf8, const vector_2d& pt);
+					void add_text(const font_resource& fr, const ::std::string& utf8, const vector_2d& pt, ::std::error_code& ec) noexcept;
+					void add_glyph_run(const font_resource& fr, const glyph_run& gr);
+					void add_glyph_run(const font_resource& fr, const glyph_run& gr, ::std::error_code& ec) noexcept;
 
 					// Observers
 					::std::experimental::io2d::rectangle path_extents() const;
@@ -1507,72 +1440,182 @@ namespace std {
 					::std::experimental::io2d::subpixel_order subpixel_order() const noexcept;
 				};
 
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wweak-vtables"
-#endif
-#endif
+				class font_resource_factory {
+					::std::string _Family;
+					::std::experimental::io2d::font_slant _Font_slant = ::std::experimental::io2d::font_slant::normal;
+					::std::experimental::io2d::font_weight _Font_weight = ::std::experimental::io2d::font_weight::normal;
+					::std::experimental::io2d::font_options _Font_options;
+					matrix_2d _Font_matrix;
+					matrix_2d _Surface_matrix;
 
-				class font_face {
-					friend surface;
 				public:
-					typedef cairo_font_face_t* native_handle_type;
-				protected:
-					::std::shared_ptr<cairo_font_face_t> _Font_face;
-					explicit font_face(native_handle_type nh);
-					font_face(native_handle_type nh, ::std::error_code& ec) noexcept;
-				public:
-					native_handle_type native_handle() const noexcept;
+					font_resource_factory() = default;
+					font_resource_factory(const font_resource_factory&) = default;
+					font_resource_factory& operator=(const font_resource_factory&) = default;
+					font_resource_factory(font_resource_factory&&) noexcept = default;
+					font_resource_factory& operator=(font_resource_factory&&) noexcept = default;
+					explicit font_resource_factory(const ::std::string& family,
+						::std::experimental::io2d::font_slant fs = ::std::experimental::io2d::font_slant::normal,
+						::std::experimental::io2d::font_weight fw = ::std::experimental::io2d::font_weight::normal,
+						const matrix_2d& fm = matrix_2d::init_scale({ 16.0, 16.0 }),
+						const ::std::experimental::io2d::font_options& fo = ::std::experimental::io2d::font_options(),
+						const matrix_2d& sm = matrix_2d::init_identity());
+					font_resource_factory(const ::std::string& family,
+						::std::error_code& ec,
+						::std::experimental::io2d::font_slant fs = ::std::experimental::io2d::font_slant::normal,
+						::std::experimental::io2d::font_weight fw = ::std::experimental::io2d::font_weight::normal,
+						const matrix_2d& fm = matrix_2d::init_scale({ 16.0, 16.0 }),
+						const ::std::experimental::io2d::font_options& fo = ::std::experimental::io2d::font_options(),
+						const matrix_2d& sm = matrix_2d::init_identity()) noexcept;
 
-					font_face() = delete;
-					font_face(const font_face&) noexcept = default;
-					font_face& operator=(const font_face&) noexcept = default;
-					font_face(font_face&& other) noexcept;
-					font_face& operator=(font_face&& other) noexcept;
-					virtual ~font_face();
-				};
-
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#endif
-
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wweak-vtables"
-#endif
-#endif
-
-				class simple_font_face : public font_face {
-				public:
-					simple_font_face() = delete;
-					simple_font_face(const simple_font_face&) noexcept = default;
-					simple_font_face& operator=(const simple_font_face&) noexcept = default;
-					simple_font_face(const ::std::string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw);
-					simple_font_face(const ::std::string& family, ::std::experimental::io2d::font_slant fs, ::std::experimental::io2d::font_weight fw, ::std::error_code& ec) noexcept;
-					simple_font_face(simple_font_face&& other) noexcept;
-					simple_font_face& operator=(simple_font_face&& other) noexcept;
-					virtual ~simple_font_face();
+					// Modifiers
+					void font_family(const ::std::string& f);
+					void font_family(const ::std::string& f, ::std::error_code& ec) noexcept;
+					void font_slant(const ::std::experimental::io2d::font_slant fs);
+					void font_slant(const ::std::experimental::io2d::font_slant fs, ::std::error_code& ec) noexcept;
+					void font_weight(::std::experimental::io2d::font_weight fw);
+					void font_weight(::std::experimental::io2d::font_weight fw, ::std::error_code& ec) noexcept;
+					void font_options(const ::std::experimental::io2d::font_options& fo) noexcept;
+					void font_matrix(const matrix_2d& m) noexcept;
+					void surface_matrix(const matrix_2d& m) noexcept;
 
 					// Observers
 					::std::string font_family() const;
-					void font_family(::std::string& str, ::std::error_code& ec) const noexcept;
+					::std::string font_family(::std::error_code& ec) const noexcept;
 					::std::experimental::io2d::font_slant font_slant() const noexcept;
 					::std::experimental::io2d::font_weight font_weight() const noexcept;
+					::std::experimental::io2d::font_options font_options() const noexcept;
+					matrix_2d font_matrix() const noexcept;
+					matrix_2d surface_matrix() const noexcept;
 				};
 
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#endif
+				//Forward declaration
+				class glyph_run;
+				class path_factory;
+
+				class font_resource {
+					friend surface;
+					friend glyph_run;
+					friend path_factory;
+
+					::std::shared_ptr<cairo_scaled_font_t> _Scaled_font;
+					::std::shared_ptr<::std::string> _Font_family;
+					::std::experimental::io2d::font_slant _Font_slant;
+					::std::experimental::io2d::font_weight _Font_weight;
+					::std::shared_ptr<cairo_font_options_t> _Font_options;
+
+				public:
+					font_resource() = delete;
+					font_resource(const font_resource&) noexcept = default;
+					font_resource& operator=(const font_resource&) noexcept = default;
+					font_resource(font_resource&&) noexcept = default;
+					font_resource& operator=(font_resource&&) noexcept = default;
+					explicit font_resource(const font_resource_factory& f);
+					font_resource(const font_resource_factory& f, ::std::error_code& ec) noexcept;
+
+					// Observers
+					::std::string font_family() const;
+					::std::string font_family(::std::error_code& ec) const noexcept;
+					::std::experimental::io2d::font_slant font_slant() const noexcept;
+					::std::experimental::io2d::font_weight font_weight() const noexcept;
+					::std::experimental::io2d::font_options font_options() const noexcept;
+					matrix_2d font_matrix() const noexcept;
+					matrix_2d surface_matrix() const noexcept;
+					::std::experimental::io2d::font_extents font_extents() const noexcept;
+					::std::experimental::io2d::text_extents text_extents(const ::std::string& utf8) const noexcept;
+					glyph_run make_glyph_run(const ::std::string& utf8, const vector_2d& pos) const;
+					glyph_run make_glyph_run(const ::std::string& utf8, const vector_2d& pos, ::std::error_code& ec) const noexcept;
+				};
+
+				class glyph_run {
+					friend font_resource;
+					friend surface;
+					friend path_factory;
+
+				public:
+					class glyph {
+						friend glyph_run;
+					public:
+						typedef unsigned long index_type; // impldef
+					private:
+						index_type _Index = 0;
+						double _X = 0.0;
+						double _Y = 0.0;
+						cairo_glyph_t* _Native_glyph = nullptr;
+					public:
+						glyph() noexcept = default;
+						glyph(const glyph&) noexcept = default;
+						glyph& operator=(const glyph&) noexcept = default;
+						glyph(glyph&&) noexcept = default;
+						glyph& operator=(glyph&&) noexcept = default;
+						glyph(index_type i, double x, double y) noexcept;
+
+						// Modifiers
+						void index(index_type i) noexcept;
+						void x(double val) noexcept;
+						void y(double val) noexcept;
+
+						// Observers
+						index_type index() const noexcept;
+						double x() const noexcept;
+						double y() const noexcept;
+					};
+
+					class cluster {
+						friend glyph_run;
+						// Clusters are useful when dealing with ligatures and ordering in scripts that require complex text layout.
+						int _Glyph_count = 0; // Note: It's possible that processing could result in a cluster where one or more characters map to zero glyphs due to the previous or next cluster.
+						int _Byte_count = 0; // Note: UTF-8 is variable byte length. A single cluster can map to multiple characters. Lastly, it's possible that processing could result in a cluster with one or more glyphs map to zero characters due to the previous or next cluster.
+						cairo_text_cluster_t* _Native_cluster = nullptr;
+					public:
+						cluster() noexcept = default;
+						cluster(const cluster&) noexcept = default;
+						cluster& operator=(const cluster&) noexcept = default;
+						cluster(cluster&&) noexcept = default;
+						cluster& operator=(cluster&&) noexcept = default;
+						cluster(int glyphs, int bytes) noexcept;
+
+						// Modifiers
+						void glyph_count(int count) noexcept;
+						void byte_count(int count) noexcept;
+
+						// Observers
+						int glyph_count() const noexcept;
+						int byte_count() const noexcept;
+					};
+
+				private:
+					::std::string _Text_string;
+					::std::experimental::io2d::font_resource _Font_resource;
+					::std::vector<glyph> _Glyphs;
+					::std::vector<cluster> _Clusters;
+					::std::shared_ptr<cairo_glyph_t> _Cairo_glyphs;
+					::std::shared_ptr<cairo_text_cluster_t> _Cairo_text_clusters;
+					vector_2d _Position;
+					cairo_text_cluster_flags_t _Text_cluster_flags;
+
+					glyph_run(const ::std::experimental::io2d::font_resource& fr, const ::std::string& utf8, const vector_2d& pos);
+					glyph_run(const ::std::experimental::io2d::font_resource& fr, const ::std::string& utf8, const vector_2d& pos, ::std::error_code& ec) noexcept;
+
+				public:
+					glyph_run(const glyph_run&) = default;
+					glyph_run& operator=(const glyph_run&) = default;
+					glyph_run(glyph_run&&) noexcept = default;
+					glyph_run& operator=(glyph_run&&) noexcept = default;
+
+					// Modifiers
+					::std::vector<glyph>& glyphs() noexcept;
+					::std::vector<cluster>& clusters() noexcept;
+
+					// Observers
+					const ::std::string& original_text() const noexcept;
+					const ::std::vector<glyph>& glyphs() const noexcept;
+					const ::std::vector<cluster>& clusters() const noexcept;
+					const ::std::experimental::io2d::font_resource& font_resource() const noexcept;
+					bool reversed_clusters() const noexcept;
+					vector_2d position() const noexcept;
+					text_extents extents() const noexcept;
+				};
 
 				// Forward declaration.
 				class linear_brush_factory;
@@ -1825,10 +1868,7 @@ namespace std {
 					::std::experimental::io2d::path_factory _Immediate_path;
 					typedef matrix_2d _Transform_matrix_type;
 					_Transform_matrix_type _Transform_matrix;
-					::std::shared_ptr<::std::experimental::io2d::font_face> _Font_face;
-					typedef matrix_2d _Font_matrix_type;
-					_Font_matrix_type _Font_matrix; // Covers both font size and full font matrix - font size is just a uniform scale matrix.
-					::std::experimental::io2d::font_options _Font_options;
+					::std::experimental::io2d::font_resource _Font_resource;
 
 					// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
 					::std::stack<::std::tuple<
@@ -1844,9 +1884,7 @@ namespace std {
 						::std::shared_ptr<::std::experimental::io2d::path>,
 						::std::experimental::io2d::path_factory,
 						_Transform_matrix_type,
-						::std::shared_ptr<::std::experimental::io2d::font_face>,
-						_Font_matrix_type,
-						::std::experimental::io2d::font_options
+						::std::experimental::io2d::font_resource
 					>, ::std::vector<::std::tuple<
 						::std::experimental::io2d::brush,
 						::std::experimental::io2d::antialias,
@@ -1860,9 +1898,7 @@ namespace std {
 						::std::shared_ptr<::std::experimental::io2d::path>,
 						::std::experimental::io2d::path_factory,
 						_Transform_matrix_type,
-						::std::shared_ptr<::std::experimental::io2d::font_face>,
-						_Font_matrix_type,
-						::std::experimental::io2d::font_options>>> _Saved_state;
+						::std::experimental::io2d::font_resource>>> _Saved_state;
 
 					void _Ensure_state();
 					void _Ensure_state(::std::error_code& ec) noexcept;
@@ -2028,21 +2064,30 @@ namespace std {
 					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
 					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const surface& s, const matrix_2d& m = matrix_2d::init_identity(), extend e = extend::none, filter f = filter::good);
 					vector_2d render_text(const ::std::string& utf8, const vector_2d& position, const surface& s, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), extend e = extend::none, filter f = filter::good) noexcept;
+					void render_glyph_run(const glyph_run& gr);
+					void render_glyph_run(const glyph_run& gr, ::std::error_code& ec) noexcept;
+					void render_glyph_run(const glyph_run& gr, const rgba_color& c);
+					void render_glyph_run(const glyph_run& gr, const rgba_color& c, ::std::error_code& ec) noexcept;
+					void render_glyph_run(const glyph_run& gr, const ::std::experimental::io2d::brush& b);
+					void render_glyph_run(const glyph_run& gr, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
+					void render_glyph_run(const glyph_run& gr, const surface& s, const matrix_2d& m = matrix_2d::init_identity(), extend e = extend::none, filter f = filter::good);
+					void render_glyph_run(const glyph_run& gr, const surface& s, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), extend e = extend::none, filter f = filter::good) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
 					void matrix(const matrix_2d& matrix);
 					void matrix(const matrix_2d& matrix, ::std::error_code& ec) noexcept;
 
 					// \ref{\iotwod.surface.modifiers.font}, font modifiers:
-					void font_face(const ::std::string& family, font_slant sl, font_weight w);
-					void font_face(const ::std::string& family, font_slant sl, font_weight w, ::std::error_code& ec) noexcept;
-					void font_face(const ::std::experimental::io2d::font_face& f);
-					void font_face(const ::std::experimental::io2d::font_face& f, ::std::error_code& ec) noexcept;
-					void font_size(double s);
-					void font_size(double s, ::std::error_code& ec) noexcept;
-					void font_matrix(const matrix_2d& m);
-					void font_matrix(const matrix_2d& m, ::std::error_code& ec) noexcept;
-					void font_options(const font_options& fo) noexcept;
+					void font_resource(const ::std::experimental::io2d::font_resource& f) noexcept;
+					void font_resource(const ::std::string& family, double size, font_slant sl = font_slant::normal, font_weight w = font_weight::normal);
+					void font_resource(const ::std::string& family, double size, ::std::error_code& ec, font_slant sl = font_slant::normal, font_weight w = font_weight::normal) noexcept;
+					//void font_face(const ::std::experimental::io2d::font_face& f);
+					//void font_face(const ::std::experimental::io2d::font_face& f, ::std::error_code& ec) noexcept;
+					//void font_size(double s);
+					//void font_size(double s, ::std::error_code& ec) noexcept;
+					//void font_matrix(const matrix_2d& m);
+					//void font_matrix(const matrix_2d& m, ::std::error_code& ec) noexcept;
+					//void font_options(const font_options& fo) noexcept;
 
 					// \ref{\iotwod.surface.observers.state}, state observers:
 					bool is_finished() const noexcept;
@@ -2085,10 +2130,12 @@ namespace std {
 					vector_2d surface_to_user_distance(const vector_2d& dpt, ::std::error_code& ec) const noexcept;
 
 					// \ref{\iotwod.surface.observers.font}, font observers:
-					matrix_2d font_matrix() const noexcept;
-					::std::experimental::io2d::font_options font_options() const noexcept;
-					::std::experimental::io2d::font_face font_face() const;
-					::std::experimental::io2d::font_face font_face(::std::error_code& ec) const noexcept;
+					::std::experimental::io2d::font_resource font_resource() const noexcept;
+
+					//matrix_2d font_matrix() const noexcept;
+					//::std::experimental::io2d::font_options font_options() const noexcept;
+					//::std::experimental::io2d::font_face font_face() const;
+					//::std::experimental::io2d::font_face font_face(::std::error_code& ec) const noexcept;
 				};
 
 				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
@@ -2394,23 +2441,23 @@ namespace std {
 				};
 #if _Variable_templates_conditional_support_test
 				template <class T>
-				constexpr T pi = T(3.14159265358979323846264338327950288419716939937510L);
+				constexpr T pi = T(3.14159265358979323846264338327950288L);
 
 				template <class T>
-				constexpr T two_pi = T(6.28318530717958647692528676655900576839433879875020L);
+				constexpr T two_pi = T(6.28318530717958647692528676655900576L);
 
 				template <class T>
-				constexpr T half_pi = T(1.57079632679489661923132169163975144209858469968755L);
+				constexpr T half_pi = T(1.57079632679489661923132169163975144L);
 
 				template <class T>
-				constexpr T three_pi_over_two = T(4.71238898038468985769396507491925432629575409906265L);
+				constexpr T three_pi_over_two = T(4.71238898038468985769396507491925432L);
 #else
 				template <class T>
 #if _Constexpr_conditional_support_test
 				constexpr
 #endif
 				T pi() noexcept {
-					return static_cast<T>(3.14159265358979323846264338327950288419716939937510L);
+					return static_cast<T>(3.14159265358979323846264338327950288L);
 				}
 
 				template <class T>
@@ -2418,7 +2465,7 @@ namespace std {
 				constexpr
 #endif
 				T two_pi() noexcept {
-					return static_cast<T>(6.28318530717958647692528676655900576839433879875020L);
+					return static_cast<T>(6.28318530717958647692528676655900576L);
 				}
 
 				template <class T>
@@ -2426,7 +2473,7 @@ namespace std {
 				constexpr
 #endif
 				T half_pi() noexcept {
-					return static_cast<T>(1.57079632679489661923132169163975144209858469968755L);
+					return static_cast<T>(1.57079632679489661923132169163975144L);
 				}
 
 				template <class T>
@@ -2434,7 +2481,7 @@ namespace std {
 				constexpr
 #endif
 				T three_pi_over_two() noexcept {
-					return static_cast<T>(4.71238898038468985769396507491925432629575409906265L);
+					return static_cast<T>(4.71238898038468985769396507491925432L);
 				}
 #endif
 				int format_stride_for_width(format format, int width) noexcept;

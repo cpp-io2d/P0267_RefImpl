@@ -397,5 +397,5 @@ double display_surface::desired_frame_rate() const noexcept {
 }
 
 double display_surface::elapsed_draw_time() const noexcept {
-	return _Elapsed_draw_time;
+	return _Elapsed_draw_time / 1'000'000.0;
 }
