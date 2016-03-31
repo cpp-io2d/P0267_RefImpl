@@ -1453,7 +1453,7 @@ namespace std {
 					font_resource_factory(const font_resource_factory&) = default;
 					font_resource_factory& operator=(const font_resource_factory&) = default;
 					font_resource_factory(font_resource_factory&&) noexcept = default;
-					font_resource_factory& operator=(font_resource_factory&&) noexcept = default;
+					font_resource_factory& operator=(font_resource_factory&&) noexcept;// = default;
 					explicit font_resource_factory(const ::std::string& family,
 						::std::experimental::io2d::font_slant fs = ::std::experimental::io2d::font_slant::normal,
 						::std::experimental::io2d::font_weight fw = ::std::experimental::io2d::font_weight::normal,
@@ -1528,7 +1528,7 @@ namespace std {
 				};
 
 				class glyph_run {
-					friend font_resource;
+					friend ::std::experimental::io2d::font_resource;
 					friend surface;
 					friend path_factory;
 
@@ -1601,7 +1601,7 @@ namespace std {
 					glyph_run(const glyph_run&) = default;
 					glyph_run& operator=(const glyph_run&) = default;
 					glyph_run(glyph_run&&) noexcept = default;
-					glyph_run& operator=(glyph_run&&) noexcept = default;
+					glyph_run& operator=(glyph_run&&) noexcept;
 
 					// Modifiers
 					::std::vector<glyph>& glyphs() noexcept;
@@ -2307,7 +2307,7 @@ namespace std {
 
 					static Bool _X11_if_event_pred(Display* display, XEvent* event, XPointer arg);
 #endif
-					refresh_rate _Refresh_rate;
+					::std::experimental::io2d::refresh_rate _Refresh_rate;
 					double _Desired_frame_rate;
 					::std::atomic<bool> _Redraw_requested;
 					double _Elapsed_draw_time;
