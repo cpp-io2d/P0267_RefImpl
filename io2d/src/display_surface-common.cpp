@@ -26,15 +26,6 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 		cairo_paint(_Native_context.get());
 	}
 	else {
-		if (_Scaling == std::experimental::io2d::scaling::letterbox) {
-			cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.extend()));
-			cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
-			cairo_matrix_t cPttnMatrix;
-			cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
-			cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
-			cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
-			cairo_paint(_Native_context.get());
-		}
 		const auto whRatio = static_cast<double>(_Width) / static_cast<double>(_Height);
 		const auto displayWHRatio = static_cast<double>(_Display_width) / static_cast<double>(_Display_height);
 		cairo_matrix_t ctm;
@@ -53,6 +44,25 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 			const auto heightRatio = static_cast<double>(_Height) / static_cast<double>(_Display_height);
 			cairo_matrix_init_scale(&ctm, heightRatio, heightRatio);
 			cairo_matrix_translate(&ctm, -rectX, 0.0);
+			unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
+			cairo_pattern_set_matrix(pat.get(), &ctm);
+			cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
+			cairo_pattern_set_filter(pat.get(), cairoFilter);
+			cairo_set_source(_Native_context.get(), pat.get());
+			cairo_fill(_Native_context.get());
+			//cairo_restore(nativeContext);
+			if (_Scaling == std::experimental::io2d::scaling::letterbox) {
+				const auto lboxWidth = trunc((static_cast<double>(_Display_width) - rectWidth) / 2.0);
+				cairo_rectangle(nativeContext, 0.0, 0.0, lboxWidth, rectHeight);
+				cairo_rectangle(nativeContext, rectWidth + lboxWidth, 0.0, lboxWidth, rectHeight);
+				cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.extend()));
+				cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
+				cairo_matrix_t cPttnMatrix;
+				cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
+				cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
+				cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
+				cairo_fill(_Native_context.get());
+			}
 		}
 		else {
 			cairo_new_path(nativeContext);
@@ -66,14 +76,26 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 			const auto widthRatio = static_cast<double>(_Width) / static_cast<double>(_Display_width);
 			cairo_matrix_init_scale(&ctm, widthRatio, widthRatio);
 			cairo_matrix_translate(&ctm, 0.0, -rectY);
+			unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
+			cairo_pattern_set_matrix(pat.get(), &ctm);
+			cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
+			cairo_pattern_set_filter(pat.get(), cairoFilter);
+			cairo_set_source(_Native_context.get(), pat.get());
+			cairo_fill(_Native_context.get());
+			//cairo_restore(nativeContext);
+			if (_Scaling == std::experimental::io2d::scaling::letterbox) {
+				const auto lboxHeight = trunc((static_cast<double>(_Display_height) - rectHeight) / 2.0);
+				cairo_rectangle(nativeContext, 0.0, 0.0, rectWidth, lboxHeight);
+				cairo_rectangle(nativeContext, 0.0, rectHeight + lboxHeight, rectWidth, lboxHeight);
+				cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.extend()));
+				cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
+				cairo_matrix_t cPttnMatrix;
+				cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
+				cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
+				cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
+				cairo_fill(_Native_context.get());
+			}
 		}
-		unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
-		cairo_pattern_set_matrix(pat.get(), &ctm);
-		cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
-		cairo_pattern_set_filter(pat.get(), cairoFilter);
-		cairo_set_source(_Native_context.get(), pat.get());
-		cairo_fill(_Native_context.get());
-		//cairo_restore(nativeContext);
 	}
 
 // 	auto currentTime = steady_clock::now();
