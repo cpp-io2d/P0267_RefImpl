@@ -21,7 +21,9 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#else
+#elif defined(USE_XCB)
+#include <xcb/xcb.h>
+#elif defined(USE_XLIB)
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -2242,7 +2244,17 @@ namespace std {
 				const int _Display_surface_ptr_window_data_byte_offset = 0;
 
 				LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-#else
+#elif defined(USE_XCB)
+				struct _Xcb_display_surface_native_handle {
+					_Surface_native_handles sfc_nh;
+					_Surface_native_handles display_sfc_nh;
+					xcb_connection_t* connection;
+					::std::mutex& connection_mutex;
+					int& connection_ref_count;
+					xcb_screen_t* screen;
+					xcb_window_t wndw;
+				};
+#elif defined(USE_XLIB)
 				struct _Xlib_display_surface_native_handle {
 					_Surface_native_handles sfc_nh;
 					Display* display;
@@ -2298,7 +2310,15 @@ namespace std {
 					HWND _Hwnd;
 
 					LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-#else
+#elif defined(USE_XCB)
+					static ::std::mutex _Connection_mutex;
+					static ::std::unique_ptr<xcb_connection_t, decltype(&xcb_disconnect)> _Connection;
+					static int _Connection_ref_count;
+					xcb_screen_t* _Screen;
+					xcb_window_t _Wndw;
+					bool _Can_draw = false;
+					const uint16_t _Window_border_width = 4;
+#elif defined(USE_XLIB)
 					static ::std::mutex _Display_mutex;
 					static ::std::unique_ptr<Display, ::std::function<void(Display*)>> _Display;
 					static int _Display_ref_count;
@@ -2330,7 +2350,9 @@ namespace std {
 				public:
 #ifdef _WIN32_WINNT
 					typedef _Win32_display_surface_native_handle native_handle_type;
-#else
+#elif defined(USE_XCB)
+					typedef _Xcb_display_surface_native_handle native_handle_type;
+#elif defined(USE_XLIB)
 					typedef _Xlib_display_surface_native_handle native_handle_type;
 #endif
 					native_handle_type native_handle() const;

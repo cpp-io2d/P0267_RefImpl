@@ -12,10 +12,9 @@
 
 bin_PROGRAMS = 			N3888_RefImpl
 
-N3888_RefImpl_SOURCES =	brush.cpp \
+N3888_RefImpl_SOURCES =		brush.cpp \
 				device.cpp \
 				display_surface-common.cpp \
-				display_surface-xlib.cpp \
 				entrypoint.cpp \
 				font_extents.cpp \
 				font_options.cpp \
@@ -44,10 +43,25 @@ N3888_RefImpl_SOURCES =	brush.cpp \
 				text_extents.cpp \
 				vector_2d.cpp
 
+if USE_XCB
+N3888_RefImpl_SOURCES +=	display_surface-xcb.cpp
+endif
+if USE_XLIB
+N3888_RefImpl_SOURCES +=	display_surface-xlib.cpp
+endif
+
 N3888_RefImpl_LDADD = 		@GTKCAIRO_LIBS@
+if USE_XCB
+N3888_RefImpl_LDADD += @xcb_LIBS@
+endif
 
-N3888_RefImpl_CPPFLAGS =	@GTKCAIRO_CFLAGS@ ## -fpermissive
-
+N3888_RefImpl_CPPFLAGS =	@GTKCAIRO_CFLAGS@
+if USE_XCB
+N3888_RefImpl_CPPFLAGS += @xcb_CFLAGS@ -DUSE_XCB
+endif
+if USE_XLIB
+N3888_RefImpl_CPPFLAGS += -DUSE_XLIB
+endif
 ##if ! [ [ test "$CXX" = "g++" ] || [ test "$CXX" = "gcc" ] ]]
 ##then
 ##	N3888_RefImpl_LDADD += -fpermissive

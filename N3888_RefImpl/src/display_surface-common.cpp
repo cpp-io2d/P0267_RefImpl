@@ -1,10 +1,14 @@
 #include "io2d.h"
 #include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
+#include <sstream>
+#include <string>
+#include <iostream>
 
 using namespace std;
 using namespace std::experimental;
 using namespace std::experimental::io2d;
+using namespace std::chrono;
 
 void display_surface::_All_dimensions(int w, int h, int dw, int dh) {
 	dimensions(w, h);
@@ -14,6 +18,9 @@ void display_surface::_All_dimensions(int w, int h, int dw, int dh) {
 // Note: cairo_surface_flush(_Native_surface.get()); must be called after calling this function.
 void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 	const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
+	
+// 	static auto previousTime = steady_clock::now();
+
 	if (_Width == _Display_width && _Height == _Display_height) {
 		cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
 		cairo_paint(_Native_context.get());
@@ -32,7 +39,7 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 		const auto displayWHRatio = static_cast<double>(_Display_width) / static_cast<double>(_Display_height);
 		cairo_matrix_t ctm;
 		auto nativeContext = _Native_context.get();
-		cairo_save(nativeContext);
+		//cairo_save(nativeContext);
 		double rectX, rectY, rectWidth, rectHeight;
 		if (whRatio < displayWHRatio) {
 			cairo_new_path(nativeContext);
@@ -66,14 +73,21 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 		cairo_pattern_set_filter(pat.get(), cairoFilter);
 		cairo_set_source(_Native_context.get(), pat.get());
 		cairo_fill(_Native_context.get());
-		cairo_restore(nativeContext);
+		//cairo_restore(nativeContext);
 	}
+
+// 	auto currentTime = steady_clock::now();
+// 	auto elapsedTimeIncrement = static_cast<double>(duration_cast<nanoseconds>(currentTime - previousTime).count());
+// 	previousTime = currentTime;
+// 	stringstream timingStr;
+// 	timingStr << "timing: " << elapsedTimeIncrement / 1'000'000.0 << endl;
+// 	cerr << timingStr.str().c_str();
 }
 
 void display_surface::_Render_to_native_surface() {
 	const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
 	cairo_surface_flush(_Surface.get());
-	cairo_save(_Native_context.get());
+// 	cairo_save(_Native_context.get());
 	cairo_set_operator(_Native_context.get(), CAIRO_OPERATOR_SOURCE);
 	if (_User_scaling_fn != nullptr) {
 		bool letterbox = false;
@@ -182,7 +196,7 @@ void display_surface::_Render_to_native_surface() {
 		}
 	}
 
-	cairo_restore(_Native_context.get());
+// 	cairo_restore(_Native_context.get());
 	// This call to cairo_surface_flush is needed for Win32 surfaces to update.
 	cairo_surface_flush(_Native_surface.get());
 }
