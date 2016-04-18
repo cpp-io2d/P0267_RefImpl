@@ -43,6 +43,7 @@ if (WIN32)
     list(APPEND IO2D_SRC display_surface-win32.cpp)
 else()
     list(APPEND IO2D_SRC display_surface-xlib.cpp)
+    list(APPEND IO2D_SRC display_surface-xcb.cpp)
 endif()
 
 add_library(io2d ${IO2D_SRC})
