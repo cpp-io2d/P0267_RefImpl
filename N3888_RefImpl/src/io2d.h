@@ -1447,7 +1447,7 @@ namespace std {
 					::std::experimental::io2d::font_slant _Font_slant = ::std::experimental::io2d::font_slant::normal;
 					::std::experimental::io2d::font_weight _Font_weight = ::std::experimental::io2d::font_weight::normal;
 					::std::experimental::io2d::font_options _Font_options;
-					matrix_2d _Font_matrix;
+					matrix_2d _Font_matrix = matrix_2d::init_scale({ 16.0, 16.0 });
 					matrix_2d _Surface_matrix;
 
 				public:
@@ -1455,7 +1455,7 @@ namespace std {
 					font_resource_factory(const font_resource_factory&) = default;
 					font_resource_factory& operator=(const font_resource_factory&) = default;
 					font_resource_factory(font_resource_factory&&) noexcept = default;
-					font_resource_factory& operator=(font_resource_factory&&) noexcept;// = default;
+					font_resource_factory& operator=(font_resource_factory&&) noexcept;
 					explicit font_resource_factory(const ::std::string& family,
 						::std::experimental::io2d::font_slant fs = ::std::experimental::io2d::font_slant::normal,
 						::std::experimental::io2d::font_weight fw = ::std::experimental::io2d::font_weight::normal,
