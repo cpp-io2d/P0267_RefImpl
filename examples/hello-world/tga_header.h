@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 // http://stackoverflow.com/questions/14025735/problems-displaying-targa-tga
 namespace tga
 {
@@ -52,10 +54,10 @@ namespace tga
     struct header
     {
         uint8_t        id_length {0};
-        color_map_type color_map_type {color_map_type::absent };
-        image_type     image_type;
-        color_map_spec color_map_spec;
-        image_spec     image_spec;
+        tga::color_map_type color_map_type {tga::color_map_type::absent };
+        tga::image_type     image_type;
+        tga::color_map_spec color_map_spec;
+        tga::image_spec     image_spec;
     };
     static_assert(sizeof(header) == 18, "bad size");
 }

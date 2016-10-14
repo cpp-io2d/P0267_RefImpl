@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(io2d CXX)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 add_subdirectory(3rd-party)
 set(CAIRO_INCLUDE_DIR 
     ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/cairo/src 
@@ -41,10 +44,12 @@ set(IO2D_SRC
 
 if (WIN32)
     list(APPEND IO2D_SRC display_surface-win32.cpp)
-else()
-    list(APPEND IO2D_SRC display_surface-xlib.cpp)
+endif()
+
+if (CAIRO_HAS_XCB_SURFACE)
     list(APPEND IO2D_SRC display_surface-xcb.cpp)
 endif()
+
 
 add_library(io2d ${IO2D_SRC})
 target_link_libraries(io2d ${CAIRO_LIBRARY})
@@ -54,6 +59,10 @@ target_include_directories(io2d PRIVATE
 )
 
 if (WIN32)
-    target_compile_definitions(io2d PRIVATE
+    target_compile_definitions(io2d PUBLIC
         _WIN32_WINNT=0x0600 CAIRO_WIN32_STATIC_BUILD UNICODE)
+endif()
+
+if (CAIRO_HAS_XCB_SURFACE)
+    target_compile_definitions(io2d PUBLIC USE_XCB)
 endif()

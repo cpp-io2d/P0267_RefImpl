@@ -35,7 +35,7 @@ endif()
 
 include(CheckIncludeFiles)
 target_compile_definitions(pixman PRIVATE HAVE_CONFIG_H)
-check_include_files(pthread.h HAVE_PTHREAD_H)
+check_include_files(pthread.h HAVE_PTHREADS)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 

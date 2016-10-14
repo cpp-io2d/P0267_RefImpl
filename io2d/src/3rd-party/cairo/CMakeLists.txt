@@ -1,7 +1,16 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 project(cairo C)
-               
+
+include(CheckIncludeFiles)
+include(CheckTypeSize)
+
+check_include_files(stdint.h HAVE_STDINT_H)
+check_include_files(inttypes.h HAVE_INTTYPES_H)
+check_include_files(sys/int_types.h HAVE_SYS_INT_TYPES_H)
+check_include_files(pthread.h CAIRO_HAS_PTHREAD)
+check_include_files(xcb/xcb.h CAIRO_HAS_XCB_SURFACE)
+
 set(CAIRO_SRC
     src/cairo-analysis-surface.c                src/cairo-arc.c
     src/cairo-array.c                           src/cairo-atomic.c
@@ -63,7 +72,10 @@ set(CAIRO_SRC
     src/cairo-type1-glyph-names.c               src/cairo-type1-subset.c
 )
 
-if(WIN32)
+if (WIN32)
+    set(CAIRO_HAS_WIN32_SURFACE 1)
+    set(CAIRO_HAS_WIN32_FONT 1)
+
     set(CAIRO_SRC_WIN32
         src/win32/cairo-win32-debug.c               src/win32/cairo-win32-device.c
         src/win32/cairo-win32-gdi-compositor.c      src/win32/cairo-win32-system.c
@@ -74,11 +86,27 @@ if(WIN32)
     set(CAIRO_EXTRA_LIBRARIES msimg32)
 endif()
 
+if (CAIRO_HAS_XCB_SURFACE)
+    set(HAVE_INTEL_ATOMIC_PRIMITIVES 1)
+    set(CAIRO_SRC_XCB
+        src/cairo-xcb-connection.c              src/cairo-xcb-connection-core.c
+        src/cairo-xcb-connection-render.c       src/cairo-xcb-connection-shm.c
+        src/cairo-xcb-screen.c                  src/cairo-xcb-shm.c
+        src/cairo-xcb-surface.c                 src/cairo-xcb-surface-core.c
+        src/cairo-xcb-surface-render.c
+    )
+    list(APPEND CAIRO_SRC ${CAIRO_SRC_XCB})
+    set(CAIRO_EXTRA_LIBRARIES -lxcb -lxcb-render -lpthread)
+endif()
+
 add_library(cairo ${CAIRO_SRC})
 target_link_libraries(cairo
     ${CAIRO_EXTRA_LIBRARIES}
     ${PIXMAN_LIBRARY}
 )
+
+target_compile_definitions(cairo PRIVATE HAVE_CONFIG_H)
+target_compile_definitions(cairo INTERFACE CAIRO_HAS_XCB_SURFACE)
 
 target_include_directories(cairo PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -87,13 +115,9 @@ target_include_directories(cairo PRIVATE
     ${PIXMAN_INCLUDE_DIR}
 )
 
-include(CheckIncludeFiles)
-include(CheckTypeSize)
-
-target_compile_definitions(cairo PRIVATE HAVE_CONFIG_H)
-check_include_files(stdint.h HAVE_STDINT_H)
-check_include_files(inttypes.h HAVE_INTTYPES_H)
-check_include_files(sys/int_types.h HAVE_SYS_INT_TYPES_H)
+target_include_directories(cairo INTERFACE
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
 
 check_type_size("uint64_t" SIZEOF_UINT64_T)
 if(SIZEOF_UINT64_T)
@@ -102,3 +126,6 @@ endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cairo-features.h.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/cairo-features.h)
