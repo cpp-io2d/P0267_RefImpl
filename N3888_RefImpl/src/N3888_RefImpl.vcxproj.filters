@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="DLLs">
-      <UniqueIdentifier>{7cc8518e-643e-4930-bfbc-8174a4bc66d8}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="win32\DLL build instructions.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -158,41 +152,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="win32\DLLs\x64\Debug\cairo.dll">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x64\Debug\cairo.pdb">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x64\Debug\zlib1.dll">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x64\Debug\zlib1.pdb">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x64\Release\cairo.dll">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x64\Release\zlib1.dll">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x86\Debug\cairo.dll">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x86\Debug\cairo.pdb">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x86\Release\cairo.dll">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x86\Debug\zlib1.dll">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x86\Release\zlib1.dll">
-      <Filter>DLLs</Filter>
-    </None>
-    <None Include="win32\DLLs\x86\Debug\zlib1.pdb">
-      <Filter>DLLs</Filter>
-    </None>
+    <Text Include="win32\Dependency installation instructions.txt" />
   </ItemGroup>
 </Project>

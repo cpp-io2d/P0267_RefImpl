@@ -1,0 +1,17 @@
+Dependency installation instructions. These are provided "AS IS" with no warranties or guarantees of any kind, express or implied, and confer no rights. 
+
+1. Ensure you have VS2015 installed and git.exe is available in your path.
+
+2. Clone the github repository at https://github.com/Microsoft/vcpkg.
+
+3. Open a powershell window and navigate to the vcpkg repository.
+
+4. Install vcpkg with the command "powershell -exec bypass scripts\bootstrap.ps1"
+
+5. Integrate vcpkg with VS2015 with the command ".\vcpkg integrate install"
+
+6. Install cairo for win32 with the command ".\vcpkg.exe install cairo"
+
+7. Install cairo for x64 with the command ".\vcpkg.exe install cairo --triplet x64-windows"
+
+8. Inspect which packages have been installed with the command ".\vcpkg.exe list"
