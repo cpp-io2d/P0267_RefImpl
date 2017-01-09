@@ -1376,10 +1376,6 @@ namespace std {
 					void change_origin(const vector_2d& pt);
 					void change_origin(const vector_2d& pt, ::std::error_code& ec) noexcept;
 					void clear() noexcept;
-					void add_text(const font_resource& fr, const ::std::string& utf8, const vector_2d& pt);
-					void add_text(const font_resource& fr, const ::std::string& utf8, const vector_2d& pt, ::std::error_code& ec) noexcept;
-					void add_glyph_run(const font_resource& fr, const glyph_run& gr);
-					void add_glyph_run(const font_resource& fr, const glyph_run& gr, ::std::error_code& ec) noexcept;
 
 					// Observers
 					::std::experimental::io2d::rectangle path_extents() const;
@@ -1617,6 +1613,20 @@ namespace std {
 					bool reversed_clusters() const noexcept;
 					vector_2d position() const noexcept;
 					text_extents extents() const noexcept;
+				};
+
+				class color_stop {
+				private:
+					double _Offset = 0.0;
+					rgba_color _Color = rgba_color::black();
+				public:
+					color_stop(double offset, rgba_color color);
+
+					::std::error_code offset(double value);
+					::std::error_code color(rgba_color value);
+
+					double offset() const noexcept;
+					rgba_color color() const noexcept;
 				};
 
 				// Forward declaration.

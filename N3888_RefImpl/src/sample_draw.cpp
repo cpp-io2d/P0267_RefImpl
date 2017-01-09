@@ -1013,7 +1013,7 @@ void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeIn
 	//gr.glyphs()[idx + 1].x(gr.glyphs()[idx + 1].x() - 10.0);
 	ds.immediate().clear();
 	//ds.immediate().add_text(ds.font_resource(), fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 50.0 });
-	ds.immediate().add_glyph_run(ds.font_resource(), gr);
+	//ds.immediate().add_glyph_run(ds.font_resource(), gr);
 	//ds.fill_immediate(rgba_color::dark_red());
 	ds.render_glyph_run(gr, rgba_color::dark_red());
 	
