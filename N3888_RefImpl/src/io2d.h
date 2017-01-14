@@ -3,6 +3,7 @@
 #ifndef _IO2D_
 #define _IO2D_
 
+#pragma message( "When in doubt, provide multiple ways to do something and write language for all of them in the document." )
 #define __cpp_lib_experimental_io2d 201507
 
 #include "xio2d.h"
