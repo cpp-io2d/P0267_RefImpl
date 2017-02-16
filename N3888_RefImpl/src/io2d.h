@@ -300,8 +300,8 @@ namespace std {
 				const ::std::error_category& io2d_category() noexcept;
 
 				class vector_2d {
-					double _X;// = 0.0;
-					double _Y;// = 0.0;
+					double _X = 0.0;
+					double _Y = 0.0;
 				public:
 					vector_2d() noexcept = default;
 					//vector_2d() noexcept = default;

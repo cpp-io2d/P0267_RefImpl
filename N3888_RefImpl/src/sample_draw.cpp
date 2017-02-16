@@ -39,7 +39,7 @@ void test_stroke_rules(display_surface& ds);
 // Drawing entry point.
 //
 void sample_draw::operator()(display_surface& ds) {
-	ds.paint(rgba_color::cornflower_blue());
+	//ds.paint(rgba_color::cornflower_blue());
 
 	//path_factory<> pf;
 	//pf.new_path();
