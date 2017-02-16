@@ -17,8 +17,6 @@ const char* io2d_error_category::name() const noexcept {
 		return "The operation completed successfully.";
 	case io2d_error::invalid_restore:
 		return "A call was made to surface::restore for which no prior call to surface::save was made.";
-	case io2d_error::no_current_point:
-		return "The operation requires a current point but no current point was set. This is usually the result of a call to path_factory::rel_curve_to, path_factory::rel_line_to, or  path_factory::rel_move_to and can be corrected by first establishing a current point with a non-\"rel\" member function call such as path_factory::move_to.";
 	case io2d_error::invalid_matrix:
 		return "A matrix_2d that the operation depends on is invalid. To be valid a matrix_2d must be invertible.";
 	case io2d_error::invalid_status:
@@ -28,7 +26,7 @@ const char* io2d_error_category::name() const noexcept {
 	case io2d_error::invalid_string:
 		return "A UTF-8 string value was expected but the string is not a valid UTF-8 string.";
 	case io2d_error::invalid_path_data:
-		return "Invalid data was encountered in a path or a path_factory object.";
+		return "Invalid data was encountered in a path_group or a path_factory object.";
 	case io2d_error::read_error:
 		return "An error occurred while attempting to read data from an input stream.";
 	case io2d_error::write_error:

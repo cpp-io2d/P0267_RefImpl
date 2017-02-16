@@ -160,8 +160,274 @@ namespace std {
 					return{ _Curve_value_for_t(startPt.x(), controlPt1.x(), controlPt2.x(), endPt.x(), t), _Curve_value_for_t(startPt.y(), controlPt1.y(), controlPt2.y(), endPt.y(), t) };
 				}
 
-				vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, bool arcNegative, bool hasCurrentPoint, const vector_2d& /*currentPoint*/, const vector_2d& origin, const matrix_2d& matrix) {
-					if (arcNegative) {
+//				vector<path_data::path_data_types> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, bool path_arcNegative, bool hasCurrentPoint, const vector_2d& /*currentPoint*/, const vector_2d& origin, const matrix_2d& matrix) {
+//					if (path_arcNegative) {
+//						while (angle2 > angle1) {
+//#if _Variable_templates_conditional_support_test
+//							angle2 -= two_pi<double>;
+//#else
+//							angle2 -= two_pi<double>();
+//#endif
+//						}
+//					}
+//					else {
+//						while (angle2 < angle1) {
+//#if _Variable_templates_conditional_support_test
+//							angle2 += two_pi<double>;
+//#else
+//							angle2 += two_pi<double>();
+//#endif
+//						}
+//					}
+//					vector_2d pt0, pt1, pt2, pt3;
+//					int bezierCount = 1;
+//					double theta;
+//					if (path_arcNegative) {
+//						theta = angle1 - angle2;
+//					}
+//					else {
+//						theta = angle2 - angle1;
+//					}
+//					double phi;
+//
+//					{
+//						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular path_arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
+//
+//#if _Variable_templates_conditional_support_test
+//						while (theta >= half_pi<double>) {
+//							theta /= 2.0;
+//							bezierCount += bezierCount;
+//						}
+//#else
+//						while (theta >= half_pi<double>()) {
+//							theta /= 2.0;
+//							bezierCount += bezierCount;
+//						}
+//#endif
+//
+//						phi = theta / 2.0;
+//
+//						auto cosinePhi = cos(phi);
+//						auto sinePhi = sin(phi);
+//
+//						pt0.x(cosinePhi);
+//						pt0.y(-sinePhi);
+//
+//						pt3.x(pt0.x());
+//						pt3.y(-pt0.y());
+//
+//						pt1.x((4.0 - cosinePhi) / 3.0);
+//						pt1.y(-(((1.0 - cosinePhi) * (3.0 - cosinePhi)) / (3.0 * sinePhi)));
+//
+//						pt2.x(pt1.x());
+//						pt2.y(-pt1.y());
+//
+//					}
+//
+//					{
+//						if (!path_arcNegative) {
+//							phi = -phi;
+//						}
+//						// Rotate all points to start with a zero angle.
+//						pt0 = _Rotate_point(pt0, phi);
+//						pt1 = _Rotate_point(pt1, phi);
+//						pt2 = _Rotate_point(pt2, phi);
+//						pt3 = _Rotate_point(pt3, phi);
+//
+//						if (path_arcNegative) {
+//							auto tempPt = pt3;
+//							pt3 = pt0;
+//							pt0 = tempPt;
+//							tempPt = pt2;
+//							pt2 = pt1;
+//							pt1 = tempPt;
+//						}
+//					}
+//
+//					auto currentTheta = angle1;
+//					path_factory<> pb;
+//					pb.change_origin(origin);
+//					pb.change_matrix(matrix);
+//
+//					const auto startPoint = center + _Rotate_point({ pt0.x() * radius, pt0.y() * radius }, currentTheta);
+//					if (hasCurrentPoint) {
+//						//		pb.path_abs_move(currentPoint);
+//						pb.abs_line_to(startPoint);
+//					}
+//					else {
+//						pb.abs_move_to(startPoint);
+//					}
+//
+//					// We start at the point derived from angle1 and continue adding beziers until the count reaches zero.
+//					// The point we have is already rotated by half of theta.
+//					for (; bezierCount > 0; bezierCount--) {
+//						pb.abs_cubic_curve_to(
+//							center + _Rotate_point({ pt1.x() * radius, pt1.y() * radius }, currentTheta),
+//							center + _Rotate_point({ pt2.x() * radius, pt2.y() * radius }, currentTheta),
+//							center + _Rotate_point({ pt3.x() * radius, pt3.y() * radius }, currentTheta)
+//							);
+//
+//						if (path_arcNegative) {
+//							currentTheta -= theta;
+//						}
+//						else {
+//							currentTheta += theta;
+//						}
+//					}
+//					return pb.data();
+//				}
+//
+//				vector<path_data::path_data_types> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec, bool path_arcNegative, bool hasCurrentPoint, const vector_2d& /*currentPoint*/, const vector_2d& origin, const matrix_2d& matrix) noexcept {
+//					if (path_arcNegative) {
+//						while (angle2 > angle1) {
+//#if _Variable_templates_conditional_support_test
+//							angle2 -= two_pi<double>;
+//#else
+//							angle2 -= two_pi<double>();
+//#endif
+//						}
+//					}
+//					else {
+//						while (angle2 < angle1) {
+//#if _Variable_templates_conditional_support_test
+//							angle2 += two_pi<double>;
+//#else
+//							angle2 += two_pi<double>();
+//#endif
+//						}
+//					}
+//					vector_2d pt0, pt1, pt2, pt3;
+//					int bezierCount = 1;
+//					double theta;
+//					if (path_arcNegative) {
+//						theta = angle1 - angle2;
+//					}
+//					else {
+//						theta = angle2 - angle1;
+//					}
+//					double phi;
+//
+//					{
+//						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular path_arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
+//
+//#if _Variable_templates_conditional_support_test
+//						while (theta >= half_pi<double>) {
+//							theta /= 2.0;
+//							bezierCount += bezierCount;
+//						}
+//#else
+//						while (theta >= half_pi<double>()) {
+//							theta /= 2.0;
+//							bezierCount += bezierCount;
+//						}
+//#endif
+//
+//						phi = theta / 2.0;
+//
+//						auto cosinePhi = cos(phi);
+//						auto sinePhi = sin(phi);
+//
+//						pt0.x(cosinePhi);
+//						pt0.y(-sinePhi);
+//
+//						pt3.x(pt0.x());
+//						pt3.y(-pt0.y());
+//
+//						pt1.x((4.0 - cosinePhi) / 3.0);
+//						pt1.y(-(((1.0 - cosinePhi) * (3.0 - cosinePhi)) / (3.0 * sinePhi)));
+//
+//						pt2.x(pt1.x());
+//						pt2.y(-pt1.y());
+//
+//					}
+//
+//					{
+//						if (!path_arcNegative) {
+//							phi = -phi;
+//						}
+//						// Rotate all points to start with a zero angle.
+//						pt0 = _Rotate_point(pt0, phi);
+//						pt1 = _Rotate_point(pt1, phi);
+//						pt2 = _Rotate_point(pt2, phi);
+//						pt3 = _Rotate_point(pt3, phi);
+//
+//						if (path_arcNegative) {
+//							auto tempPt = pt3;
+//							pt3 = pt0;
+//							pt0 = tempPt;
+//							tempPt = pt2;
+//							pt2 = pt1;
+//							pt1 = tempPt;
+//						}
+//					}
+//
+//					auto currentTheta = angle1;
+//					path_factory<> pb;
+//					pb.change_origin(origin, ec);
+//					if (static_cast<bool>(ec)) {
+//						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
+//						return vector<path_data::path_data_types>();
+//					}
+//					pb.change_matrix(matrix, ec);
+//					if (static_cast<bool>(ec)) {
+//						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
+//						return vector<path_data::path_data_types>();
+//					}
+//
+//					const auto startPoint = center + _Rotate_point({ pt0.x() * radius, pt0.y() * radius }, currentTheta);
+//					if (hasCurrentPoint) {
+//						//pb.path_abs_move(currentPoint, ec);
+//						//if (static_cast<bool>(ec)) {
+//						//	// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
+//						//	return vector<path_data_item>();
+//						//}
+//						pb.abs_line(startPoint, ec);
+//						if (static_cast<bool>(ec)) {
+//							// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
+//							return vector<path_data::path_data_types>();
+//						}
+//					}
+//					else {
+//						pb.abs_move(startPoint, ec);
+//						if (static_cast<bool>(ec)) {
+//							// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
+//							return vector<path_data::path_data_types>();
+//						}
+//					}
+//
+//					// We start at the point derived from angle1 and continue adding beziers until the count reaches zero.
+//					// The point we have is already rotated by half of theta.
+//					for (; bezierCount > 0; bezierCount--) {
+//						pb.path_curve(
+//							center + _Rotate_point({ pt1.x() * radius, pt1.y() * radius }, currentTheta),
+//							center + _Rotate_point({ pt2.x() * radius, pt2.y() * radius }, currentTheta),
+//							center + _Rotate_point({ pt3.x() * radius, pt3.y() * radius }, currentTheta),
+//							ec
+//							);
+//						if (static_cast<bool>(ec)) {
+//							// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
+//							return vector<path_data_item>();
+//						}
+//						if (path_arcNegative) {
+//							currentTheta -= theta;
+//						}
+//						else {
+//							currentTheta += theta;
+//						}
+//					}
+//					try {
+//						ec.clear();
+//						return pb.data();
+//					}
+//					catch (const bad_alloc&) {
+//						ec = make_error_code(errc::not_enough_memory);
+//						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
+//						return vector<path_data_item>();
+//					}
+//				}
+
+				void _Get_arc_extents(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, bool path_arcNegative, bool& hasCurrentPoint, ::std::experimental::io2d::vector_2d& currentPoint, ::std::experimental::io2d::vector_2d& transformedCurrentPoint, ::std::experimental::io2d::vector_2d& lastMoveToPoint, bool& hasExtents, vector_2d& exPt0, vector_2d& exPt1, ::std::experimental::io2d::vector_2d& origin, ::std::experimental::io2d::matrix_2d& transformMatrix) noexcept {
+					if (path_arcNegative) {
 						while (angle2 > angle1) {
 #if _Variable_templates_conditional_support_test
 							angle2 -= two_pi<double>;
@@ -182,7 +448,7 @@ namespace std {
 					vector_2d pt0, pt1, pt2, pt3;
 					int bezierCount = 1;
 					double theta;
-					if (arcNegative) {
+					if (path_arcNegative) {
 						theta = angle1 - angle2;
 					}
 					else {
@@ -191,7 +457,7 @@ namespace std {
 					double phi;
 
 					{
-						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
+						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular path_arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
 
 #if _Variable_templates_conditional_support_test
 						while (theta >= half_pi<double>) {
@@ -225,7 +491,7 @@ namespace std {
 					}
 
 					{
-						if (!arcNegative) {
+						if (!path_arcNegative) {
 							phi = -phi;
 						}
 						// Rotate all points to start with a zero angle.
@@ -234,273 +500,7 @@ namespace std {
 						pt2 = _Rotate_point(pt2, phi);
 						pt3 = _Rotate_point(pt3, phi);
 
-						if (arcNegative) {
-							auto tempPt = pt3;
-							pt3 = pt0;
-							pt0 = tempPt;
-							tempPt = pt2;
-							pt2 = pt1;
-							pt1 = tempPt;
-						}
-					}
-
-					auto currentTheta = angle1;
-					path_factory pb;
-					pb.change_origin(origin);
-					pb.change_matrix(matrix);
-
-					const auto startPoint = center + _Rotate_point({ pt0.x() * radius, pt0.y() * radius }, currentTheta);
-					if (hasCurrentPoint) {
-						//		pb.move_to(currentPoint);
-						pb.line_to(startPoint);
-					}
-					else {
-						pb.move_to(startPoint);
-					}
-
-					// We start at the point derived from angle1 and continue adding beziers until the count reaches zero.
-					// The point we have is already rotated by half of theta.
-					for (; bezierCount > 0; bezierCount--) {
-						pb.curve_to(
-							center + _Rotate_point({ pt1.x() * radius, pt1.y() * radius }, currentTheta),
-							center + _Rotate_point({ pt2.x() * radius, pt2.y() * radius }, currentTheta),
-							center + _Rotate_point({ pt3.x() * radius, pt3.y() * radius }, currentTheta)
-							);
-
-						if (arcNegative) {
-							currentTheta -= theta;
-						}
-						else {
-							currentTheta += theta;
-						}
-					}
-					return pb.data();
-				}
-
-				vector<path_data_item> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec, bool arcNegative, bool hasCurrentPoint, const vector_2d& /*currentPoint*/, const vector_2d& origin, const matrix_2d& matrix) noexcept {
-					if (arcNegative) {
-						while (angle2 > angle1) {
-#if _Variable_templates_conditional_support_test
-							angle2 -= two_pi<double>;
-#else
-							angle2 -= two_pi<double>();
-#endif
-						}
-					}
-					else {
-						while (angle2 < angle1) {
-#if _Variable_templates_conditional_support_test
-							angle2 += two_pi<double>;
-#else
-							angle2 += two_pi<double>();
-#endif
-						}
-					}
-					vector_2d pt0, pt1, pt2, pt3;
-					int bezierCount = 1;
-					double theta;
-					if (arcNegative) {
-						theta = angle1 - angle2;
-					}
-					else {
-						theta = angle2 - angle1;
-					}
-					double phi;
-
-					{
-						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
-
-#if _Variable_templates_conditional_support_test
-						while (theta >= half_pi<double>) {
-							theta /= 2.0;
-							bezierCount += bezierCount;
-						}
-#else
-						while (theta >= half_pi<double>()) {
-							theta /= 2.0;
-							bezierCount += bezierCount;
-						}
-#endif
-
-						phi = theta / 2.0;
-
-						auto cosinePhi = cos(phi);
-						auto sinePhi = sin(phi);
-
-						pt0.x(cosinePhi);
-						pt0.y(-sinePhi);
-
-						pt3.x(pt0.x());
-						pt3.y(-pt0.y());
-
-						pt1.x((4.0 - cosinePhi) / 3.0);
-						pt1.y(-(((1.0 - cosinePhi) * (3.0 - cosinePhi)) / (3.0 * sinePhi)));
-
-						pt2.x(pt1.x());
-						pt2.y(-pt1.y());
-
-					}
-
-					{
-						if (!arcNegative) {
-							phi = -phi;
-						}
-						// Rotate all points to start with a zero angle.
-						pt0 = _Rotate_point(pt0, phi);
-						pt1 = _Rotate_point(pt1, phi);
-						pt2 = _Rotate_point(pt2, phi);
-						pt3 = _Rotate_point(pt3, phi);
-
-						if (arcNegative) {
-							auto tempPt = pt3;
-							pt3 = pt0;
-							pt0 = tempPt;
-							tempPt = pt2;
-							pt2 = pt1;
-							pt1 = tempPt;
-						}
-					}
-
-					auto currentTheta = angle1;
-					path_factory pb;
-					pb.change_origin(origin, ec);
-					if (static_cast<bool>(ec)) {
-						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
-						return vector<path_data_item>();
-					}
-					pb.change_matrix(matrix, ec);
-					if (static_cast<bool>(ec)) {
-						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
-						return vector<path_data_item>();
-					}
-
-					const auto startPoint = center + _Rotate_point({ pt0.x() * radius, pt0.y() * radius }, currentTheta);
-					if (hasCurrentPoint) {
-						//pb.move_to(currentPoint, ec);
-						//if (static_cast<bool>(ec)) {
-						//	// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
-						//	return vector<path_data_item>();
-						//}
-						pb.line_to(startPoint, ec);
-						if (static_cast<bool>(ec)) {
-							// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
-							return vector<path_data_item>();
-						}
-					}
-					else {
-						pb.move_to(startPoint, ec);
-						if (static_cast<bool>(ec)) {
-							// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
-							return vector<path_data_item>();
-						}
-					}
-
-					// We start at the point derived from angle1 and continue adding beziers until the count reaches zero.
-					// The point we have is already rotated by half of theta.
-					for (; bezierCount > 0; bezierCount--) {
-						pb.curve_to(
-							center + _Rotate_point({ pt1.x() * radius, pt1.y() * radius }, currentTheta),
-							center + _Rotate_point({ pt2.x() * radius, pt2.y() * radius }, currentTheta),
-							center + _Rotate_point({ pt3.x() * radius, pt3.y() * radius }, currentTheta),
-							ec
-							);
-						if (static_cast<bool>(ec)) {
-							// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
-							return vector<path_data_item>();
-						}
-						if (arcNegative) {
-							currentTheta -= theta;
-						}
-						else {
-							currentTheta += theta;
-						}
-					}
-					try {
-						ec.clear();
-						return pb.data();
-					}
-					catch (const bad_alloc&) {
-						ec = make_error_code(errc::not_enough_memory);
-						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
-						return vector<path_data_item>();
-					}
-				}
-
-				void _Get_arc_extents(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, bool arcNegative, bool& hasCurrentPoint, ::std::experimental::io2d::vector_2d& currentPoint, ::std::experimental::io2d::vector_2d& transformedCurrentPoint, ::std::experimental::io2d::vector_2d& lastMoveToPoint, bool& hasExtents, vector_2d& exPt0, vector_2d& exPt1, ::std::experimental::io2d::vector_2d& origin, ::std::experimental::io2d::matrix_2d& transformMatrix) noexcept {
-					if (arcNegative) {
-						while (angle2 > angle1) {
-#if _Variable_templates_conditional_support_test
-							angle2 -= two_pi<double>;
-#else
-							angle2 -= two_pi<double>();
-#endif
-						}
-					}
-					else {
-						while (angle2 < angle1) {
-#if _Variable_templates_conditional_support_test
-							angle2 += two_pi<double>;
-#else
-							angle2 += two_pi<double>();
-#endif
-						}
-					}
-					vector_2d pt0, pt1, pt2, pt3;
-					int bezierCount = 1;
-					double theta;
-					if (arcNegative) {
-						theta = angle1 - angle2;
-					}
-					else {
-						theta = angle2 - angle1;
-					}
-					double phi;
-
-					{
-						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
-
-#if _Variable_templates_conditional_support_test
-						while (theta >= half_pi<double>) {
-							theta /= 2.0;
-							bezierCount += bezierCount;
-						}
-#else
-						while (theta >= half_pi<double>()) {
-							theta /= 2.0;
-							bezierCount += bezierCount;
-						}
-#endif
-
-						phi = theta / 2.0;
-
-						auto cosinePhi = cos(phi);
-						auto sinePhi = sin(phi);
-
-						pt0.x(cosinePhi);
-						pt0.y(-sinePhi);
-
-						pt3.x(pt0.x());
-						pt3.y(-pt0.y());
-
-						pt1.x((4.0 - cosinePhi) / 3.0);
-						pt1.y(-(((1.0 - cosinePhi) * (3.0 - cosinePhi)) / (3.0 * sinePhi)));
-
-						pt2.x(pt1.x());
-						pt2.y(-pt1.y());
-
-					}
-
-					{
-						if (!arcNegative) {
-							phi = -phi;
-						}
-						// Rotate all points to start with a zero angle.
-						pt0 = _Rotate_point(pt0, phi);
-						pt1 = _Rotate_point(pt1, phi);
-						pt2 = _Rotate_point(pt2, phi);
-						pt3 = _Rotate_point(pt3, phi);
-
-						if (arcNegative) {
+						if (path_arcNegative) {
 							auto tempPt = pt3;
 							pt3 = pt0;
 							pt0 = tempPt;
@@ -514,7 +514,7 @@ namespace std {
 
 					const auto startPoint = center + _Rotate_point({ pt0.x() * radius, pt0.y() * radius }, currentTheta);
 					if (hasCurrentPoint) {
-						// line_to
+						// path_abs_line
 						auto itemPt = transformMatrix.transform_point(startPoint - origin) + origin;
 						if (!hasExtents) {
 							hasExtents = true;
@@ -533,7 +533,7 @@ namespace std {
 						transformedCurrentPoint = itemPt;
 					}
 					else {
-						// move_to
+						// path_abs_move
 						currentPoint = startPoint;
 						transformedCurrentPoint = transformMatrix.transform_point(startPoint - origin) + origin;
 						lastMoveToPoint = startPoint;
@@ -543,7 +543,7 @@ namespace std {
 					// We start at the point derived from angle1 and continue adding beziers until the count reaches zero.
 					// The point we have is already rotated by half of theta.
 					for (; bezierCount > 0; bezierCount--) {
-						// curve_to
+						// path_curve
 						assert(hasCurrentPoint);
 						vector_2d cte0{};
 						vector_2d cte1{};
@@ -567,7 +567,7 @@ namespace std {
 							exPt1.x(max(max(pt1.x(), cte0.x()), cte1.x()));
 							exPt1.y(max(max(pt1.y(), cte0.y()), cte1.y()));
 						}
-						if (arcNegative) {
+						if (path_arcNegative) {
 							currentTheta -= theta;
 						}
 						else {

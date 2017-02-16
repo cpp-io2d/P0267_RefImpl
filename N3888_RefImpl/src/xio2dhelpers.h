@@ -8,6 +8,8 @@
 #include <limits>
 #include <cmath> // Needed for atan2
 #include <cstring> // Needed for memcpy
+#include <iterator> // Needed for distance
+#include <algorithm> // Needed for copy_n
 
 namespace std {
 	namespace experimental {
@@ -34,7 +36,7 @@ namespace std {
 						assert(false && "Unexpected value CAIRO_STATUS_INVALID_POP_GROUP.");
 						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
 					case CAIRO_STATUS_NO_CURRENT_POINT:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::no_current_point);
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_path_data);
 					case CAIRO_STATUS_INVALID_MATRIX:
 						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_matrix);
 					case CAIRO_STATUS_INVALID_STATUS:
@@ -207,165 +209,16 @@ namespace std {
 
 				vector_2d _Curve_point_at_t(const vector_2d& startPt, const vector_2d& controlPt1, const vector_2d& controlPt2, const vector_2d& endPt, double t) noexcept;
 
-				::std::vector<::std::experimental::io2d::path_data_item> _Get_arc_as_beziers(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, bool arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::io2d::vector_2d& currentPoint = { }, const ::std::experimental::io2d::vector_2d& origin = { }, const ::std::experimental::io2d::matrix_2d& matrix = ::std::experimental::io2d::matrix_2d::init_identity());
+				::std::vector<path_data::path_data_types> _Get_arc_as_beziers(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, bool path_arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::io2d::vector_2d& currentPoint = { }, const ::std::experimental::io2d::vector_2d& origin = { }, const ::std::experimental::io2d::matrix_2d& matrix = ::std::experimental::io2d::matrix_2d::init_identity());
 
-				::std::vector<::std::experimental::io2d::path_data_item> _Get_arc_as_beziers(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, ::std::error_code& ec, bool arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::io2d::vector_2d& currentPoint = { }, const ::std::experimental::io2d::vector_2d& origin = { }, const ::std::experimental::io2d::matrix_2d& matrix = ::std::experimental::io2d::matrix_2d::init_identity()) noexcept;
+				::std::vector<path_data::path_data_types> _Get_arc_as_beziers(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, ::std::error_code& ec, bool path_arcNegative = false, bool hasCurrentPoint = false, const ::std::experimental::io2d::vector_2d& currentPoint = { }, const ::std::experimental::io2d::vector_2d& origin = { }, const ::std::experimental::io2d::matrix_2d& matrix = ::std::experimental::io2d::matrix_2d::init_identity()) noexcept;
 
-				void _Get_arc_extents(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, bool arcNegative, bool& hasCurrentPoint, ::std::experimental::io2d::vector_2d& currentPoint, ::std::experimental::io2d::vector_2d& transformedCurrentPoint, ::std::experimental::io2d::vector_2d& lastMoveToPoint, bool& hasExtents, ::std::experimental::io2d::vector_2d& pt0, ::std::experimental::io2d::vector_2d& pt1, ::std::experimental::io2d::vector_2d& origin, ::std::experimental::io2d::matrix_2d& transformMatrix) noexcept;
+				void _Get_arc_extents(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, bool path_arcNegative, bool& hasCurrentPoint, ::std::experimental::io2d::vector_2d& currentPoint, ::std::experimental::io2d::vector_2d& transformedCurrentPoint, ::std::experimental::io2d::vector_2d& lastMoveToPoint, bool& hasExtents, ::std::experimental::io2d::vector_2d& pt0, ::std::experimental::io2d::vector_2d& pt1, ::std::experimental::io2d::vector_2d& origin, ::std::experimental::io2d::matrix_2d& transformMatrix) noexcept;
 
 				void _Curve_to_extents(const ::std::experimental::io2d::vector_2d& pt0, const ::std::experimental::io2d::vector_2d& pt1, const ::std::experimental::io2d::vector_2d& pt2, const ::std::experimental::io2d::vector_2d& pt3, ::std::experimental::io2d::vector_2d& extents0, ::std::experimental::io2d::vector_2d& extents1) noexcept;
 
 				inline double _Clamp_to_normal(double value) {
 					return ::std::max(::std::min(value, 1.0), 0.0);
-				}
-
-				// Note: The resulting image_surface does not maintain its own memory store.
-				inline ::std::experimental::io2d::image_surface _Surface_create_image_surface_copy(::std::experimental::io2d::surface& original) {
-					if (!original._Has_surface_resource()) {
-						throw invalid_argument("Surface to be copied has no surface resource.");
-					}
-					if (original.is_finished()) {
-						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_SURFACE_FINISHED);
-					}
-
-					original.flush();
-					::std::vector<unsigned char> data;
-					int width = 0;
-					int height = 0;
-					::std::experimental::io2d::format fmt = ::std::experimental::io2d::format::invalid;
-					int stride = 0;
-					original.map([&data, &width, &height, &fmt, &stride](::std::experimental::io2d::mapped_surface& ms) -> void {
-						width = ms.width();
-						height = ms.height();
-						stride = ms.stride();
-						fmt = ms.format();
-						auto size = static_cast<vector<unsigned char>::size_type>(height * stride);
-						data.resize(size);
-						switch (fmt)
-						{
-						case std::experimental::io2d::format::invalid:
-							throw invalid_argument("Unexpected surface format 'format::invalid'.");
-						case std::experimental::io2d::format::argb32:
-							::std::memcpy(data.data(), ms.data(), size);
-							break;
-						case std::experimental::io2d::format::xrgb32:
-							::std::memcpy(data.data(), ms.data(), size);
-							break;
-						case std::experimental::io2d::format::a8:
-							::std::memcpy(data.data(), ms.data(), size);
-							break;
-						case std::experimental::io2d::format::a1:
-							::std::memcpy(data.data(), ms.data(), size);
-							break;
-						case std::experimental::io2d::format::rgb16_565:
-							::std::memcpy(data.data(), ms.data(), size);
-							break;
-						case std::experimental::io2d::format::rgb30:
-							::std::memcpy(data.data(), ms.data(), size);
-							break;
-						default:
-							assert(false && "Unknown format enumerator.");
-							throw logic_error("Unknown format type.");
-						}
-					});
-					auto result = ::std::experimental::io2d::image_surface(fmt, width, height);
-					assert((width == result.width()) && (height == result.height()) && (stride == result.stride()));
-					result.data(data);
-					return result;
-				}
-
-				// Error codes:
-				// errc::invalid_argument		- original._Has_surface_resource() == false
-				// errc::not_enough_memory		- original.is_finished() == true
-				// result of original.flush(ec)	- currently nothing; this always succeeds but this might need to change if implementators need the possibility for failure in surface::flush(error_code&).
-				// 
-				inline void _Surface_create_image_surface_copy(::std::experimental::io2d::surface& original, ::std::experimental::io2d::image_surface& result, ::std::error_code& ec) noexcept {
-					if (!original._Has_surface_resource()) {
-						ec = make_error_code(errc::invalid_argument);
-						return;
-					}
-					if (original.is_finished()) {
-						ec = make_error_code(io2d_error::surface_finished);
-						return;
-					}
-
-					original.flush(ec);
-					if (static_cast<bool>(ec)) {
-						return;
-					}
-
-					// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
-					::std::vector<unsigned char> data;
-					int width = 0;
-					int height = 0;
-					::std::experimental::io2d::format fmt = ::std::experimental::io2d::format::invalid;
-					int stride = 0;
-					original.map([&data, &width, &height, &fmt, &stride, &ec](::std::experimental::io2d::mapped_surface& ms, ::std::error_code&) -> void {
-						width = ms.width();
-						height = ms.height();
-						stride = ms.stride();
-						fmt = ms.format();
-						auto size = static_cast<vector<unsigned char>::size_type>(height * stride);
-						try {
-							data.resize(size);
-						}
-						catch (const ::std::length_error&) {
-							ec = ::std::make_error_code(::std::errc::not_enough_memory);
-							return;
-						}
-						catch (const ::std::bad_alloc&) {
-							ec = ::std::make_error_code(::std::errc::not_enough_memory);
-							return;
-						}
-						
-						switch (fmt) {
-						case std::experimental::io2d::format::invalid:
-							ec = ::std::make_error_code(::std::errc::invalid_argument);
-							break;
-						case std::experimental::io2d::format::argb32:
-							::std::memcpy(data.data(), ms.data(ec), size);
-							break;
-						case std::experimental::io2d::format::xrgb32:
-							::std::memcpy(data.data(), ms.data(ec), size);
-							break;
-						case std::experimental::io2d::format::a8:
-							::std::memcpy(data.data(), ms.data(ec), size);
-							break;
-						case std::experimental::io2d::format::a1:
-							::std::memcpy(data.data(), ms.data(ec), size);
-							break;
-						case std::experimental::io2d::format::rgb16_565:
-							::std::memcpy(data.data(), ms.data(ec), size);
-							break;
-						case std::experimental::io2d::format::rgb30:
-							::std::memcpy(data.data(), ms.data(ec), size);
-							break;
-						default:
-							assert(false && "Unknown format enumerator.");
-							ec = ::std::make_error_code(::std::errc::invalid_argument);
-							break;
-						}
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						ec.clear();
-					}, ec);
-					if (static_cast<bool>(ec)) {
-						return;
-					}
-
-					result = ::std::experimental::io2d::image_surface(fmt, width, height, ec);
-					if (static_cast<bool>(ec)) {
-						return;
-					}
-
-					assert((width == result.width()) && (height == result.height()) && (stride == result.stride()));
-
-					result.data(data, ec);
-					if (static_cast<bool>(ec)) {
-						return;
-					}
-					ec.clear();
 				}
 
 				// Forward declarations.
@@ -375,28 +228,30 @@ namespace std {
 				rgba_color operator*(double lhs, const rgba_color& rhs);
 				rgba_color& operator*=(rgba_color& lhs, double rhs);
 
-				inline ::std::vector<path_data_item> _Cairo_path_data_t_array_to_path_data_item_vector(const cairo_path_t& cpt) {
-					::std::vector<path_data_item> vec;
+				inline ::std::vector<path_data::path_data_types> _Cairo_path_data_t_array_to_path_data_item_vector(const cairo_path_t& cpt) {
+					::std::vector<path_data::path_data_types> vec;
 					_Throw_if_failed_cairo_status_t(cpt.status);
+					vector_2d lastMoveToPt{};
 					for (auto i = 0; i < cpt.num_data; i += cpt.data[i].header.length) {
 						auto type = cpt.data[i].header.type;
 						switch (type)
 						{
 						case CAIRO_PATH_CLOSE_PATH:
 						{
-							vec.emplace_back(path_data_item::close_path());
+							vec.emplace_back(path_data::close_path(lastMoveToPt));
 						} break;
 						case CAIRO_PATH_CURVE_TO:
 						{
-							vec.emplace_back(path_data_item::curve_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }, { cpt.data[i + 2].point.x, cpt.data[i + 2].point.y }, { cpt.data[i + 3].point.x, cpt.data[i + 3].point.y }));
+							vec.emplace_back(path_data::abs_cubic_curve({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }, { cpt.data[i + 2].point.x, cpt.data[i + 2].point.y }, { cpt.data[i + 3].point.x, cpt.data[i + 3].point.y }));
 						} break;
 						case CAIRO_PATH_LINE_TO:
 						{
-							vec.emplace_back(path_data_item::line_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
+							vec.emplace_back(path_data::abs_line({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
 						} break;
 						case CAIRO_PATH_MOVE_TO:
 						{
-							vec.emplace_back(path_data_item::move_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
+							lastMoveToPt = { cpt.data[i + 1].point.x, cpt.data[i + 1].point.y };
+							vec.emplace_back(path_data::abs_move({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
 						} break;
 						default:
 						{
@@ -408,13 +263,14 @@ namespace std {
 					return vec;
 				}
 
-				inline ::std::vector<path_data_item> _Cairo_path_data_t_array_to_path_data_item_vector(const cairo_path_t& cpt, ::std::error_code& ec) noexcept {
-					::std::vector<path_data_item> vec;
+				inline ::std::vector<path_data::path_data_types> _Cairo_path_data_t_array_to_path_data_item_vector(const cairo_path_t& cpt, ::std::error_code& ec) noexcept {
+					::std::vector<path_data::path_data_types> vec;
+					vector_2d lastMoveToPt{};
 					ec = _Cairo_status_t_to_std_error_code(cpt.status);
 					if (static_cast<bool>(ec)) {
 						return vec;
 					}
-					::std::vector<path_data_item>::size_type reqSize{};
+					::std::vector<path_data::path_data_types>::size_type reqSize{};
 					for (auto i = 0; i < cpt.num_data; i += cpt.data[i].header.length) {
 						reqSize++;
 					}
@@ -436,19 +292,20 @@ namespace std {
 						{
 						case CAIRO_PATH_CLOSE_PATH:
 						{
-							vec.emplace_back(path_data_item::close_path());
+							vec.emplace_back(path_data::close_path(lastMoveToPt));
 						} break;
 						case CAIRO_PATH_CURVE_TO:
 						{
-							vec.emplace_back(path_data_item::curve_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }, { cpt.data[i + 2].point.x, cpt.data[i + 2].point.y }, { cpt.data[i + 3].point.x, cpt.data[i + 3].point.y }));
+							vec.emplace_back(path_data::abs_cubic_curve({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }, { cpt.data[i + 2].point.x, cpt.data[i + 2].point.y }, { cpt.data[i + 3].point.x, cpt.data[i + 3].point.y }));
 						} break;
 						case CAIRO_PATH_LINE_TO:
 						{
-							vec.emplace_back(path_data_item::line_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
+							vec.emplace_back(path_data::abs_line({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
 						} break;
 						case CAIRO_PATH_MOVE_TO:
 						{
-							vec.emplace_back(path_data_item::move_to({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
+							lastMoveToPt = { cpt.data[i + 1].point.x, cpt.data[i + 1].point.y };
+							vec.emplace_back(path_data::abs_move({ cpt.data[i + 1].point.x, cpt.data[i + 1].point.y }));
 						} break;
 						default:
 						{

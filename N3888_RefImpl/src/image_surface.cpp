@@ -6,18 +6,18 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-image_surface::image_surface(image_surface&& other) noexcept
-	: surface(move(other)) {
-}
-
-image_surface& image_surface::operator=(image_surface&& other) noexcept {
-	if (this != &other) {
-		surface::operator=(move(other));
-	}
-	return *this;
-}
-
-
+//image_surface::image_surface(image_surface&& other) noexcept
+//	: surface(forward<image_surface>(other)) {
+//}
+//
+//image_surface& image_surface::operator=(image_surface&& other) noexcept {
+//	if (this != &other) {
+//		surface::operator=(move(other));
+//	}
+//	return *this;
+//}
+//
+//
 image_surface::image_surface(experimental::io2d::format fmt, int width, int height)
 	: surface({ cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), nullptr }, fmt, _Content_for_format(fmt)) {
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
@@ -46,12 +46,14 @@ image_surface::image_surface(experimental::io2d::format fmt, int width, int heig
 	ec.clear();
 }
 
-image_surface::image_surface(vector<unsigned char>& data, experimental::io2d::format fmt, int width, int height)
+template <class InputIt>
+image_surface::image_surface(InputIt first, InputIt last, experimental::io2d::format fmt, int width, int height)
 	: surface({ nullptr, nullptr }, fmt, _Content_for_format(fmt)) {
 	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-	auto expected_size = static_cast<vector<unsigned char>::size_type>(cairo_image_surface_get_stride(_Surface.get()) * cairo_image_surface_get_height(_Surface.get()));
-	if (data.size() != expected_size) {
+	auto expectedSize = cairo_image_surface_get_stride(_Surface.get() * cairo_image_surface_get_height(_Surface.get()));
+	auto actualSize = ::std::distance(first, last) * sizeof(*first);
+	if (actualSize != expectedSize) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STRIDE);
 	}
 	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
@@ -62,16 +64,14 @@ image_surface::image_surface(vector<unsigned char>& data, experimental::io2d::fo
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
 	}
 	else {
-		::std::memcpy(imageData, data.data(), expected_size);
+		::std::copy_n(first, actualSize, imageData);
+		//::std::memcpy(imageData, data.data(), expected_size);
 	}
 	cairo_surface_mark_dirty(_Surface.get());
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	cairo_set_miter_limit(_Context.get(), _Line_join_miter_miter_limit);
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 	_Ensure_state();
-}
-
-image_surface::~image_surface() {
 }
 
 void image_surface::data(const vector<unsigned char>& data) {

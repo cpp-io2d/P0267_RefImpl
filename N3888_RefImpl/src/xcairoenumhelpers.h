@@ -16,8 +16,6 @@ namespace std {
 					return CAIRO_STATUS_SUCCESS;
 				case ::std::experimental::io2d::io2d_error::invalid_restore:
 					return CAIRO_STATUS_INVALID_RESTORE;
-				case ::std::experimental::io2d::io2d_error::no_current_point:
-					return CAIRO_STATUS_NO_CURRENT_POINT;
 				case ::std::experimental::io2d::io2d_error::invalid_matrix:
 					return CAIRO_STATUS_INVALID_MATRIX;
 				case ::std::experimental::io2d::io2d_error::invalid_status:
@@ -79,7 +77,7 @@ namespace std {
 					result = ::std::experimental::io2d::io2d_error::invalid_status;
 					return true;
 				case CAIRO_STATUS_NO_CURRENT_POINT:
-					result = ::std::experimental::io2d::io2d_error::no_current_point;
+					result = ::std::experimental::io2d::io2d_error::invalid_path_data;
 					return true;
 				case CAIRO_STATUS_INVALID_MATRIX:
 					result = ::std::experimental::io2d::io2d_error::invalid_matrix;
@@ -551,46 +549,31 @@ namespace std {
 				}
 			}
 
-			inline ::std::experimental::io2d::path_data_type _Cairo_type_t_to_type(cairo_path_data_type_t cpdt) {
-				switch (cpdt) {
-				case CAIRO_PATH_MOVE_TO:
-					return ::std::experimental::io2d::path_data_type::move_to;
-				case CAIRO_PATH_LINE_TO:
-					return ::std::experimental::io2d::path_data_type::line_to;
-				case CAIRO_PATH_CURVE_TO:
-					return ::std::experimental::io2d::path_data_type::curve_to;
-				case CAIRO_PATH_CLOSE_PATH:
-					return ::std::experimental::io2d::path_data_type::close_path;
-				default:
-					throw ::std::runtime_error("Unknown cairo_path_data_type_t value.");
-				}
-			}
-
-			inline cairo_extend_t _Extend_to_cairo_extend_t(::std::experimental::io2d::extend e) {
+			inline cairo_extend_t _Extend_to_cairo_extend_t(::std::experimental::io2d::tiling e) {
 				switch (e) {
-				case ::std::experimental::io2d::extend::none:
+				case ::std::experimental::io2d::tiling::none:
 					return CAIRO_EXTEND_NONE;
-				case ::std::experimental::io2d::extend::repeat:
+				case ::std::experimental::io2d::tiling::repeat:
 					return CAIRO_EXTEND_REPEAT;
-				case ::std::experimental::io2d::extend::reflect:
+				case ::std::experimental::io2d::tiling::reflect:
 					return CAIRO_EXTEND_REFLECT;
-				case ::std::experimental::io2d::extend::pad:
+				case ::std::experimental::io2d::tiling::pad:
 					return CAIRO_EXTEND_PAD;
 				default:
-					throw ::std::runtime_error("Unknown extend value.");
+					throw ::std::runtime_error("Unknown tiling value.");
 				}
 			}
 
-			inline ::std::experimental::io2d::extend _Cairo_extend_t_to_extend(cairo_extend_t ce) {
+			inline ::std::experimental::io2d::tiling _Cairo_extend_t_to_extend(cairo_extend_t ce) {
 				switch (ce) {
 				case CAIRO_EXTEND_NONE:
-					return ::std::experimental::io2d::extend::none;
+					return ::std::experimental::io2d::tiling::none;
 				case CAIRO_EXTEND_REPEAT:
-					return ::std::experimental::io2d::extend::repeat;
+					return ::std::experimental::io2d::tiling::repeat;
 				case CAIRO_EXTEND_REFLECT:
-					return ::std::experimental::io2d::extend::reflect;
+					return ::std::experimental::io2d::tiling::reflect;
 				case CAIRO_EXTEND_PAD:
-					return ::std::experimental::io2d::extend::pad;
+					return ::std::experimental::io2d::tiling::pad;
 				default:
 					throw ::std::runtime_error("Unknown cairo_extend_t value.");
 				}

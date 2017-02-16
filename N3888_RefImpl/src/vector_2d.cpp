@@ -5,22 +5,22 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-vector_2d::vector_2d(vector_2d&& other) noexcept
-	: _X(move(other._X))
-	, _Y(move(other._Y)) {
-	other._X = 0.0;
-	other._Y = 0.0;
-}
-
-vector_2d& vector_2d::operator=(vector_2d&& other) noexcept {
-	if (this != &other) {
-		_X = move(other._X);
-		_Y = move(other._Y);
-		other._X = 0.0;
-		other._Y = 0.0;
-	}
-	return *this;
-}
+//vector_2d::vector_2d(vector_2d&& other) noexcept
+//	: _X(move(other._X))
+//	, _Y(move(other._Y)) {
+//	other._X = 0.0;
+//	other._Y = 0.0;
+//}
+//
+//vector_2d& vector_2d::operator=(vector_2d&& other) noexcept {
+//	if (this != &other) {
+//		_X = move(other._X);
+//		_Y = move(other._Y);
+//		other._X = 0.0;
+//		other._Y = 0.0;
+//	}
+//	return *this;
+//}
 
 vector_2d::vector_2d(double x, double y) noexcept
 	: _X(x)
@@ -35,6 +35,15 @@ void vector_2d::y(double value) noexcept {
 	_Y = value;
 }
 
+void vector_2d::swap(vector_2d& other) noexcept {
+	::std::swap(_X, other._X);
+	::std::swap(_Y, other._Y);
+}
+
+//void swap(vector_2d& lhs, vector_2d& rhs) noexcept {
+//	lhs.swap(rhs);
+//}
+//
 double vector_2d::x() const noexcept {
 	return _X;
 }
@@ -47,7 +56,7 @@ double vector_2d::magnitude() const noexcept {
 	return sqrt(_X * _X + _Y * _Y);
 }
 
-double vector_2d::magnitude_squared() const noexcept{
+double vector_2d::magnitude_squared() const noexcept {
 	return _X * _X + _Y * _Y;
 }
 
@@ -55,12 +64,12 @@ double vector_2d::dot(const vector_2d& other) const noexcept {
 	return _X * other._X + _Y * other._Y;
 }
 
-double vector_2d::angular_direction(const vector_2d& to) const noexcept{
+double vector_2d::angular_direction(const vector_2d& to) const noexcept {
 	auto v = to - *this;
 	return atan2(v._Y, v._X);
 }
 
-vector_2d vector_2d::to_unit() const noexcept{
+vector_2d vector_2d::to_unit() const noexcept {
 	auto leng = magnitude();
 
 	return vector_2d{ _X / leng, _Y / leng };
@@ -114,11 +123,11 @@ namespace std {
 					return *this;
 				}
 
-				vector_2d operator*(const vector_2d& lhs, double rhs) noexcept{
+				vector_2d operator*(const vector_2d& lhs, double rhs) noexcept {
 					return vector_2d{ lhs.x() * rhs, lhs.y() * rhs };
 				}
 
-				vector_2d operator*(double lhs, const vector_2d& rhs) noexcept{
+				vector_2d operator*(double lhs, const vector_2d& rhs) noexcept {
 					return vector_2d{ lhs * rhs.x(), lhs * rhs.y() };
 				}
 

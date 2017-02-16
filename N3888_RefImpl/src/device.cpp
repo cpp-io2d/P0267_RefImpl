@@ -24,19 +24,19 @@ device::device(device::native_handle_type nh, error_code& ec) noexcept : _Device
 	}
 }
 
-device::device(device&& other) noexcept {
-	_Device = move(other._Device);
-	other._Device = nullptr;
-}
-
-device& device::operator=(device&& other) noexcept {
-	if (this != &other) {
-		_Device = move(other._Device);
-		other._Device = nullptr;
-	}
-	return *this;
-}
-
+//device::device(device&& other) noexcept {
+//	_Device = move(other._Device);
+//	other._Device = nullptr;
+//}
+//
+//device& device::operator=(device&& other) noexcept {
+//	if (this != &other) {
+//		_Device = move(other._Device);
+//		other._Device = nullptr;
+//	}
+//	return *this;
+//}
+//
 void device::flush() noexcept {
 	cairo_device_flush(_Device.get());
 }

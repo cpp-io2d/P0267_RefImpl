@@ -53,9 +53,6 @@
     <ClCompile Include="device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="font_options.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="image_surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,15 +77,6 @@
     <ClCompile Include="rectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="font_extents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="text_extents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="path_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="matrix_2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -101,25 +89,7 @@
     <ClCompile Include="display_surface-common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="linear_brush_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="brush.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="radial_brush_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="solid_color_brush_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="surface_brush_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mesh_brush_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="path_data_item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vector_2d.cpp">
@@ -129,15 +99,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_renderer_fill.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="font_resource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="font_resource_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="glyph_run.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

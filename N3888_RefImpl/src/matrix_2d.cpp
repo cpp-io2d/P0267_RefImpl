@@ -6,48 +6,48 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-matrix_2d::matrix_2d() noexcept
-	: _M00{ 1.0 }
-	, _M01{ 0.0 }
-	, _M10{ 0.0 }
-	, _M11{ 1.0 }
-	, _M20{ 0.0 }
-	, _M21{ 0.0 } {
-}
-
-matrix_2d::matrix_2d(matrix_2d&& other) noexcept
-	: _M00(move(other._M00))
-	, _M01(move(other._M01))
-	, _M10(move(other._M10))
-	, _M11(move(other._M11))
-	, _M20(move(other._M20))
-	, _M21(move(other._M21)) {
-	other._M00 = 0.0;
-	other._M01 = 0.0;
-	other._M10 = 0.0;
-	other._M11 = 0.0;
-	other._M20 = 0.0;
-	other._M21 = 0.0;
-}
-
-matrix_2d& matrix_2d::operator=(matrix_2d&& other) noexcept {
-	if (this != &other) {
-		_M00 = move(other._M00);
-		_M01 = move(other._M01);
-		_M10 = move(other._M10);
-		_M11 = move(other._M11);
-		_M20 = move(other._M20);
-		_M21 = move(other._M21);
-
-		other._M00 = 0.0;
-		other._M01 = 0.0;
-		other._M10 = 0.0;
-		other._M11 = 0.0;
-		other._M20 = 0.0;
-		other._M21 = 0.0;
-	}
-	return *this;
-}
+//matrix_2d::matrix_2d() noexcept
+//	: _M00{ 1.0 }
+//	, _M01{ 0.0 }
+//	, _M10{ 0.0 }
+//	, _M11{ 1.0 }
+//	, _M20{ 0.0 }
+//	, _M21{ 0.0 } {
+//}
+//
+//matrix_2d::matrix_2d(matrix_2d&& other) noexcept
+//	: _M00(move(other._M00))
+//	, _M01(move(other._M01))
+//	, _M10(move(other._M10))
+//	, _M11(move(other._M11))
+//	, _M20(move(other._M20))
+//	, _M21(move(other._M21)) {
+//	other._M00 = 0.0;
+//	other._M01 = 0.0;
+//	other._M10 = 0.0;
+//	other._M11 = 0.0;
+//	other._M20 = 0.0;
+//	other._M21 = 0.0;
+//}
+//
+//matrix_2d& matrix_2d::operator=(matrix_2d&& other) noexcept {
+//	if (this != &other) {
+//		_M00 = move(other._M00);
+//		_M01 = move(other._M01);
+//		_M10 = move(other._M10);
+//		_M11 = move(other._M11);
+//		_M20 = move(other._M20);
+//		_M21 = move(other._M21);
+//
+//		other._M00 = 0.0;
+//		other._M01 = 0.0;
+//		other._M10 = 0.0;
+//		other._M11 = 0.0;
+//		other._M20 = 0.0;
+//		other._M21 = 0.0;
+//	}
+//	return *this;
+//}
 
 matrix_2d::matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21) noexcept
 	: _M00{ m00 }
@@ -175,6 +175,15 @@ matrix_2d& matrix_2d::invert(error_code& ec) noexcept {
 
 	ec.clear();
 	return *this;
+}
+
+void matrix_2d::swap(matrix_2d& other) {
+	::std::swap(_M00, other._M00);
+	::std::swap(_M01, other._M01);
+	::std::swap(_M10, other._M10);
+	::std::swap(_M11, other._M11);
+	::std::swap(_M20, other._M20);
+	::std::swap(_M21, other._M21);
 }
 
 double matrix_2d::determinant() const {

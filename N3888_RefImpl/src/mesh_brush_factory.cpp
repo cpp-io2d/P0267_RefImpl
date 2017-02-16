@@ -116,7 +116,7 @@
 //		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 //	}
 //	if (_Current_patch_side_count < 4) {
-//		line_to(_Current_patch_initial_point);
+//		path_abs_line(_Current_patch_initial_point);
 //	}
 //	_Has_current_patch = false;
 //	_Has_current_point = false;
@@ -128,7 +128,7 @@
 //		return;
 //	}
 //	if (_Current_patch_side_count < 4) {
-//		line_to(_Current_patch_initial_point, ec);
+//		path_abs_line(_Current_patch_initial_point, ec);
 //		if (static_cast<bool>(ec)) {
 //			return;
 //		}
@@ -138,17 +138,17 @@
 //	ec.clear();
 //}
 //
-//void mesh_brush_factory::move_to(const vector_2d& pt) {
+//void mesh_brush_factory::path_abs_move(const vector_2d& pt) {
 //	if (!_Has_current_patch || _Current_patch_side_count > 0) {
 //		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 //	}
 //	auto& patch = _Patches.at(_Current_patch_index);
 //	_Current_patch_initial_point = pt;
-//	get<0>(patch).move_to(pt);
+//	get<0>(patch).path_abs_move(pt);
 //	_Has_current_point = true;
 //}
 //
-//void mesh_brush_factory::move_to(const vector_2d& pt, error_code& ec) noexcept {
+//void mesh_brush_factory::path_abs_move(const vector_2d& pt, error_code& ec) noexcept {
 //	if (!_Has_current_patch || _Current_patch_side_count > 0) {
 //		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 //		return;
@@ -156,7 +156,7 @@
 //	try {
 //		auto& patch = _Patches.at(_Current_patch_index);
 //		_Current_patch_initial_point = pt;
-//		get<0>(patch).move_to(pt);
+//		get<0>(patch).path_abs_move(pt);
 //		_Has_current_point = true;
 //	}
 //	catch (const out_of_range&) {
@@ -166,29 +166,29 @@
 //	ec.clear();
 //}
 //
-//void mesh_brush_factory::line_to(const vector_2d& pt) {
+//void mesh_brush_factory::path_abs_line(const vector_2d& pt) {
 //	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 //		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 //	}
 //
 //	if (!_Has_current_point) {
-//		move_to(pt);
+//		path_abs_move(pt);
 //	}
 //	else {
 //		auto& patch = _Patches.at(_Current_patch_index);
-//		get<0>(patch).line_to(pt);
+//		get<0>(patch).path_abs_line(pt);
 //		_Current_patch_side_count++;
 //	}
 //}
 //
-//void mesh_brush_factory::line_to(const vector_2d& pt, error_code& ec) noexcept {
+//void mesh_brush_factory::path_abs_line(const vector_2d& pt, error_code& ec) noexcept {
 //	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 //		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 //		return;
 //	}
 //
 //	if (!_Has_current_point) {
-//		move_to(pt, ec);
+//		path_abs_move(pt, ec);
 //		if (static_cast<bool>(ec)) {
 //			return;
 //		}
@@ -196,7 +196,7 @@
 //	else {
 //		try {
 //			auto& patch = _Patches.at(_Current_patch_index);
-//			get<0>(patch).line_to(pt);
+//			get<0>(patch).path_abs_line(pt);
 //			_Current_patch_side_count++;
 //		}
 //		catch (const out_of_range&) {
@@ -207,28 +207,28 @@
 //	ec.clear();
 //}
 //
-//void mesh_brush_factory::curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2) {
+//void mesh_brush_factory::path_curve(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2) {
 //	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 //		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 //	}
 //
 //	if (!_Has_current_point) {
-//		move_to(pt0);
+//		path_abs_move(pt0);
 //	}
 //
 //	_Current_patch_side_count++;
 //	auto& patch = _Patches.at(_Current_patch_index);
-//	get<0>(patch).curve_to(pt0, pt1, pt2);
+//	get<0>(patch).path_curve(pt0, pt1, pt2);
 //}
 //
-//void mesh_brush_factory::curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, error_code& ec) noexcept {
+//void mesh_brush_factory::path_curve(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2, error_code& ec) noexcept {
 //	if (!_Has_current_patch || _Current_patch_side_count >= 4) {
 //		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
 //		return;
 //	}
 //
 //	if (!_Has_current_point) {
-//		move_to(pt0, ec);
+//		path_abs_move(pt0, ec);
 //		if (static_cast<bool>(ec)) {
 //			return;
 //		}
@@ -237,7 +237,7 @@
 //	try {
 //		auto& patch = _Patches.at(_Current_patch_index);
 //		_Current_patch_side_count++;
-//		get<0>(patch).curve_to(pt0, pt1, pt2);
+//		get<0>(patch).path_curve(pt0, pt1, pt2);
 //	}
 //	catch (const out_of_range&) {
 //		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
