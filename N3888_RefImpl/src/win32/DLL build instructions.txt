@@ -1,6 +1,0 @@
-The project now requires vcpkg for the required additional DLLs ( https://github.com/Microsoft/vcpkg ).
-
-Install vcpkg according to its instructions.
-
-Once vcpkg is installed, in the vcpkg root directory run '.\vcpkg.exe install cairo' and then '.\vcpkg.exe install cairo --triplet x64-windows' in order to build the cairo dependencies for Win32 and x64 configurations.
-
