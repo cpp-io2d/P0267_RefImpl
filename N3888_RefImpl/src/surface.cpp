@@ -6,10 +6,10 @@ using namespace std;
 using namespace std::experimental;
 using namespace std::experimental::io2d;
 
-namespace {
-	const vector_2d _Font_default_size{ 16.0, 16.0 };
-}
-
+//namespace {
+//	const vector_2d _Font_default_size{ 16.0, 16.0 };
+//}
+//
 void surface::_Ensure_state() {
 	if (_Surface == nullptr || _Context == nullptr) {
 		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
@@ -915,10 +915,7 @@ void surface::matrix(const matrix_2d& m) {
 }
 
 void surface::matrix(const matrix_2d& m, error_code& ec) noexcept {
-	auto det = m.determinant(ec);
-	if (static_cast<bool>(ec)) {
-		return;
-	}
+	auto det = m.determinant();
 	if (det == 0.0) {
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MATRIX);
 		return;

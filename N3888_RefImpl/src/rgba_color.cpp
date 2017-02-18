@@ -868,37 +868,9 @@ namespace std {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
-				rgba_color operator*(const rgba_color& lhs, double rhs) {
-					rhs = ::std::max(rhs, 0.0);
-					return{
-						::std::min(lhs.r() * rhs, 1.0),
-						::std::min(lhs.g() * rhs, 1.0),
-						::std::min(lhs.b() * rhs, 1.0),
-						::std::min(lhs.a() * rhs, 1.0)
-					};
-				}
-
-				rgba_color operator*(double lhs, const rgba_color& rhs) {
-					lhs = _Clamp_to_normal(lhs);
-					return{
-						::std::min(lhs * rhs.r(), 1.0),
-						::std::min(lhs * rhs.g(), 1.0),
-						::std::min(lhs * rhs.b(), 1.0),
-						::std::min(lhs * rhs.a(), 1.0)
-					};
-				}
-
 				rgba_color& operator*=(rgba_color& lhs, double rhs) {
 					lhs = lhs * rhs;
 					return lhs;
-				}
-
-				bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
-					return lhs.r() == rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
-				}
-
-				bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {
-					return !(lhs == rhs);
 				}
 #if _Inline_namespace_conditional_support_test
 			}

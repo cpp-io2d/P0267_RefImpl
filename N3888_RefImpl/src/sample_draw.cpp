@@ -455,12 +455,6 @@ void test_stroke_rules(display_surface& ds) {
 
 void draw_radial_circles(display_surface& ds) {
 	// Clear to background color.
-
-	//constexpr vector_2d scale{ 2.0, 0.5 };
-	//constexpr auto m = matrix_2d::init_scale(scale);
-	constexpr vector_2d v1{20.0, 40.0};
-	constexpr vector_2d v2{ move(v1) };
-	constexpr double v1x = v1.x();
 	ds.paint(rgba_color::cornflower_blue());
 	ds.fill_rule(fill_rule::winding);
 	ds.matrix(matrix_2d::init_identity());

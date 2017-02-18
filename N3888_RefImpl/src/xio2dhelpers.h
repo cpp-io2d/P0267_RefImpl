@@ -224,8 +224,8 @@ namespace std {
 				// Forward declarations.
 				class rgba_color;
 
-				rgba_color operator*(const rgba_color& lhs, double rhs);
-				rgba_color operator*(double lhs, const rgba_color& rhs);
+				constexpr rgba_color operator*(const rgba_color& lhs, double rhs);
+				constexpr rgba_color operator*(double lhs, const rgba_color& rhs);
 				rgba_color& operator*=(rgba_color& lhs, double rhs);
 
 				inline ::std::vector<path_data::path_data_types> _Cairo_path_data_t_array_to_path_data_item_vector(const cairo_path_t& cpt) {

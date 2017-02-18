@@ -492,12 +492,8 @@ namespace std {
 					circle(circle&&) noexcept = default;
 					circle& operator=(circle&&) noexcept = default;
 
-					constexpr void center(const vector_2d& ctr) noexcept {
-						_Center = ctr;
-					}
-					constexpr void radius(double rad) noexcept {
-						_Radius = rad;
-					}
+					void center(const vector_2d& ctr) noexcept;
+					void radius(double rad) noexcept;
 
 					constexpr vector_2d center() const noexcept {
 						return _Center;
@@ -702,11 +698,31 @@ namespace std {
 					static const rgba_color& yellow_green() noexcept;
 				};
 
-				constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
+				inline constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
 					return lhs.r() == rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
 				}
-				constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {
+				inline constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {
 					return !(lhs == rhs);
+				}
+
+				inline constexpr rgba_color operator*(const rgba_color& lhs, double rhs) {
+					rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
+					return{
+						::std::min(lhs.r() * rhs, 1.0),
+						::std::min(lhs.g() * rhs, 1.0),
+						::std::min(lhs.b() * rhs, 1.0),
+						::std::min(lhs.a() * rhs, 1.0)
+					};
+				}
+
+				inline constexpr rgba_color operator*(double lhs, const rgba_color& rhs) {
+					lhs = ::std::max(::std::min(lhs, 1.0), 0.0);
+					return{
+						::std::min(lhs * rhs.r(), 1.0),
+						::std::min(lhs * rhs.g(), 1.0),
+						::std::min(lhs * rhs.b(), 1.0),
+						::std::min(lhs * rhs.a(), 1.0)
+					};
 				}
 
 
@@ -810,6 +826,10 @@ namespace std {
 					}
 					constexpr vector_2d transform_point(const vector_2d& pt) const noexcept {
 						return{ _M00 * pt.x() + _M10 * pt.y() + _M20, _M01 * pt.x() + _M11 * pt.y() + _M21 };
+					}
+
+					constexpr vector_2d transform_distance(const vector_2d& dist) const noexcept {
+						return{ _M00 * dist.x() + _M10 * dist.y(), _M01 * dist.x() + _M11 * dist.y() };
 					}
 
 					matrix_2d& operator*=(const matrix_2d& rhs) noexcept;

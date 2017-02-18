@@ -133,13 +133,9 @@ matrix_2d& matrix_2d::invert() {
 
 matrix_2d& matrix_2d::invert(error_code& ec) noexcept {
 	// Get the determinant for this matrix_2d.
-	auto det = determinant(ec);
+	auto det = determinant();
 
-	if (static_cast<bool>(ec)) {
-		return *this;
-	}
-
-	if (det == 0.0 || !isfinite(det)) {
+	if (det == 0.0) {
 		// A matrix_2d with a determinant of 0.0 is not invertible.
 		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MATRIX);
 		return *this;
