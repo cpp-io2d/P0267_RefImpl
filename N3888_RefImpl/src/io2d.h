@@ -20,6 +20,7 @@
 #include <optional>
 #include <cmath>
 #include <type_traits>
+#include <initializer_list>
 
 #ifdef _WIN32_WINNT
 #define NOMINMAX
@@ -303,26 +304,35 @@ namespace std {
 					double _X = 0.0;
 					double _Y = 0.0;
 				public:
-					vector_2d() noexcept = default;
-					//vector_2d() noexcept = default;
-					//vector_2d(const vector_2d& other) noexcept = default;
-					//vector_2d& operator=(const vector_2d& other) noexcept = default;
-					//vector_2d(vector_2d&& other) noexcept;
-					//vector_2d& operator=(vector_2d&& other) noexcept;
-					vector_2d(double x, double y) noexcept;
+					constexpr vector_2d() = default;// noexcept { }
+					constexpr vector_2d(double x, double y) noexcept
+						: _X(x)
+						, _Y(y) {
+					}
+					constexpr vector_2d(const vector_2d&) noexcept = default;
+					vector_2d(vector_2d&&) noexcept = default;
+					constexpr vector_2d& operator=(const vector_2d&) noexcept = default;
+					vector_2d& operator=(vector_2d&&) noexcept = default;
 
 					void x(double value) noexcept;
 					void y(double value) noexcept;
 					void swap(vector_2d& x) noexcept;
 
-					double x() const noexcept;
-					double y() const noexcept;
+					constexpr double x() const noexcept {
+						return _X;
+					}
+					constexpr double y() const noexcept {
+						return _Y;
+					}
 
 					double magnitude() const noexcept;
-					double magnitude_squared() const noexcept;
-					double dot(const vector_2d& other) const noexcept;
+					constexpr double magnitude_squared() const noexcept {
+						return _X * _X + _Y * _Y;
+					}
+					constexpr double dot(const vector_2d& other) const noexcept {
+						return _X * other._X + _Y * other._Y;
+					}
 					double angular_direction(const vector_2d& to) const noexcept;
-
 					vector_2d to_unit() const noexcept;
 
 					vector_2d& operator+=(const vector_2d& rhs) noexcept;
@@ -330,14 +340,56 @@ namespace std {
 					vector_2d& operator*=(double rhs) noexcept;
 				};
 
-				bool operator==(const vector_2d& lhs, const vector_2d& rhs) noexcept;
-				bool operator!=(const vector_2d& lhs, const vector_2d& rhs) noexcept;
-				vector_2d operator+(const vector_2d& lhs) noexcept;
-				vector_2d operator+(const vector_2d& lhs, const vector_2d& rhs) noexcept;
-				vector_2d operator-(const vector_2d& lhs) noexcept;
-				vector_2d operator-(const vector_2d& lhs, const vector_2d& rhs) noexcept;
-				vector_2d operator*(const vector_2d& lhs, double rhs) noexcept;
-				vector_2d operator*(double lhs, const vector_2d& rhs) noexcept;
+				inline constexpr bool operator==(const vector_2d& lhs, const vector_2d& rhs) noexcept {
+					return lhs.x() == rhs.x() && lhs.y() == rhs.y();
+				}
+
+				inline constexpr bool operator!=(const vector_2d& lhs, const vector_2d& rhs) noexcept {
+					return !(lhs == rhs);
+				}
+
+				inline constexpr vector_2d operator+(const vector_2d& lhs) noexcept {
+					return lhs;
+				}
+
+				inline constexpr vector_2d operator+(const vector_2d& lhs, const vector_2d& rhs) noexcept {
+					return vector_2d{ lhs.x() + rhs.x(), lhs.y() + rhs.y() };
+				}
+
+				inline vector_2d& vector_2d::operator+=(const vector_2d& rhs) noexcept {
+					_X = _X + rhs.x();
+					_Y = _Y + rhs.y();
+					return *this;
+				}
+
+				inline constexpr vector_2d operator-(const vector_2d& lhs) noexcept {
+					return vector_2d{ -lhs.x(), -lhs.y() };
+				}
+
+				inline constexpr vector_2d operator-(const vector_2d& lhs, const vector_2d& rhs) noexcept {
+					return vector_2d{ lhs.x() - rhs.x(), lhs.y() - rhs.y() };
+				}
+
+				inline vector_2d& vector_2d::operator-=(const vector_2d& rhs) noexcept {
+					_X = _X - rhs.x();
+					_Y = _Y - rhs.y();
+					return *this;
+				}
+
+				inline vector_2d& vector_2d::operator*=(double rhs) noexcept {
+					_X *= rhs;
+					_Y *= rhs;
+					return *this;
+				}
+
+				inline constexpr vector_2d operator*(const vector_2d& lhs, double rhs) noexcept {
+					return vector_2d{ lhs.x() * rhs, lhs.y() * rhs };
+				}
+
+				inline constexpr vector_2d operator*(double lhs, const vector_2d& rhs) noexcept {
+					return vector_2d{ lhs * rhs.x(), lhs * rhs.y() };
+				}
+
 				//void swap(vector_2d& lhs, vector_2d& rhs);
 
 				class rectangle {
@@ -346,13 +398,24 @@ namespace std {
 					double _Width = 0.0;
 					double _Height = 0.0;
 				public:
-					rectangle() noexcept = default;
-					rectangle(const rectangle& other) noexcept = default;
-					rectangle& operator=(const rectangle& other) noexcept = default;
-					rectangle(rectangle&& other) noexcept;
-					rectangle& operator=(rectangle&& other) noexcept;
-					rectangle(double x, double y, double width, double height) noexcept;
-					rectangle(const vector_2d& tl, const vector_2d& br) noexcept;
+					constexpr rectangle() noexcept { }
+					constexpr rectangle(double x, double y, double width, double height) noexcept
+						: _X(x)
+						, _Y(y)
+						, _Width(width)
+						, _Height(height) {
+					}
+					constexpr rectangle(const vector_2d& tl, const vector_2d& br) noexcept
+						: _X(tl.x())
+						, _Y(tl.y())
+						, _Width(::std::max(0.0, br.x() - tl.x()))
+						, _Height(::std::max(0.0, br.y() - tl.y())) {
+					}
+					constexpr rectangle(const rectangle&) noexcept = default;
+					constexpr rectangle& operator=(const rectangle&) noexcept = default;
+					rectangle(rectangle&&) noexcept = default;
+					rectangle& operator=(rectangle&&) noexcept = default;
+
 
 					void x(double value) noexcept;
 					void y(double value) noexcept;
@@ -362,28 +425,87 @@ namespace std {
 					void bottom_right(const vector_2d& value) noexcept;
 					void top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept;
 
-					double x() const noexcept;
-					double y() const noexcept;
-					double width() const noexcept;
-					double height() const noexcept;
-					double left() const noexcept;
-					double right() const noexcept;
-					double top() const noexcept;
-					double bottom() const noexcept;
-					vector_2d top_left() const noexcept;
-					vector_2d bottom_right() const noexcept;
-					tuple<vector_2d, vector_2d> top_left_bottom_right() const noexcept;
+					constexpr double x() const noexcept;
+					constexpr double y() const noexcept;
+					constexpr double width() const noexcept;
+					constexpr double height() const noexcept;
+					constexpr double left() const noexcept;
+					constexpr double right() const noexcept;
+					constexpr double top() const noexcept;
+					constexpr double bottom() const noexcept;
+					constexpr vector_2d top_left() const noexcept;
+					constexpr vector_2d bottom_right() const noexcept;
+					//tuple<vector_2d, vector_2d> top_left_bottom_right() const noexcept;
 				};
 
+				inline constexpr double rectangle::x() const noexcept {
+					return _X;
+				}
+
+				inline constexpr double rectangle::y() const noexcept {
+					return _Y;
+				}
+
+				inline constexpr double rectangle::width() const noexcept {
+					return _Width;
+				}
+
+				inline constexpr double rectangle::height() const noexcept {
+					return _Height;
+				}
+
+				inline constexpr double rectangle::left() const noexcept {
+					return _X;
+				}
+
+				inline constexpr double rectangle::right() const noexcept {
+					return _X + _Width;
+				}
+
+				inline constexpr double rectangle::top() const noexcept {
+					return _Y;
+				}
+
+				inline constexpr double rectangle::bottom() const noexcept {
+					return _Y + _Height;
+				}
+
+				inline constexpr vector_2d rectangle::top_left() const noexcept {
+					return{ _X, _Y };
+				}
+
+				inline constexpr vector_2d rectangle::bottom_right() const noexcept {
+					return{ _X + _Width, _Y + _Height };
+				}
+
 				class circle {
+					vector_2d _Center;
+					double _Radius = 0.0;
 				public:
-					circle(const vector_2d& ctr, double rad) noexcept;
+					constexpr circle() noexcept { }
+					constexpr circle(const vector_2d& ctr, double rad) noexcept
+						: _Center(ctr)
+						, _Radius(rad) {
+					}
+					constexpr circle(const circle&) noexcept = default;
+					constexpr circle& operator=(const circle&) noexcept = default;
+					circle(circle&&) noexcept = default;
+					circle& operator=(circle&&) noexcept = default;
 
-					void center(const vector_2d& ctr) noexcept;
-					void radius(double rad) noexcept;
+					constexpr void center(const vector_2d& ctr) noexcept {
+						_Center = ctr;
+					}
+					constexpr void radius(double rad) noexcept {
+						_Radius = rad;
+					}
 
-					vector_2d center() const noexcept;
-					double radius() const noexcept;
+					constexpr vector_2d center() const noexcept {
+						return _Center;
+					}
+
+					constexpr double radius() const noexcept {
+						return _Radius;
+					}
 				};
 
 				class rgba_color {
@@ -392,16 +514,18 @@ namespace std {
 					double _B = 0.0;
 					double _A = 1.0;
 				public:
-					rgba_color() noexcept = default;
-					rgba_color(const rgba_color& other) noexcept = default;
-					rgba_color& operator=(const rgba_color& other) noexcept = default;
-					rgba_color(rgba_color&& other) noexcept;
-					rgba_color& operator=(rgba_color&& other) noexcept;
-					rgba_color(double r, double g, double b, double a = 1.0);
-					rgba_color(double r, double g, double b, ::std::error_code& ec) noexcept;
-					rgba_color(double r, double g, double b, double a, ::std::error_code& ec) noexcept;
-					rgba_color(long long r, long long g, long long b) = delete;
-					rgba_color(long long r, long long g, long long b, long long a) = delete;
+					constexpr rgba_color() noexcept { }
+					constexpr rgba_color(const rgba_color& other) noexcept = default;
+					constexpr rgba_color& operator=(const rgba_color& other) noexcept = default;
+					rgba_color(rgba_color&& other) noexcept = default;
+					rgba_color& operator=(rgba_color&& other) noexcept = default;
+					template <class T, ::std::enable_if_t<::std::is_same_v<double, ::std::remove_cv_t<::std::remove_reference_t<T>>>, int> = 0>
+					constexpr rgba_color(T red, T green, T blue, T alpha = 1.0)
+						: _R(::std::min<double>(::std::max<double>(red, 0.0), 1.0))
+						, _G(::std::min<double>(::std::max<double>(green, 0.0), 1.0))
+						, _B(::std::min<double>(::std::max<double>(blue, 0.0), 1.0))
+						, _A(::std::min<double>(::std::max<double>(alpha, 0.0), 1.0)) {
+					}
 
 					void r(double val);
 					void r(double val, ::std::error_code& ec) noexcept;
@@ -415,10 +539,18 @@ namespace std {
 					void a(double val);
 					void a(double val, ::std::error_code& ec) noexcept;
 
-					double r() const noexcept;
-					double g() const noexcept;
-					double b() const noexcept;
-					double a() const noexcept;
+					constexpr double r() const noexcept {
+						return _R;
+					}
+					constexpr double g() const noexcept {
+						return _G;
+					}
+					constexpr double b() const noexcept {
+						return _B;
+					}
+					constexpr double a() const noexcept {
+						return _A;
+					}
 
 					static const rgba_color& alice_blue() noexcept;
 					static const rgba_color& antique_white() noexcept;
@@ -570,8 +702,13 @@ namespace std {
 					static const rgba_color& yellow_green() noexcept;
 				};
 
-				bool operator==(const rgba_color& lhs, const rgba_color& rhs);
-				bool operator!=(const rgba_color& lhs, const rgba_color& rhs);
+				constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
+					return lhs.r() == rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
+				}
+				constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {
+					return !(lhs == rhs);
+				}
+
 
 #if _Inline_namespace_conditional_support_test && _User_defined_literal_conditional_support_test
 				inline namespace literals {
@@ -598,19 +735,36 @@ namespace std {
 					double _M21 = 0.0;
 				public:
 
-					matrix_2d() noexcept = default;
-					matrix_2d(const matrix_2d& other) noexcept = default;
-					matrix_2d& operator=(const matrix_2d& other) noexcept = default;
+					constexpr matrix_2d() noexcept { }
+					constexpr matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21) noexcept {
+						_M00 = m00;
+						_M01 = m01;
+						_M10 = m10;
+						_M11 = m11;
+						_M20 = m20;
+						_M21 = m21;
+					}
+					constexpr matrix_2d(const matrix_2d& other) noexcept = default;
+					constexpr matrix_2d& operator=(const matrix_2d& other) noexcept = default;
 					matrix_2d(matrix_2d&& other) noexcept = default;
 					matrix_2d& operator=(matrix_2d&& other) noexcept = default;
-					matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21) noexcept;
 
-					static matrix_2d init_identity() noexcept;
-					static matrix_2d init_translate(const vector_2d& value) noexcept;
-					static matrix_2d init_scale(const vector_2d& value) noexcept;
+					constexpr static matrix_2d init_identity() noexcept {
+						return{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
+					}
+					constexpr static matrix_2d init_translate(const vector_2d& value) noexcept {
+						return{ 1.0, 0.0, 0.0, 1.0, value.x(), value.y() };
+					}
+					constexpr static matrix_2d init_scale(const vector_2d& value) noexcept {
+						return{ value.x(), 0.0, 0.0, value.y(), 0.0, 0.0 };
+					}
 					static matrix_2d init_rotate(double radians) noexcept;
-					static matrix_2d init_shear_x(double factor) noexcept;
-					static matrix_2d init_shear_y(double factor) noexcept;
+					constexpr static matrix_2d init_shear_x(double factor) noexcept {
+						return{ 1.0, 0.0, factor, 1.0, 0.0, 0.0 };
+					}
+					constexpr static matrix_2d init_shear_y(double factor) noexcept {
+						return{ 1.0, factor, 0.0, 1.0, 0.0, 0.0 };
+					}
 
 					// Modifiers
 					void m00(double value) noexcept;
@@ -629,73 +783,156 @@ namespace std {
 					void swap(matrix_2d& other);
 
 					// Observers
-					double m00() const noexcept;
-					double m01() const noexcept;
-					double m10() const noexcept;
-					double m11() const noexcept;
-					double m20() const noexcept;
-					double m21() const noexcept;
-					bool is_invertible() const noexcept;
-					double determinant() const;
-					double determinant(::std::error_code& ec) const noexcept;
-					vector_2d transform_distance(const vector_2d& dist) const noexcept;
-					vector_2d transform_point(const vector_2d& pt) const noexcept;
+					constexpr double m00() const noexcept {
+						return _M00;
+					}
+					constexpr double m01() const noexcept {
+						return _M01;
+					}
+					constexpr double m10() const noexcept {
+						return _M10;
+					}
+					constexpr double m11() const noexcept {
+						return _M11;
+					}
+					constexpr double m20() const noexcept {
+						return _M20;
+					}
+					constexpr double m21() const noexcept {
+						return _M21;
+					}
+					constexpr bool is_invertible() const noexcept {
+						return (_M00 * _M11 - _M01 * _M10) != 0.0;
+					}
+					bool is_finite() const noexcept;
+					double determinant() const noexcept {
+						return _M00 * _M11 - _M01 * _M10;
+					}
+					constexpr vector_2d transform_point(const vector_2d& pt) const noexcept {
+						return{ _M00 * pt.x() + _M10 * pt.y() + _M20, _M01 * pt.x() + _M11 * pt.y() + _M21 };
+					}
 
 					matrix_2d& operator*=(const matrix_2d& rhs) noexcept;
 				};
 
-				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
-				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
-				bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
+				constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
+					return matrix_2d{
+						(lhs.m00() * rhs.m00()) + (lhs.m01() * rhs.m10()),
+						(lhs.m00() * rhs.m01()) + (lhs.m01() * rhs.m11()),
+						(lhs.m10() * rhs.m00()) + (lhs.m11() * rhs.m10()),
+						(lhs.m10() * rhs.m01()) + (lhs.m11() * rhs.m11()),
+						(lhs.m20() * rhs.m00()) + (lhs.m21() * rhs.m10()) + rhs.m20(),
+						(lhs.m20() * rhs.m01()) + (lhs.m21() * rhs.m11()) + rhs.m21()
+					};
+				}
+				constexpr bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
+					return lhs.m00() == rhs.m00() && lhs.m01() == rhs.m01() &&
+						lhs.m10() == rhs.m10() && lhs.m11() == rhs.m11() &&
+						lhs.m20() == rhs.m20() && lhs.m21() == rhs.m21();
+				}
+				constexpr bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
+					return !(lhs == rhs);
+				}
 
 
 				namespace path_data {
 					class new_path {
+					public:
+						constexpr new_path() noexcept {}
+						constexpr new_path(const new_path&) noexcept = default;
+						constexpr new_path& operator=(const new_path&) noexcept = default;
+						new_path(new_path&&) noexcept = default;
+						new_path& operator=(new_path&&) noexcept = default;
 					};
 
 					class close_path {
 						vector_2d _Data = {};
 					public:
-						explicit close_path(const vector_2d& to) noexcept;
+						constexpr explicit close_path(const vector_2d& to) noexcept
+							: _Data(to) {
+						}
+						constexpr close_path() noexcept {}
+						constexpr close_path(const close_path&) noexcept = default;
+						constexpr close_path& operator=(const close_path&) noexcept = default;
+						close_path(close_path&&) noexcept = default;
+						close_path& operator=(close_path&&) noexcept = default;
 
-						vector_2d to() const noexcept;
 						void to(const vector_2d& value) noexcept;
+						constexpr vector_2d to() const noexcept {
+							return _Data;
+						}
 					};
 
 					class abs_move {
 						vector_2d _Data = {};
 					public:
-						explicit abs_move(const vector_2d& to) noexcept;
+						constexpr explicit abs_move(const vector_2d& to) noexcept
+							: _Data(to) {
+						}
+						constexpr abs_move() noexcept {}
+						constexpr abs_move(const abs_move&) noexcept = default;
+						constexpr abs_move& operator=(const abs_move&) noexcept = default;
+						abs_move(abs_move&&) noexcept = default;
+						abs_move& operator=(abs_move&&) noexcept = default;
 
-						vector_2d to() const noexcept;
 						void to(const vector_2d& value) noexcept;
+						constexpr vector_2d to() const noexcept {
+							return _Data;
+						}
 					};
 
 					class abs_line {
 						vector_2d _Data = {};
 					public:
-						explicit abs_line(const vector_2d& to) noexcept;
+						constexpr explicit abs_line(const vector_2d& to) noexcept
+							: _Data(to) {
+						}
+						constexpr abs_line() noexcept {}
+						constexpr abs_line(const abs_line&) noexcept = default;
+						constexpr abs_line& operator=(const abs_line&) noexcept = default;
+						abs_line(abs_line&&) noexcept = default;
+						abs_line& operator=(abs_line&&) noexcept = default;
 
-						vector_2d to() const noexcept;
 						void to(const vector_2d& value) noexcept;
+						constexpr vector_2d to() const noexcept {
+							return _Data;
+						}
 					};
 
 					class rel_move {
 						vector_2d _Data = {};
 					public:
-						explicit rel_move(const vector_2d& to) noexcept;
+						constexpr explicit rel_move(const vector_2d& to) noexcept
+							: _Data(to) {
+						}
+						constexpr rel_move() noexcept {}
+						constexpr rel_move(const rel_move&) noexcept = default;
+						constexpr rel_move& operator=(const rel_move&) noexcept = default;
+						rel_move(rel_move&&) noexcept = default;
+						rel_move& operator=(rel_move&&) noexcept = default;
 
-						vector_2d to() const noexcept;
 						void to(const vector_2d& value) noexcept;
+						constexpr vector_2d to() const noexcept {
+							return _Data;
+						}
 					};
 
 					class rel_line {
 						vector_2d _Data = {};
 					public:
-						explicit rel_line(const vector_2d& to) noexcept;
+						constexpr explicit rel_line(const vector_2d& to) noexcept
+							: _Data(to) {
+						}
+						constexpr rel_line() noexcept {}
+						constexpr rel_line(const rel_line&) noexcept = default;
+						constexpr rel_line& operator=(const rel_line&) noexcept = default;
+						rel_line(rel_line&&) noexcept = default;
+						rel_line& operator=(rel_line&&) noexcept = default;
 
-						vector_2d to() const noexcept;
 						void to(const vector_2d& value) noexcept;
+						constexpr vector_2d to() const noexcept {
+							return _Data;
+						}
 					};
 
 					class abs_cubic_curve {
@@ -703,15 +940,30 @@ namespace std {
 						vector_2d _Control_pt2 = {};
 						vector_2d _End_pt = {};
 					public:
-						abs_cubic_curve(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
+						constexpr abs_cubic_curve(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept
+							: _Control_pt1(controlPoint1)
+							, _Control_pt2(controlPoint2)
+							, _End_pt(endPoint) {
+						}
+						constexpr abs_cubic_curve() noexcept {}
+						constexpr abs_cubic_curve(const abs_cubic_curve&) noexcept = default;
+						constexpr abs_cubic_curve& operator=(const abs_cubic_curve&) noexcept = default;
+						abs_cubic_curve(abs_cubic_curve&&) noexcept = default;
+						abs_cubic_curve& operator=(abs_cubic_curve&&) noexcept = default;
 
 						void control_point_1(const vector_2d& value) noexcept;
 						void control_point_2(const vector_2d& value) noexcept;
 						void end_point(const vector_2d& value) noexcept;
 
-						vector_2d control_point_1() const noexcept;
-						vector_2d control_point_2() const noexcept;
-						vector_2d end_point() const noexcept;
+						constexpr vector_2d control_point_1() const noexcept {
+							return _Control_pt1;
+						}
+						constexpr vector_2d control_point_2() const noexcept {
+							return _Control_pt2;
+						}
+						constexpr vector_2d end_point() const noexcept {
+							return _End_pt;
+						}
 					};
 
 					class rel_cubic_curve {
@@ -719,97 +971,204 @@ namespace std {
 						vector_2d _Control_pt2 = {};
 						vector_2d _End_pt = {};
 					public:
-						rel_cubic_curve(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept;
+						constexpr rel_cubic_curve(const vector_2d& controlPoint1, const vector_2d& controlPoint2, const vector_2d& endPoint) noexcept
+							: _Control_pt1(controlPoint1)
+							, _Control_pt2(controlPoint2)
+							, _End_pt(endPoint) {
+						}
+						constexpr rel_cubic_curve() noexcept {}
+						constexpr rel_cubic_curve(const rel_cubic_curve&) noexcept = default;
+						constexpr rel_cubic_curve& operator=(const rel_cubic_curve&) noexcept = default;
+						rel_cubic_curve(rel_cubic_curve&&) noexcept = default;
+						rel_cubic_curve& operator=(rel_cubic_curve&&) noexcept = default;
 
 						void control_point_1(const vector_2d& value) noexcept;
 						void control_point_2(const vector_2d& value) noexcept;
 						void end_point(const vector_2d& value) noexcept;
 
-						vector_2d control_point_1() const noexcept;
-						vector_2d control_point_2() const noexcept;
-						vector_2d end_point() const noexcept;
+						constexpr vector_2d control_point_1() const noexcept {
+							return _Control_pt1;
+						}
+						constexpr vector_2d control_point_2() const noexcept {
+							return _Control_pt2;
+						}
+						constexpr vector_2d end_point() const noexcept {
+							return _End_pt;
+						}
 					};
 
 					class abs_quadratic_curve {
 						vector_2d _Control_pt = {};
 						vector_2d _End_pt = {};
 					public:
-						abs_quadratic_curve(const vector_2d& cp, const vector_2d& ep) noexcept;
+						constexpr abs_quadratic_curve(const vector_2d& cp, const vector_2d& ep) noexcept
+							: _Control_pt(cp)
+							, _End_pt(ep) {
+						}
+						constexpr abs_quadratic_curve() noexcept {}
+						constexpr abs_quadratic_curve(const abs_quadratic_curve&) noexcept = default;
+						constexpr abs_quadratic_curve& operator=(const abs_quadratic_curve&) noexcept = default;
+						abs_quadratic_curve(abs_quadratic_curve&&) noexcept = default;
+						abs_quadratic_curve& operator=(abs_quadratic_curve&&) noexcept = default;
 
 						void control_point(const vector_2d& cp) noexcept;
 						void end_point(const vector_2d& ep) noexcept;
 
-						vector_2d control_point() const noexcept;
-						vector_2d end_point() const noexcept;
+						constexpr vector_2d control_point() const noexcept {
+							return _Control_pt;
+						}
+						constexpr vector_2d end_point() const noexcept {
+							return _End_pt;
+						}
 					};
 
 					class rel_quadratic_curve {
 						vector_2d _Control_pt = {};
 						vector_2d _End_pt = {};
 					public:
-						rel_quadratic_curve(const vector_2d& cp, const vector_2d& ep) noexcept;
+						constexpr rel_quadratic_curve(const vector_2d& cp, const vector_2d& ep) noexcept
+							: _Control_pt(cp)
+							, _End_pt(ep) {
+						}
+						constexpr rel_quadratic_curve() noexcept {}
+						constexpr rel_quadratic_curve(const rel_quadratic_curve&) noexcept = default;
+						constexpr rel_quadratic_curve& operator=(const rel_quadratic_curve&) noexcept = default;
+						rel_quadratic_curve(rel_quadratic_curve&&) noexcept = default;
+						rel_quadratic_curve& operator=(rel_quadratic_curve&&) noexcept = default;
 
 						void control_point(const vector_2d& cp) noexcept;
 						void end_point(const vector_2d& ep) noexcept;
 
-						vector_2d control_point() const noexcept;
-						vector_2d end_point() const noexcept;
+						constexpr vector_2d control_point() const noexcept {
+							return _Control_pt;
+						}
+						constexpr vector_2d end_point() const noexcept {
+							return _End_pt;
+						}
 					};
 
 					class arc_clockwise {
-						vector_2d _Center = {};
-						double _Radius = 0.0;
+						experimental::io2d::circle _Circle = {};
 						double _Angle_1 = 0.0;
 						double _Angle_2 = 0.0;
 					public:
-						arc_clockwise(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
+						constexpr arc_clockwise(const experimental::io2d::circle& c, double angle1, double angle2) noexcept
+							: _Circle(c)
+							, _Angle_1(angle1)
+							, _Angle_2(angle2) {
+						}
+						constexpr arc_clockwise(const vector_2d& ctr, double rad, double angle1, double angle2) noexcept
+							: _Circle(ctr, rad)
+							, _Angle_1(angle1)
+							, _Angle_2(angle2) {
+						}
+						constexpr arc_clockwise() noexcept {}
+						constexpr arc_clockwise(const arc_clockwise&) noexcept = default;
+						constexpr arc_clockwise& operator=(const arc_clockwise&) noexcept = default;
+						arc_clockwise(arc_clockwise&&) noexcept = default;
+						arc_clockwise& operator=(arc_clockwise&&) noexcept = default;
 
-						void center(const vector_2d& value) noexcept;
-						void radius(double value) noexcept;
+						void circle(const experimental::io2d::circle& c) noexcept;
+						void center(const vector_2d& ctr) noexcept;
+						void radius(double rad) noexcept;
 						void angle_1(double radians) noexcept;
 						void angle_2(double radians) noexcept;
 
-						vector_2d center() const noexcept;
-						double radius() const noexcept;
-						double angle_1() const noexcept;
-						double angle_2() const noexcept;
+						constexpr experimental::io2d::circle circle() const noexcept {
+							return _Circle;
+						}
+						constexpr vector_2d center() const noexcept {
+							return _Circle.center();
+						}
+						constexpr double radius() const noexcept {
+							return _Circle.radius();
+						}
+						constexpr double angle_1() const noexcept {
+							return _Angle_1;
+						}
+						constexpr double angle_2() const noexcept {
+							return _Angle_2;
+						}
 					};
 
 					class arc_counterclockwise {
-						vector_2d _Center;
-						double _Radius;
-						double _Angle_1;
-						double _Angle_2;
+						experimental::io2d::circle _Circle = {};
+						double _Angle_1 = 0.0;
+						double _Angle_2 = 0.0;
 					public:
-						arc_counterclockwise(const vector_2d& center, double radius, double angle1, double angle2) noexcept;
+						constexpr arc_counterclockwise(const experimental::io2d::circle& c, double angle1, double angle2) noexcept
+							: _Circle(c)
+							, _Angle_1(angle1)
+							, _Angle_2(angle2) {
+						}
+						constexpr arc_counterclockwise(const vector_2d& ctr, double rad, double angle1, double angle2) noexcept
+							: _Circle(ctr, rad)
+							, _Angle_1(angle1)
+							, _Angle_2(angle2) {
+						}
+						constexpr arc_counterclockwise() noexcept {}
+						constexpr arc_counterclockwise(const arc_counterclockwise&) noexcept = default;
+						constexpr arc_counterclockwise& operator=(const arc_counterclockwise&) noexcept = default;
+						arc_counterclockwise(arc_counterclockwise&&) noexcept = default;
+						arc_counterclockwise& operator=(arc_counterclockwise&&) noexcept = default;
 
-						void center(const vector_2d& value) noexcept;
-						void radius(double value) noexcept;
+						void circle(const experimental::io2d::circle& c) noexcept;
+						void center(const vector_2d& ctr) noexcept;
+						void radius(double rad) noexcept;
 						void angle_1(double radians) noexcept;
 						void angle_2(double radians) noexcept;
 
-						vector_2d center() const noexcept;
-						double radius() const noexcept;
-						double angle_1() const noexcept;
-						double angle_2() const noexcept;
+						constexpr experimental::io2d::circle circle() const noexcept {
+							return _Circle;
+						}
+						constexpr vector_2d center() const noexcept {
+							return _Circle.center();
+						}
+						constexpr double radius() const noexcept {
+							return _Circle.radius();
+						}
+						constexpr double angle_1() const noexcept {
+							return _Angle_1;
+						}
+						constexpr double angle_2() const noexcept {
+							return _Angle_2;
+						}
 					};
 
 					class change_matrix {
 						matrix_2d _Matrix = {};
 					public:
-						explicit change_matrix(const matrix_2d& m) noexcept;
+						constexpr explicit change_matrix(const matrix_2d& m) noexcept
+							: _Matrix(m) {
+						}
+						constexpr change_matrix() noexcept {}
+						constexpr change_matrix(const change_matrix&) noexcept = default;
+						constexpr change_matrix& operator=(const change_matrix&) noexcept = default;
+						change_matrix(change_matrix&&) noexcept = default;
+						change_matrix& operator=(change_matrix&&) noexcept = default;
 
 						void matrix(const matrix_2d& value) noexcept;
-						matrix_2d matrix() const noexcept;
+						constexpr matrix_2d matrix() const noexcept {
+							return _Matrix;
+						}
 					};
 
 					class change_origin {
 						vector_2d _Origin = {};
 					public:
-						explicit change_origin(const vector_2d& origin) noexcept;
+						constexpr explicit change_origin(const vector_2d& origin) noexcept
+							: _Origin(origin) {
+						}
+						constexpr change_origin() noexcept {}
+						constexpr change_origin(const change_origin&) noexcept = default;
+						constexpr change_origin& operator=(const change_origin&) noexcept = default;
+						change_origin(change_origin&&) noexcept = default;
+						change_origin& operator=(change_origin&&) noexcept = default;
 
 						void origin(const vector_2d& value) noexcept;
-						vector_2d origin() const noexcept;
+						constexpr vector_2d origin() const noexcept {
+							return _Origin;
+						}
 					};
 
 					using path_data_types = typename ::std::variant<abs_move, abs_line, rel_move, rel_line, abs_cubic_curve, rel_cubic_curve, abs_quadratic_curve, rel_quadratic_curve, arc_clockwise, arc_counterclockwise, new_path, close_path, change_matrix, change_origin>;
@@ -981,17 +1340,6 @@ namespace std {
 						assert(false && "Change origin should have been eliminated.");
 					}
 				};
-				//void _Free_manual_cairo_path(cairo_path_t* path) noexcept {
-				//	if (path != nullptr) {
-				//		if (path->data != nullptr) {
-				//			delete[] path->data;
-				//			path->data = nullptr;
-				//			path->status = CAIRO_STATUS_NULL_POINTER;
-				//		}
-				//		delete path;
-				//		path = nullptr;
-				//	}
-				//}
 
 				template <class Allocator>
 				inline path_group::path_group(const path_factory<Allocator>& pf)
@@ -1061,209 +1409,8 @@ namespace std {
 					ec.clear();
 				}
 
-				//template <class Allocator>
-				//inline path_group::path_group(const path_factory<Allocator>& pf)
-				//	: _Cairo_path(new cairo_path_t, &_Free_manual_cairo_path) {
-				//	auto processedVec = _Process_path_data<Allocator>(pf);
-				//	::std::vector<cairo_path_data_t> vec;
-
-				//	for (const auto& val : processedVec) {
-				//		::std::visit([&vec](auto&& item) {
-				//			using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-				//			cairo_path_data_t cpdItem{};
-				//			if (::std::is_same_v<T, path_data::abs_move>) {
-				//				auto pt = item.to();
-				//				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
-				//				cpdItem.header.length = 2;
-				//				vec.push_back(cpdItem);
-				//				cpdItem = {};
-				//				cpdItem.point = { pt.x(), pt.y() };
-				//				vec.push_back(cpdItem);
-				//			}
-				//			else if (::std::is_same_v<T, path_data::abs_line>) {
-				//				auto pt = item.to();
-				//				cpdItem.header.type = CAIRO_PATH_LINE_TO;
-				//				cpdItem.header.length = 2;
-				//				vec.push_back(cpdItem);
-				//				cpdItem = {};
-				//				cpdItem.point = { pt.x(), pt.y() };
-				//				vec.push_back(cpdItem);
-				//			}
-				//			else if (::std::is_same_v<T, path_data::abs_cubic_curve>) {
-				//				auto pt1 = item.control_point_1();
-				//				auto pt2 = item.control_point_2();
-				//				auto pt3 = item.end_point();
-				//				cpdItem.header.type = CAIRO_PATH_CURVE_TO;
-				//				cpdItem.header.length = 4;
-				//				vec.push_back(cpdItem);
-				//				cpdItem = {};
-				//				cpdItem.point = { pt1.x(), pt1.y() };
-				//				vec.push_back(cpdItem);
-				//				cpdItem = {};
-				//				cpdItem.point = { pt2.x(), pt2.y() };
-				//				vec.push_back(cpdItem);
-				//				cpdItem = {};
-				//				cpdItem.point = { pt3.x(), pt3.y() };
-				//				vec.push_back(cpdItem);
-				//			}
-				//			else if (std::is_same_v<T, path_data::abs_quadratic_curve>) {
-				//				assert(false && "Quadratic curves should have been transformed into cubic curves already.");
-				//			}
-				//			else if (std::is_same_v<T, path_data::new_path>) {
-				//				// Do nothing.
-				//			}
-				//			else if (std::is_same_v<T, path_data::close_path>) {
-				//				cpdItem.header.type = CAIRO_PATH_CLOSE_PATH;
-				//				cpdItem.header.length = 1;
-				//				vec.push_back(cpdItem);
-				//				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
-				//				cpdItem.header.length = 2;
-				//				vec.push_back(cpdItem);
-				//				cpdItem = {};
-				//				cpdItem.point = { lastMoveToPoint.x(), lastMoveToPoint.y() };
-				//				vec.push_back(cpdItem);
-				//			}
-				//			else if (std::is_same_v<T, path_data::rel_move>) {
-				//				assert(false && "Rel move should have been transformed into non-relative.");
-				//			}
-				//			else if (std::is_same_v<T, path_data::rel_line>) {
-				//				assert(false && "Rel line should have been transformed into non-relative.");
-				//			}
-				//			else if (std::is_same_v<T, path_data::rel_cubic_curve>) {
-				//				assert(false && "Rel curve should have been transformed into non-relative.");
-				//			}
-				//			else if (std::is_same_v<T, path_data::rel_quadratic_curve>) {
-				//				assert(false && "Quadratic curves should have been transformed into cubic curves.");
-				//			}
-				//			else if (std::is_same_v<T, path_data::arc_clockwise>) {
-				//				assert(false && "Quadratic curves should have been transformed into cubic curves.");
-				//			}
-				//			else if (std::is_same_v<T, path_data::arc_counterclockwise>) {
-				//				assert(false && "Quadratic curves should have been transformed into cubic curves.");
-				//			}
-				//			else if (std::is_same_v<T, path_data::change_matrix>) {
-				//				assert(false && "Change matrix should have been eliminated.");
-				//			}
-				//			else if (std::is_same_v<T, path_data::change_origin>) {
-				//				assert(false && "Change origin should have been eliminated.");
-				//			}
-				//		}, val);
-				//	}
-				//	_Cairo_path->num_data = static_cast<int>(vec.size());
-				//	const auto numDataST = vec.size();
-				//	_Cairo_path->data = new cairo_path_data_t[numDataST];
-				//	for (size_t currItemIndex = 0; currItemIndex < numDataST; currItemIndex++) {
-				//		_Cairo_path->data[currItemIndex] = vec[currItemIndex];
-				//	}
-				//	_Cairo_path->status = CAIRO_STATUS_SUCCESS;
-				//}
-
-				//template<class Allocator>
-				//inline path_group::path_group(const path_factory<Allocator>& pf, ::std::error_code& ec) noexcept {
-				//	: _Cairo_path(new cairo_path_t, &_Free_manual_cairo_path) {
-				//		auto processedVec = _Process_path_data<Allocator>(pf, ec);
-				//		if (static_cast<bool>(ec)) {
-				//			return;
-				//		}
-
-				//		::std::vector<cairo_path_data_t> vec;
-
-				//		for (const auto& val : processedVec) {
-				//			::std::visit([&vec](auto&& item) {
-				//				using T = std::remove_cv_t<std::remove_reference_t<decltype(item)>>;
-				//				cairo_path_data_t cpdItem{};
-				//				if (std::is_same_v<T, path_data::abs_move>) {
-				//					auto pt = item.to();
-				//					cpdItem.header.type = CAIRO_PATH_MOVE_TO;
-				//					cpdItem.header.length = 2;
-				//					vec.push_back(cpdItem);
-				//					cpdItem = {};
-				//					cpdItem.point = { pt.x(), pt.y() };
-				//					vec.push_back(cpdItem);
-				//				}
-				//				else if (std::is_same_v<T, path_data::abs_line>) {
-				//					auto pt = item.to();
-				//					cpdItem.header.type = CAIRO_PATH_LINE_TO;
-				//					cpdItem.header.length = 2;
-				//					vec.push_back(cpdItem);
-				//					cpdItem = {};
-				//					cpdItem.point = { pt.x(), pt.y() };
-				//					vec.push_back(cpdItem);
-				//				}
-				//				else if (std::is_same_v<T, path_data::abs_cubic_curve>) {
-				//					auto pt1 = item.control_point_1();
-				//					auto pt2 = item.control_point_2();
-				//					auto pt3 = item.end_point();
-				//					cpdItem.header.type = CAIRO_PATH_CURVE_TO;
-				//					cpdItem.header.length = 4;
-				//					vec.push_back(cpdItem);
-				//					cpdItem = {};
-				//					cpdItem.point = { pt1.x(), pt1.y() };
-				//					vec.push_back(cpdItem);
-				//					cpdItem = {};
-				//					cpdItem.point = { pt2.x(), pt2.y() };
-				//					vec.push_back(cpdItem);
-				//					cpdItem = {};
-				//					cpdItem.point = { pt3.x(), pt3.y() };
-				//					vec.push_back(cpdItem);
-				//				}
-				//				else if (std::is_same_v<T, path_data::abs_quadratic_curve>) {
-				//					assert(false && "Quadratic curves should have been transformed into cubic curves already.");
-				//				}
-				//				else if (std::is_same_v<T, path_data::new_path>) {
-				//					// Do nothing.
-				//				}
-				//				else if (std::is_same_v<T, path_data::close_path>) {
-				//					cpdItem.header.type = CAIRO_PATH_CLOSE_PATH;
-				//					cpdItem.header.length = 1;
-				//					vec.push_back(cpdItem);
-				//					cpdItem.header.type = CAIRO_PATH_MOVE_TO;
-				//					cpdItem.header.length = 2;
-				//					vec.push_back(cpdItem);
-				//					cpdItem = {};
-				//					cpdItem.point = { lastMoveToPoint.x(), lastMoveToPoint.y() };
-				//					vec.push_back(cpdItem);
-				//				}
-				//				else if (std::is_same_v<T, path_data::rel_move>) {
-				//					assert(false && "Rel move should have been transformed into non-relative.");
-				//				}
-				//				else if (std::is_same_v<T, path_data::rel_line>) {
-				//					assert(false && "Rel line should have been transformed into non-relative.");
-				//				}
-				//				else if (std::is_same_v<T, path_data::rel_cubic_curve>) {
-				//					assert(false && "Rel curve should have been transformed into non-relative.");
-				//				}
-				//				else if (std::is_same_v<T, path_data::rel_quadratic_curve>) {
-				//					assert(false && "Quadratic curves should have been transformed into cubic curves.");
-				//				}
-				//				else if (std::is_same_v<T, path_data::arc_clockwise>) {
-				//					assert(false && "Quadratic curves should have been transformed into cubic curves.");
-				//				}
-				//				else if (std::is_same_v<T, path_data::arc_counterclockwise>) {
-				//					assert(false && "Quadratic curves should have been transformed into cubic curves.");
-				//				}
-				//				else if (std::is_same_v<T, path_data::change_matrix>) {
-				//					assert(false && "Change matrix should have been eliminated.");
-				//				}
-				//				else if (std::is_same_v<T, path_data::change_origin>) {
-				//					assert(false && "Change origin should have been eliminated.");
-				//				}
-				//			}, val);
-				//		}
-				//		_Cairo_path->num_data = static_cast<int>(vec.size());
-				//		const auto numDataST = vec.size();
-				//		_Cairo_path->data = new cairo_path_data_t[numDataST];
-				//		for (size_t currItemIndex = 0; currItemIndex < numDataST; currItemIndex++) {
-				//			_Cairo_path->data[currItemIndex] = vec[currItemIndex];
-				//		}
-				//		_Cairo_path->status = CAIRO_STATUS_SUCCESS;
-				//	}
-				//	ec.clear();
-				//}
-
 				template <class Allocator>
 				class path_factory {
-					friend path_group;
 					::std::vector<path_data::path_data_types, Allocator> _Data;
 					optional<vector_2d> _Current_point;
 					vector_2d _Last_move_to_point;
@@ -1442,10 +1589,11 @@ namespace std {
 					double _Offset = 0.0;
 					rgba_color _Color = rgba_color::black();
 				public:
-					color_stop(double offset, rgba_color color);
+					color_stop() noexcept = default;
+					color_stop(double offset, const rgba_color& color);
 
-					::std::error_code offset(double value);
-					::std::error_code color(rgba_color value);
+					void offset(double value) noexcept;
+					void color(const rgba_color& value) noexcept;
 
 					double offset() const noexcept;
 					rgba_color color() const noexcept;
@@ -1453,6 +1601,7 @@ namespace std {
 
 				template <class Allocator = allocator<color_stop>>
 				class color_stop_group {
+					::std::vector<color_stop> _Stops;
 				public:
 					using value_type = color_stop;
 					using allocator_type = Allocator;
@@ -1469,31 +1618,32 @@ namespace std {
 
 					color_stop_group() noexcept(noexcept(Allocator())) :
 						color_stop_group(Allocator()) { }
-					explicit color_stop_group(const Allocator&) noexcept;
-					explicit color_stop_group(size_type n, const Allocator& = Allocator());
+					explicit color_stop_group(const Allocator& a) noexcept;
+					explicit color_stop_group(size_type n, const Allocator& a = Allocator());
 					color_stop_group(size_type n, const value_type& value,
-						const Allocator& = Allocator());
+						const Allocator& a = Allocator());
 					template <class InputIterator>
 					color_stop_group(InputIterator first, InputIterator last,
-						const Allocator& = Allocator());
+						const Allocator& a = Allocator());
 					color_stop_group(const color_stop_group& x);
-					color_stop_group(color_stop_group&&) noexcept;
-					color_stop_group(const color_stop_group&, const Allocator&);
-					color_stop_group(color_stop_group&&, const Allocator&);
-					color_stop_group(initializer_list<value_type>,
-						const Allocator& = Allocator());
+					color_stop_group(color_stop_group&& x) noexcept;
+					color_stop_group(const color_stop_group& x, const Allocator& a);
+					color_stop_group(color_stop_group&& x, const Allocator& a);
+					color_stop_group(initializer_list<value_type> il,
+						const Allocator& a = Allocator());
 					~color_stop_group();
 					color_stop_group& operator=(const color_stop_group& x);
 					color_stop_group& operator=(color_stop_group&& x)
 						noexcept(
 							allocator_traits<Allocator>::propagate_on_container_move_assignment::value
 							|| allocator_traits<Allocator>::is_always_equal::value);
-					color_stop_group& operator=(initializer_list<value_type>);
+					color_stop_group& operator=(initializer_list<value_type> il);
 					template <class InputIterator>
 					void assign(InputIterator first, InputIterator last);
 					void assign(size_type n, const value_type& u);
-					void assign(initializer_list<value_type>);
+					void assign(initializer_list<value_type> il);
 					allocator_type get_allocator() const noexcept;
+
 					// 9.5.7, iterators:
 					iterator begin() noexcept;
 					const_iterator begin() const noexcept;
@@ -1516,6 +1666,7 @@ namespace std {
 					void resize(size_type sz, const value_type& c);
 					void reserve(size_type n);
 					void shrink_to_fit();
+
 					// element access:
 					reference operator[](size_type n);
 					const_reference operator[](size_type n) const;
@@ -1543,7 +1694,7 @@ namespace std {
 						initializer_list<value_type> il);
 					iterator erase(const_iterator position);
 					iterator erase(const_iterator first, const_iterator last);
-					void swap(color_stop_group&)
+					void swap(color_stop_group& other)
 						noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value
 							|| allocator_traits<Allocator>::is_always_equal::value);
 					void clear() noexcept;
@@ -1558,11 +1709,49 @@ namespace std {
 				// 8.17.8, specialized algorithms:
 				template <class Allocator>
 				void swap(color_stop_group<Allocator>& lhs, color_stop_group<Allocator>& rhs)
-					noexcept(noexcept(lhs.swap(rhs)));
+					noexcept(noexcept(lhs.swap(rhs))) {
+					lhs.swap(rhs);
+				}
+
+				//template <class... _Args>
+				//void _Find_first_variadic_type();
+				//template <class T, class... _Args>
+				//T _Find_first_variadic_type();
+				//template <class T>
+				//T _Find_first_variadic_type();
+				//template<>
+				//void _Find_first_variadic_type();
 
 				class surface;
 				class image_surface;
 				class display_surface;
+
+				//template <class _T, class... _Args>
+				//void _Add_color_stop(cairo_pattern_t*, _T&&, _Args&&...);
+
+				//template <class _T>
+				//void _Add_color_stop(cairo_pattern_t*, _T&&);
+
+				//template <>
+				//void _Add_color_stop(cairo_pattern_t*);
+
+				//template <class _T, class... _Args>
+				//inline void _Add_color_stop(cairo_pattern_t* pat, _T&& stop, _Args&&... rest) {
+				//	cairo_pattern_add_color_stop_rgba(pat, stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+				//	if (cairo_pattern_status(pat) != CAIRO_STATUS_SUCCESS) {
+				//		return;
+				//	}
+				//	_Add_color_stop<_Args&&...>(pat, ::std::forward<_Args>(rest)...);
+				//}
+
+				//template <class _T>
+				//inline void _Add_color_stop(cairo_pattern_t* pat, _T&& stop) {
+				//	cairo_pattern_add_color_stop_rgba(pat, stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+				//}
+
+				//template <>
+				//inline void _Add_color_stop(cairo_pattern_t*) {
+				//}
 
 				class brush {
 				public:
@@ -1591,18 +1780,32 @@ namespace std {
 					brush& operator=(brush&& other) noexcept = default;
 					brush(const rgba_color& c);
 					brush(const rgba_color& c, error_code& ec) noexcept;
-					template <class Allocator = allocator<color_stop>>
+					template <class _Allocator>
 					brush(const vector_2d& begin, const vector_2d& end,
-						const color_stop_group<Allocator>& csg);
-					template <class Allocator = allocator<color_stop>>
+						const color_stop_group<_Allocator>& csg);
+					template <class _Allocator>
 					brush(const vector_2d& begin, const vector_2d& end,
-						const color_stop_group<Allocator>& csg, error_code& ec) noexcept;
-					template <class Allocator = allocator<color_stop>>
+						const color_stop_group<_Allocator>& csg, error_code& ec) noexcept;
+
+					brush(const vector_2d& begin, const vector_2d& end,
+						::std::initializer_list<color_stop> il);
+
+					brush(const vector_2d& begin, const vector_2d& end, ::std::error_code& ec,
+						::std::initializer_list<color_stop> il) noexcept;
+
+					template <class _Allocator>
 					brush(const circle& start, const circle& end,
-						const color_stop_group<Allocator>& csg);
-					template <class Allocator = allocator<color_stop>>
+						const color_stop_group<_Allocator>& csg);
+					template <class _Allocator>
 					brush(const circle& start, const circle& end,
-						const color_stop_group<Allocator>& csg, error_code& ec) noexcept;
+						const color_stop_group<_Allocator>& csg, error_code& ec) noexcept;
+
+					brush(const circle& start, const circle& end,
+						::std::initializer_list<color_stop> il);
+
+					brush(const circle& start, const circle& end, ::std::error_code& ec,
+						::std::initializer_list<color_stop> il) noexcept;
+
 					brush(image_surface&& img);
 					brush(image_surface&& img, error_code& ec) noexcept;
 
@@ -2004,7 +2207,7 @@ namespace std {
 					Window wndw;
 					::std::mutex& display_mutex;
 					int& display_ref_count;
-			};
+				};
 #endif
 
 				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
@@ -2484,7 +2687,7 @@ namespace std {
 				};
 
 				template <class Allocator>
-				::std::vector<path_data::path_data_types> _Process_path_data(const path_factory<Allocator>& pf) {
+				inline ::std::vector<path_data::path_data_types> _Process_path_data(const path_factory<Allocator>& pf) {
 					matrix_2d m;
 					vector_2d origin;
 					vector_2d currentPoint; // Tracks the untransformed current point.
@@ -2819,589 +3022,6 @@ namespace std {
 					return v;
 				}
 
-				//template <class Allocator>
-				//::std::vector<path_data::path_data_types> _Process_path_data(const path_factory<Allocator>& pf) {
-				//	matrix_2d m;
-				//	vector_2d origin;
-				//	vector_2d currentPoint; // Tracks the untransformed current point.
-				//	bool hasCurrentPoint = false;
-				//	vector_2d closePoint;   // Tracks the transformed close point.
-				//	::std::vector<path_data::path_data_types> v;
-				//	constexpr double twoThirds = 2.0 / 3.0;
-
-				//	for (const path_data::path_data_types& val : pf) {
-				//		::std::visit([&m, &origin, &currentPoint, &hasCurrentPoint, &closePoint, &v](auto&& item) {
-				//			using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-
-				//			if (::std::is_same_v<T, path_data::abs_move>) {
-				//				currentPoint = item.to();
-				//				auto pt = m.transform_point(currentPoint - origin) + origin;
-				//				hasCurrentPoint = true;
-				//				v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//				closePoint = pt;
-				//			}
-				//			else if (::std::is_same_v<T, path_data::abs_line>) {
-				//				currentPoint = item.to();
-				//				auto pt = m.transform_point(currentPoint - origin) + origin;
-				//				if (hasCurrentPoint) {
-				//					v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//				}
-				//				else {
-				//					v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//					v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//					hasCurrentPoint = true;
-				//					closePoint = pt;
-				//				}
-				//			}
-				//			else if (::std::is_same_v<T, path_data::abs_cubic_curve>) {
-				//				auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
-				//				auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
-				//				auto pt3 = m.transform_point(item.end_point() - origin) + origin;
-				//				if (!hasCurrentPoint) {
-				//					currentPoint = item.control_point_1();
-				//					v.emplace_back(::std::in_place_type<path_data::abs_move>, pt1);
-				//					hasCurrentPoint = true;
-				//					closePoint = pt1;
-				//				}
-				//				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
-				//					pt2, pt3);
-				//				currentPoint = item.end_point();
-				//			}
-				//			else if (::std::is_same_v<T,
-				//				path_data::abs_quadratic_curve>) {
-				//				// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-				//				vector_2d beginPt;
-				//				auto controlPt = m.transform_point(item.control_point() - origin) + origin;
-				//				auto endPt = m.transform_point(item.end_point() - origin) + origin;
-				//				if (!hasCurrentPoint) {
-				//					currentPoint = item.control_point();
-				//					v.emplace_back(::std::in_place_type<path_data::abs_move>, pt1);
-				//					hasCurrentPoint = true;
-				//					closePoint = pt1;
-				//					beginPt = controlPt;
-				//				}
-				//				else {
-				//					beginPt = m.transform_point(currentPoint - origin) + origin;
-				//				}
-				//				auto cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y - beginPt.y()) * twoThirds) + beginPt.y() };
-				//				auto cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y - endPt.y()) * twoThirds) + endPt.y() };
-				//				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-				//				currentPoint = item.end_point();
-				//			}
-				//			else if (::std::is_same_v<T, path_data::new_path>) {
-				//				hasCurrentPoint = false;
-				//				//v.emplace_back(::std::in_place_type<path_data::new_path>);
-				//			}
-				//			else if (::std::is_same_v<T, path_data::close_path>) {
-				//				if (hasCurrentPoint) {
-				//					v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
-				//					v.emplace_back(::std::in_place_type<path_data::abs_move>,
-				//						closePoint);
-				//					auto invM = matrix_2d{ m }.invert();
-				//					// Need to assign the untransformed closePoint value to currentPoint.
-				//					currentPoint = invM.transform_point(closePoint - origin) + origin;
-				//				}
-				//			}
-				//			else if (::std::is_same_v<T, path_data::rel_move>) {
-				//				if (!hasCurrentPoint) {
-				//					throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
-				//				}
-				//				currentPoint = item.to() + currentPoint;
-				//				auto pt = m.transform_point(currentPoint - origin) + origin;
-				//				v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//				hasCurrentPoint = true;
-				//				closePoint = pt;
-				//				n.close_point(pt);
-				//			}
-				//			else if (::std::is_same_v<T, path_data::rel_line>) {
-				//				if (!hasCurrentPoint) {
-				//					throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
-				//				}
-				//				currentPoint = item.to() + currentPoint;
-				//				auto pt = m.transform_point(currentPoint - origin) + origin;
-				//				v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//			}
-				//			else if (::std::is_same_v<T, path_data::rel_cubic_curve>) {
-				//				if (!hasCurrentPoint) {
-				//					throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
-				//				}
-				//				auto pt1 = m.transform_point(item.control_point_1() + currentPoint -
-				//					origin) + origin;
-				//				auto pt2 = m.transform_point(item.control_point_2() + currentPoint -
-				//					origin) + origin;
-				//				auto pt3 = m.transform_point(item.end_point() + currentPoint - origin) +
-				//					origin;
-				//				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
-				//					pt1, pt2, pt3);
-				//				currentPoint = item.end_point() + currentPoint;
-				//			}
-				//			else if (::std::is_same_v<T,
-				//				path_data::rel_quadratic_curve>) {
-				//				if (!hasCurrentPoint) {
-				//					throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
-				//				}
-				//				// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-				//				vector_2d beginPt;
-				//				auto controlPt = m.transform_point(item.control_point() + currentPoint -
-				//					origin) + origin;
-				//				auto endPt = m.transform_point(item.end_point() + currentPoint -
-				//					origin) + origin;
-				//				beginPt = m.transform_point(currentPoint - origin) + origin;
-				//				auto cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y - beginPt.y()) * twoThirds) + beginPt.y() };
-				//				auto cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y - endPt.y()) * twoThirds) + endPt.y() };
-				//				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-				//				currentPoint = item.end_point() + currentPoint;
-				//			}
-				//			else if (::std::is_same_v<T, path_data::arc_clockwise>) {
-				//				{
-				//					auto ctr = item.center();
-				//					auto rad = item.radius();
-				//					auto ang1 = item.angle_1();
-				//					auto ang2 = item.angle_2();
-				//					while (ang2 < ang1) {
-				//						ang2 += two_pi<double>;
-				//					}
-				//					vector_2d pt0, pt1, pt2, pt3;
-				//					int bezCount = 1;
-				//					double theta = ang2 - ang1;
-				//					double phi;
-				//					while (theta >= halfpi) {
-				//						theta /= 2.0;
-				//						bezCount += bezCount;
-				//					}
-				//					phi = theta / 2.0;
-				//					auto cosPhi = cos(phi);
-				//					auto sinPhi = sin(phi);
-				//					pt0.x(cosPhi);
-				//					pt0.y(-sinPhi);
-				//					pt3.x(pt0.x());
-				//					pt3.y(-pt0.y());
-				//					pt1.x((4.0 - cosPhi) / 3.0);
-				//					pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
-				//					pt2.x(pt1.x());
-				//					pt2.y(-pt1.y());
-				//					phi = -phi;
-				//					auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
-				//						return { pt.x() * cos(a) + pt.y() * sin(a),
-				//							-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
-				//					};
-				//					pt0 = rotCwFn(pt0, phi);
-				//					pt1 = rotCwFn(pt1, phi);
-				//					pt2 = rotCwFn(pt2, phi);
-				//					pt3 = rotCwFn(pt3, phi);
-
-				//					auto currTheta = ang1;
-				//					const auto startPt =
-				//						ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
-				//					if (hasCurrentPoint) {
-				//						currentPoint = startPt;
-				//						auto pt = m.transform_point(currentPoint - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//					}
-				//					else {
-				//						currentPoint = startPt;
-				//						auto pt = m.transform_point(currentPoint - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//						hasCurrentPoint = true;
-				//						closePt = pt;
-				//					}
-				//					for (; bezCount > 0; bezCount--) {
-				//						auto cpt1 = ctr + rotCwFn({ pt1.x() * rad, pt1.y() * rad }, currTheta);
-				//						auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad },
-				//							currTheta);
-				//						auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad },
-				//							currTheta);
-				//						currentPoint = cpt3;
-				//						cpt1 = m.transform_point(cpt1 - origin) + origin;
-				//						cpt2 = m.transform_point(cpt2 - origin) + origin;
-				//						cpt3 = m.transform_point(cpt3 - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1,
-				//							cpt2, cpt3);
-				//						currTheta += theta;
-				//					}
-				//				}
-				//			}
-				//			else if (::std::is_same_v<T, path_data::arc_counterclockwise>) {
-				//				{
-				//					auto ctr = item.center();
-				//					auto rad = item.radius();
-				//					auto ang1 = item.angle_1();
-				//					auto ang2 = item.angle_2();
-				//					while (ang2 > ang1) {
-				//						ang2 -= two_pi<double>;
-				//					}
-				//					vector_2d pt0, pt1, pt2, pt3;
-				//					int bezCount = 1;
-				//					double theta = ang1 - ang2;
-				//					double phi;
-				//					while (theta >= halfpi) {
-				//						theta /= 2.0;
-				//						bezCount += bezCount;
-				//					}
-				//					phi = theta / 2.0;
-				//					auto cosPhi = cos(phi);
-				//					auto sinPhi = sin(phi);
-				//					pt0.x(cosPhi);
-				//					pt0.y(-sinPhi);
-				//					pt3.x(pt0.x());
-				//					pt3.y(-pt0.y());
-				//					pt1.x((4.0 - cosPhi) / 3.0);
-				//					pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
-				//					pt2.x(pt1.x());
-				//					pt2.y(-pt1.y());
-				//					auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
-				//						return { pt.x() * cos(a) + pt.y() * sin(a),
-				//							-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
-				//					};
-				//					pt0 = rotCwFn(pt0, phi);
-				//					pt1 = rotCwFn(pt1, phi);
-				//					pt2 = rotCwFn(pt2, phi);
-				//					pt3 = rotCwFn(pt3, phi);
-				//					auto shflPt = pt3;
-				//					pt3 = pt0;
-				//					pt0 = shflPt;
-				//					shflPt = pt2;
-				//					pt2 = pt1;
-				//					pt1 = shflPt;
-				//					auto currTheta = ang1;
-				//					const auto startPt =
-				//						ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
-				//					if (hasCurrentPoint) {
-				//						currentPoint = startPt;
-				//						auto pt = m.transform_point(currentPoint - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//					}
-				//					else {
-				//						currentPoint = startPt;
-				//						auto pt = m.transform_point(currentPoint - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//						hasCurrentPoint = true;
-				//						closePt = pt;
-				//					}
-				//					for (; bezCount > 0; bezCount--) {
-				//						auto cpt1 = ctr + rotCwFn({ pt1.x() * rad, pt1.y() * rad },
-				//							currTheta);
-				//						auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad },
-				//							currTheta);
-				//						auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad },
-				//							currTheta);
-				//						currentPoint = cpt3;
-				//						cpt1 = m.transform_point(cpt1 - origin) + origin;
-				//						cpt2 = m.transform_point(cpt2 - origin) + origin;
-				//						cpt3 = m.transform_point(cpt3 - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::cubic_curve_to>, cpt1,
-				//							cpt2, cpt3);
-				//						currTheta -= theta;
-				//					}
-				//				}
-				//			}
-				//			else if (::std::is_same_v<T, path_data::change_matrix>) {
-				//				m = item.matrix();
-				//			}
-				//			else if (::std::is_same_v<T, path_data::change_origin>) {
-				//				origin = item.origin();
-				//			}
-				//		}, val);
-				//	}
-				//	return v;
-				//}
-
-				//template <class Allocator>
-				//::std::vector<path_data::path_data_types> _Process_path_data(const path_factory<Allocator>& pf, ::std::error_code& ec) noexcept {
-				//	matrix_2d m;
-				//	vector_2d origin;
-				//	vector_2d currentPoint; // Tracks the untransformed current point.
-				//	bool hasCurrentPoint = false;
-				//	vector_2d closePoint;   // Tracks the transformed close point.
-				//	::std::vector<path_data::path_data_types> v;
-				//	constexpr double twoThirds = 2.0 / 3.0;
-
-				//	for (const path_data::path_data_types& val : pf) {
-				//		::std::visit([&m, &origin, &currentPoint, &hasCurrentPoint, &closePoint, &v](auto&& item) {
-				//			using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-
-				//			if (::std::is_same_v<T, path_data::abs_move>) {
-				//				currentPoint = item.to();
-				//				auto pt = m.transform_point(currentPoint - origin) + origin;
-				//				hasCurrentPoint = true;
-				//				v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//				closePoint = pt;
-				//			}
-				//			else if (::std::is_same_v<T, path_data::abs_line>) {
-				//				currentPoint = item.to();
-				//				auto pt = m.transform_point(currentPoint - origin) + origin;
-				//				if (hasCurrentPoint) {
-				//					v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//				}
-				//				else {
-				//					v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//					v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//					hasCurrentPoint = true;
-				//					closePoint = pt;
-				//				}
-				//			}
-				//			else if (::std::is_same_v<T, path_data::abs_cubic_curve>) {
-				//				auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
-				//				auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
-				//				auto pt3 = m.transform_point(item.end_point() - origin) + origin;
-				//				if (!hasCurrentPoint) {
-				//					currentPoint = item.control_point_1();
-				//					v.emplace_back(in_place_type<path_data::abs_move>, pt1);
-				//					hasCurrentPoint = true;
-				//					closePoint = pt1;
-				//				}
-				//				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
-				//					pt2, pt3);
-				//				currentPoint = item.end_point();
-				//			}
-				//			else if (::std::is_same_v<T,
-				//				path_data::abs_quadratic_curve>) {
-				//				// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-				//				vector_2d beginPt;
-				//				auto controlPt = m.transform_point(item.control_point() - origin) + origin;
-				//				auto endPt = m.transform_point(item.end_point() - origin) + origin;
-				//				if (!hasCurrentPoint) {
-				//					currentPoint = item.control_point();
-				//					v.emplace_back(::std::in_place_type<path_data::abs_move>, pt1);
-				//					hasCurrentPoint = true;
-				//					closePoint = pt1;
-				//					beginPt = controlPt;
-				//				}
-				//				else {
-				//					beginPt = m.transform_point(currentPoint - origin) + origin;
-				//				}
-				//				auto cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y - beginPt.y()) * twoThirds) + beginPt.y() };
-				//				auto cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y - endPt.y()) * twoThirds) + endPt.y() };
-				//				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-				//				currentPoint = item.end_point();
-				//			}
-				//			else if (::std::is_same_v<T, path_data::new_path>) {
-				//				hasCurrentPoint = false;
-				//				//v.emplace_back(::std::in_place_type<path_data::new_path>);
-				//			}
-				//			else if (::std::is_same_v<T, path_data::close_path>) {
-				//				if (hasCurrentPoint) {
-				//					v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
-				//					v.emplace_back(::std::in_place_type<path_data::abs_move>,
-				//						closePoint);
-				//					auto invM = matrix_2d{ m }.invert();
-				//					// Need to assign the untransformed closePoint value to currentPoint.
-				//					currentPoint = invM.transform_point(closePoint - origin) + origin;
-				//				}
-				//			}
-				//			else if (::std::is_same_v<T, path_data::rel_move>) {
-				//				if (!hasCurrentPoint) {
-				//					ec = ::std::make_error_code(io2d_error::invalid_path_data);
-				//					v.clear();
-				//					return v;
-				//				}
-				//				currentPoint = item.to() + currentPoint;
-				//				auto pt = m.transform_point(currentPoint - origin) + origin;
-				//				v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//				hasCurrentPoint = true;
-				//				closePoint = pt;
-				//				n.close_point(pt);
-				//			}
-				//			else if (::std::is_same_v<T, path_data::rel_line>) {
-				//				if (!hasCurrentPoint) {
-				//					ec = ::std::make_error_code(io2d_error::invalid_path_data);
-				//					v.clear();
-				//					return v;
-				//				}
-				//				currentPoint = item.to() + currentPoint;
-				//				auto pt = m.transform_point(currentPoint - origin) + origin;
-				//				v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//			}
-				//			else if (::std::is_same_v<T, path_data::rel_cubic_curve>) {
-				//				if (!hasCurrentPoint) {
-				//					ec = ::std::make_error_code(io2d_error::invalid_path_data);
-				//					v.clear();
-				//					return v;
-				//				}
-				//				auto pt1 = m.transform_point(item.control_point_1() + currentPoint -
-				//					origin) + origin;
-				//				auto pt2 = m.transform_point(item.control_point_2() + currentPoint -
-				//					origin) + origin;
-				//				auto pt3 = m.transform_point(item.end_point() + currentPoint - origin) +
-				//					origin;
-				//				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
-				//					pt1, pt2, pt3);
-				//				currentPoint = item.end_point() + currentPoint;
-				//			}
-				//			else if (::std::is_same_v<T,
-				//				path_data::rel_quadratic_curve>) {
-				//				if (!hasCurrentPoint) {
-				//					ec = ::std::make_error_code(io2d_error::invalid_path_data);
-				//					v.clear();
-				//					return v;
-				//				}
-				//				// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-				//				vector_2d beginPt;
-				//				auto controlPt = m.transform_point(item.control_point() + currentPoint -
-				//					origin) + origin;
-				//				auto endPt = m.transform_point(item.end_point() + currentPoint -
-				//					origin) + origin;
-				//				beginPt = m.transform_point(currentPoint - origin) + origin;
-				//				auto cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y - beginPt.y()) * twoThirds) + beginPt.y() };
-				//				auto cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y - endPt.y()) * twoThirds) + endPt.y() };
-				//				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-				//				currentPoint = item.end_point() + currentPoint;
-				//			}
-				//			else if (::std::is_same_v<T, path_data::arc_clockwise>) {
-				//				{
-				//					auto ctr = item.center();
-				//					auto rad = item.radius();
-				//					auto ang1 = item.angle_1();
-				//					auto ang2 = item.angle_2();
-				//					while (ang2 < ang1) {
-				//						ang2 += two_pi<double>;
-				//					}
-				//					vector_2d pt0, pt1, pt2, pt3;
-				//					int bezCount = 1;
-				//					double theta = ang2 - ang1;
-				//					double phi;
-				//					while (theta >= halfpi) {
-				//						theta /= 2.0;
-				//						bezCount += bezCount;
-				//					}
-				//					phi = theta / 2.0;
-				//					auto cosPhi = cos(phi);
-				//					auto sinPhi = sin(phi);
-				//					pt0.x(cosPhi);
-				//					pt0.y(-sinPhi);
-				//					pt3.x(pt0.x());
-				//					pt3.y(-pt0.y());
-				//					pt1.x((4.0 - cosPhi) / 3.0);
-				//					pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
-				//					pt2.x(pt1.x());
-				//					pt2.y(-pt1.y());
-				//					phi = -phi;
-				//					auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
-				//						return { pt.x() * cos(a) + pt.y() * sin(a),
-				//							-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
-				//					};
-				//					pt0 = rotCwFn(pt0, phi);
-				//					pt1 = rotCwFn(pt1, phi);
-				//					pt2 = rotCwFn(pt2, phi);
-				//					pt3 = rotCwFn(pt3, phi);
-
-				//					auto currTheta = ang1;
-				//					const auto startPt =
-				//						ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
-				//					if (hasCurrentPoint) {
-				//						currentPoint = startPt;
-				//						auto pt = m.transform_point(currentPoint - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//					}
-				//					else {
-				//						currentPoint = startPt;
-				//						auto pt = m.transform_point(currentPoint - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//						hasCurrentPoint = true;
-				//						closePt = pt;
-				//					}
-				//					for (; bezCount > 0; bezCount--) {
-				//						auto cpt1 = ctr + rotCwFn({ pt1.x() * rad, pt1.y() * rad }, currTheta);
-				//						auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad },
-				//							currTheta);
-				//						auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad },
-				//							currTheta);
-				//						currentPoint = cpt3;
-				//						cpt1 = m.transform_point(cpt1 - origin) + origin;
-				//						cpt2 = m.transform_point(cpt2 - origin) + origin;
-				//						cpt3 = m.transform_point(cpt3 - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1,
-				//							cpt2, cpt3);
-				//						currTheta += theta;
-				//					}
-				//				}
-				//			}
-				//			else if (::std::is_same_v<T, path_data::arc_counterclockwise>) {
-				//				{
-				//					auto ctr = item.center();
-				//					auto rad = item.radius();
-				//					auto ang1 = item.angle_1();
-				//					auto ang2 = item.angle_2();
-				//					while (ang2 > ang1) {
-				//						ang2 -= two_pi<double>;
-				//					}
-				//					vector_2d pt0, pt1, pt2, pt3;
-				//					int bezCount = 1;
-				//					double theta = ang1 - ang2;
-				//					double phi;
-				//					while (theta >= halfpi) {
-				//						theta /= 2.0;
-				//						bezCount += bezCount;
-				//					}
-				//					phi = theta / 2.0;
-				//					auto cosPhi = cos(phi);
-				//					auto sinPhi = sin(phi);
-				//					pt0.x(cosPhi);
-				//					pt0.y(-sinPhi);
-				//					pt3.x(pt0.x());
-				//					pt3.y(-pt0.y());
-				//					pt1.x((4.0 - cosPhi) / 3.0);
-				//					pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
-				//					pt2.x(pt1.x());
-				//					pt2.y(-pt1.y());
-				//					auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
-				//						return { pt.x() * cos(a) + pt.y() * sin(a),
-				//							-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
-				//					};
-				//					pt0 = rotCwFn(pt0, phi);
-				//					pt1 = rotCwFn(pt1, phi);
-				//					pt2 = rotCwFn(pt2, phi);
-				//					pt3 = rotCwFn(pt3, phi);
-				//					auto shflPt = pt3;
-				//					pt3 = pt0;
-				//					pt0 = shflPt;
-				//					shflPt = pt2;
-				//					pt2 = pt1;
-				//					pt1 = shflPt;
-				//					auto currTheta = ang1;
-				//					const auto startPt =
-				//						ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
-				//					if (hasCurrentPoint) {
-				//						currentPoint = startPt;
-				//						auto pt = m.transform_point(currentPoint - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-				//					}
-				//					else {
-				//						currentPoint = startPt;
-				//						auto pt = m.transform_point(currentPoint - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-				//						hasCurrentPoint = true;
-				//						closePt = pt;
-				//					}
-				//					for (; bezCount > 0; bezCount--) {
-				//						auto cpt1 = ctr + rotCwFn({ pt1.x() * rad, pt1.y() * rad },
-				//							currTheta);
-				//						auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad },
-				//							currTheta);
-				//						auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad },
-				//							currTheta);
-				//						currentPoint = cpt3;
-				//						cpt1 = m.transform_point(cpt1 - origin) + origin;
-				//						cpt2 = m.transform_point(cpt2 - origin) + origin;
-				//						cpt3 = m.transform_point(cpt3 - origin) + origin;
-				//						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1,
-				//							cpt2, cpt3);
-				//						currTheta -= theta;
-				//					}
-				//				}
-				//			}
-				//			else if (::std::is_same_v<T, path_data::change_matrix>) {
-				//				m = item.matrix();
-				//			}
-				//			else if (::std::is_same_v<T, path_data::change_origin>) {
-				//				origin = item.origin();
-				//			}
-				//		}, val);
-				//	}
-				//	ec.clear();
-				//	return v;
-				//}
-
 				template<class Allocator>
 				inline path_factory<Allocator>::path_factory(const Allocator &a) noexcept
 					: _Data(a)
@@ -3448,13 +3068,13 @@ namespace std {
 				template<class Allocator>
 				template<class ...Args>
 				inline typename path_factory<Allocator>::reference path_factory<Allocator>::emplace_back(Args && ...args) {
-					return _Data.emplace_back(forward<Args&&...>(args...));
+					return _Data.emplace_back(forward<Args>(args)...);
 				}
 
 				template<class Allocator>
 				template<class ...Args>
 				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::emplace(const_iterator position, Args&& ...args) {
-					return _Data.emplace(position, forward<Args&&...>(args...)).
+					return _Data.emplace(position, forward<Args>(args)...).
 				}
 
 				template<class Allocator>
@@ -3815,12 +3435,438 @@ namespace std {
 					_Origin = {};
 				}
 
+				template<class Allocator>
+				inline color_stop_group<Allocator>::color_stop_group(const Allocator& a) noexcept
+					: _Stops(a) {
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>::color_stop_group(size_type n, const Allocator& a)
+					: _Stops(n, a) {
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>::color_stop_group(size_type n, const value_type& value, const Allocator& a)
+					: _Stops(n, value, a) {
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>::color_stop_group(const color_stop_group& x)
+					: _Stops(x._Stops) {
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>::color_stop_group(color_stop_group&& x) noexcept
+					: _Stops(::std::move(x._Stops)) {
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>::color_stop_group(const color_stop_group& x, const Allocator& a)
+					: _Stops(x._Stops, a) {
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>::color_stop_group(color_stop_group&& x, const Allocator& a)
+					: _Stops(move(x), a) {
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>::color_stop_group(initializer_list<value_type> il, const Allocator& a)
+					: _Stops(il, a) {
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>::~color_stop_group() {
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>& color_stop_group<Allocator>::operator=(const color_stop_group& x) {
+					_Stops = x._Stops;
+					return *this;
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>& color_stop_group<Allocator>::operator=(color_stop_group&& x) noexcept(allocator_traits<Allocator>::propagate_on_container_move_assignment::value || allocator_traits<Allocator>::is_always_equal::value) {
+					swap(_Stops, x._Stops);
+					return *this;
+				}
+
+				template<class Allocator>
+				inline color_stop_group<Allocator>& color_stop_group<Allocator>::operator=(initializer_list<value_type> il) {
+					_Stops = il;
+					return *this;
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::assign(size_type n, const value_type& u) {
+					_Stops.assign(n, u);
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::assign(initializer_list<value_type> il) {
+					_Stops.assign(il);
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::allocator_type color_stop_group<Allocator>::get_allocator() const noexcept {
+					return allocator_type();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::begin() noexcept {
+					return _Stops.begin();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_iterator color_stop_group<Allocator>::begin() const noexcept {
+					return _Stops.begin();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_iterator color_stop_group<Allocator>::cbegin() const noexcept {
+					return _Stops.cbegin();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::end() noexcept {
+					return _Stops.end();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_iterator color_stop_group<Allocator>::end() const noexcept {
+					return _Stops.end();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_iterator color_stop_group<Allocator>::cend() const noexcept {
+					return _Stops.cend();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::reverse_iterator color_stop_group<Allocator>::rbegin() noexcept {
+					return _Stops.rbegin();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_reverse_iterator color_stop_group<Allocator>::rbegin() const noexcept {
+					return _Stops.rbegin();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_reverse_iterator color_stop_group<Allocator>::crbegin() const noexcept {
+					return _Stops.crbegin();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::reverse_iterator color_stop_group<Allocator>::rend() noexcept {
+					return _Stops.rend();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_reverse_iterator color_stop_group<Allocator>::rend() const noexcept {
+					return _Stops.rend();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_reverse_iterator color_stop_group<Allocator>::crend() const noexcept {
+					return _Stops.crend();
+				}
+
+				template<class Allocator>
+				inline bool color_stop_group<Allocator>::empty() const noexcept {
+					return _Stops.empty();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::size_type color_stop_group<Allocator>::size() const noexcept {
+					return _Stops.size();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::size_type color_stop_group<Allocator>::max_size() const noexcept {
+					return _Stops.max_size();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::size_type color_stop_group<Allocator>::capacity() const noexcept {
+					return _Stops.capacity();
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::resize(size_type sz) {
+					_Stops.resize(sz);
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::resize(size_type sz, const value_type& c) {
+					_Stops.resize(sz, c);
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::reserve(size_type n) {
+					_Stops.reserve(n);
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::shrink_to_fit() {
+					_Stops.shrink_to_fit();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::operator[](size_type n) {
+					return _Stops[n];
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_reference color_stop_group<Allocator>::operator[](size_type n) const {
+					return _Stops[n];
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_reference color_stop_group<Allocator>::at(size_type n) const {
+					return _Stops.at(n);
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::at(size_type n) {
+					return _Stops.at(n);
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::front() {
+					return _Stops.front();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_reference color_stop_group<Allocator>::front() const {
+					return _Stops.front();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::back() {
+					return _Stops.back();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::const_reference color_stop_group<Allocator>::back() const {
+					return _Stops.back();
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::push_back(const value_type& x) {
+					_Stops.push_bacl(x);
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::push_back(value_type&& x) {
+					_Stops.push_back(move(x));
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::pop_back() {
+					_Stops.pop_back();
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, const value_type & x) {
+					return _Stops.insert(position, x);
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, value_type && x) {
+					return _Stops.insert(position, ::std::move(x));
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, size_type n, const value_type& x) {
+					return _Stops.insert(position, n, x);
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, initializer_list<value_type> il) {
+					return _Stops.insert(position, il);
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::erase(const_iterator position) {
+					return _Stops.erase(position);
+				}
+
+				template<class Allocator>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::erase(const_iterator first, const_iterator last) {
+					return _Stops.erase(first, last);
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::swap(color_stop_group& other) noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value || allocator_traits<Allocator>::is_always_equal::value) {
+					_Stops.swap(other._Stops);
+				}
+
+				template<class Allocator>
+				inline void color_stop_group<Allocator>::clear() noexcept {
+					_Stops.clear();
+				}
+
+				template<class Allocator>
+				template<class InputIterator>
+				inline color_stop_group<Allocator>::color_stop_group(InputIterator first, InputIterator last, const Allocator& a)
+					: _Stops(first, last, a) {
+				}
+
+				template<class Allocator>
+				template<class InputIterator>
+				inline void color_stop_group<Allocator>::assign(InputIterator first, InputIterator last) {
+					_Stops.assign<InputIterator>(first, last);
+				}
+
+				template<class Allocator>
+				template<class ...Args>
+				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::emplace_back(Args&& ...args) {
+					_Stops.emplace_back<Args&&...>(::std::forward<Args>(args)...);
+					return _Stops.back();
+				}
+
+				template<class Allocator>
+				template<class ...Args>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::emplace(const_iterator position, Args && ...args) {
+					return _Stops.emplace(position, ::std::forward<Args>(args)...);
+				}
+
+				template<class Allocator>
+				template<class InputIterator>
+				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, InputIterator first, InputIterator last) {
+					return _Stops.insert(position, first, last);
+				}
+
+
+				template <class Allocator>
+				inline brush::brush(const vector_2d& begin, const vector_2d& end,
+					const color_stop_group<Allocator>& csg)
+					: _Brush()
+					, _Image_surface()
+					, _Brush_type(brush_type::linear)
+					, _Extend(::std::experimental::io2d::tiling::none)
+					, _Filter(::std::experimental::io2d::filter::good)
+					, _Matrix(matrix_2d::init_identity()) {
+					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+
+					for (const color_stop& stop : csg) {
+						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+					}
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+				}
+
+				template <class Allocator>
+				inline brush::brush(const vector_2d& begin, const vector_2d& end,
+					const color_stop_group<Allocator>& csg, error_code& ec) noexcept
+					: _Brush()
+					, _Image_surface()
+					, _Brush_type(brush_type::linear)
+					, _Extend(::std::experimental::io2d::tiling::none)
+					, _Filter(::std::experimental::io2d::filter::good)
+					, _Matrix(matrix_2d::init_identity()) {
+					try {
+						_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
+					}
+					catch (const bad_alloc&) {
+						ec = make_error_code(errc::not_enough_memory);
+						_Brush.reset();
+						return;
+					}
+					catch (const ::std::length_error&) {
+						_Brush.reset();
+						ec = ::std::make_error_code(::std::errc::not_enough_memory);
+						return;
+					}
+
+					auto status = cairo_pattern_status(_Brush.get());
+					if (status != CAIRO_STATUS_SUCCESS) {
+						ec = _Cairo_status_t_to_std_error_code(status);
+						_Brush.reset();
+						return;
+					}
+
+					for (const color_stop& stop : csg) {
+						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+					}
+					status = cairo_pattern_status(_Brush.get());
+					if (status != CAIRO_STATUS_SUCCESS) {
+						ec = _Cairo_status_t_to_std_error_code(status);
+						_Brush.reset();
+						return;
+					}
+					ec.clear();
+				}
+
+				template <class Allocator>
+				inline brush::brush(const circle& start, const circle& end,
+					const color_stop_group<Allocator>& csg)
+					: _Brush()
+					, _Brush_type(brush_type::radial)
+					, _Extend(::std::experimental::io2d::tiling::none)
+					, _Filter(::std::experimental::io2d::filter::good)
+					, _Matrix(matrix_2d::init_identity()) {
+					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+
+					for (const color_stop& stop : csg) {
+						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+					}
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+				}
+
+				template <class Allocator>
+				inline brush::brush(const circle& start, const circle& end,
+					const color_stop_group<Allocator>& csg, error_code& ec) noexcept
+					: _Brush()
+					, _Image_surface()
+					, _Brush_type(brush_type::radial)
+					, _Extend(::std::experimental::io2d::tiling::none)
+					, _Filter(::std::experimental::io2d::filter::good)
+					, _Matrix(matrix_2d::init_identity()) {
+					try {
+						_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
+					}
+					catch (const bad_alloc&) {
+						ec = make_error_code(errc::not_enough_memory);
+						_Brush.reset();
+						return;
+					}
+					catch (const ::std::length_error&) {
+						_Brush.reset();
+						ec = ::std::make_error_code(::std::errc::not_enough_memory);
+						return;
+					}
+
+					auto status = cairo_pattern_status(_Brush.get());
+					if (status != CAIRO_STATUS_SUCCESS) {
+						ec = _Cairo_status_t_to_std_error_code(status);
+						_Brush.reset();
+						return;
+					}
+
+					for (const color_stop& stop : csg) {
+						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+					}
+					status = cairo_pattern_status(_Brush.get());
+					if (status != CAIRO_STATUS_SUCCESS) {
+						ec = _Cairo_status_t_to_std_error_code(status);
+						_Brush.reset();
+						return;
+					}
+					ec.clear();
+				}
+
+				template <class... _Args>
+				void _Add_color_stop(cairo_pattern_t*, _Args&&...);
+
 #if _Inline_namespace_conditional_support_test
-		}
+			}
 #endif
+		}
 	}
 }
-	}
 
 #endif
 

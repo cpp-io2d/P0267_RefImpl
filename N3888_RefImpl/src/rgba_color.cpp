@@ -5,76 +5,35 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-rgba_color::rgba_color(rgba_color&& other) noexcept
-	: _R(move(other._R))
-	, _G(move(other._G))
-	, _B(move(other._B))
-	, _A(move(other._A)) {
-	other._R = 0.0;
-	other._G = 0.0;
-	other._B = 0.0;
-	other._A = 0.0;
+rgba_color _Rgba_color_from_byte_values(unsigned char r, unsigned char g, unsigned char b, unsigned char a = static_cast<unsigned char>(255)) noexcept;
+rgba_color _Rgba_color_from_byte_values(unsigned char r, unsigned char g, unsigned char b, unsigned char a) noexcept {
+	return{ static_cast<double>(r) / 255.0, static_cast<double>(g) / 255.0, static_cast<double>(b) / 255.0, static_cast<double>(a) / 255.0 };
 }
 
-rgba_color& rgba_color::operator=(rgba_color&& other) noexcept {
-	if (this != &other) {
-		_R = move(other._R);
-		_G = move(other._G);
-		_B = move(other._B);
-		_A = move(other._A);
-		other._R = 0.0;
-		other._G = 0.0;
-		other._B = 0.0;
-		other._A = 0.0;
-	}
-	return *this;
-}
-
-rgba_color::rgba_color(double red, double green, double blue, double alpha)
-: _R(red)
-, _G(green)
-, _B(blue)
-, _A(alpha) {
-	if (red > 1.0 || red < 0.0 || green > 1.0 || green < 0.0 || blue > 1.0 || blue < 0.0 || alpha > 1.0 || alpha < 0.0) {
-		throw out_of_range("The arguments must each fall between 0.0 and 1.0, inclusive.");
-	}
-}
-
-rgba_color::rgba_color(double red, double green, double blue, error_code& ec) noexcept
-	: _R(red)
-	, _G(green)
-	, _B(blue)
-	, _A(1.0) {
-	if (red > 1.0 || red < 0.0 || green > 1.0 || green < 0.0 || blue > 1.0 || blue < 0.0) {
-		// Default to magenta for error visibility in case people don't check the ec.
-		_R = 1.0;
-		_G = 0.0;
-		_B = 1.0;
-		_A = 1.0;
-		ec = make_error_code(errc::argument_out_of_domain);
-	}
-	else {
-		ec.clear();
-	}
-}
-
-rgba_color::rgba_color(double red, double green, double blue, double alpha, error_code& ec) noexcept
-	: _R(red)
-	, _G(green)
-	, _B(blue)
-	, _A(alpha) {
-	if (red > 1.0 || red < 0.0 || green > 1.0 || green < 0.0 || blue > 1.0 || blue < 0.0 || alpha > 1.0 || alpha < 0.0) {
-		// Default to magenta for error visibility in case people don't check the ec.
-		_R = 1.0;
-		_G = 0.0;
-		_B = 1.0;
-		_A = 1.0;
-		ec = make_error_code(errc::argument_out_of_domain);
-	}
-	else {
-		ec.clear();
-	}
-}
+//rgba_color::rgba_color(rgba_color&& other) noexcept
+//	: _R(move(other._R))
+//	, _G(move(other._G))
+//	, _B(move(other._B))
+//	, _A(move(other._A)) {
+//	other._R = 0.0;
+//	other._G = 0.0;
+//	other._B = 0.0;
+//	other._A = 0.0;
+//}
+//
+//rgba_color& rgba_color::operator=(rgba_color&& other) noexcept {
+//	if (this != &other) {
+//		_R = move(other._R);
+//		_G = move(other._G);
+//		_B = move(other._B);
+//		_A = move(other._A);
+//		other._R = 0.0;
+//		other._G = 0.0;
+//		other._B = 0.0;
+//		other._A = 0.0;
+//	}
+//	return *this;
+//}
 
 void rgba_color::r(double val) {
 	if (val < 0.0 || val > 1.0) {
@@ -146,27 +105,22 @@ void rgba_color::a(double val, error_code& ec) noexcept {
 	ec.clear();
 }
 
-double rgba_color::r() const noexcept {
-	return _R;
-}
-
-double rgba_color::g() const noexcept {
-	return _G;
-}
-
-double rgba_color::b() const noexcept {
-	return _B;
-}
-
-double rgba_color::a() const noexcept {
-	return _A;
-}
-
-rgba_color _Rgba_color_from_byte_values(unsigned char r, unsigned char g, unsigned char b, unsigned char a = static_cast<unsigned char>(255)) noexcept;
-rgba_color _Rgba_color_from_byte_values(unsigned char r, unsigned char g, unsigned char b, unsigned char a) noexcept {
-	return{ static_cast<double>(r) / 255.0, static_cast<double>(g) / 255.0, static_cast<double>(b) / 255.0, static_cast<double>(a) / 255.0 };
-}
-
+//double rgba_color::r() const noexcept {
+//	return _R;
+//}
+//
+//double rgba_color::g() const noexcept {
+//	return _G;
+//}
+//
+//double rgba_color::b() const noexcept {
+//	return _B;
+//}
+//
+//double rgba_color::a() const noexcept {
+//	return _A;
+//}
+//
 const rgba_color& rgba_color::alice_blue() noexcept {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(240), static_cast<unsigned char>(248), static_cast<unsigned char>(255));
 	return c;

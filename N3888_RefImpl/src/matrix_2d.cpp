@@ -48,41 +48,41 @@ using namespace std::experimental::io2d;
 //	}
 //	return *this;
 //}
+//
+//matrix_2d::matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21) noexcept
+//	: _M00{ m00 }
+//	, _M01{ m01 }
+//	, _M10{ m10 }
+//	, _M11{ m11 }
+//	, _M20{ m20 }
+//	, _M21{ m21 } {
+//}
 
-matrix_2d::matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21) noexcept
-	: _M00{ m00 }
-	, _M01{ m01 }
-	, _M10{ m10 }
-	, _M11{ m11 }
-	, _M20{ m20 }
-	, _M21{ m21 } {
-}
-
-matrix_2d matrix_2d::init_identity() noexcept {
-	return{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
-}
-
-matrix_2d matrix_2d::init_translate(const vector_2d& value) noexcept {
-	return{ 1.0, 0.0, 0.0, 1.0, value.x(), value.y() };
-}
-
-matrix_2d matrix_2d::init_scale(const vector_2d& value) noexcept {
-	return{ value.x(), 0.0, 0.0, value.y(), 0.0, 0.0 };
-}
+//matrix_2d matrix_2d::init_identity() noexcept {
+//	return{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
+//}
+//
+//matrix_2d matrix_2d::init_translate(const vector_2d& value) noexcept {
+//	return{ 1.0, 0.0, 0.0, 1.0, value.x(), value.y() };
+//}
+//
+//matrix_2d matrix_2d::init_scale(const vector_2d& value) noexcept {
+//	return{ value.x(), 0.0, 0.0, value.y(), 0.0, 0.0 };
+//}
 
 matrix_2d matrix_2d::init_rotate(double radians) noexcept {
 	auto sine = sin(radians);
 	auto cosine = cos(radians);
 	return{ cosine, sine, -sine, cosine, 0.0, 0.0 };
 }
-
-matrix_2d matrix_2d::init_shear_x(double factor) noexcept {
-	return{ 1.0, 0.0, factor, 1.0, 0.0, 0.0 };
-}
-
-matrix_2d matrix_2d::init_shear_y(double factor) noexcept {
-	return{ 1.0, factor, 0.0, 1.0, 0.0, 0.0 };
-}
+//
+//matrix_2d matrix_2d::init_shear_x(double factor) noexcept {
+//	return{ 1.0, 0.0, factor, 1.0, 0.0, 0.0 };
+//}
+//
+//matrix_2d matrix_2d::init_shear_y(double factor) noexcept {
+//	return{ 1.0, factor, 0.0, 1.0, 0.0, 0.0 };
+//}
 
 matrix_2d& matrix_2d::translate(const vector_2d& value) noexcept {
 	*this = init_translate(value) * (*this);
@@ -186,29 +186,21 @@ void matrix_2d::swap(matrix_2d& other) {
 	::std::swap(_M21, other._M21);
 }
 
-double matrix_2d::determinant() const {
-	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
-		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MATRIX);
-	}
-	return _M00 * _M11 - _M01 * _M10;
-}
-
-double matrix_2d::determinant(error_code& ec) const noexcept {
-	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
-		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MATRIX);
-		return numeric_limits<double>::quiet_NaN();
-	}
-	ec.clear();
-	return _M00 * _M11 - _M01 * _M10;
-}
-
-vector_2d matrix_2d::transform_distance(const vector_2d& dist) const noexcept {
-	return{ _M00 * dist.x() + _M10 * dist.y(), _M01 * dist.x() + _M11 * dist.y() };
-}
-
-vector_2d matrix_2d::transform_point(const vector_2d& pt) const noexcept {
-	return{ _M00 * pt.x() + _M10 * pt.y() + _M20, _M01 * pt.x() + _M11 * pt.y() + _M21 };
-}
+//double matrix_2d::determinant() const {
+//	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
+//		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MATRIX);
+//	}
+//	return _M00 * _M11 - _M01 * _M10;
+//}
+//
+//double matrix_2d::determinant(error_code& ec) const noexcept {
+//	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
+//		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MATRIX);
+//		return numeric_limits<double>::quiet_NaN();
+//	}
+//	ec.clear();
+//	return _M00 * _M11 - _M01 * _M10;
+//}
 
 void matrix_2d::m00(double value) noexcept {
 	_M00 = value;
@@ -234,71 +226,14 @@ void matrix_2d::m21(double value) noexcept {
 	_M21 = value;
 }
 
-double matrix_2d::m00() const noexcept {
-	return _M00;
-}
-
-double matrix_2d::m01() const noexcept {
-	return _M01;
-}
-
-double matrix_2d::m10() const noexcept {
-	return _M10;
-}
-
-double matrix_2d::m11() const noexcept {
-	return _M11;
-}
-
-double matrix_2d::m20() const noexcept {
-	return _M20;
-}
-
-double matrix_2d::m21() const noexcept {
-	return _M21;
-}
-
-bool matrix_2d::is_invertible() const noexcept {
+bool matrix_2d::is_finite() const noexcept {
 	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
 		return false;
 	}
-	return (_M00 * _M11 - _M01 * _M10) != 0.0;
+	return true;
 }
 
 matrix_2d& matrix_2d::operator*=(const matrix_2d& rhs) noexcept {
 	*this = *this * rhs;
 	return *this;
-}
-
-namespace std {
-	namespace experimental {
-		namespace io2d {
-#if _Inline_namespace_conditional_support_test
-			inline namespace v1 {
-#endif
-				matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
-					return matrix_2d{
-						(lhs.m00() * rhs.m00()) + (lhs.m01() * rhs.m10()),
-						(lhs.m00() * rhs.m01()) + (lhs.m01() * rhs.m11()),
-						(lhs.m10() * rhs.m00()) + (lhs.m11() * rhs.m10()),
-						(lhs.m10() * rhs.m01()) + (lhs.m11() * rhs.m11()),
-						(lhs.m20() * rhs.m00()) + (lhs.m21() * rhs.m10()) + rhs.m20(),
-						(lhs.m20() * rhs.m01()) + (lhs.m21() * rhs.m11()) + rhs.m21()
-					};
-				}
-
-				bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
-					return lhs.m00() == rhs.m00() && lhs.m01() == rhs.m01() &&
-						lhs.m10() == rhs.m10() && lhs.m11() == rhs.m11() &&
-						lhs.m20() == rhs.m20() && lhs.m21() == rhs.m21();
-				}
-
-				bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
-					return !(lhs == rhs);
-				}
-#if _Inline_namespace_conditional_support_test
-			}
-#endif
-		}
-	}
 }

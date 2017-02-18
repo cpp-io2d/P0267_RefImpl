@@ -152,7 +152,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept</AdditionalOptions>
+      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive-</AdditionalOptions>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <BrowseInformation>true</BrowseInformation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -203,7 +203,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept</AdditionalOptions>
+      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive-</AdditionalOptions>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
@@ -251,7 +251,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept</AdditionalOptions>
+      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive-</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -306,7 +306,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0600;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept</AdditionalOptions>
+      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive-</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -367,6 +367,8 @@
     <ClInclude Include="xio2dhelpers.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="circle.cpp" />
+    <ClCompile Include="color_stop.cpp" />
     <ClCompile Include="device.cpp" />
     <ClCompile Include="display_surface-common.cpp" />
     <ClCompile Include="display_surface-win32.cpp" />
