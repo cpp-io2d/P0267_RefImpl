@@ -222,13 +222,13 @@ void matrix_2d::m21(double value) noexcept {
 	_M21 = value;
 }
 
-bool matrix_2d::is_finite() const noexcept {
-	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
-		return false;
-	}
-	return true;
-}
-
+//bool matrix_2d::is_finite() const noexcept {
+//	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
+//		return false;
+//	}
+//	return true;
+//}
+//
 matrix_2d& matrix_2d::operator*=(const matrix_2d& rhs) noexcept {
 	*this = *this * rhs;
 	return *this;

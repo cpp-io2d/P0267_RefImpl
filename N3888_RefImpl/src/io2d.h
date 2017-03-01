@@ -862,7 +862,21 @@ namespace std {
 					constexpr bool is_invertible() const noexcept {
 						return (_M00 * _M11 - _M01 * _M10) != 0.0;
 					}
-					bool is_finite() const noexcept;
+				private:
+					constexpr bool _Is_finite_check(double val) const noexcept {
+						return val != numeric_limits<double>::infinity() &&
+							val != -numeric_limits<double>::infinity() &&
+							val != val; // This checks for both types of NaN. Compilers should not optimize this away but the only way to be sure is to check the documentation and any compiler switches you may be using.
+					}
+				public:
+					constexpr bool is_finite() const noexcept {
+						static_assert(numeric_limits<double>::is_iec559 == true, "This implementation relies on IEEE 754 floating point behavior.");
+						return numeric_limits<double>::is_iec559 &&
+							_Is_finite_check(_M00) &&
+							_Is_finite_check(_M01) &&
+							_Is_finite_check(_M10) &&
+							_Is_finite_check(_M11);
+					}
 					constexpr double determinant() const noexcept {
 						return _M00 * _M11 - _M01 * _M10;
 					}

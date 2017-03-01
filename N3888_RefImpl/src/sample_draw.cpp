@@ -523,6 +523,15 @@ void test_path_functionality(display_surface& ds) {
 	ds.brush(rgba_color::lime());
 	ds.stroke();
 
+	//constexpr auto iec559 = numeric_limits<double>::is_iec559;
+	//constexpr auto infinity = numeric_limits<double>::infinity() == numeric_limits<double>::infinity();
+	//constexpr auto negativeinfinity = -numeric_limits<double>::infinity();
+	//constexpr auto testinfinity = numeric_limits<double>::infinity() == negativeinfinity;
+	//constexpr auto isqnan1 = numeric_limits<double>::quiet_NaN() != numeric_limits<double>::quiet_NaN();
+	//constexpr auto isqnan2 = 10.0 != numeric_limits<double>::quiet_NaN();
+	//constexpr auto isqnan3 = numeric_limits<double>::quiet_NaN() == numeric_limits<double>::quiet_NaN();
+	//constexpr auto isqnan4 = 10.0 == numeric_limits<double>::quiet_NaN();
+
 	//constexpr auto dClr = rgba_color(1.0, 1.0, 1.0);
 	//constexpr auto fClr = rgba_color(0.5f, 1.0f, 0.0f, 0.25f);
 	//constexpr circle circ{ {20.0, 20.0}, 10.0 };
