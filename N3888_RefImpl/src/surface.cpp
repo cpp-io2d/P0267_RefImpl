@@ -1076,18 +1076,8 @@ vector_2d surface::user_to_surface(const vector_2d& pt) const noexcept {
 	return _Transform_matrix.transform_point(pt);
 }
 
-vector_2d surface::user_to_surface_distance(const vector_2d& dpt) const noexcept {
-	return _Transform_matrix.transform_distance(dpt);
-}
-
-vector_2d surface::surface_to_user(const vector_2d& pt) const {
+vector_2d surface::surface_to_user(const vector_2d& pt) const noexcept {
 	auto im = _Transform_matrix;
 	im.invert();
 	return im.transform_point(pt);
-}
-
-vector_2d surface::surface_to_user_distance(const vector_2d& dpt) const {
-	auto im = _Transform_matrix;
-	im.invert();
-	return im.transform_distance(dpt);
 }

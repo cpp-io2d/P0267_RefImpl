@@ -304,7 +304,7 @@ namespace std {
 					double _X = 0.0;
 					double _Y = 0.0;
 				public:
-					constexpr vector_2d() = default;// noexcept { }
+					constexpr vector_2d() noexcept { }
 					constexpr vector_2d(double x, double y) noexcept
 						: _X(x)
 						, _Y(y) {
@@ -332,7 +332,7 @@ namespace std {
 					constexpr double dot(const vector_2d& other) const noexcept {
 						return _X * other._X + _Y * other._Y;
 					}
-					double angular_direction(const vector_2d& to) const noexcept;
+					double angular_direction() const noexcept;
 					vector_2d to_unit() const noexcept;
 
 					vector_2d& operator+=(const vector_2d& rhs) noexcept;
@@ -435,7 +435,6 @@ namespace std {
 					constexpr double bottom() const noexcept;
 					constexpr vector_2d top_left() const noexcept;
 					constexpr vector_2d bottom_right() const noexcept;
-					//tuple<vector_2d, vector_2d> top_left_bottom_right() const noexcept;
 				};
 
 				inline constexpr double rectangle::x() const noexcept {
@@ -504,6 +503,49 @@ namespace std {
 					}
 				};
 
+				class ellipse {
+					vector_2d _Center;
+					double _X_axis = 0.0;
+					double _Y_axis = 0.0;
+				public:
+					constexpr ellipse() noexcept { }
+					constexpr ellipse(const vector_2d& ctr, double xaxis, double yaxis) noexcept
+						: _Center(ctr)
+						, _X_axis(xaxis)
+						, _Y_axis(yaxis) {
+					}
+					constexpr explicit ellipse(const circle& c) noexcept
+						: _Center(c.center())
+						, _X_axis(c.radius())
+						, _Y_axis(c.radius()) { }
+					constexpr ellipse(const ellipse&) noexcept = default;
+					constexpr ellipse& operator=(const ellipse&) noexcept = default;
+					ellipse(ellipse&&) noexcept = default;
+					ellipse& operator=(ellipse&&) noexcept = default;
+
+					void center(const vector_2d& ctr) noexcept {
+						_Center = ctr;
+					}
+					void x_axis(double val) noexcept {
+						_X_axis = val;
+					}
+					void y_axis(double val) noexcept {
+						_Y_axis = val;
+					}
+
+					constexpr vector_2d center() const noexcept {
+						return _Center;
+					}
+
+					constexpr double x_axis() const noexcept {
+						return _X_axis;
+					}
+
+					constexpr double y_axis() const noexcept {
+						return _Y_axis;
+					}
+				};
+
 				class rgba_color {
 					double _R = 0.0;
 					double _G = 0.0;
@@ -515,12 +557,12 @@ namespace std {
 					constexpr rgba_color& operator=(const rgba_color& other) noexcept = default;
 					rgba_color(rgba_color&& other) noexcept = default;
 					rgba_color& operator=(rgba_color&& other) noexcept = default;
-					template <class T, ::std::enable_if_t<::std::is_same_v<double, ::std::remove_cv_t<::std::remove_reference_t<T>>>, int> = 0>
+					template <class T, ::std::enable_if_t<::std::is_same_v<double, ::std::remove_cv_t<::std::remove_reference_t<T>>> || ::std::is_same_v<float, ::std::remove_cv_t<::std::remove_reference_t<T>>>, int> = 0>
 					constexpr rgba_color(T red, T green, T blue, T alpha = 1.0)
-						: _R(::std::min<double>(::std::max<double>(red, 0.0), 1.0))
-						, _G(::std::min<double>(::std::max<double>(green, 0.0), 1.0))
-						, _B(::std::min<double>(::std::max<double>(blue, 0.0), 1.0))
-						, _A(::std::min<double>(::std::max<double>(alpha, 0.0), 1.0)) {
+						: _R(static_cast<double>(::std::min<T>(::std::max<T>(red, 0.0), 1.0)))
+						, _G(static_cast<double>(::std::min<T>(::std::max<T>(green, 0.0), 1.0)))
+						, _B(static_cast<double>(::std::min<T>(::std::max<T>(blue, 0.0), 1.0)))
+						, _A(static_cast<double>(::std::min<T>(::std::max<T>(alpha, 0.0), 1.0))) {
 					}
 
 					void r(double val);
@@ -821,7 +863,7 @@ namespace std {
 						return (_M00 * _M11 - _M01 * _M10) != 0.0;
 					}
 					bool is_finite() const noexcept;
-					double determinant() const noexcept {
+					constexpr double determinant() const noexcept {
 						return _M00 * _M11 - _M01 * _M10;
 					}
 					constexpr vector_2d transform_point(const vector_2d& pt) const noexcept {
@@ -1219,19 +1261,6 @@ namespace std {
 					}
 				};
 
-				//void _Free_manual_cairo_path(cairo_path_t* path) noexcept;
-				//void _Free_manual_cairo_path(cairo_path_t* path) noexcept {
-				//	if (path != nullptr) {
-				//		if (path->data != nullptr) {
-				//			delete[] path->data;
-				//			path->data = nullptr;
-				//			path->status = CAIRO_STATUS_NULL_POINTER;
-				//		}
-				//		delete path;
-				//		path = nullptr;
-				//	}
-				//}
-
 				enum class _Path_data_new_path {};
 				constexpr static _Path_data_new_path _Path_data_new_path_val = {};
 				enum class _Path_data_close_path {};
@@ -1512,8 +1541,13 @@ namespace std {
 					void close_path() noexcept;
 					void arc_clockwise(const vector_2d& center, double radius, double angle1,
 						double angle2) noexcept;
+					void arc_clockwise(const circle& c, double angle1,
+						double angle2) noexcept;
 					void arc_counterclockwise(const vector_2d& center, double radius,
 						double angle1, double angle2) noexcept;
+					void arc_counterclockwise(const circle& c,
+						double angle1, double angle2) noexcept;
+					void ellipse(const vector_2d& ctr, double width, double height) noexcept;
 					void cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1,
 						const vector_2d& pt2) noexcept;
 					void line_to(const vector_2d& pt) noexcept;
@@ -1555,11 +1589,11 @@ namespace std {
 					// Observers
 					::std::experimental::io2d::rectangle path_extents() const;
 					::std::experimental::io2d::rectangle path_extents(::std::error_code& ec) const noexcept;
-					bool has_current_point() const noexcept;
-					vector_2d current_point() const;
-					vector_2d current_point(::std::error_code& ec) const noexcept;
-					matrix_2d current_matrix() const noexcept;
-					vector_2d current_origin() const noexcept;
+					//bool has_current_point() const noexcept;
+					//vector_2d current_point() const;
+					//vector_2d current_point(::std::error_code& ec) const noexcept;
+					//matrix_2d current_matrix() const noexcept;
+					//vector_2d current_origin() const noexcept;
 					//::std::vector<path_data_item> data() const;
 					//::std::vector<path_data_item> data(::std::error_code& ec) const noexcept;
 					//path_data_item data_item(unsigned int index) const;
@@ -2097,11 +2131,7 @@ namespace std {
 					// \ref{\iotwod.surface.observers.transform}, transformation observers:
 					matrix_2d matrix() const noexcept;
 					vector_2d user_to_surface(const vector_2d& pt) const noexcept;
-					vector_2d user_to_surface_distance(const vector_2d& dpt) const noexcept;
-					vector_2d surface_to_user(const vector_2d& pt) const;
-					vector_2d surface_to_user(const vector_2d& pt, ::std::error_code& ec) const noexcept;
-					vector_2d surface_to_user_distance(const vector_2d& dpt) const;
-					vector_2d surface_to_user_distance(const vector_2d& dpt, ::std::error_code& ec) const noexcept;
+					vector_2d surface_to_user(const vector_2d& pt) const noexcept;
 				};
 
 				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
@@ -2419,36 +2449,35 @@ namespace std {
 					constexpr static double twoThirds = 2.0 / 3.0;
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_move>, _Path_data_abs_move> = _Path_data_abs_move_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d& closePoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
 						currentPoint = item.to();
-						auto pt = m.transform_point(currentPoint - origin) + origin;
-						hasCurrentPoint = true;
+						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
 						closePoint = pt;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d& closePoint) {
-						currentPoint = item.to();
-						auto pt = m.transform_point(currentPoint - origin) + origin;
-						if (hasCurrentPoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						if (currentPoint.has_value()) {
+							currentPoint = item.to();
+							auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 							v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 						}
 						else {
+							currentPoint = item.to();
+							auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 							v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
 							v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-							hasCurrentPoint = true;
 							closePoint = pt;
 						}
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d& closePoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
 						auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
 						auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
 						auto pt3 = m.transform_point(item.end_point() - origin) + origin;
-						if (!hasCurrentPoint) {
+						if (!currentPoint.has_value()) {
 							currentPoint = item.control_point_1();
 							v.emplace_back(::std::in_place_type<path_data::abs_move>, pt1);
-							hasCurrentPoint = true;
 							closePoint = pt1;
 						}
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
@@ -2456,20 +2485,19 @@ namespace std {
 						currentPoint = item.end_point();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d& closePoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
 						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 						vector_2d beginPt;
 						auto controlPt = m.transform_point(item.control_point() - origin) + origin;
 						auto endPt = m.transform_point(item.end_point() - origin) + origin;
-						if (!hasCurrentPoint) {
+						if (!currentPoint.has_value()) {
 							currentPoint = item.control_point();
 							v.emplace_back(::std::in_place_type<path_data::abs_move>, controlPt);
-							hasCurrentPoint = true;
 							closePoint = controlPt;
 							beginPt = controlPt;
 						}
 						else {
-							beginPt = m.transform_point(currentPoint - origin) + origin;
+							beginPt = m.transform_point(currentPoint.value() - origin) + origin;
 						}
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
@@ -2477,74 +2505,76 @@ namespace std {
 						currentPoint = item.end_point();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::new_path>, _Path_data_new_path> = _Path_data_new_path_val>
-					constexpr static void _Perform(const T&, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d&, vector_2d&, bool& hasCurrentPoint, vector_2d&) {
-						hasCurrentPoint = false;
+					static void _Perform(const T&, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d&, optional<vector_2d>& currentPoint, vector_2d&) {
+						currentPoint.reset();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-					constexpr static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d& closePoint) {
-						if (hasCurrentPoint) {
+					static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						if (currentPoint.has_value()) {
 							v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
 							v.emplace_back(::std::in_place_type<path_data::abs_move>,
 								closePoint);
+							if (!m.is_finite() || !m.is_invertible()) {
+								throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
+							}
 							auto invM = matrix_2d{ m }.invert();
 							// Need to assign the untransformed closePoint value to currentPoint.
 							currentPoint = invM.transform_point(closePoint - origin) + origin;
 						}
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_move>, _Path_data_rel_move> = _Path_data_rel_move_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d& closePoint) {
-						if (!hasCurrentPoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						if (!currentPoint.has_value()) {
 							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
 						}
-						currentPoint = item.to() + currentPoint;
-						auto pt = m.transform_point(currentPoint - origin) + origin;
+						currentPoint = item.to() + currentPoint.value();
+						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-						hasCurrentPoint = true;
 						closePoint = pt;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d&) {
-						if (!hasCurrentPoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
+						if (!currentPoint.has_value()) {
 							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
 						}
-						currentPoint = item.to() + currentPoint;
-						auto pt = m.transform_point(currentPoint - origin) + origin;
+						currentPoint = item.to() + currentPoint.value();
+						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d&) {
-						if (!hasCurrentPoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
+						if (!currentPoint.has_value()) {
 							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
 						}
-						auto pt1 = m.transform_point(item.control_point_1() + currentPoint -
+						auto pt1 = m.transform_point(item.control_point_1() + currentPoint.value() -
 							origin) + origin;
-						auto pt2 = m.transform_point(item.control_point_2() + currentPoint -
+						auto pt2 = m.transform_point(item.control_point_2() + currentPoint.value() -
 							origin) + origin;
-						auto pt3 = m.transform_point(item.end_point() + currentPoint - origin) +
+						auto pt3 = m.transform_point(item.end_point() + currentPoint.value() - origin) +
 							origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
 							pt1, pt2, pt3);
-						currentPoint = item.end_point() + currentPoint;
+						currentPoint = item.end_point() + currentPoint.value();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d&) {
-						if (!hasCurrentPoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
+						if (!currentPoint.has_value()) {
 							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
 						}
 						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 						vector_2d beginPt;
-						auto controlPt = m.transform_point(item.control_point() + currentPoint -
+						auto controlPt = m.transform_point(item.control_point() + currentPoint.value() -
 							origin) + origin;
-						auto endPt = m.transform_point(item.end_point() + currentPoint -
+						auto endPt = m.transform_point(item.end_point() + currentPoint.value() -
 							origin) + origin;
-						beginPt = m.transform_point(currentPoint - origin) + origin;
+						beginPt = m.transform_point(currentPoint.value() - origin) + origin;
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-						currentPoint = item.end_point() + currentPoint;
+						currentPoint = item.end_point() + currentPoint.value();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_clockwise>, _Path_data_arc_clockwise> = _Path_data_arc_clockwise_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d& closePoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
 						{
 							auto ctr = item.center();
 							auto rad = item.radius();
@@ -2589,16 +2619,15 @@ namespace std {
 							auto currTheta = ang1;
 							const auto startPt =
 								ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
-							if (hasCurrentPoint) {
+							if (currentPoint.has_value()) {
 								currentPoint = startPt;
-								auto pt = m.transform_point(currentPoint - origin) + origin;
+								auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 								v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 							}
 							else {
 								currentPoint = startPt;
-								auto pt = m.transform_point(currentPoint - origin) + origin;
+								auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 								v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-								hasCurrentPoint = true;
 								closePoint = pt;
 							}
 							for (; bezCount > 0; bezCount--) {
@@ -2618,7 +2647,7 @@ namespace std {
 						}
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_counterclockwise>, _Path_data_arc_counterclockwise> = _Path_data_arc_counterclockwise_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, bool& hasCurrentPoint, vector_2d& closePoint) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
 						{
 							auto ctr = item.center();
 							auto rad = item.radius();
@@ -2667,16 +2696,15 @@ namespace std {
 							auto currTheta = ang1;
 							const auto startPt =
 								ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
-							if (hasCurrentPoint) {
+							if (currentPoint.has_value()) {
 								currentPoint = startPt;
-								auto pt = m.transform_point(currentPoint - origin) + origin;
+								auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 								v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 							}
 							else {
 								currentPoint = startPt;
-								auto pt = m.transform_point(currentPoint - origin) + origin;
+								auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 								v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-								hasCurrentPoint = true;
 								closePoint = pt;
 							}
 							for (; bezCount > 0; bezCount--) {
@@ -2697,11 +2725,18 @@ namespace std {
 						}
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, vector_2d&, bool&, vector_2d&) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, optional<vector_2d>&, vector_2d&) {
+						if (!m.is_finite()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
+						}
+						if (!m.is_invertible()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
+							return;
+						}
 						m = item.matrix();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, vector_2d&, bool&, vector_2d&) {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, optional<vector_2d>&, vector_2d&) {
 						origin = item.origin();
 					}
 				};
@@ -2710,15 +2745,14 @@ namespace std {
 				inline ::std::vector<path_data::path_data_types> _Process_path_data(const path_factory<Allocator>& pf) {
 					matrix_2d m;
 					vector_2d origin;
-					vector_2d currentPoint; // Tracks the untransformed current point.
-					bool hasCurrentPoint = false;
+					optional<vector_2d> currentPoint = optional<vector_2d>{}; // Tracks the untransformed current point.
 					vector_2d closePoint;   // Tracks the transformed close point.
 					::std::vector<path_data::path_data_types> v;
 
 					for (const path_data::path_data_types& val : pf) {
-						::std::visit([&m, &origin, &currentPoint, &hasCurrentPoint, &closePoint, &v](auto&& item) {
+						::std::visit([&m, &origin, &currentPoint, &closePoint, &v](auto&& item) {
 							using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-							_Path_factory_process_visit<T>::template _Perform<T>(item, v, m, origin, currentPoint, hasCurrentPoint, closePoint);
+							_Path_factory_process_visit<T>::template _Perform<T>(item, v, m, origin, currentPoint, closePoint);
 						}, val);
 					}
 					return v;
@@ -3011,7 +3045,15 @@ namespace std {
 						}
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
-					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, vector_2d&, bool&, vector_2d&, ::std::error_code&) noexcept {
+					constexpr static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, vector_2d&, bool&, vector_2d&, ::std::error_code& ec) noexcept {
+						if (!m.is_finite()) {
+							ec = ::std::make_error_code(io2d_error::invalid_matrix);
+							return;
+						}
+						if (!m.is_invertible()) {
+							ec = ::std::make_error_code(io2d_error::invalid_matrix);
+							return;
+						}
 						m = item.matrix();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
@@ -3330,8 +3372,29 @@ namespace std {
 				}
 
 				template<class Allocator>
+				inline void path_factory<Allocator>::arc_clockwise(const circle& c, double angle1, double angle2) noexcept {
+					_Data.emplace_back(in_place_type<path_data::arc_clockwise>, c, angle1, angle2);
+				}
+
+				template<class Allocator>
 				inline void path_factory<Allocator>::arc_counterclockwise(const vector_2d& center, double radius, double angle1, double angle2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::arc_counterclockwise>, center, radius, angle1, angle2);
+				}
+
+				template<class Allocator>
+				inline void path_factory<Allocator>::arc_counterclockwise(const circle& c, double angle1, double angle2) noexcept {
+					_Data.emplace_back(in_place_type<path_data::arc_counterclockwise>, c, angle1, angle2);
+				}
+
+				template<class Allocator>
+				inline void path_factory<Allocator>::ellipse(const vector_2d& ctr, double width, double height) noexcept {
+					const auto m = _Transform_matrix;
+					const auto o = _Origin;
+					_Data.emplace_back(in_place_type<path_data::change_origin>, ctr);
+					_Data.emplace_back(in_place_type<path_data::change_matrix>, matrix_2d::init_scale({ width/height, 1.0 }) * m);
+					_Data.emplace_back(in_place_type<path_data::arc_clockwise>, ctr, height, 0.0, two_pi<double>);
+					_Data.emplace_back(in_place_type<path_data::change_matrix>, m);
+					_Data.emplace_back(in_place_type<path_data::change_origin>, o);
 				}
 
 				template<class Allocator>
@@ -3356,11 +3419,11 @@ namespace std {
 
 				template<class Allocator>
 				inline void path_factory<Allocator>::rectangle(const experimental::io2d::rectangle& r) noexcept {
-					_Data.emplace_back(in_place_type<path_data::abs_move>, { r.x(), r.y() });
-					_Data.emplace_back(in_place_type<path_data::rel_line>, { r.width(), 0.0 });
-					_Data.emplace_back(in_place_type<path_data::rel_line>, { 0.0, r.height() });
-					_Data.emplace_back(in_place_type<path_data::rel_line>, { -r.width(), 0.0 });
-					_Data.emplace_back(in_place_type<path_data::close_path>, { 0.0. 0.0 });
+					_Data.emplace_back(in_place_type<path_data::abs_move>, vector_2d{ r.x(), r.y() });
+					_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ r.width(), 0.0 });
+					_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ 0.0, r.height() });
+					_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ -r.width(), 0.0 });
+					_Data.emplace_back(in_place_type<path_data::close_path>, vector_2d{ 0.0, 0.0 });
 				}
 
 				template<class Allocator>
@@ -3385,12 +3448,14 @@ namespace std {
 
 				template<class Allocator>
 				inline void path_factory<Allocator>::transform_matrix(const matrix_2d& m) noexcept {
+					_Transform_matrix = m;
 					_Data.emplace_back(in_place_type<path_data::change_matrix>, m);
 				}
 
 				template<class Allocator>
 				inline void path_factory<Allocator>::origin(const vector_2d& pt) noexcept {
-					return _Data.emplace_back(in_place_type<path_data::change_origin>, pt);
+					_Origin = pt;
+					_Data.emplace_back(in_place_type<path_data::change_origin>, pt);
 				}
 
 				template<class Allocator>

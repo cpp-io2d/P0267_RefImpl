@@ -19,6 +19,7 @@ using namespace std::experimental::io2d;
 
 //// Declarations
 void test_stroke_rules(display_surface& ds);
+void test_path_functionality(display_surface& ds);
 void draw_radial_circles(display_surface& ds);
 //void test_draw_radial_circles(display_surface& ds);
 //wostream& operator<<(wostream& os, const vector_2d& pt);
@@ -52,7 +53,8 @@ void sample_draw::operator()(display_surface& ds) {
 	////test_clip_transformation(ds);
 	////test_paint(ds);
 	//test_stroke_rules(ds);
-	draw_radial_circles(ds);
+	test_path_functionality(ds);
+	//draw_radial_circles(ds);
 	////test_mask(ds);
 	////test_extend_none_on_boundary(ds);
 
@@ -452,6 +454,100 @@ void test_stroke_rules(display_surface& ds) {
 //	drawArea.y(drawArea.y() + dy);
 //	render_fill_rect_radial_gradient(ds, drawArea, radialFactory, extendMode);
 //}
+#include "test_process.h"
+
+void test_path_functionality(display_surface& ds) {
+	// Clear to background color.
+	ds.paint(rgba_color::cornflower_blue());
+	ds.brush(brush{ rgba_color::red() });
+	//ds.fill_rule(fill_rule::even_odd);
+	path_factory<> pf{};
+	//void move_to(const vector_2d& pt) noexcept;
+	vector_2d v, cpt1, cpt2, ept;
+	v = { 10.0, 10.0 };
+	pf.move_to(v);
+	//void rel_move_to(const vector_2d& dpt) noexcept;
+	v = { 30.0, 0.0 };
+	pf.rel_move_to(v);
+	//void line_to(const vector_2d& pt) noexcept;
+	v = { 80.0, 10.0 };
+	pf.line_to(v);
+	//void rel_line_to(const vector_2d& dpt) noexcept;
+	v = { 0.0, 40.0 };
+	pf.rel_line_to(v);
+	//void close_path() noexcept;
+	pf.close_path();
+
+	//void new_path() noexcept;
+	pf.new_path();
+	v = { 200.0, 20.0 };
+	//pf.move_to(v);
+	pf.line_to(v); // Should behave as a move_to.
+	cpt1 = { 300.0, 60.0 };
+	cpt2 = { 100.0, 100.0 };
+	ept = { 200.0, 140.0 };
+	pf.cubic_curve_to(cpt1, cpt2, ept);
+	pf.new_path();
+
+	v = { 30.0, 300.0 };
+	pf.move_to(v);
+	vector_2d qcpt = { 100.0, 230.0 };
+	ept = { 170.0, 300.0 };
+	pf.quadratic_curve_to(qcpt, ept);
+
+	pf.new_path();
+	pf.arc_clockwise(circle{ { 600.0, 100.0 }, 50.0 }, 0.0, half_pi<double>);
+	pf.new_path();
+	pf.arc_counterclockwise(circle{ { 600.0, 300.0 }, 50.0 }, 0.0, half_pi<double>);
+	pf.new_path();
+	pf.arc_clockwise(circle{ { 300.0, 300.0 }, 50.0 }, 0.0, two_pi<double>);
+
+	pf.new_path();
+	pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
+	pf.rectangle(rectangle{ 500.0, 300.0, 200.0, 100.0 });
+
+	ds.path_group(path_group(pf));
+	ds.stroke();
+
+	pf.clear();
+
+	pf.new_path();
+	pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
+	pf.ellipse({ 200.0, 200.0 }, 80.0, 40.0);
+	pf.transform_matrix(matrix_2d{});
+	pf.move_to({ 200.0, 0.0 });
+	pf.line_to({ 200.0, 800.0 });
+
+	auto vecprocessed = test_process::process_path_data(pf);
+	ds.path_group(path_group{ pf });
+	ds.brush(rgba_color::lime());
+	ds.stroke();
+
+	//constexpr auto dClr = rgba_color(1.0, 1.0, 1.0);
+	//constexpr auto fClr = rgba_color(0.5f, 1.0f, 0.0f, 0.25f);
+	//constexpr circle circ{ {20.0, 20.0}, 10.0 };
+	//constexpr ellipse ell{ circ };
+	//constexpr double ellx = ell.x_axis();
+	////constexpr ellipse ell2 = circ; // Implicit conversion barred, so this is invalid.
+
+	//void arc_clockwise(const vector_2d& center, double radius, double angle1,
+	//	double angle2) noexcept;
+	//void arc_counterclockwise(const vector_2d& center, double radius,
+	//	double angle1, double angle2) noexcept;
+	//void cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1,
+	//	const vector_2d& pt2) noexcept;
+	//void quadratic_curve_to(const vector_2d& pt0, const vector_2d& pt1)
+	//	noexcept;
+	//void rectangle(const experimental::io2d::rectangle& r) noexcept;
+	//void rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1,
+	//	const vector_2d& dpt2) noexcept;
+	//void rel_quadratic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1)
+	//	noexcept;
+	//void transform_matrix(const matrix_2d& m) noexcept;
+	//void origin(const vector_2d& pt) noexcept;
+
+
+}
 
 void draw_radial_circles(display_surface& ds) {
 	// Clear to background color.

@@ -42,9 +42,12 @@ double vector_2d::magnitude() const noexcept {
 //	return _X * other._X + _Y * other._Y;
 //}
 
-double vector_2d::angular_direction(const vector_2d& to) const noexcept {
-	auto v = to - *this;
-	return atan2(v._Y, v._X);
+double vector_2d::angular_direction() const noexcept {
+	auto v = atan2(_Y, _X);
+	if (v < 0.0) {
+		v += two_pi<double>;
+	}
+	return v;
 }
 
 vector_2d vector_2d::to_unit() const noexcept {
