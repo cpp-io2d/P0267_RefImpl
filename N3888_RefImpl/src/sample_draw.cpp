@@ -512,9 +512,17 @@ void test_path_functionality(display_surface& ds) {
 	pf.clear();
 
 	pf.new_path();
-	pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
-	pf.ellipse({ 200.0, 200.0 }, 80.0, 40.0);
+	//pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
+	pf.ellipse({ { 200.0, 200.0 }, 80.0, 40.0 });
+	pf.move_to({ 400.0, 200.0 });
+	pf.rel_ellipse({ {200.0, 0.0}, 80.0, 40.0 });
+	pf.new_path();
+	pf.rectangle({ 200.0, 400.0, 100.0, 50.0 });
+	pf.new_path();
+	pf.move_to({ 400.0, 400.0 });
+	pf.rel_rectangle({ 200.0, 0.0, 100.0, 50.0 });
 	pf.transform_matrix(matrix_2d{});
+	pf.new_path();
 	pf.move_to({ 200.0, 0.0 });
 	pf.line_to({ 200.0, 800.0 });
 

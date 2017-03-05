@@ -43,7 +43,3 @@ void rectangle::top_left_bottom_right(const vector_2d& tl, const vector_2d& br) 
 	_Width = max(0.0, brx - tlx);
 	_Height = max(0.0, bry - tly);
 }
-
-//tuple<vector_2d, vector_2d> rectangle::top_left_bottom_right() const noexcept {
-//	return make_tuple<vector_2d, vector_2d>({ _X, _Y }, { _X + _Width, _Y + _Height });
-//}

@@ -866,7 +866,7 @@ namespace std {
 					constexpr bool _Is_finite_check(double val) const noexcept {
 						return val != numeric_limits<double>::infinity() &&
 							val != -numeric_limits<double>::infinity() &&
-							val != val; // This checks for both types of NaN. Compilers should not optimize this away but the only way to be sure is to check the documentation and any compiler switches you may be using.
+							!(val != val); // This checks for both types of NaN. Compilers should not optimize this away but the only way to be sure is to check the documentation and any compiler switches you may be using.
 					}
 				public:
 					constexpr bool is_finite() const noexcept {
@@ -1123,6 +1123,282 @@ namespace std {
 						}
 					};
 
+					class abs_rectangle {
+						double _X = 0.0;
+						double _Y = 0.0;
+						double _Width = 0.0;
+						double _Height = 0.0;
+					public:
+						constexpr abs_rectangle() noexcept { }
+						constexpr abs_rectangle(double x, double y, double width, double height) noexcept
+							: _X(x)
+							, _Y(y)
+							, _Width(width)
+							, _Height(height) {
+						}
+						constexpr abs_rectangle(const vector_2d& tl, const vector_2d& br) noexcept
+							: _X(tl.x())
+							, _Y(tl.y())
+							, _Width(::std::max(0.0, br.x() - tl.x()))
+							, _Height(::std::max(0.0, br.y() - tl.y())) {
+						}
+						constexpr abs_rectangle(const rectangle& r)
+							: _X(r.x())
+							, _Y(r.y())
+							, _Width(r.width())
+							, _Height(r.height()) {
+						}
+						constexpr abs_rectangle(const abs_rectangle&) noexcept = default;
+						constexpr abs_rectangle& operator=(const abs_rectangle&) noexcept = default;
+						abs_rectangle(abs_rectangle&&) noexcept = default;
+						abs_rectangle& operator=(abs_rectangle&&) noexcept = default;
+
+
+						void x(double value) noexcept;
+						void y(double value) noexcept;
+						void width(double value) noexcept;
+						void height(double value) noexcept;
+						void top_left(const vector_2d& value) noexcept;
+						void bottom_right(const vector_2d& value) noexcept;
+						void top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept;
+
+						constexpr double x() const noexcept;
+						constexpr double y() const noexcept;
+						constexpr double width() const noexcept;
+						constexpr double height() const noexcept;
+						constexpr double left() const noexcept;
+						constexpr double right() const noexcept;
+						constexpr double top() const noexcept;
+						constexpr double bottom() const noexcept;
+						constexpr vector_2d top_left() const noexcept;
+						constexpr vector_2d bottom_right() const noexcept;
+					};
+
+					inline constexpr double abs_rectangle::x() const noexcept {
+						return _X;
+					}
+
+					inline constexpr double abs_rectangle::y() const noexcept {
+						return _Y;
+					}
+
+					inline constexpr double abs_rectangle::width() const noexcept {
+						return _Width;
+					}
+
+					inline constexpr double abs_rectangle::height() const noexcept {
+						return _Height;
+					}
+
+					inline constexpr double abs_rectangle::left() const noexcept {
+						return _X;
+					}
+
+					inline constexpr double abs_rectangle::right() const noexcept {
+						return _X + _Width;
+					}
+
+					inline constexpr double abs_rectangle::top() const noexcept {
+						return _Y;
+					}
+
+					inline constexpr double abs_rectangle::bottom() const noexcept {
+						return _Y + _Height;
+					}
+
+					inline constexpr vector_2d abs_rectangle::top_left() const noexcept {
+						return{ _X, _Y };
+					}
+
+					inline constexpr vector_2d abs_rectangle::bottom_right() const noexcept {
+						return{ _X + _Width, _Y + _Height };
+					}
+
+					class rel_rectangle {
+						double _X = 0.0;
+						double _Y = 0.0;
+						double _Width = 0.0;
+						double _Height = 0.0;
+					public:
+						constexpr rel_rectangle() noexcept { }
+						constexpr rel_rectangle(double x, double y, double width, double height) noexcept
+							: _X(x)
+							, _Y(y)
+							, _Width(width)
+							, _Height(height) {
+						}
+						constexpr rel_rectangle(const vector_2d& tl, const vector_2d& br) noexcept
+							: _X(tl.x())
+							, _Y(tl.y())
+							, _Width(::std::max(0.0, br.x() - tl.x()))
+							, _Height(::std::max(0.0, br.y() - tl.y())) {
+						}
+						constexpr rel_rectangle(const rectangle& r)
+							: _X(r.x())
+							, _Y(r.y())
+							, _Width(r.width())
+							, _Height(r.height()) {
+						}
+						constexpr rel_rectangle(const rel_rectangle&) noexcept = default;
+						constexpr rel_rectangle& operator=(const rel_rectangle&) noexcept = default;
+						rel_rectangle(rel_rectangle&&) noexcept = default;
+						rel_rectangle& operator=(rel_rectangle&&) noexcept = default;
+
+
+						void x(double value) noexcept;
+						void y(double value) noexcept;
+						void width(double value) noexcept;
+						void height(double value) noexcept;
+						void top_left(const vector_2d& value) noexcept;
+						void bottom_right(const vector_2d& value) noexcept;
+						void top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept;
+
+						constexpr double x() const noexcept;
+						constexpr double y() const noexcept;
+						constexpr double width() const noexcept;
+						constexpr double height() const noexcept;
+						constexpr double left() const noexcept;
+						constexpr double right() const noexcept;
+						constexpr double top() const noexcept;
+						constexpr double bottom() const noexcept;
+						constexpr vector_2d top_left() const noexcept;
+						constexpr vector_2d bottom_right() const noexcept;
+					};
+
+					inline constexpr double rel_rectangle::x() const noexcept {
+						return _X;
+					}
+
+					inline constexpr double rel_rectangle::y() const noexcept {
+						return _Y;
+					}
+
+					inline constexpr double rel_rectangle::width() const noexcept {
+						return _Width;
+					}
+
+					inline constexpr double rel_rectangle::height() const noexcept {
+						return _Height;
+					}
+
+					inline constexpr double rel_rectangle::left() const noexcept {
+						return _X;
+					}
+
+					inline constexpr double rel_rectangle::right() const noexcept {
+						return _X + _Width;
+					}
+
+					inline constexpr double rel_rectangle::top() const noexcept {
+						return _Y;
+					}
+
+					inline constexpr double rel_rectangle::bottom() const noexcept {
+						return _Y + _Height;
+					}
+
+					inline constexpr vector_2d rel_rectangle::top_left() const noexcept {
+						return{ _X, _Y };
+					}
+
+					inline constexpr vector_2d rel_rectangle::bottom_right() const noexcept {
+						return{ _X + _Width, _Y + _Height };
+					}
+
+					class abs_ellipse {
+						vector_2d _Center;
+						double _X_axis = 0.0;
+						double _Y_axis = 0.0;
+					public:
+						constexpr abs_ellipse() noexcept { }
+						constexpr abs_ellipse(const vector_2d& ctr, double xaxis, double yaxis) noexcept
+							: _Center(ctr)
+							, _X_axis(xaxis)
+							, _Y_axis(yaxis) {
+						}
+						constexpr explicit abs_ellipse(const circle& c) noexcept
+							: _Center(c.center())
+							, _X_axis(c.radius())
+							, _Y_axis(c.radius()) { }
+						constexpr explicit abs_ellipse(const ellipse& e) noexcept
+							: _Center(e.center())
+							, _X_axis(e.x_axis())
+							, _Y_axis(e.y_axis()) { }
+						constexpr abs_ellipse(const abs_ellipse&) noexcept = default;
+						constexpr abs_ellipse& operator=(const abs_ellipse&) noexcept = default;
+						abs_ellipse(abs_ellipse&&) noexcept = default;
+						abs_ellipse& operator=(abs_ellipse&&) noexcept = default;
+
+						void center(const vector_2d& ctr) noexcept {
+							_Center = ctr;
+						}
+						void x_axis(double val) noexcept {
+							_X_axis = val;
+						}
+						void y_axis(double val) noexcept {
+							_Y_axis = val;
+						}
+
+						constexpr vector_2d center() const noexcept {
+							return _Center;
+						}
+
+						constexpr double x_axis() const noexcept {
+							return _X_axis;
+						}
+
+						constexpr double y_axis() const noexcept {
+							return _Y_axis;
+						}
+					};
+
+					class rel_ellipse {
+						vector_2d _Center;
+						double _X_axis = 0.0;
+						double _Y_axis = 0.0;
+					public:
+						constexpr rel_ellipse() noexcept { }
+						constexpr rel_ellipse(const vector_2d& ctr, double xaxis, double yaxis) noexcept
+							: _Center(ctr)
+							, _X_axis(xaxis)
+							, _Y_axis(yaxis) {
+						}
+						constexpr explicit rel_ellipse(const circle& c) noexcept
+							: _Center(c.center())
+							, _X_axis(c.radius())
+							, _Y_axis(c.radius()) { }
+						constexpr explicit rel_ellipse(const ellipse& e) noexcept
+							: _Center(e.center())
+							, _X_axis(e.x_axis())
+							, _Y_axis(e.y_axis()) { }
+						constexpr rel_ellipse(const rel_ellipse&) noexcept = default;
+						constexpr rel_ellipse& operator=(const rel_ellipse&) noexcept = default;
+						rel_ellipse(rel_ellipse&&) noexcept = default;
+						rel_ellipse& operator=(rel_ellipse&&) noexcept = default;
+
+						void center(const vector_2d& ctr) noexcept {
+							_Center = ctr;
+						}
+						void x_axis(double val) noexcept {
+							_X_axis = val;
+						}
+						void y_axis(double val) noexcept {
+							_Y_axis = val;
+						}
+
+						constexpr vector_2d center() const noexcept {
+							return _Center;
+						}
+
+						constexpr double x_axis() const noexcept {
+							return _X_axis;
+						}
+
+						constexpr double y_axis() const noexcept {
+							return _Y_axis;
+						}
+					};
+
 					class arc_clockwise {
 						experimental::io2d::circle _Circle = {};
 						double _Angle_1 = 0.0;
@@ -1247,7 +1523,7 @@ namespace std {
 						}
 					};
 
-					using path_data_types = typename ::std::variant<abs_move, abs_line, rel_move, rel_line, abs_cubic_curve, rel_cubic_curve, abs_quadratic_curve, rel_quadratic_curve, arc_clockwise, arc_counterclockwise, new_path, close_path, change_matrix, change_origin>;
+					using path_data_types = typename ::std::variant<new_path, close_path, abs_cubic_curve, abs_ellipse, abs_line, abs_move, abs_rectangle, abs_quadratic_curve, arc_clockwise, arc_counterclockwise, change_matrix, change_origin, rel_cubic_curve, rel_ellipse, rel_line, rel_move, rel_rectangle, rel_quadratic_curve>;
 				}
 
 				// Forward declaration.
@@ -1281,20 +1557,28 @@ namespace std {
 				constexpr static _Path_data_close_path _Path_data_close_path_val = {};
 				enum class _Path_data_abs_cubic_curve {};
 				constexpr static _Path_data_abs_cubic_curve _Path_data_abs_cubic_curve_val = {};
+				enum class _Path_data_abs_ellipse {};
+				constexpr static _Path_data_abs_ellipse _Path_data_abs_ellipse_val = {};
 				enum class _Path_data_abs_line {};
 				constexpr static _Path_data_abs_line _Path_data_abs_line_val = {};
 				enum class _Path_data_abs_move {};
 				constexpr static _Path_data_abs_move _Path_data_abs_move_val = {};
 				enum class _Path_data_abs_quadratic_curve {};
 				constexpr static _Path_data_abs_quadratic_curve _Path_data_abs_quadratic_curve_val = {};
+				enum class _Path_data_abs_rectangle {};
+				constexpr static _Path_data_abs_rectangle _Path_data_abs_rectangle_val = {};
 				enum class _Path_data_rel_cubic_curve {};
 				constexpr static _Path_data_rel_cubic_curve _Path_data_rel_cubic_curve_val = {};
+				enum class _Path_data_rel_ellipse {};
+				constexpr static _Path_data_rel_ellipse _Path_data_rel_ellipse_val = {};
 				enum class _Path_data_rel_line {};
 				constexpr static _Path_data_rel_line _Path_data_rel_line_val = {};
 				enum class _Path_data_rel_move {};
 				constexpr static _Path_data_rel_move _Path_data_rel_move_val = {};
 				enum class _Path_data_rel_quadratic_curve {};
 				constexpr static _Path_data_rel_quadratic_curve _Path_data_rel_quadratic_curve_val = {};
+				enum class _Path_data_rel_rectangle {};
+				constexpr static _Path_data_rel_rectangle _Path_data_rel_rectangle_val = {};
 				enum class _Path_data_arc_clockwise {};
 				constexpr static _Path_data_arc_clockwise _Path_data_arc_clockwise_val = {};
 				enum class _Path_data_arc_counterclockwise {};
@@ -1385,6 +1669,22 @@ namespace std {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
 					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_quadratic_curve&) noexcept {
 						assert(false && "Quadratic curves should have been transformed into cubic curves.");
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_ellipse>, _Path_data_abs_ellipse> = _Path_data_abs_ellipse_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_ellipse&) {
+						assert(false && "Abs ellipse should have been transformed into cubic curves.");
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_ellipse>, _Path_data_rel_ellipse> = _Path_data_rel_ellipse_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_ellipse&) {
+						assert(false && "Rel ellipse should have been transformed into cubic curves.");
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_rectangle>, _Path_data_abs_rectangle> = _Path_data_abs_rectangle_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_rectangle&) {
+						assert(false && "Abs rectangle should have been transformed into lines and close point.");
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_rectangle>, _Path_data_rel_rectangle> = _Path_data_rel_rectangle_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_rectangle&) {
+						assert(false && "Rel rectangle should have been transformed into lines and close point.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_clockwise>, _Path_data_arc_clockwise> = _Path_data_arc_clockwise_val>
 					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::arc_clockwise&) noexcept {
@@ -1561,7 +1861,8 @@ namespace std {
 						double angle1, double angle2) noexcept;
 					void arc_counterclockwise(const circle& c,
 						double angle1, double angle2) noexcept;
-					void ellipse(const vector_2d& ctr, double width, double height) noexcept;
+					void ellipse(const experimental::io2d::ellipse& e) noexcept;
+					void ellipse(const circle& c) noexcept;
 					void cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1,
 						const vector_2d& pt2) noexcept;
 					void line_to(const vector_2d& pt) noexcept;
@@ -1569,6 +1870,9 @@ namespace std {
 					void quadratic_curve_to(const vector_2d& pt0, const vector_2d& pt1)
 						noexcept;
 					void rectangle(const experimental::io2d::rectangle& r) noexcept;
+					void rel_rectangle(const experimental::io2d::rectangle& r) noexcept;
+					void rel_ellipse(const experimental::io2d::ellipse& e) noexcept;
+					void rel_ellipse(const circle& c) noexcept;
 					void rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1,
 						const vector_2d& dpt2) noexcept;
 					void rel_line_to(const vector_2d& dpt) noexcept;
@@ -2738,6 +3042,45 @@ namespace std {
 							}
 						}
 					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_rectangle>, _Path_data_abs_rectangle> = _Path_data_abs_rectangle_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						_Path_factory_process_visit::template _Perform(path_data::abs_move{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { 0.0, item.height() } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { -item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::close_path{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_rectangle>, _Path_data_rel_rectangle> = _Path_data_rel_rectangle_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						_Path_factory_process_visit::template _Perform(path_data::rel_move{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { 0.0, item.height() } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { -item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::close_path{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_ellipse>, _Path_data_abs_ellipse> = _Path_data_abs_ellipse_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						const auto o_M = m;
+						const auto o_O = origin;
+						_Path_factory_process_visit<path_data::change_origin>::template _Perform(path_data::change_origin{ item.center() }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit<path_data::change_matrix>::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({item.x_axis() / item.y_axis(), 1.0}) * m }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit<path_data::arc_clockwise>::template _Perform(path_data::arc_clockwise{ item.center(), item.y_axis(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit<path_data::change_matrix>::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit<path_data::change_origin>::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint);
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_ellipse>, _Path_data_rel_ellipse> = _Path_data_rel_ellipse_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						if (!currentPoint.has_value()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
+						}
+						const auto o_M = m;
+						const auto o_O = origin;
+						_Path_factory_process_visit::template _Perform(path_data::change_origin{ item.center() + currentPoint.value() }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_axis() / item.y_axis(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::arc_clockwise{ item.center() + currentPoint.value(), item.y_axis(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint);
+					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, optional<vector_2d>&, vector_2d&) {
 						if (!m.is_finite()) {
@@ -3401,14 +3744,20 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::ellipse(const vector_2d& ctr, double width, double height) noexcept {
-					const auto m = _Transform_matrix;
-					const auto o = _Origin;
-					_Data.emplace_back(in_place_type<path_data::change_origin>, ctr);
-					_Data.emplace_back(in_place_type<path_data::change_matrix>, matrix_2d::init_scale({ width/height, 1.0 }) * m);
-					_Data.emplace_back(in_place_type<path_data::arc_clockwise>, ctr, height, 0.0, two_pi<double>);
-					_Data.emplace_back(in_place_type<path_data::change_matrix>, m);
-					_Data.emplace_back(in_place_type<path_data::change_origin>, o);
+				inline void path_factory<Allocator>::ellipse(const experimental::io2d::ellipse& e) noexcept {
+					_Data.emplace_back(in_place_type<path_data::abs_ellipse>, e);
+					//const auto m = _Transform_matrix;
+					//const auto o = _Origin;
+					//_Data.emplace_back(in_place_type<path_data::change_origin>, ctr);
+					//_Data.emplace_back(in_place_type<path_data::change_matrix>, matrix_2d::init_scale({ width/height, 1.0 }) * m);
+					//_Data.emplace_back(in_place_type<path_data::arc_clockwise>, ctr, height, 0.0, two_pi<double>);
+					//_Data.emplace_back(in_place_type<path_data::change_matrix>, m);
+					//_Data.emplace_back(in_place_type<path_data::change_origin>, o);
+				}
+
+				template<class Allocator>
+				inline void path_factory<Allocator>::ellipse(const circle& c) noexcept {
+					_Data.emplace_back(in_place_type<path_data::abs_ellipse>, c);
 				}
 
 				template<class Allocator>
@@ -3433,16 +3782,32 @@ namespace std {
 
 				template<class Allocator>
 				inline void path_factory<Allocator>::rectangle(const experimental::io2d::rectangle& r) noexcept {
-					_Data.emplace_back(in_place_type<path_data::abs_move>, vector_2d{ r.x(), r.y() });
-					_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ r.width(), 0.0 });
-					_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ 0.0, r.height() });
-					_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ -r.width(), 0.0 });
-					_Data.emplace_back(in_place_type<path_data::close_path>, vector_2d{ 0.0, 0.0 });
+					_Data.emplace_back(in_place_type<path_data::abs_rectangle>, r);
+					//_Data.emplace_back(in_place_type<path_data::abs_move>, vector_2d{ r.x(), r.y() });
+					//_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ r.width(), 0.0 });
+					//_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ 0.0, r.height() });
+					//_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ -r.width(), 0.0 });
+					//_Data.emplace_back(in_place_type<path_data::close_path>, vector_2d{ 0.0, 0.0 });
 				}
 
 				template<class Allocator>
 				inline void path_factory<Allocator>::rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_cubic_curve>, dpt0, dpt1, dpt2);
+				}
+
+				template<class Allocator>
+				inline void path_factory<Allocator>::rel_ellipse(const experimental::io2d::ellipse& e) noexcept {
+					_Data.emplace_back(in_place_type<path_data::rel_ellipse>, e);
+				}
+
+				template<class Allocator>
+				inline void path_factory<Allocator>::rel_ellipse(const circle& c) noexcept {
+					_Data.emplace_back(in_place_type<path_data::rel_ellipse>, c);
+				}
+
+				template<class Allocator>
+				inline void path_factory<Allocator>::rel_rectangle(const experimental::io2d::rectangle& r) noexcept {
+					_Data.emplace_back(in_place_type<path_data::rel_rectangle>, r);
 				}
 
 				template<class Allocator>

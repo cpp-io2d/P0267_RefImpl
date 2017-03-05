@@ -74,6 +74,83 @@ void rel_quadratic_curve::end_point(const vector_2d& ep) noexcept {
 	_End_pt = ep;
 }
 
+void abs_rectangle::x(double x) noexcept {
+	_X = x;
+}
+
+void abs_rectangle::y(double value) noexcept {
+	_Y = value;
+}
+
+void abs_rectangle::width(double value) noexcept {
+	_Width = value;
+}
+
+void abs_rectangle::height(double value) noexcept {
+	_Height = value;
+}
+
+void abs_rectangle::top_left(const vector_2d& value) noexcept {
+	_X = value.x();
+	_Y = value.y();
+}
+
+void abs_rectangle::bottom_right(const vector_2d& value) noexcept {
+	auto x = value.x();
+	auto y = value.y();
+	_Width = max(0.0, x - _X);
+	_Height = max(0.0, y - _Y);
+}
+
+void abs_rectangle::top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept {
+	auto tlx = tl.x();
+	auto tly = tl.y();
+	auto brx = br.x();
+	auto bry = br.y();
+	_X = tlx;
+	_Y = tly;
+	_Width = max(0.0, brx - tlx);
+	_Height = max(0.0, bry - tly);
+}
+
+void rel_rectangle::x(double value) noexcept {
+	_X = value;
+}
+
+void rel_rectangle::y(double value) noexcept {
+	_Y = value;
+}
+
+void rel_rectangle::width(double value) noexcept {
+	_Width = value;
+}
+
+void rel_rectangle::height(double value) noexcept {
+	_Height = value;
+}
+
+void rel_rectangle::top_left(const vector_2d& value) noexcept {
+	_X = value.x();
+	_Y = value.y();
+}
+
+void rel_rectangle::bottom_right(const vector_2d& value) noexcept {
+	auto x = value.x();
+	auto y = value.y();
+	_Width = max(0.0, x - _X);
+	_Height = max(0.0, y - _Y);
+}
+
+void rel_rectangle::top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept {
+	auto tlx = tl.x();
+	auto tly = tl.y();
+	auto brx = br.x();
+	auto bry = br.y();
+	_X = tlx;
+	_Y = tly;
+	_Width = max(0.0, brx - tlx);
+	_Height = max(0.0, bry - tly);
+}
 
 void arc_clockwise::circle(const experimental::io2d::circle& c) noexcept {
 	_Circle = c;
