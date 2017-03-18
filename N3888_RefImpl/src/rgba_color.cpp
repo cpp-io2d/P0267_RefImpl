@@ -10,31 +10,6 @@ rgba_color _Rgba_color_from_byte_values(unsigned char r, unsigned char g, unsign
 	return{ static_cast<double>(r) / 255.0, static_cast<double>(g) / 255.0, static_cast<double>(b) / 255.0, static_cast<double>(a) / 255.0 };
 }
 
-//rgba_color::rgba_color(rgba_color&& other) noexcept
-//	: _R(move(other._R))
-//	, _G(move(other._G))
-//	, _B(move(other._B))
-//	, _A(move(other._A)) {
-//	other._R = 0.0;
-//	other._G = 0.0;
-//	other._B = 0.0;
-//	other._A = 0.0;
-//}
-//
-//rgba_color& rgba_color::operator=(rgba_color&& other) noexcept {
-//	if (this != &other) {
-//		_R = move(other._R);
-//		_G = move(other._G);
-//		_B = move(other._B);
-//		_A = move(other._A);
-//		other._R = 0.0;
-//		other._G = 0.0;
-//		other._B = 0.0;
-//		other._A = 0.0;
-//	}
-//	return *this;
-//}
-
 void rgba_color::r(double val) {
 	if (val < 0.0 || val > 1.0) {
 		throw system_error(make_error_code(errc::argument_out_of_domain));
@@ -105,22 +80,6 @@ void rgba_color::a(double val, error_code& ec) noexcept {
 	ec.clear();
 }
 
-//double rgba_color::r() const noexcept {
-//	return _R;
-//}
-//
-//double rgba_color::g() const noexcept {
-//	return _G;
-//}
-//
-//double rgba_color::b() const noexcept {
-//	return _B;
-//}
-//
-//double rgba_color::a() const noexcept {
-//	return _A;
-//}
-//
 const rgba_color& rgba_color::alice_blue() noexcept {
 	static auto c = _Rgba_color_from_byte_values(static_cast<unsigned char>(240), static_cast<unsigned char>(248), static_cast<unsigned char>(255));
 	return c;

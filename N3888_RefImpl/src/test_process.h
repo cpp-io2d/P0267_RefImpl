@@ -48,7 +48,7 @@ namespace test_process {
 	constexpr static rel_rectangle_sfinae rel_rectangle_sfinae_val = {};
 
 	template <class Allocator>
-	vector<path_data::path_data_types> process_path_data(const path_factory<Allocator>& pf);
+	vector<path_data::path_data_types> process_path_data(const path_builder<Allocator>& pf);
 
 	template <class _TItem>
 	struct path_factory_process_visit {
@@ -72,6 +72,7 @@ namespace test_process {
 		static void perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
 			const auto m2 = m;
 			const auto o2 = origin;
+			currentPoint.reset();
 			path_factory_process_visit<path_data::change_origin>::template perform(path_data::change_origin{ item.center() }, v, m, origin, currentPoint, closePoint);
 			path_factory_process_visit<path_data::change_matrix>::template perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_axis() / item.y_axis(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
 			path_factory_process_visit<path_data::arc_clockwise>::template perform(path_data::arc_clockwise{ item.center(), item.y_axis(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
@@ -326,9 +327,11 @@ namespace test_process {
 			}
 			const auto m2 = m;
 			const auto o2 = origin;
-			path_factory_process_visit::template perform(path_data::change_origin{ item.center() + currentPoint.value() }, v, m, origin, currentPoint, closePoint);
+			const auto cpt2 = currentPoint;
+			currentPoint.reset();
+			path_factory_process_visit::template perform(path_data::change_origin{ item.center() + cpt2.value() }, v, m, origin, currentPoint, closePoint);
 			path_factory_process_visit::template perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_axis() / item.y_axis(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
-			path_factory_process_visit::template perform(path_data::arc_clockwise{ item.center() + currentPoint.value(), item.y_axis(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
+			path_factory_process_visit::template perform(path_data::arc_clockwise{ item.center() + cpt2.value(), item.y_axis(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
 			path_factory_process_visit::template perform(path_data::change_matrix{ m2 }, v, m, origin, currentPoint, closePoint);
 			path_factory_process_visit::template perform(path_data::change_origin{ o2 }, v, m, origin, currentPoint, closePoint);
 		}
@@ -379,7 +382,7 @@ namespace test_process {
 	};
 
 	template <class Allocator>
-	inline vector<path_data::path_data_types> process_path_data(const path_factory<Allocator>& pf) {
+	inline vector<path_data::path_data_types> process_path_data(const path_builder<Allocator>& pf) {
 		matrix_2d m;
 		vector_2d origin;
 		optional<vector_2d> currentPoint = optional<vector_2d>{}; // Tracks the untransformed current point.

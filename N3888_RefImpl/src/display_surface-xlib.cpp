@@ -235,7 +235,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 }
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
-	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
+	: surface({ nullptr, nullptr }, preferredFormat)
 	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
@@ -293,7 +293,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	XMapWindow(display, _Wndw);
 	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
 	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-	_Ensure_state();
+	//_Ensure_state();
 }
 
 display_surface::~display_surface() {

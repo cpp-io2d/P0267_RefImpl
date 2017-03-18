@@ -99,20 +99,20 @@
 //			reinterpret_cast<uint32_t *>(data)[x + y * stride] = value;
 //		}
 //
-//		bool t_is_valid_for_extend(double, tiling);
-//		bool t_is_valid_for_extend(double t, tiling e) {
+//		bool t_is_valid_for_extend(double, wrap_mode);
+//		bool t_is_valid_for_extend(double t, wrap_mode e) {
 //			switch (e)
 //			{
-//			case std::experimental::io2d::v1::tiling::none:
+//			case std::experimental::io2d::v1::wrap_mode::none:
 //				return t >= 0.0 && t <= 1.0;
-//			case std::experimental::io2d::v1::tiling::repeat:
+//			case std::experimental::io2d::v1::wrap_mode::repeat:
 //				return true;
-//			case std::experimental::io2d::v1::tiling::reflect:
+//			case std::experimental::io2d::v1::wrap_mode::reflect:
 //				return true;
-//			case std::experimental::io2d::v1::tiling::pad:
+//			case std::experimental::io2d::v1::wrap_mode::pad:
 //				return true;
 //			default:
-//				assert(false && "Unknown tiling enumerator value.");
+//				assert(false && "Unknown wrap_mode enumerator value.");
 //				return false;
 //			}
 //		}
@@ -334,7 +334,7 @@
 //			});
 //		}
 //
-//		void render_fill_rect_radial_gradient(display_surface& ds, const rectangle& fillArea, const radial_brush_factory& f, tiling e) {
+//		void render_fill_rect_radial_gradient(display_surface& ds, const rectangle& fillArea, const radial_brush_factory& f, wrap_mode e) {
 //			ds.map([&fillArea, &f, &e](mapped_surface& ms) -> void {
 //				auto width = ms.width();
 //				auto height = ms.height();
@@ -458,12 +458,12 @@
 //			};
 //		}
 //
-//		rgba_color get_interpolated_color(const radial_brush_factory& f, double t, tiling e) {
+//		rgba_color get_interpolated_color(const radial_brush_factory& f, double t, wrap_mode e) {
 //			switch (e)
 //			{
-//			case std::experimental::io2d::v1::tiling::none:
+//			case std::experimental::io2d::v1::wrap_mode::none:
 //				break;
-//			case std::experimental::io2d::v1::tiling::repeat:
+//			case std::experimental::io2d::v1::wrap_mode::repeat:
 //				while (t > 1.0) {
 //					t -= 1.0;
 //				}
@@ -474,7 +474,7 @@
 //					}
 //				}
 //				break;
-//			case std::experimental::io2d::v1::tiling::reflect:
+//			case std::experimental::io2d::v1::wrap_mode::reflect:
 //				t = fabs(t);
 //				while (t > 2.0) {
 //					t -= 2.0;
@@ -500,7 +500,7 @@
 //				//	}
 //				//}
 //				break;
-//			case std::experimental::io2d::v1::tiling::pad:
+//			case std::experimental::io2d::v1::wrap_mode::pad:
 //				if (t > 1.0) {
 //					t = 1.0;
 //				}
@@ -509,10 +509,10 @@
 //				}
 //				break;
 //			default:
-//				throw system_error(make_error_code(errc::invalid_argument), "Unknown tiling value.");
+//				throw system_error(make_error_code(errc::invalid_argument), "Unknown wrap_mode value.");
 //			}
 //			if (t > 1.0 || t < 0.0) {
-//				throw logic_error("Invalid value for t for the provided tiling enumerator.");
+//				throw logic_error("Invalid value for t for the provided wrap_mode enumerator.");
 //			}
 //
 //			if (f.color_stop_count() < 2) {

@@ -4,7 +4,7 @@
 #define _XIO2D_
 
 #include <cairo.h>
-
+#include <libpng16\png.h>
 #include <map>
 #include <cassert>
 #include <cstdint>

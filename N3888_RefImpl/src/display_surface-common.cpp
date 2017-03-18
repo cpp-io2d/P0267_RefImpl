@@ -55,12 +55,39 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 				const auto lboxWidth = trunc((static_cast<double>(_Display_width) - rectWidth) / 2.0);
 				cairo_rectangle(nativeContext, 0.0, 0.0, lboxWidth, rectHeight);
 				cairo_rectangle(nativeContext, rectWidth + lboxWidth, 0.0, lboxWidth, rectHeight);
-				cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.tiling()));
-				cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
-				cairo_matrix_t cPttnMatrix;
-				cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
-				cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
-				cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
+				//cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.wrap_mode()));
+				//cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
+				//cairo_matrix_t cPttnMatrix;
+				//cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
+				//cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
+				//cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
+				if (_Letterbox_brush == nullopt) {
+					cairo_set_source(_Native_context.get(), _Default_brush.native_handle());
+					//cairo_paint(_Native_context.get());
+				}
+				else {
+					auto pttn = _Letterbox_brush.value().native_handle();
+					if (_Letterbox_brush_props == nullopt) {
+						cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
+						cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
+						cairo_matrix_t cPttnMatrix;
+						cairo_matrix_init_identity(&cPttnMatrix);
+						cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+						cairo_set_source(_Native_context.get(), pttn);
+						//cairo_paint(_Native_context.get());
+					}
+					else {
+						const brush_props& props = _Letterbox_brush_props.value();
+						cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
+						cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
+						cairo_matrix_t cPttnMatrix;
+						const auto& m = props.matrix();
+						cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+						cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+						cairo_set_source(_Native_context.get(), pttn);
+						//cairo_paint(_Native_context.get());
+					}
+				}
 				cairo_fill(_Native_context.get());
 			}
 		}
@@ -87,12 +114,39 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 				const auto lboxHeight = trunc((static_cast<double>(_Display_height) - rectHeight) / 2.0);
 				cairo_rectangle(nativeContext, 0.0, 0.0, rectWidth, lboxHeight);
 				cairo_rectangle(nativeContext, 0.0, rectHeight + lboxHeight, rectWidth, lboxHeight);
-				cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.tiling()));
-				cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
-				cairo_matrix_t cPttnMatrix;
-				cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
-				cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
-				cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
+				//cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.wrap_mode()));
+				//cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
+				//cairo_matrix_t cPttnMatrix;
+				//cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
+				//cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
+				//cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
+				if (_Letterbox_brush == nullopt) {
+					cairo_set_source(_Native_context.get(), _Default_brush.native_handle());
+					//cairo_paint(_Native_context.get());
+				}
+				else {
+					auto pttn = _Letterbox_brush.value().native_handle();
+					if (_Letterbox_brush_props == nullopt) {
+						cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
+						cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
+						cairo_matrix_t cPttnMatrix;
+						cairo_matrix_init_identity(&cPttnMatrix);
+						cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+						cairo_set_source(_Native_context.get(), pttn);
+						//cairo_paint(_Native_context.get());
+					}
+					else {
+						const brush_props& props = _Letterbox_brush_props.value();
+						cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
+						cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
+						cairo_matrix_t cPttnMatrix;
+						const auto& m = props.matrix();
+						cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+						cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+						cairo_set_source(_Native_context.get(), pttn);
+						//cairo_paint(_Native_context.get());
+					}
+				}
 				cairo_fill(_Native_context.get());
 			}
 		}
@@ -115,13 +169,33 @@ void display_surface::_Render_to_native_surface() {
 		bool letterbox = false;
 		auto userRect = _User_scaling_fn(*this, letterbox);
 		if (letterbox) {
-			cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.tiling()));
-			cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
-			cairo_matrix_t cPttnMatrix;
-			cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
-			cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
-			cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
-			cairo_paint(_Native_context.get());
+			if (_Letterbox_brush == nullopt) {
+				cairo_set_source(_Native_context.get(), _Default_brush.native_handle());
+				cairo_paint(_Native_context.get());
+			}
+			else {
+				auto pttn = _Letterbox_brush.value().native_handle();
+				if (_Letterbox_brush_props == nullopt) {
+					cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
+					cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
+					cairo_matrix_t cPttnMatrix;
+					cairo_matrix_init_identity(&cPttnMatrix);
+					cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+					cairo_set_source(_Native_context.get(), pttn);
+					cairo_paint(_Native_context.get());
+				}
+				else {
+					const brush_props& props = _Letterbox_brush_props.value();
+					cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
+					cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
+					cairo_matrix_t cPttnMatrix;
+					const auto& m = props.matrix();
+					cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+					cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+					cairo_set_source(_Native_context.get(), pttn);
+					cairo_paint(_Native_context.get());
+				}
+			}
 		}
 		cairo_matrix_t ctm;
 		cairo_matrix_init_scale(&ctm, 1.0 / (static_cast<double>(_Display_width) / userRect.width()), 1.0 / (static_cast<double>(_Display_height) / userRect.height()));
@@ -218,50 +292,9 @@ void display_surface::_Render_to_native_surface() {
 		}
 	}
 
-// 	cairo_restore(_Native_context.get());
+	// 	cairo_restore(_Native_context.get());
 	// This call to cairo_surface_flush is needed for Win32 surfaces to update.
 	cairo_surface_flush(_Native_surface.get());
-}
-
-void display_surface::save() {
-	surface::save();
-	// We shouldn't be saving most of this to begin with (esp. the display width and height) and the rest can be saved by the user and saving it doesn't seem consistent with the purpose of save.
-	//_Display_saved_state.push(make_tuple(_Scaling, _Width, _Height, _Display_width, _Display_height, _User_scaling_fn, _Letterbox_brush));
-}
-
-void display_surface::save(error_code& ec) noexcept {
-	surface::save(ec);
-	if (static_cast<bool>(ec)) {
-		return;
-	}
-	ec.clear();
-	//try {
-	//	_Display_saved_state.push(make_tuple(_Scaling, _Width, _Height, _Display_width, _Display_height, _User_scaling_fn, _Letterbox_brush));
-	//}
-	//catch (const length_error&) {
-	//	ec = make_error_code(errc::not_enough_memory);
-	//	return;
-	//}
-	//catch (const bad_alloc&) {
-	//	ec = make_error_code(errc::not_enough_memory);
-	//	return;
-	//}
-	//ec.clear();
-}
-
-void display_surface::restore() {
-	surface::restore();
-	//auto& top = _Display_saved_state.top();
-	//_Scaling = get<0>(top);
-	//_All_dimensions(get<1>(top), get<2>(top), get<3>(top), get<4>(top));
-}
-
-void display_surface::restore(error_code& ec) noexcept {
-	surface::restore(ec);
-	if (static_cast<bool>(ec)) {
-		return;
-	}
-	ec.clear();
 }
 
 void display_surface::draw_callback(const ::std::function<void(display_surface& sfc)>& fn) {
@@ -272,23 +305,23 @@ void display_surface::size_change_callback(const ::std::function<void(display_su
 	_Size_change_fn = fn;
 }
 
-void display_surface::width(int w) {
+void display_surface::width(int w) noexcept {
 	dimensions(w, _Width);
 }
 
-void display_surface::height(int h) {
+void display_surface::height(int h) noexcept {
 	dimensions(_Width, h);
 }
 
-void display_surface::display_width(int w) {
+void display_surface::display_width(int w) noexcept {
 	display_dimensions(w, _Display_height);
 }
 
-void display_surface::display_height(int h) {
+void display_surface::display_height(int h) noexcept {
 	display_dimensions(_Display_width, h);
 }
 
-void display_surface::dimensions(int w, int h) {
+void display_surface::dimensions(int w, int h) noexcept {
 	bool recreate = false;
 
 	if (_Width != w) {
@@ -304,11 +337,11 @@ void display_surface::dimensions(int w, int h) {
 		// Recreate the render target that is drawn to the displayed surface
 		_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
 		_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-		_Ensure_state();
+		//_Ensure_state();
 	}
 }
 
-void display_surface::display_dimensions(int dw, int dh) {
+void display_surface::display_dimensions(int dw, int dh) noexcept {
 	_Display_width = dw;
 	_Display_height = dh;
 	_Resize_window();
@@ -325,16 +358,9 @@ void display_surface::user_scaling_callback(const function<experimental::io2d::r
 	_User_scaling_fn = fn;
 }
 
-void display_surface::letterbox_brush(nullvalue_t) noexcept {
-	_Letterbox_brush = _Default_brush;
-}
-
-void display_surface::letterbox_brush(const rgba_color& c) {
-	_Letterbox_brush = experimental::io2d::brush(c);
-}
-
-void display_surface::letterbox_brush(const experimental::io2d::brush& b) {
+void display_surface::letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp) noexcept {
 	_Letterbox_brush = b;
+	_Letterbox_brush_props = bp;
 }
 
 void display_surface::auto_clear(bool val) noexcept {
@@ -389,12 +415,12 @@ int display_surface::display_height() const noexcept {
 	return _Display_height;
 }
 
-tuple<int, int> display_surface::dimensions() const noexcept {
-	return make_tuple(_Width, _Height);
+vector_2d display_surface::dimensions() const noexcept {
+	return { static_cast<double>(_Width), static_cast<double>(_Height) };
 }
 
-tuple<int, int> display_surface::display_dimensions() const noexcept {
-	return make_tuple(_Display_width, _Display_height);
+vector_2d display_surface::display_dimensions() const noexcept {
+	return { static_cast<double>(_Display_width), static_cast<double>(_Display_height) };
 }
 
 experimental::io2d::scaling display_surface::scaling() const noexcept {
@@ -416,8 +442,12 @@ experimental::io2d::scaling display_surface::scaling() const noexcept {
 	}
 }
 
-experimental::io2d::brush display_surface::letterbox_brush() const noexcept {
+const optional<brush>& display_surface::letterbox_brush() const noexcept {
 	return _Letterbox_brush;
+}
+
+optional<brush_props> display_surface::letterbox_brush_props() const noexcept {
+	return _Letterbox_brush_props;
 }
 
 bool display_surface::auto_clear() const noexcept {

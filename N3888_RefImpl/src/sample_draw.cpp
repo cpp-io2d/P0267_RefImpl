@@ -25,10 +25,10 @@ void draw_radial_circles(display_surface& ds);
 //wostream& operator<<(wostream& os, const vector_2d& pt);
 //vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL);
 //void draw_hello_world(display_surface& ds);
-//void draw_test_compositing_operators(display_surface& ds, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp = compositing_operator::over, bool clipToRects = false, bool clipToTriangle = false, bool strokePaths = false, bool mask = false, const rgba_color& backgroundColor = rgba_color::transparent_black(), const rgba_color& firstColor = rgba_color::red() * 0.8, const rgba_color& secondColor = rgba_color::teal() * 0.4);
+//void draw_test_compositing_operators(display_surface& ds, compositing_op secondRectCompOp, compositing_op firstRectCompOp = compositing_op::over, bool clipToRects = false, bool clipToTriangle = false, bool strokePaths = false, bool mask = false, const rgba_color& backgroundColor = rgba_color::transparent_black(), const rgba_color& firstColor = rgba_color::red() * 0.8, const rgba_color& secondColor = rgba_color::teal() * 0.4);
 //void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeInMilliseconds);
 //void draw_sort_visualization(display_surface& ds, double elapsedTimeInMilliseconds);
-//void test_compositing_operators_different_pixel_formats(display_surface& ds, compositing_operator co);
+//void test_compositing_operators_different_pixel_formats(display_surface& ds, compositing_op co);
 //void test_paint_surface_extend_modes(display_surface& ds, double elapsedTimeInMilliseconds);
 //void test_fill_rules(display_surface& ds);
 //void test_paint(display_surface& ds);
@@ -42,7 +42,7 @@ void draw_radial_circles(display_surface& ds);
 void sample_draw::operator()(display_surface& ds) {
 	//ds.paint(rgba_color::cornflower_blue());
 
-	//path_factory<> pf;
+	//path_builder<> pf;
 	//pf.new_path();
 	////static auto previousTime = steady_clock::now();
 	////auto currentTime = steady_clock::now();
@@ -50,10 +50,61 @@ void sample_draw::operator()(display_surface& ds) {
 	////previousTime = currentTime;
 	//draw_sort_visualization_immediate(ds, ds.elapsed_draw_time());
 
+	path_builder<> pb;
+	pb.new_path();
+	pb.rectangle({ 30.0, 30.0, 800.0, 600.0 });
+	ds.paint(brush{ rgba_color::cornflower_blue() });
+	//png_image img{};
+	//img.version = PNG_IMAGE_VERSION;
+	//img.opaque = nullptr;
+	//png_image_begin_read_from_file(&img, "C:\\Users\\mikeb\\Pictures\\2017-03-15.png");
+	//img.format = PNG_FORMAT_BGRA;//PNG_FORMAT_LINEAR_RGB_ALPHA;
+	//auto dataSize = static_cast<size_t>(PNG_IMAGE_SIZE(img));
+	////auto data = make_unique<unsigned char>(dataSize);
+	//auto data = new unsigned char[dataSize];
+	//const auto dataStride = PNG_IMAGE_ROW_STRIDE(img);
+	//png_image_finish_read(&img, nullptr, data, dataStride, nullptr);
+	//int w{}, h{};
+	//w = static_cast<int>(img.width);
+	//h = static_cast<int>(img.height);
+	//png_image_free(&img);
+	//image_surface imgsfc{ format::argb32, w, h };
+	//imgsfc.map([&data, &dataSize](mapped_surface& ms) {
+	//	auto msSize = static_cast<size_t>(ms.height() * ms.stride());
+	//	auto msDataAddr = ms.data();
+	//	memcpy(msDataAddr, data, min(dataSize, msSize));
+	//	ms.commit_changes();
+	//});
+
+	image_surface imgsfc{ format::argb32, 400, 400 };
+	imgsfc.map([](mapped_surface& ms) {
+		for (auto i = 0; i < ms.height(); ++i) {
+			for (auto j = 0; j < ms.width(); ++j) {
+				unsigned char* data = ms.data() + (i * ms.stride()) + j * 4;
+				data[0] = 0x00;
+				data[1] = 0x00;
+				data[2] = 0xFF;
+				data[3] = 0x80;
+			}
+		}
+		ms.commit_changes();
+	});
+	//imgsfc.mark_dirty();
+	//cairo_surface_write_to_png(imgsfc.native_handle().csfce, "C:\\Users\\mikeb\\Pictures\\2017-03-15-cairo.png");
+	//image_surface testSfc{ format::argb32, 100, 100 };
+	//testSfc.paint(brush{ rgba_color::red() });
+	//ds.paint(brush{ move(testSfc) });
+	brush imgBrush{ move(imgsfc) };
+	ds.paint(imgBrush);
+	ds.flush();
+	//ds.fill(brush{ move(imgsfc) }, pb);
+
+	//delete[] data;
+
 	////test_clip_transformation(ds);
 	////test_paint(ds);
 	//test_stroke_rules(ds);
-	test_path_functionality(ds);
+	//test_path_functionality(ds);
 	//draw_radial_circles(ds);
 	////test_mask(ds);
 	////test_extend_none_on_boundary(ds);
@@ -61,9 +112,9 @@ void sample_draw::operator()(display_surface& ds) {
 	////test_draw_radial_circles(ds);
 
 	//
-	////draw_test_compositing_operators(ds, compositing_operator::in, compositing_operator::over, true, false, false, true);
+	////draw_test_compositing_operators(ds, compositing_op::in, compositing_op::over, true, false, false, true);
 	//
-	////test_compositing_operators_different_pixel_formats(ds, compositing_operator::out);
+	////test_compositing_operators_different_pixel_formats(ds, compositing_op::out);
 	//
 	////static auto previousTime = steady_clock::now();
 	////auto currentTime = steady_clock::now();
@@ -115,7 +166,7 @@ void sample_draw::operator()(display_surface& ds) {
 //	ds.immediate().clear();
 //	ds.paint(rgba_color::red());
 //	ds.immediate().rectangle({ 20.0, 20.0, static_cast<double>(ds.width()), static_cast<double>(ds.height()) });
-//	ds.fill_immediate(imgSfc, matrix_2d::init_translate({ -20.0, -20.0 }), tiling::none, filter::bilinear);
+//	ds.fill_immediate(imgSfc, matrix_2d::init_translate({ -20.0, -20.0 }), wrap_mode::none, filter::bilinear);
 //}
 //
 //void test_mask(display_surface& ds) {
@@ -137,14 +188,14 @@ void sample_draw::operator()(display_surface& ds) {
 //	//br.matrix(matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double>() * 0.25));
 //#endif
 //	//br.filter(filter::nearest);
-//	//br.tiling(tiling::none);
+//	//br.wrap_mode(wrap_mode::none);
 //
 //	//radial_brush_factory rbf{ {250.0, 250.0}, 0.0, {250.0, 250.0}, 250.0 };
 //	//rbf.add_color_stop(0.0, rgba_color::red());
 //	//rbf.add_color_stop(0.5, rgba_color::lime() * 0.5);
 //	//rbf.add_color_stop(1.0, rgba_color::blue());
 //	//brush br{ rbf };
-//	//br.tiling(tiling::repeat);
+//	//br.wrap_mode(wrap_mode::repeat);
 //	//br.filter(filter::nearest);
 //
 //	ds.save();
@@ -192,10 +243,10 @@ void sample_draw::operator()(display_surface& ds) {
 //	//auto pt4 = vector_2d{ -16.6666666666666, -20.0 };
 //	//auto pt5 = vector_2d{ 45.0, 30.0 };
 //	ds.matrix(m);
-//	ds.paint(imgSfc, matrix_2d::init_translate({ -10.0, -10.0 })/*init_identity()*//*init_scale({ 1.0, 1.5 }).translate({ -20.0, -20.0 })*/, tiling::repeat, filter::nearest);
+//	ds.paint(imgSfc, matrix_2d::init_translate({ -10.0, -10.0 })/*init_identity()*//*init_scale({ 1.0, 1.5 }).translate({ -20.0, -20.0 })*/, wrap_mode::repeat, filter::nearest);
 //	//ds.paint(rgba_color::red());
 //	//auto br = brush(solid_color_brush_factory(rgba_color::red()));
-//	//br.tiling(tiling::none);
+//	//br.wrap_mode(wrap_mode::none);
 //	//ds.brush(br);
 //	ds.paint();
 //
@@ -205,7 +256,7 @@ void sample_draw::operator()(display_surface& ds) {
 //	//lbf.add_color_stop(0.5, rgba_color::lime());
 //	//lbf.add_color_stop(1.0, rgba_color::blue());
 //	//auto linBrush = brush(lbf);
-//	//linBrush.tiling(tiling::repeat);
+//	//linBrush.wrap_mode(wrap_mode::repeat);
 //#if _Variable_templates_conditional_support_test
 //	//linBrush.matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
 //#else
@@ -225,24 +276,25 @@ void sample_draw::operator()(display_surface& ds) {
 //}
 //
 void test_stroke_rules(display_surface& ds) {
-	ds.save();
+	//ds.save();
 	ds.clear();
-	color_stop_group<> csg;
+	//color_stop_group<> csg;
 	//auto orng = rgba_color::orange();
+	vector<color_stop> csg;
 	csg.emplace_back(0.0, rgba_color::orange());
 	csg.emplace_back(0.25, rgba_color::red());
 	csg.emplace_back(0.5, rgba_color::lime_green());
 	csg.emplace_back(0.75, rgba_color::blue());
 	csg.emplace_back(1.0, rgba_color::gray());
-	brush linearGrad({ 0.0, 0.0 }, { 0.0, 100.0 }, csg);
-	ds.brush(linearGrad);
-	linearGrad.tiling(tiling::reflect);
+	brush linearGrad({ 0.0, 0.0 }, { 0.0, 100.0 }, begin(csg), end(csg));
+	//ds.brush(linearGrad);
+	//linearGrad.wrap_mode(wrap_mode::reflect);
 	ds.paint(linearGrad);
 
-	ds.immediate().clear();
+	//ds.immediate().clear();
 
 	//ds.line_width(40.0);
-	//ds.line_cap(line_cap::butt);
+	//ds.line_cap(line_cap::none);
 	//ds.line_join(line_join::miter_or_bevel);
 #if _Variable_templates_conditional_support_test
 	//ds.immediate().arc({ ds.width() / 2.0, ds.height() / 2.0 }, 200.0, 0.0, two_pi<double>);
@@ -254,28 +306,29 @@ void test_stroke_rules(display_surface& ds) {
 #else
 	//ds.matrix(matrix_2d::init_translate({ ds.width() / 2.0, ds.height() / 2.0 }).rotate(half_pi<double>() / 2.0).scale({ 0.5, 1.0 }).translate({ -ds.width() / 2.0, -ds.height() / 2.0 }));
 #endif
-	ds.dashes(nullvalue);
-	ds.line_width(12.0);
-	ds.immediate().move_to({ 0.0, 199.0 });
-	ds.immediate().line_to({ 1280.9, 199.0 });
-	ds.stroke_immediate(rgba_color::cornflower_blue());
-	ds.immediate().clear();
+	//ds.dashes(nullvalue);
 
-	ds.line_width(40.0);
-	dashes dsh(vector<double>{ 40.0, 50.0, 40.0, 50.0, 40.0, 50.0, 40.0, 50.0, 40.0, 50.0 }, 150.0);
-	ds.dashes(dsh);
-	ds.line_cap(line_cap::round);
-	ds.line_join(line_join::miter_or_bevel);
-	ds.immediate().move_to({ 700.0, 200.0 });
-	ds.immediate().close_path();
+	//ds.line_width(12.0);
+	//ds.immediate().move_to({ 0.0, 199.0 });
+	//ds.immediate().line_to({ 1280.9, 199.0 });
+	//ds.stroke_immediate(rgba_color::cornflower_blue());
+	//ds.immediate().clear();
 
-	ds.line_width(40.0);
-	ds.line_cap(line_cap::round);
-	ds.line_join(line_join::miter_or_bevel);
-	ds.immediate().move_to({ 200.0, 200.0 });
-	ds.immediate().rel_line_to({ 0.0, 100.0 });
-	ds.immediate().move_to({ 200.0, 335.0 });
-	ds.immediate().rel_line_to({ 0.0, 200.0 });
+	//ds.line_width(40.0);
+	//dashes dsh(vector<double>{ 40.0, 50.0, 40.0, 50.0, 40.0, 50.0, 40.0, 50.0, 40.0, 50.0 }, 150.0);
+	//ds.dashes(dsh);
+	//ds.line_cap(line_cap::round);
+	//ds.line_join(line_join::miter_or_bevel);
+	//ds.immediate().move_to({ 700.0, 200.0 });
+	//ds.immediate().close_path();
+
+	//ds.line_width(40.0);
+	//ds.line_cap(line_cap::round);
+	//ds.line_join(line_join::miter_or_bevel);
+	//ds.immediate().move_to({ 200.0, 200.0 });
+	//ds.immediate().rel_line_to({ 0.0, 100.0 });
+	//ds.immediate().move_to({ 200.0, 335.0 });
+	//ds.immediate().rel_line_to({ 0.0, 200.0 });
 
 #if _Variable_templates_conditional_support_test
 	//ds.matrix(matrix_2d::init_scale({ 0.5, 1.0 }).rotate(half_pi<double> / 2.0));
@@ -292,9 +345,9 @@ void test_stroke_rules(display_surface& ds) {
 	//ds.immediate().close_path();
 	//ds.immediate().rel_line({ 5.0, 10.0 });
 	//ds.immediate().rel_line({ -20.0, 0.0 });
-	ds.stroke_immediate(rgba_color::black());
+	//ds.stroke_immediate(rgba_color::black());
 
-	ds.restore();
+	//ds.restore();
 }
 
 //void test_fill_rules(display_surface& ds) {
@@ -378,7 +431,7 @@ void test_stroke_rules(display_surface& ds) {
 //		imgSfcInitialized = true;
 //	}
 //	static double totalElapsedTime = 0.0;
-//	ds.compositing_operator(compositing_operator::source);
+//	ds.compositing_op(compositing_op::source);
 //	ds.immediate().rectangle({ 400.0, 0.0, 100.0, 100.0 });
 //	ds.fill_immediate(rgba_color::orange());
 //	ds.immediate().clear();
@@ -390,13 +443,13 @@ void test_stroke_rules(display_surface& ds) {
 //			ds.paint(imgSfc);
 //		}
 //		else {
-//			ds.paint(imgSfc, matrix_2d::init_identity(), tiling::repeat);
+//			ds.paint(imgSfc, matrix_2d::init_identity(), wrap_mode::repeat);
 //		}
 //	}
 //	totalElapsedTime += elapsedTimeInMilliseconds;
 //}
 //
-//void test_compositing_operators_different_pixel_formats(display_surface& ds, compositing_operator co) {
+//void test_compositing_operators_different_pixel_formats(display_surface& ds, compositing_op co) {
 //	image_surface srcSfc{ format::a8, 120, 90 };
 //	image_surface dstSfc{ format::argb32, 120, 90 };
 //	srcSfc.clear();
@@ -407,10 +460,10 @@ void test_stroke_rules(display_surface& ds) {
 //	
 //	//auto data = srcSfc.data();
 //	//ds.paint(rgba_color::white());
-//	ds.compositing_operator(compositing_operator::over);
+//	ds.compositing_op(compositing_op::over);
 //	ds.immediate().rectangle({ 10.0, 10.0, 120.0, 90.0 });
 //	ds.fill_immediate(srcSfc, matrix_2d::init_translate({ -10.0, -10.0 }));
-//	ds.compositing_operator(co);
+//	ds.compositing_op(co);
 //	ds.immediate().clear();
 //	ds.immediate().rectangle({ 50.0, 40.0, 120.0, 90.0 });
 //	ds.fill_immediate(dstSfc, matrix_2d::init_translate({ -50.0, -40.0 }));
@@ -433,10 +486,10 @@ void test_stroke_rules(display_surface& ds) {
 //	vector_2d center1 = { 300.0, 300.0 };
 //	double radius1 = 100.0;
 //	radialFactory.radial_circles(center0, radius0, center1, radius1);
-//	auto extendMode = tiling::reflect;
+//	auto extendMode = wrap_mode::reflect;
 //	auto radialBrush = brush(radialFactory);
-//	radialBrush.tiling(extendMode);
-//	path_factory<> pf;
+//	radialBrush.wrap_mode(extendMode);
+//	path_builder<> pf;
 //	rectangle drawArea = { { 100.0, 100.0 }, { 500.0, 500.0 } };
 //	pf.rectangle(drawArea);
 //	path_group p(pf);
@@ -458,10 +511,10 @@ void test_stroke_rules(display_surface& ds) {
 
 void test_path_functionality(display_surface& ds) {
 	// Clear to background color.
-	ds.paint(rgba_color::cornflower_blue());
-	ds.brush(brush{ rgba_color::red() });
+	ds.paint(brush{ rgba_color::cornflower_blue() });
+	//ds.brush(brush{ rgba_color::red() });
 	//ds.fill_rule(fill_rule::even_odd);
-	path_factory<> pf{};
+	path_builder<> pf{};
 	//void move_to(const vector_2d& pt) noexcept;
 	vector_2d v, cpt1, cpt2, ept;
 	v = { 10.0, 10.0 };
@@ -477,7 +530,12 @@ void test_path_functionality(display_surface& ds) {
 	pf.rel_line_to(v);
 	//void close_path() noexcept;
 	pf.close_path();
+	auto nh = ds.native_handle();
 
+	pf.move_to({ 50.0, 50.0 });
+	pf.line_to({ 1240.0, 50.0 });
+	pf.move_to({ 50.0, 80.0 });
+	pf.line_to({ 900.0, 80.0 });
 	//void new_path() noexcept;
 	pf.new_path();
 	v = { 200.0, 20.0 };
@@ -506,8 +564,8 @@ void test_path_functionality(display_surface& ds) {
 	pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
 	pf.rectangle(rectangle{ 500.0, 300.0, 200.0, 100.0 });
 
-	ds.path_group(path_group(pf));
-	ds.stroke();
+	auto pg = path_group(pf);
+	ds.stroke(brush{ rgba_color::red() }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ path_group{path_builder<>{path_data::abs_rectangle(40.0, 40.0, 1240.0, 680.0)}} });
 
 	pf.clear();
 
@@ -527,10 +585,13 @@ void test_path_functionality(display_surface& ds) {
 	pf.line_to({ 200.0, 800.0 });
 
 	auto vecprocessed = test_process::process_path_data(pf);
-	ds.path_group(path_group{ pf });
-	ds.brush(rgba_color::lime());
-	ds.stroke();
-
+	//pg = path_group{ pf };
+	//ds.brush(rgba_color::lime());
+	ds.stroke(brush{ rgba_color::lime() }, pf);
+	constexpr stroke_props sp;
+	constexpr auto sp2 = sp;
+	constexpr render_props rp;
+	constexpr auto rp2 = rp;
 	//constexpr auto iec559 = numeric_limits<double>::is_iec559;
 	//constexpr auto infinity = numeric_limits<double>::infinity() == numeric_limits<double>::infinity();
 	//constexpr auto negativeinfinity = -numeric_limits<double>::infinity();
@@ -562,31 +623,20 @@ void test_path_functionality(display_surface& ds) {
 	//	noexcept;
 	//void transform_matrix(const matrix_2d& m) noexcept;
 	//void origin(const vector_2d& pt) noexcept;
-
-
 }
 
 void draw_radial_circles(display_surface& ds) {
 	// Clear to background color.
-	ds.paint(rgba_color::cornflower_blue());
-	ds.fill_rule(fill_rule::winding);
-	ds.matrix(matrix_2d::init_identity());
+	ds.paint(brush{ rgba_color::magenta() });
+	ds.paint(brush{ rgba_color::cornflower_blue() }, nullopt, nullopt, clip_props{ path_group{path_builder<>({ path_data::abs_rectangle(40.0, 40.0, 1200.0, 640.0)})} });
+	vector<color_stop> csv;
+	csv.emplace_back(0.0, rgba_color::white());
+	color_stop firststop = *csv.cbegin();
 	brush radialBrush{ {{ 200.5, 300.0 }, 0.0}, {{ 300.0, 300.0 }, 100.0 }, {
 		{ 0.0, rgba_color::white() }, { 0.25, rgba_color::red() },
 		{ 0.5, rgba_color::green() }, { 0.75, rgba_color::blue() }, { 1.0, rgba_color::black() } } };
-	//auto radialFactory = radial_brush_factory();
-	//radialFactory.add_color_stop(0.0, rgba_color::white());
-	//radialFactory.add_color_stop(0.25, rgba_color::red());
-	//radialFactory.add_color_stop(0.5, rgba_color::green());
-	//radialFactory.add_color_stop(0.75, rgba_color::blue());
-	//radialFactory.add_color_stop(1.0, rgba_color::black());
-	//radialFactory.add_color_stop(1.0, rgba_color::black());
-	//radialFactory.radial_circles({ 400.0, 200.0 }, 100.0, { 600.0, 200.0 }, 50.0);
 
-	//radialFactory.radial_circles({ 200.5, 300.0 }, 0.0, { 300.0, 300.0 }, 100.0);
-	//auto radialBrush = brush(radialFactory);
-	radialBrush.tiling(tiling::repeat);
-	path_factory<> pf;
+	path_builder<> pf;
 	//pf.rectangle({ { 100.0, 100.0 }, { 500.0, 500.0 } });
 	pf.move_to({ 100.0, 100.0 });
 	pf.line_to({ 500.0, 100.0 });
@@ -607,8 +657,8 @@ void draw_radial_circles(display_surface& ds) {
 	pf.move_to({ 520.0, 10.0 });
 	pf.cubic_curve_to({ 480.0, 60.0 }, { 560.0, 60.0 }, { 520.0, 10.0 });
 	path_group p(pf);
-	ds.path_group(p);
-	ds.brush(radialBrush);
+	//ds.path_group(p);
+	//ds.brush(radialBrush);
 
 	//// For debug inspection testing only; uncomment if needed.
 	//auto fe = ds.fill_extents();
@@ -617,9 +667,12 @@ void draw_radial_circles(display_surface& ds) {
 	//auto inFill = ds.in_fill(pt);
 	//// End for debug inspection testing only.
 
-	ds.fill();
-	ds.brush(brush(rgba_color::red()));
-	ds.stroke();
+	//optional<brush_props> bp{};
+	//bp.emplace(wrap_mode::repeat);
+	//ds.fill(radialBrush, p, bp);
+	ds.fill(radialBrush, p, { wrap_mode::repeat });
+	//ds.brush(brush(rgba_color::red()));
+	ds.stroke(brush{ rgba_color::red() }, p);
 	pf.clear();
 	pf.new_path();
 #if _Variable_templates_conditional_support_test
@@ -652,18 +705,18 @@ void draw_radial_circles(display_surface& ds) {
 	pf.arc_clockwise({ 900.0, 200.0 }, 150.0, 0.0, two_pi<double>());
 #endif
 	p = path_group(pf);
-	ds.path_group(p);
-	ds.fill();
-	ds.matrix(matrix_2d::init_translate({ 0.0, 310.0 }));
-	ds.path_group(p);
-	ds.fill_rule(fill_rule::even_odd);
-	ds.fill();
+	//ds.path_group(p);
+	ds.stroke(radialBrush, p);
+	//ds.matrix(matrix_2d::init_translate({ 0.0, 310.0 }));
+	//ds.path_group(p);
+	//ds.fill_rule(fill_rule::even_odd);
+	ds.stroke(radialBrush, p, brush_props{ wrap_mode::repeat, filter::good, fill_rule::even_odd }, stroke_props{10.0}, nullopt, render_props{ matrix_2d::init_translate({0.0, 310.0}) });
 
 	//render_ellipse(ds, { 200.0, 600.0 }, 250.0, 100.0, rgba_color(0.0, 1.0, 1.0, 1.0));
 
 	//radialFactory.radial_circles({ 200.5, 300.0 }, 0.0, { 300.0, 300.0 }, 100.0);
 	//auto radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::repeat);
+	//radialBrush.wrap_mode(wrap_mode::repeat);
 	////radialBrush.matrix(matrix_2d::init_scale({ 2.0, 2.0 }));
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 100.0, 100.0 }, { 500.0, 500.0 } });
@@ -671,7 +724,7 @@ void draw_radial_circles(display_surface& ds) {
 	//
 	//radialFactory.radial_circles({ 115.2, 102.4 }, 25.6, { 102.4, 102.4 }, 128.0);
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::pad);
+	//radialBrush.wrap_mode(wrap_mode::pad);
 	//ds.immediate().clear();
 	//ds.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * pi);
 	////ds.immediate().rectangle({ 0.0, 0.0, 250.0, 250.0 });
@@ -700,35 +753,35 @@ void draw_radial_circles(display_surface& ds) {
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 280.0, 80.0 }, { 720.0, 320.0 } });
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::pad);
+	//radialBrush.wrap_mode(wrap_mode::pad);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 400.0, 450.0 }, 100.0, { 600.0, 450.0 }, 100.0);
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 280.0, 330.0 }, { 720.0, 570.0 } });
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::none);
+	//radialBrush.wrap_mode(wrap_mode::none);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 1000.0, 200.0 }, 100.0, { 1000.0, 200.0 }, 20.0);
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 880.0, 80.0 }, { 1120.0, 320.0 } });
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::reflect);
+	//radialBrush.wrap_mode(wrap_mode::reflect);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 1000.0, 450.0 }, 20.0, { 1000.0, 450.0 }, 100.0);
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 880.0, 330.0 }, { 1120.0, 570.0 } });
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::repeat);
+	//radialBrush.wrap_mode(wrap_mode::repeat);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 105.0, 100.0 }, 0.0, { 200.0, 100.0 }, 100.0);
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 0.0, 0.0 }, { 520.0, 200.0 } });
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::repeat);
+	//radialBrush.wrap_mode(wrap_mode::repeat);
 	//ds.fill_immediate(radialBrush);
 	//
 	//
@@ -736,35 +789,35 @@ void draw_radial_circles(display_surface& ds) {
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 80.0, 80.0 }, { 520.0, 320.0 } });
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::none);
+	//radialBrush.wrap_mode(wrap_mode::none);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 200.0, 450.0 }, 100.0, { 400.0, 450.0 }, 100.0);
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 80.0, 330.0 }, { 520.0, 570.0 } });
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::pad);
+	//radialBrush.wrap_mode(wrap_mode::pad);
 	//ds.fill_immediate(radialBrush);
 	//
 	////radialFactory.radial_circles({ 200.0, 450.0 }, 100.0, { 400.0, 450.0 }, 100.0);
 	////ds.immediate().clear();
 	////ds.immediate().rectangle({ { 80.0, 330.0 }, { 520.0, 570.0 } });
 	////radialBrush = brush(radialFactory);
-	////radialBrush.tiling(tiling::pad);
+	////radialBrush.wrap_mode(wrap_mode::pad);
 	////ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 700.0, 200.0 }, 100.0, { 900.0, 200.0 }, 100.0);
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 580.0, 80.0 }, { 1020.0, 320.0 } });
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::reflect);
+	//radialBrush.wrap_mode(wrap_mode::reflect);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 700.0, 450.0 }, 100.0, { 900.0, 450.0 }, 100.0);
 	//ds.immediate().clear();
 	//ds.immediate().rectangle({ { 580.0, 330.0 }, { 1020.0, 570.0 } });
 	//radialBrush = brush(radialFactory);
-	//radialBrush.tiling(tiling::repeat);
+	//radialBrush.wrap_mode(wrap_mode::repeat);
 	//ds.fill_immediate(radialBrush);
 }
 
@@ -819,7 +872,7 @@ void draw_radial_circles(display_surface& ds) {
 //}
 //
 //// For testing purposes only.
-//void draw_test_compositing_operators(display_surface& ds, compositing_operator secondRectCompOp, compositing_operator firstRectCompOp, bool clipToRects, bool clipToTriangle, bool strokePaths, bool mask, const rgba_color& backgroundColor, const rgba_color& firstColor, const rgba_color& secondColor) {
+//void draw_test_compositing_operators(display_surface& ds, compositing_op secondRectCompOp, compositing_op firstRectCompOp, bool clipToRects, bool clipToTriangle, bool strokePaths, bool mask, const rgba_color& backgroundColor, const rgba_color& firstColor, const rgba_color& secondColor) {
 //	// Parameter validation.
 //	if (clipToRects && clipToTriangle) {
 //		throw invalid_argument("clipToRects and clipToTriangle cannot both be set to true.");
@@ -830,7 +883,7 @@ void draw_radial_circles(display_surface& ds) {
 //	auto firstBrush = brush(firstColor);
 //	auto secondBrush = brush(secondColor);
 //
-//	auto pb = path_factory<>();
+//	auto pb = path_builder<>();
 //
 //	pb.rectangle({ 10.0, 10.0, 120.0, 90.0 });
 //	auto firstRectPath = path_group(pb);
@@ -851,11 +904,11 @@ void draw_radial_circles(display_surface& ds) {
 //	auto triangleClipPath = path_group(pb);
 //
 //	ds.brush(backgroundBrush);
-//	ds.compositing_operator(compositing_operator::clear);
+//	ds.compositing_op(compositing_op::clear);
 //	ds.paint();
 //
 //	ds.brush(firstBrush);
-//	ds.compositing_operator(firstRectCompOp);
+//	ds.compositing_op(firstRectCompOp);
 //	ds.path_group(firstRectPath);
 //	ds.fill();
 //
@@ -869,7 +922,7 @@ void draw_radial_circles(display_surface& ds) {
 //	}
 //
 //	ds.path_group(secondRectPath);
-//	ds.compositing_operator(secondRectCompOp);
+//	ds.compositing_op(secondRectCompOp);
 //	ds.brush(secondBrush);
 //	if (mask) {
 //		static image_surface maskSurface(format::a8, 200, 200);
@@ -903,7 +956,7 @@ void draw_radial_circles(display_surface& ds) {
 //	ds.restore(); // Restore old clip
 //
 //	if (strokePaths) {
-//		ds.compositing_operator(compositing_operator::source);
+//		ds.compositing_op(compositing_op::source);
 //		ds.line_width(2.0);
 //
 //		ds.path_group(firstRectPath);
@@ -1039,7 +1092,7 @@ void draw_radial_circles(display_surface& ds) {
 //	//radialFactory.add_color_stop(0.75, rgba_color::blue());
 //	//radialFactory.add_color_stop(1.0, rgba_color::white());
 //	//auto radialBrush = ds.create_brush(radialFactory);
-//	//radialBrush.tiling(tiling::reflect);
+//	//radialBrush.wrap_mode(wrap_mode::reflect);
 //	//ds.fill_immediate(radialBrush);
 //
 //	//auto meshFactory = mesh_brush_factory();
@@ -1076,7 +1129,7 @@ void draw_radial_circles(display_surface& ds) {
 //
 //	auto sfcFactory = surface_brush_factory(imgSfc);
 //	auto sfcBrush = brush(sfcFactory);
-//	sfcBrush.tiling(tiling::repeat);
+//	sfcBrush.wrap_mode(wrap_mode::repeat);
 //	ds.immediate().clear();
 //	ds.immediate().rectangle({ 500.0, 450.0, 100.0, 100.0 });
 //	ds.immediate().rectangle({ 525.0, 425.0, 50.0, 150.0 });
@@ -1090,7 +1143,7 @@ void draw_radial_circles(display_surface& ds) {
 //	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
 //	linearFactory.add_color_stop(1.0, rgba_color::salmon());
 //	auto linearBrush = brush(linearFactory);
-//	linearBrush.tiling(tiling::repeat);
+//	linearBrush.wrap_mode(wrap_mode::repeat);
 //	ds.immediate().clear();
 //	ds.immediate().abs_move({ 650.0, 400.0 });
 //	ds.immediate().rel_line({ 0.0, 100.0 });
@@ -1121,7 +1174,7 @@ void draw_radial_circles(display_surface& ds) {
 //	ds.stroke_immediate(rgba_color::orange());
 //	// Reset dashes to be a solid line.
 //	ds.dashes(nullopt);
-//	ds.line_cap(line_cap::butt);
+//	ds.line_cap(line_cap::none);
 //
 //	ds.immediate().clear();
 //	ds.immediate().curve({ 610.0, 400.0 }, { 660.0, 300.0 }, { 710.0, 400.0 });
@@ -1162,7 +1215,7 @@ void draw_radial_circles(display_surface& ds) {
 //	////radialFactory.add_color_stop(0.75, rgba_color::blue());
 //	//radialFactory.add_color_stop(1.0, rgba_color::black());
 //	//auto radialBrush = brush(radialFactory);
-//	//radialBrush.tiling(tiling::pad);
+//	//radialBrush.wrap_mode(wrap_mode::pad);
 //	//ds.immediate().clear();
 //	////ds.immediate().arc({ 128.0, 128.0 }, 76.8, 0.0, 2 * pi);
 //	//ds.immediate().rectangle({ 0.0, 0.0, 250.0, 250.0 });
@@ -1198,7 +1251,7 @@ void draw_radial_circles(display_surface& ds) {
 //	//ds.font_resource("Segoe UI", 40.0);
 //	//ds.render_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 });
 //
-//	path_factory<> pf;
+//	path_builder<> pf;
 //
 //	for (size_t i = 0; i < elementCount; ++i) {
 //		pf.clear();
@@ -1258,7 +1311,7 @@ void draw_radial_circles(display_surface& ds) {
 //	radialFactory.add_color_stop(0.75, rgba_color::blue());
 //	radialFactory.add_color_stop(1.0, rgba_color::white());
 //	auto radialBrush = brush(radialFactory);
-//	radialBrush.tiling(tiling::reflect);
+//	radialBrush.wrap_mode(wrap_mode::reflect);
 //	ds.brush(radialBrush);
 //	ds.fill();
 //
@@ -1266,7 +1319,7 @@ void draw_radial_circles(display_surface& ds) {
 //	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
 //	linearFactory.add_color_stop(1.0, rgba_color::salmon());
 //	auto linearBrush = brush(linearFactory);
-//	linearBrush.tiling(tiling::repeat);
+//	linearBrush.wrap_mode(wrap_mode::repeat);
 //	pf.clear();
 //	pf.rectangle({ 500.0, 450.0, 100.0, 100.0 });
 //	pf.rectangle({ 525.0, 425.0, 50.0, 150.0 });

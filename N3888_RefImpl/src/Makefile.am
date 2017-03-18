@@ -13,6 +13,7 @@
 bin_PROGRAMS = 			N3888_RefImpl
 
 N3888_RefImpl_SOURCES =		brush.cpp \
+				color_stop.cpp \
 				device.cpp \
 				display_surface-common.cpp \
 				entrypoint.cpp \
@@ -26,11 +27,8 @@ N3888_RefImpl_SOURCES =		brush.cpp \
 				linear_brush_factory.cpp \
 				mapped_surface.cpp \
 				matrix_2d.cpp \
-				mesh_brush_factory.cpp \
 				path.cpp \
 				path_data.cpp \
-				path_data_item.cpp \
-				path_factory.cpp \
 				radial_brush_factory.cpp \
 				rectangle.cpp \
 				rgba_color.cpp \
@@ -40,7 +38,6 @@ N3888_RefImpl_SOURCES =		brush.cpp \
 				surface.cpp \
 				surface_brush_factory.cpp \
 				test_renderer_fill.cpp \
-				text_extents.cpp \
 				vector_2d.cpp
 
 if USE_XCB

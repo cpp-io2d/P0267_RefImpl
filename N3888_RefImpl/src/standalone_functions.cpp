@@ -16,13 +16,13 @@ namespace std {
 					return ec;
 				}
 
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, double desiredFramerate) {
-					return display_surface(preferredWidth, preferredHeight, preferredFormat, scl, rr, desiredFramerate);
-				}
+				//display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, double desiredFramerate) {
+				//	return display_surface(preferredWidth, preferredHeight, preferredFormat, scl, rr, desiredFramerate);
+				//}
 
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, double desiredFramerate) {
-					return display_surface(preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight,scl, rr, desiredFramerate);
-				}
+				//display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, double desiredFramerate) {
+				//	return display_surface(preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight,scl, rr, desiredFramerate);
+				//}
 
 				image_surface make_image_surface(format fmt, int width, int height) {
 					return image_surface(fmt, width, height);
@@ -245,7 +245,7 @@ namespace std {
 //					}
 //
 //					auto currentTheta = angle1;
-//					path_factory<> pb;
+//					path_builder<> pb;
 //					pb.change_origin(origin);
 //					pb.change_matrix(matrix);
 //
@@ -362,7 +362,7 @@ namespace std {
 //					}
 //
 //					auto currentTheta = angle1;
-//					path_factory<> pb;
+//					path_builder<> pb;
 //					pb.change_origin(origin, ec);
 //					if (static_cast<bool>(ec)) {
 //						// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).

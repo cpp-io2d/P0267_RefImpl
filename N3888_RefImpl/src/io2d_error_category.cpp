@@ -26,7 +26,7 @@ const char* io2d_error_category::name() const noexcept {
 	case io2d_error::invalid_string:
 		return "A UTF-8 string value was expected but the string is not a valid UTF-8 string.";
 	case io2d_error::invalid_path_data:
-		return "Invalid data was encountered in a path_group or a path_factory object.";
+		return "Invalid data was encountered in a path_group or a path_builder object.";
 	case io2d_error::read_error:
 		return "An error occurred while attempting to read data from an input stream.";
 	case io2d_error::write_error:

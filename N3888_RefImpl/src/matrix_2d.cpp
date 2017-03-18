@@ -198,30 +198,30 @@ void matrix_2d::swap(matrix_2d& other) {
 //	return _M00 * _M11 - _M01 * _M10;
 //}
 
-void matrix_2d::m00(double value) noexcept {
-	_M00 = value;
-}
-
-void matrix_2d::m01(double value) noexcept {
-	_M01 = value;
-}
-
-void matrix_2d::m10(double value) noexcept {
-	_M10 = value;
-}
-
-void matrix_2d::m11(double value) noexcept {
-	_M11 = value;
-}
-
-void matrix_2d::m20(double value) noexcept {
-	_M20 = value;
-}
-
-void matrix_2d::m21(double value) noexcept {
-	_M21 = value;
-}
-
+//void matrix_2d::m00(double value) noexcept {
+//	_M00 = value;
+//}
+//
+//void matrix_2d::m01(double value) noexcept {
+//	_M01 = value;
+//}
+//
+//void matrix_2d::m10(double value) noexcept {
+//	_M10 = value;
+//}
+//
+//void matrix_2d::m11(double value) noexcept {
+//	_M11 = value;
+//}
+//
+//void matrix_2d::m20(double value) noexcept {
+//	_M20 = value;
+//}
+//
+//void matrix_2d::m21(double value) noexcept {
+//	_M21 = value;
+//}
+//
 //bool matrix_2d::is_finite() const noexcept {
 //	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
 //		return false;

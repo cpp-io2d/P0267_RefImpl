@@ -3,7 +3,7 @@
 #ifndef _IO2D_
 #define _IO2D_
 
-#define __cpp_lib_experimental_io2d 201602
+#define __cpp_lib_experimental_io2d 201707
 
 #include "xio2d.h"
 
@@ -21,6 +21,7 @@
 #include <cmath>
 #include <type_traits>
 #include <initializer_list>
+#include <filesystem>
 
 #ifdef _WIN32_WINNT
 #define NOMINMAX
@@ -44,6 +45,8 @@ namespace std {
 #if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
 #endif
+				constexpr cairo_matrix_t _Cairo_identity_matrix{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
+
 				enum class io2d_error {
 					success,
 					invalid_restore,
@@ -100,19 +103,13 @@ namespace std {
 					best
 				};
 
-				enum class content {
-					color,
-					alpha,
-					color_alpha
-				};
-
 				enum class fill_rule {
 					winding,
 					even_odd
 				};
 
 				enum class line_cap {
-					butt,
+					none,
 					round,
 					square
 				};
@@ -124,7 +121,7 @@ namespace std {
 					miter_or_bevel
 				};
 
-				enum class compositing_operator {
+				enum class compositing_op {
 					over,
 					clear,
 					source,
@@ -166,7 +163,7 @@ namespace std {
 					rgb30
 				};
 
-				enum class tiling {
+				enum class wrap_mode {
 					none,
 					repeat,
 					reflect,
@@ -188,25 +185,6 @@ namespace std {
 					radial
 				};
 
-				enum class font_slant {
-					normal,
-					italic,
-					oblique
-				};
-
-				enum class font_weight {
-					normal,
-					bold
-				};
-
-				enum class subpixel_order {
-					default_subpixel_order,
-					horizontal_rgb,
-					horizontal_bgr,
-					vertical_rgb,
-					vertical_bgr
-				};
-
 				enum class scaling {
 					letterbox, // Same as uniform except that the display_surface is cleared using the letterbox brush first
 					uniform, // Maintain aspect ratio and center as needed, ignoring side areas that are not drawn to
@@ -221,14 +199,6 @@ namespace std {
 					fixed
 				};
 
-				struct nullvalue_t {
-					constexpr explicit nullvalue_t(int) noexcept {
-					}
-				};
-
-				constexpr nullvalue_t nullvalue{ 0 };
-
-#if _Variable_templates_conditional_support_test
 				template <class T>
 				constexpr T pi = T(3.14159265358979323846264338327950288L);
 
@@ -240,39 +210,6 @@ namespace std {
 
 				template <class T>
 				constexpr T three_pi_over_two = T(4.71238898038468985769396507491925432L);
-#else
-				template <class T>
-#if _Constexpr_conditional_support_test
-				constexpr
-#endif
-					T pi() noexcept {
-					return static_cast<T>(3.14159265358979323846264338327950288L);
-				}
-
-				template <class T>
-#if _Constexpr_conditional_support_test
-				constexpr
-#endif
-					T two_pi() noexcept {
-					return static_cast<T>(6.28318530717958647692528676655900576L);
-				}
-
-				template <class T>
-#if _Constexpr_conditional_support_test
-				constexpr
-#endif
-					T half_pi() noexcept {
-					return static_cast<T>(1.57079632679489661923132169163975144L);
-				}
-
-				template <class T>
-#if _Constexpr_conditional_support_test
-				constexpr
-#endif
-					T three_pi_over_two() noexcept {
-					return static_cast<T>(4.71238898038468985769396507491925432L);
-				}
-#endif
 
 				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
 #ifdef _WIN32
@@ -486,13 +423,17 @@ namespace std {
 						: _Center(ctr)
 						, _Radius(rad) {
 					}
-					constexpr circle(const circle&) noexcept = default;
-					constexpr circle& operator=(const circle&) noexcept = default;
-					circle(circle&&) noexcept = default;
-					circle& operator=(circle&&) noexcept = default;
+					//constexpr circle(const circle&) noexcept = default;
+					//constexpr circle& operator=(const circle&) noexcept = default;
+					//circle(circle&&) noexcept = default;
+					//circle& operator=(circle&&) noexcept = default;
 
-					void center(const vector_2d& ctr) noexcept;
-					void radius(double rad) noexcept;
+					constexpr void center(const vector_2d& ctr) noexcept {
+						_Center = ctr;
+					}
+					constexpr void radius(double rad) noexcept {
+						_Radius = rad;
+					}
 
 					constexpr vector_2d center() const noexcept {
 						return _Center;
@@ -793,7 +734,7 @@ namespace std {
 					double _M21 = 0.0;
 				public:
 
-					constexpr matrix_2d() noexcept { }
+					constexpr matrix_2d() noexcept = default;
 					constexpr matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21) noexcept {
 						_M00 = m00;
 						_M01 = m01;
@@ -802,10 +743,6 @@ namespace std {
 						_M20 = m20;
 						_M21 = m21;
 					}
-					constexpr matrix_2d(const matrix_2d& other) noexcept = default;
-					constexpr matrix_2d& operator=(const matrix_2d& other) noexcept = default;
-					matrix_2d(matrix_2d&& other) noexcept = default;
-					matrix_2d& operator=(matrix_2d&& other) noexcept = default;
 
 					constexpr static matrix_2d init_identity() noexcept {
 						return{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
@@ -825,12 +762,29 @@ namespace std {
 					}
 
 					// Modifiers
-					void m00(double value) noexcept;
-					void m01(double value) noexcept;
-					void m10(double value) noexcept;
-					void m11(double value) noexcept;
-					void m20(double value) noexcept;
-					void m21(double value) noexcept;
+					constexpr void m00(double value) noexcept {
+						_M00 = value;
+					}
+					constexpr void m01(double value) noexcept {
+						_M01 = value;
+					}
+					constexpr void m10(double value) noexcept {
+						_M10 = value;
+					}
+					constexpr void m11(double value) noexcept {
+						_M11 = value;
+					}
+					constexpr void m20(double value) noexcept {
+						_M20 = value;
+					}
+					constexpr void m21(double value) noexcept {
+						_M21 = value;
+					}
+					//void m01(double value) noexcept;
+					//void m10(double value) noexcept;
+					//void m11(double value) noexcept;
+					//void m20(double value) noexcept;
+					//void m21(double value) noexcept;
 					matrix_2d& translate(const vector_2d& value) noexcept;
 					matrix_2d& scale(const vector_2d& value) noexcept;
 					matrix_2d& rotate(double radians) noexcept;
@@ -1358,11 +1312,10 @@ namespace std {
 						double _Y_axis = 0.0;
 					public:
 						constexpr rel_ellipse() noexcept { }
-						constexpr rel_ellipse(const vector_2d& ctr, double xaxis, double yaxis) noexcept
-							: _Center(ctr)
-							, _X_axis(xaxis)
-							, _Y_axis(yaxis) {
-						}
+						//constexpr rel_ellipse(const vector_2d& ctr, double xaxis, double yaxis) noexcept
+						//	: _Center(ctr)
+						//	, _X_axis(xaxis)
+						//	, _Y_axis(yaxis) { }
 						constexpr explicit rel_ellipse(const circle& c) noexcept
 							: _Center(c.center())
 							, _X_axis(c.radius())
@@ -1389,11 +1342,9 @@ namespace std {
 						constexpr vector_2d center() const noexcept {
 							return _Center;
 						}
-
 						constexpr double x_axis() const noexcept {
 							return _X_axis;
 						}
-
 						constexpr double y_axis() const noexcept {
 							return _Y_axis;
 						}
@@ -1488,7 +1439,7 @@ namespace std {
 					};
 
 					class change_matrix {
-						matrix_2d _Matrix = {};
+						matrix_2d _Matrix;// = {};
 					public:
 						constexpr explicit change_matrix(const matrix_2d& m) noexcept
 							: _Matrix(m) {
@@ -1529,7 +1480,7 @@ namespace std {
 				// Forward declaration.
 				class surface;
 				template <class Allocator = allocator<path_data::path_data_types>>
-				class path_factory;
+				class path_builder;
 
 				class path_group {
 					::std::shared_ptr<cairo_path_t> _Cairo_path;
@@ -1538,15 +1489,18 @@ namespace std {
 					// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
 					path_group() noexcept = default;
 					template <class Allocator>
-					explicit path_group(const path_factory<Allocator>& p);
+					explicit path_group(const path_builder<Allocator>& p);
 					template <class Allocator>
-					path_group(const path_factory<Allocator>& p, std::error_code& ec) noexcept;
+					path_group(const path_builder<Allocator>& p, std::error_code& ec) noexcept;
 					path_group(const path_group&) = default;
 					path_group& operator=(const path_group&) = default;
 					path_group(path_group&&) = default;
 					path_group& operator=(path_group&&) = default;
 
 					native_handle_type native_handle() {
+						return _Cairo_path.get();
+					}
+					const cairo_path* native_handle() const {
 						return _Cairo_path.get();
 					}
 				};
@@ -1705,7 +1659,7 @@ namespace std {
 				};
 
 				template <class Allocator>
-				inline path_group::path_group(const path_factory<Allocator>& pf)
+				inline path_group::path_group(const path_builder<Allocator>& pf)
 					: _Cairo_path(new cairo_path_t, [](cairo_path_t* path) {
 					if (path != nullptr) {
 						if (path->data != nullptr) {
@@ -1736,7 +1690,7 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline path_group::path_group(const path_factory<Allocator>& pf, ::std::error_code& ec) noexcept {
+				inline path_group::path_group(const path_builder<Allocator>& pf, ::std::error_code& ec) noexcept {
 					: _Cairo_path(new cairo_path_t, [](cairo_path_t* path) {
 						if (path != nullptr) {
 							if (path->data != nullptr) {
@@ -1773,7 +1727,7 @@ namespace std {
 				}
 
 				template <class Allocator>
-				class path_factory {
+				class path_builder {
 					::std::vector<path_data::path_data_types, Allocator> _Data;
 					optional<vector_2d> _Current_point;
 					vector_2d _Last_move_to_point;
@@ -1791,28 +1745,28 @@ namespace std {
 					using reverse_iterator = std::reverse_iterator<iterator>;
 					using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-					path_factory() noexcept(noexcept(Allocator())) :
-						path_factory(Allocator()) { }
-					explicit path_factory(const Allocator& a) noexcept;
-					explicit path_factory(size_type n, const Allocator& a = Allocator());
-					path_factory(size_type n, const value_type& value,
+					path_builder() noexcept(noexcept(Allocator())) :
+						path_builder(Allocator()) { }
+					explicit path_builder(const Allocator& a) noexcept;
+					explicit path_builder(size_type n, const Allocator& a = Allocator());
+					path_builder(size_type n, const value_type& value,
 						const Allocator& a = Allocator());
 					template <class InputIterator>
-					path_factory(InputIterator first, InputIterator last,
+					path_builder(InputIterator first, InputIterator last,
 						const Allocator& = Allocator());
-					path_factory(const path_factory& pf);
-					path_factory(path_factory&& pf) noexcept;
-					path_factory(const path_factory& pf, const Allocator& a);
-					path_factory(path_factory&& pf, const Allocator& a);
-					path_factory(initializer_list<value_type> il, const Allocator& a = Allocator());
-					~path_factory() { }
-					path_factory& operator=(const path_factory& x);
-					path_factory& operator=(path_factory&& x)
+					path_builder(const path_builder& pf);
+					path_builder(path_builder&& pf) noexcept;
+					path_builder(const path_builder& pf, const Allocator& a);
+					path_builder(path_builder&& pf, const Allocator& a);
+					path_builder(initializer_list<value_type> il, const Allocator& a = Allocator());
+					~path_builder() { }
+					path_builder& operator=(const path_builder& x);
+					path_builder& operator=(path_builder&& x)
 						noexcept(
 							allocator_traits<Allocator>::propagate_on_container_move_assignment::value
 							||
 							allocator_traits<Allocator>::is_always_equal::value);
-					path_factory& operator=(initializer_list<value_type> il);
+					path_builder& operator=(initializer_list<value_type> il);
 					template <class InputIterator>
 					void assign(InputIterator first, InputIterator last);
 					void assign(size_type n, const value_type& u);
@@ -1899,7 +1853,7 @@ namespace std {
 						initializer_list<value_type> il);
 					iterator erase(const_iterator position);
 					iterator erase(const_iterator first, const_iterator last);
-					void swap(path_factory&)
+					void swap(path_builder&)
 						noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value
 							|| allocator_traits<Allocator>::is_always_equal::value);
 					void clear() noexcept;
@@ -1920,14 +1874,14 @@ namespace std {
 				};
 
 				template <class Allocator>
-				bool operator==(const path_factory<Allocator>& lhs,
-					const path_factory<Allocator>& rhs);
+				bool operator==(const path_builder<Allocator>& lhs,
+					const path_builder<Allocator>& rhs);
 				template <class Allocator>
-				bool operator!=(const path_factory<Allocator>& lhs,
-					const path_factory<Allocator>& rhs);
+				bool operator!=(const path_builder<Allocator>& lhs,
+					const path_builder<Allocator>& rhs);
 				// 8.17.8, specialized algorithms:
 				template <class Allocator>
-				void swap(path_factory<Allocator>& lhs, path_factory<Allocator>& rhs)
+				void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
 					noexcept(noexcept(lhs.swap(rhs)));
 
 				class device {
@@ -1971,159 +1925,212 @@ namespace std {
 					rgba_color color() const noexcept;
 				};
 
-				template <class Allocator = allocator<color_stop>>
-				class color_stop_group {
-					::std::vector<color_stop> _Stops;
-				public:
-					using value_type = color_stop;
-					using allocator_type = Allocator;
-					using pointer = typename allocator_traits<Allocator>::pointer;
-					using const_pointer = typename allocator_traits<Allocator>::const_pointer;
-					using reference = value_type&;
-					using const_reference = const value_type&;
-					using size_type = typename ::std::vector<color_stop, Allocator>::size_type;
-					using difference_type = typename ::std::vector<color_stop, Allocator>::difference_type;
-					using iterator = typename ::std::vector<color_stop, Allocator>::iterator;
-					using const_iterator = typename ::std::vector<color_stop, Allocator>::const_iterator;
-					using reverse_iterator = typename ::std::reverse_iterator<iterator>;
-					using const_reverse_iterator = typename ::std::reverse_iterator<const_iterator>;
-
-					color_stop_group() noexcept(noexcept(Allocator())) :
-						color_stop_group(Allocator()) { }
-					explicit color_stop_group(const Allocator& a) noexcept;
-					explicit color_stop_group(size_type n, const Allocator& a = Allocator());
-					color_stop_group(size_type n, const value_type& value,
-						const Allocator& a = Allocator());
-					template <class InputIterator>
-					color_stop_group(InputIterator first, InputIterator last,
-						const Allocator& a = Allocator());
-					color_stop_group(const color_stop_group& x);
-					color_stop_group(color_stop_group&& x) noexcept;
-					color_stop_group(const color_stop_group& x, const Allocator& a);
-					color_stop_group(color_stop_group&& x, const Allocator& a);
-					color_stop_group(initializer_list<value_type> il,
-						const Allocator& a = Allocator());
-					~color_stop_group();
-					color_stop_group& operator=(const color_stop_group& x);
-					color_stop_group& operator=(color_stop_group&& x)
-						noexcept(
-							allocator_traits<Allocator>::propagate_on_container_move_assignment::value
-							|| allocator_traits<Allocator>::is_always_equal::value);
-					color_stop_group& operator=(initializer_list<value_type> il);
-					template <class InputIterator>
-					void assign(InputIterator first, InputIterator last);
-					void assign(size_type n, const value_type& u);
-					void assign(initializer_list<value_type> il);
-					allocator_type get_allocator() const noexcept;
-
-					// 9.5.7, iterators:
-					iterator begin() noexcept;
-					const_iterator begin() const noexcept;
-					const_iterator cbegin() const noexcept;
-					iterator end() noexcept;
-					const_iterator end() const noexcept;
-					const_iterator cend() const noexcept;
-					reverse_iterator rbegin() noexcept;
-					const_reverse_iterator rbegin() const noexcept;
-					const_reverse_iterator crbegin() const noexcept;
-					reverse_iterator rend() noexcept;
-					const_reverse_iterator rend() const noexcept;
-					const_reverse_iterator crend() const noexcept;
-
-					bool empty() const noexcept;
-					size_type size() const noexcept;
-					size_type max_size() const noexcept;
-					size_type capacity() const noexcept;
-					void resize(size_type sz);
-					void resize(size_type sz, const value_type& c);
-					void reserve(size_type n);
-					void shrink_to_fit();
-
-					// element access:
-					reference operator[](size_type n);
-					const_reference operator[](size_type n) const;
-					const_reference at(size_type n) const;
-					reference at(size_type n);
-					reference front();
-					const_reference front() const;
-					reference back();
-					const_reference back() const;
-
-					template <class... Args>
-					reference emplace_back(Args&&... args);
-					void push_back(const value_type& x);
-					void push_back(value_type&& x);
-					void pop_back();
-					template <class... Args>
-					iterator emplace(const_iterator position, Args&&... args);
-					iterator insert(const_iterator position, const value_type& x);
-					iterator insert(const_iterator position, value_type&& x);
-					iterator insert(const_iterator position, size_type n, const value_type& x);
-					template <class InputIterator>
-					iterator insert(const_iterator position, InputIterator first,
-						InputIterator last);
-					iterator insert(const_iterator position,
-						initializer_list<value_type> il);
-					iterator erase(const_iterator position);
-					iterator erase(const_iterator first, const_iterator last);
-					void swap(color_stop_group& other)
-						noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value
-							|| allocator_traits<Allocator>::is_always_equal::value);
-					void clear() noexcept;
-				};
-
-				template <class Allocator>
-				bool operator==(const color_stop_group<Allocator>& lhs,
-					const color_stop_group<Allocator>& rhs);
-				template <class Allocator>
-				bool operator!=(const color_stop_group<Allocator>& lhs,
-					const color_stop_group<Allocator>& rhs);
-				// 8.17.8, specialized algorithms:
-				template <class Allocator>
-				void swap(color_stop_group<Allocator>& lhs, color_stop_group<Allocator>& rhs)
-					noexcept(noexcept(lhs.swap(rhs))) {
-					lhs.swap(rhs);
-				}
-
-				//template <class... _Args>
-				//void _Find_first_variadic_type();
-				//template <class T, class... _Args>
-				//T _Find_first_variadic_type();
-				//template <class T>
-				//T _Find_first_variadic_type();
-				//template<>
-				//void _Find_first_variadic_type();
-
 				class surface;
 				class image_surface;
 				class display_surface;
 
-				//template <class _T, class... _Args>
-				//void _Add_color_stop(cairo_pattern_t*, _T&&, _Args&&...);
+				class render_props {
+					matrix_2d _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
+					experimental::io2d::antialias _Antialias = experimental::io2d::antialias::good;
+					experimental::io2d::compositing_op _Compositing = experimental::io2d::compositing_op::over;
+				public:
+					constexpr render_props() noexcept {}
+					constexpr explicit render_props(const matrix_2d& m,
+						antialias a = antialias::good,
+						compositing_op co = compositing_op::over) noexcept
+						: _Matrix(m)
+						, _Antialias(a)
+						, _Compositing(co) {}
+					//constexpr render_props(const render_props&) noexcept = default;
+					//constexpr render_props& operator=(const render_props&) noexcept = default;
+					//render_props(render_props&&) noexcept = default;
+					//render_props& operator=(render_props&&) noexcept = default;
 
-				//template <class _T>
-				//void _Add_color_stop(cairo_pattern_t*, _T&&);
+					constexpr void antialiasing(antialias a) noexcept {
+						_Antialias = a;
+					}
+					constexpr void compositing(compositing_op co) noexcept {
+						_Compositing = co;
+					}
+					constexpr void surface_matrix(const matrix_2d& m) noexcept {
+						_Matrix = m;
+					}
 
-				//template <>
-				//void _Add_color_stop(cairo_pattern_t*);
+					constexpr antialias antialiasing() const noexcept {
+						return _Antialias;
+					}
+					constexpr compositing_op compositing() const noexcept {
+						return _Compositing;
+					}
+					constexpr matrix_2d surface_matrix() const noexcept {
+						return _Matrix;
+					}
+				};
 
-				//template <class _T, class... _Args>
-				//inline void _Add_color_stop(cairo_pattern_t* pat, _T&& stop, _Args&&... rest) {
-				//	cairo_pattern_add_color_stop_rgba(pat, stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
-				//	if (cairo_pattern_status(pat) != CAIRO_STATUS_SUCCESS) {
-				//		return;
-				//	}
-				//	_Add_color_stop<_Args&&...>(pat, ::std::forward<_Args>(rest)...);
-				//}
+				class clip_props {
+					path_group _Clip;
+					experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
+				public:
+					clip_props() noexcept = default;
+					template <class Allocator>
+					explicit clip_props(const path_builder<Allocator> &pf,
+						experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding)
+						: _Clip(path_group(pf))
+						, _Fill_rule(fr) { }
 
-				//template <class _T>
-				//inline void _Add_color_stop(cairo_pattern_t* pat, _T&& stop) {
-				//	cairo_pattern_add_color_stop_rgba(pat, stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
-				//}
+					explicit clip_props(const path_group& pg,
+						experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept
+						: _Clip(pg)
+						, _Fill_rule(fr) { }
 
-				//template <>
-				//inline void _Add_color_stop(cairo_pattern_t*) {
-				//}
+					template <class Allocator>
+					void clip(const path_builder<Allocator>& pf) {
+						_Clip = path_group(pf);
+					}
+
+					void clip(const path_group& pg) noexcept {
+						_Clip = pg;
+					}
+
+					void fill_rule(experimental::io2d::fill_rule fr) {
+						_Fill_rule = fr;
+					}
+
+					path_group clip() const noexcept {
+						return _Clip;
+					}
+
+					experimental::io2d::fill_rule fill_rule() const noexcept {
+						return _Fill_rule;
+					}
+				};
+
+				class stroke_props {
+					double _Line_width = 2.0;
+					double _Miter_limit = 10.0;
+					experimental::io2d::line_cap _Line_cap = experimental::io2d::line_cap::none;
+					experimental::io2d::line_join _Line_join = experimental::io2d::line_join::miter;
+					//optional<dashes> _Dashes;
+				public:
+					constexpr stroke_props() noexcept {}
+					constexpr explicit stroke_props(double w,
+						experimental::io2d::line_cap lc = experimental::io2d::line_cap::none,
+						experimental::io2d::line_join lj = experimental::io2d::line_join::miter,
+						double ml = 10.0) noexcept
+						: _Line_width(w)
+						, _Miter_limit(ml)
+						, _Line_cap(lc)
+						, _Line_join(lj) {}
+
+					constexpr void line_width(double w) noexcept {
+						_Line_width = w;
+					}
+					constexpr void line_cap(experimental::io2d::line_cap lc) noexcept {
+						_Line_cap = lc;
+					}
+					constexpr void line_join(experimental::io2d::line_join lj) noexcept {
+						_Line_join = lj;
+					}
+					constexpr void miter_limit(double ml) noexcept {
+						_Miter_limit = ml;
+					}
+
+					constexpr double line_width() const noexcept {
+						return _Line_width;
+					}
+					constexpr experimental::io2d::line_cap line_cap() const noexcept {
+						return _Line_cap;
+					}
+					constexpr experimental::io2d::line_join line_join() const noexcept {
+						return _Line_join;
+					}
+					constexpr double miter_limit() const noexcept {
+						return _Miter_limit;
+					}
+				};
+
+				class brush_props {
+					experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::none;
+					experimental::io2d::filter _Filter = experimental::io2d::filter::good;
+					experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
+					matrix_2d _Matrix = matrix_2d{};
+
+				public:
+					constexpr brush_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::none,
+						experimental::io2d::filter fi = experimental::io2d::filter::good,
+						experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding,
+						matrix_2d m = matrix_2d{}) noexcept
+						: _Wrap_mode(w)
+						, _Filter(fi)
+						, _Fill_rule(fr)
+						, _Matrix(m) {
+					}
+
+					constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept {
+						_Wrap_mode = w;
+					}
+					constexpr void filter(experimental::io2d::filter fi) noexcept {
+						_Filter = fi;
+					}
+					constexpr void fill_rule(experimental::io2d::fill_rule fr) noexcept {
+						_Fill_rule = fr;
+					}
+					constexpr void matrix(const matrix_2d& m) noexcept {
+						_Matrix = m;
+					}
+
+					constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept {
+						return _Wrap_mode;
+					}
+					constexpr experimental::io2d::filter filter() const noexcept {
+						return _Filter;
+					}
+					constexpr experimental::io2d::fill_rule fill_rule() const noexcept {
+						return _Fill_rule;
+					}
+					constexpr matrix_2d matrix() const noexcept {
+						return _Matrix;
+					}
+				};
+
+				class mask_props {
+					experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::repeat;
+					experimental::io2d::filter _Filter = experimental::io2d::filter::good;
+					matrix_2d _Matrix = matrix_2d{};
+
+				public:
+					constexpr mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat,
+						experimental::io2d::filter fi = experimental::io2d::filter::good,
+						matrix_2d m = matrix_2d{}) noexcept
+						: _Wrap_mode(w)
+						, _Filter(fi)
+						, _Matrix(m) {
+					}
+					constexpr mask_props(const mask_props&) noexcept = default;
+					constexpr mask_props& operator=(const mask_props&) noexcept = default;
+					mask_props(mask_props&&) noexcept = default;
+					mask_props& operator=(mask_props&&) noexcept = default;
+
+					constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept {
+						_Wrap_mode = w;
+					}
+					constexpr void filter(experimental::io2d::filter fi) noexcept {
+						_Filter = fi;
+					}
+					constexpr void matrix(const matrix_2d& m) noexcept {
+						_Matrix = m;
+					}
+
+					constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept {
+						return _Wrap_mode;
+					}
+					constexpr experimental::io2d::filter filter() const noexcept {
+						return _Filter;
+					}
+					constexpr matrix_2d matrix() const noexcept {
+						return _Matrix;
+					}
+				};
 
 				class brush {
 				public:
@@ -2138,60 +2145,37 @@ namespace std {
 					::std::shared_ptr<cairo_pattern_t> _Brush;
 					::std::shared_ptr<image_surface> _Image_surface;
 					brush_type _Brush_type;
-					::std::experimental::io2d::tiling _Extend;
-					::std::experimental::io2d::filter _Filter;
-					matrix_2d _Matrix;
 
 				public:
 					native_handle_type native_handle() const noexcept;
 
-					brush() = delete;
-					brush(const brush&) noexcept = default;
-					brush& operator=(const brush&) noexcept = default;
-					brush(brush&& other) noexcept = default;
-					brush& operator=(brush&& other) noexcept = default;
-					brush(const rgba_color& c);
-					brush(const rgba_color& c, error_code& ec) noexcept;
-					template <class _Allocator>
+					//brush() = delete;
+					//brush(const brush&) noexcept = default;
+					//brush& operator=(const brush&) noexcept = default;
+					//brush(brush&& other) noexcept = default;
+					//brush& operator=(brush&& other) noexcept = default;
+					explicit brush(const rgba_color& c);
+					//brush(const rgba_color& c, error_code& ec) noexcept;
+					template <class InputIterator>
 					brush(const vector_2d& begin, const vector_2d& end,
-						const color_stop_group<_Allocator>& csg);
-					template <class _Allocator>
-					brush(const vector_2d& begin, const vector_2d& end,
-						const color_stop_group<_Allocator>& csg, error_code& ec) noexcept;
-
+						InputIterator first, InputIterator last);
 					brush(const vector_2d& begin, const vector_2d& end,
 						::std::initializer_list<color_stop> il);
 
-					brush(const vector_2d& begin, const vector_2d& end, ::std::error_code& ec,
-						::std::initializer_list<color_stop> il) noexcept;
-
-					template <class _Allocator>
+					template <class InputIterator>
 					brush(const circle& start, const circle& end,
-						const color_stop_group<_Allocator>& csg);
-					template <class _Allocator>
-					brush(const circle& start, const circle& end,
-						const color_stop_group<_Allocator>& csg, error_code& ec) noexcept;
+						InputIterator first, InputIterator last);
 
 					brush(const circle& start, const circle& end,
 						::std::initializer_list<color_stop> il);
 
-					brush(const circle& start, const circle& end, ::std::error_code& ec,
-						::std::initializer_list<color_stop> il) noexcept;
+					//brush(const circle& start, const circle& end, ::std::error_code& ec,
+					//	::std::initializer_list<color_stop> il) noexcept;
 
-					brush(image_surface&& img);
-					brush(image_surface&& img, error_code& ec) noexcept;
+					explicit brush(image_surface&& img);
+					//brush(image_surface&& img, error_code& ec) noexcept;
 
-					void tiling(::std::experimental::io2d::tiling e) noexcept;
-					void filter(::std::experimental::io2d::filter f) noexcept;
-					void matrix(const matrix_2d& m) noexcept;
-
-					::std::experimental::io2d::tiling tiling() const noexcept;
-					::std::experimental::io2d::filter filter() const noexcept;
-					matrix_2d matrix() const noexcept;
 					brush_type type() const noexcept;
-					//const image_surface& surface() const;
-					//const image_surface& surface(::std::error_code& ec) const noexcept;
-
 				};
 
 				struct _Surface_native_handles {
@@ -2220,7 +2204,6 @@ namespace std {
 				protected:
 					::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> _Surface;
 					::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Context;
-					::std::unique_ptr<cairo_font_options_t, decltype(&cairo_font_options_destroy)> _Native_font_options;
 
 					const double _Line_join_miter_miter_limit = 10000.0;
 
@@ -2228,228 +2211,64 @@ namespace std {
 					typedef rectangle _Dirty_type;
 					_Dirty_type _Dirty_rect;
 					::std::experimental::io2d::format _Format;
-					::std::experimental::io2d::content _Content;
-
-					// State - saved
-					::std::experimental::io2d::brush _Brush;
-					::std::experimental::io2d::antialias _Antialias;
-					::std::experimental::io2d::dashes _Dashes;
-					::std::experimental::io2d::fill_rule _Fill_rule;
-					::std::experimental::io2d::line_cap _Line_cap;
-					::std::experimental::io2d::line_join _Line_join = ::std::experimental::io2d::line_join::miter;
-					typedef double _Line_width_type;
-					_Line_width_type _Line_width;
-					typedef double _Miter_limit_type;
-					_Miter_limit_type _Miter_limit = 10.0;
-					::std::experimental::io2d::compositing_operator _Compositing_operator;
-					::std::shared_ptr<::std::experimental::io2d::path_group> _Current_path;
-					::std::experimental::io2d::path_factory<> _Immediate_path;
-					typedef matrix_2d _Transform_matrix_type;
-					_Transform_matrix_type _Transform_matrix;
-
-					// Relies on C++17 noexcept guarantee for vector default ctor (N4258, adopted 2014-11).
-					::std::stack < ::std::tuple<
-						::std::experimental::io2d::brush,
-						::std::experimental::io2d::antialias,
-						::std::experimental::io2d::dashes,
-						::std::experimental::io2d::fill_rule,
-						::std::experimental::io2d::line_cap,
-						::std::experimental::io2d::line_join,
-						_Line_width_type,
-						_Miter_limit_type,
-						::std::experimental::io2d::compositing_operator,
-						::std::shared_ptr<::std::experimental::io2d::path_group>,
-						::std::experimental::io2d::path_factory<>,
-						_Transform_matrix_type
-					>, ::std::vector<::std::tuple<
-						::std::experimental::io2d::brush,
-						::std::experimental::io2d::antialias,
-						::std::experimental::io2d::dashes,
-						::std::experimental::io2d::fill_rule,
-						::std::experimental::io2d::line_cap,
-						::std::experimental::io2d::line_join,
-						_Line_width_type,
-						_Miter_limit_type,
-						::std::experimental::io2d::compositing_operator,
-						::std::shared_ptr<::std::experimental::io2d::path_group>,
-						::std::experimental::io2d::path_factory<>,
-						_Transform_matrix_type>> > _Saved_state;
-
-					void _Ensure_state();
-					void _Ensure_state(::std::error_code& ec) noexcept;
 
 					surface(::std::experimental::io2d::format fmt, int width, int height);
-					surface(::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
+					//surface(::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
 
-					surface(native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::experimental::io2d::content ctnt);
-					surface(native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::experimental::io2d::content ctnt, ::std::error_code& ec) noexcept;
+					surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
+					//surface(native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::error_code& ec) noexcept;
 
-					// create_similar
-					surface(const surface& other, ::std::experimental::io2d::content ctnt, int width, int height);
-					surface(const surface& other, ::std::experimental::io2d::content ctnt, int width, int height, ::std::error_code& ec) noexcept;
+					//// create_similar
+					//surface(const surface& other, int width, int height);
+					//surface(const surface& other, int width, int height, ::std::error_code& ec) noexcept;
 
-					void path_group(const ::std::shared_ptr<::std::experimental::io2d::path_group>& p);
-					void path_group(const ::std::shared_ptr<::std::experimental::io2d::path_group>& p, ::std::error_code& ec) noexcept;
-				public:
-					bool _Has_surface_resource() const noexcept;
-					native_handle_type native_handle() const;
-
-					surface() = delete;
+					//void path_group(const ::std::shared_ptr<::std::experimental::io2d::path_group>& p);
+					//void path_group(const ::std::shared_ptr<::std::experimental::io2d::path_group>& p, ::std::error_code& ec) noexcept;
+				protected:
 					surface(const surface&) = delete;
 					surface& operator=(const surface&) = delete;
 					surface(surface&& other) /*noexcept*/ = default;
 					surface& operator=(surface&& other) /*noexcept*/ = default;
 
-					virtual ~surface();
+				public:
+					native_handle_type native_handle() const;
+
+					// \ref{\iotwod.surface.cons}, constructors:
+					surface() = delete;
 
 					// \ref{\iotwod.surface.modifiers.state}, state modifiers:
-					virtual void finish() noexcept;
 					void flush();
 					void flush(::std::error_code& ec) noexcept;
-					::std::shared_ptr<::std::experimental::io2d::device> device();
-					::std::shared_ptr<::std::experimental::io2d::device> device(::std::error_code& ec) noexcept;
+					::std::shared_ptr<experimental::io2d::device> device();
+					::std::shared_ptr<experimental::io2d::device> device(::std::error_code& ec) noexcept;
 					void mark_dirty();
-					void mark_dirty(::std::error_code& ec) noexcept;
 					void mark_dirty(const rectangle& rect);
-					void mark_dirty(const rectangle& rect, ::std::error_code& ec) noexcept;
 					void map(const ::std::function<void(mapped_surface&)>& action);
 					void map(const ::std::function<void(mapped_surface&, error_code&)>& action, ::std::error_code& ec);
 					void map(const ::std::function<void(mapped_surface&)>& action, const rectangle& extents);
 					void map(const ::std::function<void(mapped_surface&, error_code&)>& action, const rectangle& extents, ::std::error_code& ec);
-					virtual void save();
-					virtual void save(::std::error_code& ec) noexcept;
-					virtual void restore();
-					virtual void restore(::std::error_code& ec) noexcept;
-					void brush(experimental::io2d::nullvalue_t) noexcept;
-					void brush(const ::std::experimental::io2d::brush& source);
-					void brush(const ::std::experimental::io2d::brush& source, ::std::error_code& ec) noexcept;
-					void antialias(::std::experimental::io2d::antialias a) noexcept;
-					void dashes(experimental::io2d::nullvalue_t) noexcept;
-					void dashes(const ::std::experimental::io2d::dashes& d);
-					void dashes(const ::std::experimental::io2d::dashes& d, ::std::error_code& ec) noexcept;
-					void fill_rule(::std::experimental::io2d::fill_rule fr) noexcept;
-					void line_cap(::std::experimental::io2d::line_cap lc) noexcept;
-					void line_join(::std::experimental::io2d::line_join lj) noexcept;
-					void line_width(double width) noexcept;
-					void miter_limit(double limit) noexcept;
-					void compositing_operator(::std::experimental::io2d::compositing_operator co) noexcept;
-					//void clip(experimental::nullopt_t) noexcept;
-					void clip(const ::std::experimental::io2d::path_group& p);
-					void clip(const ::std::experimental::io2d::path_group& p, ::std::error_code& ec) noexcept;
-					void clip_immediate();
-					void clip_immediate(::std::error_code& ec) noexcept;
-					void path_group(experimental::io2d::nullvalue_t) noexcept;
-					void path_group(const ::std::experimental::io2d::path_group& p);
-					void path_group(const ::std::experimental::io2d::path_group& p, ::std::error_code& ec) noexcept;
-
-					// \ref{\iotwod.surface.modifiers.immediatepath}, immediate path_group modifiers:
-					::std::experimental::io2d::path_factory<>& immediate() noexcept;
 
 					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
 					void clear();
-					void fill();
-					void fill(::std::error_code& ec) noexcept;
-					void fill(const rgba_color& c);
-					void fill(const rgba_color& c, ::std::error_code& ec) noexcept;
-					void fill(const ::std::experimental::io2d::brush& b);
-					void fill(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
-					void fill(const surface& s, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good);
-					void fill(const surface& s, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good) noexcept;
-					void fill_immediate();
-					void fill_immediate(::std::error_code& ec) noexcept;
-					void fill_immediate(const rgba_color& c);
-					void fill_immediate(const rgba_color& c, ::std::error_code& ec) noexcept;
-					void fill_immediate(const ::std::experimental::io2d::brush& b);
-					void fill_immediate(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
-					void fill_immediate(const surface& s, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good);
-					void fill_immediate(const surface& s, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good) noexcept;
-					void paint();
-					void paint(::std::error_code& ec) noexcept;
-					void paint(const rgba_color& c);
-					void paint(const rgba_color& c, ::std::error_code& ec) noexcept;
-					void paint(const ::std::experimental::io2d::brush& b);
-					void paint(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
-					void paint(const surface& s, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good);
-					void paint(const surface& s, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good) noexcept;
-					void paint(double alpha);
-					void paint(double alpha, ::std::error_code& ec) noexcept;
-					void paint(const rgba_color& c, double alpha);
-					void paint(const rgba_color& c, double alpha, ::std::error_code& ec) noexcept;
-					void paint(const ::std::experimental::io2d::brush& b, double alpha);
-					void paint(const ::std::experimental::io2d::brush& b, double alpha, ::std::error_code& ec) noexcept;
-					void paint(const surface& s, double alpha, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good);
-					void paint(const surface& s, double alpha, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good) noexcept;
-					void stroke();
-					void stroke(::std::error_code& ec) noexcept;
-					void stroke(const rgba_color& c);
-					void stroke(const rgba_color& c, ::std::error_code& ec) noexcept;
-					void stroke(const ::std::experimental::io2d::brush& b);
-					void stroke(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
-					void stroke(const surface& s, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good);
-					void stroke(const surface& s, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good) noexcept;
-					void stroke_immediate();
-					void stroke_immediate(::std::error_code& ec) noexcept;
-					void stroke_immediate(const rgba_color& c);
-					void stroke_immediate(const rgba_color& c, ::std::error_code& ec) noexcept;
-					void stroke_immediate(const ::std::experimental::io2d::brush& b);
-					void stroke_immediate(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
-					void stroke_immediate(const surface& s, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good);
-					void stroke_immediate(const surface& s, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good) noexcept;
-
-					// \ref{\iotwod.surface.modifiers.maskrender}, mask render modifiers:
-					void mask(const ::std::experimental::io2d::brush& maskBrush);
-					void mask(const ::std::experimental::io2d::brush& maskBrush, ::std::error_code& ec) noexcept;
-					void mask(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
-					void mask(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c, ::std::error_code& ec) noexcept;
-					void mask(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
-					void mask(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
-					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good);
-					void mask(const ::std::experimental::io2d::brush& maskBrush, const surface& s, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good) noexcept;
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush);
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, ::std::error_code& ec) noexcept;
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c);
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const rgba_color& c, ::std::error_code& ec) noexcept;
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b);
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good);
-					void mask_immediate(const ::std::experimental::io2d::brush& maskBrush, const surface& s, ::std::error_code& ec, const matrix_2d& m = matrix_2d::init_identity(), tiling e = tiling::none, filter f = filter::good) noexcept;
-
-					// \ref{\iotwod.surface.modifiers.transform}, transformation modifiers:
-					void matrix(const matrix_2d& matrix);
-					void matrix(const matrix_2d& matrix, ::std::error_code& ec) noexcept;
-
-					// \ref{\iotwod.surface.observers.state}, state observers:
-					bool is_finished() const noexcept;
-					::std::experimental::io2d::content content() const noexcept;
-					::std::experimental::io2d::brush brush() const noexcept;
-					::std::experimental::io2d::antialias antialias() const noexcept;
-					::std::experimental::io2d::dashes dashes() const;
-					::std::experimental::io2d::dashes dashes(::std::error_code& ec) const noexcept;
-					::std::experimental::io2d::fill_rule fill_rule() const noexcept;
-					::std::experimental::io2d::line_cap line_cap() const noexcept;
-					::std::experimental::io2d::line_join line_join() const noexcept;
-					double line_width() const noexcept;
-					double miter_limit() const noexcept;
-					::std::experimental::io2d::compositing_operator compositing_operator() const noexcept;
-					rectangle clip_extents() const noexcept;
-					bool in_clip(const vector_2d& pt) const noexcept;
-					::std::vector<rectangle> clip_rectangles() const;
-					::std::vector<rectangle> clip_rectangles(::std::error_code& ec) const noexcept;
-
-					// \ref{\iotwod.surface.observers.render}, render observers:
-					rectangle fill_extents() const noexcept;
-					rectangle fill_extents_immediate() const noexcept;
-					bool in_fill(const vector_2d& pt) const noexcept;
-					bool in_fill_immediate(const vector_2d& pt) const noexcept;
-					rectangle stroke_extents() const noexcept;
-					rectangle stroke_extents_immediate() const noexcept;
-					bool in_stroke(const vector_2d& pt) const noexcept;
-					bool in_stroke_immediate(const vector_2d& pt) const noexcept;
-
-					// \ref{\iotwod.surface.observers.transform}, transformation observers:
-					matrix_2d matrix() const noexcept;
-					vector_2d user_to_surface(const vector_2d& pt) const noexcept;
-					vector_2d surface_to_user(const vector_2d& pt) const noexcept;
+					void paint(const brush& b, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+					template <class Allocator>
+					void fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt) {
+						path_group pg(pf);
+						fill(b, pg, bp, rp, cl);
+					}
+					void fill(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+					template <class Allocator>
+					void stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt) {
+						path_group pg(pf);
+						stroke(b, pg, bp, sp, d, rp, cl);
+					}
+					void stroke(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+					template <class Allocator>
+					void mask(const brush& b, const brush& mb, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>&rp = nullopt, const optional<clip_props>& cl = nullopt) {
+						path_group pg(pf);
+						mask(b, mb, pg, bp, mp, rp, cl);
+					}
+					void mask(const brush& b, const brush& mb, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 				};
 
 				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
@@ -2469,29 +2288,34 @@ namespace std {
 				class image_surface : public surface {
 					friend surface;
 				public:
-					image_surface() = delete;
-					image_surface(const image_surface&) = delete;
-					image_surface& operator=(const image_surface&) = delete;
+					//image_surface() = delete;
+					//image_surface(const image_surface&) = delete;
+					//image_surface& operator=(const image_surface&) = delete;
 					image_surface(image_surface&& other) /*noexcept*/ = default;
 					image_surface& operator=(image_surface&& other) /*noexcept*/ = default;
 					image_surface(::std::experimental::io2d::format fmt, int width, int height);
-					image_surface(::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
-					template <class InputIt>
-					image_surface(InputIt first, InputIt last, ::std::experimental::io2d::format fmt, int width, int height);
-					template <class InputIt>
-					image_surface(InputIt first, InputIt last, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
+					image_surface(filesystem::path f, experimental::io2d::format fmt);
+					//image_surface(::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
+
+					//template <class InputIterator>
+					//image_surface(InputIterator first, InputIterator last, ::std::experimental::io2d::format fmt, int width, int height);
+
+					//template <class InputIterator>
+					//image_surface(InputIterator first, InputIterator last, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
 					//// create_similar_image
 					//image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height);
 					//image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
 					//// create_from_png
 					//image_surface(const ::std::string& filename);
-					virtual ~image_surface() { }
+					//virtual ~image_surface() { }
 
 					// Modifiers
-					void data(const ::std::vector<unsigned char>& data);
-					void data(const ::std::vector<unsigned char>& data, ::std::error_code& ec) noexcept;
-					::std::vector<unsigned char> data();
-					::std::vector<unsigned char> data(::std::error_code& ec) noexcept;
+					void save_to_file(filesystem::path f);
+					//template <class InputIterator>
+					//void data(InputIterator first, InputIterator last);
+					//void data(const ::std::vector<unsigned char>& data, ::std::error_code& ec) noexcept;
+					//::std::vector<unsigned char> data();
+					//::std::vector<unsigned char> data(::std::error_code& ec) noexcept;
 
 					// Observers
 					::std::experimental::io2d::format format() const noexcept;
@@ -2589,6 +2413,7 @@ namespace std {
 					friend surface;
 					// Unsaved state.
 					::std::experimental::io2d::brush _Default_brush;
+					//brush_props _Default_brush_props; // Unneeded since it's a solid color brush.
 					typedef int _Display_width_type;
 					_Display_width_type _Display_width;
 					typedef int _Display_height_type;
@@ -2602,22 +2427,11 @@ namespace std {
 					::std::function<void(display_surface& sfc)> _Size_change_fn;
 					typedef ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> _User_scaling_fn_type;
 					_User_scaling_fn_type _User_scaling_fn;
-					::std::experimental::io2d::brush _Letterbox_brush;
+					optional<experimental::io2d::brush> _Letterbox_brush;
+					optional<brush_props> _Letterbox_brush_props;
 					typedef bool _Auto_clear_type;
 					_Auto_clear_type _Auto_clear;
 
-					//::std::stack<::std::tuple<
-					//	::std::experimental::io2d::scaling,
-					//	_Width_type,
-					//	_Height_type,
-					//	_User_scaling_fn_type,
-					//	::std::experimental::io2d::brush
-					//>, ::std::vector<::std::tuple<
-					//	::std::experimental::io2d::scaling,
-					//	_Width_type,
-					//	_Height_type,
-					//	_User_scaling_fn_type,
-					//	::std::experimental::io2d::brush>>> _Display_saved_state;
 #ifdef _WIN32_WINNT
 					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 					DWORD _Window_style;
@@ -2671,77 +2485,56 @@ namespace std {
 #endif
 					native_handle_type native_handle() const;
 
-					display_surface() = delete;
-					display_surface(const display_surface&) = delete;
-					display_surface& operator=(const display_surface&) = delete;
-					display_surface(display_surface&& other) noexcept;
-					display_surface& operator=(display_surface&& other) noexcept;
+					//display_surface() = delete;
+					//display_surface(const display_surface&) = delete;
+					//display_surface& operator=(const display_surface&) = delete;
+					display_surface(display_surface&& other) noexcept = default;
+					display_surface& operator=(display_surface&& other) noexcept = default;
 
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
 						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0);
-					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::error_code& ec,
-						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0) noexcept;
+					//display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::error_code& ec,
+					//	::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0) noexcept;
 
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
 						int preferredDisplayWidth, int preferredDisplayHeight,
 						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0);
-					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
-						int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec,
-						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0) noexcept;
 
-					virtual ~display_surface();
-
-					virtual void save() override;
-					virtual void save(::std::error_code& ec) noexcept override;
-					virtual void restore() override;
-					virtual void restore(::std::error_code& ec) noexcept override;
+					~display_surface();
 
 					void draw_callback(const ::std::function<void(display_surface& sfc)>& fn);
-					void draw_callback(const ::std::function<void(display_surface& sfc)>& fn, ::std::error_code& ec) noexcept;
 					void size_change_callback(const ::std::function<void(display_surface& sfc)>& fn);
-					void size_change_callback(const ::std::function<void(display_surface& sfc)>& fn, ::std::error_code& ec) noexcept;
-					void width(int w);
-					void width(int w, ::std::error_code& ec) noexcept;
-					void height(int h);
-					void height(int h, ::std::error_code& ec) noexcept;
-					void display_width(int w);
-					void display_width(int w, ::std::error_code& ec) noexcept;
-					void display_height(int h);
-					void display_height(int h, ::std::error_code& ec) noexcept;
-					void dimensions(int w, int h);
-					void dimensions(int w, int h, ::std::error_code& ec) noexcept;
-					void display_dimensions(int dw, int dh);
-					void display_dimensions(int dw, int dh, ::std::error_code& ec) noexcept;
-					void scaling(::std::experimental::io2d::scaling scl) noexcept;
+					void width(int w) noexcept;
+					void height(int h) noexcept;
+					void display_width(int w) noexcept;
+					void display_height(int h) noexcept;
+					void dimensions(int w, int h) noexcept;
+					void display_dimensions(int dw, int dh) noexcept;
+					void scaling(experimental::io2d::scaling scl) noexcept;
 					void user_scaling_callback(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn);
-					void user_scaling_callback(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn, ::std::error_code& ec) noexcept;
-					void letterbox_brush(experimental::io2d::nullvalue_t) noexcept;
-					void letterbox_brush(const rgba_color& c);
-					void letterbox_brush(const rgba_color& c, ::std::error_code& ec) noexcept;
-					void letterbox_brush(const ::std::experimental::io2d::brush& b);
-					void letterbox_brush(const ::std::experimental::io2d::brush& b, ::std::error_code& ec) noexcept;
+					void letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp = nullopt) noexcept;
 					void auto_clear(bool val) noexcept;
 					void refresh_rate(::std::experimental::io2d::refresh_rate rr) noexcept;
 					bool desired_frame_rate(double fps) noexcept;
 					void redraw_required() noexcept;
 
-					int show();
-					int show(::std::error_code& ec); // Not noexcept because if the user-provided functions throw they will propagate, but otherwise is non-throwing.
-					void exit_show(int ms) noexcept;
+					int begin_show();
+					void end_show() noexcept;
 
-					::std::experimental::io2d::format format() const noexcept;
+					experimental::io2d::format format() const noexcept;
 					int width() const noexcept;
 					int height() const noexcept;
 					int display_width() const noexcept;
 					int display_height() const noexcept;
-					::std::tuple<int, int> dimensions() const noexcept;
-					::std::tuple<int, int> display_dimensions() const noexcept;
-					::std::experimental::io2d::scaling scaling() const noexcept;
-					::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback() const;
-					::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback(::std::error_code& ec) const noexcept;
-					::std::experimental::io2d::brush letterbox_brush() const noexcept;
+					vector_2d dimensions() const noexcept;
+					vector_2d display_dimensions() const noexcept;
+					experimental::io2d::scaling scaling() const noexcept;
+					function<experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback() const;
+					function<experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback(::std::error_code& ec) const noexcept;
+					const optional<brush>& letterbox_brush() const noexcept;
+					optional<brush_props> letterbox_brush_props() const noexcept;
 					bool auto_clear() const noexcept;
-					::std::experimental::io2d::refresh_rate refresh_rate() const noexcept;
+					experimental::io2d::refresh_rate refresh_rate() const noexcept;
 					double desired_frame_rate() const noexcept;
 					double elapsed_draw_time() const noexcept;
 				};
@@ -2766,12 +2559,30 @@ namespace std {
 				struct _Path_factory_process_visit {
 					constexpr static double twoThirds = 2.0 / 3.0;
 
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_move>, _Path_data_abs_move> = _Path_data_abs_move_val>
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
-						currentPoint = item.to();
-						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-						closePoint = pt;
+						auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
+						auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
+						auto pt3 = m.transform_point(item.end_point() - origin) + origin;
+						if (!currentPoint.has_value()) {
+							currentPoint = item.control_point_1();
+							v.emplace_back(::std::in_place_type<path_data::abs_move>, pt1);
+							closePoint = pt1;
+						}
+						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
+							pt2, pt3);
+						currentPoint = item.end_point();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_ellipse>, _Path_data_abs_ellipse> = _Path_data_abs_ellipse_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						const auto o_M = m;
+						const auto o_O = origin;
+						currentPoint.reset();
+						_Path_factory_process_visit<path_data::change_origin>::template _Perform(path_data::change_origin{ item.center() }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit<path_data::change_matrix>::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_axis() / item.y_axis(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit<path_data::arc_clockwise>::template _Perform(path_data::arc_clockwise{ item.center(), item.y_axis(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit<path_data::change_matrix>::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit<path_data::change_origin>::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
@@ -2788,19 +2599,12 @@ namespace std {
 							closePoint = pt;
 						}
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_move>, _Path_data_abs_move> = _Path_data_abs_move_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
-						auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
-						auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
-						auto pt3 = m.transform_point(item.end_point() - origin) + origin;
-						if (!currentPoint.has_value()) {
-							currentPoint = item.control_point_1();
-							v.emplace_back(::std::in_place_type<path_data::abs_move>, pt1);
-							closePoint = pt1;
-						}
-						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
-							pt2, pt3);
-						currentPoint = item.end_point();
+						currentPoint = item.to();
+						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
+						closePoint = pt;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
@@ -2822,74 +2626,13 @@ namespace std {
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
 						currentPoint = item.end_point();
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::new_path>, _Path_data_new_path> = _Path_data_new_path_val>
-					static void _Perform(const T&, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d&, optional<vector_2d>& currentPoint, vector_2d&) {
-						currentPoint.reset();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-					static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
-						if (currentPoint.has_value()) {
-							v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
-							v.emplace_back(::std::in_place_type<path_data::abs_move>,
-								closePoint);
-							if (!m.is_finite() || !m.is_invertible()) {
-								throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
-							}
-							auto invM = matrix_2d{ m }.invert();
-							// Need to assign the untransformed closePoint value to currentPoint.
-							currentPoint = invM.transform_point(closePoint - origin) + origin;
-						}
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_move>, _Path_data_rel_move> = _Path_data_rel_move_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
-						if (!currentPoint.has_value()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
-						}
-						currentPoint = item.to() + currentPoint.value();
-						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-						closePoint = pt;
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
-						if (!currentPoint.has_value()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
-						}
-						currentPoint = item.to() + currentPoint.value();
-						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
-						if (!currentPoint.has_value()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
-						}
-						auto pt1 = m.transform_point(item.control_point_1() + currentPoint.value() -
-							origin) + origin;
-						auto pt2 = m.transform_point(item.control_point_2() + currentPoint.value() -
-							origin) + origin;
-						auto pt3 = m.transform_point(item.end_point() + currentPoint.value() - origin) +
-							origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
-							pt1, pt2, pt3);
-						currentPoint = item.end_point() + currentPoint.value();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
-						if (!currentPoint.has_value()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
-						}
-						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-						vector_2d beginPt;
-						auto controlPt = m.transform_point(item.control_point() + currentPoint.value() -
-							origin) + origin;
-						auto endPt = m.transform_point(item.end_point() + currentPoint.value() -
-							origin) + origin;
-						beginPt = m.transform_point(currentPoint.value() - origin) + origin;
-						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
-						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
-						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-						currentPoint = item.end_point() + currentPoint.value();
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_rectangle>, _Path_data_abs_rectangle> = _Path_data_abs_rectangle_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						_Path_factory_process_visit::template _Perform(path_data::abs_move{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { 0.0, item.height() } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { -item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::close_path{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_clockwise>, _Path_data_arc_clockwise> = _Path_data_arc_clockwise_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
@@ -3042,45 +2785,6 @@ namespace std {
 							}
 						}
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_rectangle>, _Path_data_abs_rectangle> = _Path_data_abs_rectangle_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
-						_Path_factory_process_visit::template _Perform(path_data::abs_move{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { 0.0, item.height() } }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { -item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::close_path{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_rectangle>, _Path_data_rel_rectangle> = _Path_data_rel_rectangle_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
-						_Path_factory_process_visit::template _Perform(path_data::rel_move{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { 0.0, item.height() } }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { -item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::close_path{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_ellipse>, _Path_data_abs_ellipse> = _Path_data_abs_ellipse_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
-						const auto o_M = m;
-						const auto o_O = origin;
-						_Path_factory_process_visit<path_data::change_origin>::template _Perform(path_data::change_origin{ item.center() }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit<path_data::change_matrix>::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({item.x_axis() / item.y_axis(), 1.0}) * m }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit<path_data::arc_clockwise>::template _Perform(path_data::arc_clockwise{ item.center(), item.y_axis(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit<path_data::change_matrix>::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit<path_data::change_origin>::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint);
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_ellipse>, _Path_data_rel_ellipse> = _Path_data_rel_ellipse_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
-						if (!currentPoint.has_value()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
-						}
-						const auto o_M = m;
-						const auto o_O = origin;
-						_Path_factory_process_visit::template _Perform(path_data::change_origin{ item.center() + currentPoint.value() }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_axis() / item.y_axis(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::arc_clockwise{ item.center() + currentPoint.value(), item.y_axis(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint);
-					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, optional<vector_2d>&, vector_2d&) {
 						if (!m.is_finite()) {
@@ -3096,10 +2800,102 @@ namespace std {
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, optional<vector_2d>&, vector_2d&) {
 						origin = item.origin();
 					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
+					static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						if (currentPoint.has_value()) {
+							v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
+							v.emplace_back(::std::in_place_type<path_data::abs_move>,
+								closePoint);
+							if (!m.is_finite() || !m.is_invertible()) {
+								throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
+							}
+							auto invM = matrix_2d{ m }.invert();
+							// Need to assign the untransformed closePoint value to currentPoint.
+							currentPoint = invM.transform_point(closePoint - origin) + origin;
+						}
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::new_path>, _Path_data_new_path> = _Path_data_new_path_val>
+					static void _Perform(const T&, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d&, optional<vector_2d>& currentPoint, vector_2d&) {
+						currentPoint.reset();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
+						if (!currentPoint.has_value()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
+						}
+						auto pt1 = m.transform_point(item.control_point_1() + currentPoint.value() -
+							origin) + origin;
+						auto pt2 = m.transform_point(item.control_point_2() + currentPoint.value() -
+							origin) + origin;
+						auto pt3 = m.transform_point(item.end_point() + currentPoint.value() - origin) +
+							origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
+							pt1, pt2, pt3);
+						currentPoint = item.end_point() + currentPoint.value();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_ellipse>, _Path_data_rel_ellipse> = _Path_data_rel_ellipse_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						if (!currentPoint.has_value()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
+						}
+						const auto o_M = m;
+						const auto o_O = origin;
+						const auto cpt2 = currentPoint;
+						currentPoint.reset();
+						_Path_factory_process_visit::template _Perform(path_data::change_origin{ item.center() + cpt2.value() }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_axis() / item.y_axis(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::arc_clockwise{ item.center() + cpt2.value(), item.y_axis(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint);
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
+						if (!currentPoint.has_value()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
+						}
+						currentPoint = item.to() + currentPoint.value();
+						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_move>, _Path_data_rel_move> = _Path_data_rel_move_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						if (!currentPoint.has_value()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
+						}
+						currentPoint = item.to() + currentPoint.value();
+						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
+						closePoint = pt;
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
+						if (!currentPoint.has_value()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
+						}
+						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
+						vector_2d beginPt;
+						auto controlPt = m.transform_point(item.control_point() + currentPoint.value() -
+							origin) + origin;
+						auto endPt = m.transform_point(item.end_point() + currentPoint.value() -
+							origin) + origin;
+						beginPt = m.transform_point(currentPoint.value() - origin) + origin;
+						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
+						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
+						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
+						currentPoint = item.end_point() + currentPoint.value();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_rectangle>, _Path_data_rel_rectangle> = _Path_data_rel_rectangle_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+						_Path_factory_process_visit::template _Perform(path_data::rel_move{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { 0.0, item.height() } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::rel_line{ { -item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
+						_Path_factory_process_visit::template _Perform(path_data::close_path{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
+					}
 				};
 
 				template <class Allocator>
-				inline ::std::vector<path_data::path_data_types> _Process_path_data(const path_factory<Allocator>& pf) {
+				inline ::std::vector<path_data::path_data_types> _Process_path_data(const path_builder<Allocator>& pf) {
 					matrix_2d m;
 					vector_2d origin;
 					optional<vector_2d> currentPoint = optional<vector_2d>{}; // Tracks the untransformed current point.
@@ -3420,7 +3216,7 @@ namespace std {
 				};
 
 				template <class Allocator>
-				::std::vector<path_data::path_data_types> _Process_path_data(const path_factory<Allocator>& pf, ::std::error_code& ec) {
+				::std::vector<path_data::path_data_types> _Process_path_data(const path_builder<Allocator>& pf, ::std::error_code& ec) {
 					matrix_2d m;
 					vector_2d origin;
 					vector_2d currentPoint; // Tracks the untransformed current point.
@@ -3442,7 +3238,7 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline path_factory<Allocator>::path_factory(const Allocator &a) noexcept
+				inline path_builder<Allocator>::path_builder(const Allocator &a) noexcept
 					: _Data(a)
 					, _Current_point()
 					, _Last_move_to_point()
@@ -3451,7 +3247,7 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline path_factory<Allocator>::path_factory(size_type n, const Allocator & a)
+				inline path_builder<Allocator>::path_builder(size_type n, const Allocator & a)
 					: _Data(n, a)
 					, _Current_point()
 					, _Last_move_to_point()
@@ -3460,7 +3256,7 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline path_factory<Allocator>::path_factory(size_type n, const value_type & value, const Allocator& a)
+				inline path_builder<Allocator>::path_builder(size_type n, const value_type & value, const Allocator& a)
 					: _Data(n, value, a)
 					, _Current_point()
 					, _Last_move_to_point()
@@ -3470,7 +3266,7 @@ namespace std {
 
 				template<class Allocator>
 				template<class InputIterator>
-				inline path_factory<Allocator>::path_factory(InputIterator first, InputIterator last, const Allocator& a)
+				inline path_builder<Allocator>::path_builder(InputIterator first, InputIterator last, const Allocator& a)
 					: _Data(first, last, a)
 					, _Current_point()
 					, _Last_move_to_point()
@@ -3480,30 +3276,30 @@ namespace std {
 
 				template<class Allocator>
 				template<class InputIterator>
-				inline void path_factory<Allocator>::assign(InputIterator first, InputIterator last) {
+				inline void path_builder<Allocator>::assign(InputIterator first, InputIterator last) {
 					_Data.assign(first, last);
 				}
 
 				template<class Allocator>
 				template<class ...Args>
-				inline typename path_factory<Allocator>::reference path_factory<Allocator>::emplace_back(Args && ...args) {
+				inline typename path_builder<Allocator>::reference path_builder<Allocator>::emplace_back(Args && ...args) {
 					return _Data.emplace_back(forward<Args>(args)...);
 				}
 
 				template<class Allocator>
 				template<class ...Args>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::emplace(const_iterator position, Args&& ...args) {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::emplace(const_iterator position, Args&& ...args) {
 					return _Data.emplace(position, forward<Args>(args)...).
 				}
 
 				template<class Allocator>
 				template<class InputIterator>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::insert(const_iterator position, InputIterator first, InputIterator last) {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::insert(const_iterator position, InputIterator first, InputIterator last) {
 					return _Data.insert<InputIterator>(position, first, last);
 				}
 
 				template<class Allocator>
-				inline path_factory<Allocator>::path_factory(const path_factory& pf)
+				inline path_builder<Allocator>::path_builder(const path_builder& pf)
 					: _Data(pf._Data)
 					, _Current_point(pf._Current_point)
 					, _Last_move_to_point(pf._Last_move_to_point)
@@ -3512,7 +3308,7 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline path_factory<Allocator>::path_factory(path_factory&& pf) noexcept
+				inline path_builder<Allocator>::path_builder(path_builder&& pf) noexcept
 					: _Data(move(pf._Data))
 					, _Current_point(move(pf._Current_point))
 					, _Last_move_to_point(move(pf._Last_move_to_point))
@@ -3521,7 +3317,7 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline path_factory<Allocator>::path_factory(const path_factory& pf, const Allocator & a)
+				inline path_builder<Allocator>::path_builder(const path_builder& pf, const Allocator & a)
 					: _Data(pf._Data, a)
 					, _Current_point(pf._Current_point)
 					, _Last_move_to_point(pf._Last_move_to_point)
@@ -3530,7 +3326,7 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline path_factory<Allocator>::path_factory(path_factory&& pf, const Allocator & a)
+				inline path_builder<Allocator>::path_builder(path_builder&& pf, const Allocator & a)
 					: _Data(move(pf._Data), a)
 					, _Current_point(move(pf._Current_point))
 					, _Last_move_to_point(move(pf._Last_move_to_point))
@@ -3539,7 +3335,7 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline path_factory<Allocator>::path_factory(initializer_list<value_type> il, const Allocator & a)
+				inline path_builder<Allocator>::path_builder(initializer_list<value_type> il, const Allocator & a)
 					: _Data(il, a)
 					, _Current_point()
 					, _Last_move_to_point()
@@ -3548,7 +3344,7 @@ namespace std {
 				}
 
 				template <class Allocator>
-				inline path_factory<Allocator>& path_factory<Allocator>::operator=(const path_factory& x) {
+				inline path_builder<Allocator>& path_builder<Allocator>::operator=(const path_builder& x) {
 					_Data = x._Data;
 					_Current_point = x._Current_point;
 					_Last_move_to_point = x._Last_move_to_point;
@@ -3556,7 +3352,7 @@ namespace std {
 					return *this;
 				}
 				template<class Allocator>
-				inline path_factory<Allocator>& path_factory<Allocator>::operator=(path_factory&& x) noexcept(allocator_traits<Allocator>::propagate_on_container_move_assignment::value || allocator_traits<Allocator>::is_always_equal::value) {
+				inline path_builder<Allocator>& path_builder<Allocator>::operator=(path_builder&& x) noexcept(allocator_traits<Allocator>::propagate_on_container_move_assignment::value || allocator_traits<Allocator>::is_always_equal::value) {
 					::std::swap(_Data, x._Data);
 					::std::swap(_Current_point, x._Current_point);
 					::std::swap(_Last_move_to_point, x._Last_move_to_point);
@@ -3564,7 +3360,7 @@ namespace std {
 					return *this;
 				}
 				template<class Allocator>
-				inline path_factory<Allocator>& path_factory<Allocator>::operator=(initializer_list<value_type> il) {
+				inline path_builder<Allocator>& path_builder<Allocator>::operator=(initializer_list<value_type> il) {
 					_Data.clear();
 					for (const auto& item : il) {
 						_Data.push_back(item);
@@ -3572,179 +3368,179 @@ namespace std {
 					return *this;
 				}
 				template<class Allocator>
-				inline void path_factory<Allocator>::assign(size_type n, const value_type& u) {
+				inline void path_builder<Allocator>::assign(size_type n, const value_type& u) {
 					_Data.assign(n, u);
 				}
 				template<class Allocator>
-				inline void path_factory<Allocator>::assign(initializer_list<value_type> il) {
+				inline void path_builder<Allocator>::assign(initializer_list<value_type> il) {
 					_Data.assign(il);
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::allocator_type path_factory<Allocator>::get_allocator() const noexcept {
+				inline typename path_builder<Allocator>::allocator_type path_builder<Allocator>::get_allocator() const noexcept {
 					return _Data.allocator_type();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::begin() noexcept {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::begin() noexcept {
 					return _Data.begin();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_iterator path_factory<Allocator>::begin() const noexcept {
+				inline typename path_builder<Allocator>::const_iterator path_builder<Allocator>::begin() const noexcept {
 					return _Data.begin();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_iterator path_factory<Allocator>::cbegin() const noexcept {
+				inline typename path_builder<Allocator>::const_iterator path_builder<Allocator>::cbegin() const noexcept {
 					return _Data.cbegin();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::end() noexcept {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::end() noexcept {
 					return _Data.end();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_iterator path_factory<Allocator>::end() const noexcept {
+				inline typename path_builder<Allocator>::const_iterator path_builder<Allocator>::end() const noexcept {
 					return _Data.end();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_iterator path_factory<Allocator>::cend() const noexcept {
+				inline typename path_builder<Allocator>::const_iterator path_builder<Allocator>::cend() const noexcept {
 					return _Data.cend();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::reverse_iterator path_factory<Allocator>::rbegin() noexcept {
+				inline typename path_builder<Allocator>::reverse_iterator path_builder<Allocator>::rbegin() noexcept {
 					return _Data.rbegin();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_reverse_iterator path_factory<Allocator>::rbegin() const noexcept {
+				inline typename path_builder<Allocator>::const_reverse_iterator path_builder<Allocator>::rbegin() const noexcept {
 					return _Data.rbegin();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_reverse_iterator path_factory<Allocator>::crbegin() const noexcept {
+				inline typename path_builder<Allocator>::const_reverse_iterator path_builder<Allocator>::crbegin() const noexcept {
 					return _Data.crbegin();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::reverse_iterator path_factory<Allocator>::rend() noexcept {
+				inline typename path_builder<Allocator>::reverse_iterator path_builder<Allocator>::rend() noexcept {
 					return _Data.rend();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_reverse_iterator path_factory<Allocator>::rend() const noexcept {
+				inline typename path_builder<Allocator>::const_reverse_iterator path_builder<Allocator>::rend() const noexcept {
 					return _Data.rend();
 				}
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_reverse_iterator path_factory<Allocator>::crend() const noexcept {
+				inline typename path_builder<Allocator>::const_reverse_iterator path_builder<Allocator>::crend() const noexcept {
 					return _Data.crend();
 				}
 
 				template<class Allocator>
-				inline bool path_factory<Allocator>::empty() const noexcept {
+				inline bool path_builder<Allocator>::empty() const noexcept {
 					return _Data.empty();
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::size_type path_factory<Allocator>::size() const noexcept {
+				inline typename path_builder<Allocator>::size_type path_builder<Allocator>::size() const noexcept {
 					return _Data.size();
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::size_type path_factory<Allocator>::max_size() const noexcept {
+				inline typename path_builder<Allocator>::size_type path_builder<Allocator>::max_size() const noexcept {
 					return _Data.max_size();
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::size_type path_factory<Allocator>::capacity() const noexcept {
+				inline typename path_builder<Allocator>::size_type path_builder<Allocator>::capacity() const noexcept {
 					return _Data.capacity();
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::resize(size_type sz) {
+				inline void path_builder<Allocator>::resize(size_type sz) {
 					_Data.resize(sz);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::resize(size_type sz, const value_type& c) {
+				inline void path_builder<Allocator>::resize(size_type sz, const value_type& c) {
 					_Data.resize(sz, c);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::reserve(size_type n) {
+				inline void path_builder<Allocator>::reserve(size_type n) {
 					_Data.reserve(n)
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::shrink_to_fit() {
+				inline void path_builder<Allocator>::shrink_to_fit() {
 					_Data.shrink_to_fit();
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::reference path_factory<Allocator>::operator[](size_type n) {
+				inline typename path_builder<Allocator>::reference path_builder<Allocator>::operator[](size_type n) {
 					return _Data[n];
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_reference path_factory<Allocator>::operator[](size_type n) const {
+				inline typename path_builder<Allocator>::const_reference path_builder<Allocator>::operator[](size_type n) const {
 					return _Data[n];
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_reference path_factory<Allocator>::at(size_type n) const {
+				inline typename path_builder<Allocator>::const_reference path_builder<Allocator>::at(size_type n) const {
 					return _Data.at(n);
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::reference path_factory<Allocator>::at(size_type n) {
+				inline typename path_builder<Allocator>::reference path_builder<Allocator>::at(size_type n) {
 					return _Data.at(n);
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::reference path_factory<Allocator>::front() {
+				inline typename path_builder<Allocator>::reference path_builder<Allocator>::front() {
 					return _Data.front();
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_reference path_factory<Allocator>::front() const {
+				inline typename path_builder<Allocator>::const_reference path_builder<Allocator>::front() const {
 					return _Data.front();
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::reference path_factory<Allocator>::back() {
+				inline typename path_builder<Allocator>::reference path_builder<Allocator>::back() {
 					return _Data.back();
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::const_reference path_factory<Allocator>::back() const {
+				inline typename path_builder<Allocator>::const_reference path_builder<Allocator>::back() const {
 					return _Data.back();
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::new_path() noexcept {
+				inline void path_builder<Allocator>::new_path() noexcept {
 					_Data.emplace_back(in_place_type<path_data::new_path>);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::close_path() noexcept {
+				inline void path_builder<Allocator>::close_path() noexcept {
 					const vector_2d pt{};
 					_Data.emplace_back(in_place_type<path_data::close_path>, pt);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::arc_clockwise(const vector_2d& center, double radius, double angle1, double angle2) noexcept {
+				inline void path_builder<Allocator>::arc_clockwise(const vector_2d& center, double radius, double angle1, double angle2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::arc_clockwise>, center, radius, angle1, angle2);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::arc_clockwise(const circle& c, double angle1, double angle2) noexcept {
+				inline void path_builder<Allocator>::arc_clockwise(const circle& c, double angle1, double angle2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::arc_clockwise>, c, angle1, angle2);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::arc_counterclockwise(const vector_2d& center, double radius, double angle1, double angle2) noexcept {
+				inline void path_builder<Allocator>::arc_counterclockwise(const vector_2d& center, double radius, double angle1, double angle2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::arc_counterclockwise>, center, radius, angle1, angle2);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::arc_counterclockwise(const circle& c, double angle1, double angle2) noexcept {
+				inline void path_builder<Allocator>::arc_counterclockwise(const circle& c, double angle1, double angle2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::arc_counterclockwise>, c, angle1, angle2);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::ellipse(const experimental::io2d::ellipse& e) noexcept {
+				inline void path_builder<Allocator>::ellipse(const experimental::io2d::ellipse& e) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_ellipse>, e);
 					//const auto m = _Transform_matrix;
 					//const auto o = _Origin;
@@ -3756,32 +3552,32 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::ellipse(const circle& c) noexcept {
+				inline void path_builder<Allocator>::ellipse(const circle& c) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_ellipse>, c);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2) noexcept {
+				inline void path_builder<Allocator>::cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_cubic_curve>, pt0, pt1, pt2);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::line_to(const vector_2d& pt) noexcept {
+				inline void path_builder<Allocator>::line_to(const vector_2d& pt) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_line>, pt);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::move_to(const vector_2d& pt) noexcept {
+				inline void path_builder<Allocator>::move_to(const vector_2d& pt) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_move>, pt);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::quadratic_curve_to(const vector_2d& pt0, const vector_2d& pt1) noexcept {
+				inline void path_builder<Allocator>::quadratic_curve_to(const vector_2d& pt0, const vector_2d& pt1) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_quadratic_curve>, pt0, pt1);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::rectangle(const experimental::io2d::rectangle& r) noexcept {
+				inline void path_builder<Allocator>::rectangle(const experimental::io2d::rectangle& r) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_rectangle>, r);
 					//_Data.emplace_back(in_place_type<path_data::abs_move>, vector_2d{ r.x(), r.y() });
 					//_Data.emplace_back(in_place_type<path_data::rel_line>, vector_2d{ r.width(), 0.0 });
@@ -3791,99 +3587,99 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2) noexcept {
+				inline void path_builder<Allocator>::rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_cubic_curve>, dpt0, dpt1, dpt2);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::rel_ellipse(const experimental::io2d::ellipse& e) noexcept {
+				inline void path_builder<Allocator>::rel_ellipse(const experimental::io2d::ellipse& e) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_ellipse>, e);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::rel_ellipse(const circle& c) noexcept {
+				inline void path_builder<Allocator>::rel_ellipse(const circle& c) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_ellipse>, c);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::rel_rectangle(const experimental::io2d::rectangle& r) noexcept {
+				inline void path_builder<Allocator>::rel_rectangle(const experimental::io2d::rectangle& r) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_rectangle>, r);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::rel_line_to(const vector_2d& dpt) noexcept {
+				inline void path_builder<Allocator>::rel_line_to(const vector_2d& dpt) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_line>, dpt);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::rel_move_to(const vector_2d& dpt) noexcept {
+				inline void path_builder<Allocator>::rel_move_to(const vector_2d& dpt) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_move>, dpt);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::rel_quadratic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1) noexcept {
+				inline void path_builder<Allocator>::rel_quadratic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_quadratic_curve>, dpt0, dpt1);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::transform_matrix(const matrix_2d& m) noexcept {
+				inline void path_builder<Allocator>::transform_matrix(const matrix_2d& m) noexcept {
 					_Transform_matrix = m;
 					_Data.emplace_back(in_place_type<path_data::change_matrix>, m);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::origin(const vector_2d& pt) noexcept {
+				inline void path_builder<Allocator>::origin(const vector_2d& pt) noexcept {
 					_Origin = pt;
 					_Data.emplace_back(in_place_type<path_data::change_origin>, pt);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::push_back(const value_type& x) {
+				inline void path_builder<Allocator>::push_back(const value_type& x) {
 					_Data.push_back(x);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::push_back(value_type&& x) {
+				inline void path_builder<Allocator>::push_back(value_type&& x) {
 					_Data.push_back(move(x));
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::pop_back() {
+				inline void path_builder<Allocator>::pop_back() {
 					_Data.pop_back();
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::insert(const_iterator position, const value_type& x) {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::insert(const_iterator position, const value_type& x) {
 					return _Data.insert(position, x);
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::insert(const_iterator position, value_type&& x) {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::insert(const_iterator position, value_type&& x) {
 					return _Data.insert(position, x);
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::insert(const_iterator position, size_type n, const value_type& x) {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::insert(const_iterator position, size_type n, const value_type& x) {
 					return _Data.insert(position, n, x);
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::insert(const_iterator position, initializer_list<value_type> il) {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::insert(const_iterator position, initializer_list<value_type> il) {
 					return _Data.insert(position, il);
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::erase(const_iterator position) {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::erase(const_iterator position) {
 					return _Data.erase(position);
 				}
 
 				template<class Allocator>
-				inline typename path_factory<Allocator>::iterator path_factory<Allocator>::erase(const_iterator first, const_iterator last) {
+				inline typename path_builder<Allocator>::iterator path_builder<Allocator>::erase(const_iterator first, const_iterator last) {
 					return _Data.erase(first, last);
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::swap(path_factory &pf) noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value || allocator_traits<Allocator>::is_always_equal::value) {
+				inline void path_builder<Allocator>::swap(path_builder &pf) noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value || allocator_traits<Allocator>::is_always_equal::value) {
 					swap(_data, pf._Data);
 					swap(_Current_point, pf._Current_point);
 					swap(_Last_move_to_point, pf._Last_move_to_point);
@@ -3892,439 +3688,58 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline void path_factory<Allocator>::clear() noexcept {
+				inline void path_builder<Allocator>::clear() noexcept {
 					_Data.clear();
 					_Current_point.reset();
 					_Transform_matrix = matrix_2d::init_identity();
 					_Origin = {};
 				}
 
-				template<class Allocator>
-				inline color_stop_group<Allocator>::color_stop_group(const Allocator& a) noexcept
-					: _Stops(a) {
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>::color_stop_group(size_type n, const Allocator& a)
-					: _Stops(n, a) {
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>::color_stop_group(size_type n, const value_type& value, const Allocator& a)
-					: _Stops(n, value, a) {
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>::color_stop_group(const color_stop_group& x)
-					: _Stops(x._Stops) {
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>::color_stop_group(color_stop_group&& x) noexcept
-					: _Stops(::std::move(x._Stops)) {
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>::color_stop_group(const color_stop_group& x, const Allocator& a)
-					: _Stops(x._Stops, a) {
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>::color_stop_group(color_stop_group&& x, const Allocator& a)
-					: _Stops(move(x), a) {
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>::color_stop_group(initializer_list<value_type> il, const Allocator& a)
-					: _Stops(il, a) {
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>::~color_stop_group() {
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>& color_stop_group<Allocator>::operator=(const color_stop_group& x) {
-					_Stops = x._Stops;
-					return *this;
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>& color_stop_group<Allocator>::operator=(color_stop_group&& x) noexcept(allocator_traits<Allocator>::propagate_on_container_move_assignment::value || allocator_traits<Allocator>::is_always_equal::value) {
-					swap(_Stops, x._Stops);
-					return *this;
-				}
-
-				template<class Allocator>
-				inline color_stop_group<Allocator>& color_stop_group<Allocator>::operator=(initializer_list<value_type> il) {
-					_Stops = il;
-					return *this;
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::assign(size_type n, const value_type& u) {
-					_Stops.assign(n, u);
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::assign(initializer_list<value_type> il) {
-					_Stops.assign(il);
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::allocator_type color_stop_group<Allocator>::get_allocator() const noexcept {
-					return allocator_type();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::begin() noexcept {
-					return _Stops.begin();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_iterator color_stop_group<Allocator>::begin() const noexcept {
-					return _Stops.begin();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_iterator color_stop_group<Allocator>::cbegin() const noexcept {
-					return _Stops.cbegin();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::end() noexcept {
-					return _Stops.end();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_iterator color_stop_group<Allocator>::end() const noexcept {
-					return _Stops.end();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_iterator color_stop_group<Allocator>::cend() const noexcept {
-					return _Stops.cend();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::reverse_iterator color_stop_group<Allocator>::rbegin() noexcept {
-					return _Stops.rbegin();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_reverse_iterator color_stop_group<Allocator>::rbegin() const noexcept {
-					return _Stops.rbegin();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_reverse_iterator color_stop_group<Allocator>::crbegin() const noexcept {
-					return _Stops.crbegin();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::reverse_iterator color_stop_group<Allocator>::rend() noexcept {
-					return _Stops.rend();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_reverse_iterator color_stop_group<Allocator>::rend() const noexcept {
-					return _Stops.rend();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_reverse_iterator color_stop_group<Allocator>::crend() const noexcept {
-					return _Stops.crend();
-				}
-
-				template<class Allocator>
-				inline bool color_stop_group<Allocator>::empty() const noexcept {
-					return _Stops.empty();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::size_type color_stop_group<Allocator>::size() const noexcept {
-					return _Stops.size();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::size_type color_stop_group<Allocator>::max_size() const noexcept {
-					return _Stops.max_size();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::size_type color_stop_group<Allocator>::capacity() const noexcept {
-					return _Stops.capacity();
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::resize(size_type sz) {
-					_Stops.resize(sz);
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::resize(size_type sz, const value_type& c) {
-					_Stops.resize(sz, c);
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::reserve(size_type n) {
-					_Stops.reserve(n);
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::shrink_to_fit() {
-					_Stops.shrink_to_fit();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::operator[](size_type n) {
-					return _Stops[n];
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_reference color_stop_group<Allocator>::operator[](size_type n) const {
-					return _Stops[n];
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_reference color_stop_group<Allocator>::at(size_type n) const {
-					return _Stops.at(n);
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::at(size_type n) {
-					return _Stops.at(n);
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::front() {
-					return _Stops.front();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_reference color_stop_group<Allocator>::front() const {
-					return _Stops.front();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::back() {
-					return _Stops.back();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::const_reference color_stop_group<Allocator>::back() const {
-					return _Stops.back();
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::push_back(const value_type& x) {
-					_Stops.push_bacl(x);
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::push_back(value_type&& x) {
-					_Stops.push_back(move(x));
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::pop_back() {
-					_Stops.pop_back();
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, const value_type & x) {
-					return _Stops.insert(position, x);
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, value_type && x) {
-					return _Stops.insert(position, ::std::move(x));
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, size_type n, const value_type& x) {
-					return _Stops.insert(position, n, x);
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, initializer_list<value_type> il) {
-					return _Stops.insert(position, il);
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::erase(const_iterator position) {
-					return _Stops.erase(position);
-				}
-
-				template<class Allocator>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::erase(const_iterator first, const_iterator last) {
-					return _Stops.erase(first, last);
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::swap(color_stop_group& other) noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value || allocator_traits<Allocator>::is_always_equal::value) {
-					_Stops.swap(other._Stops);
-				}
-
-				template<class Allocator>
-				inline void color_stop_group<Allocator>::clear() noexcept {
-					_Stops.clear();
-				}
-
-				template<class Allocator>
-				template<class InputIterator>
-				inline color_stop_group<Allocator>::color_stop_group(InputIterator first, InputIterator last, const Allocator& a)
-					: _Stops(first, last, a) {
-				}
-
-				template<class Allocator>
-				template<class InputIterator>
-				inline void color_stop_group<Allocator>::assign(InputIterator first, InputIterator last) {
-					_Stops.assign<InputIterator>(first, last);
-				}
-
-				template<class Allocator>
-				template<class ...Args>
-				inline typename color_stop_group<Allocator>::reference color_stop_group<Allocator>::emplace_back(Args&& ...args) {
-					_Stops.emplace_back<Args&&...>(::std::forward<Args>(args)...);
-					return _Stops.back();
-				}
-
-				template<class Allocator>
-				template<class ...Args>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::emplace(const_iterator position, Args && ...args) {
-					return _Stops.emplace(position, ::std::forward<Args>(args)...);
-				}
-
-				template<class Allocator>
-				template<class InputIterator>
-				inline typename color_stop_group<Allocator>::iterator color_stop_group<Allocator>::insert(const_iterator position, InputIterator first, InputIterator last) {
-					return _Stops.insert(position, first, last);
-				}
-
-
-				template <class Allocator>
+				template <class InputIterator>
 				inline brush::brush(const vector_2d& begin, const vector_2d& end,
-					const color_stop_group<Allocator>& csg)
+					InputIterator first, InputIterator last)
 					: _Brush()
 					, _Image_surface()
-					, _Brush_type(brush_type::linear)
-					, _Extend(::std::experimental::io2d::tiling::none)
-					, _Filter(::std::experimental::io2d::filter::good)
-					, _Matrix(matrix_2d::init_identity()) {
+					, _Brush_type(brush_type::linear) {
 					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
 					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
-					for (const color_stop& stop : csg) {
+					//for (const color_stop& stop : csg) {
+					//	cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+					//}
+					for (auto it = first; it != last; ++it) {
+						auto stop = *it;
 						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
 					}
 					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 				}
 
-				template <class Allocator>
-				inline brush::brush(const vector_2d& begin, const vector_2d& end,
-					const color_stop_group<Allocator>& csg, error_code& ec) noexcept
-					: _Brush()
-					, _Image_surface()
-					, _Brush_type(brush_type::linear)
-					, _Extend(::std::experimental::io2d::tiling::none)
-					, _Filter(::std::experimental::io2d::filter::good)
-					, _Matrix(matrix_2d::init_identity()) {
-					try {
-						_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
-					}
-					catch (const bad_alloc&) {
-						ec = make_error_code(errc::not_enough_memory);
-						_Brush.reset();
-						return;
-					}
-					catch (const ::std::length_error&) {
-						_Brush.reset();
-						ec = ::std::make_error_code(::std::errc::not_enough_memory);
-						return;
-					}
-
-					auto status = cairo_pattern_status(_Brush.get());
-					if (status != CAIRO_STATUS_SUCCESS) {
-						ec = _Cairo_status_t_to_std_error_code(status);
-						_Brush.reset();
-						return;
-					}
-
-					for (const color_stop& stop : csg) {
-						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
-					}
-					status = cairo_pattern_status(_Brush.get());
-					if (status != CAIRO_STATUS_SUCCESS) {
-						ec = _Cairo_status_t_to_std_error_code(status);
-						_Brush.reset();
-						return;
-					}
-					ec.clear();
-				}
-
-				template <class Allocator>
+				template <class InputIterator>
 				inline brush::brush(const circle& start, const circle& end,
-					const color_stop_group<Allocator>& csg)
+					InputIterator first, InputIterator last)
 					: _Brush()
 					, _Brush_type(brush_type::radial)
-					, _Extend(::std::experimental::io2d::tiling::none)
+					, _Extend(::std::experimental::io2d::wrap_mode::none)
 					, _Filter(::std::experimental::io2d::filter::good)
 					, _Matrix(matrix_2d::init_identity()) {
 					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
 					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
-					for (const color_stop& stop : csg) {
+					//for (const color_stop& stop : csg) {
+					//	cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+					//}
+					//for (const color_stop& stop = first, end = last; stop != last; ++stop) {
+					//	cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+					//}
+					//for (auto& stop = first; stop != last; ++stop) {
+					//	cairo_pattern_add_color_stop_rgba(_Brush.get(), *stop.offset(), *stop.color().r(), *stop.color().g(), *stop.color().b(), *stop.color().a());
+					//}
+					for (auto it = first; it != last; ++it) {
+						auto stop = *it;
 						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
 					}
 					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 				}
-
-				template <class Allocator>
-				inline brush::brush(const circle& start, const circle& end,
-					const color_stop_group<Allocator>& csg, error_code& ec) noexcept
-					: _Brush()
-					, _Image_surface()
-					, _Brush_type(brush_type::radial)
-					, _Extend(::std::experimental::io2d::tiling::none)
-					, _Filter(::std::experimental::io2d::filter::good)
-					, _Matrix(matrix_2d::init_identity()) {
-					try {
-						_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
-					}
-					catch (const bad_alloc&) {
-						ec = make_error_code(errc::not_enough_memory);
-						_Brush.reset();
-						return;
-					}
-					catch (const ::std::length_error&) {
-						_Brush.reset();
-						ec = ::std::make_error_code(::std::errc::not_enough_memory);
-						return;
-					}
-
-					auto status = cairo_pattern_status(_Brush.get());
-					if (status != CAIRO_STATUS_SUCCESS) {
-						ec = _Cairo_status_t_to_std_error_code(status);
-						_Brush.reset();
-						return;
-					}
-
-					for (const color_stop& stop : csg) {
-						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
-					}
-					status = cairo_pattern_status(_Brush.get());
-					if (status != CAIRO_STATUS_SUCCESS) {
-						ec = _Cairo_status_t_to_std_error_code(status);
-						_Brush.reset();
-						return;
-					}
-					ec.clear();
-				}
-
-				template <class... _Args>
-				void _Add_color_stop(cairo_pattern_t*, _Args&&...);
-
 #if _Inline_namespace_conditional_support_test
 			}
 #endif

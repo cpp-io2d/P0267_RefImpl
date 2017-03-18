@@ -266,7 +266,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 }
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
-	: surface({ nullptr, nullptr }, preferredFormat, _Cairo_content_t_to_content(_Cairo_content_t_for_cairo_format_t(_Format_to_cairo_format_t(preferredFormat))))
+	: surface({ nullptr, nullptr }, preferredFormat)
 	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
@@ -276,7 +276,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Draw_fn()
 	, _Size_change_fn()
 	, _User_scaling_fn()
-	, _Letterbox_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Letterbox_brush()
 	, _Auto_clear(false)
 	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
@@ -363,7 +363,9 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	// We render to the fixed size surface.
 	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
 	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-	_Ensure_state();
+	//_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+	//_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	//_Ensure_state();
 }
 
 display_surface::~display_surface() {
@@ -373,7 +375,7 @@ display_surface::~display_surface() {
 	}
 }
 
-int display_surface::show() {
+int display_surface::begin_show() {
 	MSG msg{ };
 	msg.message = WM_NULL;
 	if (_Draw_fn == nullptr) {
@@ -383,6 +385,8 @@ int display_surface::show() {
 	_Elapsed_draw_time = 0.0;
 
 	while (msg.message != WM_QUIT) {
+		//_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+		//_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 		auto currentTime = steady_clock::now();
 		auto elapsedTimeIncrement = static_cast<double>(duration_cast<nanoseconds>(currentTime - previousTime).count());
 		_Elapsed_draw_time += elapsedTimeIncrement;
@@ -475,6 +479,6 @@ int display_surface::show() {
 #endif
 }
 
-void display_surface::exit_show(int ms) noexcept {
+void display_surface::end_show() noexcept {
 	PostQuitMessage(0);
 }

@@ -229,31 +229,31 @@ namespace std {
 				}
 			}
 
-			inline cairo_content_t _Content_to_cairo_content_t(::std::experimental::io2d::content c) {
-				switch (c) {
-				case ::std::experimental::io2d::content::color:
-					return CAIRO_CONTENT_COLOR;
-				case ::std::experimental::io2d::content::alpha:
-					return CAIRO_CONTENT_ALPHA;
-				case ::std::experimental::io2d::content::color_alpha:
-					return CAIRO_CONTENT_COLOR_ALPHA;
-				default:
-					throw ::std::runtime_error("Unknown content value.");
-				}
-			}
+			//inline cairo_content_t _Content_to_cairo_content_t(::std::experimental::io2d::content c) {
+			//	switch (c) {
+			//	case ::std::experimental::io2d::content::color:
+			//		return CAIRO_CONTENT_COLOR;
+			//	case ::std::experimental::io2d::content::alpha:
+			//		return CAIRO_CONTENT_ALPHA;
+			//	case ::std::experimental::io2d::content::color_alpha:
+			//		return CAIRO_CONTENT_COLOR_ALPHA;
+			//	default:
+			//		throw ::std::runtime_error("Unknown content value.");
+			//	}
+			//}
 
-			inline ::std::experimental::io2d::content _Cairo_content_t_to_content(cairo_content_t cc) {
-				switch (cc) {
-				case CAIRO_CONTENT_COLOR:
-					return ::std::experimental::io2d::content::color;
-				case CAIRO_CONTENT_ALPHA:
-					return ::std::experimental::io2d::content::alpha;
-				case CAIRO_CONTENT_COLOR_ALPHA:
-					return ::std::experimental::io2d::content::color_alpha;
-				default:
-					throw ::std::runtime_error("Unknown cairo_content_t value.");
-				}
-			}
+			//inline ::std::experimental::io2d::content _Cairo_content_t_to_content(cairo_content_t cc) {
+			//	switch (cc) {
+			//	case CAIRO_CONTENT_COLOR:
+			//		return ::std::experimental::io2d::content::color;
+			//	case CAIRO_CONTENT_ALPHA:
+			//		return ::std::experimental::io2d::content::alpha;
+			//	case CAIRO_CONTENT_COLOR_ALPHA:
+			//		return ::std::experimental::io2d::content::color_alpha;
+			//	default:
+			//		throw ::std::runtime_error("Unknown cairo_content_t value.");
+			//	}
+			//}
 
 			inline cairo_fill_rule_t _Fill_rule_to_cairo_fill_rule_t(::std::experimental::io2d::fill_rule fr) {
 				switch (fr) {
@@ -279,7 +279,7 @@ namespace std {
 
 			inline cairo_line_cap_t _Line_cap_to_cairo_line_cap_t(::std::experimental::io2d::line_cap lc) {
 				switch (lc) {
-				case ::std::experimental::io2d::line_cap::butt:
+				case ::std::experimental::io2d::line_cap::none:
 					return CAIRO_LINE_CAP_BUTT;
 				case ::std::experimental::io2d::line_cap::round:
 					return CAIRO_LINE_CAP_ROUND;
@@ -293,7 +293,7 @@ namespace std {
 			inline ::std::experimental::io2d::line_cap _Cairo_line_cap_t_to_line_cap(cairo_line_cap_t clc) {
 				switch (clc) {
 				case CAIRO_LINE_CAP_BUTT:
-					return ::std::experimental::io2d::line_cap::butt;
+					return ::std::experimental::io2d::line_cap::none;
 				case CAIRO_LINE_CAP_ROUND:
 					return ::std::experimental::io2d::line_cap::round;
 				case CAIRO_LINE_CAP_SQUARE:
@@ -331,133 +331,133 @@ namespace std {
 				}
 			}
 
-			inline cairo_operator_t _Compositing_operator_to_cairo_operator_t(::std::experimental::io2d::compositing_operator co) {
+			inline cairo_operator_t _Compositing_operator_to_cairo_operator_t(::std::experimental::io2d::compositing_op co) {
 				switch (co)
 				{
-				case ::std::experimental::io2d::compositing_operator::clear:
+				case ::std::experimental::io2d::compositing_op::clear:
 					return CAIRO_OPERATOR_CLEAR;
-				case ::std::experimental::io2d::compositing_operator::source:
+				case ::std::experimental::io2d::compositing_op::source:
 					return CAIRO_OPERATOR_SOURCE;
-				case ::std::experimental::io2d::compositing_operator::over:
+				case ::std::experimental::io2d::compositing_op::over:
 					return CAIRO_OPERATOR_OVER;
-				case ::std::experimental::io2d::compositing_operator::in:
+				case ::std::experimental::io2d::compositing_op::in:
 					return CAIRO_OPERATOR_IN;
-				case ::std::experimental::io2d::compositing_operator::out:
+				case ::std::experimental::io2d::compositing_op::out:
 					return CAIRO_OPERATOR_OUT;
-				case ::std::experimental::io2d::compositing_operator::atop:
+				case ::std::experimental::io2d::compositing_op::atop:
 					return CAIRO_OPERATOR_ATOP;
-				case ::std::experimental::io2d::compositing_operator::dest:
+				case ::std::experimental::io2d::compositing_op::dest:
 					return CAIRO_OPERATOR_DEST;
-				case ::std::experimental::io2d::compositing_operator::dest_over:
+				case ::std::experimental::io2d::compositing_op::dest_over:
 					return CAIRO_OPERATOR_DEST_OVER;
-				case ::std::experimental::io2d::compositing_operator::dest_in:
+				case ::std::experimental::io2d::compositing_op::dest_in:
 					return CAIRO_OPERATOR_DEST_IN;
-				case ::std::experimental::io2d::compositing_operator::dest_out:
+				case ::std::experimental::io2d::compositing_op::dest_out:
 					return CAIRO_OPERATOR_DEST_OUT;
-				case ::std::experimental::io2d::compositing_operator::dest_atop:
+				case ::std::experimental::io2d::compositing_op::dest_atop:
 					return CAIRO_OPERATOR_DEST_ATOP;
-				case ::std::experimental::io2d::compositing_operator::xor_op:
+				case ::std::experimental::io2d::compositing_op::xor_op:
 					return CAIRO_OPERATOR_XOR;
-				case ::std::experimental::io2d::compositing_operator::add:
+				case ::std::experimental::io2d::compositing_op::add:
 					return CAIRO_OPERATOR_ADD;
-				case ::std::experimental::io2d::compositing_operator::saturate:
+				case ::std::experimental::io2d::compositing_op::saturate:
 					return CAIRO_OPERATOR_SATURATE;
-				case ::std::experimental::io2d::compositing_operator::multiply:
+				case ::std::experimental::io2d::compositing_op::multiply:
 					return CAIRO_OPERATOR_MULTIPLY;
-				case ::std::experimental::io2d::compositing_operator::screen:
+				case ::std::experimental::io2d::compositing_op::screen:
 					return CAIRO_OPERATOR_SCREEN;
-				case ::std::experimental::io2d::compositing_operator::overlay:
+				case ::std::experimental::io2d::compositing_op::overlay:
 					return CAIRO_OPERATOR_OVERLAY;
-				case ::std::experimental::io2d::compositing_operator::darken:
+				case ::std::experimental::io2d::compositing_op::darken:
 					return CAIRO_OPERATOR_DARKEN;
-				case ::std::experimental::io2d::compositing_operator::lighten:
+				case ::std::experimental::io2d::compositing_op::lighten:
 					return CAIRO_OPERATOR_LIGHTEN;
-				case ::std::experimental::io2d::compositing_operator::color_dodge:
+				case ::std::experimental::io2d::compositing_op::color_dodge:
 					return CAIRO_OPERATOR_COLOR_DODGE;
-				case ::std::experimental::io2d::compositing_operator::color_burn:
+				case ::std::experimental::io2d::compositing_op::color_burn:
 					return CAIRO_OPERATOR_COLOR_BURN;
-				case ::std::experimental::io2d::compositing_operator::hard_light:
+				case ::std::experimental::io2d::compositing_op::hard_light:
 					return CAIRO_OPERATOR_HARD_LIGHT;
-				case ::std::experimental::io2d::compositing_operator::soft_light:
+				case ::std::experimental::io2d::compositing_op::soft_light:
 					return CAIRO_OPERATOR_SOFT_LIGHT;
-				case ::std::experimental::io2d::compositing_operator::difference:
+				case ::std::experimental::io2d::compositing_op::difference:
 					return CAIRO_OPERATOR_DIFFERENCE;
-				case ::std::experimental::io2d::compositing_operator::exclusion:
+				case ::std::experimental::io2d::compositing_op::exclusion:
 					return CAIRO_OPERATOR_EXCLUSION;
-				case ::std::experimental::io2d::compositing_operator::hsl_hue:
+				case ::std::experimental::io2d::compositing_op::hsl_hue:
 					return CAIRO_OPERATOR_HSL_HUE;
-				case ::std::experimental::io2d::compositing_operator::hsl_saturation:
+				case ::std::experimental::io2d::compositing_op::hsl_saturation:
 					return CAIRO_OPERATOR_HSL_SATURATION;
-				case ::std::experimental::io2d::compositing_operator::hsl_color:
+				case ::std::experimental::io2d::compositing_op::hsl_color:
 					return CAIRO_OPERATOR_HSL_COLOR;
-				case ::std::experimental::io2d::compositing_operator::hsl_luminosity:
+				case ::std::experimental::io2d::compositing_op::hsl_luminosity:
 					return CAIRO_OPERATOR_HSL_LUMINOSITY;
 				default:
-					throw ::std::runtime_error("Unknown compositing_operator value.");
+					throw ::std::runtime_error("Unknown compositing_op value.");
 				}
 			}
 
-			inline ::std::experimental::io2d::compositing_operator _Cairo_operator_t_to_compositing_operator(cairo_operator_t co) {
+			inline ::std::experimental::io2d::compositing_op _Cairo_operator_t_to_compositing_operator(cairo_operator_t co) {
 				switch (co)
 				{
 				case CAIRO_OPERATOR_CLEAR:
-					return ::std::experimental::io2d::compositing_operator::clear;
+					return ::std::experimental::io2d::compositing_op::clear;
 				case CAIRO_OPERATOR_SOURCE:
-					return ::std::experimental::io2d::compositing_operator::source;
+					return ::std::experimental::io2d::compositing_op::source;
 				case CAIRO_OPERATOR_OVER:
-					return ::std::experimental::io2d::compositing_operator::over;
+					return ::std::experimental::io2d::compositing_op::over;
 				case CAIRO_OPERATOR_IN:
-					return ::std::experimental::io2d::compositing_operator::in;
+					return ::std::experimental::io2d::compositing_op::in;
 				case CAIRO_OPERATOR_OUT:
-					return ::std::experimental::io2d::compositing_operator::out;
+					return ::std::experimental::io2d::compositing_op::out;
 				case CAIRO_OPERATOR_ATOP:
-					return ::std::experimental::io2d::compositing_operator::atop;
+					return ::std::experimental::io2d::compositing_op::atop;
 				case CAIRO_OPERATOR_DEST:
-					return ::std::experimental::io2d::compositing_operator::dest;
+					return ::std::experimental::io2d::compositing_op::dest;
 				case CAIRO_OPERATOR_DEST_OVER:
-					return ::std::experimental::io2d::compositing_operator::dest_over;
+					return ::std::experimental::io2d::compositing_op::dest_over;
 				case CAIRO_OPERATOR_DEST_IN:
-					return ::std::experimental::io2d::compositing_operator::dest_in;
+					return ::std::experimental::io2d::compositing_op::dest_in;
 				case CAIRO_OPERATOR_DEST_OUT:
-					return ::std::experimental::io2d::compositing_operator::dest_out;
+					return ::std::experimental::io2d::compositing_op::dest_out;
 				case CAIRO_OPERATOR_DEST_ATOP:
-					return ::std::experimental::io2d::compositing_operator::dest_atop;
+					return ::std::experimental::io2d::compositing_op::dest_atop;
 				case CAIRO_OPERATOR_XOR:
-					return ::std::experimental::io2d::compositing_operator::xor_op;
+					return ::std::experimental::io2d::compositing_op::xor_op;
 				case CAIRO_OPERATOR_ADD:
-					return ::std::experimental::io2d::compositing_operator::add;
+					return ::std::experimental::io2d::compositing_op::add;
 				case CAIRO_OPERATOR_SATURATE:
-					return ::std::experimental::io2d::compositing_operator::saturate;
+					return ::std::experimental::io2d::compositing_op::saturate;
 				case CAIRO_OPERATOR_MULTIPLY:
-					return ::std::experimental::io2d::compositing_operator::multiply;
+					return ::std::experimental::io2d::compositing_op::multiply;
 				case CAIRO_OPERATOR_SCREEN:
-					return ::std::experimental::io2d::compositing_operator::screen;
+					return ::std::experimental::io2d::compositing_op::screen;
 				case CAIRO_OPERATOR_OVERLAY:
-					return ::std::experimental::io2d::compositing_operator::overlay;
+					return ::std::experimental::io2d::compositing_op::overlay;
 				case CAIRO_OPERATOR_DARKEN:
-					return ::std::experimental::io2d::compositing_operator::darken;
+					return ::std::experimental::io2d::compositing_op::darken;
 				case CAIRO_OPERATOR_LIGHTEN:
-					return ::std::experimental::io2d::compositing_operator::lighten;
+					return ::std::experimental::io2d::compositing_op::lighten;
 				case CAIRO_OPERATOR_COLOR_DODGE:
-					return ::std::experimental::io2d::compositing_operator::color_dodge;
+					return ::std::experimental::io2d::compositing_op::color_dodge;
 				case CAIRO_OPERATOR_COLOR_BURN:
-					return ::std::experimental::io2d::compositing_operator::color_burn;
+					return ::std::experimental::io2d::compositing_op::color_burn;
 				case CAIRO_OPERATOR_HARD_LIGHT:
-					return ::std::experimental::io2d::compositing_operator::hard_light;
+					return ::std::experimental::io2d::compositing_op::hard_light;
 				case CAIRO_OPERATOR_SOFT_LIGHT:
-					return ::std::experimental::io2d::compositing_operator::soft_light;
+					return ::std::experimental::io2d::compositing_op::soft_light;
 				case CAIRO_OPERATOR_DIFFERENCE:
-					return ::std::experimental::io2d::compositing_operator::difference;
+					return ::std::experimental::io2d::compositing_op::difference;
 				case CAIRO_OPERATOR_EXCLUSION:
-					return ::std::experimental::io2d::compositing_operator::exclusion;
+					return ::std::experimental::io2d::compositing_op::exclusion;
 				case CAIRO_OPERATOR_HSL_HUE:
-					return ::std::experimental::io2d::compositing_operator::hsl_hue;
+					return ::std::experimental::io2d::compositing_op::hsl_hue;
 				case CAIRO_OPERATOR_HSL_SATURATION:
-					return ::std::experimental::io2d::compositing_operator::hsl_saturation;
+					return ::std::experimental::io2d::compositing_op::hsl_saturation;
 				case CAIRO_OPERATOR_HSL_COLOR:
-					return ::std::experimental::io2d::compositing_operator::hsl_color;
+					return ::std::experimental::io2d::compositing_op::hsl_color;
 				case CAIRO_OPERATOR_HSL_LUMINOSITY:
-					return ::std::experimental::io2d::compositing_operator::hsl_luminosity;
+					return ::std::experimental::io2d::compositing_op::hsl_luminosity;
 				default:
 					throw ::std::runtime_error("Unknown cairo_operator_t value.");
 				}
@@ -528,52 +528,52 @@ namespace std {
 				}
 			}
 
-			inline ::std::experimental::io2d::content _Content_for_format(::std::experimental::io2d::format f) {
-				switch (f) {
-				case std::experimental::io2d::format::invalid:
-					throw ::std::runtime_error("format::invalid has no content equivalent.");
-				case std::experimental::io2d::format::argb32:
-					return ::std::experimental::io2d::content::color_alpha;
-				case std::experimental::io2d::format::xrgb32:
-					return ::std::experimental::io2d::content::color;
-				case std::experimental::io2d::format::a8:
-					return ::std::experimental::io2d::content::alpha;
-				case std::experimental::io2d::format::a1:
-					return ::std::experimental::io2d::content::alpha;
-				case std::experimental::io2d::format::rgb16_565:
-					return ::std::experimental::io2d::content::color;
-				case std::experimental::io2d::format::rgb30:
-					return ::std::experimental::io2d::content::color;
-				default:
-					throw ::std::runtime_error("Unknown format value.");
-				}
-			}
+			//inline ::std::experimental::io2d::content _Content_for_format(::std::experimental::io2d::format f) {
+			//	switch (f) {
+			//	case std::experimental::io2d::format::invalid:
+			//		throw ::std::runtime_error("format::invalid has no content equivalent.");
+			//	case std::experimental::io2d::format::argb32:
+			//		return ::std::experimental::io2d::content::color_alpha;
+			//	case std::experimental::io2d::format::xrgb32:
+			//		return ::std::experimental::io2d::content::color;
+			//	case std::experimental::io2d::format::a8:
+			//		return ::std::experimental::io2d::content::alpha;
+			//	case std::experimental::io2d::format::a1:
+			//		return ::std::experimental::io2d::content::alpha;
+			//	case std::experimental::io2d::format::rgb16_565:
+			//		return ::std::experimental::io2d::content::color;
+			//	case std::experimental::io2d::format::rgb30:
+			//		return ::std::experimental::io2d::content::color;
+			//	default:
+			//		throw ::std::runtime_error("Unknown format value.");
+			//	}
+			//}
 
-			inline cairo_extend_t _Extend_to_cairo_extend_t(::std::experimental::io2d::tiling e) {
+			inline cairo_extend_t _Extend_to_cairo_extend_t(::std::experimental::io2d::wrap_mode e) {
 				switch (e) {
-				case ::std::experimental::io2d::tiling::none:
+				case ::std::experimental::io2d::wrap_mode::none:
 					return CAIRO_EXTEND_NONE;
-				case ::std::experimental::io2d::tiling::repeat:
+				case ::std::experimental::io2d::wrap_mode::repeat:
 					return CAIRO_EXTEND_REPEAT;
-				case ::std::experimental::io2d::tiling::reflect:
+				case ::std::experimental::io2d::wrap_mode::reflect:
 					return CAIRO_EXTEND_REFLECT;
-				case ::std::experimental::io2d::tiling::pad:
+				case ::std::experimental::io2d::wrap_mode::pad:
 					return CAIRO_EXTEND_PAD;
 				default:
-					throw ::std::runtime_error("Unknown tiling value.");
+					throw ::std::runtime_error("Unknown wrap_mode value.");
 				}
 			}
 
-			inline ::std::experimental::io2d::tiling _Cairo_extend_t_to_extend(cairo_extend_t ce) {
+			inline ::std::experimental::io2d::wrap_mode _Cairo_extend_t_to_extend(cairo_extend_t ce) {
 				switch (ce) {
 				case CAIRO_EXTEND_NONE:
-					return ::std::experimental::io2d::tiling::none;
+					return ::std::experimental::io2d::wrap_mode::none;
 				case CAIRO_EXTEND_REPEAT:
-					return ::std::experimental::io2d::tiling::repeat;
+					return ::std::experimental::io2d::wrap_mode::repeat;
 				case CAIRO_EXTEND_REFLECT:
-					return ::std::experimental::io2d::tiling::reflect;
+					return ::std::experimental::io2d::wrap_mode::reflect;
 				case CAIRO_EXTEND_PAD:
-					return ::std::experimental::io2d::tiling::pad;
+					return ::std::experimental::io2d::wrap_mode::pad;
 				default:
 					throw ::std::runtime_error("Unknown cairo_extend_t value.");
 				}
@@ -652,87 +652,87 @@ namespace std {
 				}
 			}
 
-			inline cairo_font_slant_t _Font_slant_to_cairo_font_slant_t(::std::experimental::io2d::font_slant fs) {
-				switch (fs) {
-				case ::std::experimental::io2d::font_slant::normal:
-					return CAIRO_FONT_SLANT_NORMAL;
-				case ::std::experimental::io2d::font_slant::italic:
-					return CAIRO_FONT_SLANT_ITALIC;
-				case ::std::experimental::io2d::font_slant::oblique:
-					return CAIRO_FONT_SLANT_OBLIQUE;
-				default:
-					throw ::std::runtime_error("Unknown font_slant value.");
-				}
-			}
+			//inline cairo_font_slant_t _Font_slant_to_cairo_font_slant_t(::std::experimental::io2d::font_slant fs) {
+			//	switch (fs) {
+			//	case ::std::experimental::io2d::font_slant::normal:
+			//		return CAIRO_FONT_SLANT_NORMAL;
+			//	case ::std::experimental::io2d::font_slant::italic:
+			//		return CAIRO_FONT_SLANT_ITALIC;
+			//	case ::std::experimental::io2d::font_slant::oblique:
+			//		return CAIRO_FONT_SLANT_OBLIQUE;
+			//	default:
+			//		throw ::std::runtime_error("Unknown font_slant value.");
+			//	}
+			//}
 
-			inline ::std::experimental::io2d::font_slant _Cairo_font_slant_t_to_font_slant(cairo_font_slant_t cfs) {
-				switch (cfs) {
-				case CAIRO_FONT_SLANT_NORMAL:
-					return ::std::experimental::io2d::font_slant::normal;
-				case CAIRO_FONT_SLANT_ITALIC:
-					return ::std::experimental::io2d::font_slant::italic;
-				case CAIRO_FONT_SLANT_OBLIQUE:
-					return ::std::experimental::io2d::font_slant::oblique;
-				default:
-					throw ::std::runtime_error("Unknown cairo_font_slant_t value.");
-				}
-			}
+			//inline ::std::experimental::io2d::font_slant _Cairo_font_slant_t_to_font_slant(cairo_font_slant_t cfs) {
+			//	switch (cfs) {
+			//	case CAIRO_FONT_SLANT_NORMAL:
+			//		return ::std::experimental::io2d::font_slant::normal;
+			//	case CAIRO_FONT_SLANT_ITALIC:
+			//		return ::std::experimental::io2d::font_slant::italic;
+			//	case CAIRO_FONT_SLANT_OBLIQUE:
+			//		return ::std::experimental::io2d::font_slant::oblique;
+			//	default:
+			//		throw ::std::runtime_error("Unknown cairo_font_slant_t value.");
+			//	}
+			//}
 
-			inline cairo_font_weight_t _Font_weight_to_cairo_font_weight_t(::std::experimental::io2d::font_weight fw) {
-				switch (fw) {
-				case ::std::experimental::io2d::font_weight::normal:
-					return CAIRO_FONT_WEIGHT_NORMAL;
-				case ::std::experimental::io2d::font_weight::bold:
-					return CAIRO_FONT_WEIGHT_BOLD;
-				default:
-					throw ::std::runtime_error("Unknown font_weight value.");
-				}
-			}
+			//inline cairo_font_weight_t _Font_weight_to_cairo_font_weight_t(::std::experimental::io2d::font_weight fw) {
+			//	switch (fw) {
+			//	case ::std::experimental::io2d::font_weight::normal:
+			//		return CAIRO_FONT_WEIGHT_NORMAL;
+			//	case ::std::experimental::io2d::font_weight::bold:
+			//		return CAIRO_FONT_WEIGHT_BOLD;
+			//	default:
+			//		throw ::std::runtime_error("Unknown font_weight value.");
+			//	}
+			//}
 
-			inline ::std::experimental::io2d::font_weight _Cairo_font_weight_t_to_font_weight(cairo_font_weight_t cfw) {
-				switch (cfw) {
-				case CAIRO_FONT_WEIGHT_NORMAL:
-					return ::std::experimental::io2d::font_weight::normal;
-				case CAIRO_FONT_WEIGHT_BOLD:
-					return ::std::experimental::io2d::font_weight::bold;
-				default:
-					throw ::std::runtime_error("Unknown cairo_font_weight_t value.");
-				}
-			}
+			//inline ::std::experimental::io2d::font_weight _Cairo_font_weight_t_to_font_weight(cairo_font_weight_t cfw) {
+			//	switch (cfw) {
+			//	case CAIRO_FONT_WEIGHT_NORMAL:
+			//		return ::std::experimental::io2d::font_weight::normal;
+			//	case CAIRO_FONT_WEIGHT_BOLD:
+			//		return ::std::experimental::io2d::font_weight::bold;
+			//	default:
+			//		throw ::std::runtime_error("Unknown cairo_font_weight_t value.");
+			//	}
+			//}
 
-			inline cairo_subpixel_order_t _Subpixel_order_to_cairo_subpixel_order_t(::std::experimental::io2d::subpixel_order so) {
-				switch (so) {
-				case ::std::experimental::io2d::subpixel_order::default_subpixel_order:
-					return CAIRO_SUBPIXEL_ORDER_DEFAULT;
-				case ::std::experimental::io2d::subpixel_order::horizontal_rgb:
-					return CAIRO_SUBPIXEL_ORDER_RGB;
-				case ::std::experimental::io2d::subpixel_order::horizontal_bgr:
-					return CAIRO_SUBPIXEL_ORDER_BGR;
-				case ::std::experimental::io2d::subpixel_order::vertical_rgb:
-					return CAIRO_SUBPIXEL_ORDER_VRGB;
-				case ::std::experimental::io2d::subpixel_order::vertical_bgr:
-					return CAIRO_SUBPIXEL_ORDER_VBGR;
-				default:
-					throw ::std::runtime_error("Unknown subpixel_order value.");
-				}
-			}
+			//inline cairo_subpixel_order_t _Subpixel_order_to_cairo_subpixel_order_t(::std::experimental::io2d::subpixel_order so) {
+			//	switch (so) {
+			//	case ::std::experimental::io2d::subpixel_order::default_subpixel_order:
+			//		return CAIRO_SUBPIXEL_ORDER_DEFAULT;
+			//	case ::std::experimental::io2d::subpixel_order::horizontal_rgb:
+			//		return CAIRO_SUBPIXEL_ORDER_RGB;
+			//	case ::std::experimental::io2d::subpixel_order::horizontal_bgr:
+			//		return CAIRO_SUBPIXEL_ORDER_BGR;
+			//	case ::std::experimental::io2d::subpixel_order::vertical_rgb:
+			//		return CAIRO_SUBPIXEL_ORDER_VRGB;
+			//	case ::std::experimental::io2d::subpixel_order::vertical_bgr:
+			//		return CAIRO_SUBPIXEL_ORDER_VBGR;
+			//	default:
+			//		throw ::std::runtime_error("Unknown subpixel_order value.");
+			//	}
+			//}
 
-			inline ::std::experimental::io2d::subpixel_order _Cairo_subpixel_order_t_to_subpixel_order(cairo_subpixel_order_t cso) {
-				switch (cso) {
-				case CAIRO_SUBPIXEL_ORDER_DEFAULT:
-					return ::std::experimental::io2d::subpixel_order::default_subpixel_order;
-				case CAIRO_SUBPIXEL_ORDER_RGB:
-					return ::std::experimental::io2d::subpixel_order::horizontal_rgb;
-				case CAIRO_SUBPIXEL_ORDER_BGR:
-					return ::std::experimental::io2d::subpixel_order::horizontal_bgr;
-				case CAIRO_SUBPIXEL_ORDER_VRGB:
-					return ::std::experimental::io2d::subpixel_order::vertical_rgb;
-				case CAIRO_SUBPIXEL_ORDER_VBGR:
-					return ::std::experimental::io2d::subpixel_order::vertical_bgr;
-				default:
-					throw ::std::runtime_error("Unknown cairo_subpixel_order value.");
-				}
-			}
+			//inline ::std::experimental::io2d::subpixel_order _Cairo_subpixel_order_t_to_subpixel_order(cairo_subpixel_order_t cso) {
+			//	switch (cso) {
+			//	case CAIRO_SUBPIXEL_ORDER_DEFAULT:
+			//		return ::std::experimental::io2d::subpixel_order::default_subpixel_order;
+			//	case CAIRO_SUBPIXEL_ORDER_RGB:
+			//		return ::std::experimental::io2d::subpixel_order::horizontal_rgb;
+			//	case CAIRO_SUBPIXEL_ORDER_BGR:
+			//		return ::std::experimental::io2d::subpixel_order::horizontal_bgr;
+			//	case CAIRO_SUBPIXEL_ORDER_VRGB:
+			//		return ::std::experimental::io2d::subpixel_order::vertical_rgb;
+			//	case CAIRO_SUBPIXEL_ORDER_VBGR:
+			//		return ::std::experimental::io2d::subpixel_order::vertical_bgr;
+			//	default:
+			//		throw ::std::runtime_error("Unknown cairo_subpixel_order value.");
+			//	}
+			//}
 
 		} // close io2d
 	} // close experimental
