@@ -5,16 +5,17 @@ Please read the [LICENSE](https://github.com/mikebmcl/N3888_RefImpl/blob/master/
 
 Please see the [wiki](https://github.com/mikebmcl/N3888_RefImpl/wiki) for links to forks which provide alternate implementations!
 
+*Update as of 2017-03-27:* Lastly, this is the repository for the reference implementation of P0267. There is also a [P0267 repository](https://github.com/mikebmcl/io2dts). **If you have questions, concerns, or other issues with the P0267 API or the P0267 document itself, please file an issue on the P0267 repository.** In the past, this has been the catch-all place for issues, but from now on I'd like to limit issues here to those concerning this reference implementation.  
+
 Overview
 -------------
 
-This is a reference implementations of [P0267: A Proposal to Add 2D Rendering and Display to C++](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0267r2.pdf).
+This is a reference implementations of [P0267: A Proposal to Add 2D Rendering and Display to C++](http://wg21.link/p0267). That link will always take you to the most current revision of the paper. You can also go to [WG21 Papers](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/) and find the most recent version yourself in case you don't like short links like that.
 
 Requirements
 -------------
 
-For Windows platforms, it currently requires Visual Studio 2015 (the free Community edition should suffice) and Windows Vista or newer. 
-PLEASE NOTE: In the near future this project will require Visual Studio 2017 (currently available as an RC as of 2017-01-11) in order to use C++ language and library features that are only available in that version.
+For Windows platforms, it currently requires Visual Studio 2017 (the free Community edition should suffice) and Windows 7 or newer. It also requires [vcpkg](https://github.com/Microsoft/vcpkg/) for installing dependencies - this is described more fully here: [Dependency installation instructions.txt](https://raw.githubusercontent.com/mikebmcl/N3888_RefImpl/master/N3888_RefImpl/src/win32/Dependency%20installation%20instructions.txt).
 
 For GNU/Linux platforms, it currently requires a non-ancient version of GNU autotools, cairo (>= 1.12.16), GTK+3.0 (>= 3.8.0), gmodule-2.0, gobject-2.0, and related libraries (autotools will tell you about any missing dependencies). By default it builds using GCC (>= 4.9.0), but you can configure it to use recent versions of Clang.
 
@@ -22,12 +23,7 @@ Feedback
 -------------
 If you have found a bug in the reference implementation or have a suggestion for improving P0267 please read the following. Note that any contributions must comply with the ISO patent and copyright policy, an overview of which is available in the ISO document [Participating in International Standardization](http://www.iso.org/iso/joining_in_2012.pdf).
 
-* If you want to suggest a change to P0267 please file an [issue](https://github.com/mikebmcl/N3888_RefImpl/issues) with the tag [enhancement](https://github.com/mikebmcl/N3888_RefImpl/issues?labels=enhancement&page=1&state=open). We will consider these for future revisions of N4073. Pull requests for suggested changes will not be accepted because this is a reference implementation.
-* If you have found a bug in the reference implementation, please file an issue with the tag [bug](https://github.com/mikebmcl/N3888_RefImpl/issues?labels=bug&page=1&state=open). Pull requests that fix bugs are welcome.
-* If you have found any sort of error in P0267 (be it a typo, an omission, a contradiction, or some other non-subjective problem), please file an issue with the tag [proposal-bug](https://github.com/mikebmcl/N3888_RefImpl/issues?labels=proposal-bug&page=1&state=open). We will do our best to address these in the next revision of P0267.
-* If you have created a reference implementation for another platform or tool-chain, please let us know. We welcome these types of pull requests provided that the implementation conforms to N4073 and the licensing terms are acceptable.
-
-The master branch is intended to reflect the most recent revision of P0267.
+The master branch is intended to reflect the most recent revision of P0267 but is not guaranteed to be current or fully implemented (especially around the time that a new revision of P0267 has been published).
 
 Licenses and Contributions (Important!)
 -------------
