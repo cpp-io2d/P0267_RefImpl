@@ -165,9 +165,9 @@ void display_surface::_Render_to_native_surface() {
 	cairo_surface_flush(_Surface.get());
 // 	cairo_save(_Native_context.get());
 	cairo_set_operator(_Native_context.get(), CAIRO_OPERATOR_SOURCE);
-	if (_User_scaling_fn != nullptr) {
+	if (_User_scaling_fn != nullptr && _User_scaling_fn != nullptr) {
 		bool letterbox = false;
-		auto userRect = _User_scaling_fn(*this, letterbox);
+		auto userRect = (*_User_scaling_fn)(*this, letterbox);
 		if (letterbox) {
 			if (_Letterbox_brush == nullopt) {
 				cairo_set_source(_Native_context.get(), _Default_brush.native_handle());
@@ -298,11 +298,11 @@ void display_surface::_Render_to_native_surface() {
 }
 
 void display_surface::draw_callback(const ::std::function<void(display_surface& sfc)>& fn) {
-	_Draw_fn = fn;
+	_Draw_fn = make_unique<::std::function<void(display_surface& sfc)>>(fn);
 }
 
 void display_surface::size_change_callback(const ::std::function<void(display_surface& sfc)>& fn) {
-	_Size_change_fn = fn;
+	_Size_change_fn = make_unique<::std::function<void(display_surface& sfc)>>(fn);
 }
 
 void display_surface::width(int w) noexcept {
@@ -355,7 +355,7 @@ void display_surface::scaling(experimental::io2d::scaling scl) noexcept {
 }
 
 void display_surface::user_scaling_callback(const function<experimental::io2d::rectangle(const display_surface&, bool&)>& fn) {
-	_User_scaling_fn = fn;
+	_User_scaling_fn = make_unique<function<experimental::io2d::rectangle(const display_surface&, bool&)>>(fn);
 }
 
 void display_surface::letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp) noexcept {
@@ -392,7 +392,7 @@ bool display_surface::desired_frame_rate(double fps) noexcept {
 }
 
 void display_surface::redraw_required() noexcept {
-	_Redraw_requested.store(true, std::memory_order_release);
+	_Redraw_requested = true;
 }
 
 format display_surface::format() const noexcept {
@@ -428,13 +428,13 @@ experimental::io2d::scaling display_surface::scaling() const noexcept {
 }
 
 ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> display_surface::user_scaling_callback() const {
-	return _User_scaling_fn;
+	return *_User_scaling_fn;
 }
 
 ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> display_surface::user_scaling_callback(error_code& ec) const noexcept {
 	try {
 		ec.clear();
-		return _User_scaling_fn;
+		return *_User_scaling_fn;
 	}
 	catch (const bad_alloc&) {
 		ec = make_error_code(errc::not_enough_memory);

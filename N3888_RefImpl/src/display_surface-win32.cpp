@@ -1,8 +1,14 @@
 #include "io2d.h"
 #include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
-#include "cairo-win32.h"
+#include <cairo-win32.h>
 #include <chrono>
+#include <sstream>
+#include <string>
+#include <iomanip>
+#include <deque>
+#include <numeric>
+#include "xdiagnostics.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -22,9 +28,7 @@ inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const 
 namespace std {
 	namespace experimental {
 		namespace io2d {
-#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
-#endif
 				LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 					LONG_PTR objPtr = GetWindowLongPtrW(hwnd, _Display_surface_ptr_window_data_byte_offset);
 
@@ -35,9 +39,7 @@ namespace std {
 						return reinterpret_cast<display_surface*>(objPtr)->_Window_proc(hwnd, msg, wparam, lparam);
 					}
 				}
-#if _Inline_namespace_conditional_support_test
 			}
-#endif
 		}
 	}
 }
@@ -156,7 +158,7 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 			// Call user size change function.
 			if (_Size_change_fn != nullptr) {
-				_Size_change_fn(*this);
+				(*_Size_change_fn)(*this);
 			}
 		}
 	} break;
@@ -184,7 +186,7 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 			if (_Auto_clear) {
 				clear();
 			}
-			_Draw_fn(*this);
+			(*_Draw_fn)(*this);
 		}
 
 		_Render_to_native_surface();
@@ -192,7 +194,6 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		EndPaint(hwnd, &ps);
 	} break;
 	}
-
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
@@ -200,74 +201,17 @@ display_surface::native_handle_type display_surface::native_handle() const {
 	return{ { _Surface.get(), _Context.get() }, _Hwnd, { _Native_surface.get(), _Native_context.get() } };
 }
 
-//display_surface::display_surface(display_surface&& other) noexcept
-//	: surface(move(other))
-//	, _Default_brush(move(other._Default_brush))
-//	, _Display_width(move(other._Display_width))
-//	, _Display_height(move(other._Display_height))
-//	, _Scaling(move(other._Scaling))
-//	, _Width(move(other._Width))
-//	, _Height(move(other._Height))
-//	, _Draw_fn(move(other._Draw_fn))
-//	, _Size_change_fn(move(other._Size_change_fn))
-//	, _User_scaling_fn(move(other._User_scaling_fn))
-//	, _Letterbox_brush(move(other._Letterbox_brush))
-//	, _Auto_clear(move(other._Auto_clear))
-//	, _Window_style(move(other._Window_style))
-//	, _Hwnd(move(other._Hwnd))
-//	, _Refresh_rate(move(other._Refresh_rate))
-//	, _Desired_frame_rate(move(other._Desired_frame_rate))
-//	, _Redraw_requested(other._Redraw_requested.load())
-//	, _Elapsed_draw_time(move(other._Elapsed_draw_time))
-//	, _Native_surface(move(other._Native_surface))
-//	, _Native_context(move(other._Native_context)) {
-//	other._Draw_fn = nullptr;
-//	other._Size_change_fn = nullptr;
-//	other._Hwnd = nullptr;
-//}
-//
-//display_surface& display_surface::operator=(display_surface&& other) noexcept {
-//	if (this != &other) {
-//		surface::operator=(move(other));
-//		_Default_brush = move(other._Default_brush);
-//		_Scaling = move(other._Scaling);
-//		_Width = move(other._Width);
-//		_Height = move(other._Height);
-//		_Display_width = move(other._Display_width);
-//		_Display_height = move(other._Display_height);
-//		_Draw_fn = move(other._Draw_fn);
-//		_Size_change_fn = move(other._Size_change_fn);
-//		_User_scaling_fn = move(other._User_scaling_fn);
-//		_Letterbox_brush = move(other._Letterbox_brush);
-//		_Auto_clear = move(other._Auto_clear);
-//		_Window_style = move(other._Window_style);
-//		_Hwnd = move(other._Hwnd);
-//		_Refresh_rate = move(other._Refresh_rate);
-//		_Desired_frame_rate = move(other._Desired_frame_rate);
-//		_Redraw_requested = other._Redraw_requested.load();
-//		_Elapsed_draw_time = move(other._Elapsed_draw_time);
-//		_Native_surface = move(other._Native_surface);
-//		_Native_context = move(other._Native_context);
-//
-//		other._Hwnd = nullptr;
-//		other._Draw_fn = nullptr;
-//		other._Size_change_fn = nullptr;
-//	}
-//
-//	return *this;
-//}
-//
 namespace {
 	once_flag _Window_class_registered_flag;
 }
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double desiredFramerate)
-	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, desiredFramerate) {	
+	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, desiredFramerate) {
 }
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
 	: surface({ nullptr, nullptr }, preferredFormat)
-	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Default_brush(bgra_color::transparent_black())//cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
 	, _Scaling(scl)
@@ -312,7 +256,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 
 
 	// Create an instance of the window
-	_Hwnd = CreateWindowExW(
+	_Hwnd = CreateWindowEx(
 		static_cast<DWORD>(0),				// extended style
 		_Refimpl_window_class_name,			// class name
 		L"",								// instance title
@@ -363,9 +307,8 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	// We render to the fixed size surface.
 	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
 	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-	//_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-	//_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
-	//_Ensure_state();
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 }
 
 display_surface::~display_surface() {
@@ -381,17 +324,21 @@ int display_surface::begin_show() {
 	if (_Draw_fn == nullptr) {
 		throw system_error(make_error_code(errc::operation_would_block));
 	}
-	auto previousTime = steady_clock::now();
 	_Elapsed_draw_time = 0.0;
-
+#ifdef _IO2D_WIN32FRAMERATE
+	auto previousTime = steady_clock::now();
+	long long int elapsedDrawNanoseconds = 0LL;
+	int updateTitleCounter = -1;
+	deque<chrono::nanoseconds> elapsedNanoseconds(static_cast<size_t>(30), 33'333'333ns);
+#endif
 	while (msg.message != WM_QUIT) {
-		//_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-		//_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+#ifdef _IO2D_WIN32FRAMERATE
 		auto currentTime = steady_clock::now();
 		auto elapsedTimeIncrement = static_cast<double>(duration_cast<nanoseconds>(currentTime - previousTime).count());
 		_Elapsed_draw_time += elapsedTimeIncrement;
+		elapsedDrawNanoseconds += duration_cast<nanoseconds>(currentTime - previousTime).count();
 		previousTime = currentTime;
-
+#endif
 		if (!PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
 			if (_Native_surface.get() != nullptr) {
 				RECT clientRect;
@@ -404,7 +351,7 @@ int display_surface::begin_show() {
 					_Make_native_surface_and_context();
 					if (dw != _Display_width || dh != _Display_height) {
 						if (_Size_change_fn != nullptr) {
-							_Size_change_fn(*this);
+							(*_Size_change_fn)(*this);
 						}
 					}
 					continue;
@@ -412,11 +359,14 @@ int display_surface::begin_show() {
 				else {
 					bool redraw = true;
 					if (_Refresh_rate == experimental::io2d::refresh_rate::as_needed) {
-						redraw = _Redraw_requested.exchange(false, std::memory_order_acquire);
+						redraw = _Redraw_requested;
+						_Redraw_requested = false;
 					}
 
 					const auto desiredElapsed = 1'000'000'000.0 / _Desired_frame_rate;
-
+#ifdef _IO2D_WIN32FRAMERATE
+					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00 / _Desired_frame_rate);
+#endif
 					if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
 						// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
 						redraw = _Elapsed_draw_time >= desiredElapsed;
@@ -427,19 +377,32 @@ int display_surface::begin_show() {
 							if (_Auto_clear) {
 								clear();
 							}
-							_Draw_fn(*this);
+							(*_Draw_fn)(*this);
 						}
 						else {
 							throw system_error(make_error_code(errc::operation_would_block));
 						}
 						_Render_to_native_surface();
+
+#ifdef _IO2D_WIN32FRAMERATE
+						elapsedNanoseconds.pop_front();
+						elapsedNanoseconds.push_back(chrono::nanoseconds(elapsedDrawNanoseconds));
+#endif
 						if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
 							while (_Elapsed_draw_time >= desiredElapsed) {
 								_Elapsed_draw_time -= desiredElapsed;
 							}
+#ifdef _IO2D_WIN32FRAMERATE
+							while (elapsedDrawNanoseconds >= desiredElapsedNanoseconds) {
+								elapsedDrawNanoseconds -= desiredElapsedNanoseconds;
+							}
+#endif
 						}
 						else {
 							_Elapsed_draw_time = 0.0;
+#ifdef _IO2D_WIN32FRAMERATE
+							elapsedDrawNanoseconds = 0LL;
+#endif
 						}
 					}
 				}
@@ -451,32 +414,64 @@ int display_surface::begin_show() {
 				DispatchMessage(&msg);
 
 				if (msg.message == WM_PAINT) {
-					_Elapsed_draw_time = 0.0;
-					//if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
-					//	_Elapsed_draw_time -= elapsedTimeIncrement;
-					//}
-					//else {
-					//	_Elapsed_draw_time = 0.0;
-					//}
+					const auto desiredElapsed = 1'000'000'000.0 / _Desired_frame_rate;
+#ifdef _IO2D_WIN32FRAMERATE
+					elapsedNanoseconds.pop_front();
+					elapsedNanoseconds.push_back(chrono::nanoseconds(elapsedDrawNanoseconds));
+
+					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00 / _Desired_frame_rate);
+#endif
+					if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+						while (_Elapsed_draw_time >= desiredElapsed) {
+							_Elapsed_draw_time -= desiredElapsed;
+						}
+#ifdef _IO2D_WIN32FRAMERATE
+						while (elapsedDrawNanoseconds >= desiredElapsedNanoseconds) {
+							elapsedDrawNanoseconds -= desiredElapsedNanoseconds;
+						}
+#endif
+					}
+					else {
+						_Elapsed_draw_time = 0.0;
+#ifdef _IO2D_WIN32FRAMERATE
+						elapsedDrawNanoseconds = 0LL;
+#endif
+					}
 				}
 			}
 		}
+
+#ifdef _IO2D_WIN32FRAMERATE
+		if (updateTitleCounter == -1) {
+			SetWindowText(msg.hwnd, L"FPS: ");
+		}
+		updateTitleCounter++;
+		if (updateTitleCounter == 50 && msg.hwnd == 0) {
+			updateTitleCounter--;
+		}
+		if (updateTitleCounter == 50 && msg.hwnd != 0) {
+			long long sumNanoElapsed = 0LL;
+			for (auto iter = begin(elapsedNanoseconds), last = end(elapsedNanoseconds); iter != last; iter++) {
+				const auto val = *iter;
+				sumNanoElapsed += val.count();
+			}
+			auto avgNanoFrameTime = (sumNanoElapsed / elapsedNanoseconds.size());
+			const auto fpsNano = 1'000'000'000.0 / avgNanoFrameTime;
+			const auto millisecondsPerNanoSecond = 1'000'000'000.0 / 1'000.0;
+			wstringstream fpsStr;
+			fpsStr << "FPS: " << fixed << setprecision(5) << fpsNano;
+			wstring fpsStr_Str;
+			fpsStr_Str = fpsStr.str();
+			const wchar_t* fpsStrWindowText = fpsStr_Str.c_str();
+			if (!SetWindowText(msg.hwnd, fpsStrWindowText)) {
+				_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to SetWindowText.");
+			}
+			updateTitleCounter = 0;
+		}
+#endif
 	}
 	_Elapsed_draw_time = 0.0;
-	// I know that the C-style cast works and have not had a chance to come up with a safer C++-style cast that I can be sure also works so I'm disabling the warning.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wold-style-cast"
-#endif
-#endif
-	return (int)msg.wParam;
-	// I know that the C-style cast works and have not had a chance to come up with a safer C++-style cast that I can be sure also works so I'm disabling the warning.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#endif
+	return static_cast<int>(msg.wParam);
 }
 
 void display_surface::end_show() noexcept {

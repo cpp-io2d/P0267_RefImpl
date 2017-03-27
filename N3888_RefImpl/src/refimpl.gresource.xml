@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<gresources>
-  <gresource prefix="/com/bobtacoindustries/N3888_RefImpl">
-    <file preprocess="xml-stripblanks">refimpl_menu.ui</file>
-    <file preprocess="xml-stripblanks">refimpl_window.ui</file>
-  </gresource>
-</gresources>

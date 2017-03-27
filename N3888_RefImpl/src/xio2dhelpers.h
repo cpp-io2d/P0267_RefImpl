@@ -14,9 +14,7 @@
 namespace std {
 	namespace experimental {
 		namespace io2d {
-#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
-#endif
 				// Creates the appropriate error_code for a given cairo_status_t value.
 				// cairo_status_t values which are implementation detail errors are all mapped to make_error_code(io2d_error::invalid_status).
 				inline ::std::error_code _Cairo_status_t_to_std_error_code(cairo_status_t cs) noexcept {
@@ -222,11 +220,11 @@ namespace std {
 				}
 
 				// Forward declarations.
-				class rgba_color;
+				class bgra_color;
 
-				constexpr rgba_color operator*(const rgba_color& lhs, double rhs);
-				constexpr rgba_color operator*(double lhs, const rgba_color& rhs);
-				rgba_color& operator*=(rgba_color& lhs, double rhs);
+				constexpr bgra_color operator*(const bgra_color& lhs, double rhs);
+				constexpr bgra_color operator*(double lhs, const bgra_color& rhs);
+				bgra_color& operator*=(bgra_color& lhs, double rhs);
 
 				inline ::std::vector<path_data::path_data_types> _Cairo_path_data_t_array_to_path_data_item_vector(const cairo_path_t& cpt) {
 					::std::vector<path_data::path_data_types> vec;
@@ -318,9 +316,7 @@ namespace std {
 					ec.clear();
 					return vec;
 				}
-#if _Inline_namespace_conditional_support_test
 			}
-#endif
 		}
 	}
 }

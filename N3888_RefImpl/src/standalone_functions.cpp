@@ -1,3 +1,4 @@
+//#define _HAS_CXX17 1
 #include "io2d.h"
 #include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
@@ -8,32 +9,39 @@ using namespace std::experimental::io2d;
 namespace std {
 	namespace experimental {
 		namespace io2d {
-#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
-#endif
 				const ::std::error_category& io2d_category() noexcept {
 					static io2d_error_category ec;
 					return ec;
 				}
 
-				//display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, double desiredFramerate) {
-				//	return display_surface(preferredWidth, preferredHeight, preferredFormat, scl, rr, desiredFramerate);
-				//}
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, double desiredFramerate) {
+                    return { preferredWidth, preferredHeight, preferredFormat, scl, rr, desiredFramerate };
+				}
 
-				//display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, double desiredFramerate) {
-				//	return display_surface(preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight,scl, rr, desiredFramerate);
-				//}
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, double desiredFramerate) {
+                    return { preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight,scl, rr, desiredFramerate };
+				}
 
 				image_surface make_image_surface(format fmt, int width, int height) {
 					return image_surface(fmt, width, height);
 				}
 
+				image_surface make_image_surface(image_surface& sfc) {
+					image_surface retval(sfc.format(), sfc.width(), sfc.height());
+					retval.map([&sfc](mapped_surface& rvms) {
+						sfc.map([&rvms](mapped_surface& sfcms) {
+							memcpy(rvms.data(), sfcms.data(), rvms.height() * rvms.stride());
+						});
+					});
+					retval.mark_dirty();
+					return retval;
+				}
+
 				int format_stride_for_width(format format, int width) noexcept {
 					return cairo_format_stride_for_width(_Format_to_cairo_format_t(format), width);
 				}
-#if _Inline_namespace_conditional_support_test
 			}
-#endif
 		}
 	}
 }
@@ -153,9 +161,7 @@ namespace {
 namespace std {
 	namespace experimental {
 		namespace io2d {
-#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
-#endif
 				vector_2d _Curve_point_at_t(const vector_2d& startPt, const vector_2d& controlPt1, const vector_2d& controlPt2, const vector_2d& endPt, double t) noexcept {
 					return{ _Curve_value_for_t(startPt.x(), controlPt1.x(), controlPt2.x(), endPt.x(), t), _Curve_value_for_t(startPt.y(), controlPt1.y(), controlPt2.y(), endPt.y(), t) };
 				}
@@ -193,17 +199,10 @@ namespace std {
 //					{
 //						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular path_arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
 //
-//#if _Variable_templates_conditional_support_test
 //						while (theta >= half_pi<double>) {
 //							theta /= 2.0;
 //							bezierCount += bezierCount;
 //						}
-//#else
-//						while (theta >= half_pi<double>()) {
-//							theta /= 2.0;
-//							bezierCount += bezierCount;
-//						}
-//#endif
 //
 //						phi = theta / 2.0;
 //
@@ -280,20 +279,12 @@ namespace std {
 //				vector<path_data::path_data_types> _Get_arc_as_beziers(const vector_2d& center, double radius, double angle1, double angle2, error_code& ec, bool path_arcNegative, bool hasCurrentPoint, const vector_2d& /*currentPoint*/, const vector_2d& origin, const matrix_2d& matrix) noexcept {
 //					if (path_arcNegative) {
 //						while (angle2 > angle1) {
-//#if _Variable_templates_conditional_support_test
 //							angle2 -= two_pi<double>;
-//#else
-//							angle2 -= two_pi<double>();
-//#endif
 //						}
 //					}
 //					else {
 //						while (angle2 < angle1) {
-//#if _Variable_templates_conditional_support_test
 //							angle2 += two_pi<double>;
-//#else
-//							angle2 += two_pi<double>();
-//#endif
 //						}
 //					}
 //					vector_2d pt0, pt1, pt2, pt3;
@@ -310,17 +301,10 @@ namespace std {
 //					{
 //						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular path_arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
 //
-//#if _Variable_templates_conditional_support_test
 //						while (theta >= half_pi<double>) {
 //							theta /= 2.0;
 //							bezierCount += bezierCount;
 //						}
-//#else
-//						while (theta >= half_pi<double>()) {
-//							theta /= 2.0;
-//							bezierCount += bezierCount;
-//						}
-//#endif
 //
 //						phi = theta / 2.0;
 //
@@ -429,20 +413,12 @@ namespace std {
 				void _Get_arc_extents(const ::std::experimental::io2d::vector_2d& center, double radius, double angle1, double angle2, bool path_arcNegative, bool& hasCurrentPoint, ::std::experimental::io2d::vector_2d& currentPoint, ::std::experimental::io2d::vector_2d& transformedCurrentPoint, ::std::experimental::io2d::vector_2d& lastMoveToPoint, bool& hasExtents, vector_2d& exPt0, vector_2d& exPt1, ::std::experimental::io2d::vector_2d& origin, ::std::experimental::io2d::matrix_2d& transformMatrix) noexcept {
 					if (path_arcNegative) {
 						while (angle2 > angle1) {
-#if _Variable_templates_conditional_support_test
 							angle2 -= two_pi<double>;
-#else
-							angle2 -= two_pi<double>();
-#endif
 						}
 					}
 					else {
 						while (angle2 < angle1) {
-#if _Variable_templates_conditional_support_test
 							angle2 += two_pi<double>;
-#else
-							angle2 += two_pi<double>();
-#endif
 						}
 					}
 					vector_2d pt0, pt1, pt2, pt3;
@@ -459,17 +435,10 @@ namespace std {
 					{
 						// See: DeVeneza, Richard A., "How to determine the control points of a Bézier curve that approximates a small circular path_arc" (Nov. 2004) [ http://www.tinaja.com/glib/bezcirc2.pdf ].
 
-#if _Variable_templates_conditional_support_test
 						while (theta >= half_pi<double>) {
 							theta /= 2.0;
 							bezierCount += bezierCount;
 						}
-#else
-						while (theta >= half_pi<double>()) {
-							theta /= 2.0;
-							bezierCount += bezierCount;
-						}
-#endif
 
 						phi = theta / 2.0;
 
@@ -810,9 +779,7 @@ namespace std {
 					assert(foundLowX && foundLowY && foundHighX && foundHighY && numPoints == 4 && numXs == 2 && numYs == 2);
 				}
 
-#if _Inline_namespace_conditional_support_test
 			}
-#endif
 		}
 	}
 }

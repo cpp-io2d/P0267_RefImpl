@@ -8,10 +8,10 @@
 //namespace not_proposed {
 //	namespace test_renderer {
 //		template <::std::experimental::io2d::format F, class T>
-//		void set_pixel_to_color(T* data, int width, int height, int stride, int x, int y, const ::std::experimental::io2d::rgba_color& color);
+//		void set_pixel_to_color(T* data, int width, int height, int stride, int x, int y, const ::std::experimental::io2d::bgra_color& color);
 //
 //		template <>
-//		void set_pixel_to_color<::std::experimental::io2d::format::argb32>(unsigned char* data, int width, int height, int stride, int x, int y, const rgba_color& color) {
+//		void set_pixel_to_color<::std::experimental::io2d::format::argb32>(unsigned char* data, int width, int height, int stride, int x, int y, const bgra_color& color) {
 //			if (x < 0 || x >= width || y < 0 || y >= height) {
 //				return;
 //			}
@@ -25,7 +25,7 @@
 //		}
 //
 //		template <>
-//		void set_pixel_to_color<::std::experimental::io2d::format::xrgb32>(unsigned char* data, int width, int height, int stride, int x, int y, const rgba_color& color) {
+//		void set_pixel_to_color<::std::experimental::io2d::format::xrgb32>(unsigned char* data, int width, int height, int stride, int x, int y, const bgra_color& color) {
 //			if (x < 0 || x >= width || y < 0 || y >= height) {
 //				return;
 //			}
@@ -39,7 +39,7 @@
 //		}
 //
 //		template <>
-//		void set_pixel_to_color<::std::experimental::io2d::format::a8>(unsigned char* data, int width, int height, int stride, int x, int y, const rgba_color& color) {
+//		void set_pixel_to_color<::std::experimental::io2d::format::a8>(unsigned char* data, int width, int height, int stride, int x, int y, const bgra_color& color) {
 //			if (x < 0 || x >= width || y < 0 || y >= height) {
 //				return;
 //			}
@@ -50,7 +50,7 @@
 //		}
 //
 //		template<>
-//		void set_pixel_to_color<::std::experimental::io2d::format::a1>(unsigned char* data, int width, int height, int stride, int x, int y, const ::std::experimental::io2d::rgba_color& color) {
+//		void set_pixel_to_color<::std::experimental::io2d::format::a1>(unsigned char* data, int width, int height, int stride, int x, int y, const ::std::experimental::io2d::bgra_color& color) {
 //			if (x < 0 || x >= width || y < 0 || y >= height) {
 //				return;
 //			}
@@ -73,7 +73,7 @@
 //		}
 //
 //		template<>
-//		void set_pixel_to_color<::std::experimental::io2d::format::rgb16_565>(unsigned char* data, int width, int height, int stride, int x, int y, const ::std::experimental::io2d::rgba_color& color) {
+//		void set_pixel_to_color<::std::experimental::io2d::format::rgb16_565>(unsigned char* data, int width, int height, int stride, int x, int y, const ::std::experimental::io2d::bgra_color& color) {
 //			if (x < 0 || x >= width || y < 0 || y >= height) {
 //				return;
 //			}
@@ -85,7 +85,7 @@
 //		}
 //
 //		template<>
-//		void set_pixel_to_color<::std::experimental::io2d::format::rgb30>(unsigned char* data, int width, int height, int stride, int x, int y, const ::std::experimental::io2d::rgba_color& color) {
+//		void set_pixel_to_color<::std::experimental::io2d::format::rgb30>(unsigned char* data, int width, int height, int stride, int x, int y, const ::std::experimental::io2d::bgra_color& color) {
 //			if (x < 0 || x >= width || y < 0 || y >= height) {
 //				return;
 //			}
@@ -117,7 +117,7 @@
 //			}
 //		}
 //
-//		void render_ellipse(display_surface& ds, const vector_2d& center, double xRadius, double yRadius, const rgba_color& color) {
+//		void render_ellipse(display_surface& ds, const vector_2d& center, double xRadius, double yRadius, const bgra_color& color) {
 //			// See: http://members.chello.at/~easyfilter/bresenham.html
 //			ds.map([&center, &xRadius, &yRadius, &color](mapped_surface& ms) -> void {
 //				auto width = ms.width();
@@ -441,8 +441,8 @@
 //			});
 //		}
 //
-//		rgba_color interpolate(const rgba_color&, double, const rgba_color&, double, double);
-//		rgba_color interpolate(const rgba_color& lc, double loff, const rgba_color& hc, double hoff, double t) {
+//		bgra_color interpolate(const bgra_color&, double, const bgra_color&, double, double);
+//		bgra_color interpolate(const bgra_color& lc, double loff, const bgra_color& hc, double hoff, double t) {
 //			// loff must be the lower value and cannot equal hoff (avoids improper results and divide by zero).
 //			assert(loff < hoff);
 //
@@ -458,7 +458,7 @@
 //			};
 //		}
 //
-//		rgba_color get_interpolated_color(const radial_brush_factory& f, double t, wrap_mode e) {
+//		bgra_color get_interpolated_color(const radial_brush_factory& f, double t, wrap_mode e) {
 //			switch (e)
 //			{
 //			case std::experimental::io2d::v1::wrap_mode::none:
@@ -516,7 +516,7 @@
 //			}
 //
 //			if (f.color_stop_count() < 2) {
-//				return rgba_color::transparent_black();
+//				return bgra_color::transparent_black();
 //			}
 //
 //			auto lowColorOffset = -1.0;
@@ -577,11 +577,11 @@
 //			// Now we figure out if 't' falls into a realm where it must be transparent black.
 //			// If it's lower than the low offset then there was no '0.0' stop and 't' is in the [0,n) range such that the result color is transparent black.
 //			if (t < lowColorOffset) {
-//				return rgba_color::transparent_black();
+//				return bgra_color::transparent_black();
 //			}
 //			// If it's higher than the high offset then there was no '1.0' stop and 't' is in the (n,1] range such that the result color is transparent black.
 //			if (t > highColorOffset) {
-//				return rgba_color::transparent_black();
+//				return bgra_color::transparent_black();
 //			}
 //
 //			// Having gotten here, we lerp between the low stop and high stop to get the color for 't'.

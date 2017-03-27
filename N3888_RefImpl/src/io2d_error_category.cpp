@@ -11,8 +11,10 @@ const char* io2d_error_category::name() const noexcept {
 
 ::std::string io2d_error_category::message(int errVal) const {
 	io2d_error ev;
-	auto result = _Cairo_status_t_to_io2d_error(static_cast<cairo_status_t>(errVal), ev);
-	assert(result);;	switch (ev) {
+	if (_Cairo_status_t_to_io2d_error(static_cast<cairo_status_t>(errVal), ev)) {
+		assert(false && "The provided errVal has no error message associated with it.");
+	}
+	switch (ev) {
 	case io2d_error::success:
 		return "The operation completed successfully.";
 	case io2d_error::invalid_restore:

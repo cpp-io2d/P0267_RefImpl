@@ -35,16 +35,10 @@
 #include <X11/Xatom.h>
 #endif
 
-#if !_Noexcept_conditional_support_test
-#define noexcept
-#endif
-
 namespace std {
 	namespace experimental {
 		namespace io2d {
-#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
-#endif
 				constexpr cairo_matrix_t _Cairo_identity_matrix{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
 
 				enum class io2d_error {
@@ -68,9 +62,7 @@ namespace std {
 					device_error,
 					invalid_mesh_construction
 				};
-#if _Inline_namespace_conditional_support_test
 			}
-#endif
 		}
 	}
 
@@ -90,9 +82,7 @@ namespace std {
 
 	namespace experimental {
 		namespace io2d {
-#if _Inline_namespace_conditional_support_test
 			inline namespace v1 {
-#endif
 				enum class antialias {
 					default_antialias,
 					none,
@@ -246,14 +236,17 @@ namespace std {
 						: _X(x)
 						, _Y(y) {
 					}
-					constexpr vector_2d(const vector_2d&) noexcept = default;
-					vector_2d(vector_2d&&) noexcept = default;
-					constexpr vector_2d& operator=(const vector_2d&) noexcept = default;
-					vector_2d& operator=(vector_2d&&) noexcept = default;
+					//constexpr vector_2d(const vector_2d&) noexcept = default;
+					//vector_2d(vector_2d&&) noexcept = default;
+					//constexpr vector_2d& operator=(const vector_2d&) noexcept = default;
+					//vector_2d& operator=(vector_2d&&) noexcept = default;
 
-					void x(double value) noexcept;
-					void y(double value) noexcept;
-					void swap(vector_2d& x) noexcept;
+					constexpr void x(double value) noexcept {
+						_X = value;
+					}
+					constexpr void y(double value) noexcept {
+						_Y = value;
+					}
 
 					constexpr double x() const noexcept {
 						return _X;
@@ -327,8 +320,6 @@ namespace std {
 					return vector_2d{ lhs * rhs.x(), lhs * rhs.y() };
 				}
 
-				//void swap(vector_2d& lhs, vector_2d& rhs);
-
 				class rectangle {
 					double _X = 0.0;
 					double _Y = 0.0;
@@ -348,19 +339,27 @@ namespace std {
 						, _Width(::std::max(0.0, br.x() - tl.x()))
 						, _Height(::std::max(0.0, br.y() - tl.y())) {
 					}
-					constexpr rectangle(const rectangle&) noexcept = default;
-					constexpr rectangle& operator=(const rectangle&) noexcept = default;
-					rectangle(rectangle&&) noexcept = default;
-					rectangle& operator=(rectangle&&) noexcept = default;
 
-
-					void x(double value) noexcept;
-					void y(double value) noexcept;
-					void width(double value) noexcept;
-					void height(double value) noexcept;
-					void top_left(const vector_2d& value) noexcept;
-					void bottom_right(const vector_2d& value) noexcept;
-					void top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept;
+					constexpr void x(double value) noexcept {
+						_X = value;
+					}
+					constexpr void y(double value) noexcept {
+						_Y = value;
+					}
+					constexpr void width(double value) noexcept {
+						_Width = value;
+					}
+					constexpr void height(double value) noexcept {
+						_Height = value;
+					}
+					constexpr void top_left(const vector_2d& value) noexcept {
+						_X = value.x();
+						_Y = value.y();
+					}
+					constexpr void bottom_right(const vector_2d& value) noexcept {
+						_Width = max(0.0, value.x() - _X);
+						_Height = max(0.0, value.y() - _Y);
+					}
 
 					constexpr double x() const noexcept;
 					constexpr double y() const noexcept;
@@ -423,10 +422,6 @@ namespace std {
 						: _Center(ctr)
 						, _Radius(rad) {
 					}
-					//constexpr circle(const circle&) noexcept = default;
-					//constexpr circle& operator=(const circle&) noexcept = default;
-					//circle(circle&&) noexcept = default;
-					//circle& operator=(circle&&) noexcept = default;
 
 					constexpr void center(const vector_2d& ctr) noexcept {
 						_Center = ctr;
@@ -459,64 +454,59 @@ namespace std {
 						: _Center(c.center())
 						, _X_axis(c.radius())
 						, _Y_axis(c.radius()) { }
-					constexpr ellipse(const ellipse&) noexcept = default;
-					constexpr ellipse& operator=(const ellipse&) noexcept = default;
-					ellipse(ellipse&&) noexcept = default;
-					ellipse& operator=(ellipse&&) noexcept = default;
 
-					void center(const vector_2d& ctr) noexcept {
+					constexpr void center(const vector_2d& ctr) noexcept {
 						_Center = ctr;
 					}
-					void x_axis(double val) noexcept {
+					constexpr void x_axis(double val) noexcept {
 						_X_axis = val;
 					}
-					void y_axis(double val) noexcept {
+					constexpr void y_axis(double val) noexcept {
 						_Y_axis = val;
 					}
 
 					constexpr vector_2d center() const noexcept {
 						return _Center;
 					}
-
 					constexpr double x_axis() const noexcept {
 						return _X_axis;
 					}
-
 					constexpr double y_axis() const noexcept {
 						return _Y_axis;
 					}
 				};
 
-				class rgba_color {
+				class bgra_color {
 					double _R = 0.0;
 					double _G = 0.0;
 					double _B = 0.0;
 					double _A = 1.0;
 				public:
-					constexpr rgba_color() noexcept { }
-					constexpr rgba_color(const rgba_color& other) noexcept = default;
-					constexpr rgba_color& operator=(const rgba_color& other) noexcept = default;
-					rgba_color(rgba_color&& other) noexcept = default;
-					rgba_color& operator=(rgba_color&& other) noexcept = default;
+					constexpr bgra_color() noexcept { }
+					constexpr bgra_color(const bgra_color& other) noexcept = default;
+					constexpr bgra_color& operator=(const bgra_color& other) noexcept = default;
+					bgra_color(bgra_color&& other) noexcept = default;
+					bgra_color& operator=(bgra_color&& other) noexcept = default;
 					template <class T, ::std::enable_if_t<::std::is_same_v<double, ::std::remove_cv_t<::std::remove_reference_t<T>>> || ::std::is_same_v<float, ::std::remove_cv_t<::std::remove_reference_t<T>>>, int> = 0>
-					constexpr rgba_color(T red, T green, T blue, T alpha = 1.0)
+					constexpr bgra_color(T red, T green, T blue, T alpha = 1.0)
 						: _R(static_cast<double>(::std::min<T>(::std::max<T>(red, 0.0), 1.0)))
 						, _G(static_cast<double>(::std::min<T>(::std::max<T>(green, 0.0), 1.0)))
 						, _B(static_cast<double>(::std::min<T>(::std::max<T>(blue, 0.0), 1.0)))
 						, _A(static_cast<double>(::std::min<T>(::std::max<T>(alpha, 0.0), 1.0))) {
 					}
 
-					void r(double val);
-					void r(double val, ::std::error_code& ec) noexcept;
-
-					void g(double val);
-					void g(double val, ::std::error_code& ec) noexcept;
-
-					void b(double val);
-					void b(double val, ::std::error_code& ec) noexcept;
-
-					void a(double val);
-					void a(double val, ::std::error_code& ec) noexcept;
+					void r(double val) noexcept {
+						_R = val * _A;
+					}
+					void g(double val) noexcept {
+						_G = val * _A;
+					}
+					void b(double val) noexcept {
+						_B = val * _A;
+					}
+					void a(double val) noexcept {
+						_A = val;
+					}
 
 					constexpr double r() const noexcept {
 						return _R;
@@ -531,164 +521,164 @@ namespace std {
 						return _A;
 					}
 
-					static const rgba_color& alice_blue() noexcept;
-					static const rgba_color& antique_white() noexcept;
-					static const rgba_color& aqua() noexcept;
-					static const rgba_color& aquamarine() noexcept;
-					static const rgba_color& azure() noexcept;
-					static const rgba_color& beige() noexcept;
-					static const rgba_color& bisque() noexcept;
-					static const rgba_color& black() noexcept;
-					static const rgba_color& blanched_almond() noexcept;
-					static const rgba_color& blue() noexcept;
-					static const rgba_color& blue_violet() noexcept;
-					static const rgba_color& brown() noexcept;
-					static const rgba_color& burly_wood() noexcept;
-					static const rgba_color& cadet_blue() noexcept;
-					static const rgba_color& chartreuse() noexcept;
-					static const rgba_color& chocolate() noexcept;
-					static const rgba_color& coral() noexcept;
-					static const rgba_color& cornflower_blue() noexcept;
-					static const rgba_color& cornsilk() noexcept;
-					static const rgba_color& crimson() noexcept;
-					static const rgba_color& cyan() noexcept;
-					static const rgba_color& dark_blue() noexcept;
-					static const rgba_color& dark_cyan() noexcept;
-					static const rgba_color& dark_goldenrod() noexcept;
-					static const rgba_color& dark_gray() noexcept;
-					static const rgba_color& dark_green() noexcept;
-					static const rgba_color& dark_grey() noexcept;
-					static const rgba_color& dark_khaki() noexcept;
-					static const rgba_color& dark_magenta() noexcept;
-					static const rgba_color& dark_olive_green() noexcept;
-					static const rgba_color& dark_orange() noexcept;
-					static const rgba_color& dark_orchid() noexcept;
-					static const rgba_color& dark_red() noexcept;
-					static const rgba_color& dark_salmon() noexcept;
-					static const rgba_color& dark_sea_green() noexcept;
-					static const rgba_color& dark_slate_blue() noexcept;
-					static const rgba_color& dark_slate_gray() noexcept;
-					static const rgba_color& dark_slate_grey() noexcept;
-					static const rgba_color& dark_turquoise() noexcept;
-					static const rgba_color& dark_violet() noexcept;
-					static const rgba_color& deep_pink() noexcept;
-					static const rgba_color& deep_sky_blue() noexcept;
-					static const rgba_color& dim_gray() noexcept;
-					static const rgba_color& dim_grey() noexcept;
-					static const rgba_color& dodger_blue() noexcept;
-					static const rgba_color& firebrick() noexcept;
-					static const rgba_color& floral_white() noexcept;
-					static const rgba_color& forest_green() noexcept;
-					static const rgba_color& fuchsia() noexcept;
-					static const rgba_color& gainsboro() noexcept;
-					static const rgba_color& ghost_white() noexcept;
-					static const rgba_color& gold() noexcept;
-					static const rgba_color& goldenrod() noexcept;
-					static const rgba_color& gray() noexcept;
-					static const rgba_color& green() noexcept;
-					static const rgba_color& green_yellow() noexcept;
-					static const rgba_color& grey() noexcept;
-					static const rgba_color& honeydew() noexcept;
-					static const rgba_color& hot_pink() noexcept;
-					static const rgba_color& indian_red() noexcept;
-					static const rgba_color& indigo() noexcept;
-					static const rgba_color& ivory() noexcept;
-					static const rgba_color& khaki() noexcept;
-					static const rgba_color& lavender() noexcept;
-					static const rgba_color& lavender_blush() noexcept;
-					static const rgba_color& lawn_green() noexcept;
-					static const rgba_color& lemon_chiffon() noexcept;
-					static const rgba_color& light_blue() noexcept;
-					static const rgba_color& light_coral() noexcept;
-					static const rgba_color& light_cyan() noexcept;
-					static const rgba_color& light_goldenrod_yellow() noexcept;
-					static const rgba_color& light_gray() noexcept;
-					static const rgba_color& light_green() noexcept;
-					static const rgba_color& light_grey() noexcept;
-					static const rgba_color& light_pink() noexcept;
-					static const rgba_color& light_salmon() noexcept;
-					static const rgba_color& light_sea_green() noexcept;
-					static const rgba_color& light_sky_blue() noexcept;
-					static const rgba_color& light_slate_gray() noexcept;
-					static const rgba_color& light_slate_grey() noexcept;
-					static const rgba_color& light_steel_blue() noexcept;
-					static const rgba_color& light_yellow() noexcept;
-					static const rgba_color& lime() noexcept;
-					static const rgba_color& lime_green() noexcept;
-					static const rgba_color& linen() noexcept;
-					static const rgba_color& magenta() noexcept;
-					static const rgba_color& maroon() noexcept;
-					static const rgba_color& medium_aquamarine() noexcept;
-					static const rgba_color& medium_blue() noexcept;
-					static const rgba_color& medium_orchid() noexcept;
-					static const rgba_color& medium_purple() noexcept;
-					static const rgba_color& medium_sea_green() noexcept;
-					static const rgba_color& medium_slate_blue() noexcept;
-					static const rgba_color& medium_spring_green() noexcept;
-					static const rgba_color& medium_turquoise() noexcept;
-					static const rgba_color& medium_violet_red() noexcept;
-					static const rgba_color& midnight_blue() noexcept;
-					static const rgba_color& mint_cream() noexcept;
-					static const rgba_color& misty_rose() noexcept;
-					static const rgba_color& moccasin() noexcept;
-					static const rgba_color& navajo_white() noexcept;
-					static const rgba_color& navy() noexcept;
-					static const rgba_color& old_lace() noexcept;
-					static const rgba_color& olive() noexcept;
-					static const rgba_color& olive_drab() noexcept;
-					static const rgba_color& orange() noexcept;
-					static const rgba_color& orange_red() noexcept;
-					static const rgba_color& orchid() noexcept;
-					static const rgba_color& pale_goldenrod() noexcept;
-					static const rgba_color& pale_green() noexcept;
-					static const rgba_color& pale_turquoise() noexcept;
-					static const rgba_color& pale_violet_red() noexcept;
-					static const rgba_color& papaya_whip() noexcept;
-					static const rgba_color& peach_puff() noexcept;
-					static const rgba_color& peru() noexcept;
-					static const rgba_color& pink() noexcept;
-					static const rgba_color& plum() noexcept;
-					static const rgba_color& powder_blue() noexcept;
-					static const rgba_color& purple() noexcept;
-					static const rgba_color& red() noexcept;
-					static const rgba_color& rosy_brown() noexcept;
-					static const rgba_color& royal_blue() noexcept;
-					static const rgba_color& saddle_brown() noexcept;
-					static const rgba_color& salmon() noexcept;
-					static const rgba_color& sandy_brown() noexcept;
-					static const rgba_color& sea_green() noexcept;
-					static const rgba_color& sea_shell() noexcept;
-					static const rgba_color& sienna() noexcept;
-					static const rgba_color& silver() noexcept;
-					static const rgba_color& sky_blue() noexcept;
-					static const rgba_color& slate_blue() noexcept;
-					static const rgba_color& slate_gray() noexcept;
-					static const rgba_color& slate_grey() noexcept;
-					static const rgba_color& snow() noexcept;
-					static const rgba_color& spring_green() noexcept;
-					static const rgba_color& steel_blue() noexcept;
-					static const rgba_color& tan() noexcept;
-					static const rgba_color& teal() noexcept;
-					static const rgba_color& thistle() noexcept;
-					static const rgba_color& tomato() noexcept;
-					static const rgba_color& transparent_black() noexcept; // Note: Not in CSS3.
-					static const rgba_color& turquoise() noexcept;
-					static const rgba_color& violet() noexcept;
-					static const rgba_color& wheat() noexcept;
-					static const rgba_color& white() noexcept;
-					static const rgba_color& white_smoke() noexcept;
-					static const rgba_color& yellow() noexcept;
-					static const rgba_color& yellow_green() noexcept;
+					static const bgra_color& alice_blue() noexcept;
+					static const bgra_color& antique_white() noexcept;
+					static const bgra_color& aqua() noexcept;
+					static const bgra_color& aquamarine() noexcept;
+					static const bgra_color& azure() noexcept;
+					static const bgra_color& beige() noexcept;
+					static const bgra_color& bisque() noexcept;
+					static const bgra_color& black() noexcept;
+					static const bgra_color& blanched_almond() noexcept;
+					static const bgra_color& blue() noexcept;
+					static const bgra_color& blue_violet() noexcept;
+					static const bgra_color& brown() noexcept;
+					static const bgra_color& burly_wood() noexcept;
+					static const bgra_color& cadet_blue() noexcept;
+					static const bgra_color& chartreuse() noexcept;
+					static const bgra_color& chocolate() noexcept;
+					static const bgra_color& coral() noexcept;
+					static const bgra_color& cornflower_blue() noexcept;
+					static const bgra_color& cornsilk() noexcept;
+					static const bgra_color& crimson() noexcept;
+					static const bgra_color& cyan() noexcept;
+					static const bgra_color& dark_blue() noexcept;
+					static const bgra_color& dark_cyan() noexcept;
+					static const bgra_color& dark_goldenrod() noexcept;
+					static const bgra_color& dark_gray() noexcept;
+					static const bgra_color& dark_green() noexcept;
+					static const bgra_color& dark_grey() noexcept;
+					static const bgra_color& dark_khaki() noexcept;
+					static const bgra_color& dark_magenta() noexcept;
+					static const bgra_color& dark_olive_green() noexcept;
+					static const bgra_color& dark_orange() noexcept;
+					static const bgra_color& dark_orchid() noexcept;
+					static const bgra_color& dark_red() noexcept;
+					static const bgra_color& dark_salmon() noexcept;
+					static const bgra_color& dark_sea_green() noexcept;
+					static const bgra_color& dark_slate_blue() noexcept;
+					static const bgra_color& dark_slate_gray() noexcept;
+					static const bgra_color& dark_slate_grey() noexcept;
+					static const bgra_color& dark_turquoise() noexcept;
+					static const bgra_color& dark_violet() noexcept;
+					static const bgra_color& deep_pink() noexcept;
+					static const bgra_color& deep_sky_blue() noexcept;
+					static const bgra_color& dim_gray() noexcept;
+					static const bgra_color& dim_grey() noexcept;
+					static const bgra_color& dodger_blue() noexcept;
+					static const bgra_color& firebrick() noexcept;
+					static const bgra_color& floral_white() noexcept;
+					static const bgra_color& forest_green() noexcept;
+					static const bgra_color& fuchsia() noexcept;
+					static const bgra_color& gainsboro() noexcept;
+					static const bgra_color& ghost_white() noexcept;
+					static const bgra_color& gold() noexcept;
+					static const bgra_color& goldenrod() noexcept;
+					static const bgra_color& gray() noexcept;
+					static const bgra_color& green() noexcept;
+					static const bgra_color& green_yellow() noexcept;
+					static const bgra_color& grey() noexcept;
+					static const bgra_color& honeydew() noexcept;
+					static const bgra_color& hot_pink() noexcept;
+					static const bgra_color& indian_red() noexcept;
+					static const bgra_color& indigo() noexcept;
+					static const bgra_color& ivory() noexcept;
+					static const bgra_color& khaki() noexcept;
+					static const bgra_color& lavender() noexcept;
+					static const bgra_color& lavender_blush() noexcept;
+					static const bgra_color& lawn_green() noexcept;
+					static const bgra_color& lemon_chiffon() noexcept;
+					static const bgra_color& light_blue() noexcept;
+					static const bgra_color& light_coral() noexcept;
+					static const bgra_color& light_cyan() noexcept;
+					static const bgra_color& light_goldenrod_yellow() noexcept;
+					static const bgra_color& light_gray() noexcept;
+					static const bgra_color& light_green() noexcept;
+					static const bgra_color& light_grey() noexcept;
+					static const bgra_color& light_pink() noexcept;
+					static const bgra_color& light_salmon() noexcept;
+					static const bgra_color& light_sea_green() noexcept;
+					static const bgra_color& light_sky_blue() noexcept;
+					static const bgra_color& light_slate_gray() noexcept;
+					static const bgra_color& light_slate_grey() noexcept;
+					static const bgra_color& light_steel_blue() noexcept;
+					static const bgra_color& light_yellow() noexcept;
+					static const bgra_color& lime() noexcept;
+					static const bgra_color& lime_green() noexcept;
+					static const bgra_color& linen() noexcept;
+					static const bgra_color& magenta() noexcept;
+					static const bgra_color& maroon() noexcept;
+					static const bgra_color& medium_aquamarine() noexcept;
+					static const bgra_color& medium_blue() noexcept;
+					static const bgra_color& medium_orchid() noexcept;
+					static const bgra_color& medium_purple() noexcept;
+					static const bgra_color& medium_sea_green() noexcept;
+					static const bgra_color& medium_slate_blue() noexcept;
+					static const bgra_color& medium_spring_green() noexcept;
+					static const bgra_color& medium_turquoise() noexcept;
+					static const bgra_color& medium_violet_red() noexcept;
+					static const bgra_color& midnight_blue() noexcept;
+					static const bgra_color& mint_cream() noexcept;
+					static const bgra_color& misty_rose() noexcept;
+					static const bgra_color& moccasin() noexcept;
+					static const bgra_color& navajo_white() noexcept;
+					static const bgra_color& navy() noexcept;
+					static const bgra_color& old_lace() noexcept;
+					static const bgra_color& olive() noexcept;
+					static const bgra_color& olive_drab() noexcept;
+					static const bgra_color& orange() noexcept;
+					static const bgra_color& orange_red() noexcept;
+					static const bgra_color& orchid() noexcept;
+					static const bgra_color& pale_goldenrod() noexcept;
+					static const bgra_color& pale_green() noexcept;
+					static const bgra_color& pale_turquoise() noexcept;
+					static const bgra_color& pale_violet_red() noexcept;
+					static const bgra_color& papaya_whip() noexcept;
+					static const bgra_color& peach_puff() noexcept;
+					static const bgra_color& peru() noexcept;
+					static const bgra_color& pink() noexcept;
+					static const bgra_color& plum() noexcept;
+					static const bgra_color& powder_blue() noexcept;
+					static const bgra_color& purple() noexcept;
+					static const bgra_color& red() noexcept;
+					static const bgra_color& rosy_brown() noexcept;
+					static const bgra_color& royal_blue() noexcept;
+					static const bgra_color& saddle_brown() noexcept;
+					static const bgra_color& salmon() noexcept;
+					static const bgra_color& sandy_brown() noexcept;
+					static const bgra_color& sea_green() noexcept;
+					static const bgra_color& sea_shell() noexcept;
+					static const bgra_color& sienna() noexcept;
+					static const bgra_color& silver() noexcept;
+					static const bgra_color& sky_blue() noexcept;
+					static const bgra_color& slate_blue() noexcept;
+					static const bgra_color& slate_gray() noexcept;
+					static const bgra_color& slate_grey() noexcept;
+					static const bgra_color& snow() noexcept;
+					static const bgra_color& spring_green() noexcept;
+					static const bgra_color& steel_blue() noexcept;
+					static const bgra_color& tan() noexcept;
+					static const bgra_color& teal() noexcept;
+					static const bgra_color& thistle() noexcept;
+					static const bgra_color& tomato() noexcept;
+					static const bgra_color& transparent_black() noexcept; // Note: Not in CSS3.
+					static const bgra_color& turquoise() noexcept;
+					static const bgra_color& violet() noexcept;
+					static const bgra_color& wheat() noexcept;
+					static const bgra_color& white() noexcept;
+					static const bgra_color& white_smoke() noexcept;
+					static const bgra_color& yellow() noexcept;
+					static const bgra_color& yellow_green() noexcept;
 				};
 
-				inline constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
+				inline constexpr bool operator==(const bgra_color& lhs, const bgra_color& rhs) {
 					return lhs.r() == rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
 				}
-				inline constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {
+				inline constexpr bool operator!=(const bgra_color& lhs, const bgra_color& rhs) {
 					return !(lhs == rhs);
 				}
 
-				inline constexpr rgba_color operator*(const rgba_color& lhs, double rhs) {
+				inline constexpr bgra_color operator*(const bgra_color& lhs, double rhs) {
 					rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
 					return{
 						::std::min(lhs.r() * rhs, 1.0),
@@ -698,7 +688,7 @@ namespace std {
 					};
 				}
 
-				inline constexpr rgba_color operator*(double lhs, const rgba_color& rhs) {
+				inline constexpr bgra_color operator*(double lhs, const bgra_color& rhs) {
 					lhs = ::std::max(::std::min(lhs, 1.0), 0.0);
 					return{
 						::std::min(lhs * rhs.r(), 1.0),
@@ -709,7 +699,6 @@ namespace std {
 				}
 
 
-#if _Inline_namespace_conditional_support_test && _User_defined_literal_conditional_support_test
 				inline namespace literals {
 					// Note: The _ prefix is added because certain compilers reject attempts to add a non-user-defined literal
 					inline double operator""_ubyte(unsigned long long value) noexcept {
@@ -723,7 +712,6 @@ namespace std {
 						return result / 255.0;
 					}
 				}
-#endif
 
 				class matrix_2d {
 					double _M00 = 1.0;
@@ -780,11 +768,6 @@ namespace std {
 					constexpr void m21(double value) noexcept {
 						_M21 = value;
 					}
-					//void m01(double value) noexcept;
-					//void m10(double value) noexcept;
-					//void m11(double value) noexcept;
-					//void m20(double value) noexcept;
-					//void m21(double value) noexcept;
 					matrix_2d& translate(const vector_2d& value) noexcept;
 					matrix_2d& scale(const vector_2d& value) noexcept;
 					matrix_2d& rotate(double radians) noexcept;
@@ -792,7 +775,6 @@ namespace std {
 					matrix_2d& shear_y(double factor) noexcept;
 					matrix_2d& invert();
 					matrix_2d& invert(::std::error_code& ec) noexcept;
-					void swap(matrix_2d& other);
 
 					// Observers
 					constexpr double m00() const noexcept {
@@ -869,10 +851,10 @@ namespace std {
 					class new_path {
 					public:
 						constexpr new_path() noexcept {}
-						constexpr new_path(const new_path&) noexcept = default;
-						constexpr new_path& operator=(const new_path&) noexcept = default;
-						new_path(new_path&&) noexcept = default;
-						new_path& operator=(new_path&&) noexcept = default;
+						//constexpr new_path(const new_path&) noexcept = default;
+						//constexpr new_path& operator=(const new_path&) noexcept = default;
+						//new_path(new_path&&) noexcept = default;
+						//new_path& operator=(new_path&&) noexcept = default;
 					};
 
 					class close_path {
@@ -882,12 +864,15 @@ namespace std {
 							: _Data(to) {
 						}
 						constexpr close_path() noexcept {}
-						constexpr close_path(const close_path&) noexcept = default;
-						constexpr close_path& operator=(const close_path&) noexcept = default;
-						close_path(close_path&&) noexcept = default;
-						close_path& operator=(close_path&&) noexcept = default;
+						//constexpr close_path(const close_path&) noexcept = default;
+						//constexpr close_path& operator=(const close_path&) noexcept = default;
+						//close_path(close_path&&) noexcept = default;
+						//close_path& operator=(close_path&&) noexcept = default;
 
-						void to(const vector_2d& value) noexcept;
+						constexpr void to(const vector_2d& value) noexcept {
+							_Data = value;
+						}
+
 						constexpr vector_2d to() const noexcept {
 							return _Data;
 						}
@@ -900,12 +885,15 @@ namespace std {
 							: _Data(to) {
 						}
 						constexpr abs_move() noexcept {}
-						constexpr abs_move(const abs_move&) noexcept = default;
-						constexpr abs_move& operator=(const abs_move&) noexcept = default;
-						abs_move(abs_move&&) noexcept = default;
-						abs_move& operator=(abs_move&&) noexcept = default;
+						//constexpr abs_move(const abs_move&) noexcept = default;
+						//constexpr abs_move& operator=(const abs_move&) noexcept = default;
+						//abs_move(abs_move&&) noexcept = default;
+						//abs_move& operator=(abs_move&&) noexcept = default;
 
-						void to(const vector_2d& value) noexcept;
+						constexpr void to(const vector_2d& value) noexcept {
+							_Data = value;
+						}
+
 						constexpr vector_2d to() const noexcept {
 							return _Data;
 						}
@@ -918,12 +906,15 @@ namespace std {
 							: _Data(to) {
 						}
 						constexpr abs_line() noexcept {}
-						constexpr abs_line(const abs_line&) noexcept = default;
-						constexpr abs_line& operator=(const abs_line&) noexcept = default;
-						abs_line(abs_line&&) noexcept = default;
-						abs_line& operator=(abs_line&&) noexcept = default;
+						//constexpr abs_line(const abs_line&) noexcept = default;
+						//constexpr abs_line& operator=(const abs_line&) noexcept = default;
+						//abs_line(abs_line&&) noexcept = default;
+						//abs_line& operator=(abs_line&&) noexcept = default;
 
-						void to(const vector_2d& value) noexcept;
+						constexpr void to(const vector_2d& value) noexcept {
+							_Data = value;
+						}
+
 						constexpr vector_2d to() const noexcept {
 							return _Data;
 						}
@@ -936,12 +927,15 @@ namespace std {
 							: _Data(to) {
 						}
 						constexpr rel_move() noexcept {}
-						constexpr rel_move(const rel_move&) noexcept = default;
-						constexpr rel_move& operator=(const rel_move&) noexcept = default;
-						rel_move(rel_move&&) noexcept = default;
-						rel_move& operator=(rel_move&&) noexcept = default;
+						//constexpr rel_move(const rel_move&) noexcept = default;
+						//constexpr rel_move& operator=(const rel_move&) noexcept = default;
+						//rel_move(rel_move&&) noexcept = default;
+						//rel_move& operator=(rel_move&&) noexcept = default;
 
-						void to(const vector_2d& value) noexcept;
+						constexpr void to(const vector_2d& value) noexcept {
+							_Data = value;
+						}
+
 						constexpr vector_2d to() const noexcept {
 							return _Data;
 						}
@@ -954,12 +948,15 @@ namespace std {
 							: _Data(to) {
 						}
 						constexpr rel_line() noexcept {}
-						constexpr rel_line(const rel_line&) noexcept = default;
-						constexpr rel_line& operator=(const rel_line&) noexcept = default;
-						rel_line(rel_line&&) noexcept = default;
-						rel_line& operator=(rel_line&&) noexcept = default;
+						//constexpr rel_line(const rel_line&) noexcept = default;
+						//constexpr rel_line& operator=(const rel_line&) noexcept = default;
+						//rel_line(rel_line&&) noexcept = default;
+						//rel_line& operator=(rel_line&&) noexcept = default;
 
-						void to(const vector_2d& value) noexcept;
+						constexpr void to(const vector_2d& value) noexcept {
+							_Data = value;
+						}
+
 						constexpr vector_2d to() const noexcept {
 							return _Data;
 						}
@@ -976,14 +973,20 @@ namespace std {
 							, _End_pt(endPoint) {
 						}
 						constexpr abs_cubic_curve() noexcept {}
-						constexpr abs_cubic_curve(const abs_cubic_curve&) noexcept = default;
-						constexpr abs_cubic_curve& operator=(const abs_cubic_curve&) noexcept = default;
-						abs_cubic_curve(abs_cubic_curve&&) noexcept = default;
-						abs_cubic_curve& operator=(abs_cubic_curve&&) noexcept = default;
+						//constexpr abs_cubic_curve(const abs_cubic_curve&) noexcept = default;
+						//constexpr abs_cubic_curve& operator=(const abs_cubic_curve&) noexcept = default;
+						//abs_cubic_curve(abs_cubic_curve&&) noexcept = default;
+						//abs_cubic_curve& operator=(abs_cubic_curve&&) noexcept = default;
 
-						void control_point_1(const vector_2d& value) noexcept;
-						void control_point_2(const vector_2d& value) noexcept;
-						void end_point(const vector_2d& value) noexcept;
+						constexpr void control_point_1(const vector_2d& value) noexcept {
+							_Control_pt1 = value;
+						}
+						constexpr void control_point_2(const vector_2d& value) noexcept {
+							_Control_pt2 = value;
+						}
+						constexpr void end_point(const vector_2d& value) noexcept {
+							_End_pt = value;
+						}
 
 						constexpr vector_2d control_point_1() const noexcept {
 							return _Control_pt1;
@@ -1007,14 +1010,20 @@ namespace std {
 							, _End_pt(endPoint) {
 						}
 						constexpr rel_cubic_curve() noexcept {}
-						constexpr rel_cubic_curve(const rel_cubic_curve&) noexcept = default;
-						constexpr rel_cubic_curve& operator=(const rel_cubic_curve&) noexcept = default;
-						rel_cubic_curve(rel_cubic_curve&&) noexcept = default;
-						rel_cubic_curve& operator=(rel_cubic_curve&&) noexcept = default;
+						//constexpr rel_cubic_curve(const rel_cubic_curve&) noexcept = default;
+						//constexpr rel_cubic_curve& operator=(const rel_cubic_curve&) noexcept = default;
+						//rel_cubic_curve(rel_cubic_curve&&) noexcept = default;
+						//rel_cubic_curve& operator=(rel_cubic_curve&&) noexcept = default;
 
-						void control_point_1(const vector_2d& value) noexcept;
-						void control_point_2(const vector_2d& value) noexcept;
-						void end_point(const vector_2d& value) noexcept;
+						constexpr void control_point_1(const vector_2d& value) noexcept {
+							_Control_pt1 = value;
+						}
+						constexpr void control_point_2(const vector_2d& value) noexcept {
+							_Control_pt2 = value;
+						}
+						constexpr void end_point(const vector_2d& value) noexcept {
+							_End_pt = value;
+						}
 
 						constexpr vector_2d control_point_1() const noexcept {
 							return _Control_pt1;
@@ -1036,13 +1045,17 @@ namespace std {
 							, _End_pt(ep) {
 						}
 						constexpr abs_quadratic_curve() noexcept {}
-						constexpr abs_quadratic_curve(const abs_quadratic_curve&) noexcept = default;
-						constexpr abs_quadratic_curve& operator=(const abs_quadratic_curve&) noexcept = default;
-						abs_quadratic_curve(abs_quadratic_curve&&) noexcept = default;
-						abs_quadratic_curve& operator=(abs_quadratic_curve&&) noexcept = default;
+						//constexpr abs_quadratic_curve(const abs_quadratic_curve&) noexcept = default;
+						//constexpr abs_quadratic_curve& operator=(const abs_quadratic_curve&) noexcept = default;
+						//abs_quadratic_curve(abs_quadratic_curve&&) noexcept = default;
+						//abs_quadratic_curve& operator=(abs_quadratic_curve&&) noexcept = default;
 
-						void control_point(const vector_2d& cp) noexcept;
-						void end_point(const vector_2d& ep) noexcept;
+						constexpr void control_point(const vector_2d& value) noexcept {
+							_Control_pt = value;
+						}
+						constexpr void end_point(const vector_2d& value) noexcept {
+							_End_pt = value;
+						}
 
 						constexpr vector_2d control_point() const noexcept {
 							return _Control_pt;
@@ -1061,13 +1074,17 @@ namespace std {
 							, _End_pt(ep) {
 						}
 						constexpr rel_quadratic_curve() noexcept {}
-						constexpr rel_quadratic_curve(const rel_quadratic_curve&) noexcept = default;
-						constexpr rel_quadratic_curve& operator=(const rel_quadratic_curve&) noexcept = default;
-						rel_quadratic_curve(rel_quadratic_curve&&) noexcept = default;
-						rel_quadratic_curve& operator=(rel_quadratic_curve&&) noexcept = default;
+						//constexpr rel_quadratic_curve(const rel_quadratic_curve&) noexcept = default;
+						//constexpr rel_quadratic_curve& operator=(const rel_quadratic_curve&) noexcept = default;
+						//rel_quadratic_curve(rel_quadratic_curve&&) noexcept = default;
+						//rel_quadratic_curve& operator=(rel_quadratic_curve&&) noexcept = default;
 
-						void control_point(const vector_2d& cp) noexcept;
-						void end_point(const vector_2d& ep) noexcept;
+						constexpr void control_point(const vector_2d& value) noexcept {
+							_Control_pt = value;
+						}
+						constexpr void end_point(const vector_2d& value) noexcept {
+							_End_pt = value;
+						}
 
 						constexpr vector_2d control_point() const noexcept {
 							return _Control_pt;
@@ -1102,19 +1119,43 @@ namespace std {
 							, _Width(r.width())
 							, _Height(r.height()) {
 						}
-						constexpr abs_rectangle(const abs_rectangle&) noexcept = default;
-						constexpr abs_rectangle& operator=(const abs_rectangle&) noexcept = default;
-						abs_rectangle(abs_rectangle&&) noexcept = default;
-						abs_rectangle& operator=(abs_rectangle&&) noexcept = default;
+						//constexpr abs_rectangle(const abs_rectangle&) noexcept = default;
+						//constexpr abs_rectangle& operator=(const abs_rectangle&) noexcept = default;
+						//abs_rectangle(abs_rectangle&&) noexcept = default;
+						//abs_rectangle& operator=(abs_rectangle&&) noexcept = default;
 
-
-						void x(double value) noexcept;
-						void y(double value) noexcept;
-						void width(double value) noexcept;
-						void height(double value) noexcept;
-						void top_left(const vector_2d& value) noexcept;
-						void bottom_right(const vector_2d& value) noexcept;
-						void top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept;
+						constexpr void x(double value) noexcept {
+							_X = value;
+						}
+						constexpr void y(double value) noexcept {
+							_Y = value;
+						}
+						constexpr void width(double value) noexcept {
+							_Width = value;
+						}
+						constexpr void height(double value) noexcept {
+							_Height = value;
+						}
+						constexpr void top_left(const vector_2d& value) noexcept {
+							_X = value.x();
+							_Y = value.y();
+						}
+						constexpr void bottom_right(const vector_2d& value) noexcept {
+							auto x = value.x();
+							auto y = value.y();
+							_Width = max(0.0, x - _X);
+							_Height = max(0.0, y - _Y);
+						}
+						constexpr void top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept {
+							auto tlx = tl.x();
+							auto tly = tl.y();
+							auto brx = br.x();
+							auto bry = br.y();
+							_X = tlx;
+							_Y = tly;
+							_Width = max(0.0, brx - tlx);
+							_Height = max(0.0, bry - tly);
+						}
 
 						constexpr double x() const noexcept;
 						constexpr double y() const noexcept;
@@ -1193,19 +1234,39 @@ namespace std {
 							, _Width(r.width())
 							, _Height(r.height()) {
 						}
-						constexpr rel_rectangle(const rel_rectangle&) noexcept = default;
-						constexpr rel_rectangle& operator=(const rel_rectangle&) noexcept = default;
-						rel_rectangle(rel_rectangle&&) noexcept = default;
-						rel_rectangle& operator=(rel_rectangle&&) noexcept = default;
 
-
-						void x(double value) noexcept;
-						void y(double value) noexcept;
-						void width(double value) noexcept;
-						void height(double value) noexcept;
-						void top_left(const vector_2d& value) noexcept;
-						void bottom_right(const vector_2d& value) noexcept;
-						void top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept;
+						constexpr void x(double value) noexcept {
+							_X = value;
+						}
+						constexpr void y(double value) noexcept {
+							_Y = value;
+						}
+						constexpr void width(double value) noexcept {
+							_Width = value;
+						}
+						constexpr void height(double value) noexcept {
+							_Height = value;
+						}
+						constexpr void top_left(const vector_2d& value) noexcept {
+							_X = value.x();
+							_Y = value.y();
+						}
+						constexpr void bottom_right(const vector_2d& value) noexcept {
+							auto x = value.x();
+							auto y = value.y();
+							_Width = max(0.0, x - _X);
+							_Height = max(0.0, y - _Y);
+						}
+						constexpr void top_left_bottom_right(const vector_2d& tl, const vector_2d& br) noexcept {
+							auto tlx = tl.x();
+							auto tly = tl.y();
+							auto brx = br.x();
+							auto bry = br.y();
+							_X = tlx;
+							_Y = tly;
+							_Width = max(0.0, brx - tlx);
+							_Height = max(0.0, bry - tly);
+						}
 
 						constexpr double x() const noexcept;
 						constexpr double y() const noexcept;
@@ -1265,11 +1326,6 @@ namespace std {
 						double _Y_axis = 0.0;
 					public:
 						constexpr abs_ellipse() noexcept { }
-						constexpr abs_ellipse(const vector_2d& ctr, double xaxis, double yaxis) noexcept
-							: _Center(ctr)
-							, _X_axis(xaxis)
-							, _Y_axis(yaxis) {
-						}
 						constexpr explicit abs_ellipse(const circle& c) noexcept
 							: _Center(c.center())
 							, _X_axis(c.radius())
@@ -1278,18 +1334,18 @@ namespace std {
 							: _Center(e.center())
 							, _X_axis(e.x_axis())
 							, _Y_axis(e.y_axis()) { }
-						constexpr abs_ellipse(const abs_ellipse&) noexcept = default;
-						constexpr abs_ellipse& operator=(const abs_ellipse&) noexcept = default;
-						abs_ellipse(abs_ellipse&&) noexcept = default;
-						abs_ellipse& operator=(abs_ellipse&&) noexcept = default;
+						//constexpr abs_ellipse(const abs_ellipse&) noexcept = default;
+						//constexpr abs_ellipse& operator=(const abs_ellipse&) noexcept = default;
+						//abs_ellipse(abs_ellipse&&) noexcept = default;
+						//abs_ellipse& operator=(abs_ellipse&&) noexcept = default;
 
-						void center(const vector_2d& ctr) noexcept {
+						constexpr void center(const vector_2d& ctr) noexcept {
 							_Center = ctr;
 						}
-						void x_axis(double val) noexcept {
+						constexpr void x_axis(double val) noexcept {
 							_X_axis = val;
 						}
-						void y_axis(double val) noexcept {
+						constexpr void y_axis(double val) noexcept {
 							_Y_axis = val;
 						}
 
@@ -1312,10 +1368,6 @@ namespace std {
 						double _Y_axis = 0.0;
 					public:
 						constexpr rel_ellipse() noexcept { }
-						//constexpr rel_ellipse(const vector_2d& ctr, double xaxis, double yaxis) noexcept
-						//	: _Center(ctr)
-						//	, _X_axis(xaxis)
-						//	, _Y_axis(yaxis) { }
 						constexpr explicit rel_ellipse(const circle& c) noexcept
 							: _Center(c.center())
 							, _X_axis(c.radius())
@@ -1324,18 +1376,18 @@ namespace std {
 							: _Center(e.center())
 							, _X_axis(e.x_axis())
 							, _Y_axis(e.y_axis()) { }
-						constexpr rel_ellipse(const rel_ellipse&) noexcept = default;
-						constexpr rel_ellipse& operator=(const rel_ellipse&) noexcept = default;
-						rel_ellipse(rel_ellipse&&) noexcept = default;
-						rel_ellipse& operator=(rel_ellipse&&) noexcept = default;
+						//constexpr rel_ellipse(const rel_ellipse&) noexcept = default;
+						//constexpr rel_ellipse& operator=(const rel_ellipse&) noexcept = default;
+						//rel_ellipse(rel_ellipse&&) noexcept = default;
+						//rel_ellipse& operator=(rel_ellipse&&) noexcept = default;
 
-						void center(const vector_2d& ctr) noexcept {
+						constexpr void center(const vector_2d& ctr) noexcept {
 							_Center = ctr;
 						}
-						void x_axis(double val) noexcept {
+						constexpr void x_axis(double val) noexcept {
 							_X_axis = val;
 						}
-						void y_axis(double val) noexcept {
+						constexpr void y_axis(double val) noexcept {
 							_Y_axis = val;
 						}
 
@@ -1366,16 +1418,26 @@ namespace std {
 							, _Angle_2(angle2) {
 						}
 						constexpr arc_clockwise() noexcept {}
-						constexpr arc_clockwise(const arc_clockwise&) noexcept = default;
-						constexpr arc_clockwise& operator=(const arc_clockwise&) noexcept = default;
-						arc_clockwise(arc_clockwise&&) noexcept = default;
-						arc_clockwise& operator=(arc_clockwise&&) noexcept = default;
+						//constexpr arc_clockwise(const arc_clockwise&) noexcept = default;
+						//constexpr arc_clockwise& operator=(const arc_clockwise&) noexcept = default;
+						//arc_clockwise(arc_clockwise&&) noexcept = default;
+						//arc_clockwise& operator=(arc_clockwise&&) noexcept = default;
 
-						void circle(const experimental::io2d::circle& c) noexcept;
-						void center(const vector_2d& ctr) noexcept;
-						void radius(double rad) noexcept;
-						void angle_1(double radians) noexcept;
-						void angle_2(double radians) noexcept;
+						constexpr void circle(const experimental::io2d::circle& c) noexcept {
+							_Circle = c;
+						}
+						constexpr void center(const vector_2d& ctr) noexcept {
+							_Circle.center(ctr);
+						}
+						constexpr void radius(double rad) noexcept {
+							_Circle.radius(rad);
+						}
+						constexpr void angle_1(double radians) noexcept {
+							_Angle_1 = radians;
+						}
+						constexpr void angle_2(double radians) noexcept {
+							_Angle_2 = radians;
+						}
 
 						constexpr experimental::io2d::circle circle() const noexcept {
 							return _Circle;
@@ -1410,16 +1472,26 @@ namespace std {
 							, _Angle_2(angle2) {
 						}
 						constexpr arc_counterclockwise() noexcept {}
-						constexpr arc_counterclockwise(const arc_counterclockwise&) noexcept = default;
-						constexpr arc_counterclockwise& operator=(const arc_counterclockwise&) noexcept = default;
-						arc_counterclockwise(arc_counterclockwise&&) noexcept = default;
-						arc_counterclockwise& operator=(arc_counterclockwise&&) noexcept = default;
+						//constexpr arc_counterclockwise(const arc_counterclockwise&) noexcept = default;
+						//constexpr arc_counterclockwise& operator=(const arc_counterclockwise&) noexcept = default;
+						//arc_counterclockwise(arc_counterclockwise&&) noexcept = default;
+						//arc_counterclockwise& operator=(arc_counterclockwise&&) noexcept = default;
 
-						void circle(const experimental::io2d::circle& c) noexcept;
-						void center(const vector_2d& ctr) noexcept;
-						void radius(double rad) noexcept;
-						void angle_1(double radians) noexcept;
-						void angle_2(double radians) noexcept;
+						constexpr void circle(const experimental::io2d::circle& c) noexcept {
+							_Circle = c;
+						}
+						constexpr void center(const vector_2d& ctr) noexcept {
+							_Circle.center(ctr);
+						}
+						constexpr void radius(double rad) noexcept {
+							_Circle.radius(rad);
+						}
+						constexpr void angle_1(double radians) noexcept {
+							_Angle_1 = radians;
+						}
+						constexpr void angle_2(double radians) noexcept {
+							_Angle_2 = radians;
+						}
 
 						constexpr experimental::io2d::circle circle() const noexcept {
 							return _Circle;
@@ -1445,12 +1517,14 @@ namespace std {
 							: _Matrix(m) {
 						}
 						constexpr change_matrix() noexcept {}
-						constexpr change_matrix(const change_matrix&) noexcept = default;
-						constexpr change_matrix& operator=(const change_matrix&) noexcept = default;
-						change_matrix(change_matrix&&) noexcept = default;
-						change_matrix& operator=(change_matrix&&) noexcept = default;
+						//constexpr change_matrix(const change_matrix&) noexcept = default;
+						//constexpr change_matrix& operator=(const change_matrix&) noexcept = default;
+						//change_matrix(change_matrix&&) noexcept = default;
+						//change_matrix& operator=(change_matrix&&) noexcept = default;
 
-						void matrix(const matrix_2d& value) noexcept;
+						constexpr void matrix(const matrix_2d& value) noexcept {
+							_Matrix = value;
+						}
 						constexpr matrix_2d matrix() const noexcept {
 							return _Matrix;
 						}
@@ -1463,18 +1537,20 @@ namespace std {
 							: _Origin(origin) {
 						}
 						constexpr change_origin() noexcept {}
-						constexpr change_origin(const change_origin&) noexcept = default;
-						constexpr change_origin& operator=(const change_origin&) noexcept = default;
-						change_origin(change_origin&&) noexcept = default;
-						change_origin& operator=(change_origin&&) noexcept = default;
+						//constexpr change_origin(const change_origin&) noexcept = default;
+						//constexpr change_origin& operator=(const change_origin&) noexcept = default;
+						//change_origin(change_origin&&) noexcept = default;
+						//change_origin& operator=(change_origin&&) noexcept = default;
 
-						void origin(const vector_2d& value) noexcept;
+						constexpr void origin(const vector_2d& value) noexcept {
+							_Origin = value;
+						}
 						constexpr vector_2d origin() const noexcept {
 							return _Origin;
 						}
 					};
 
-					using path_data_types = typename ::std::variant<new_path, close_path, abs_cubic_curve, abs_ellipse, abs_line, abs_move, abs_rectangle, abs_quadratic_curve, arc_clockwise, arc_counterclockwise, change_matrix, change_origin, rel_cubic_curve, rel_ellipse, rel_line, rel_move, rel_rectangle, rel_quadratic_curve>;
+					using path_data_types = typename ::std::variant<abs_cubic_curve, abs_ellipse, abs_line, abs_move, abs_quadratic_curve, abs_rectangle, arc_clockwise, arc_counterclockwise, change_matrix, change_origin, close_path, new_path, rel_cubic_curve, rel_ellipse, rel_line, rel_move, rel_quadratic_curve, rel_rectangle>;
 				}
 
 				// Forward declaration.
@@ -1860,7 +1936,7 @@ namespace std {
 
 					// Observers
 					::std::experimental::io2d::rectangle path_extents() const;
-					::std::experimental::io2d::rectangle path_extents(::std::error_code& ec) const noexcept;
+					//::std::experimental::io2d::rectangle path_extents(::std::error_code& ec) const noexcept;
 					//bool has_current_point() const noexcept;
 					//vector_2d current_point() const;
 					//vector_2d current_point(::std::error_code& ec) const noexcept;
@@ -1897,8 +1973,8 @@ namespace std {
 					native_handle_type native_handle() const noexcept;
 
 					device() = delete;
-					device(const device&) = delete;
-					device& operator=(const device&) = delete;
+					//device(const device&) = delete;
+					//device& operator=(const device&) = delete;
 					device(device&& other) noexcept = default;
 					device& operator=(device&& other) noexcept = default;
 
@@ -1913,21 +1989,17 @@ namespace std {
 				class color_stop {
 				private:
 					double _Offset = 0.0;
-					rgba_color _Color = rgba_color::black();
+					bgra_color _Color = bgra_color::black();
 				public:
 					color_stop() noexcept = default;
-					color_stop(double offset, const rgba_color& color);
+					color_stop(double offset, const bgra_color& color);
 
 					void offset(double value) noexcept;
-					void color(const rgba_color& value) noexcept;
+					void color(const bgra_color& value) noexcept;
 
 					double offset() const noexcept;
-					rgba_color color() const noexcept;
+					bgra_color color() const noexcept;
 				};
-
-				class surface;
-				class image_surface;
-				class display_surface;
 
 				class render_props {
 					matrix_2d _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
@@ -2132,13 +2204,17 @@ namespace std {
 					}
 				};
 
+				//class surface;
+				class image_surface;
+				//class display_surface;
+
 				class brush {
 				public:
 					typedef cairo_pattern_t* native_handle_type;
 
 				private:
-					friend surface;
-					friend display_surface;
+					//friend surface;
+					//friend display_surface;
 					// Precondition: nh has already had its reference count incremented (either in creation or with cairo_pattern_reference).
 					brush(native_handle_type nh) noexcept;
 
@@ -2149,13 +2225,8 @@ namespace std {
 				public:
 					native_handle_type native_handle() const noexcept;
 
-					//brush() = delete;
-					//brush(const brush&) noexcept = default;
-					//brush& operator=(const brush&) noexcept = default;
-					//brush(brush&& other) noexcept = default;
-					//brush& operator=(brush&& other) noexcept = default;
-					explicit brush(const rgba_color& c);
-					//brush(const rgba_color& c, error_code& ec) noexcept;
+					explicit brush(const bgra_color& c);
+
 					template <class InputIterator>
 					brush(const vector_2d& begin, const vector_2d& end,
 						InputIterator first, InputIterator last);
@@ -2168,12 +2239,8 @@ namespace std {
 
 					brush(const circle& start, const circle& end,
 						::std::initializer_list<color_stop> il);
-
-					//brush(const circle& start, const circle& end, ::std::error_code& ec,
-					//	::std::initializer_list<color_stop> il) noexcept;
 
 					explicit brush(image_surface&& img);
-					//brush(image_surface&& img, error_code& ec) noexcept;
 
 					brush_type type() const noexcept;
 				};
@@ -2185,16 +2252,8 @@ namespace std {
 
 				class mapped_surface;
 
-				// tuple<dashes, offset>
+				 //tuple<dashes, offset>
 				typedef ::std::tuple<::std::vector<double>, double> dashes;
-
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wweak-vtables"
-#endif
-#endif
 
 				class surface {
 				public:
@@ -2207,28 +2266,17 @@ namespace std {
 
 					const double _Line_join_miter_miter_limit = 10000.0;
 
-					// State - unsaved
-					typedef rectangle _Dirty_type;
-					_Dirty_type _Dirty_rect;
+                    rectangle _Dirty_rect;
 					::std::experimental::io2d::format _Format;
 
 					surface(::std::experimental::io2d::format fmt, int width, int height);
-					//surface(::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
 
 					surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
-					//surface(native_handle_type nh, ::std::experimental::io2d::format fmt, ::std::error_code& ec) noexcept;
-
-					//// create_similar
-					//surface(const surface& other, int width, int height);
-					//surface(const surface& other, int width, int height, ::std::error_code& ec) noexcept;
-
-					//void path_group(const ::std::shared_ptr<::std::experimental::io2d::path_group>& p);
-					//void path_group(const ::std::shared_ptr<::std::experimental::io2d::path_group>& p, ::std::error_code& ec) noexcept;
 				protected:
-					surface(const surface&) = delete;
-					surface& operator=(const surface&) = delete;
-					surface(surface&& other) /*noexcept*/ = default;
-					surface& operator=(surface&& other) /*noexcept*/ = default;
+					//surface(const surface&) = delete;
+					//surface& operator=(const surface&) = delete;
+					surface(surface&& other) noexcept = default;
+					surface& operator=(surface&& other) noexcept = default;
 
 				public:
 					native_handle_type native_handle() const;
@@ -2271,20 +2319,11 @@ namespace std {
 					void mask(const brush& b, const brush& mb, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 				};
 
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#endif
+				enum class image_data_format {
+					png,
+					jpg
+				};
 
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wweak-vtables"
-#endif
-#endif
 				class image_surface : public surface {
 					friend surface;
 				public:
@@ -2294,28 +2333,10 @@ namespace std {
 					image_surface(image_surface&& other) /*noexcept*/ = default;
 					image_surface& operator=(image_surface&& other) /*noexcept*/ = default;
 					image_surface(::std::experimental::io2d::format fmt, int width, int height);
-					image_surface(filesystem::path f, experimental::io2d::format fmt);
-					//image_surface(::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
-
-					//template <class InputIterator>
-					//image_surface(InputIterator first, InputIterator last, ::std::experimental::io2d::format fmt, int width, int height);
-
-					//template <class InputIterator>
-					//image_surface(InputIterator first, InputIterator last, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
-					//// create_similar_image
-					//image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height);
-					//image_surface(const surface& other, ::std::experimental::io2d::format fmt, int width, int height, ::std::error_code& ec) noexcept;
-					//// create_from_png
-					//image_surface(const ::std::string& filename);
-					//virtual ~image_surface() { }
+					image_surface(::std::experimental::filesystem::path f, experimental::io2d::format fmt, image_data_format idf);
 
 					// Modifiers
-					void save_to_file(filesystem::path f);
-					//template <class InputIterator>
-					//void data(InputIterator first, InputIterator last);
-					//void data(const ::std::vector<unsigned char>& data, ::std::error_code& ec) noexcept;
-					//::std::vector<unsigned char> data();
-					//::std::vector<unsigned char> data(::std::error_code& ec) noexcept;
+					void save(::std::experimental::filesystem::path f, image_data_format idf);
 
 					// Observers
 					::std::experimental::io2d::format format() const noexcept;
@@ -2323,13 +2344,6 @@ namespace std {
 					int height() const noexcept;
 					int stride() const noexcept;
 				};
-
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#endif
 
 				class mapped_surface {
 					surface::native_handle_type _Mapped_surface;
@@ -2355,16 +2369,10 @@ namespace std {
 
 					unsigned char* data();
 					unsigned char* data(::std::error_code& ec) noexcept;
-					//void rgba_data(const ::std::vector<rgba_color>& v);
-					//void rgba_data(const ::std::vector<rgba_color>& v, ::std::error_code& ec) noexcept;
-					//void rgba_data(const ::std::vector<rgba_color>& v, unsigned int offset);
-					//void rgba_data(const ::std::vector<rgba_color>& v, unsigned int offset, ::std::error_code& ec) noexcept;
 
 					// Observers
 					const unsigned char* data() const;
 					const unsigned char* data(::std::error_code& ec) const noexcept;
-					//::std::vector<rgba_color> rgba_data() const;
-					//::std::vector<rgba_color> rgba_data(::std::error_code& ec) const noexcept;
 
 					::std::experimental::io2d::format format() const noexcept;
 					int width() const noexcept;
@@ -2402,35 +2410,23 @@ namespace std {
 				};
 #endif
 
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wweak-vtables"
-#endif
-#endif
 				class display_surface : public surface {
 					friend surface;
-					// Unsaved state.
-					::std::experimental::io2d::brush _Default_brush;
+
+                    ::std::experimental::io2d::brush _Default_brush;
 					//brush_props _Default_brush_props; // Unneeded since it's a solid color brush.
-					typedef int _Display_width_type;
-					_Display_width_type _Display_width;
-					typedef int _Display_height_type;
-					_Display_height_type _Display_height;
+					int _Display_width;
+					int _Display_height;
 					::std::experimental::io2d::scaling _Scaling;
-					typedef int _Width_type;
-					_Width_type _Width;
-					typedef int _Height_type;
-					_Height_type _Height;
-					::std::function<void(display_surface& sfc)> _Draw_fn;
-					::std::function<void(display_surface& sfc)> _Size_change_fn;
-					typedef ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> _User_scaling_fn_type;
-					_User_scaling_fn_type _User_scaling_fn;
+					int _Width;
+					int _Height;
+					::std::unique_ptr<::std::function<void(display_surface& sfc)>> _Draw_fn;
+					::std::unique_ptr<::std::function<void(display_surface& sfc)>> _Size_change_fn;
+					::std::unique_ptr<::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>> _User_scaling_fn;
 					optional<experimental::io2d::brush> _Letterbox_brush;
 					optional<brush_props> _Letterbox_brush_props;
 					typedef bool _Auto_clear_type;
-					_Auto_clear_type _Auto_clear;
+					bool _Auto_clear;
 
 #ifdef _WIN32_WINNT
 					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -2457,7 +2453,7 @@ namespace std {
 #endif
 					::std::experimental::io2d::refresh_rate _Refresh_rate;
 					double _Desired_frame_rate;
-					::std::atomic<bool> _Redraw_requested;
+					bool _Redraw_requested;
 					double _Elapsed_draw_time;
 					const double _Minimum_frame_rate = 0.01;
 					const double _Maximum_frame_rate = 120.0;
@@ -2488,8 +2484,8 @@ namespace std {
 					//display_surface() = delete;
 					//display_surface(const display_surface&) = delete;
 					//display_surface& operator=(const display_surface&) = delete;
-					display_surface(display_surface&& other) noexcept = default;
-					display_surface& operator=(display_surface&& other) noexcept = default;
+					display_surface(display_surface&& other) /*noexcept*/ = default;
+					display_surface& operator=(display_surface&& other) /*noexcept*/ = default;
 
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
 						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0);
@@ -2539,13 +2535,6 @@ namespace std {
 					double elapsed_draw_time() const noexcept;
 				};
 
-				// I don't know why Clang/C2 is complaining about weak vtables here since the at least one virtual function is always anchored but for now silence the warnings. I've never seen this using Clang on OpenSUSE.
-#ifdef _WIN32
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#endif
-
 				int format_stride_for_width(format format, int width) noexcept;
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0);
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0) noexcept;
@@ -2554,6 +2543,7 @@ namespace std {
 					int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0) noexcept;
 				image_surface make_image_surface(format format, int width, int height);
 				image_surface make_image_surface(format format, int width, int height, ::std::error_code& ec) noexcept;
+				image_surface make_image_surface(image_surface& sfc);
 
 				template <class _TItem>
 				struct _Path_factory_process_visit {
@@ -2648,11 +2638,7 @@ namespace std {
 							int bezCount = 1;
 							double theta = ang2 - ang1;
 							double phi{};
-#if _Variable_templates_conditional_support_test
 							while (theta >= half_pi<double>) {
-#else
-							while (theta >= half_pi<double>()) {
-#endif
 								theta /= 2.0;
 								bezCount += bezCount;
 							}
@@ -2721,11 +2707,7 @@ namespace std {
 							int bezCount = 1;
 							double theta = ang1 - ang2;
 							double phi{};
-#if _Variable_templates_conditional_support_test
 							while (theta >= half_pi<double>) {
-#else
-							while (theta >= half_pi<double>()) {
-#endif
 								theta /= 2.0;
 								bezCount += bezCount;
 							}
@@ -3058,11 +3040,7 @@ namespace std {
 							int bezCount = 1;
 							double theta = ang2 - ang1;
 							double phi{};
-#if _Variable_templates_conditional_support_test
 							while (theta >= half_pi<double>) {
-#else
-							while (theta >= half_pi<double>()) {
-#endif
 								theta /= 2.0;
 								bezCount += bezCount;
 							}
@@ -3132,11 +3110,7 @@ namespace std {
 							int bezCount = 1;
 							double theta = ang1 - ang2;
 							double phi{};
-#if _Variable_templates_conditional_support_test
 							while (theta >= half_pi<double>) {
-#else
-							while (theta >= half_pi<double>()) {
-#endif
 								theta /= 2.0;
 								bezCount += bezCount;
 							}
@@ -3542,13 +3516,6 @@ namespace std {
 				template<class Allocator>
 				inline void path_builder<Allocator>::ellipse(const experimental::io2d::ellipse& e) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_ellipse>, e);
-					//const auto m = _Transform_matrix;
-					//const auto o = _Origin;
-					//_Data.emplace_back(in_place_type<path_data::change_origin>, ctr);
-					//_Data.emplace_back(in_place_type<path_data::change_matrix>, matrix_2d::init_scale({ width/height, 1.0 }) * m);
-					//_Data.emplace_back(in_place_type<path_data::arc_clockwise>, ctr, height, 0.0, two_pi<double>);
-					//_Data.emplace_back(in_place_type<path_data::change_matrix>, m);
-					//_Data.emplace_back(in_place_type<path_data::change_origin>, o);
 				}
 
 				template<class Allocator>
@@ -3704,9 +3671,6 @@ namespace std {
 					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
 					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
-					//for (const color_stop& stop : csg) {
-					//	cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
-					//}
 					for (auto it = first; it != last; ++it) {
 						auto stop = *it;
 						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
@@ -3740,12 +3704,9 @@ namespace std {
 					}
 					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 				}
-#if _Inline_namespace_conditional_support_test
 			}
-#endif
 		}
 	}
 }
 
 #endif
-

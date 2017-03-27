@@ -106,11 +106,11 @@
 //			return{ m_startPoint, m_controlPoint1, m_controlPoint2, m_endPoint };
 //		}
 //
-//		void render_ellipse(::std::experimental::io2d::display_surface& ds, const ::std::experimental::io2d::vector_2d& center, double xRadius, double yRadius, const ::std::experimental::io2d::rgba_color& color);
+//		void render_ellipse(::std::experimental::io2d::display_surface& ds, const ::std::experimental::io2d::vector_2d& center, double xRadius, double yRadius, const ::std::experimental::io2d::bgra_color& color);
 //
 //		void render_fill_rect_radial_gradient(::std::experimental::io2d::display_surface& ds, const ::std::experimental::io2d::rectangle& fillArea, const ::std::experimental::io2d::radial_brush_factory& f, ::std::experimental::io2d::wrap_mode e = ::std::experimental::io2d::wrap_mode::none);
 //
-//		::std::experimental::io2d::rgba_color get_interpolated_color(const ::std::experimental::io2d::radial_brush_factory& f, double t, ::std::experimental::io2d::wrap_mode e = ::std::experimental::io2d::wrap_mode::none);
+//		::std::experimental::io2d::bgra_color get_interpolated_color(const ::std::experimental::io2d::radial_brush_factory& f, double t, ::std::experimental::io2d::wrap_mode e = ::std::experimental::io2d::wrap_mode::none);
 //
 //		::std::experimental::io2d::vector_2d de_casteljau(const ::std::array<::std::experimental::io2d::vector_2d, 4>& p, ::std::array<::std::experimental::io2d::vector_2d, 4>::size_type j, unsigned int k, double t);
 //		

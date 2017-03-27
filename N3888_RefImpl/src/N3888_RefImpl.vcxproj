@@ -156,6 +156,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <BrowseInformation>true</BrowseInformation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -209,6 +210,7 @@
       <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive-</AdditionalOptions>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -261,6 +263,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -320,6 +323,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -378,6 +382,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="throw_helpers.h" />
     <ClInclude Include="xcairoenumhelpers.h" />
+    <ClInclude Include="xdiagnostics.h" />
     <ClInclude Include="xio2d.h" />
     <ClInclude Include="xio2dhelpers.h" />
   </ItemGroup>
@@ -391,11 +396,9 @@
     <ClCompile Include="io2d_error_category.cpp" />
     <ClCompile Include="mapped_surface.cpp" />
     <ClCompile Include="matrix_2d.cpp" />
-    <ClCompile Include="path_data.cpp" />
     <ClCompile Include="brush.cpp" />
     <ClCompile Include="test_renderer_fill.cpp" />
     <ClCompile Include="vector_2d.cpp" />
-    <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="rgba_color.cpp" />
     <ClCompile Include="sample_draw.cpp" />
     <ClCompile Include="standalone_functions.cpp" />

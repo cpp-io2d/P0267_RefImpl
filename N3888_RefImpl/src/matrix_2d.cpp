@@ -6,83 +6,11 @@
 using namespace std;
 using namespace std::experimental::io2d;
 
-//matrix_2d::matrix_2d() noexcept
-//	: _M00{ 1.0 }
-//	, _M01{ 0.0 }
-//	, _M10{ 0.0 }
-//	, _M11{ 1.0 }
-//	, _M20{ 0.0 }
-//	, _M21{ 0.0 } {
-//}
-//
-//matrix_2d::matrix_2d(matrix_2d&& other) noexcept
-//	: _M00(move(other._M00))
-//	, _M01(move(other._M01))
-//	, _M10(move(other._M10))
-//	, _M11(move(other._M11))
-//	, _M20(move(other._M20))
-//	, _M21(move(other._M21)) {
-//	other._M00 = 0.0;
-//	other._M01 = 0.0;
-//	other._M10 = 0.0;
-//	other._M11 = 0.0;
-//	other._M20 = 0.0;
-//	other._M21 = 0.0;
-//}
-//
-//matrix_2d& matrix_2d::operator=(matrix_2d&& other) noexcept {
-//	if (this != &other) {
-//		_M00 = move(other._M00);
-//		_M01 = move(other._M01);
-//		_M10 = move(other._M10);
-//		_M11 = move(other._M11);
-//		_M20 = move(other._M20);
-//		_M21 = move(other._M21);
-//
-//		other._M00 = 0.0;
-//		other._M01 = 0.0;
-//		other._M10 = 0.0;
-//		other._M11 = 0.0;
-//		other._M20 = 0.0;
-//		other._M21 = 0.0;
-//	}
-//	return *this;
-//}
-//
-//matrix_2d::matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21) noexcept
-//	: _M00{ m00 }
-//	, _M01{ m01 }
-//	, _M10{ m10 }
-//	, _M11{ m11 }
-//	, _M20{ m20 }
-//	, _M21{ m21 } {
-//}
-
-//matrix_2d matrix_2d::init_identity() noexcept {
-//	return{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
-//}
-//
-//matrix_2d matrix_2d::init_translate(const vector_2d& value) noexcept {
-//	return{ 1.0, 0.0, 0.0, 1.0, value.x(), value.y() };
-//}
-//
-//matrix_2d matrix_2d::init_scale(const vector_2d& value) noexcept {
-//	return{ value.x(), 0.0, 0.0, value.y(), 0.0, 0.0 };
-//}
-
 matrix_2d matrix_2d::init_rotate(double radians) noexcept {
 	auto sine = sin(radians);
 	auto cosine = cos(radians);
 	return{ cosine, sine, -sine, cosine, 0.0, 0.0 };
 }
-//
-//matrix_2d matrix_2d::init_shear_x(double factor) noexcept {
-//	return{ 1.0, 0.0, factor, 1.0, 0.0, 0.0 };
-//}
-//
-//matrix_2d matrix_2d::init_shear_y(double factor) noexcept {
-//	return{ 1.0, factor, 0.0, 1.0, 0.0, 0.0 };
-//}
 
 matrix_2d& matrix_2d::translate(const vector_2d& value) noexcept {
 	*this = init_translate(value) * (*this);
@@ -173,62 +101,6 @@ matrix_2d& matrix_2d::invert(error_code& ec) noexcept {
 	return *this;
 }
 
-void matrix_2d::swap(matrix_2d& other) {
-	::std::swap(_M00, other._M00);
-	::std::swap(_M01, other._M01);
-	::std::swap(_M10, other._M10);
-	::std::swap(_M11, other._M11);
-	::std::swap(_M20, other._M20);
-	::std::swap(_M21, other._M21);
-}
-
-//double matrix_2d::determinant() const {
-//	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
-//		_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_MATRIX);
-//	}
-//	return _M00 * _M11 - _M01 * _M10;
-//}
-//
-//double matrix_2d::determinant(error_code& ec) const noexcept {
-//	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
-//		ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_INVALID_MATRIX);
-//		return numeric_limits<double>::quiet_NaN();
-//	}
-//	ec.clear();
-//	return _M00 * _M11 - _M01 * _M10;
-//}
-
-//void matrix_2d::m00(double value) noexcept {
-//	_M00 = value;
-//}
-//
-//void matrix_2d::m01(double value) noexcept {
-//	_M01 = value;
-//}
-//
-//void matrix_2d::m10(double value) noexcept {
-//	_M10 = value;
-//}
-//
-//void matrix_2d::m11(double value) noexcept {
-//	_M11 = value;
-//}
-//
-//void matrix_2d::m20(double value) noexcept {
-//	_M20 = value;
-//}
-//
-//void matrix_2d::m21(double value) noexcept {
-//	_M21 = value;
-//}
-//
-//bool matrix_2d::is_finite() const noexcept {
-//	if (!isfinite(_M00) || !isfinite(_M01) || !isfinite(_M10) || !isfinite(_M11) || !isfinite(_M20) || !isfinite(_M21)) {
-//		return false;
-//	}
-//	return true;
-//}
-//
 matrix_2d& matrix_2d::operator*=(const matrix_2d& rhs) noexcept {
 	*this = *this * rhs;
 	return *this;
