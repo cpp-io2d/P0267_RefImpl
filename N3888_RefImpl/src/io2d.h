@@ -476,6 +476,11 @@ namespace std {
 					}
 				};
 
+				//enum class _Color_is_integral {};
+				//constexpr _Color_is_integral _Color_is_integral_val{};
+				//enum class _Color_is_floating {};
+				//constexpr _Color_is_floating _Color_is_floating_val{};
+
 				class bgra_color {
 					double _R = 0.0;
 					double _G = 0.0;
@@ -483,17 +488,24 @@ namespace std {
 					double _A = 1.0;
 				public:
 					constexpr bgra_color() noexcept { }
-					constexpr bgra_color(const bgra_color& other) noexcept = default;
-					constexpr bgra_color& operator=(const bgra_color& other) noexcept = default;
-					bgra_color(bgra_color&& other) noexcept = default;
-					bgra_color& operator=(bgra_color&& other) noexcept = default;
-					template <class T, ::std::enable_if_t<::std::is_same_v<double, ::std::remove_cv_t<::std::remove_reference_t<T>>> || ::std::is_same_v<float, ::std::remove_cv_t<::std::remove_reference_t<T>>>, int> = 0>
-					constexpr bgra_color(T red, T green, T blue, T alpha = 1.0)
-						: _R(static_cast<double>(::std::min<T>(::std::max<T>(red, 0.0), 1.0)))
-						, _G(static_cast<double>(::std::min<T>(::std::max<T>(green, 0.0), 1.0)))
-						, _B(static_cast<double>(::std::min<T>(::std::max<T>(blue, 0.0), 1.0)))
-						, _A(static_cast<double>(::std::min<T>(::std::max<T>(alpha, 0.0), 1.0))) {
-					}
+					constexpr bgra_color(double r, double g, double b, double a = 1.0) noexcept
+						: _R(r)
+						, _G(g)
+						, _B(b)
+						, _A(a) { }
+					//template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+					//constexpr bgra_color(T r, T g, T b, T a = 0xFF)
+					//	: _R(static_cast<double>(::std::min<double>(::std::max<double>((r / 255.0), 0.0), 1.0)))
+					//	, _G(static_cast<double>(::std::min<double>(::std::max<double>((g / 255.0), 0.0), 1.0)))
+					//	, _B(static_cast<double>(::std::min<double>(::std::max<double>((b / 255.0), 0.0), 1.0)))
+					//	, _A(static_cast<double>(::std::min<double>(::std::max<double>((a / 255.0), 0.0), 1.0))) { }
+					//template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
+					//constexpr bgra_color(T r, T g, T b, T a = 1.0)
+					//	: _R(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(r), 0.0), 1.0)))
+					//	, _G(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(g), 0.0), 1.0)))
+					//	, _B(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(b), 0.0), 1.0)))
+					//	, _A(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(a), 0.0), 1.0))) {
+					//}
 
 					void r(double val) noexcept {
 						_R = val * _A;

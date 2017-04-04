@@ -18,6 +18,7 @@ using namespace std::experimental::io2d;
 //using namespace not_proposed::test_renderer;
 
 //// Declarations
+void test_image_load_save(display_surface& ds);
 void test_stroke_rules(display_surface& ds);
 void test_path_functionality(display_surface& ds);
 void draw_radial_circles(display_surface& ds);
@@ -40,6 +41,7 @@ void draw_radial_circles(display_surface& ds);
 // Drawing entry point.
 //
 void sample_draw::operator()(display_surface& ds) {
+	test_image_load_save(ds);
 	//ds.paint(bgra_color::cornflower_blue());
 
 	//path_builder<> pf;
@@ -50,72 +52,16 @@ void sample_draw::operator()(display_surface& ds) {
 	////previousTime = currentTime;
 	//draw_sort_visualization_immediate(ds, ds.elapsed_draw_time());
 
-	//static auto imgSfc = image_surface(filesystem::path("C:\\Users\\mikeb\\Pictures\\2017-03-15.png"s), format::argb32, image_data_format::png);
-	static auto imgSfc = image_surface(filesystem::path("C:\\Users\\mikeb\\Pictures\\WP_20170305_032.jpg"s), format::argb32, image_data_format::jpg);
+	//constexpr auto flColor = bgra_color(1.0, 0.0, 1.0, 1.0);
+	//constexpr auto intColor = bgra_color(255, 0, 255, 255);
+	//static_assert(flColor.r() == 1.0, "Huh floating?");
+	//static_assert(intColor.r() == 1.0, "Huh integral?");
 
-	path_builder<> pb;
-	pb.new_path();
-	pb.rectangle({ 30.0, 30.0, 800.0, 600.0 });
-	ds.paint(brush{ bgra_color::cornflower_blue() });
-
-	//static png_image img{};
-	//static bool doOnceBegin = false;
-	//static bool doOnceEnd = false;
-	//static size_t dataSize{};
-	//if (!doOnceBegin) {
-	//	img.version = PNG_IMAGE_VERSION;
-	//	img.opaque = nullptr;
-	//	png_image_begin_read_from_file(&img, "C:\\Users\\mikeb\\Pictures\\2017-03-15.png");
-	//	img.format = PNG_FORMAT_BGRA;//PNG_FORMAT_LINEAR_RGB_ALPHA;
-	//	dataSize = static_cast<size_t>(PNG_IMAGE_SIZE(img));
-	//	doOnceBegin = true;
-	//}
-
-	//static auto data = new unsigned char[dataSize];
-
-	//static int w{}, h{};
-	//if (!doOnceEnd) {
-	//	const auto dataStride = PNG_IMAGE_ROW_STRIDE(img);
-	//	png_image_finish_read(&img, nullptr, data, dataStride, nullptr);
-	//	w = static_cast<int>(img.width);
-	//	h = static_cast<int>(img.height);
-	//	png_image_free(&img);
-	//}
-
-	//image_surface imgsfc{ format::argb32, w, h };
-	//imgsfc.map([&](mapped_surface& ms) {
-	//	auto msSize = static_cast<size_t>(ms.height() * ms.stride());
-	//	auto msDataAddr = ms.data();
-	//	memcpy(msDataAddr, data, min(dataSize, msSize));
-	//	ms.commit_changes();
-	//});
-	//delete[] data;
-
-	//image_surface imgsfc{ format::argb32, 400, 400 };
-	//imgsfc.map([](mapped_surface& ms) {
-	//	for (auto i = 0; i < ms.height(); ++i) {
-	//		for (auto j = 0; j < ms.width(); ++j) {
-	//			unsigned char* data = ms.data() + (i * ms.stride()) + j * 4;
-	//			data[0] = 0x00;
-	//			data[1] = 0x00;
-	//			data[2] = 0xFF;
-	//			data[3] = 0x80;
-	//		}
-	//	}
-	//	ms.commit_changes();
-	//});
-	////imgsfc.mark_dirty();
-	////cairo_surface_write_to_png(imgsfc.native_handle().csfce, "C:\\Users\\mikeb\\Pictures\\2017-03-15-cairo.png");
-	////image_surface testSfc{ format::argb32, 100, 100 };
-	////testSfc.paint(brush{ bgra_color::red() });
-	////ds.paint(brush{ move(testSfc) });
-	brush imgBrush{ make_image_surface(imgSfc) };
-	ds.paint(imgBrush);
-	ds.flush();
-	//ds.fill(brush{ move(imgsfc) }, pb);
-
-	//delete[] data;
-
+	//path_builder<> pb;
+	//pb.new_path();
+	//pb.rectangle({ 30.0, 30.0, 800.0, 600.0 });
+	//ds.paint(brush{ bgra_color::cornflower_blue() });
+	
 	////test_clip_transformation(ds);
 	////test_paint(ds);
 	//test_stroke_rules(ds);
@@ -140,6 +86,23 @@ void sample_draw::operator()(display_surface& ds) {
 	////test_fill_rules(ds);
 }
 
+void test_image_load_save(display_surface& ds) {
+	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), format::argb32, image_data_format::jpg);
+	static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_data_format::png);
+	//static bool saveOnce = false;
+	//if (!saveOnce) {
+	//	imgSfc.save(filesystem::path("2017-03-05_testsave.png"s), image_data_format::png);
+	//	alphaSfc.save(filesystem::path("alpha8_testsave.png"s), image_data_format::png);
+	//	saveOnce = true;
+	//}
+
+	brush imgBrush{ make_image_surface(imgSfc) };
+	brush alphaBrush{ make_image_surface(alphaSfc) };
+
+	ds.paint(brush{ bgra_color::cornflower_blue() });
+	ds.mask(imgBrush, alphaBrush, path_builder<>{});
+	ds.flush();
+}
 //void test_clip_transformation(display_surface& ds) {
 //	ds.save();
 //

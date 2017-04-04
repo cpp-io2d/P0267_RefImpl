@@ -165,8 +165,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -196,8 +198,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -219,8 +223,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
@@ -246,8 +252,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -274,8 +282,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
@@ -306,8 +316,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -334,8 +346,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
@@ -366,8 +380,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -408,6 +424,9 @@
     <ResourceCompile Include="N3888_RefImpl.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="2016_06_22.png" />
+    <Image Include="2017_03_05.jpg" />
+    <Image Include="alpha8.png" />
     <Image Include="N3888_RefImpl.ico" />
     <Image Include="small.ico" />
   </ItemGroup>

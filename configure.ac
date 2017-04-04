@@ -1,4 +1,4 @@
-AC_INIT([amN3888_RefImpl], [1.0], [mikebmcl@gmail.com])
+AC_INIT([amN3888_RefImpl], [1.4], [mikebmcl@gmail.com])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_PROG_CC
 AM_PROG_CC_C_O
@@ -10,6 +10,10 @@ AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX_11([noext], [mandatory])
 AX_CFLAGS_WARN_ALL
 AX_CXXFLAGS_WARN_ALL
+
+dnl check for libjpeg-turbo
+AC_CHECK_HEADERS(turbojpeg.h,[],[AC_MSG_ERROR(turbojpeg.h not found. Install libjpeg-turbo), AC_INCLUDES_DEFAULT)
+AC_SEARCH_LIBS(tjInitCompress,jpeg,[],[AC_MSG_ERROR(libjpeg-turbo not found. Install libjpeg-turbo),[])
 PKG_CHECK_MODULES([GTKCAIRO], [gtk+-3.0 >= 3.8.0 gmodule-2.0 gobject-2.0 cairo >= 1.12.16 x11])
 PKG_PROG_PKG_CONFIG
 AC_ARG_ENABLE([xcb],

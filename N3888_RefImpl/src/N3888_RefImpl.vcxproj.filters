@@ -111,6 +111,15 @@
     <Image Include="N3888_RefImpl.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="2016_06_22.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="alpha8.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="2017_03_05.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="win32\Dependency installation instructions.txt" />
