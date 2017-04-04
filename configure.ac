@@ -7,14 +7,12 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile N3888_RefImpl/Makefile N3888_RefImpl/src/Makefile])
 AC_CONFIG_MACRO_DIR([m4])
 AC_LANG([C++])
-AX_CXX_COMPILE_STDCXX_11([noext], [mandatory])
-AX_CFLAGS_WARN_ALL
-AX_CXXFLAGS_WARN_ALL
-
-dnl check for libjpeg-turbo
-AC_CHECK_HEADERS(turbojpeg.h,[],[AC_MSG_ERROR(turbojpeg.h not found. Install libjpeg-turbo), AC_INCLUDES_DEFAULT)
-AC_SEARCH_LIBS(tjInitCompress,jpeg,[],[AC_MSG_ERROR(libjpeg-turbo not found. Install libjpeg-turbo),[])
-PKG_CHECK_MODULES([GTKCAIRO], [gtk+-3.0 >= 3.8.0 gmodule-2.0 gobject-2.0 cairo >= 1.12.16 x11])
+dnl AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
+dnl AX_CFLAGS_WARN_ALL
+dnl AX_CXXFLAGS_WARN_ALL
+dnl AC_CHECK_HEADERS([turbojpeg.h],[],[AC_MSG_ERROR(turbojpeg.h not found. Install libjpeg-turbo)], [AC_INCLUDES_DEFAULT])
+dnl AC_SEARCH_LIBS([tjInitCompress],[libturbojpeg],[],[AC_MSG_ERROR(libjpeg-turbo not found. Install libjpeg-turbo)],[-lz -lm])
+PKG_CHECK_MODULES([GTKCAIRO], [cairo >= 1.12.16 x11])
 PKG_PROG_PKG_CONFIG
 AC_ARG_ENABLE([xcb],
 [  --enable-xcb       Build with Xcb],

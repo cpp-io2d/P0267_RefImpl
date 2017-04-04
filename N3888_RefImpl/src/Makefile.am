@@ -41,3 +41,4 @@ endif
 ##then
 ##	N3888_RefImpl_LDADD += -fpermissive
 ##fi
+N3888_RefImpl_LDADD += -lturbojpeg
