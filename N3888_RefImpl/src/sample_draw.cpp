@@ -1,3 +1,4 @@
+#include "io2d.h"
 #include "sample_draw.h"
 #include "xio2dhelpers.h"
 #include <cmath>
@@ -41,9 +42,10 @@ void draw_radial_circles(display_surface& ds);
 // Drawing entry point.
 //
 void sample_draw::operator()(display_surface& ds) {
-	test_image_load_save(ds);
+	//test_image_load_save(ds);
+	test_path_functionality(ds);
 	//ds.paint(bgra_color::cornflower_blue());
-
+	//draw_radial_circles(ds);
 	//path_builder<> pf;
 	//pf.new_path();
 	////static auto previousTime = steady_clock::now();
@@ -87,22 +89,35 @@ void sample_draw::operator()(display_surface& ds) {
 }
 
 void test_image_load_save(display_surface& ds) {
+#ifdef _Filesystem_support_test
 	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), format::argb32, image_data_format::jpg);
-	static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_data_format::png);
-	//static bool saveOnce = false;
-	//if (!saveOnce) {
-	//	imgSfc.save(filesystem::path("2017-03-05_testsave.png"s), image_data_format::png);
+	//static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_data_format::png);
+#else
+	static auto imgSfc = image_surface("2017_03_05.jpg"s, format::argb32, image_data_format::jpg);
+	//static auto alphaSfc = image_surface("alpha8.png"s, format::a8, image_data_format::png);
+#endif
+	static bool saveOnce = false;
+	if (!saveOnce) {
+#ifdef _Filesystem_support_test
+	//imgSfc.save(filesystem::path("2017-03-05_testsave.png"s), image_data_format::png);
+	imgSfc.save(filesystem::path("2017-03-05_testsave.jpg"s), image_data_format::jpg);
 	//	alphaSfc.save(filesystem::path("alpha8_testsave.png"s), image_data_format::png);
-	//	saveOnce = true;
-	//}
+#else
+	//	imgSfc.save("2017-03-05_testsave.png"s, image_data_format::png);
+	//	alphaSfc.save("alpha8_testsave.png"s, image_data_format::png);
+#endif
+		saveOnce = true;
+	}
 
 	brush imgBrush{ make_image_surface(imgSfc) };
-	brush alphaBrush{ make_image_surface(alphaSfc) };
+	//brush alphaBrush{ make_image_surface(alphaSfc) };
 
 	ds.paint(brush{ bgra_color::cornflower_blue() });
-	ds.mask(imgBrush, alphaBrush, path_builder<>{});
+	ds.paint(imgBrush);
+	//ds.mask(imgBrush, alphaBrush, path_builder<>{});
 	ds.flush();
 }
+
 //void test_clip_transformation(display_surface& ds) {
 //	ds.save();
 //
@@ -476,7 +491,6 @@ void test_path_functionality(display_surface& ds) {
 	pf.rel_line_to(v);
 	//void close_path() noexcept;
 	pf.close_path();
-	auto nh = ds.native_handle();
 
 	pf.move_to({ 50.0, 50.0 });
 	pf.line_to({ 1240.0, 50.0 });
@@ -534,10 +548,10 @@ void test_path_functionality(display_surface& ds) {
 	//pg = path_group{ pf };
 	//ds.brush(bgra_color::lime());
 	ds.stroke(brush{ bgra_color::lime() }, pf);
-	constexpr stroke_props sp;
-	constexpr auto sp2 = sp;
-	constexpr render_props rp;
-	constexpr auto rp2 = rp;
+	//constexpr stroke_props sp;
+	//constexpr auto sp2 = sp;
+	//constexpr render_props rp;
+	//constexpr auto rp2 = rp;
 	//constexpr auto iec559 = numeric_limits<double>::is_iec559;
 	//constexpr auto infinity = numeric_limits<double>::infinity() == numeric_limits<double>::infinity();
 	//constexpr auto negativeinfinity = -numeric_limits<double>::infinity();
@@ -577,7 +591,6 @@ void draw_radial_circles(display_surface& ds) {
 	ds.paint(brush{ bgra_color::cornflower_blue() }, nullopt, nullopt, clip_props{ path_group{path_builder<>({ path_data::abs_rectangle(40.0, 40.0, 1200.0, 640.0)})} });
 	vector<color_stop> csv;
 	csv.emplace_back(0.0, bgra_color::white());
-	color_stop firststop = *csv.cbegin();
 	brush radialBrush{ {{ 200.5, 300.0 }, 0.0}, {{ 300.0, 300.0 }, 100.0 }, {
 		{ 0.0, bgra_color::white() }, { 0.25, bgra_color::red() },
 		{ 0.5, bgra_color::green() }, { 0.75, bgra_color::blue() }, { 1.0, bgra_color::black() } } };

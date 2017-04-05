@@ -25,17 +25,20 @@ if USE_XLIB
 N3888_RefImpl_SOURCES +=	display_surface-xlib.cpp
 endif
 
-N3888_RefImpl_LDADD = 		@GTKCAIRO_LIBS@
+N3888_RefImpl_LDADD = @LIBS@
+N3888_RefImpl_LDADD += 		@GTKCAIRO_LIBS@
 if USE_XCB
 N3888_RefImpl_LDADD += @xcb_LIBS@
 endif
 
-N3888_RefImpl_CPPFLAGS =	@GTKCAIRO_CFLAGS@
+N3888_RefImpl_CPPFLAGS = @CPPFLAGS@
+N3888_RefImpl_CXXFLAGS = @CXXFLAGS@
+N3888_RefImpl_CXXFLAGS +=	@GTKCAIRO_CFLAGS@
 if USE_XCB
-N3888_RefImpl_CPPFLAGS += @xcb_CFLAGS@ -DUSE_XCB
+N3888_RefImpl_CXXFLAGS += @xcb_CFLAGS@ -DUSE_XCB
 endif
 if USE_XLIB
-N3888_RefImpl_CPPFLAGS += -DUSE_XLIB
+N3888_RefImpl_CXXFLAGS += -DUSE_XLIB
 endif
 ##if ! [ [ test "$CXX" = "g++" ] || [ test "$CXX" = "gcc" ] ]]
 ##then

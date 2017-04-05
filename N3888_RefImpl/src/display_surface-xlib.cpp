@@ -136,64 +136,6 @@ display_surface::native_handle_type display_surface::native_handle() const {
 	return{ { _Surface.get(), _Context.get() }, _Display.get(), _Wndw, _Display_mutex, _Display_ref_count };
 }
 
-//display_surface::display_surface(display_surface&& other) noexcept
-//	: surface(move(other))
-//	, _Default_brush(move(other._Default_brush))
-//	, _Display_width(move(other._Display_width))
-//	, _Display_height(move(other._Display_height))
-//	, _Scaling(move(other._Scaling))
-//	, _Width(move(other._Width))
-//	, _Height(move(other._Height))
-//	, _Draw_fn(move(other._Draw_fn))
-//	, _Size_change_fn(move(other._Size_change_fn))
-//	, _User_scaling_fn(move(other._User_scaling_fn))
-//	, _Letterbox_brush(move(other._Letterbox_brush))
-//	, _Auto_clear(move(other._Auto_clear))
-//	, _Wndw(move(other._Wndw))
-//	, _Can_draw(move(other._Can_draw))
-//	, _Refresh_rate(move(other._Refresh_rate))
-//	, _Desired_frame_rate(move(other._Desired_frame_rate))
-//	, _Redraw_requested(other._Redraw_requested.load())
-//	, _Elapsed_draw_time(move(other._Elapsed_draw_time))
-//	, _Native_surface(move(other._Native_surface))
-//	, _Native_context(move(other._Native_context)) {
-//	other._Draw_fn = nullptr;
-//	other._Size_change_fn = nullptr;
-//	other._Wndw = None;
-//}
-//
-//display_surface& display_surface::operator=(display_surface&& other) noexcept {
-//	if (this != &other) {
-//		surface::operator=(move(other));
-//		_Default_brush = move(other._Default_brush);
-//		_Display_width = move(other._Display_width);
-//		_Display_height = move(other._Display_height);
-//		_Scaling = move(other._Scaling);
-//		_Width = move(other._Width);
-//		_Height = move(other._Height);
-//		_Draw_fn = move(other._Draw_fn);
-//		_Size_change_fn = move(other._Size_change_fn);
-//		_User_scaling_fn = move(other._User_scaling_fn);
-//		_Letterbox_brush = move(other._Letterbox_brush);
-//		_Auto_clear = move(other._Auto_clear);
-//		_Wndw = move(other._Wndw);
-//		_Can_draw = move(other._Can_draw);
-//		_Refresh_rate = move(other._Refresh_rate);
-//		_Desired_frame_rate = move(other._Desired_frame_rate);
-//		_Redraw_requested = other._Redraw_requested.load();
-//		_Elapsed_draw_time = move(other._Elapsed_draw_time);
-//		_Native_surface = move(other._Native_surface);
-//		_Native_context = move(other._Native_context);
-//
-//		other._Wndw = None;
-//		other._Draw_fn = nullptr;
-//		other._Size_change_fn = nullptr;
-//		other._Can_draw = false;
-//	}
-//
-//	return *this;
-//}
-//
 mutex display_surface::_Display_mutex;
 unique_ptr<Display, function<void(Display*)>> display_surface::_Display{ nullptr, [](Display*) { return; } };
 int display_surface::_Display_ref_count = 0;
@@ -236,7 +178,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
 	: surface({ nullptr, nullptr }, preferredFormat)
-	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Default_brush(bgra_color::transparent_black())
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
 	, _Scaling(scl)
@@ -245,7 +187,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Draw_fn()
 	, _Size_change_fn()
 	, _User_scaling_fn()
-	, _Letterbox_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Letterbox_brush()
 	, _Auto_clear(false)
 	, _Wndw(None)
 	, _Can_draw(false)
@@ -312,7 +254,7 @@ display_surface::~display_surface() {
 	}
 }
 
-int display_surface::show() {
+int display_surface::begin_show() {
 	bool exit = false;
 	XEvent event;
 
@@ -337,7 +279,7 @@ int display_surface::show() {
 					if (_Auto_clear) {
 						clear();
 					}
-					_Draw_fn(*this);
+					(*_Draw_fn)(*this);
 				}
 				else {
 					throw system_error(make_error_code(errc::operation_would_block));
@@ -370,7 +312,7 @@ int display_surface::show() {
 				if (resized) {
 					cairo_xlib_surface_set_size(_Native_surface.get(), _Display_width, _Display_height);
 					if (_Size_change_fn != nullptr) {
-						_Size_change_fn(*this);
+						(*_Size_change_fn)(*this);
 					}
 				}
 			} break;
@@ -406,7 +348,7 @@ int display_surface::show() {
 						if (_Auto_clear) {
 							clear();
 						}
-						_Draw_fn(*this);
+						(*_Draw_fn)(*this);
 					}
 					else {
 						throw system_error(make_error_code(errc::operation_would_block));
@@ -498,7 +440,8 @@ int display_surface::show() {
 		if (_Can_draw) {
 			bool redraw = true;
 			if (_Refresh_rate == experimental::io2d::refresh_rate::as_needed) {
-				redraw = _Redraw_requested.exchange(false, std::memory_order_acquire);
+				redraw = _Redraw_requested;
+				_Redraw_requested = false;
 			}
 
 			auto desiredElapsed = 1'000'000'000.0 / _Desired_frame_rate;
@@ -513,7 +456,7 @@ int display_surface::show() {
 					if (_Auto_clear) {
 						clear();
 					}
-					_Draw_fn(*this);
+					(*_Draw_fn)(*this);
 				}
 				else {
 					throw system_error(make_error_code(errc::operation_would_block));

@@ -14,6 +14,9 @@
 #include <stack>
 #include <array>
 
+#if ((defined(_MSC_VER) && _MSC_VER >= 1910) || defined(HAVE_FILESYSTEM))
+#define _Filesystem_support_test
+#endif
 // Designed to be used to conditionally define compiler support for inline namespaces using a #if
 //define _Inline_namespace_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190022609))
 

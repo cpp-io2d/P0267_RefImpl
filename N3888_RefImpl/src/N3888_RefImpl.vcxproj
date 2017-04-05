@@ -184,12 +184,11 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>-Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token</AdditionalOptions>
+      <AdditionalOptions>-Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token -std=c++1z</AdditionalOptions>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ExceptionHandling>Enabled</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <UndefinePreprocessorDefinitions>NDEBUG</UndefinePreprocessorDefinitions>
-      <CppLanguageStandard>c++1y</CppLanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

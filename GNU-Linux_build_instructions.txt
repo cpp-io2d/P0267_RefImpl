@@ -1,8 +1,14 @@
 ﻿You will need a relatively recent build of GNU autotools. Any recent distro
 should have a reasonably new version available which will fit the needs here.
-You will also need cairo, GTK+3, and related libraries; as long as you have
-autotools, if you should be able to generate a configure script and it will
-tell you if you are missing any other dependencies.
+
+You will also need cairo version 1.12.14 or newer and libjpeg-turbo (note: on 
+Ubuntu it's called libturbojpeg, maybe on other distros). To support PNG
+functionality, you need libpng 1.6.X or later.
+
+This has been tested with Clang 4.0 and the version of libc++ that accompanies 
+it. It will likely work with GCC 7 and the version of libstdc++ that 
+accompanies it. The reason is that it requires std::variant, std::optional, 
+and various other library features that are only in C++.
 
 To build the project, from this directory run the command 'autoreconf -i'. It
 should run for a bit then complete silently. If so, you should then run the
@@ -10,14 +16,14 @@ generated './configure' script with any necessary parameters. This should
 notify you if you are missing any pre-requisites or have an older version that
 won't work. If configure completes successfully, you should be able to run the
 'make' command and then execute the resulting executable by calling
-the './N3888_RefImpl/src/N3888_RefImpl' executable.
+the './N3888_RefImpl/src/N3888_RefImpl' executable. In sample_draw.cpp, the 
+test_image_load_and_save function will only work if you run N3888_RefImpl from 
+the N3888_RefImpl/src/ directory since it uses relative paths to load the 
+images it uses.
 
-The drawing portion is the same code as in the Windows version. The entry
-point uses GTK+3 and is primarily C code. It is patterned after Gnome project
-utilities. It has improved significantly and is now essentially on par with
-the Windows version.
+By default it will build using Xlib. You can use Xcb by passing the 
+"--enable-xcb" option to configure.
 
-Tested on OpenSUSE 13.2 with GCC 4.9.0 using the following configure command:
-'./configure CC=gcc-4.9 CXX=g++-4.9 CXXFLAGS="-g -std=c++1y"'. Also tested
-with Clang 3.5 using the configure settings found in the
-run-configure-with-clang-and-libstdc++.sh shell script.
+The "run-configure-with-*" shell scripts are provided as examples only. They 
+are used for my personal testing. Like everything else, they are subject to 
+the terms of LICENSE.md.

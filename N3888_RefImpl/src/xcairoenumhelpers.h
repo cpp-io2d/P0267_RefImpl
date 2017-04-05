@@ -58,7 +58,7 @@ namespace std {
 
 			inline bool _Cairo_status_t_to_io2d_error(cairo_status_t cs, ::std::experimental::io2d::io2d_error& result) {
 				switch (cs) {
-#if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1, 14, 0)
+#if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1, 13, 1)
 				case CAIRO_STATUS_JBIG2_GLOBAL_MISSING:
 					result = ::std::experimental::io2d::io2d_error::invalid_status;
 					return true;

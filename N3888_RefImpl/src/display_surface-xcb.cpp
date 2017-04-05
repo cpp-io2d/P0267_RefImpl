@@ -65,7 +65,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
 	: surface({ nullptr, nullptr }, preferredFormat)
-	, _Default_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Default_brush(bgra_color::transparent_black())
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
 	, _Scaling(scl)
@@ -74,7 +74,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Draw_fn()
 	, _Size_change_fn()
 	, _User_scaling_fn()
-	, _Letterbox_brush(cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
+	, _Letterbox_brush()
 	, _Auto_clear(false)
 	, _Screen(nullptr)
 	, _Wndw()
@@ -240,7 +240,7 @@ int display_surface::show() {
 					if (_Auto_clear) {
 						clear();
 					}
-					_Draw_fn(*this);
+					(*_Draw_fn)(*this);
 				}
 				else {
 					throw system_error(make_error_code(errc::operation_would_block));
@@ -274,7 +274,7 @@ int display_surface::show() {
 				if (resized) {
 					cairo_xcb_surface_set_size(_Native_surface.get(), _Display_width, _Display_height);
 					if (_Size_change_fn != nullptr) {
-						_Size_change_fn(*this);
+						(*_Size_change_fn)(*this);
 					}
 				}
 			} break;
@@ -316,7 +316,7 @@ int display_surface::show() {
 						if (_Auto_clear) {
 							clear();
 						}
-						_Draw_fn(*this);
+						(*_Draw_fn)(*this);
 					}
 					else {
 						throw system_error(make_error_code(errc::operation_would_block));
@@ -420,7 +420,8 @@ int display_surface::show() {
 		if (_Can_draw) {
 			bool redraw = true;
 			if (_Refresh_rate == experimental::io2d::refresh_rate::as_needed) {
-				redraw = _Redraw_requested.exchange(false, std::memory_order_acquire);
+				redraw = _Redraw_requested;
+				_Redraw_requested = false;
 			}
 
 			auto desiredElapsed = 1'000'000'000.0 / _Desired_frame_rate;
@@ -435,7 +436,7 @@ int display_surface::show() {
 					if (_Auto_clear) {
 						clear();
 					}
-					_Draw_fn(*this);
+					(*_Draw_fn)(*this);
 				}
 				else {
 					throw system_error(make_error_code(errc::operation_would_block));
