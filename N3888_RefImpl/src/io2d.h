@@ -27,9 +27,7 @@
 #endif
 
 #ifdef _WIN32_WINNT
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include "xinclwindows_h.h"
 #elif defined(USE_XCB)
 #include <xcb/xcb.h>
 #elif defined(USE_XLIB)
@@ -1540,7 +1538,7 @@ namespace std {
 						}
 					};
 
-					using path_data_types = typename ::std::variant<abs_cubic_curve, abs_ellipse, abs_line, abs_move, abs_quadratic_curve, abs_rectangle, arc_clockwise, arc_counterclockwise, change_matrix, change_origin, close_path, new_path, rel_cubic_curve, rel_ellipse, rel_line, rel_move, rel_quadratic_curve, rel_rectangle>;
+					using path_data_types = ::std::variant<abs_cubic_curve, abs_ellipse, abs_line, abs_move, abs_quadratic_curve, abs_rectangle, arc_clockwise, arc_counterclockwise, change_matrix, change_origin, close_path, new_path, rel_cubic_curve, rel_ellipse, rel_line, rel_move, rel_quadratic_curve, rel_rectangle>;
 				}
 
 				// Forward declaration.
@@ -1558,10 +1556,10 @@ namespace std {
 					explicit path_group(const path_builder<Allocator>& p);
 					template <class Allocator>
 					path_group(const path_builder<Allocator>& p, std::error_code& ec) noexcept;
-					path_group(const path_group&) = default;
-					path_group& operator=(const path_group&) = default;
-					path_group(path_group&&) = default;
-					path_group& operator=(path_group&&) = default;
+					//path_group(const path_group&) = default;
+					//path_group& operator=(const path_group&) = default;
+					//path_group(path_group&&) = default;
+					//path_group& operator=(path_group&&) = default;
 
 					native_handle_type native_handle() {
 						return _Cairo_path.get();

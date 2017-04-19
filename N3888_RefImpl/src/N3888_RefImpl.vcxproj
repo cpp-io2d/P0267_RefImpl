@@ -398,6 +398,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
     <ClInclude Include="throw_helpers.h" />
     <ClInclude Include="xcairoenumhelpers.h" />
     <ClInclude Include="xdiagnostics.h" />
+    <ClInclude Include="xinclwindows_h.h" />
     <ClInclude Include="xio2d.h" />
     <ClInclude Include="xio2dhelpers.h" />
   </ItemGroup>

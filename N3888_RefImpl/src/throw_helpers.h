@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <memory>
+#include "xinclwindows_h.h"
 
 template <class exception_type>
 inline void throw_if_null(void* ptr, const char* msg) {
@@ -12,12 +13,6 @@ inline void throw_if_null(void* ptr, const char* msg) {
 		throw exception_type(msg);
 	}
 }
-
-#if defined(_WIN32_WINNT)
-
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
 
 template <class exception_type>
 inline HRESULT throw_if_failed_hresult(HRESULT hr, const char* msg) {

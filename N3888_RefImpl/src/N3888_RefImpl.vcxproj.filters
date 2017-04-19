@@ -48,6 +48,9 @@
     <ClInclude Include="xdiagnostics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xinclwindows_h.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="surface.cpp">
