@@ -15,7 +15,7 @@ int main() {
 	path_builder<> pb{};
 
 	pb.clear();
-	pb.move_to({ 80.0, 20.0 });
+	pb.new_path({ 80.0, 20.0 });
 	pb.line_to({ 220.0, 20.0 });
 	pb.rel_line_to({ 60.0, 160.0 });
 	pb.rel_line_to({ -260.0, 0.0 });
@@ -29,13 +29,13 @@ int main() {
 	imgSfc.save("pathexample01.png"s, image_data_format::png);
 #endif
 	pb.clear();
-	pb.move_to({ 20.0, 20.0 });
+	pb.new_path({ 20.0, 20.0 });
 	pb.rel_line_to({ 100.0, 0.0 });
 	pb.rel_line_to({ 0.0, 160.0 });
 	pb.rel_line_to({ -100.0, 0.0 });
 	pb.rel_line_to({ 0.0, -160.0 });
 
-	pb.move_to({ 180.0, 20.0 });
+	pb.new_path({ 180.0, 20.0 });
 	pb.rel_line_to({ 100.0, 0.0 });
 	pb.rel_line_to({ 0.0, 160.0 });
 	pb.rel_line_to({ -100.0, 0.0 });
