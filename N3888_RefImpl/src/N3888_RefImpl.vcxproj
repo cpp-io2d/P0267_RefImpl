@@ -170,9 +170,7 @@ copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
-    <Bscmake>
-      <PreserveSbr>true</PreserveSbr>
-    </Bscmake>
+    <Bscmake />
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
     </Manifest>
@@ -202,6 +200,7 @@ copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
+    <Bscmake />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -230,6 +229,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
     </Manifest>
+    <Bscmake />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Clang_C2|x64'">
     <ClCompile>
@@ -256,6 +256,7 @@ copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
+    <Bscmake />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -289,6 +290,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
     </Manifest>
+    <Bscmake />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Clang_C2|Win32'">
     <ClCompile>
@@ -320,6 +322,7 @@ copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
+    <Bscmake />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -353,6 +356,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
     </Manifest>
+    <Bscmake />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Clang_C2|x64'">
     <ClCompile>
@@ -384,6 +388,7 @@ copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
+    <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="win32\Dependency installation instructions.txt" />
