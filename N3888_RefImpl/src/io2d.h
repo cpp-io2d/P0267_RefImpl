@@ -272,6 +272,9 @@ namespace std {
 					vector_2d& operator+=(const vector_2d& rhs) noexcept;
 					vector_2d& operator-=(const vector_2d& rhs) noexcept;
 					vector_2d& operator*=(double rhs) noexcept;
+					vector_2d& operator*=(const vector_2d& rhs) noexcept;
+					vector_2d& operator/=(double rhs) noexcept;
+					vector_2d& operator/=(const vector_2d& rhs) noexcept;
 				};
 
 				inline constexpr bool operator==(const vector_2d& lhs, const vector_2d& rhs) noexcept {
@@ -316,12 +319,46 @@ namespace std {
 					return *this;
 				}
 
+				inline vector_2d& vector_2d::operator*=(const vector_2d& rhs) noexcept {
+					_X *= rhs.x();
+					_Y *= rhs.y();
+					return *this;
+				}
+
 				inline constexpr vector_2d operator*(const vector_2d& lhs, double rhs) noexcept {
 					return vector_2d{ lhs.x() * rhs, lhs.y() * rhs };
 				}
 
 				inline constexpr vector_2d operator*(double lhs, const vector_2d& rhs) noexcept {
 					return vector_2d{ lhs * rhs.x(), lhs * rhs.y() };
+				}
+
+				inline constexpr vector_2d operator*(const vector_2d& lhs, const vector_2d& rhs) noexcept {
+					return vector_2d{ lhs.x() * rhs.x(), lhs.y() * rhs.y() };
+				}
+
+				inline vector_2d& vector_2d::operator/=(double rhs) noexcept {
+					_X /= rhs;
+					_Y /= rhs;
+					return *this;
+				}
+
+				inline vector_2d& vector_2d::operator/=(const vector_2d& rhs) noexcept {
+					_X /= rhs.x();
+					_Y /= rhs.y();
+					return *this;
+				}
+
+				inline constexpr vector_2d operator/(const vector_2d& lhs, double rhs) noexcept {
+					return vector_2d{ lhs.x() / rhs, lhs.y() / rhs };
+				}
+
+				inline constexpr vector_2d operator/(double lhs, const vector_2d& rhs) noexcept {
+					return vector_2d{ lhs / rhs.x(), lhs / rhs.y() };
+				}
+
+				inline constexpr vector_2d operator/(const vector_2d& lhs, const vector_2d& rhs) noexcept {
+					return vector_2d{ lhs.x() / rhs.x(), lhs.y() / rhs.y() };
 				}
 
 				class rectangle {
@@ -835,10 +872,6 @@ namespace std {
 						return{ _M00 * pt.x() + _M10 * pt.y() + _M20, _M01 * pt.x() + _M11 * pt.y() + _M21 };
 					}
 
-					constexpr vector_2d transform_distance(const vector_2d& dist) const noexcept {
-						return{ _M00 * dist.x() + _M10 * dist.y(), _M01 * dist.x() + _M11 * dist.y() };
-					}
-
 					matrix_2d& operator*=(const matrix_2d& rhs) noexcept;
 				};
 
@@ -904,10 +937,6 @@ namespace std {
 							: _Data(to) {
 						}
 						constexpr close_path() noexcept {}
-						//constexpr close_path(const close_path&) noexcept = default;
-						//constexpr close_path& operator=(const close_path&) noexcept = default;
-						//close_path(close_path&&) noexcept = default;
-						//close_path& operator=(close_path&&) noexcept = default;
 
 						constexpr void to(const vector_2d& value) noexcept {
 							_Data = value;
@@ -925,10 +954,6 @@ namespace std {
 							: _Data(to) {
 						}
 						constexpr abs_line() noexcept {}
-						//constexpr abs_line(const abs_line&) noexcept = default;
-						//constexpr abs_line& operator=(const abs_line&) noexcept = default;
-						//abs_line(abs_line&&) noexcept = default;
-						//abs_line& operator=(abs_line&&) noexcept = default;
 
 						constexpr void to(const vector_2d& value) noexcept {
 							_Data = value;
@@ -946,10 +971,6 @@ namespace std {
 							: _Data(to) {
 						}
 						constexpr rel_line() noexcept {}
-						//constexpr rel_line(const rel_line&) noexcept = default;
-						//constexpr rel_line& operator=(const rel_line&) noexcept = default;
-						//rel_line(rel_line&&) noexcept = default;
-						//rel_line& operator=(rel_line&&) noexcept = default;
 
 						constexpr void to(const vector_2d& value) noexcept {
 							_Data = value;
@@ -971,10 +992,6 @@ namespace std {
 							, _End_pt(endPoint) {
 						}
 						constexpr abs_cubic_curve() noexcept {}
-						//constexpr abs_cubic_curve(const abs_cubic_curve&) noexcept = default;
-						//constexpr abs_cubic_curve& operator=(const abs_cubic_curve&) noexcept = default;
-						//abs_cubic_curve(abs_cubic_curve&&) noexcept = default;
-						//abs_cubic_curve& operator=(abs_cubic_curve&&) noexcept = default;
 
 						constexpr void control_point_1(const vector_2d& value) noexcept {
 							_Control_pt1 = value;
@@ -1008,10 +1025,6 @@ namespace std {
 							, _End_pt(endPoint) {
 						}
 						constexpr rel_cubic_curve() noexcept {}
-						//constexpr rel_cubic_curve(const rel_cubic_curve&) noexcept = default;
-						//constexpr rel_cubic_curve& operator=(const rel_cubic_curve&) noexcept = default;
-						//rel_cubic_curve(rel_cubic_curve&&) noexcept = default;
-						//rel_cubic_curve& operator=(rel_cubic_curve&&) noexcept = default;
 
 						constexpr void control_point_1(const vector_2d& value) noexcept {
 							_Control_pt1 = value;
@@ -1043,10 +1056,6 @@ namespace std {
 							, _End_pt(ep) {
 						}
 						constexpr abs_quadratic_curve() noexcept {}
-						//constexpr abs_quadratic_curve(const abs_quadratic_curve&) noexcept = default;
-						//constexpr abs_quadratic_curve& operator=(const abs_quadratic_curve&) noexcept = default;
-						//abs_quadratic_curve(abs_quadratic_curve&&) noexcept = default;
-						//abs_quadratic_curve& operator=(abs_quadratic_curve&&) noexcept = default;
 
 						constexpr void control_point(const vector_2d& value) noexcept {
 							_Control_pt = value;
@@ -1072,10 +1081,6 @@ namespace std {
 							, _End_pt(ep) {
 						}
 						constexpr rel_quadratic_curve() noexcept {}
-						//constexpr rel_quadratic_curve(const rel_quadratic_curve&) noexcept = default;
-						//constexpr rel_quadratic_curve& operator=(const rel_quadratic_curve&) noexcept = default;
-						//rel_quadratic_curve(rel_quadratic_curve&&) noexcept = default;
-						//rel_quadratic_curve& operator=(rel_quadratic_curve&&) noexcept = default;
 
 						constexpr void control_point(const vector_2d& value) noexcept {
 							_Control_pt = value;
@@ -1092,177 +1097,139 @@ namespace std {
 						}
 					};
 
-					class abs_ellipse {
+					class abs_arc_clockwise {
 						vector_2d _Center;
-						double _X_axis = 0.0;
-						double _Y_axis = 0.0;
+						double _End_angle;
+						vector_2d _Scale;
 					public:
-						constexpr abs_ellipse() noexcept { }
-						constexpr explicit abs_ellipse(const circle& c) noexcept
-							: _Center(c.center())
-							, _X_axis(c.radius())
-							, _Y_axis(c.radius()) { }
-						constexpr explicit abs_ellipse(const ellipse& e) noexcept
-							: _Center(e.center())
-							, _X_axis(e.x_radius())
-							, _Y_axis(e.y_radius()) { }
+						constexpr abs_arc_clockwise() noexcept
+							: abs_arc_clockwise(vector_2d{}, 0.0, vector_2d{ 1.0, 1.0 }) { }
+						constexpr abs_arc_clockwise(const vector_2d& ctr, double ea, const vector_2d& scl = vector_2d{ 1.0, 1.0 }) noexcept
+							: _Center(ctr)
+							, _End_angle(ea)
+							, _Scale(scl) {
+						}
 
 						constexpr void center(const vector_2d& ctr) noexcept {
 							_Center = ctr;
 						}
-						constexpr void x_radius(double val) noexcept {
-							_X_axis = val;
+						constexpr void end_angle(double ea) noexcept {
+							_End_angle = ea;
 						}
-						constexpr void y_radius(double val) noexcept {
-							_Y_axis = val;
+						constexpr void scale(const vector_2d& scl) noexcept {
+							_Scale = scl;
 						}
 
 						constexpr vector_2d center() const noexcept {
 							return _Center;
 						}
-
-						constexpr double x_radius() const noexcept {
-							return _X_axis;
+						constexpr double end_angle() const noexcept {
+							return _End_angle;
 						}
-
-						constexpr double y_radius() const noexcept {
-							return _Y_axis;
+						constexpr vector_2d scale() const noexcept {
+							return _Scale;
 						}
 					};
 
-					class rel_ellipse {
+					class rel_arc_clockwise {
 						vector_2d _Center;
-						double _X_axis = 0.0;
-						double _Y_axis = 0.0;
+						double _End_angle;
+						vector_2d _Scale;
 					public:
-						constexpr rel_ellipse() noexcept { }
-						constexpr explicit rel_ellipse(const circle& c) noexcept
-							: _Center(c.center())
-							, _X_axis(c.radius())
-							, _Y_axis(c.radius()) { }
-						constexpr explicit rel_ellipse(const ellipse& e) noexcept
-							: _Center(e.center())
-							, _X_axis(e.x_radius())
-							, _Y_axis(e.y_radius()) { }
+						constexpr rel_arc_clockwise() noexcept
+							: rel_arc_clockwise(vector_2d{}, 0.0, vector_2d{ 1.0, 1.0 }) { }
+						constexpr rel_arc_clockwise(const vector_2d& ctr, double ea, const vector_2d& scl = vector_2d{ 1.0, 1.0 }) noexcept
+							: _Center(ctr)
+							, _End_angle(ea)
+							, _Scale(scl) {
+						}
 
 						constexpr void center(const vector_2d& ctr) noexcept {
 							_Center = ctr;
 						}
-						constexpr void x_radius(double val) noexcept {
-							_X_axis = val;
+						constexpr void end_angle(double ea) noexcept {
+							_End_angle = ea;
 						}
-						constexpr void y_radius(double val) noexcept {
-							_Y_axis = val;
+						constexpr void scale(const vector_2d& scl) noexcept {
+							_Scale = scl;
 						}
 
 						constexpr vector_2d center() const noexcept {
 							return _Center;
 						}
-						constexpr double x_radius() const noexcept {
-							return _X_axis;
+						constexpr double end_angle() const noexcept {
+							return _End_angle;
 						}
-						constexpr double y_radius() const noexcept {
-							return _Y_axis;
-						}
-					};
-
-					class arc_clockwise {
-						experimental::io2d::circle _Circle = {};
-						double _Angle_1 = 0.0;
-						double _Angle_2 = 0.0;
-					public:
-						constexpr arc_clockwise(const experimental::io2d::circle& c, double angle1, double angle2) noexcept
-							: _Circle(c)
-							, _Angle_1(angle1)
-							, _Angle_2(angle2) {
-						}
-						constexpr arc_clockwise(const vector_2d& ctr, double rad, double angle1, double angle2) noexcept
-							: _Circle(ctr, rad)
-							, _Angle_1(angle1)
-							, _Angle_2(angle2) {
-						}
-						constexpr arc_clockwise() noexcept {}
-
-						constexpr void circle(const experimental::io2d::circle& c) noexcept {
-							_Circle = c;
-						}
-						constexpr void center(const vector_2d& ctr) noexcept {
-							_Circle.center(ctr);
-						}
-						constexpr void radius(double rad) noexcept {
-							_Circle.radius(rad);
-						}
-						constexpr void angle_1(double radians) noexcept {
-							_Angle_1 = radians;
-						}
-						constexpr void angle_2(double radians) noexcept {
-							_Angle_2 = radians;
-						}
-
-						constexpr experimental::io2d::circle circle() const noexcept {
-							return _Circle;
-						}
-						constexpr vector_2d center() const noexcept {
-							return _Circle.center();
-						}
-						constexpr double radius() const noexcept {
-							return _Circle.radius();
-						}
-						constexpr double angle_1() const noexcept {
-							return _Angle_1;
-						}
-						constexpr double angle_2() const noexcept {
-							return _Angle_2;
+						constexpr vector_2d scale() const noexcept {
+							return _Scale;
 						}
 					};
 
-					class arc_counterclockwise {
-						experimental::io2d::circle _Circle = {};
-						double _Angle_1 = 0.0;
-						double _Angle_2 = 0.0;
+					class abs_arc_counterclockwise {
+						vector_2d _Center;
+						double _End_angle;
+						vector_2d _Scale;
 					public:
-						constexpr arc_counterclockwise(const experimental::io2d::circle& c, double angle1, double angle2) noexcept
-							: _Circle(c)
-							, _Angle_1(angle1)
-							, _Angle_2(angle2) {
+						constexpr abs_arc_counterclockwise() noexcept
+							: abs_arc_counterclockwise(vector_2d{}, 0.0, vector_2d{ 1.0, 1.0 }) { }
+						constexpr abs_arc_counterclockwise(const vector_2d& ctr, double ea, const vector_2d& scl = vector_2d{ 1.0, 1.0 }) noexcept
+							: _Center(ctr)
+							, _End_angle(ea)
+							, _Scale(scl) {
 						}
-						constexpr arc_counterclockwise(const vector_2d& ctr, double rad, double angle1, double angle2) noexcept
-							: _Circle(ctr, rad)
-							, _Angle_1(angle1)
-							, _Angle_2(angle2) {
-						}
-						constexpr arc_counterclockwise() noexcept {}
 
-						constexpr void circle(const experimental::io2d::circle& c) noexcept {
-							_Circle = c;
-						}
 						constexpr void center(const vector_2d& ctr) noexcept {
-							_Circle.center(ctr);
+							_Center = ctr;
 						}
-						constexpr void radius(double rad) noexcept {
-							_Circle.radius(rad);
+						constexpr void end_angle(double ea) noexcept {
+							_End_angle = ea;
 						}
-						constexpr void angle_1(double radians) noexcept {
-							_Angle_1 = radians;
-						}
-						constexpr void angle_2(double radians) noexcept {
-							_Angle_2 = radians;
+						constexpr void scale(const vector_2d& scl) noexcept {
+							_Scale = scl;
 						}
 
-						constexpr experimental::io2d::circle circle() const noexcept {
-							return _Circle;
-						}
 						constexpr vector_2d center() const noexcept {
-							return _Circle.center();
+							return _Center;
 						}
-						constexpr double radius() const noexcept {
-							return _Circle.radius();
+						constexpr double end_angle() const noexcept {
+							return _End_angle;
 						}
-						constexpr double angle_1() const noexcept {
-							return _Angle_1;
+						constexpr vector_2d scale() const noexcept {
+							return _Scale;
 						}
-						constexpr double angle_2() const noexcept {
-							return _Angle_2;
+					};
+
+					class rel_arc_counterclockwise {
+						vector_2d _Center;
+						double _End_angle;
+						vector_2d _Scale;
+					public:
+						constexpr rel_arc_counterclockwise() noexcept
+							: rel_arc_counterclockwise(vector_2d{}, 0.0, vector_2d{ 1.0, 1.0 }) { }
+						constexpr rel_arc_counterclockwise(const vector_2d& ctr, double ea, const vector_2d& scl = vector_2d{ 1.0, 1.0 }) noexcept
+							: _Center(ctr)
+							, _End_angle(ea)
+							, _Scale(scl) {
+						}
+
+						constexpr void center(const vector_2d& ctr) noexcept {
+							_Center = ctr;
+						}
+						constexpr void end_angle(double ea) noexcept {
+							_End_angle = ea;
+						}
+						constexpr void scale(const vector_2d& scl) noexcept {
+							_Scale = scl;
+						}
+
+						constexpr vector_2d center() const noexcept {
+							return _Center;
+						}
+						constexpr double end_angle() const noexcept {
+							return _End_angle;
+						}
+						constexpr vector_2d scale() const noexcept {
+							return _Scale;
 						}
 					};
 
@@ -1298,7 +1265,7 @@ namespace std {
 						}
 					};
 
-					using path_data_types = ::std::variant<abs_new_path, rel_new_path, close_path, change_matrix, change_origin, abs_cubic_curve, abs_ellipse, abs_line, abs_quadratic_curve, arc_clockwise, arc_counterclockwise, rel_cubic_curve, rel_cubic_curve, rel_ellipse, rel_line, rel_quadratic_curve>;
+					using path_data_types = ::std::variant<abs_new_path, rel_new_path, close_path, change_matrix, change_origin, abs_cubic_curve, abs_line, abs_quadratic_curve, abs_arc_clockwise, rel_arc_clockwise, abs_arc_counterclockwise, rel_arc_counterclockwise, rel_cubic_curve, rel_cubic_curve, rel_line, rel_quadratic_curve>;
 				}
 
 				// Forward declaration.
@@ -1337,24 +1304,28 @@ namespace std {
 				constexpr static _Path_data_close_path _Path_data_close_path_val = {};
 				enum class _Path_data_abs_cubic_curve {};
 				constexpr static _Path_data_abs_cubic_curve _Path_data_abs_cubic_curve_val = {};
-				enum class _Path_data_abs_ellipse {};
-				constexpr static _Path_data_abs_ellipse _Path_data_abs_ellipse_val = {};
 				enum class _Path_data_abs_line {};
 				constexpr static _Path_data_abs_line _Path_data_abs_line_val = {};
 				enum class _Path_data_abs_quadratic_curve {};
 				constexpr static _Path_data_abs_quadratic_curve _Path_data_abs_quadratic_curve_val = {};
 				enum class _Path_data_rel_cubic_curve {};
 				constexpr static _Path_data_rel_cubic_curve _Path_data_rel_cubic_curve_val = {};
-				enum class _Path_data_rel_ellipse {};
-				constexpr static _Path_data_rel_ellipse _Path_data_rel_ellipse_val = {};
 				enum class _Path_data_rel_line {};
 				constexpr static _Path_data_rel_line _Path_data_rel_line_val = {};
 				enum class _Path_data_rel_quadratic_curve {};
 				constexpr static _Path_data_rel_quadratic_curve _Path_data_rel_quadratic_curve_val = {};
-				enum class _Path_data_arc_clockwise {};
-				constexpr static _Path_data_arc_clockwise _Path_data_arc_clockwise_val = {};
+				enum class _Path_data_abs_arc_clockwise {};
+				constexpr static _Path_data_abs_arc_clockwise _Path_data_abs_arc_clockwise_val = {};
+				enum class _Path_data_rel_arc_clockwise {};
+				constexpr static _Path_data_rel_arc_clockwise _Path_data_rel_arc_clockwise_val = {};
+				enum class _Path_data_abs_arc_counterclockwise {};
+				constexpr static _Path_data_abs_arc_counterclockwise _Path_data_abs_arc_counterclockwise_val = {};
+				enum class _Path_data_rel_arc_counterclockwise {};
+				constexpr static _Path_data_rel_arc_counterclockwise _Path_data_rel_arc_counterclockwise_val = {};
+
 				enum class _Path_data_arc_counterclockwise {};
 				constexpr static _Path_data_arc_counterclockwise _Path_data_arc_counterclockwise_val = {};
+
 				enum class _Path_data_change_matrix {};
 				constexpr static _Path_data_change_matrix _Path_data_change_matrix_val = {};
 				enum class _Path_data_change_origin {};
@@ -1406,7 +1377,7 @@ namespace std {
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
 					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_quadratic_curve&) noexcept {
-						assert(false && "Quadratic curves should have been transformed into cubic curves already.");
+						assert(false && "Abs quadratic curves should have been transformed into cubic curves already.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
 					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_new_path&) noexcept {
@@ -1436,23 +1407,23 @@ namespace std {
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
 					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_quadratic_curve&) noexcept {
-						assert(false && "Quadratic curves should have been transformed into cubic curves.");
+						assert(false && "Rel quadratic curves should have been transformed into cubic curves.");
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_ellipse>, _Path_data_abs_ellipse> = _Path_data_abs_ellipse_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_ellipse&) {
-						assert(false && "Abs ellipse should have been transformed into cubic curves.");
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_arc_clockwise>, _Path_data_abs_arc_clockwise> = _Path_data_abs_arc_clockwise_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_arc_clockwise&) noexcept {
+						assert(false && "Abs clockwise arcs should have been transformed into cubic curves.");
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_ellipse>, _Path_data_rel_ellipse> = _Path_data_rel_ellipse_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_ellipse&) {
-						assert(false && "Rel ellipse should have been transformed into cubic curves.");
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_clockwise>, _Path_data_rel_arc_clockwise> = _Path_data_rel_arc_clockwise_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_arc_clockwise&) noexcept {
+						assert(false && "Abs clockwise arcs should have been transformed into cubic curves.");
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_clockwise>, _Path_data_arc_clockwise> = _Path_data_arc_clockwise_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::arc_clockwise&) noexcept {
-						assert(false && "Quadratic curves should have been transformed into cubic curves.");
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_arc_counterclockwise>, _Path_data_abs_arc_counterclockwise> = _Path_data_abs_arc_counterclockwise_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_arc_counterclockwise&) {
+						assert(false && "Abs counterclockwise should have been transformed into cubic curves.");
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_counterclockwise>, _Path_data_arc_counterclockwise> = _Path_data_arc_counterclockwise_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::arc_counterclockwise&) {
-						assert(false && "Quadratic curves should have been transformed into cubic curves.");
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_counterclockwise>, _Path_data_rel_arc_counterclockwise> = _Path_data_rel_arc_counterclockwise_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_arc_counterclockwise&) {
+						assert(false && "Rel counterclockwise should have been transformed into cubic curves.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
 					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::change_matrix&) noexcept {
@@ -1618,23 +1589,15 @@ namespace std {
 					void new_path(const vector_2d& v) noexcept;
 					void rel_new_path(const vector_2d& v) noexcept;
 					void close_path() noexcept;
-					void arc_clockwise(const vector_2d& center, double radius, double angle1,
-						double angle2) noexcept;
-					void arc_clockwise(const circle& c, double angle1,
-						double angle2) noexcept;
-					void arc_counterclockwise(const vector_2d& center, double radius,
-						double angle1, double angle2) noexcept;
-					void arc_counterclockwise(const circle& c,
-						double angle1, double angle2) noexcept;
-					void ellipse(const experimental::io2d::ellipse& e) noexcept;
-					void ellipse(const circle& c) noexcept;
+					void arc_clockwise(const vector_2d& center, double ea, const vector_2d& scl = vector_2d{ 1.0, 1.0 }) noexcept;
+					void rel_arc_clockwise(const vector_2d& center, double ea, const vector_2d& scl = vector_2d{ 1.0, 1.0 }) noexcept;
+					void arc_counterclockwise(const vector_2d& center, double ea, const vector_2d& scl = vector_2d{ 1.0, 1.0 }) noexcept;
+					void rel_arc_counterclockwise(const vector_2d& center, double ea, const vector_2d& scl = vector_2d{ 1.0, 1.0 }) noexcept;
 					void cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1,
 						const vector_2d& pt2) noexcept;
 					void line_to(const vector_2d& pt) noexcept;
 					void quadratic_curve_to(const vector_2d& pt0, const vector_2d& pt1)
 						noexcept;
-					void rel_ellipse(const experimental::io2d::ellipse& e) noexcept;
-					void rel_ellipse(const circle& c) noexcept;
 					void rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1,
 						const vector_2d& dpt2) noexcept;
 					void rel_line_to(const vector_2d& dpt) noexcept;
@@ -2268,7 +2231,8 @@ namespace std {
 				image_surface make_image_surface(format format, int width, int height);
 				image_surface make_image_surface(format format, int width, int height, ::std::error_code& ec) noexcept;
 				image_surface make_image_surface(image_surface& sfc);
-
+				double angle_for_point(const vector_2d& ctr, const vector_2d& pt);
+				vector_2d point_for_angle(const vector_2d& ctr, double ang, double mgn);
 				template <class _TItem>
 				struct _Path_factory_process_visit {
 					constexpr static double twoThirds = 2.0 / 3.0;
@@ -2285,20 +2249,33 @@ namespace std {
 						currentPoint = currentPoint + item.at();
 						auto pt = m.transform_point(currentPoint - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
-						currentPoint = item.at();
 						closePoint = pt;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
 					static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
 						v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>,
-								closePoint);
+							closePoint);
 						if (!m.is_finite() || !m.is_invertible()) {
 							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
 						}
 						auto invM = matrix_2d{ m }.invert();
 						// Need to assign the untransformed closePoint value to currentPoint.
 						currentPoint = invM.transform_point(closePoint - origin) + origin;
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&) {
+						if (!m.is_finite()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
+						}
+						if (!m.is_invertible()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
+						}
+						m = item.matrix();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&) {
+						origin = item.origin();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
@@ -2309,17 +2286,6 @@ namespace std {
 							pt2, pt3);
 						currentPoint = item.end_point();
 						closePoint = pt3;
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_ellipse>, _Path_data_abs_ellipse> = _Path_data_abs_ellipse_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
-						const auto o_M = m;
-						const auto o_O = origin;
-						//currentPoint.reset();
-						_Path_factory_process_visit<path_data::change_origin>::template _Perform(path_data::change_origin{ item.center() }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit<path_data::change_matrix>::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit<path_data::arc_clockwise>::template _Perform(path_data::arc_clockwise{ item.center(), item.y_radius(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit<path_data::change_matrix>::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit<path_data::change_origin>::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
@@ -2341,19 +2307,62 @@ namespace std {
 						currentPoint = item.end_point();
 						closePoint = endPt;
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_clockwise>, _Path_data_arc_clockwise> = _Path_data_arc_clockwise_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_arc_clockwise>, _Path_data_abs_arc_clockwise> = _Path_data_abs_arc_clockwise_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
 						{
 							auto ctr = item.center();
-							auto rad = item.radius();
-							auto ang1 = item.angle_1();
-							auto ang2 = item.angle_2();
-							while (ang2 < ang1) {
-								ang2 += two_pi<double>;
+							auto endAng = item.end_angle();
+							auto scl = item.scale();
+							if (scl.x() < 0.0 || scl.y() < 0.0) {
+								throw system_error(make_error_code(io2d_error::invalid_path_data));
+							}
+							auto rad = (ctr - currentPoint).magnitude();
+							//const auto valPi = pi<double>;
+							//const auto valHalfPi = half_pi<double>;
+							//const auto val3PiOver2 = three_pi_over_two<double>;
+							//auto angleFromCenter = [&ctr, &valPi, &valHalfPi, &val3PiOver2](const vector_2d& somePt) -> double {
+							//	auto xDiff = somePt.x() - ctr.x();
+							//	auto yDiff = somePt.y() - ctr.y();
+							//	auto result = atan2(abs(yDiff), abs(xDiff));
+							//	if (xDiff < 0.0) {
+							//		if (yDiff >= 0.0) {
+							//			return result + valPi;
+							//		}
+							//		else {
+							//			return result + valHalfPi;
+							//		}
+							//	}
+							//	else {
+							//		if (yDiff >= 0.0) {
+							//			return result + val3PiOver2;
+							//		}
+							//		// else leave it alone, it's already in the 0 to two pi range.
+							//	}
+							//	return result;
+							//};
+							auto startAng = angle_for_point(ctr, currentPoint);
+							if (abs(startAng - endAng) < numeric_limits<double>::epsilon() * 100) {
+								// bomb out if the angles are the same; it's a degenerate path segment.
+								return;
 							}
 							vector_2d pt0, pt1, pt2, pt3;
 							int bezCount = 1;
-							double theta = ang2 - ang1;
+							double theta{};
+							auto endAngAdjust = endAng;
+							while (endAngAdjust > two_pi<double>) {
+								endAngAdjust -= two_pi<double>;
+							}
+							if (endAngAdjust > startAng && (endAng - startAng) < two_pi<double>) {
+								//endAng += two_pi<double>;
+								endAng -= endAngAdjust;
+								endAng += -(endAngAdjust - two_pi<double>);
+								//endAng -= two_pi<double>;
+								//theta = abs(endAng + startAng);
+							}
+							theta = abs(endAng + startAng);
+							//while (theta > two_pi<double>) {
+							//	theta -= two_pi<double>;
+							//}
 							double phi{};
 							while (theta >= half_pi<double>) {
 								theta /= 2.0;
@@ -2370,31 +2379,55 @@ namespace std {
 							pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
 							pt2.x(pt1.x());
 							pt2.y(-pt1.y());
-							phi = -phi;
+
 							auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
 								return { pt.x() * cos(a) + pt.y() * sin(a),
 									-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
 							};
-							pt0 = rotCwFn(pt0, phi);
-							pt1 = rotCwFn(pt1, phi);
-							pt2 = rotCwFn(pt2, phi);
-							pt3 = rotCwFn(pt3, phi);
 
-							auto currTheta = ang1;
+							auto negatePhiPt0 = rotCwFn(pt0, phi) * rad;
 							const auto startPt =
-								ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
+								ctr + rotCwFn(negatePhiPt0, startAng);
+							const auto adjustPt = (currentPoint - startPt);
+							// The current point and the calculated start point must be the same. If not, phi = -phi will make it so.
+							//if ((adjustPt.x() < 0.0) || (adjustPt.y() < 0.0)) {
+							phi = -phi;
+							//}
+							auto negatePhiPt0_1 = rotCwFn(pt0, phi) * rad;
+							const auto startPt_1 =
+								ctr + rotCwFn(negatePhiPt0_1, startAng);
+							const auto adjustPt_1 = (currentPoint - startPt_1);
 
-							currentPoint = startPt;
-							auto pt = m.transform_point(currentPoint - origin) + origin;
-							v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
-							closePoint = pt;
+							phi = -phi;
+							auto negatePhiPt0_2 = rotCwFn(pt0, phi) * rad;
+							const auto startPt_2 =
+								ctr + rotCwFn(negatePhiPt0_2, startAng);
+							const auto adjustPt_2 = (currentPoint - startPt_2);
 
+							phi = -phi;
+							auto negatePhiPt0_3 = rotCwFn(pt0, phi) * rad;
+							const auto startPt_3 =
+								ctr + rotCwFn(negatePhiPt0_3, startAng);
+							const auto adjustPt_3 = (currentPoint - startPt_3);
+
+							//phi = -phi;
+							pt0 = rotCwFn(pt0, phi);// *scl;
+							pt1 = rotCwFn(pt1, phi);// *scl;
+							pt2 = rotCwFn(pt2, phi);// *scl;
+							pt3 = rotCwFn(pt3, phi);// *scl;
+
+							//const auto apt1 = (pt1 * rad);
+							//const auto apt2 = (pt2 * rad);
+							//const auto apt3 = (pt3 * rad);
+							////phi = -phi;
+							auto currTheta = -startAng;
+							const auto apt1 = (pt1 * rad);
+							const auto apt2 = (pt2 * rad);
+							const auto apt3 = (pt3 * rad);
 							for (; bezCount > 0; bezCount--) {
-								auto cpt1 = ctr + rotCwFn({ pt1.x() * rad, pt1.y() * rad }, currTheta);
-								auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad },
-									currTheta);
-								auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad },
-									currTheta);
+								auto cpt1 = ctr + rotCwFn(apt1, currTheta);
+								auto cpt2 = ctr + rotCwFn(apt2, currTheta);
+								auto cpt3 = ctr + rotCwFn(apt3, currTheta);
 								currentPoint = cpt3;
 								cpt1 = m.transform_point(cpt1 - origin) + origin;
 								cpt2 = m.transform_point(cpt2 - origin) + origin;
@@ -2403,21 +2436,57 @@ namespace std {
 									cpt2, cpt3);
 								currTheta += theta;
 							}
+							//origin = origOrigin;
+							//m = origM;
 						}
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_counterclockwise>, _Path_data_arc_counterclockwise> = _Path_data_arc_counterclockwise_val>
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_clockwise>, _Path_data_rel_arc_clockwise> = _Path_data_rel_arc_clockwise_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
+						path_data::abs_arc_clockwise absItem{};
+						absItem.center(item.center() + currentPoint);
+						absItem.end_angle(item.end_angle());
+						absItem.scale(item.scale());
+						_Path_factory_process_visit::template _Perform(absItem, v, m, origin, currentPoint, closePoint);
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_arc_counterclockwise>, _Path_data_abs_arc_counterclockwise> = _Path_data_abs_arc_counterclockwise_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
 						{
 							auto ctr = item.center();
-							auto rad = item.radius();
-							auto ang1 = item.angle_1();
-							auto ang2 = item.angle_2();
-							while (ang2 > ang1) {
-								ang2 -= two_pi<double>;
+							auto endAng = item.end_angle();
+							auto scl = item.scale();
+							if (scl.x() < 0.0 || scl.y() < 0.0) {
+								throw system_error(make_error_code(io2d_error::invalid_path_data));
+							}
+							auto rad = (ctr - currentPoint).magnitude();
+							//auto rad = item.radius();
+							//auto ang1 = item.angle_1();
+							//auto ang2 = item.angle_2();
+							//while (ang2 > ang1) {
+							//	ang2 -= two_pi<double>;
+							//}
+							auto xDiff = currentPoint.x() - ctr.x();
+							auto yDiff = currentPoint.y() - ctr.y();
+							auto startAng = atan2(abs(yDiff), abs(xDiff));
+							if (xDiff < 0.0) {
+								if (yDiff >= 0.0) {
+									startAng += pi<double>;
+								}
+								else {
+									startAng += half_pi<double>;
+								}
+							}
+							else {
+								if (yDiff >= 0.0) {
+									startAng += three_pi_over_two<double>;
+								}
+								// else leave it alone, it's already in the 0 to two pi range.
+							}
+							while ((endAng + two_pi<double>) < startAng) {
+								endAng += two_pi<double>;
 							}
 							vector_2d pt0, pt1, pt2, pt3;
 							int bezCount = 1;
-							double theta = ang1 - ang2;
+							double theta = abs(startAng - endAng);
 							double phi{};
 							while (theta >= half_pi<double>) {
 								theta /= 2.0;
@@ -2448,13 +2517,15 @@ namespace std {
 							shflPt = pt2;
 							pt2 = pt1;
 							pt1 = shflPt;
-							auto currTheta = ang1;
-							const auto startPt = ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
+							auto currTheta = startAng;
+							//const auto startPt = ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
 
-							currentPoint = startPt;
-							auto pt = m.transform_point(currentPoint - origin) + origin;
-							v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
-							closePoint = pt;
+							//currentPoint = startPt;
+							//auto pt = m.transform_point(currentPoint - origin) + origin;
+							//v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+							//closePoint = pt;
+							auto origOrigin = origin;
+							origin = ctr - currentPoint;
 
 							for (; bezCount > 0; bezCount--) {
 								auto cpt1 = ctr + rotCwFn({ pt1.x() * rad, pt1.y() * rad },
@@ -2471,21 +2542,16 @@ namespace std {
 									cpt2, cpt3);
 								currTheta -= theta;
 							}
+							origin = origOrigin;
 						}
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&) {
-						if (!m.is_finite()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
-						}
-						if (!m.is_invertible()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
-						}
-						m = item.matrix();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&) {
-						origin = item.origin();
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_counterclockwise>, _Path_data_rel_arc_counterclockwise> = _Path_data_rel_arc_counterclockwise_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
+						path_data::abs_arc_counterclockwise absItem{};
+						absItem.center(item.center() + currentPoint);
+						absItem.end_angle(item.end_angle());
+						absItem.scale(item.scale());
+						_Path_factory_process_visit::template _Perform(absItem, v, m, origin, currentPoint, closePoint);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
@@ -2498,17 +2564,6 @@ namespace std {
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
 							pt1, pt2, pt3);
 						currentPoint = item.end_point() + currentPoint;
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_ellipse>, _Path_data_rel_ellipse> = _Path_data_rel_ellipse_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
-						const auto o_M = m;
-						const auto o_O = origin;
-						const auto cpt2 = currentPoint;
-						_Path_factory_process_visit::template _Perform(path_data::change_origin{ item.center() + cpt2 }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::arc_clockwise{ item.center() + cpt2, item.y_radius(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint);
-						_Path_factory_process_visit::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
@@ -2553,98 +2608,123 @@ namespace std {
 				struct _Path_factory_process_visit_noexcept {
 					constexpr static double twoThirds = 2.0 / 3.0;
 
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d&, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+						currentPoint = item.at();
+						auto pt = m.transform_point(currentPoint - origin) + origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+						closePoint = pt;
+						ec.clear();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d&, optional<vector_2d>& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+						currentPoint = currentPoint + item.at();
+						auto pt = m.transform_point(currentPoint - origin) + origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+						closePoint = pt;
+						ec.clear();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
+					static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
+						v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
+						v.emplace_back(::std::in_place_type<path_data::abs_move>,
+							closePoint);
+						if (!m.is_finite() || !m.is_invertible()) {
+							ec = ::std::make_error_code(io2d_error::invalid_matrix);
+							return;
+						}
+						auto invM = matrix_2d{ m }.invert();
+						// Need to assign the untransformed closePoint value to currentPoint.
+						currentPoint = invM.transform_point(closePoint - origin) + origin;
+						ec.clear();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, ::std::error_code& ec) noexcept {
+						if (!m.is_finite()) {
+							ec = ::std::make_error_code(io2d_error::invalid_matrix);
+							return;
+						}
+						if (!m.is_invertible()) {
+							ec = ::std::make_error_code(io2d_error::invalid_matrix);
+							return;
+						}
+						m = item.matrix();
+						ec.clear();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, ::std::error_code& ec) noexcept {
+						origin = item.origin();
+						ec.clear();
+					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
 						auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
 						auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
 						auto pt3 = m.transform_point(item.end_point() - origin) + origin;
-						if (!currentPoint.has_value()) {
-							currentPoint = item.control_point_1();
-							v.emplace_back(::std::in_place_type<path_data::abs_move>, pt1);
-							closePoint = pt1;
-						}
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
 							pt2, pt3);
 						currentPoint = item.end_point();
 						ec.clear();
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_ellipse>, _Path_data_abs_ellipse> = _Path_data_abs_ellipse_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
-						const auto o_M = m;
-						const auto o_O = origin;
-						currentPoint.reset();
-						_Path_factory_process_visit_noexcept<path_data::change_origin>::template _Perform(path_data::change_origin{ item.center() }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						_Path_factory_process_visit_noexcept<path_data::change_matrix>::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						_Path_factory_process_visit_noexcept<path_data::arc_clockwise>::template _Perform(path_data::arc_clockwise{ item.center(), item.y_radius(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						_Path_factory_process_visit_noexcept<path_data::change_matrix>::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						_Path_factory_process_visit_noexcept<path_data::change_origin>::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						ec.clear();
-					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
-						if (currentPoint.has_value()) {
-							currentPoint = item.to();
-							auto pt = m.transform_point(currentPoint.value() - origin) + origin;
-							v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-						}
-						else {
-							currentPoint = item.to();
-							auto pt = m.transform_point(currentPoint.value() - origin) + origin;
-							v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-							v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-							closePoint = pt;
-						}
+						currentPoint = item.to();
+						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 						ec.clear();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
 						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 						vector_2d beginPt;
 						auto controlPt = m.transform_point(item.control_point() - origin) + origin;
 						auto endPt = m.transform_point(item.end_point() - origin) + origin;
-						if (!currentPoint.has_value()) {
-							currentPoint = item.control_point();
-							v.emplace_back(::std::in_place_type<path_data::abs_move>, controlPt);
-							closePoint = controlPt;
-							beginPt = controlPt;
-						}
-						else {
-							beginPt = m.transform_point(currentPoint.value() - origin) + origin;
-						}
+						beginPt = m.transform_point(currentPoint.value() - origin) + origin;
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
 						currentPoint = item.end_point();
 						ec.clear();
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_clockwise>, _Path_data_arc_clockwise> = _Path_data_arc_clockwise_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_arc_clockwise>, _Path_data_abs_arc_clockwise> = _Path_data_abs_arc_clockwise_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
 						{
 							auto ctr = item.center();
-							auto rad = item.radius();
-							auto ang1 = item.angle_1();
-							auto ang2 = item.angle_2();
-							while (ang2 < ang1) {
-								ang2 += two_pi<double>;
+							auto endAng = item.end_angle();
+							auto scl = item.scale();
+							auto rad = (ctr - currentPoint).magnitude();
+							//auto rad = item.radius();
+							//auto ang1 = item.angle_1();
+							//auto ang2 = item.angle_2();
+							//while (ang2 < ang1) {
+							//	ang2 += two_pi<double>;
+							//}
+							auto xDiff = currentPoint.x() - ctr.x();
+							auto yDiff = currentPoint.y() - ctr.y();
+							auto startAng = atan2(abs(yDiff), abs(xDiff));
+							if (xDiff < 0.0) {
+								if (yDiff >= 0.0) {
+									startAng += pi<double>;
+								}
+								else {
+									startAng += half_pi<double>;
+								}
+							}
+							else {
+								if (yDiff >= 0.0) {
+									startAng += three_pi_over_two<double>;
+								}
+								// else leave it alone, it's already in the 0 to two pi range.
+							}
+							while ((endAng + two_pi<double>) < startAng) {
+								endAng += two_pi<double>;
 							}
 							vector_2d pt0, pt1, pt2, pt3;
 							int bezCount = 1;
-							double theta = ang2 - ang1;
+							double theta = abs(endAng - startAng);
+							//while (theta > two_pi<double>) {
+							//	theta -= two_pi<double>;
+							//}
 							double phi{};
 							while (theta >= half_pi<double>) {
 								theta /= 2.0;
@@ -2671,26 +2751,29 @@ namespace std {
 							pt2 = rotCwFn(pt2, phi);
 							pt3 = rotCwFn(pt3, phi);
 
-							auto currTheta = ang1;
-							const auto startPt =
-								ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
-							if (currentPoint.has_value()) {
-								currentPoint = startPt;
-								auto pt = m.transform_point(currentPoint.value() - origin) + origin;
-								v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-							}
-							else {
-								currentPoint = startPt;
-								auto pt = m.transform_point(currentPoint.value() - origin) + origin;
-								v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-								closePoint = pt;
-							}
+							auto currTheta = startAng;
+							//const auto startPt =
+							//	ctr + rotCwFn({ pt0.x() * scl.x(), pt0.y() * scl.y() }, currTheta);
+
+							//currentPoint = startPt;
+							//auto pt = m.transform_point(currentPoint - origin) + origin;
+							//v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+							//closePoint = pt;
+							auto origOrigin = origin;
+							origin = ctr - currentPoint;
+
+							//FIXME ******** WE ARE CALCULATING UNIT ROTATIONS AROUND AN IDEAL CIRCULAR ARC - PREVIOUSLY RADIUS GAVE US THE TRANSFORM WE NEEDED BUT NOW WE NEED A SUBSTITUTE RADIUS
+							//auto origM = m;
+							//m = m.scale(scl);
 							for (; bezCount > 0; bezCount--) {
 								auto cpt1 = ctr + rotCwFn({ pt1.x() * rad, pt1.y() * rad }, currTheta);
+								cpt1 *= scl;
 								auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad },
 									currTheta);
+								cpt2 *= scl;
 								auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad },
 									currTheta);
+								cpt3 *= scl;
 								currentPoint = cpt3;
 								cpt1 = m.transform_point(cpt1 - origin) + origin;
 								cpt2 = m.transform_point(cpt2 - origin) + origin;
@@ -2699,22 +2782,54 @@ namespace std {
 									cpt2, cpt3);
 								currTheta += theta;
 							}
+							origin = origOrigin;
+							ec.clear();
 						}
-						ec.clear();
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc_counterclockwise>, _Path_data_arc_counterclockwise> = _Path_data_arc_counterclockwise_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_clockwise>, _Path_data_rel_arc_clockwise> = _Path_data_rel_arc_clockwise_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, error_code& ec) {
+						path_data::abs_arc_clockwise absItem{};
+						absItem.center(item.center() + currentPoint);
+						absItem.end_angle(item.end_angle());
+						absItem.scale(item.scale());
+						_Path_factory_process_visit_noexcept::template _Perform(absItem, v, m, origin, currentPoint, closePoint, ec);
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_arc_counterclockwise>, _Path_data_abs_arc_counterclockwise> = _Path_data_abs_arc_counterclockwise_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, error_code& ec) {
 						{
 							auto ctr = item.center();
-							auto rad = item.radius();
-							auto ang1 = item.angle_1();
-							auto ang2 = item.angle_2();
-							while (ang2 > ang1) {
-								ang2 -= two_pi<double>;
+							auto endAng = item.end_angle();
+							auto scl = item.scale();
+							auto rad = (ctr - currentPoint).magnitude();
+							//auto rad = item.radius();
+							//auto ang1 = item.angle_1();
+							//auto ang2 = item.angle_2();
+							//while (ang2 > ang1) {
+							//	ang2 -= two_pi<double>;
+							//}
+							auto xDiff = currentPoint.x() - ctr.x();
+							auto yDiff = currentPoint.y() - ctr.y();
+							auto startAng = atan2(abs(yDiff), abs(xDiff));
+							if (xDiff < 0.0) {
+								if (yDiff >= 0.0) {
+									startAng += pi<double>;
+								}
+								else {
+									startAng += half_pi<double>;
+								}
+							}
+							else {
+								if (yDiff >= 0.0) {
+									startAng += three_pi_over_two<double>;
+								}
+								// else leave it alone, it's already in the 0 to two pi range.
+							}
+							while ((endAng + two_pi<double>) < startAng) {
+								endAng += two_pi<double>;
 							}
 							vector_2d pt0, pt1, pt2, pt3;
 							int bezCount = 1;
-							double theta = ang1 - ang2;
+							double theta = abs(startAng - endAng);
 							double phi{};
 							while (theta >= half_pi<double>) {
 								theta /= 2.0;
@@ -2745,20 +2860,16 @@ namespace std {
 							shflPt = pt2;
 							pt2 = pt1;
 							pt1 = shflPt;
-							auto currTheta = ang1;
-							const auto startPt =
-								ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
-							if (currentPoint.has_value()) {
-								currentPoint = startPt;
-								auto pt = m.transform_point(currentPoint.value() - origin) + origin;
-								v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-							}
-							else {
-								currentPoint = startPt;
-								auto pt = m.transform_point(currentPoint.value() - origin) + origin;
-								v.emplace_back(::std::in_place_type<path_data::abs_move>, pt);
-								closePoint = pt;
-							}
+							auto currTheta = startAng;
+							//const auto startPt = ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
+
+							//currentPoint = startPt;
+							//auto pt = m.transform_point(currentPoint - origin) + origin;
+							//v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+							//closePoint = pt;
+							auto origOrigin = origin;
+							origin = ctr - currentPoint;
+
 							for (; bezCount > 0; bezCount--) {
 								auto cpt1 = ctr + rotCwFn({ pt1.x() * rad, pt1.y() * rad },
 									currTheta);
@@ -2774,133 +2885,49 @@ namespace std {
 									cpt2, cpt3);
 								currTheta -= theta;
 							}
+							origin = origOrigin;
+							ec.clear();
 						}
-						ec.clear();
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, optional<vector_2d>&, vector_2d&, ::std::error_code& ec) noexcept {
-						if (!m.is_finite()) {
-							ec = ::std::make_error_code(io2d_error::invalid_matrix);
-							return;
-						}
-						if (!m.is_invertible()) {
-							ec = ::std::make_error_code(io2d_error::invalid_matrix);
-							return;
-						}
-						m = item.matrix();
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, optional<vector_2d>&, vector_2d&, ::std::error_code& ec) noexcept {
-						origin = item.origin();
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d&, optional<vector_2d>& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						currentPoint = item.at();
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d&, optional<vector_2d>& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						if (!currentPoint.has_value()) {
-							ec = ::std::make_error_code(io2d_error::invalid_path_data);
-							return;
-						}
-						currentPoint = currentPoint.value() + item.at();
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-					static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
-						if (currentPoint.has_value()) {
-							v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
-							v.emplace_back(::std::in_place_type<path_data::abs_move>,
-								closePoint);
-							if (!m.is_finite() || !m.is_invertible()) {
-								ec = ::std::make_error_code(io2d_error::invalid_matrix);
-								return;
-							}
-							auto invM = matrix_2d{ m }.invert();
-							// Need to assign the untransformed closePoint value to currentPoint.
-							currentPoint = invM.transform_point(closePoint - origin) + origin;
-						}
-						ec.clear();
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_counterclockwise>, _Path_data_rel_arc_counterclockwise> = _Path_data_rel_arc_counterclockwise_val>
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, error_code& ec) {
+						path_data::abs_arc_counterclockwise absItem{};
+						absItem.center(item.center() + currentPoint);
+						absItem.end_angle(item.end_angle());
+						absItem.scale(item.scale());
+						_Path_factory_process_visit_noexcept::template _Perform(absItem, v, m, origin, currentPoint, closePoint, ec);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						if (!currentPoint.has_value()) {
-							ec = ::std::make_error_code(io2d_error::invalid_path_data);
-							return;
-						}
-						auto pt1 = m.transform_point(item.control_point_1() + currentPoint.value() -
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+						auto pt1 = m.transform_point(item.control_point_1() + currentPoint -
 							origin) + origin;
-						auto pt2 = m.transform_point(item.control_point_2() + currentPoint.value() -
+						auto pt2 = m.transform_point(item.control_point_2() + currentPoint -
 							origin) + origin;
-						auto pt3 = m.transform_point(item.end_point() + currentPoint.value() - origin) +
+						auto pt3 = m.transform_point(item.end_point() + currentPoint - origin) +
 							origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
 							pt1, pt2, pt3);
-						currentPoint = item.end_point() + currentPoint.value();
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_ellipse>, _Path_data_rel_ellipse> = _Path_data_rel_ellipse_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
-						if (!currentPoint.has_value()) {
-							ec = ::std::make_error_code(io2d_error::invalid_path_data);
-						}
-						const auto o_M = m;
-						const auto o_O = origin;
-						const auto cpt2 = currentPoint;
-						currentPoint.reset();
-						_Path_factory_process_visit_noexcept::template _Perform(path_data::change_origin{ item.center() + cpt2.value() }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						_Path_factory_process_visit_noexcept::template _Perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						_Path_factory_process_visit_noexcept::template _Perform(path_data::arc_clockwise{ item.center() + cpt2.value(), item.y_radius(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						_Path_factory_process_visit_noexcept::template _Perform(path_data::change_matrix{ o_M }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
-						_Path_factory_process_visit_noexcept::template _Perform(path_data::change_origin{ o_O }, v, m, origin, currentPoint, closePoint, ec);
-						if (static_cast<bool>(ec)) {
-							return;
-						}
+						currentPoint = item.end_point() + currentPoint;
 						ec.clear();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						if (!currentPoint.has_value()) {
-							ec = ::std::make_error_code(io2d_error::invalid_path_data);
-							return;
-						}
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
 						currentPoint = item.to() + currentPoint.value();
 						auto pt = m.transform_point(currentPoint.value() - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 						ec.clear();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						if (!currentPoint.has_value()) {
-							ec = ::std::make_error_code(io2d_error::invalid_path_data);
-							return;
-						}
+					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
 						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 						vector_2d beginPt;
-						auto controlPt = m.transform_point(item.control_point() + currentPoint.value() -
-							origin) + origin;
-						auto endPt = m.transform_point(item.end_point() + currentPoint.value() -
-							origin) + origin;
-						beginPt = m.transform_point(currentPoint.value() - origin) + origin;
+						auto controlPt = m.transform_point(item.control_point() + currentPoint - origin) + origin;
+						auto endPt = m.transform_point(item.end_point() + currentPoint - origin) + origin;
+						beginPt = m.transform_point(currentPoint - origin) + origin;
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-						currentPoint = item.end_point() + currentPoint.value();
+						currentPoint = item.end_point() + currentPoint;
 						ec.clear();
 					}
 				};
@@ -2920,7 +2947,7 @@ namespace std {
 							_Path_factory_process_visit_noexcept<T>::template _Perform<T>(item, v, m, origin, currentPoint, hasCurrentPoint, closePoint, ec);
 						}, val);
 						if (static_cast<bool>(ec)) {
-							v.clear();
+							//v.clear();
 							return v;
 						}
 					}
@@ -3215,33 +3242,23 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::arc_clockwise(const vector_2d& center, double radius, double angle1, double angle2) noexcept {
-					_Data.emplace_back(in_place_type<path_data::arc_clockwise>, center, radius, angle1, angle2);
+				inline void path_builder<Allocator>::arc_clockwise(const vector_2d& ctr, double ea, const vector_2d& scl) noexcept {
+					_Data.emplace_back(in_place_type<path_data::abs_arc_clockwise>, ctr, ea, scl);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::arc_clockwise(const circle& c, double angle1, double angle2) noexcept {
-					_Data.emplace_back(in_place_type<path_data::arc_clockwise>, c, angle1, angle2);
+				inline void path_builder<Allocator>::rel_arc_clockwise(const vector_2d& ctr, double ea, const vector_2d& scl) noexcept {
+					_Data.emplace_back(in_place_type<path_data::rel_arc_clockwise>, ctr, ea, scl);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::arc_counterclockwise(const vector_2d& center, double radius, double angle1, double angle2) noexcept {
-					_Data.emplace_back(in_place_type<path_data::arc_counterclockwise>, center, radius, angle1, angle2);
+				inline void path_builder<Allocator>::arc_counterclockwise(const vector_2d& ctr, double ea, const vector_2d& scl) noexcept {
+					_Data.emplace_back(in_place_type<path_data::abs_arc_counterclockwise>, ctr, ea, scl);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::arc_counterclockwise(const circle& c, double angle1, double angle2) noexcept {
-					_Data.emplace_back(in_place_type<path_data::arc_counterclockwise>, c, angle1, angle2);
-				}
-
-				template<class Allocator>
-				inline void path_builder<Allocator>::ellipse(const experimental::io2d::ellipse& e) noexcept {
-					_Data.emplace_back(in_place_type<path_data::abs_ellipse>, e);
-				}
-
-				template<class Allocator>
-				inline void path_builder<Allocator>::ellipse(const circle& c) noexcept {
-					_Data.emplace_back(in_place_type<path_data::abs_ellipse>, c);
+				inline void path_builder<Allocator>::rel_arc_counterclockwise(const vector_2d& ctr, double ea, const vector_2d& scl) noexcept {
+					_Data.emplace_back(in_place_type<path_data::rel_arc_counterclockwise>, ctr, ea, scl);
 				}
 
 				template<class Allocator>
@@ -3262,16 +3279,6 @@ namespace std {
 				template<class Allocator>
 				inline void path_builder<Allocator>::rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_cubic_curve>, dpt0, dpt1, dpt2);
-				}
-
-				template<class Allocator>
-				inline void path_builder<Allocator>::rel_ellipse(const experimental::io2d::ellipse& e) noexcept {
-					_Data.emplace_back(in_place_type<path_data::rel_ellipse>, e);
-				}
-
-				template<class Allocator>
-				inline void path_builder<Allocator>::rel_ellipse(const circle& c) noexcept {
-					_Data.emplace_back(in_place_type<path_data::rel_ellipse>, c);
 				}
 
 				template<class Allocator>
@@ -3388,6 +3395,10 @@ namespace std {
 					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 				}
 
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
 				// Creates the appropriate error_code for a given cairo_status_t value.
 				// cairo_status_t values which are implementation detail errors are all mapped to make_error_code(io2d_error::invalid_status).
 				inline ::std::error_code _Cairo_status_t_to_std_error_code(cairo_status_t cs) noexcept {
@@ -3486,6 +3497,9 @@ namespace std {
 						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
 					}
 				}
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 				// Throws an exception of type:
 				// -  bad_alloc : If the value of s is CAIRO_STATUS_NO_MEMORY.

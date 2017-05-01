@@ -627,33 +627,35 @@ void test_path_functionality(display_surface& ds) {
 	ept = { 170.0, 300.0 };
 	pf.quadratic_curve_to(qcpt, ept);
 
-	pf.new_path({ 600.0, 100.0 });
-	pf.arc_clockwise(circle{ { 600.0, 100.0 }, 50.0 }, 0.0, half_pi<double>);
-	pf.new_path({ 600.0, 300.0 });
-	pf.arc_counterclockwise(circle{ { 600.0, 300.0 }, 50.0 }, 0.0, half_pi<double>);
-	pf.new_path({ 300.0, 300.0 });
-	pf.arc_clockwise(circle{ { 300.0, 300.0 }, 50.0 }, 0.0, two_pi<double>);
+	//pf.new_path({ 600.0, 100.0 });
+	//pf.arc_clockwise(circle{ { 600.0, 100.0 }, 50.0 }, 0.0, half_pi<double>);
+	//pf.new_path({ 600.0, 100.0 });
+	//pf.arc_clockwise(circle{ { 600.0, 100.0 }, 50.0 }, 0.0, half_pi<double>);
+	//pf.new_path({ 600.0, 300.0 });
+	//pf.arc_counterclockwise(circle{ { 600.0, 300.0 }, 50.0 }, 0.0, half_pi<double>);
+	//pf.new_path({ 300.0, 300.0 });
+	//pf.arc_clockwise(circle{ { 300.0, 300.0 }, 50.0 }, 0.0, two_pi<double>);
 
-	pf.new_path({ 500.0, 300.0 });
-	pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
-	pf.rel_line_to({ 200.0, 0.0 });
-	pf.rel_line_to({ 0.0, 100.0 });
-	pf.rel_line_to({ -200.0, 0.0 });
-	pf.close_path();
+	//pf.new_path({ 500.0, 300.0 });
+	//pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
+	//pf.rel_line_to({ 200.0, 0.0 });
+	//pf.rel_line_to({ 0.0, 100.0 });
+	//pf.rel_line_to({ -200.0, 0.0 });
+	//pf.close_path();
 
 	auto pg = path_group(pf);
 	ds.stroke(brush{ bgra_color::red() }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1240.0, 680.0) });
 
 	pf.clear();
 
-	pf.new_path({ 200.0, 200.0 });
-	//pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
-	pf.ellipse({ { 200.0, 200.0 },{ 80.0, 40.0 } });
-	pf.new_path({ 400.0, 200.0 });
-	pf.rel_ellipse({ { 200.0, 0.0 },{ 80.0, 40.0 } });
-	pf.transform_matrix(matrix_2d{});
-	pf.new_path({ 200.0, 0.0 });
-	pf.line_to({ 200.0, 800.0 });
+	//pf.new_path({ 200.0, 200.0 });
+	////pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
+	//pf.ellipse({ { 200.0, 200.0 },{ 80.0, 40.0 } });
+	//pf.new_path({ 400.0, 200.0 });
+	//pf.rel_ellipse({ { 200.0, 0.0 },{ 80.0, 40.0 } });
+	//pf.transform_matrix(matrix_2d{});
+	//pf.new_path({ 200.0, 0.0 });
+	//pf.line_to({ 200.0, 800.0 });
 }
 
 void draw_radial_circles(display_surface& ds) {
@@ -678,7 +680,7 @@ void draw_radial_circles(display_surface& ds) {
 	pf.new_path({ 520.0, 520.0 });
 	pf.line_to({ 600.0, 600.0 });
 	pf.transform_matrix(matrix_2d::init_scale({ 2.0, 1.0 }));
-	pf.arc_clockwise({ 300.0, 700.0 }, 100.0, three_pi_over_two<double>, two_pi<double>);
+	//pf.arc_clockwise({ 300.0, 700.0 }, 100.0, three_pi_over_two<double>, two_pi<double>);
 	pf.transform_matrix(matrix_2d::init_identity());
 	pf.new_path({ 520.0, 10.0 });
 	pf.cubic_curve_to({ 480.0, 60.0 }, { 560.0, 60.0 }, { 520.0, 10.0 });
@@ -700,16 +702,16 @@ void draw_radial_circles(display_surface& ds) {
 	//ds.brush(brush(bgra_color::red()));
 	ds.stroke(brush{ bgra_color::red() }, p);
 	pf.clear();
-	pf.new_path({ 900.0, 200.0 });
-	pf.arc_clockwise({ 900.0, 200.0 }, 50.0, 0.0, two_pi<double>);
-	pf.new_path({ 900.0, 200.0 });
-	pf.arc_counterclockwise({ 900.0, 200.0 }, 75.0, 0.0, two_pi<double>);
-	pf.new_path({ 900.0, 200.0 });
-	pf.arc_clockwise({ 900.0, 200.0 }, 100.0, 0.0, two_pi<double>);
-	pf.new_path({ 900.0, 200.0 });
-	pf.arc_counterclockwise({ 900.0, 200.0 }, 125.0, 0.0, two_pi<double>);
-	pf.new_path({ 900.0, 200.0 });
-	pf.arc_clockwise({ 900.0, 200.0 }, 150.0, 0.0, two_pi<double>);
+	//pf.new_path({ 900.0, 200.0 });
+	//pf.arc_clockwise({ 900.0, 200.0 }, 50.0, 0.0, two_pi<double>);
+	//pf.new_path({ 900.0, 200.0 });
+	//pf.arc_counterclockwise({ 900.0, 200.0 }, 75.0, 0.0, two_pi<double>);
+	//pf.new_path({ 900.0, 200.0 });
+	//pf.arc_clockwise({ 900.0, 200.0 }, 100.0, 0.0, two_pi<double>);
+	//pf.new_path({ 900.0, 200.0 });
+	//pf.arc_counterclockwise({ 900.0, 200.0 }, 125.0, 0.0, two_pi<double>);
+	//pf.new_path({ 900.0, 200.0 });
+	//pf.arc_clockwise({ 900.0, 200.0 }, 150.0, 0.0, two_pi<double>);
 	p = path_group(pf);
 	//ds.path_group(p);
 	ds.stroke(radialBrush, p);

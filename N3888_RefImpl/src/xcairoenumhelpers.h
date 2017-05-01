@@ -56,6 +56,10 @@ namespace std {
 				}
 			}
 
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
 			inline bool _Cairo_status_t_to_io2d_error(cairo_status_t cs, ::std::experimental::io2d::io2d_error& result) {
 				switch (cs) {
 #if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1, 13, 1)
@@ -186,6 +190,9 @@ namespace std {
 					return false;
 				}
 			}
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 			inline cairo_antialias_t _Antialias_to_cairo_antialias_t(::std::experimental::io2d::antialias aa) {
 				switch (aa) {
