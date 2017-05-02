@@ -2317,57 +2317,25 @@ namespace std {
 								throw system_error(make_error_code(io2d_error::invalid_path_data));
 							}
 							auto rad = (ctr - currentPoint).magnitude();
-							//const auto valPi = pi<double>;
-							//const auto valHalfPi = half_pi<double>;
-							//const auto val3PiOver2 = three_pi_over_two<double>;
-							//auto angleFromCenter = [&ctr, &valPi, &valHalfPi, &val3PiOver2](const vector_2d& somePt) -> double {
-							//	auto xDiff = somePt.x() - ctr.x();
-							//	auto yDiff = somePt.y() - ctr.y();
-							//	auto result = atan2(abs(yDiff), abs(xDiff));
-							//	if (xDiff < 0.0) {
-							//		if (yDiff >= 0.0) {
-							//			return result + valPi;
-							//		}
-							//		else {
-							//			return result + valHalfPi;
-							//		}
-							//	}
-							//	else {
-							//		if (yDiff >= 0.0) {
-							//			return result + val3PiOver2;
-							//		}
-							//		// else leave it alone, it's already in the 0 to two pi range.
-							//	}
-							//	return result;
-							//};
-							auto startAng = angle_for_point(ctr, currentPoint);
-							if (abs(startAng - endAng) < numeric_limits<double>::epsilon() * 100) {
+							if (abs(endAng) < pi<double> / 18000.0) {
 								// bomb out if the angles are the same; it's a degenerate path segment.
 								return;
 							}
+							auto startAng = angle_for_point(ctr, currentPoint);
 							vector_2d pt0, pt1, pt2, pt3;
 							int bezCount = 1;
-							double theta{};
-							auto endAngAdjust = endAng;
-							while (endAngAdjust > two_pi<double>) {
-								endAngAdjust -= two_pi<double>;
-							}
-							if (endAngAdjust > startAng && (endAng - startAng) < two_pi<double>) {
-								//endAng += two_pi<double>;
-								endAng -= endAngAdjust;
-								endAng += -(endAngAdjust - two_pi<double>);
-								//endAng -= two_pi<double>;
-								//theta = abs(endAng + startAng);
-							}
-							theta = abs(endAng + startAng);
-							//while (theta > two_pi<double>) {
-							//	theta -= two_pi<double>;
-							//}
-							double phi{};
+							double theta = endAng;
+							double phi = startAng + endAng;
 							while (theta >= half_pi<double>) {
 								theta /= 2.0;
 								bezCount += bezCount;
 							}
+							//while (phi >= half_pi<double>) {
+							//	phi /= 2.0;
+							//}
+							//if (atan2(currentPoint.y() - ctr.y(), currentPoint.x() - ctr.x()) <= 0.0) {
+							//	phi = -phi;
+							//}
 							phi = theta / 2.0;
 							auto cosPhi = cos(phi);
 							auto sinPhi = sin(phi);
@@ -2384,15 +2352,12 @@ namespace std {
 								return { pt.x() * cos(a) + pt.y() * sin(a),
 									-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
 							};
-
+							startAng = two_pi<double> - startAng;
 							auto negatePhiPt0 = rotCwFn(pt0, phi) * rad;
 							const auto startPt =
 								ctr + rotCwFn(negatePhiPt0, startAng);
 							const auto adjustPt = (currentPoint - startPt);
-							// The current point and the calculated start point must be the same. If not, phi = -phi will make it so.
-							//if ((adjustPt.x() < 0.0) || (adjustPt.y() < 0.0)) {
 							phi = -phi;
-							//}
 							auto negatePhiPt0_1 = rotCwFn(pt0, phi) * rad;
 							const auto startPt_1 =
 								ctr + rotCwFn(negatePhiPt0_1, startAng);
@@ -2416,24 +2381,23 @@ namespace std {
 							pt2 = rotCwFn(pt2, phi);// *scl;
 							pt3 = rotCwFn(pt3, phi);// *scl;
 
-							//const auto apt1 = (pt1 * rad);
-							//const auto apt2 = (pt2 * rad);
-							//const auto apt3 = (pt3 * rad);
-							////phi = -phi;
-							auto currTheta = -startAng;
+							auto currTheta = startAng;
 							const auto apt1 = (pt1 * rad);
 							const auto apt2 = (pt2 * rad);
 							const auto apt3 = (pt3 * rad);
 							for (; bezCount > 0; bezCount--) {
 								auto cpt1 = ctr + rotCwFn(apt1, currTheta);
+								cpt1 = ctr + rotCwFn(apt1, currTheta);
+								cpt1 = ctr + rotCwFn(apt1, currTheta);
+								cpt1 = ctr + rotCwFn(apt1, currTheta);
+								cpt1 = ctr + rotCwFn(apt1, currTheta);
 								auto cpt2 = ctr + rotCwFn(apt2, currTheta);
 								auto cpt3 = ctr + rotCwFn(apt3, currTheta);
 								currentPoint = cpt3;
 								cpt1 = m.transform_point(cpt1 - origin) + origin;
 								cpt2 = m.transform_point(cpt2 - origin) + origin;
 								cpt3 = m.transform_point(cpt3 - origin) + origin;
-								v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1,
-									cpt2, cpt3);
+								v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
 								currTheta += theta;
 							}
 							//origin = origOrigin;

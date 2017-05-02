@@ -41,7 +41,14 @@ namespace std {
 				vector_2d point_for_angle(const vector_2d & ctr, double ang, double mgn) {
 					vector_2d v{ mgn, 0.0 };
 					auto m = matrix_2d::init_rotate(ang);
-					return ctr + m.transform_point(v);
+					auto result = m.transform_point(v);
+					if ((abs(result.x()) < numeric_limits<double>::epsilon() * 100.0)) {
+						result.x(0.0);
+					}
+					if ((abs(result.y()) < numeric_limits<double>::epsilon() * 100.0)) {
+						result.y(0.0);
+					}
+					return ctr + result;
 				}
 
 				double angle_for_point(const vector_2d& ctr, const vector_2d& pt) {

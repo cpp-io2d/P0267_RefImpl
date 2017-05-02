@@ -69,89 +69,109 @@ int main() {
 #else
 	imgSfc.save("pathexample02.png"s, image_data_format::png);
 #endif
-	auto tempImgSfc = make_image_surface(format::argb32, 2000, 400);
-	const double locY = 100.0;
-	vector_2d location{ 20.0, locY };
+	auto tempImgSfc = make_image_surface(format::argb32, 2000, 800);
+	const double beginLocX = 20.0;
+	double locY = 100.0;
+	vector_2d location{ beginLocX, locY };
 	vector_2d relcenter{ 60.0, 0.0 };
-	const vector_2d locadd{ 150.0, 0.0 };
-	const double endAngle = 0.0;
+	const vector_2d locadd{ 200.0, 0.0 };
+	double endAngle = 0.0;
 	vector_2d scale{ 1.0, 1.0 };
 	const double quarterPi = half_pi<double> / 2.0;
 	const bool closePath = false;
-
-	pb.clear();
-
-	//// Test end angle 90 degree increments starting at 180.
-	//pb.new_path(location);
-	//pb.rel_arc_clockwise(relcenter, endAngle + pi<double>, scale);
-	//if (closePath) {
-	//	pb.close_path();
-	//}
-
-	//location += locadd;
-	//pb.new_path(location + vector_2d{0.0, 0.0});
-	//pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + half_pi<double>, scale);
-	//if (closePath) {
-	//	pb.close_path();
-	//}
-
-	//location += locadd;
-	//pb.new_path(location + vector_2d{ 0.0, 0.0 });
-	//pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + 0.0, scale);
-	//if (closePath) {
-	//	pb.close_path();
-	//}
-
-	//location += locadd;
-	//pb.new_path(location + vector_2d{ 0.0, 0.0 });
-	//pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + three_pi_over_two<double>, scale);
-	//if (closePath) {
-	//	pb.close_path();
-	//}
-
-	//// Test end angle 90 degree intervals starting at 135
-	//location += locadd;
-	//pb.new_path(location + vector_2d{ 0.0, 0.0 });
-	//pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + half_pi<double> + quarterPi, scale);
-	//if (closePath) {
-	//	pb.close_path();
-	//}
-
-	//location += locadd;
-	//pb.new_path(location + vector_2d{ 0.0, 0.0 });
-	//pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + half_pi<double> - quarterPi, scale);
-	//if (closePath) {
-	//	pb.close_path();
-	//}
-
-	//location += locadd;
-	//pb.new_path(location + vector_2d{ 0.0, 0.0 });
-	//pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + three_pi_over_two<double> + quarterPi, scale);
-	//if (closePath) {
-	//	pb.close_path();
-	//}
-
-	//location += locadd;
-	//pb.new_path(location + vector_2d{ 0.0, 0.0 });
-	//pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + three_pi_over_two<double> - quarterPi, scale);
-	//if (closePath) {
-	//	pb.close_path();
-	//}
-
-	// Test start angle 90 degree intervals starting at 180
 	vector_2d ctrVal{};
 	double angleVal{};
 	stringstream outputDebugStr;
-	location.y(locY);
+
+	pb.clear();
+	// Test end angle 90 degree increments starting at 180.
+	pb.new_path(location);
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + 0.0, scale);
+	if (closePath) {
+		pb.close_path();
+	}
+
 	location += locadd;
 	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + half_pi<double>, scale);
+	if (closePath) {
+		pb.close_path();
+	}
+
+	location += locadd;
+	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + pi<double>, scale);
+	if (closePath) {
+		pb.close_path();
+	}
+
+	location += locadd;
+	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + three_pi_over_two<double>, scale);
+	if (closePath) {
+		pb.close_path();
+	}
+
+	location += locadd;
+	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + two_pi<double>, scale);
+	pb.rel_line_to({ -40.0, 0.0 });
+	if (closePath) {
+		pb.close_path();
+	}
+
+	// Test end angle 90 degree intervals starting at 135
+	location += locadd;
+	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + half_pi<double> +quarterPi, scale);
+	if (closePath) {
+		pb.close_path();
+	}
+
+	location += locadd;
+	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + half_pi<double> -quarterPi, scale);
+	if (closePath) {
+		pb.close_path();
+	}
+
+	location += locadd;
+	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + three_pi_over_two<double> +quarterPi, scale);
+	if (closePath) {
+		pb.close_path();
+	}
+
+	location += locadd;
+	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + three_pi_over_two<double> -quarterPi, scale);
+	if (closePath) {
+		pb.close_path();
+	}
+
+	location += locadd;
+	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + two_pi<double> +quarterPi, scale);
+	pb.rel_line_to({ -40.0, -40.0 });
+	if (closePath) {
+		pb.close_path();
+	}
+
+	// Test start angle 90 degree intervals starting at 180
+	locY += 200;
+	location.x(beginLocX);
+	location.y(locY);
+	//location += locadd;
 	ctrVal = point_for_angle({}, pi<double>, relcenter.magnitude());
-#ifdef _MSC_VER
+	location -= ctrVal;
+	pb.new_path(location + vector_2d{ 0.0, 0.0 } -ctrVal);
 	angleVal = angle_for_point(ctrVal + location, location);
+#ifdef _MSC_VER
 	outputDebugStr.str(""s);
-	outputDebugStr << "Center: " << ctrVal + location << " Current Point: " << location << " Diff: " << ctrVal << " Angle: " << angleVal <<"\n";
+	outputDebugStr << "Center: " << ctrVal + location << " Current Point: " << location << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
 	OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
+	endAngle = angleVal;
 	pb.rel_arc_clockwise(ctrVal, endAngle, scale);
 	if (closePath) {
 		pb.close_path();
@@ -159,14 +179,15 @@ int main() {
 
 	location.y(locY);
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });// +relcenter);
 	ctrVal = point_for_angle({}, half_pi<double>, relcenter.magnitude());
-#ifdef _MSC_VER
+	pb.new_path(location + vector_2d{ 0.0, 0.0 } -ctrVal);
 	angleVal = angle_for_point(ctrVal + location, location);
+#ifdef _MSC_VER
 	outputDebugStr.str(""s);
-	outputDebugStr << "Center: " << ctrVal + location << " Current Point: " << location << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
+	outputDebugStr << "Center: " << location << " Current Point: " << location - ctrVal << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
 	OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
+	endAngle = angleVal;
 	pb.rel_arc_clockwise(ctrVal, endAngle, scale);
 	if (closePath) {
 		pb.close_path();
@@ -174,14 +195,15 @@ int main() {
 
 	location.y(locY);
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
 	ctrVal = point_for_angle({}, 0.0, relcenter.magnitude());
-#ifdef _MSC_VER
+	pb.new_path(location + vector_2d{ 0.0, 0.0 } -ctrVal);
 	angleVal = angle_for_point(ctrVal + location, location);
+#ifdef _MSC_VER
 	outputDebugStr.str(""s);
-	outputDebugStr << "Center: " << ctrVal + location << " Current Point: " << location << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
+	outputDebugStr << "Center: " << location << " Current Point: " << location - ctrVal << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
 	OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
+	endAngle = angleVal;
 	pb.rel_arc_clockwise(ctrVal, endAngle, scale);
 	if (closePath) {
 		pb.close_path();
@@ -189,14 +211,15 @@ int main() {
 
 	location.y(locY);
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
 	ctrVal = point_for_angle({}, three_pi_over_two<double>, relcenter.magnitude());
-#ifdef _MSC_VER
+	pb.new_path(location + vector_2d{ 0.0, 0.0 } -ctrVal);
 	angleVal = angle_for_point(ctrVal + location, location);
+#ifdef _MSC_VER
 	outputDebugStr.str(""s);
-	outputDebugStr << "Center: " << ctrVal + location << " Current Point: " << location << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
+	outputDebugStr << "Center: " << location << " Current Point: " << location - ctrVal << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
 	OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
+	endAngle = angleVal;
 	pb.rel_arc_clockwise(ctrVal, endAngle, scale);
 	if (closePath) {
 		pb.close_path();
@@ -205,30 +228,16 @@ int main() {
 	// Test start angle 90 degree intervals starting at 135
 	location.y(locY);
 	location += locadd;
-	//location.y(location.y() + 100.0);
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
-	ctrVal = point_for_angle({}, pi<double> -quarterPi, relcenter.magnitude());
-#ifdef _MSC_VER
-	angleVal = angle_for_point(ctrVal + location, location);
-	outputDebugStr.str(""s);
-	outputDebugStr << "Center: " << ctrVal + location << " Current Point: " << location << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
-	OutputDebugStringA(outputDebugStr.str().c_str());
-#endif
-	pb.rel_arc_clockwise(ctrVal, endAngle, scale);
-	if (closePath) {
-		pb.close_path();
-	}
-
-	location.y(locY);
-	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });// +relcenter);
 	ctrVal = point_for_angle({}, half_pi<double> -quarterPi, relcenter.magnitude());
+	pb.new_path(location + vector_2d{ 0.0, 0.0 } -ctrVal);
+	//angleVal = angle_for_point(ctrVal + location, location);
+	angleVal = half_pi<double> -quarterPi;
 #ifdef _MSC_VER
-	angleVal = angle_for_point(ctrVal + location, location);
 	outputDebugStr.str(""s);
-	outputDebugStr << "Center: " << ctrVal + location << " Current Point: " << location << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
+	outputDebugStr << "Center: " << location << " Current Point: " << location - ctrVal << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
 	OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
+	endAngle = angleVal;
 	pb.rel_arc_clockwise(ctrVal, endAngle, scale);
 	if (closePath) {
 		pb.close_path();
@@ -236,14 +245,16 @@ int main() {
 
 	location.y(locY);
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
-	ctrVal = point_for_angle({}, two_pi<double> -quarterPi, relcenter.magnitude());
+	ctrVal = point_for_angle({}, pi<double> -quarterPi, relcenter.magnitude());
+	pb.new_path(location + vector_2d{ 0.0, 0.0 } -ctrVal);
+	//angleVal = angle_for_point(ctrVal + location, location);
+	angleVal = pi<double> -quarterPi;
 #ifdef _MSC_VER
-	angleVal = angle_for_point(ctrVal + location, location);
 	outputDebugStr.str(""s);
-	outputDebugStr << "Center: " << ctrVal + location << " Current Point: " << location << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
+	outputDebugStr << "Center: " << location << " Current Point: " << location - ctrVal << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
 	OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
+	endAngle = angleVal;
 	pb.rel_arc_clockwise(ctrVal, endAngle, scale);
 	if (closePath) {
 		pb.close_path();
@@ -251,14 +262,33 @@ int main() {
 
 	location.y(locY);
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
 	ctrVal = point_for_angle({}, three_pi_over_two<double> -quarterPi, relcenter.magnitude());
+	pb.new_path(location + vector_2d{ 0.0, 0.0 } -ctrVal);
+	//angleVal = angle_for_point(ctrVal + location, location);
+	angleVal = three_pi_over_two<double> -quarterPi;
 #ifdef _MSC_VER
-	angleVal = angle_for_point(ctrVal + location, location);
 	outputDebugStr.str(""s);
-	outputDebugStr << "Center: " << ctrVal + location << " Current Point: " << location << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
+	outputDebugStr << "Center: " << location << " Current Point: " << location - ctrVal << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
 	OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
+	endAngle = angleVal;
+	pb.rel_arc_clockwise(ctrVal, endAngle, scale);
+	if (closePath) {
+		pb.close_path();
+	}
+
+	location.y(locY);
+	location += locadd;
+	ctrVal = point_for_angle({}, two_pi<double> -quarterPi, relcenter.magnitude());
+	pb.new_path(location + vector_2d{ 0.0, 0.0 } -ctrVal);
+	//angleVal = angle_for_point(ctrVal + location, location);
+	angleVal = two_pi<double> -quarterPi;
+#ifdef _MSC_VER
+	outputDebugStr.str(""s);
+	outputDebugStr << "Center: " << location << " Current Point: " << location - ctrVal << " Diff: " << ctrVal << " Angle: " << angleVal << "\n";
+	OutputDebugStringA(outputDebugStr.str().c_str());
+#endif
+	endAngle = angleVal;
 	pb.rel_arc_clockwise(ctrVal, endAngle, scale);
 	if (closePath) {
 		pb.close_path();
@@ -287,6 +317,7 @@ int main() {
 	//pb.rel_arc_counterclockwise({ 40.0, 0.0 }, 0.0);// , { 1.0, 2.0 });
 	//pb.close_path();
 
+writefileandexit:
 	tempImgSfc.paint(bkgrndBrush);
 	tempImgSfc.stroke(frgrndBrush, pb, nullopt, stroke_props{ 10.0 });
 #ifdef _Filesystem_support_test
