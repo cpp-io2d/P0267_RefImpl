@@ -2385,6 +2385,10 @@ namespace std {
 							const auto apt1 = (pt1 * rad);
 							const auto apt2 = (pt2 * rad);
 							const auto apt3 = (pt3 * rad);
+							auto origOrigin = origin;
+							origin = ctr;// -currentPoint;
+							auto origM = m;
+							m.scale(scl);
 							for (; bezCount > 0; bezCount--) {
 								auto cpt1 = ctr + rotCwFn(apt1, currTheta);
 								cpt1 = ctr + rotCwFn(apt1, currTheta);
@@ -2400,8 +2404,8 @@ namespace std {
 								v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
 								currTheta += theta;
 							}
-							//origin = origOrigin;
-							//m = origM;
+							origin = origOrigin;
+							m = origM;
 						}
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_clockwise>, _Path_data_rel_arc_clockwise> = _Path_data_rel_arc_clockwise_val>
@@ -2488,9 +2492,6 @@ namespace std {
 							//auto pt = m.transform_point(currentPoint - origin) + origin;
 							//v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 							//closePoint = pt;
-							auto origOrigin = origin;
-							origin = ctr - currentPoint;
-
 							for (; bezCount > 0; bezCount--) {
 								auto cpt1 = ctr + rotCwFn({ pt1.x() * rad, pt1.y() * rad },
 									currTheta);
@@ -2506,7 +2507,6 @@ namespace std {
 									cpt2, cpt3);
 								currTheta -= theta;
 							}
-							origin = origOrigin;
 						}
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_counterclockwise>, _Path_data_rel_arc_counterclockwise> = _Path_data_rel_arc_counterclockwise_val>

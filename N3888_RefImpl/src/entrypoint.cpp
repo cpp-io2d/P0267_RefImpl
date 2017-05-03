@@ -86,10 +86,12 @@ int main() {
 	pb.clear();
 	// Test end angle 90 degree increments starting at 180.
 	pb.new_path(location);
-	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + 0.0, scale);
+	scale.y(0.5);
+	pb.rel_arc_clockwise(relcenter + vector_2d{ 0.0, 0.0 }, endAngle + two_pi<double>, scale);
 	if (closePath) {
 		pb.close_path();
 	}
+	scale.y(1.0);
 
 	location += locadd;
 	pb.new_path(location + vector_2d{ 0.0, 0.0 });
