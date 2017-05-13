@@ -13,6 +13,8 @@
 #include <utility>
 #include <stack>
 #include <array>
+#include <sstream>
+#include <ios>
 
 #if ((defined(_MSC_VER) && ((_MSC_VER >= 1910) || (defined(__clang__) && (_MSC_VER >= 1900)))) || defined(HAVE_FILESYSTEM))
 #define _Filesystem_support_test

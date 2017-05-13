@@ -10,7 +10,7 @@ double vector_2d::magnitude() const noexcept {
 }
 
 double vector_2d::angular_direction() const noexcept {
-	auto v = atan2(_Y, _X);
+	auto v = atan2(-_Y, _X);
 	if (v < 0.0) {
 		v += two_pi<double>;
 	}
