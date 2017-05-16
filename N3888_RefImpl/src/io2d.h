@@ -2141,9 +2141,9 @@ namespace std {
 
 				template <class T, enable_if_t<is_arithmetic_v<T>, int*> = 0>
 				constexpr double to_radians(T deg) noexcept {
-					const auto angle = static_cast<double>(deg) / 360.0 * two_pi<double>;
-					const double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
-					if (((angle > 0.0) && (angle < oneThousandthOfADegreeInRads)) || ((angle < 0.0) && (angle < -oneThousandthOfADegreeInRads))) {
+					auto angle = static_cast<double>(deg) / 360.0 * two_pi<double>;
+					double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
+					if (((angle > 0.0) && (angle < oneThousandthOfADegreeInRads)) || ((angle < 0.0) && (-angle < oneThousandthOfADegreeInRads))) {
 						return (angle < 0.0) ? - 0.0 : 0.0;
 					}
 					return angle;
@@ -2151,9 +2151,9 @@ namespace std {
 
 				template <class T, enable_if_t<is_arithmetic_v<T>, int*> = 0>
 				constexpr double to_degrees(T rad) noexcept {
-					const auto angle = static_cast<double>(rad) / two_pi<double> * 360.0;
-					const double oneThousandthOfADegree = 0.001;
-					if (((angle > 0.0) && (angle < oneThousandthOfADegree)) || ((angle < 0.0) && (angle < -oneThousandthOfADegree))) {
+					auto angle = static_cast<double>(rad) / two_pi<double> * 360.0;
+					double oneThousandthOfADegree = 0.001;
+					if (((angle > 0.0) && (angle < oneThousandthOfADegree)) || ((angle < 0.0) && (-angle < oneThousandthOfADegree))) {
 						return (angle < 0.0) ? -0.0 : 0.0;
 					}
 					return angle;
@@ -2248,47 +2248,23 @@ namespace std {
 							auto startAng = item.start_angle();
 							const auto origM = m;
 							//m.scale({ rad.x() / rad.y(), 1.0 });
+							m = matrix_2d::init_identity();
 							m.scale(rad);
 							const auto origOrigin = origin;
 							auto centerOffset = (point_for_angle(two_pi<double> - startAng) * rad);
 							auto ctr = currentPoint - centerOffset;
-							// Maybe make the origin = origM.transform_point(currentPoint - origin) + origin; Then m.translate(-centerOffset); ? That would transform every point relative to the currentPoint (as actually interpreted). Also, should currentPoint below be an inverse matrix transform of cpt3? The answer is yes.
-
 							origin = ctr;
-
-							//ctr.y(-ctr.y());
-							//auto invM = m;
-							//invM.invert();
-							//auto testPt = invM.transform_point(ctr);
-							//bool x = true;
-							//if (x) {
-							//	origin = ctr;
-							//}
-							//else {
-							//	origin = testPt;
-							//}
-							//const auto rad = ((ctr - currentPoint) / scl).magnitude();
-							//const auto rad = sqrt((ctr - currentPoint).magnitude_squared()/scl);
-							//auto startAng = angle_for_point(ctr, currentPoint, scl);
-							//auto radDiff = ctr - currentPoint;
-							//auto radMag = radDiff.magnitude();
-							//auto radCos = cos(startAng);
-							//auto radSin = sin(startAng);
-							//auto radRot = vector_2d{ radDiff.x() * radCos + radDiff.y() * (radSin), -(radDiff.x() * (-radSin) + radDiff.y() * radCos) };
-							//auto rad = radRot.magnitude();
 
 							vector_2d pt0, pt1, pt2, pt3;
 							int bezCount = 1;
 							double theta = rot;// abs(rot);
 
-							//while (theta > half_pi<double>) {
 							while (abs(theta) > half_pi<double>) {
-								//while (theta > quarterpi) {
 								theta /= 2.0;
 								bezCount += bezCount;
 							}
 							double phi;
-							if (clockwise) {
+							//if (clockwise) {
 								phi = (theta / 2.0);
 								const auto cosPhi = cos(-phi);
 								const auto sinPhi = sin(-phi);
@@ -2300,25 +2276,34 @@ namespace std {
 								pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
 								pt2.x(pt1.x());
 								pt2.y(-pt1.y());
-							}
-							else {
-								phi = (theta / 2.0);
-								const auto cosPhi = cos(phi);
-								const auto sinPhi = sin(phi);
-								pt0.x(cosPhi);
-								pt0.y(-sinPhi);
-								pt3.x(pt0.x());
-								pt3.y(-pt0.y());
-								pt1.x((4.0 - cosPhi) / 3.0);
-								pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
-								pt2.x(pt1.x());
-								pt2.y(-pt1.y());
-							}
+							//}
+							//else {
+							//	phi = (theta / 2.0);
+							//	const auto cosPhi = cos(phi);
+							//	const auto sinPhi = sin(phi);
+							//	pt0.x(cosPhi);
+							//	pt0.y(-sinPhi);
+							//	pt3.x(pt0.x());
+							//	pt3.y(-pt0.y());
+							//	pt1.x((4.0 - cosPhi) / 3.0);
+							//	pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
+							//	pt2.x(pt1.x());
+							//	pt2.y(-pt1.y());
+							//}
 							auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
-								//auto result = vector_2d{ pt.x() * cos(a) + pt.y() * sin(a),
-								//	-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
 								auto result = vector_2d{ pt.x() * cos(a) - pt.y() * sin(a),
 									pt.x() * sin(a) + pt.y() * cos(a) };
+								if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
+									result.x(result.x() < 0.0 ? -0.0 : 0.0);
+								}
+								if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
+									result.y(result.y() < 0.0 ? -0.0 : 0.0);
+								}
+								return result;
+							};
+							auto rotCntrCwFn = [](const vector_2d& pt, double a) -> vector_2d {
+								auto result = vector_2d{ pt.x() * cos(a) - pt.y() * sin(a),
+									-(pt.x() * sin(a) + pt.y() * cos(a)) };
 								if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
 									result.x(result.x() < 0.0 ? -0.0 : 0.0);
 								}
@@ -2354,56 +2339,36 @@ namespace std {
 								pt1 = shflPt;
 							}
 							else {
-								auto shflPt = pt0;
-								pt0 = rotCwFn(pt3, phi);
-								pt3 = rotCwFn(shflPt, phi);
-								shflPt = pt1;
-								pt1 = rotCwFn(pt2, phi);
-								pt2 = rotCwFn(pt1, phi);
-								//pt0 = rotCwFn(pt0, phi);
-								//pt1 = rotCwFn(pt1, phi);
-								//pt2 = rotCwFn(pt2, phi);
-								//pt3 = rotCwFn(pt3, phi);
-								//auto shflPt = pt3;
-								//pt3 = pt0;
-								//pt0 = shflPt;
-								//shflPt = pt2;
-								//pt2 = pt1;
-								//pt1 = shflPt;
+								pt0 = rotCntrCwFn(pt0, phi);
+								pt1 = rotCntrCwFn(pt1, phi);
+								pt2 = rotCntrCwFn(pt2, phi);
+								pt3 = rotCntrCwFn(pt3, phi);
+								//pt0.y(-pt0.y());
+								//pt1.y(-pt1.y());
+								//pt2.y(-pt2.y());
+								//pt3.y(-pt3.y());
+								auto shflPt = pt3;
+								pt3 = pt0;
+								pt0 = shflPt;
+								shflPt = pt2;
+								pt2 = pt1;
+								pt1 = shflPt;
+								//auto shflPt = pt0;
+								//pt0 = rotCntrCwFn(pt3, phi);
+								//pt3 = rotCntrCwFn(shflPt, phi);
+								//shflPt = pt1;
+								//pt1 = rotCntrCwFn(pt2, phi);
+								//pt2 = rotCntrCwFn(pt1, phi);
 							}
 							auto currTheta = startAng;
-							//const auto apt0 = (pt0 * rad);
-							//const auto apt1 = (pt1 * rad);
-							//const auto apt2 = (pt2 * rad);
-							//const auto apt3 = (pt3 * rad);
 #ifdef _MSC_VER
 							outputDebugStr.str(string());
 							outputDebugStr << "pt0:\t" << pt0 << "\npt1:\t" << pt1 << "\npt2:\t" << pt2 << "\npt3:\t" << pt3 <</* "\napt0:\t" << apt0 << "\napt1:\t" << apt1 << "\napt2:\t" << apt2 << "\napt3:\t" << apt3 << "\ncurrTheta:\t" << currTheta <<*/ "\n\n";
 							OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
 							
-							//const auto oneRad = (rad.x() > rad.y()) ? rad.x() : rad.y();
 							const auto oneRad = 1.0;
 							for (; bezCount > 0; bezCount--) {
-								////const auto rapt0 = rotCwFn(apt0, currTheta);
-								////const auto rapt1 = rotCwFn(apt1, currTheta);
-								////const auto rapt2 = rotCwFn(apt2, currTheta);
-								////const auto rapt3 = rotCwFn(apt3, currTheta);
-								//const auto rapt0 = rotCwFn(pt0, currTheta) * oneRad;
-								//const auto rapt1 = rotCwFn(pt1, currTheta) * oneRad;
-								//const auto rapt2 = rotCwFn(pt2, currTheta) * oneRad;
-								//const auto rapt3 = rotCwFn(pt3, currTheta) * oneRad;
-								//auto cpt0 = ctr + rapt3;
-								//auto cpt1 = ctr + rapt2;
-								//auto cpt2 = ctr + rapt1;
-								//auto cpt3 = ctr + rapt0;
-								////auto cpt1 = ctr + rotCwFn(apt1, currTheta);
-								////auto cpt2 = ctr + rotCwFn(apt2, currTheta);
-								////auto cpt3 = ctr + rotCwFn(apt3, currTheta);
-								//const auto rapt0 = rotCwFn(m.transform_point(pt0), currTheta);
-								//const auto rapt1 = rotCwFn(m.transform_point(pt1), currTheta);
-								//const auto rapt2 = rotCwFn(m.transform_point(pt2), currTheta);
-								//const auto rapt3 = rotCwFn(m.transform_point(pt3), currTheta);
 								const auto rapt0 = m.transform_point(rotCwFn(pt0, currTheta));
 								const auto rapt1 = m.transform_point(rotCwFn(pt1, currTheta));
 								const auto rapt2 = m.transform_point(rotCwFn(pt2, currTheta));
@@ -2412,34 +2377,42 @@ namespace std {
 								auto cpt1 = ctr + rapt1;
 								auto cpt2 = ctr + rapt2;
 								auto cpt3 = ctr + rapt3;
+								currentPoint = cpt3;
 #ifdef _MSC_VER
 								outputDebugStr.str(string());
 								outputDebugStr << "currentPoint:\t" << currentPoint << "\ncurrTheta:\t" << currTheta << "\ntheta:\t" << theta << "\noneRad:\t" << oneRad << "\nrapt0:\t" << rapt0 << "\nrapt1:\t" << rapt1 << "\nrapt2:\t" << rapt2 << "\nrapt3:\t" << rapt3 << "\ncpt0:\t" << cpt0 << "\ncpt1:\t" << cpt1 << "\ncpt2:\t" << cpt2 << "\ncpt3:\t" << cpt3 << "\n";
 								OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
-//								//cpt1 = ctr + point_for_angle(pt1.angular_direction() + currTheta) * rad;
-//								//cpt2 = ctr + point_for_angle(pt2.angular_direction() + currTheta) * rad;
-//								//cpt3 = ctr + point_for_angle(pt3.angular_direction() + currTheta) * rad;
-//								cpt0 = m.transform_point(cpt0 - origin) + origin;
-//								cpt1 = m.transform_point(cpt1 - origin) + origin;
-//								cpt2 = m.transform_point(cpt2 - origin) + origin;
-//								cpt3 = m.transform_point(cpt3 - origin) + origin;
+
+								cpt0 = origM.transform_point(cpt0);
+								cpt1 = origM.transform_point(cpt1);
+								cpt2 = origM.transform_point(cpt2);
+								cpt3 = origM.transform_point(cpt3);
 #ifdef _MSC_VER
 								outputDebugStr.str(string());
 								outputDebugStr << "\ncpt0:\t" << cpt0 << "\ncpt1:\t" << cpt1 << "\ncpt2:\t" << cpt2 << "\ncpt3:\t" << cpt3 << "\n\n";
 								OutputDebugStringA(outputDebugStr.str().c_str());
 #endif
-//								auto inverseM = m;
-//								m.invert();
-//								currentPoint = inverseM.transform_point(cpt3 - origin) + origin;
-								currentPoint = cpt3;
+								//auto inverseOrigM = origM;
+								//inverseOrigM.invert();
+								////auto invCpt3 = inverseOrigM.transform_point(cpt3 - origin) + origin;
+								//auto invCpt3NoOrigin = inverseOrigM.transform_point(cpt3);
+								//auto inverseM = m;
+								//m.invert();
+								//auto invCpt3InvRapt3 = inverseM.transform_point(ctr - rapt3) + ctr;
+								//currentPoint = invCpt3NoOrigin;
+								//bool withOrigin = true;
+								//if (withOrigin) {
+								//	currentPoint = invCpt3;
+								//}
+
 								v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
-								if (clockwise) {
+								//if (clockwise) {
+								//	currTheta -= theta;
+								//}
+								//else {
 									currTheta -= theta;
-								}
-								else {
-									currTheta -= theta;
-								}
+								//}
 							}
 #ifdef _MSC_VER
 							outputDebugStr.str(string());
@@ -2450,102 +2423,6 @@ namespace std {
 							m = origM;
 						}
 					}
-					//template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_clockwise>, _Path_data_rel_arc_clockwise> = _Path_data_rel_arc_clockwise_val>
-					//static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
-					//	path_data::abs_arc_clockwise absItem{};
-					//	absItem.center(currentPoint + item.center());
-					//	absItem.end_angle(item.end_angle());
-					//	absItem.scale(item.scale());
-					//	_Path_factory_process_visit::template _Perform(absItem, v, m, origin, currentPoint, closePoint);
-					//}
-					//template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_arc_counterclockwise>, _Path_data_abs_arc_counterclockwise> = _Path_data_abs_arc_counterclockwise_val>
-					//static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
-					//	{
-					//		const auto endAngRot = item.end_angle();
-					//		const double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
-					//		if (abs(endAngRot) < oneThousandthOfADegreeInRads) {
-					//			// Return if the rotation is less than one thousandth of one degree; it's a degenerate path segment.
-					//			return;
-					//		}
-					//		const auto ctr = item.center();
-					//		const auto scl = item.scale();
-					//		const auto origM = m;
-					//		m.scale(scl);
-					//		const auto origOrigin = origin;
-					//		origin = ctr;
-					//		const auto rad = ((ctr - currentPoint) / scl).magnitude();
-					//		auto startAng = angle_for_point(ctr, currentPoint, scl);
-					//		vector_2d pt0, pt1, pt2, pt3;
-					//		int bezCount = 1;
-					//		double theta = endAngRot;
-					//		while (theta >= half_pi<double>) {
-					//			theta /= 2.0;
-					//			bezCount += bezCount;
-					//		}
-					//		const double phi = theta / 2.0;
-					//		const auto cosPhi = cos(phi);
-					//		const auto sinPhi = sin(phi);
-					//		pt0.x(cosPhi);
-					//		pt0.y(-sinPhi);
-					//		pt3.x(pt0.x());
-					//		pt3.y(-pt0.y());
-					//		pt1.x((4.0 - cosPhi) / 3.0);
-					//		pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
-					//		pt2.x(pt1.x());
-					//		pt2.y(-pt1.y());
-
-					//		auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
-					//			auto result = vector_2d{ pt.x() * cos(a) + pt.y() * sin(a),
-					//				-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
-					//			if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
-					//				result.x(result.x() < 0 ? -0.0 : 0.0);
-					//			}
-					//			if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
-					//				result.y(result.y() < 0 ? -0.0 : 0.0);
-					//			}
-					//			return result;
-					//		};
-
-					//		startAng = two_pi<double> -startAng;
-					//		pt0 = rotCwFn(pt0, phi);
-					//		pt1 = rotCwFn(pt1, phi);
-					//		pt2 = rotCwFn(pt2, phi);
-					//		pt3 = rotCwFn(pt3, phi);
-					//		auto shflPt = pt3;
-					//		pt3 = pt0;
-					//		pt0 = shflPt;
-					//		shflPt = pt2;
-					//		pt2 = pt1;
-					//		pt1 = shflPt;
-
-					//		auto currTheta = startAng;
-					//		const auto apt1 = (pt1 * rad);
-					//		const auto apt2 = (pt2 * rad);
-					//		const auto apt3 = (pt3 * rad);
-
-					//		for (; bezCount > 0; bezCount--) {
-					//			auto cpt1 = ctr + rotCwFn(apt1, currTheta);
-					//			auto cpt2 = ctr + rotCwFn(apt2, currTheta);
-					//			auto cpt3 = ctr + rotCwFn(apt3, currTheta);
-					//			cpt1 = m.transform_point(cpt1 - origin) + origin;
-					//			cpt2 = m.transform_point(cpt2 - origin) + origin;
-					//			cpt3 = m.transform_point(cpt3 - origin) + origin;
-					//			currentPoint = cpt3;
-					//			v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
-					//			currTheta -= theta;
-					//		}
-					//		origin = origOrigin;
-					//		m = origM;
-					//	}
-					//}
-					//template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_arc_counterclockwise>, _Path_data_rel_arc_counterclockwise> = _Path_data_rel_arc_counterclockwise_val>
-					//static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
-					//	path_data::abs_arc_counterclockwise absItem{};
-					//	absItem.center(currentPoint + item.center());
-					//	absItem.end_angle(item.end_angle());
-					//	absItem.scale(item.scale());
-					//	_Path_factory_process_visit::template _Perform(absItem, v, m, origin, currentPoint, closePoint);
-					//}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
 					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
 						auto pt1 = m.transform_point(item.control_point_1() + currentPoint -
