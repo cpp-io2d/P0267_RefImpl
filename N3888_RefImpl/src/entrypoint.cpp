@@ -108,11 +108,11 @@ int main() {
 	//vector_2d ctrVal{};
 	////double angleVal{};
 	//stringstream outputDebugStr;
-	auto testRot = matrix_2d::init_rotate(to_radians(-45));
-	auto testRotPt = testRot.transform_point({ 60.0, 0.0 });
+	//auto testRot = matrix_2d::init_rotate(to_radians(-45));
+	//auto testRotPt = testRot.transform_point({ 60.0, 0.0 });
 	pb.clear();
 	//pb.transform_matrix(matrix_2d::init_scale({ 0.5, 0.5 }).translate({ 400.0, 400.0 }).rotate(to_radians(-45)));
-	pb.transform_matrix(matrix_2d::init_translate({ 400.0, 400.0 }).rotate(to_radians(0)).scale({ 0.5, 0.5 }));
+	pb.transform_matrix(matrix_2d::init_translate({ 400.0, 400.0 }).rotate(to_radians(-45)).scale({ 0.5, 0.5 }));
 	//pb.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 4.0));
 	//pb.transform_matrix(matrix_2d::init_translate({ 0.0, 100.0 }));
 	location = testArcClockwiseEndAngle(pb, location, false, { 60.0, 60.0 });
@@ -274,13 +274,13 @@ int main() {
 	location.y(locY);
 
 	//location = testArcClockwiseStartAngle(pb, location, false, { 0.5, 1.0 });
-
+	//
 	//locY += 200;
 	//location.x(beginLocX);
 	//location.y(locY);
-
+	//
 	//location = testArcClockwiseStartAngle(pb, location, false, { 1.0, 0.5 });
-
+	//
 	//locY += 200;
 	//location.x(beginLocX);
 	//location.y(locY);

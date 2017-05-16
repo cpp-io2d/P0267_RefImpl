@@ -9,7 +9,7 @@ using namespace std::experimental::io2d;
 matrix_2d matrix_2d::init_rotate(double radians) noexcept {
 	auto sine = sin(radians);
 	auto cosine = cos(radians);
-	return{ cosine, sine, -sine, cosine, 0.0, 0.0 };
+	return{ cosine, -sine, sine, cosine, 0.0, 0.0 };
 }
 
 matrix_2d& matrix_2d::translate(const vector_2d& value) noexcept {
