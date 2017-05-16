@@ -38,7 +38,7 @@ namespace std {
 					return retval;
 				}
 
-				vector_2d point_for_angle(double ang, double mgn) {
+				vector_2d point_for_angle(double ang, double mgn) noexcept {
 					vector_2d v{ mgn, 0.0 };
 					auto m = matrix_2d::init_rotate(ang);
 					auto result = m.transform_point(v);
@@ -51,7 +51,7 @@ namespace std {
 					return result;
 				}
 
-				double angle_for_point(const vector_2d& ctr, const vector_2d& pt, const vector_2d& scl) {
+				double angle_for_point(const vector_2d& ctr, const vector_2d& pt, const vector_2d& scl) noexcept {
 					//auto xDiff = ctr.x() - pt.x();
 					//auto yDiff = ctr.y() - pt.y();
 					auto xDiff = pt.x() - ctr.x();
