@@ -240,10 +240,6 @@ namespace std {
 						: _X(x)
 						, _Y(y) {
 					}
-					//constexpr vector_2d(const vector_2d&) noexcept = default;
-					//vector_2d(vector_2d&&) noexcept = default;
-					//constexpr vector_2d& operator=(const vector_2d&) noexcept = default;
-					//vector_2d& operator=(vector_2d&&) noexcept = default;
 
 					constexpr void x(double value) noexcept {
 						_X = value;
@@ -903,7 +899,6 @@ namespace std {
 					return !(lhs == rhs);
 				}
 
-
 				namespace path_data {
 					class abs_new_path {
 						vector_2d _Data = {};
@@ -919,6 +914,14 @@ namespace std {
 
 						constexpr vector_2d at() const noexcept {
 							return _Data;
+						}
+
+						constexpr bool operator==(const abs_new_path& rhs) const noexcept {
+							return _Data == rhs._Data;
+						}
+
+						constexpr bool operator!=(const abs_new_path& rhs) const noexcept {
+							return !((*this) == rhs);
 						}
 					};
 
@@ -937,22 +940,26 @@ namespace std {
 						constexpr vector_2d at() const noexcept {
 							return _Data;
 						}
+
+						constexpr bool operator==(const rel_new_path& rhs) const noexcept {
+							return _Data == rhs._Data;
+						}
+
+						constexpr bool operator!=(const rel_new_path& rhs) const noexcept {
+							return !((*this) == rhs);
+						}
 					};
 
 					class close_path {
-						vector_2d _Data = {};
 					public:
-						constexpr explicit close_path(const vector_2d& to) noexcept
-							: _Data(to) {
-						}
 						constexpr close_path() noexcept {}
 
-						constexpr void to(const vector_2d& value) noexcept {
-							_Data = value;
+						constexpr bool operator==(const close_path&) const noexcept {
+							return true;
 						}
 
-						constexpr vector_2d to() const noexcept {
-							return _Data;
+						constexpr bool operator!=(const close_path& rhs) const noexcept {
+							return !((*this) == rhs);
 						}
 					};
 
@@ -971,6 +978,14 @@ namespace std {
 						constexpr vector_2d to() const noexcept {
 							return _Data;
 						}
+
+						constexpr bool operator==(const abs_line& rhs) const noexcept {
+							return _Data == rhs._Data;
+						}
+
+						constexpr bool operator!=(const abs_line& rhs) const noexcept {
+							return !((*this) == rhs);
+						}
 					};
 
 					class rel_line {
@@ -987,6 +1002,14 @@ namespace std {
 
 						constexpr vector_2d to() const noexcept {
 							return _Data;
+						}
+
+						constexpr bool operator==(const rel_line& rhs) const noexcept {
+							return _Data == rhs._Data;
+						}
+
+						constexpr bool operator!=(const rel_line& rhs) const noexcept {
+							return !((*this) == rhs);
 						}
 					};
 
@@ -1021,6 +1044,16 @@ namespace std {
 						constexpr vector_2d end_point() const noexcept {
 							return _End_pt;
 						}
+
+						constexpr bool operator==(const abs_cubic_curve& rhs) const noexcept {
+							return (_Control_pt1 == rhs._Control_pt1) &&
+								(_Control_pt2 == rhs._Control_pt2) &&
+								(_End_pt == rhs._End_pt);
+						}
+
+						constexpr bool operator!=(const abs_cubic_curve& rhs) const noexcept {
+							return !((*this) == rhs);
+						}
 					};
 
 					class rel_cubic_curve {
@@ -1054,6 +1087,16 @@ namespace std {
 						constexpr vector_2d end_point() const noexcept {
 							return _End_pt;
 						}
+
+						constexpr bool operator==(const rel_cubic_curve& rhs) const noexcept {
+							return (_Control_pt1 == rhs._Control_pt1) &&
+								(_Control_pt2 == rhs._Control_pt2) &&
+								(_End_pt == rhs._End_pt);
+						}
+
+						constexpr bool operator!=(const rel_cubic_curve& rhs) const noexcept {
+							return !((*this) == rhs);
+						}
 					};
 
 					class abs_quadratic_curve {
@@ -1079,6 +1122,15 @@ namespace std {
 						constexpr vector_2d end_point() const noexcept {
 							return _End_pt;
 						}
+
+						constexpr bool operator==(const abs_quadratic_curve& rhs) const noexcept {
+							return (_Control_pt == rhs._Control_pt) &&
+								(_End_pt == rhs._End_pt);
+						}
+
+						constexpr bool operator!=(const abs_quadratic_curve& rhs) const noexcept {
+							return !((*this) == rhs);
+						}
 					};
 
 					class rel_quadratic_curve {
@@ -1103,6 +1155,15 @@ namespace std {
 						}
 						constexpr vector_2d end_point() const noexcept {
 							return _End_pt;
+						}
+
+						constexpr bool operator==(const rel_quadratic_curve& rhs) const noexcept {
+							return (_Control_pt == rhs._Control_pt) &&
+								(_End_pt == rhs._End_pt);
+						}
+
+						constexpr bool operator!=(const rel_quadratic_curve& rhs) const noexcept {
+							return !((*this) == rhs);
 						}
 					};
 
@@ -1138,6 +1199,16 @@ namespace std {
 						constexpr double start_angle() const noexcept {
 							return _Start_angle;
 						}
+
+						constexpr bool operator==(const arc& rhs) const noexcept {
+							return (_Radius == rhs._Radius) &&
+								(_Rotation == rhs._Rotation) &&
+								(_Start_angle == rhs._Start_angle);
+						}
+
+						constexpr bool operator!=(const arc& rhs) const noexcept {
+							return !((*this) == rhs);
+						}
 					};
 
 					class change_matrix {
@@ -1154,6 +1225,14 @@ namespace std {
 						constexpr matrix_2d matrix() const noexcept {
 							return _Matrix;
 						}
+
+						constexpr bool operator==(const change_matrix& rhs) const noexcept {
+							return _Matrix == rhs._Matrix;
+						}
+
+						constexpr bool operator!=(const change_matrix& rhs) const noexcept {
+							return !((*this) == rhs);
+						}
 					};
 
 					class change_origin {
@@ -1169,6 +1248,14 @@ namespace std {
 						}
 						constexpr vector_2d origin() const noexcept {
 							return _Origin;
+						}
+
+						constexpr bool operator==(const change_origin& rhs) const noexcept {
+							return _Origin == rhs._Origin;
+						}
+
+						constexpr bool operator!=(const change_origin& rhs) const noexcept {
+							return !((*this) == rhs);
 						}
 					};
 
@@ -1231,7 +1318,7 @@ namespace std {
 				template <class _TItem>
 				struct _Path_group_perform_visit {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::abs_new_path& item) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::abs_new_path& item, vector_2d& lastMoveToPoint) noexcept {
 						cairo_path_data_t cpdItem{};
 						auto pt = item.at();
 						cpdItem.header.type = CAIRO_PATH_MOVE_TO;
@@ -1239,11 +1326,12 @@ namespace std {
 						vec.push_back(cpdItem);
 						cpdItem = {};
 						cpdItem.point = { pt.x(), pt.y() };
+						lastMoveToPoint = pt;
 						vec.push_back(cpdItem);
 					}
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::abs_line& item) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::abs_line& item, vector_2d&) noexcept {
 						cairo_path_data_t cpdItem{};
 						auto pt = item.to();
 						cpdItem.header.type = CAIRO_PATH_LINE_TO;
@@ -1254,7 +1342,7 @@ namespace std {
 						vec.push_back(cpdItem);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::abs_cubic_curve& item) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::abs_cubic_curve& item, vector_2d&) noexcept {
 						cairo_path_data_t cpdItem{};
 						auto pt1 = item.control_point_1();
 						auto pt2 = item.control_point_2();
@@ -1273,16 +1361,15 @@ namespace std {
 						vec.push_back(cpdItem);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_quadratic_curve&) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_quadratic_curve&, vector_2d&) noexcept {
 						assert(false && "Abs quadratic curves should have been transformed into cubic curves already.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_new_path&) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_new_path&, vector_2d&) noexcept {
 						assert(false && "Rel new path instructions should have been eliminated.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::close_path& item) noexcept {
-						auto lastMoveToPoint = item.to();
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::close_path&, vector_2d& lastMoveToPoint) noexcept {
 						cairo_path_data_t cpdItem{};
 						cpdItem.header.type = CAIRO_PATH_CLOSE_PATH;
 						cpdItem.header.length = 1;
@@ -1295,27 +1382,27 @@ namespace std {
 						vec.push_back(cpdItem);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_line&) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_line&, vector_2d&) noexcept {
 						assert(false && "Rel line should have been transformed into non-relative.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_cubic_curve&) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_cubic_curve&, vector_2d&) noexcept {
 						assert(false && "Rel curve should have been transformed into non-relative.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_quadratic_curve&) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_quadratic_curve&, vector_2d&) noexcept {
 						assert(false && "Rel quadratic curves should have been transformed into cubic curves.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc>, _Path_data_arc> = _Path_data_arc_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::arc&) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::arc&, vector_2d&) noexcept {
 						assert(false && "Arcs should have been transformed into cubic curves.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::change_matrix&) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::change_matrix&, vector_2d&) noexcept {
 						assert(false && "Change matrix should have been eliminated.");
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::change_origin&) noexcept {
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::change_origin&, vector_2d&) noexcept {
 						assert(false && "Change origin should have been eliminated.");
 					}
 				};
@@ -1340,11 +1427,11 @@ namespace std {
 				}) {
 					auto processedVec = _Process_path_data<Allocator>(pf);
 					::std::vector<cairo_path_data_t> vec;
-
+					vector_2d lastMoveToPoint;
 					for (const auto& val : processedVec) {
-						::std::visit([&vec](auto&& item) {
+						::std::visit([&vec, &lastMoveToPoint](auto&& item) {
 							using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-							_Path_group_perform_visit<T>::template _Perform<T>(vec, item);
+							_Path_group_perform_visit<T>::template _Perform<T>(vec, item, lastMoveToPoint);
 						}, val);
 					}
 					_Cairo_path->num_data = static_cast<int>(vec.size());
@@ -1395,10 +1482,10 @@ namespace std {
 				template <class Allocator>
 				class path_builder {
 					::std::vector<path_data::path_data_types, Allocator> _Data;
-					optional<vector_2d> _Current_point;
-					vector_2d _Last_move_to_point;
-					matrix_2d _Transform_matrix;
-					vector_2d _Origin;
+					//optional<vector_2d> _Current_point;
+					//vector_2d _Last_move_to_point;
+					//matrix_2d _Transform_matrix;
+					//vector_2d _Origin;
 				public:
 					using value_type = path_data::path_data_types;
 					using allocator_type = Allocator;
@@ -1474,6 +1561,8 @@ namespace std {
 					void new_path(const vector_2d& v) noexcept;
 					void rel_new_path(const vector_2d& v) noexcept;
 					void close_path() noexcept;
+					void change_matrix(const matrix_2d& m) noexcept;
+					void change_origin(const vector_2d& pt) noexcept;
 					void arc(const vector_2d& radius, double rot, double sang = pi<double>) noexcept;
 					void cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1,
 						const vector_2d& pt2) noexcept;
@@ -1485,8 +1574,6 @@ namespace std {
 					void rel_line_to(const vector_2d& dpt) noexcept;
 					void rel_quadratic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1)
 						noexcept;
-					void transform_matrix(const matrix_2d& m) noexcept;
-					void origin(const vector_2d& pt) noexcept;
 					template <class... Args>
 					reference emplace_back(Args&&... args);
 					void push_back(const value_type& x);
@@ -1512,18 +1599,43 @@ namespace std {
 
 					// Observers
 					::std::experimental::io2d::rectangle path_extents() const;
+
+					bool operator==(const path_builder& rhs) const noexcept {
+						if (size() != rhs.size()) {
+							return false;
+						}
+						//return equal(_Data.cbegin(), _Data.cend(), rhs._Data.cbegin(), rhs._Data.cend());
+						auto lhsEnd = _Data.end();
+						auto rhsEnd = rhs._Data.end();
+						auto lhsIter = _Data.begin();
+						auto rhsIter = rhs._Data.begin();
+						for (; lhsIter != lhsEnd && 
+							rhsIter != rhsEnd; ++lhsIter, ++rhsIter) {
+							assert(lhsIter != lhsEnd && "Unexpected path_builder op== size mismatch. rhs greater than lhs.");
+							assert(rhsIter != rhsEnd && "Unexpected path_builder op== size mismatch. lhs greater than rhs.");
+							if (*lhsIter != *rhsIter) {
+								return false;
+							}
+						}
+						//const size_t dataSize = _Data.size();
+						//for (size_t i = 0; i < dataSize; i++) {
+						//	if (_Data.at(i) != rhs._Data.at(i)) {
+						//		return false;
+						//	}
+						//}
+						return true;
+					}
+					bool operator!=(const path_builder& rhs) const noexcept {
+						return !((*this) == rhs);
+					}
 				};
 
-				template <class Allocator>
-				bool operator==(const path_builder<Allocator>& lhs,
-					const path_builder<Allocator>& rhs);
-				template <class Allocator>
-				bool operator!=(const path_builder<Allocator>& lhs,
-					const path_builder<Allocator>& rhs);
 				// 8.17.8, specialized algorithms:
 				template <class Allocator>
 				void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
-					noexcept(noexcept(lhs.swap(rhs)));
+					noexcept(noexcept(lhs.swap(rhs))) {
+					lhs.swap(rhs);
+				}
 
 				class device {
 				public:
@@ -2179,7 +2291,7 @@ namespace std {
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
 					static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
-						v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
+						v.emplace_back(::std::in_place_type<path_data::close_path>);
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>,
 							closePoint);
 						if (!m.is_finite() || !m.is_invertible()) {
@@ -2790,39 +2902,23 @@ namespace std {
 
 				template<class Allocator>
 				inline path_builder<Allocator>::path_builder(const Allocator &a) noexcept
-					: _Data(a)
-					, _Current_point()
-					, _Last_move_to_point()
-					, _Transform_matrix()
-					, _Origin() {
+					: _Data(a) {
 				}
 
 				template<class Allocator>
 				inline path_builder<Allocator>::path_builder(size_type n, const Allocator & a)
-					: _Data(n, a)
-					, _Current_point()
-					, _Last_move_to_point()
-					, _Transform_matrix()
-					, _Origin() {
+					: _Data(n, a) {
 				}
 
 				template<class Allocator>
 				inline path_builder<Allocator>::path_builder(size_type n, const value_type & value, const Allocator& a)
-					: _Data(n, value, a)
-					, _Current_point()
-					, _Last_move_to_point()
-					, _Transform_matrix()
-					, _Origin() {
+					: _Data(n, value, a) {
 				}
 
 				template<class Allocator>
 				template<class InputIterator>
 				inline path_builder<Allocator>::path_builder(InputIterator first, InputIterator last, const Allocator& a)
-					: _Data(first, last, a)
-					, _Current_point()
-					, _Last_move_to_point()
-					, _Transform_matrix()
-					, _Origin() {
+					: _Data(first, last, a) {
 				}
 
 				template<class Allocator>
@@ -2851,47 +2947,27 @@ namespace std {
 
 				template<class Allocator>
 				inline path_builder<Allocator>::path_builder(const path_builder& pf)
-					: _Data(pf._Data)
-					, _Current_point(pf._Current_point)
-					, _Last_move_to_point(pf._Last_move_to_point)
-					, _Transform_matrix(pf._Transform_matrix)
-					, _Origin(pf._Origin) {
+					: _Data(pf._Data) {
 				}
 
 				template<class Allocator>
 				inline path_builder<Allocator>::path_builder(path_builder&& pf) noexcept
-					: _Data(move(pf._Data))
-					, _Current_point(move(pf._Current_point))
-					, _Last_move_to_point(move(pf._Last_move_to_point))
-					, _Transform_matrix(move(pf._Transform_matrix))
-					, _Origin(move(pf._Origin)) {
+					: _Data(move(pf._Data)) {
 				}
 
 				template<class Allocator>
 				inline path_builder<Allocator>::path_builder(const path_builder& pf, const Allocator & a)
-					: _Data(pf._Data, a)
-					, _Current_point(pf._Current_point)
-					, _Last_move_to_point(pf._Last_move_to_point)
-					, _Transform_matrix(pf._Transform_matrix)
-					, _Origin(pf._Origin) {
+					: _Data(pf._Data, a) {
 				}
 
 				template<class Allocator>
 				inline path_builder<Allocator>::path_builder(path_builder&& pf, const Allocator & a)
-					: _Data(move(pf._Data), a)
-					, _Current_point(move(pf._Current_point))
-					, _Last_move_to_point(move(pf._Last_move_to_point))
-					, _Transform_matrix(move(pf._Transform_matrix))
-					, _Origin(move(pf._Origin)) {
+					: _Data(move(pf._Data), a) {
 				}
 
 				template<class Allocator>
 				inline path_builder<Allocator>::path_builder(initializer_list<value_type> il, const Allocator & a)
-					: _Data(il, a)
-					, _Current_point()
-					, _Last_move_to_point()
-					, _Transform_matrix()
-					, _Origin() {
+					: _Data(il, a) {
 				}
 
 				template <class Allocator>
@@ -3071,8 +3147,17 @@ namespace std {
 
 				template<class Allocator>
 				inline void path_builder<Allocator>::close_path() noexcept {
-					const vector_2d pt{};
-					_Data.emplace_back(in_place_type<path_data::close_path>, pt);
+					_Data.emplace_back(in_place_type<path_data::close_path>);
+				}
+
+				template<class Allocator>
+				inline void path_builder<Allocator>::change_matrix(const matrix_2d& m) noexcept {
+					_Data.emplace_back(in_place_type<path_data::change_matrix>, m);
+				}
+
+				template<class Allocator>
+				inline void path_builder<Allocator>::change_origin(const vector_2d& pt) noexcept {
+					_Data.emplace_back(in_place_type<path_data::change_origin>, pt);
 				}
 
 				template<class Allocator>
@@ -3108,18 +3193,6 @@ namespace std {
 				template<class Allocator>
 				inline void path_builder<Allocator>::rel_quadratic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_quadratic_curve>, dpt0, dpt1);
-				}
-
-				template<class Allocator>
-				inline void path_builder<Allocator>::transform_matrix(const matrix_2d& m) noexcept {
-					_Transform_matrix = m;
-					_Data.emplace_back(in_place_type<path_data::change_matrix>, m);
-				}
-
-				template<class Allocator>
-				inline void path_builder<Allocator>::origin(const vector_2d& pt) noexcept {
-					_Origin = pt;
-					_Data.emplace_back(in_place_type<path_data::change_origin>, pt);
 				}
 
 				template<class Allocator>
@@ -3169,19 +3242,12 @@ namespace std {
 
 				template<class Allocator>
 				inline void path_builder<Allocator>::swap(path_builder &pf) noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value || allocator_traits<Allocator>::is_always_equal::value) {
-					swap(_Data, pf._Data);
-					swap(_Current_point, pf._Current_point);
-					swap(_Last_move_to_point, pf._Last_move_to_point);
-					swap(_Origin, pf._Origin);
-					swap(_Transform_matrix, pf._Transform_matrix);
+					::std::swap(_Data, pf._Data);
 				}
 
 				template<class Allocator>
 				inline void path_builder<Allocator>::clear() noexcept {
 					_Data.clear();
-					_Current_point.reset();
-					_Transform_matrix = matrix_2d::init_identity();
-					_Origin = {};
 				}
 
 				template <class InputIterator>

@@ -69,6 +69,17 @@ int main() {
 	pb.rel_line_to({ -100.0, 0.0 });
 	pb.close_path();
 
+	//path_builder<> pb2 = pb;
+	//assert(pb == pb2);
+	//pb.swap(pb2);
+	//assert(pb == pb2);
+	//swap(pb, pb2);
+	//assert(pb == pb2);
+	//pb2.clear();
+	//pb2.new_path({ 100.0, 100.0 });
+	//pb2.line_to({ 200.0, 20.0 });
+	//assert(pb != pb2);
+
 	imgSfc.paint(bkgrndBrush);
 	imgSfc.stroke(frgrndBrush, pb, nullopt, stroke_props{ 10.0 });
 #ifdef _Filesystem_support_test
@@ -76,6 +87,7 @@ int main() {
 #else
 	imgSfc.save("pathexample02.png"s, image_data_format::png);
 #endif
+
 	//const auto testRotAng = half_pi<double>;
 	//auto testM = matrix_2d::init_rotate(testRotAng);
 	//const vector_2d vecRotTestInit{ 60.0, 0.0 };
@@ -112,7 +124,7 @@ int main() {
 	//auto testRotPt = testRot.transform_point({ 60.0, 0.0 });
 	pb.clear();
 	//pb.transform_matrix(matrix_2d::init_scale({ 0.5, 0.5 }).translate({ 400.0, 400.0 }).rotate(to_radians(-45)));
-	pb.transform_matrix(matrix_2d::init_translate({ 400.0, 400.0 }).rotate(to_radians(-45)).scale({ 0.5, 0.5 }));
+	pb.change_matrix(matrix_2d::init_translate({ 400.0, 400.0 }).rotate(to_radians(-45)).scale({ 0.5, 0.5 }));
 	//pb.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 4.0));
 	//pb.transform_matrix(matrix_2d::init_translate({ 0.0, 100.0 }));
 	location = testArcClockwiseEndAngle(pb, location, false, { 60.0, 60.0 });
