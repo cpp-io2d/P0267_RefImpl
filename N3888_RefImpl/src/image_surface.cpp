@@ -1,5 +1,4 @@
 #include "io2d.h"
-#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 #include <cstring>
 #include <fstream>
@@ -184,8 +183,8 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 		}
 		data = make_unique<unsigned char[]>(static_cast<size_t>(imgFileSize));
 		static_assert(sizeof(unsigned char) == 1U, "sizeof(unsigned char) != 1U");
-		testFail = fread(data.get(), sizeof(unsigned char), imgFileSize * sizeof(unsigned char), imgFile);
-		if (testFail != imgFileSize) {
+		auto testFailFRead = fread(data.get(), sizeof(unsigned char), imgFileSize * sizeof(unsigned char), imgFile);
+		if (testFailFRead != static_cast<size_t>(imgFileSize)) {
 			throw runtime_error("Reading the file produced unexpected results");
 		}
 		testFail = fclose(imgFile);
@@ -270,8 +269,8 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 					unsigned char blue = static_cast<unsigned char>(pixelValue[0] / 255.0 * 31.0 + 0.5);
 					unsigned char green = static_cast<unsigned char>(pixelValue[1] / 255.0 * 63.0 + 0.5);
 					unsigned char red = static_cast<unsigned char>(pixelValue[2] / 255.0 * 31.0 + 0.5);
-					mapData[(i * mapStride) + (j * 2)] = (((blue & 0b00011111)) | ((green & 0b00000111) << 5));
-					mapData[(i * mapStride) + (j * 2) + 1] = (((green & 0b00111000) >> 3) | ((red & 0b00011111) << 3));
+					mapData[(i * mapStride) + (j * 2)] = static_cast<unsigned char>(((blue & 0b00011111)) | ((green & 0b00000111) << 5));
+					mapData[(i * mapStride) + (j * 2) + 1] = static_cast<unsigned char>(((green & 0b00111000) >> 3) | ((red & 0b00011111) << 3));
 				}
 			}
 		} break;

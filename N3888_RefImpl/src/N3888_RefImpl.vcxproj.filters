@@ -27,23 +27,11 @@
     <ClInclude Include="xcairoenumhelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sample_draw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="io2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xio2d.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="xio2dhelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="test_renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="test_process.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="xdiagnostics.h">
       <Filter>Header Files</Filter>
@@ -65,9 +53,6 @@
     <ClCompile Include="standalone_functions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sample_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="rgba_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,9 +65,6 @@
     <ClCompile Include="display_surface-win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="entrypoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="display_surface-common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,9 +75,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapped_surface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_renderer_fill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="color_stop.cpp">

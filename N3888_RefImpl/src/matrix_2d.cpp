@@ -1,7 +1,5 @@
 #include "io2d.h"
-#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
-#include <cmath>
 
 using namespace std;
 using namespace std::experimental::io2d;

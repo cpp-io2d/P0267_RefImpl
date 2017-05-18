@@ -1,7 +1,7 @@
 #pragma once
 #ifndef SAMPLE_DRAW_H
 #define SAMPLE_DRAW_H
-#include "xio2d.h"
+#include "io2d.h"
 
 namespace std {
 	namespace experimental {

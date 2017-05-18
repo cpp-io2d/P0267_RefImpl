@@ -1,5 +1,4 @@
 #include "io2d.h"
-#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;
@@ -751,16 +750,3 @@ const bgra_color& bgra_color::yellow_green() noexcept {
 	return c;
 }
 
-
-namespace std {
-	namespace experimental {
-		namespace io2d {
-			inline namespace v1 {
-				bgra_color& operator*=(bgra_color& lhs, double rhs) {
-					lhs = lhs * rhs;
-					return lhs;
-				}
-			}
-		}
-	}
-}

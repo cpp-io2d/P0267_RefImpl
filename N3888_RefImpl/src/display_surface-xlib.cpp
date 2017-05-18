@@ -1,5 +1,4 @@
 #include "io2d.h"
-#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 #include <cairo-xlib.h>
 #include <sstream>

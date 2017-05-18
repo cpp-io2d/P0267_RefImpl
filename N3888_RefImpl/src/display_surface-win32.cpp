@@ -1,5 +1,4 @@
 #include "io2d.h"
-#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 #include <cairo-win32.h>
 #include <chrono>
@@ -132,6 +131,11 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	{
 		// This message is sent when a window or an application should
 		// terminate.
+		if (!DestroyWindow(hwnd)) {
+			_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to DestroyWindow when processing WM_CLOSE.");
+		}
+		_Hwnd = nullptr;
+		return lrZero;
 	} break;
 
 #ifdef __clang__
@@ -238,10 +242,92 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	if (fps <= _Minimum_frame_rate || !isfinite(fps)) {
 		throw system_error(make_error_code(errc::argument_out_of_domain));
 	}
+//	RECT rc;
+//	rc.top = rc.left = 0;
+//	rc.right = preferredDisplayWidth;
+//	rc.bottom = preferredDisplayHeight;
+//
+//	// Adjust the window size for correct device size
+//	if (!AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE)) {
+//		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to AdjustWindowRect in display_surface::display_surface(int, int, format, int, int, scaling).");
+//	}
+//
+//	long lwidth = rc.right - rc.left;
+//	long lheight = rc.bottom - rc.top;
+//
+//	long lleft = 10;
+//	long ltop = 10;
+//
+//
+//	// Create an instance of the window
+//	_Hwnd = CreateWindowEx(
+//		static_cast<DWORD>(0),				// extended style
+//		_Refimpl_window_class_name,			// class name
+//		L"",								// instance title
+//		(WS_OVERLAPPEDWINDOW | WS_VISIBLE),	// window style
+//		lleft, ltop,						// initial x, y
+//		lwidth,								// initial width
+//		lheight,							// initial height
+//		static_cast<HWND>(nullptr),			// handle to parent
+//		static_cast<HMENU>(nullptr),		// handle to menu
+//		static_cast<HINSTANCE>(nullptr),	// instance of this application
+//		static_cast<LPVOID>(nullptr));		// extra creation parms
+//
+//	if (_Hwnd == nullptr) {
+//		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to CreateWindowEx in display_surface::display_surface(int, int, format, int, int, scaling)");
+//	}
+//
+//	SetLastError(ERROR_SUCCESS);
+//	// Set in the "extra" bytes the pointer to the 'this' pointer
+//	// so it can handle messages for itself.
+//	// I know that the C-style cast works and have not had a chance to come up with a safer C++-style cast that I can be sure also works so I'm disabling the warning.
+//#ifdef _WIN32
+//#ifdef __clang__
+//#pragma clang diagnostic push
+//#pragma clang diagnostic ignored "-Wold-style-cast"
+//#endif
+//#endif
+//
+//	if (!SetWindowLongPtrW(_Hwnd, _Display_surface_ptr_window_data_byte_offset, (LONG_PTR)this)) {
+//		// I know that the C-style cast works and have not had a chance to come up with a safer C++-style cast that I can be sure also works so I'm disabling the warning.
+//#ifdef _WIN32
+//#ifdef __clang__
+//#pragma clang diagnostic pop
+//#endif
+//#endif
+//		DWORD lastError = GetLastError();
+//		if (lastError != ERROR_SUCCESS) {
+//			_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in display_surface::display_surface(int, int, format, int, int, scaling)");
+//		}
+//	}
+//
+//	// Initially display the window
+//	ShowWindow(_Hwnd, SW_SHOWNORMAL);
+//	UpdateWindow(_Hwnd);
+//
+//	// We are using CS_OWNDC to keep a steady HDC for the Win32 window.
+//	_Make_native_surface_and_context();
+//
+//	// We render to the fixed size surface.
+//	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
+//	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
+//	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
+//	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+}
+
+display_surface::~display_surface() {
+	if (_Hwnd != nullptr) {
+		assert(_Hwnd == nullptr);
+		DestroyWindow(_Hwnd);
+		_Hwnd = nullptr;
+	}
+}
+
+int display_surface::begin_show() {
 	RECT rc;
 	rc.top = rc.left = 0;
-	rc.right = preferredDisplayWidth;
-	rc.bottom = preferredDisplayHeight;
+	rc.right = _Display_width;
+	rc.bottom = _Display_height;
 
 	// Adjust the window size for correct device size
 	if (!AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE)) {
@@ -309,16 +395,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
-}
 
-display_surface::~display_surface() {
-	if (_Hwnd != nullptr) {
-		DestroyWindow(_Hwnd);
-		_Hwnd = nullptr;
-	}
-}
-
-int display_surface::begin_show() {
 	MSG msg{ };
 	msg.message = WM_NULL;
 	if (_Draw_fn == nullptr) {
@@ -450,14 +527,13 @@ int display_surface::begin_show() {
 			updateTitleCounter--;
 		}
 		if (updateTitleCounter == 50 && msg.hwnd != 0) {
-			long long sumNanoElapsed = 0LL;
+			unsigned long long sumNanoElapsed = 0LL;
 			for (auto iter = begin(elapsedNanoseconds), last = end(elapsedNanoseconds); iter != last; iter++) {
 				const auto val = *iter;
 				sumNanoElapsed += val.count();
 			}
 			auto avgNanoFrameTime = (sumNanoElapsed / elapsedNanoseconds.size());
 			const auto fpsNano = 1'000'000'000.0 / avgNanoFrameTime;
-			const auto millisecondsPerNanoSecond = 1'000'000'000.0 / 1'000.0;
 			wstringstream fpsStr;
 			fpsStr << "FPS: " << fixed << setprecision(5) << fpsNano;
 			wstring fpsStr_Str;

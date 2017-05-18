@@ -1,5 +1,4 @@
 #include "io2d.h"
-#include "xio2dhelpers.h"
 #include "xcairoenumhelpers.h"
 
 using namespace std;

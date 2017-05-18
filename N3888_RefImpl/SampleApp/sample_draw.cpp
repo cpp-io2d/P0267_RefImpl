@@ -1,6 +1,4 @@
-#include "io2d.h"
 #include "sample_draw.h"
-#include "xio2dhelpers.h"
 #include <cmath>
 #include <random>
 #include <vector>
@@ -10,13 +8,11 @@
 #include <chrono>
 #include <numeric>
 #include <iomanip>
-#include "test_renderer.h"
 
 using namespace std;
 using namespace std::chrono;
 using namespace std::experimental;
 using namespace std::experimental::io2d;
-//using namespace not_proposed::test_renderer;
 
 //// Declarations
 void test_image_load_save(display_surface& ds);
@@ -43,9 +39,9 @@ void draw_radial_circles(display_surface& ds);
 //
 void sample_draw::operator()(display_surface& ds) {
 	//test_image_load_save(ds);
-	test_path_functionality(ds);
+	//test_path_functionality(ds);
+	draw_radial_circles(ds);
 	//ds.paint(bgra_color::cornflower_blue());
-	//draw_radial_circles(ds);
 	//path_builder<> pf;
 	//pf.new_path();
 	////static auto previousTime = steady_clock::now();
@@ -253,10 +249,7 @@ void test_image_load_save(display_surface& ds) {
 //}
 //
 void test_stroke_rules(display_surface& ds) {
-	//ds.save();
 	ds.clear();
-	//color_stop_group<> csg;
-	//auto orng = bgra_color::orange();
 	vector<color_stop> csg;
 	csg.emplace_back(0.0, bgra_color::orange());
 	csg.emplace_back(0.25, bgra_color::red());
@@ -264,12 +257,10 @@ void test_stroke_rules(display_surface& ds) {
 	csg.emplace_back(0.75, bgra_color::blue());
 	csg.emplace_back(1.0, bgra_color::gray());
 	brush linearGrad({ 0.0, 0.0 }, { 0.0, 100.0 }, begin(csg), end(csg));
-	//ds.brush(linearGrad);
 	//linearGrad.wrap_mode(wrap_mode::reflect);
 	ds.paint(linearGrad);
 
-	//ds.immediate().clear();
-
+	path_builder<> pb;
 	//ds.line_width(40.0);
 	//ds.line_cap(line_cap::none);
 	//ds.line_join(line_join::miter_or_bevel);
@@ -311,291 +302,15 @@ void test_stroke_rules(display_surface& ds) {
 	//ds.restore();
 }
 
-//void test_fill_rules(display_surface& ds) {
-//	ds.clear();
-//	auto prevFr = ds.fill_rule();
-//
-//	bool clockwise = true;
-//
-//	auto rect = rectangle{ 10.0, 10.0, 120.0, 90.0 };
-//
-//	ds.fill_rule(fill_rule::winding);
-//	clockwise = true;
-//	ds.immediate().clear();
-//	rect.top_left({ 10.0, 10.0 });
-//	ds.immediate().rectangle(rect, clockwise);
-//	rect.top_left({ 50.0, 40.0 });
-//	ds.immediate().rectangle(rect, clockwise);
-//	ds.fill_immediate(bgra_color::red() * 0.5);
-//
-//	ds.immediate().clear();
-//	rect.top_left({ 10.0, 150.0 });
-//	ds.immediate().rectangle(rect, clockwise);
-//	rect.top_left({ 50.0, 190.0 });
-//	clockwise = false;
-//	ds.immediate().rectangle(rect, clockwise);
-//	ds.fill_immediate(bgra_color::red() * 0.5);
-//
-//	ds.fill_rule(fill_rule::even_odd);
-//	clockwise = true;
-//	ds.immediate().clear();
-//	rect.top_left({ 190.0, 10.0 });
-//	ds.immediate().rectangle(rect, clockwise);
-//	rect.top_left({ 240.0, 40.0 });
-//	ds.immediate().rectangle(rect, clockwise);
-//	ds.fill_immediate(bgra_color::red() * 0.5);
-//
-//	ds.immediate().clear();
-//	rect.top_left({ 190.0, 150.0 });
-//	ds.immediate().rectangle(rect, clockwise);
-//	rect.top_left({ 240.0, 190.0 });
-//	clockwise = false;
-//	ds.immediate().rectangle(rect, clockwise);
-//	ds.fill_immediate(bgra_color::red() * 0.5);
-//
-//	ds.fill_rule(prevFr);
-//}
-//
-//void test_paint_surface_extend_modes(display_surface& ds, double elapsedTimeInMilliseconds) {
-//	static image_surface imgSfc{ format::argb32, 120, 90 };
-//	static bool imgSfcInitialized = false;
-//	if (!imgSfcInitialized) {
-//		imgSfc.paint(bgra_color::red());
-//		
-//		imgSfc.immediate().abs_move({ 60.0, 0.0 });
-//		imgSfc.immediate().abs_line({ 120.0, 0.0 });
-//		imgSfc.immediate().abs_line({ 120.0, 90.0 });
-//		imgSfc.immediate().abs_line({ 0.0, 90.0 });
-//		imgSfc.immediate().abs_line({ 0.0, 45.0 });
-//		imgSfc.immediate().abs_line({ 60.0, 45.0 });
-//		imgSfc.immediate().close_path();
-//		imgSfc.clip_immediate();
-//		imgSfc.paint(bgra_color::yellow());
-//		
-//		imgSfc.immediate().clear();
-//		imgSfc.immediate().abs_move({ 0.0, 45.0 });
-//		imgSfc.immediate().abs_line({ 120.0, 45.0 });
-//		imgSfc.immediate().abs_line({ 120.0, 90.0 });
-//		imgSfc.immediate().abs_line({ 0.0, 90.0 });
-//		imgSfc.immediate().close_path();
-//		imgSfc.clip_immediate();
-//		imgSfc.paint(bgra_color::green());
-//
-//		imgSfc.immediate().clear();
-//		imgSfc.immediate().abs_move({ 60.0, 45.0 });
-//		imgSfc.immediate().abs_line({ 120.0, 45.0 });
-//		imgSfc.immediate().abs_line({ 120.0, 90.0 });
-//		imgSfc.immediate().abs_line({ 60.0, 90.0 });
-//		imgSfc.immediate().close_path();
-//		imgSfc.clip_immediate();
-//		imgSfc.paint(bgra_color::blue());
-//		imgSfcInitialized = true;
-//	}
-//	static double totalElapsedTime = 0.0;
-//	ds.compositing_op(compositing_op::source);
-//	ds.immediate().rectangle({ 400.0, 0.0, 100.0, 100.0 });
-//	ds.fill_immediate(bgra_color::orange());
-//	ds.immediate().clear();
-//	if (totalElapsedTime < 1000.0) {
-//		// Do nothing.
-//	}
-//	else {
-//		if (totalElapsedTime < 3000.0) {
-//			ds.paint(imgSfc);
-//		}
-//		else {
-//			ds.paint(imgSfc, matrix_2d::init_identity(), wrap_mode::repeat);
-//		}
-//	}
-//	totalElapsedTime += elapsedTimeInMilliseconds;
-//}
-//
-//void test_compositing_operators_different_pixel_formats(display_surface& ds, compositing_op co) {
-//	image_surface srcSfc{ format::a8, 120, 90 };
-//	image_surface dstSfc{ format::argb32, 120, 90 };
-//	srcSfc.clear();
-//	srcSfc.paint(bgra_color::blue(), 0.6);
-//	dstSfc.clear();
-//	dstSfc.paint(bgra_color::lime(), 0.4);
-//	ds.clear();
-//	
-//	//auto data = srcSfc.data();
-//	//ds.paint(bgra_color::white());
-//	ds.compositing_op(compositing_op::over);
-//	ds.immediate().rectangle({ 10.0, 10.0, 120.0, 90.0 });
-//	ds.fill_immediate(srcSfc, matrix_2d::init_translate({ -10.0, -10.0 }));
-//	ds.compositing_op(co);
-//	ds.immediate().clear();
-//	ds.immediate().rectangle({ 50.0, 40.0, 120.0, 90.0 });
-//	ds.fill_immediate(dstSfc, matrix_2d::init_translate({ -50.0, -40.0 }));
-//}
-//
-//void test_draw_radial_circles(display_surface& ds) {
-//	ds.paint(bgra_color::cornflower_blue());
-//	ds.fill_rule(fill_rule::winding);
-//	ds.matrix(matrix_2d::init_identity());
-//	auto radialFactory = radial_brush_factory();
-//	radialFactory.add_color_stop(0.0, bgra_color::white());
-//	radialFactory.add_color_stop(0.25, bgra_color::red());
-//	radialFactory.add_color_stop(0.5, bgra_color::green());
-//	radialFactory.add_color_stop(0.75, bgra_color::blue());
-//	//radialFactory.add_color_stop(1.0, bgra_color::black());
-//	radialFactory.add_color_stop(1.0, bgra_color::black());
-//	//radialFactory.radial_circles({ 400.0, 200.0 }, 100.0, { 600.0, 200.0 }, 50.0);
-//	vector_2d center0 = { 150.0, 150.0 }/*{ 200.5, 300.0 }*/;
-//	double radius0 = 10.0;
-//	vector_2d center1 = { 300.0, 300.0 };
-//	double radius1 = 100.0;
-//	radialFactory.radial_circles(center0, radius0, center1, radius1);
-//	auto extendMode = wrap_mode::reflect;
-//	auto radialBrush = brush(radialFactory);
-//	radialBrush.wrap_mode(extendMode);
-//	path_builder<> pf;
-//	rectangle drawArea = { { 100.0, 100.0 }, { 500.0, 500.0 } };
-//	pf.rectangle(drawArea);
-//	path_group p(pf);
-//	ds.path_group(p);
-//	ds.brush(radialBrush);
-//	ds.fill();
-//
-//	auto dx = 500.0;
-//	auto dy = 0.0;
-//	vector_2d delta{ dx, dy };
-//	center0 += delta;
-//	center1 += delta;
-//	radialFactory.radial_circles(center0, radius0, center1, radius1);
-//	drawArea.x(drawArea.x() + dx);
-//	drawArea.y(drawArea.y() + dy);
-//	render_fill_rect_radial_gradient(ds, drawArea, radialFactory, extendMode);
-//}
-#include "test_process.h"
-
-//void test_path_functionality_old(display_surface& ds) {
-//	// Clear to background color.
-//	ds.paint(brush{ bgra_color::cornflower_blue() });
-//	//ds.brush(brush{ bgra_color::red() });
-//	//ds.fill_rule(fill_rule::even_odd);
-//	path_builder<> pf{};
-//	//void move_to(const vector_2d& pt) noexcept;
-//	vector_2d v, cpt1, cpt2, ept;
-//	v = { 10.0, 10.0 };
-//	pf.move_to(v);
-//	//void rel_move_to(const vector_2d& dpt) noexcept;
-//	v = { 30.0, 0.0 };
-//	pf.rel_move_to(v);
-//	//void line_to(const vector_2d& pt) noexcept;
-//	v = { 80.0, 10.0 };
-//	pf.line_to(v);
-//	//void rel_line_to(const vector_2d& dpt) noexcept;
-//	v = { 0.0, 40.0 };
-//	pf.rel_line_to(v);
-//	//void close_path() noexcept;
-//	pf.close_path();
-//
-//	pf.move_to({ 50.0, 50.0 });
-//	pf.line_to({ 1240.0, 50.0 });
-//	pf.move_to({ 50.0, 80.0 });
-//	pf.line_to({ 900.0, 80.0 });
-//	//void new_path() noexcept;
-//	pf.new_path();
-//	v = { 200.0, 20.0 };
-//	//pf.move_to(v);
-//	pf.line_to(v); // Should behave as a move_to.
-//	cpt1 = { 300.0, 60.0 };
-//	cpt2 = { 100.0, 100.0 };
-//	ept = { 200.0, 140.0 };
-//	pf.cubic_curve_to(cpt1, cpt2, ept);
-//	pf.new_path();
-//
-//	v = { 30.0, 300.0 };
-//	pf.move_to(v);
-//	vector_2d qcpt = { 100.0, 230.0 };
-//	ept = { 170.0, 300.0 };
-//	pf.quadratic_curve_to(qcpt, ept);
-//
-//	pf.new_path();
-//	pf.arc_clockwise(circle{ { 600.0, 100.0 }, 50.0 }, 0.0, half_pi<double>);
-//	pf.new_path();
-//	pf.arc_counterclockwise(circle{ { 600.0, 300.0 }, 50.0 }, 0.0, half_pi<double>);
-//	pf.new_path();
-//	pf.arc_clockwise(circle{ { 300.0, 300.0 }, 50.0 }, 0.0, two_pi<double>);
-//
-//	pf.new_path();
-//	pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
-//	pf.rectangle(rectangle{ 500.0, 300.0, 200.0, 100.0 });
-//
-//	auto pg = path_group(pf);
-//	ds.stroke(brush{ bgra_color::red() }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1240.0, 680.0) });
-//
-//	pf.clear();
-//
-//	pf.new_path();
-//	//pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
-//	pf.ellipse({ { 200.0, 200.0 }, {80.0, 40.0} });
-//	pf.move_to({ 400.0, 200.0 });
-//	pf.rel_ellipse({ {200.0, 0.0}, {80.0, 40.0} });
-//	pf.new_path();
-//	pf.rectangle({ 200.0, 400.0, 100.0, 50.0 });
-//	pf.new_path();
-//	pf.move_to({ 400.0, 400.0 });
-//	pf.rel_rectangle({ 200.0, 0.0, 100.0, 50.0 });
-//	pf.transform_matrix(matrix_2d{});
-//	pf.new_path();
-//	pf.move_to({ 200.0, 0.0 });
-//	pf.line_to({ 200.0, 800.0 });
-//
-//	//auto vecprocessed = test_process::process_path_data(pf);
-//	//pg = path_group{ pf };
-//	//ds.brush(bgra_color::lime());
-//	ds.stroke(brush{ bgra_color::lime() }, pf);
-//	//constexpr stroke_props sp;
-//	//constexpr auto sp2 = sp;
-//	//constexpr render_props rp;
-//	//constexpr auto rp2 = rp;
-//	//constexpr auto iec559 = numeric_limits<double>::is_iec559;
-//	//constexpr auto infinity = numeric_limits<double>::infinity() == numeric_limits<double>::infinity();
-//	//constexpr auto negativeinfinity = -numeric_limits<double>::infinity();
-//	//constexpr auto testinfinity = numeric_limits<double>::infinity() == negativeinfinity;
-//	//constexpr auto isqnan1 = numeric_limits<double>::quiet_NaN() != numeric_limits<double>::quiet_NaN();
-//	//constexpr auto isqnan2 = 10.0 != numeric_limits<double>::quiet_NaN();
-//	//constexpr auto isqnan3 = numeric_limits<double>::quiet_NaN() == numeric_limits<double>::quiet_NaN();
-//	//constexpr auto isqnan4 = 10.0 == numeric_limits<double>::quiet_NaN();
-//
-//	//constexpr auto dClr = bgra_color(1.0, 1.0, 1.0);
-//	//constexpr auto fClr = bgra_color(0.5f, 1.0f, 0.0f, 0.25f);
-//	//constexpr circle circ{ {20.0, 20.0}, 10.0 };
-//	//constexpr ellipse ell{ circ };
-//	//constexpr double ellx = ell.x_radius();
-//	////constexpr ellipse ell2 = circ; // Implicit conversion barred, so this is invalid.
-//
-//	//void arc_clockwise(const vector_2d& center, double radius, double angle1,
-//	//	double angle2) noexcept;
-//	//void arc_counterclockwise(const vector_2d& center, double radius,
-//	//	double angle1, double angle2) noexcept;
-//	//void cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1,
-//	//	const vector_2d& pt2) noexcept;
-//	//void quadratic_curve_to(const vector_2d& pt0, const vector_2d& pt1)
-//	//	noexcept;
-//	//void rectangle(const experimental::io2d::rectangle& r) noexcept;
-//	//void rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1,
-//	//	const vector_2d& dpt2) noexcept;
-//	//void rel_quadratic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1)
-//	//	noexcept;
-//	//void transform_matrix(const matrix_2d& m) noexcept;
-//	//void origin(const vector_2d& pt) noexcept;
-//}
-
 void test_path_functionality(display_surface& ds) {
 	// Clear to background color.
 	ds.paint(brush{ bgra_color::cornflower_blue() });
-	//ds.brush(brush{ bgra_color::red() });
-	//ds.fill_rule(fill_rule::even_odd);
 	path_builder<> pf{};
-	//void move_to(const vector_2d& pt) noexcept;
+	//void new_path(const vector_2d& pt) noexcept;
 	vector_2d v, cpt1, cpt2, ept;
 	v = { 10.0, 10.0 };
 	pf.new_path(v);
-	//void rel_move_to(const vector_2d& dpt) noexcept;
+	//void rel_new_path(const vector_2d& dpt) noexcept;
 	v = { 30.0, 0.0 };
 	pf.rel_new_path(v);
 	//void line_to(const vector_2d& pt) noexcept;
@@ -829,11 +544,6 @@ void draw_radial_circles(display_surface& ds) {
 	//ds.fill_immediate(radialBrush);
 }
 
-//wostream& operator<<(wostream& os, const vector_2d& pt) {
-//	os << L"(" << pt.x() << L"," << pt.y() << L")";
-//	return os;
-//}
-//
 //vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed) {
 //	vector<vector<int>> result;
 //	result.push_back([count, mtSeed]() {
