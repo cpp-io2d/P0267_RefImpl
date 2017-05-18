@@ -10,4 +10,8 @@ Dependency installation instructions. These are provided "AS IS" with no warrant
 
 5. Install cairo for x64 with the command ".\vcpkg.exe install cairo --triplet x64-windows"
 
-6. Inspect which packages have been installed with the command ".\vcpkg.exe list"
+6. Install libjpeg-turbo for win32 with the command ".\vcpkg.exe install libjpeg-turbo"
+
+7. Install libjpeg-turbo for x64 with the command ".\vcpkg.exe install libjpeg-turbo --triplet x64-windows"
+
+8. Inspect which packages have been installed with the command ".\vcpkg.exe list"
