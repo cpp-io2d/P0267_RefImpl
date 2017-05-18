@@ -1,15 +1,25 @@
 ## Process this file with automake to produce Makefile.in
 
-## P0267_RefImpl
+## sample_app
 
-P0267_RefImpl_SOURCES =	entrypoint.cpp \
-						sample_draw.cpp
-P0267_RefImpl_CPPFLAGS =	@CPPFLAGS@
-P0267_RefImpl_CXXFLAGS =	@CXXFLAGS@
-P0267_RefImpl_LDFLAGS =	-static
-P0267_RefImpl_LDADD	=	libio2d.la
-P0267_RefImpl_LDADD +=	@LIBS@
-P0267_RefImpl_LDADD +=	@CAIRO_LIBS@
+bin_PROGRAMS = 		sample_app
+
+sample_app_SOURCES =	entrypoint.cpp \
+			sample_draw.cpp
+
+sample_app_CPPFLAGS =	@CPPFLAGS@
+sample_app_CPPFLAGS +=	-I../src
+sample_app_CPPFLAGS +=	@CAIRO_CFLAGS@
+sample_app_CXXFLAGS =	@CXXFLAGS@
+sample_app_CXXFLAGS +=	@X11_CFLAGS@
+sample_app_LDFLAGS =	-static
+sample_app_LDADD =	../src/libio2d.la
+sample_app_LDADD +=	@LIBS@
+sample_app_LDADD +=	@CAIRO_LIBS@
 if USE_XCB
-P0267_RefImpl_LDADD +=	@xcb_LIBS@
+sample_app_LDADD +=	@xcb_LIBS@
 endif
+if USE_XLIB
+sample_app_LDADD +=	@X11_LIBS@
+endif
+

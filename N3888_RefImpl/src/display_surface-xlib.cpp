@@ -223,18 +223,6 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 #endif
 		}
 	}
-	display = _Display.get();
-	int screenNumber = DefaultScreen(display);
-	int x = 0;
-	int y = 0;
-	unsigned int borderWidth = 4;
-	_Wndw = XCreateSimpleWindow(display, RootWindow(display, screenNumber), x, y, static_cast<unsigned int>(preferredDisplayWidth), static_cast<unsigned int>(preferredDisplayHeight), borderWidth, WhitePixel(display, screenNumber), BlackPixel(display, screenNumber));
-	XSelectInput(display, _Wndw, ExposureMask | StructureNotifyMask);
-	XSetWMProtocols(display, _Wndw, &_Wm_delete_window, 1);
-	XMapWindow(display, _Wndw);
-	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
-	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-	//_Ensure_state();
 }
 
 display_surface::~display_surface() {
@@ -254,6 +242,18 @@ display_surface::~display_surface() {
 }
 
 int display_surface::begin_show() {
+	Display* display = _Display.get();
+	int screenNumber = DefaultScreen(display);
+	int x = 0;
+	int y = 0;
+	unsigned int borderWidth = 4;
+	_Wndw = XCreateSimpleWindow(display, RootWindow(display, screenNumber), x, y, static_cast<unsigned int>(_Display_width), static_cast<unsigned int>(_Display_height), borderWidth, WhitePixel(display, screenNumber), BlackPixel(display, screenNumber));
+	XSelectInput(display, _Wndw, ExposureMask | StructureNotifyMask);
+	XSetWMProtocols(display, _Wndw, &_Wm_delete_window, 1);
+	XMapWindow(display, _Wndw);
+	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
+	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
+
 	bool exit = false;
 	XEvent event;
 

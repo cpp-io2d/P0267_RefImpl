@@ -1,17 +1,17 @@
-AC_INIT([amP0267_RefImpl], [1.5], [mikebmcl@gmail.com])
+AC_INIT([P0267_RefImpl], [1.5], [mikebmcl@gmail.com])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_CONFIG_MACRO_DIR([m4])
+AM_PROG_AR
 LT_INIT([disable-shared])
 
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_CXX
 AC_PROG_CXX_C_O
-AC_PROG_RANLIB
 
 AC_SUBST([LIBTOOL_DEPS])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile N3888_RefImpl/Makefile N3888_RefImpl/src/Makefile])
+AC_CONFIG_FILES([Makefile N3888_RefImpl/Makefile N3888_RefImpl/src/Makefile N3888_RefImpl/SampleApp/Makefile])
 
 AC_LANG([C++])
 
@@ -29,7 +29,8 @@ AC_SEARCH_LIBS([png_access_version_number],[png],[],[AC_MSG_ERROR(libpng not fou
 
 AC_SEARCH_LIBS([tjInitCompress],[jpeg turbojpeg],[],[AC_MSG_ERROR(libjpeg-turbo not found. Install libjpeg-turbo, called libturbojpeg on Ubuntu and possibly other distros)],[-lz -lm])
 
-PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.16 x11])
+PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.16])
+PKG_CHECK_MODULES([X11], [x11])
 PKG_PROG_PKG_CONFIG
 
 AC_ARG_ENABLE([xcb],

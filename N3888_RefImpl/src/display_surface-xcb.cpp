@@ -1,9 +1,6 @@
 #include "io2d.h"
 #include "xcairoenumhelpers.h"
 #include <cairo-xcb.h>
-// #include <sstream>
-// #include <string>
-// #include <iostream>
 #include <chrono>
 
 using namespace std;
@@ -122,59 +119,6 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 		throw system_error(make_error_code(errc::connection_aborted));
 	}
 	
-	_Wndw = xcb_generate_id(connection);
-	uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
-	uint32_t values[2];
-	values[0] = _Screen->black_pixel;
-	values[1] = XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_STRUCTURE_NOTIFY | XCB_EVENT_MASK_PROPERTY_CHANGE;
-	uint16_t x = 0;
-	uint16_t y = 0;
-	auto windowCookie = xcb_create_window_checked(connection, _Screen->root_depth, _Wndw, _Screen->root, x, y, static_cast<uint16_t>(preferredDisplayWidth), static_cast<uint16_t>(preferredDisplayHeight), _Window_border_width, XCB_WINDOW_CLASS_INPUT_OUTPUT, _Screen->root_visual, mask, values);
-	
-	xcb_generic_error_t* error = xcb_request_check(connection, windowCookie);
-	if (error != nullptr) {
-		lock_guard<mutex> lg(_Connection_mutex);
-		_Connection_ref_count--;
-		throw system_error(make_error_code(errc::connection_aborted));
-	}
-	
-	auto mapCookie = xcb_map_window_checked(connection, _Wndw);
-	xcb_generic_error_t* mapError = xcb_request_check(connection, mapCookie);
-	if (mapError != nullptr) {
-		lock_guard<mutex> lg(_Connection_mutex);
-		_Connection_ref_count--;
-		throw system_error(make_error_code(errc::connection_aborted));
-	}
-	
-	string wmProtocols = "WM_PROTOCOLS";
-	auto wmProtocolsCookie = xcb_intern_atom(connection, 0, wmProtocols.size(), wmProtocols.c_str());
-	unique_ptr<xcb_intern_atom_reply_t, decltype(&::free)> wmProtocolsReply(xcb_intern_atom_reply(connection, wmProtocolsCookie, nullptr), &::free);
-	if (wmProtocolsReply == nullptr) {
-		lock_guard<mutex> lg(_Connection_mutex);
-		_Connection_ref_count--;
-		throw system_error(make_error_code(errc::connection_aborted));
-	}
-	_Wm_protocols = wmProtocolsReply->atom;
-	string wmDelWin = "WM_DELETE_WINDOW";
-	auto wmDelWinCookie = xcb_intern_atom(connection, 0, wmDelWin.size(), wmDelWin.c_str());
-	unique_ptr<xcb_intern_atom_reply_t, decltype(&::free)> wmDelWinReply(xcb_intern_atom_reply(connection, wmDelWinCookie, nullptr), &::free);
-	if (wmDelWinReply == nullptr) {
-		lock_guard<mutex> lg(_Connection_mutex);
-		_Connection_ref_count--;
-		throw system_error(make_error_code(errc::connection_aborted));
-	}
-	_Wm_delete_window = (wmDelWinReply.get())->atom;
-	const uint8_t wmProtocolsDataFormat = 32;
-	const uint32_t wmProtocolsNumDataElements = 1;
-	xcb_change_property(connection, XCB_PROP_MODE_REPLACE, _Wndw, _Wm_protocols, XCB_ATOM_ATOM, wmProtocolsDataFormat, wmProtocolsNumDataElements, static_cast<void *>(&_Wm_delete_window));
-// 	stringstream wmAtomsStr;
-// 	wmAtomsStr << "WM_PROTOCOLS: '" << to_string(_Wm_protocols) << "'" << endl << "WM_DELETE_WINDOW: '" << to_string(_Wm_delete_window) << "'" << endl;
-// 	cerr << wmAtomsStr.str().c_str();
-	xcb_flush(connection);
-
-	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
-	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-	//_Ensure_state();
 }
 
 display_surface::~display_surface() {
@@ -205,7 +149,58 @@ namespace {
 	}
 }
 
-int display_surface::show() {
+int display_surface::begin_show() {
+	xcb_connection_t* connection = _Connection.get();
+	_Wndw = xcb_generate_id(connection);
+	uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
+	uint32_t values[2];
+	values[0] = _Screen->black_pixel;
+	values[1] = XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_STRUCTURE_NOTIFY | XCB_EVENT_MASK_PROPERTY_CHANGE;
+	uint16_t x = 0;
+	uint16_t y = 0;
+	auto windowCookie = xcb_create_window_checked(connection, _Screen->root_depth, _Wndw, _Screen->root, x, y, static_cast<uint16_t>(_Display_width), static_cast<uint16_t>(_Display_height), _Window_border_width, XCB_WINDOW_CLASS_INPUT_OUTPUT, _Screen->root_visual, mask, values);
+	
+	xcb_generic_error_t* error = xcb_request_check(connection, windowCookie);
+	if (error != nullptr) {
+		lock_guard<mutex> lg(_Connection_mutex);
+		_Connection_ref_count--;
+		throw system_error(make_error_code(errc::connection_aborted));
+	}
+	
+	auto mapCookie = xcb_map_window_checked(connection, _Wndw);
+	xcb_generic_error_t* mapError = xcb_request_check(connection, mapCookie);
+	if (mapError != nullptr) {
+		lock_guard<mutex> lg(_Connection_mutex);
+		_Connection_ref_count--;
+		throw system_error(make_error_code(errc::connection_aborted));
+	}
+	
+	string wmProtocols = "WM_PROTOCOLS";
+	auto wmProtocolsCookie = xcb_intern_atom(connection, 0, static_cast<uint16_t>(wmProtocols.size()), wmProtocols.c_str());
+	unique_ptr<xcb_intern_atom_reply_t, decltype(&::free)> wmProtocolsReply(xcb_intern_atom_reply(connection, wmProtocolsCookie, nullptr), &::free);
+	if (wmProtocolsReply == nullptr) {
+		lock_guard<mutex> lg(_Connection_mutex);
+		_Connection_ref_count--;
+		throw system_error(make_error_code(errc::connection_aborted));
+	}
+	_Wm_protocols = wmProtocolsReply->atom;
+	string wmDelWin = "WM_DELETE_WINDOW";
+	auto wmDelWinCookie = xcb_intern_atom(connection, 0, static_cast<uint16_t>(wmDelWin.size()), wmDelWin.c_str());
+	unique_ptr<xcb_intern_atom_reply_t, decltype(&::free)> wmDelWinReply(xcb_intern_atom_reply(connection, wmDelWinCookie, nullptr), &::free);
+	if (wmDelWinReply == nullptr) {
+		lock_guard<mutex> lg(_Connection_mutex);
+		_Connection_ref_count--;
+		throw system_error(make_error_code(errc::connection_aborted));
+	}
+	_Wm_delete_window = (wmDelWinReply.get())->atom;
+	const uint8_t wmProtocolsDataFormat = 32;
+	const uint32_t wmProtocolsNumDataElements = 1;
+	xcb_change_property(connection, XCB_PROP_MODE_REPLACE, _Wndw, _Wm_protocols, XCB_ATOM_ATOM, wmProtocolsDataFormat, wmProtocolsNumDataElements, static_cast<void *>(&_Wm_delete_window));
+	xcb_flush(connection);
+
+	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
+	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
+
 	bool exit = false;
 	unique_ptr<xcb_generic_event_t, decltype(&::free)> event{ nullptr, &::free };
 
@@ -223,9 +218,6 @@ int display_surface::show() {
 			{
 				xcb_generic_error_t* err = reinterpret_cast<xcb_generic_error_t*>(event.get());
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STATUS);
-// 				stringstream errorString;
-// 				errorString << "Error event->response_type. Value of error_code is '" << to_string(err->error_code) << "'." << endl;
-// 				cerr << errorString.str().c_str();
 			} break;
 				// ExposureMask events:
 			case XCB_EXPOSE:
