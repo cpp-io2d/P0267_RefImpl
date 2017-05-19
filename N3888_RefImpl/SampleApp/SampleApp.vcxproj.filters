@@ -21,9 +21,15 @@
     <ClCompile Include="sample_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="path_examples.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sample_draw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="path_examples.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -27,14 +27,14 @@
 #include <filesystem>
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
-#include "xinclwindows_h.h"
-#elif defined(USE_XCB)
+#if defined(USE_XCB)
 #include <xcb/xcb.h>
 #elif defined(USE_XLIB)
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+#elif defined(_WIN32) || defined(_WIN64)
+#include "xinclwindows_h.h"
 #endif
 
 namespace std {
@@ -1269,7 +1269,9 @@ namespace std {
 						}
 					};
 
-					using path_data_types = ::std::variant<abs_new_path, rel_new_path, close_path, change_matrix, change_origin, abs_cubic_curve, abs_line, abs_quadratic_curve, arc, rel_cubic_curve, rel_cubic_curve, rel_line, rel_quadratic_curve>;
+					using path_data_types = ::std::variant<abs_cubic_curve, abs_line, abs_new_path,
+						abs_quadratic_curve, arc, change_matrix, change_origin, close_path,
+						rel_cubic_curve, rel_line, rel_new_path, rel_quadratic_curve>;
 				}
 
 				// Forward declaration.
