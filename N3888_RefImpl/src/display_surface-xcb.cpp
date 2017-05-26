@@ -2,6 +2,7 @@
 #include "xcairoenumhelpers.h"
 #include <cairo-xcb.h>
 #include <chrono>
+#include <cstdlib>
 
 using namespace std;
 using namespace std::chrono;
@@ -38,8 +39,8 @@ void display_surface::_Make_native_surface_and_context() {
 	}
 	
 	_Native_surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_xcb_surface_create(_Connection.get(), _Wndw, visual, _Display_width, _Display_height), &cairo_surface_destroy);
-	_Native_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Native_surface.get()), &cairo_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Native_surface.get()));
+	_Native_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Native_surface.get()), &cairo_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_status(_Native_context.get()));
 }
 
@@ -61,7 +62,6 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
 	: surface({ nullptr, nullptr }, preferredFormat)
-	, _Default_brush(bgra_color::transparent_black())
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
 	, _Scaling(scl)
@@ -70,7 +70,6 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Draw_fn()
 	, _Size_change_fn()
 	, _User_scaling_fn()
-	, _Letterbox_brush()
 	, _Auto_clear(false)
 	, _Screen(nullptr)
 	, _Wndw()
@@ -79,7 +78,9 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Desired_frame_rate(fps)
 	, _Redraw_requested(true)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
-	, _Native_context(nullptr, &cairo_destroy) {
+	, _Native_context(nullptr, &cairo_destroy)
+	, _Letterbox_brush()
+	, _Default_brush(bgra_color::transparent_black()) {
 	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
 		throw invalid_argument("Invalid parameter.");
 	}

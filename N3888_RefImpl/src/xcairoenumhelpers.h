@@ -194,47 +194,47 @@ namespace std {
 #pragma clang diagnostic pop
 #endif
 
-			inline cairo_antialias_t _Antialias_to_cairo_antialias_t(::std::experimental::io2d::antialias aa) {
-				switch (aa) {
-				case ::std::experimental::io2d::antialias::default_antialias:
-					return CAIRO_ANTIALIAS_DEFAULT;
-				case ::std::experimental::io2d::antialias::none:
-					return CAIRO_ANTIALIAS_NONE;
-				case ::std::experimental::io2d::antialias::gray:
-					return CAIRO_ANTIALIAS_GRAY;
-				case ::std::experimental::io2d::antialias::subpixel:
-					return CAIRO_ANTIALIAS_SUBPIXEL;
-				case ::std::experimental::io2d::antialias::fast:
-					return CAIRO_ANTIALIAS_FAST;
-				case ::std::experimental::io2d::antialias::good:
-					return CAIRO_ANTIALIAS_GOOD;
-				case ::std::experimental::io2d::antialias::best:
-					return CAIRO_ANTIALIAS_BEST;
-				default:
-					throw ::std::runtime_error("Unknown antialias value.");
-				}
-			}
+			//inline cairo_antialias_t _Antialias_to_cairo_antialias_t(::std::experimental::io2d::antialias aa) {
+			//	switch (aa) {
+			//	case ::std::experimental::io2d::antialias::default_antialias:
+			//		return CAIRO_ANTIALIAS_DEFAULT;
+			//	case ::std::experimental::io2d::antialias::none:
+			//		return CAIRO_ANTIALIAS_NONE;
+			//	case ::std::experimental::io2d::antialias::gray:
+			//		return CAIRO_ANTIALIAS_GRAY;
+			//	case ::std::experimental::io2d::antialias::subpixel:
+			//		return CAIRO_ANTIALIAS_SUBPIXEL;
+			//	case ::std::experimental::io2d::antialias::fast:
+			//		return CAIRO_ANTIALIAS_FAST;
+			//	case ::std::experimental::io2d::antialias::good:
+			//		return CAIRO_ANTIALIAS_GOOD;
+			//	case ::std::experimental::io2d::antialias::best:
+			//		return CAIRO_ANTIALIAS_BEST;
+			//	default:
+			//		throw ::std::runtime_error("Unknown antialias value.");
+			//	}
+			//}
 
-			inline ::std::experimental::io2d::antialias _Cairo_antialias_t_to_antialias(cairo_antialias_t caa) {
-				switch (caa) {
-				case CAIRO_ANTIALIAS_DEFAULT:
-					return ::std::experimental::io2d::antialias::default_antialias;
-				case CAIRO_ANTIALIAS_NONE:
-					return ::std::experimental::io2d::antialias::none;
-				case CAIRO_ANTIALIAS_GRAY:
-					return ::std::experimental::io2d::antialias::gray;
-				case CAIRO_ANTIALIAS_SUBPIXEL:
-					return ::std::experimental::io2d::antialias::subpixel;
-				case CAIRO_ANTIALIAS_FAST:
-					return ::std::experimental::io2d::antialias::fast;
-				case CAIRO_ANTIALIAS_GOOD:
-					return ::std::experimental::io2d::antialias::good;
-				case CAIRO_ANTIALIAS_BEST:
-					return ::std::experimental::io2d::antialias::best;
-				default:
-					throw ::std::runtime_error("Unknown cairo_antialias_t value.");
-				}
-			}
+			//inline ::std::experimental::io2d::antialias _Cairo_antialias_t_to_antialias(cairo_antialias_t caa) {
+			//	switch (caa) {
+			//	case CAIRO_ANTIALIAS_DEFAULT:
+			//		return ::std::experimental::io2d::antialias::default_antialias;
+			//	case CAIRO_ANTIALIAS_NONE:
+			//		return ::std::experimental::io2d::antialias::none;
+			//	case CAIRO_ANTIALIAS_GRAY:
+			//		return ::std::experimental::io2d::antialias::gray;
+			//	case CAIRO_ANTIALIAS_SUBPIXEL:
+			//		return ::std::experimental::io2d::antialias::subpixel;
+			//	case CAIRO_ANTIALIAS_FAST:
+			//		return ::std::experimental::io2d::antialias::fast;
+			//	case CAIRO_ANTIALIAS_GOOD:
+			//		return ::std::experimental::io2d::antialias::good;
+			//	case CAIRO_ANTIALIAS_BEST:
+			//		return ::std::experimental::io2d::antialias::best;
+			//	default:
+			//		throw ::std::runtime_error("Unknown cairo_antialias_t value.");
+			//	}
+			//}
 
 			//inline cairo_content_t _Content_to_cairo_content_t(::std::experimental::io2d::content c) {
 			//	switch (c) {

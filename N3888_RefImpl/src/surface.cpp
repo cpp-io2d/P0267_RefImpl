@@ -10,8 +10,7 @@ using namespace std::experimental::io2d;
 //}
 //
 surface::surface(format fmt, int width, int height)
-	: _Device()
-	, _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
+	: _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy))
 	, _Dirty_rect()
 	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get()))) {
@@ -24,8 +23,7 @@ surface::native_handle_type surface::native_handle() const {
 }
 
 surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::format fmt)
-	: _Device()
-	, _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(nh.csfce, &cairo_surface_destroy))
+	: _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(nh.csfce, &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, decltype(&cairo_destroy)>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy))
 	, _Dirty_rect()
 	, _Format(fmt) {
@@ -35,16 +33,6 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	}
 }
 
-//surface::surface(const surface& other, int width, int height)
-//	: _Device()
-//	, _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_surface_create_similar(other._Surface.get(), cairo_surface_get_content(other._Surface.get()), width, height), &cairo_surface_destroy))
-//	, _Context(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy))
-//	, _Dirty_rect()
-//	, _Format(_Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get()))) {
-//	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-//	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
-//}
-//
 void surface::flush() {
 	cairo_surface_flush(_Surface.get());
 }
@@ -52,16 +40,6 @@ void surface::flush() {
 void surface::flush(::std::error_code & ec) noexcept {
 	cairo_surface_flush(_Surface.get());
 	ec.clear();
-}
-
-shared_ptr<device> surface::device() {
-	auto dvc = _Device.lock();
-	if (dvc.use_count() != 0) {
-		return dvc;
-	}
-	dvc = shared_ptr<::std::experimental::io2d::device>(new ::std::experimental::io2d::device(cairo_surface_get_device(_Surface.get())));
-	_Device = weak_ptr<::std::experimental::io2d::device>(dvc);
-	return dvc;
 }
 
 void surface::mark_dirty() {
@@ -133,7 +111,6 @@ namespace {
 	void _Set_render_props(cairo_t* context, const optional<render_props>& r) {
 		if (r == nullopt) {
 			cairo_identity_matrix(context);
-			cairo_set_antialias(context, CAIRO_ANTIALIAS_GOOD);
 			cairo_set_operator(context, CAIRO_OPERATOR_OVER);
 		}
 		else {
@@ -141,7 +118,6 @@ namespace {
 			const matrix_2d m = props.surface_matrix();
 			cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
 			cairo_set_matrix(context, &cm);
-			cairo_set_antialias(context, _Antialias_to_cairo_antialias_t(props.antialiasing()));
 			cairo_set_operator(context, _Compositing_operator_to_cairo_operator_t(props.compositing()));
 		}
 	}
@@ -239,11 +215,6 @@ void surface::paint(const brush& b, const optional<brush_props>& bp, const optio
 	cairo_paint(context);
 }
 
-//template <class Allocator>
-//void surface::fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
-//	path_group pg(pf);
-//	fill(b, pg, bp, rp, cl);
-//}
 void surface::fill(const brush& b, const path_group& pg, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);

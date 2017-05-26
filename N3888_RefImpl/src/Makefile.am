@@ -6,7 +6,6 @@ lib_LTLIBRARIES =		libio2d.la
 
 libio2d_la_SOURCES =		brush.cpp \
 				color_stop.cpp \
-				device.cpp \
 				display_surface-common.cpp \
 				image_surface.cpp \
 				io2d_error_category.cpp \

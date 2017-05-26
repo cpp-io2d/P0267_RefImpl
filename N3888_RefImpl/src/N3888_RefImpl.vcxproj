@@ -413,7 +413,6 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="color_stop.cpp" />
-    <ClCompile Include="device.cpp" />
     <ClCompile Include="display_surface-common.cpp" />
     <ClCompile Include="display_surface-win32.cpp" />
     <ClCompile Include="image_surface.cpp" />

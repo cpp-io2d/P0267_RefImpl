@@ -44,9 +44,6 @@
     <ClCompile Include="surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="image_surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

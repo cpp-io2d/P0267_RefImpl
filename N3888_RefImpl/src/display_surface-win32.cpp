@@ -215,7 +215,6 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
 	: surface({ nullptr, nullptr }, preferredFormat)
-	, _Default_brush(bgra_color::transparent_black())//cairo_pattern_create_rgba(0.0, 0.0, 0.0, 1.0))
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
 	, _Scaling(scl)
@@ -224,7 +223,6 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Draw_fn()
 	, _Size_change_fn()
 	, _User_scaling_fn()
-	, _Letterbox_brush()
 	, _Auto_clear(false)
 	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
@@ -232,7 +230,9 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Desired_frame_rate(fps)
 	, _Redraw_requested(true)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
-	, _Native_context(nullptr, &cairo_destroy) {
+	, _Native_context(nullptr, &cairo_destroy)
+	, _Letterbox_brush()
+	, _Default_brush(bgra_color::transparent_black()) {
 	call_once(_Window_class_registered_flag, _MyRegisterClass, static_cast<HINSTANCE>(GetModuleHandleW(nullptr)));
 
 	// Record the desired client window size

@@ -88,16 +88,6 @@ namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
-				enum class antialias {
-					default_antialias,
-					none,
-					gray,
-					subpixel,
-					fast,
-					good,
-					best
-				};
-
 				enum class fill_rule {
 					winding,
 					even_odd
@@ -266,12 +256,12 @@ namespace std {
 					double angular_direction() const noexcept;
 					vector_2d to_unit() const noexcept;
 
-					vector_2d& operator+=(const vector_2d& rhs) noexcept;
-					vector_2d& operator-=(const vector_2d& rhs) noexcept;
-					vector_2d& operator*=(double rhs) noexcept;
-					vector_2d& operator*=(const vector_2d& rhs) noexcept;
-					vector_2d& operator/=(double rhs) noexcept;
-					vector_2d& operator/=(const vector_2d& rhs) noexcept;
+					constexpr vector_2d& operator+=(const vector_2d& rhs) noexcept;
+					constexpr vector_2d& operator-=(const vector_2d& rhs) noexcept;
+					constexpr vector_2d& operator*=(double rhs) noexcept;
+					constexpr vector_2d& operator*=(const vector_2d& rhs) noexcept;
+					constexpr vector_2d& operator/=(double rhs) noexcept;
+					constexpr vector_2d& operator/=(const vector_2d& rhs) noexcept;
 				};
 
 				inline constexpr bool operator==(const vector_2d& lhs, const vector_2d& rhs) noexcept {
@@ -290,7 +280,7 @@ namespace std {
 					return vector_2d{ lhs.x() + rhs.x(), lhs.y() + rhs.y() };
 				}
 
-				inline vector_2d& vector_2d::operator+=(const vector_2d& rhs) noexcept {
+				inline constexpr vector_2d& vector_2d::operator+=(const vector_2d& rhs) noexcept {
 					_X = _X + rhs.x();
 					_Y = _Y + rhs.y();
 					return *this;
@@ -304,19 +294,19 @@ namespace std {
 					return vector_2d{ lhs.x() - rhs.x(), lhs.y() - rhs.y() };
 				}
 
-				inline vector_2d& vector_2d::operator-=(const vector_2d& rhs) noexcept {
+				inline constexpr vector_2d& vector_2d::operator-=(const vector_2d& rhs) noexcept {
 					_X = _X - rhs.x();
 					_Y = _Y - rhs.y();
 					return *this;
 				}
 
-				inline vector_2d& vector_2d::operator*=(double rhs) noexcept {
+				inline constexpr vector_2d& vector_2d::operator*=(double rhs) noexcept {
 					_X *= rhs;
 					_Y *= rhs;
 					return *this;
 				}
 
-				inline vector_2d& vector_2d::operator*=(const vector_2d& rhs) noexcept {
+				inline constexpr vector_2d& vector_2d::operator*=(const vector_2d& rhs) noexcept {
 					_X *= rhs.x();
 					_Y *= rhs.y();
 					return *this;
@@ -334,13 +324,13 @@ namespace std {
 					return vector_2d{ lhs.x() * rhs.x(), lhs.y() * rhs.y() };
 				}
 
-				inline vector_2d& vector_2d::operator/=(double rhs) noexcept {
+				inline constexpr vector_2d& vector_2d::operator/=(double rhs) noexcept {
 					_X /= rhs;
 					_Y /= rhs;
 					return *this;
 				}
 
-				inline vector_2d& vector_2d::operator/=(const vector_2d& rhs) noexcept {
+				inline constexpr vector_2d& vector_2d::operator/=(const vector_2d& rhs) noexcept {
 					_X /= rhs.x();
 					_Y /= rhs.y();
 					return *this;
@@ -409,6 +399,13 @@ namespace std {
 					constexpr double bottom() const noexcept;
 					constexpr vector_2d top_left() const noexcept;
 					constexpr vector_2d bottom_right() const noexcept;
+
+					constexpr bool operator==(const rectangle& rhs) const noexcept {
+						return _X == rhs._X && _Y == rhs._Y && _Width == rhs._Width && _Height == rhs._Height;
+					}
+					constexpr bool operator!=(const rectangle& rhs) const noexcept {
+						return !((*this) == rhs);
+					}
 				};
 
 				inline constexpr double rectangle::x() const noexcept {
@@ -1649,30 +1646,6 @@ namespace std {
 					lhs.swap(rhs);
 				}
 
-				class device {
-				public:
-					typedef cairo_device_t* native_handle_type;
-				private:
-					friend surface;
-					explicit device(native_handle_type nh);
-					device(native_handle_type nh, error_code& ec) noexcept;
-				protected:
-					::std::shared_ptr<cairo_device_t> _Device;
-				public:
-					native_handle_type native_handle() const noexcept;
-
-					device() = delete;
-					device(device&& other) noexcept = default;
-					device& operator=(device&& other) noexcept = default;
-
-					// Modifiers
-					void flush() noexcept;
-					void lock();
-					void lock(::std::error_code& ec) noexcept;
-					void unlock();
-					void unlock(::std::error_code& ec) noexcept;
-				};
-
 				class color_stop {
 				private:
 					double _Offset = 0.0;
@@ -1690,20 +1663,14 @@ namespace std {
 
 				class render_props {
 					matrix_2d _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
-					experimental::io2d::antialias _Antialias = experimental::io2d::antialias::good;
 					experimental::io2d::compositing_op _Compositing = experimental::io2d::compositing_op::over;
 				public:
 					constexpr render_props() noexcept {}
 					constexpr explicit render_props(const matrix_2d& m,
-						antialias a = antialias::good,
 						compositing_op co = compositing_op::over) noexcept
 						: _Matrix(m)
-						, _Antialias(a)
 						, _Compositing(co) {}
 
-					constexpr void antialiasing(antialias a) noexcept {
-						_Antialias = a;
-					}
 					constexpr void compositing(compositing_op co) noexcept {
 						_Compositing = co;
 					}
@@ -1711,9 +1678,6 @@ namespace std {
 						_Matrix = m;
 					}
 
-					constexpr antialias antialiasing() const noexcept {
-						return _Antialias;
-					}
 					constexpr compositing_op compositing() const noexcept {
 						return _Compositing;
 					}
@@ -1950,8 +1914,6 @@ namespace std {
 				class surface {
 				public:
 					typedef _Surface_native_handles native_handle_type;
-				private:
-					::std::weak_ptr<::std::experimental::io2d::device> _Device;
 				protected:
 					::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> _Surface;
 					::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Context;
@@ -1977,8 +1939,6 @@ namespace std {
 					// \ref{\iotwod.surface.modifiers.state}, state modifiers:
 					void flush();
 					void flush(::std::error_code& ec) noexcept;
-					::std::shared_ptr<experimental::io2d::device> device();
-					::std::shared_ptr<experimental::io2d::device> device(::std::error_code& ec) noexcept;
 					void mark_dirty();
 					void mark_dirty(const rectangle& rect);
 					void map(const ::std::function<void(mapped_surface&)>& action);
@@ -2073,17 +2033,7 @@ namespace std {
 					int stride() const noexcept;
 				};
 
-#ifdef _WIN32_WINNT
-				struct _Win32_display_surface_native_handle {
-					_Surface_native_handles sfc_nh;
-					HWND hwnd;
-					_Surface_native_handles win32_sfc_nh;
-				};
-
-				const int _Display_surface_ptr_window_data_byte_offset = 0;
-
-				LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-#elif defined(USE_XCB)
+#if defined(USE_XCB)
 				struct _Xcb_display_surface_native_handle {
 					_Surface_native_handles sfc_nh;
 					_Surface_native_handles display_sfc_nh;
@@ -2101,13 +2051,21 @@ namespace std {
 					::std::mutex& display_mutex;
 					int& display_ref_count;
 				};
+#elif defined(_WIN32) || defined(_WIN64)
+				struct _Win32_display_surface_native_handle {
+					_Surface_native_handles sfc_nh;
+					HWND hwnd;
+					_Surface_native_handles win32_sfc_nh;
+				};
+
+				const int _Display_surface_ptr_window_data_byte_offset = 0;
+
+				LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 
 				class display_surface : public surface {
 					friend surface;
 
-					::std::experimental::io2d::brush _Default_brush;
-					//brush_props _Default_brush_props; // Unneeded since it's a solid color brush.
 					int _Display_width;
 					int _Display_height;
 					::std::experimental::io2d::scaling _Scaling;
@@ -2116,18 +2074,11 @@ namespace std {
 					::std::unique_ptr<::std::function<void(display_surface& sfc)>> _Draw_fn;
 					::std::unique_ptr<::std::function<void(display_surface& sfc)>> _Size_change_fn;
 					::std::unique_ptr<::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>> _User_scaling_fn;
-					optional<experimental::io2d::brush> _Letterbox_brush;
 					optional<brush_props> _Letterbox_brush_props;
 					typedef bool _Auto_clear_type;
 					bool _Auto_clear;
 
-#ifdef _WIN32_WINNT
-					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-					DWORD _Window_style;
-					HWND _Hwnd;
-
-					LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-#elif defined(USE_XCB)
+#if defined(USE_XCB)
 					static ::std::mutex _Connection_mutex;
 					static ::std::unique_ptr<xcb_connection_t, decltype(&xcb_disconnect)> _Connection;
 					static int _Connection_ref_count;
@@ -2143,6 +2094,12 @@ namespace std {
 					bool _Can_draw = false;
 
 					static Bool _X11_if_event_pred(Display* display, XEvent* event, XPointer arg);
+#elif  defined(_WIN32) || (_WIN64)
+					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+					DWORD _Window_style;
+					HWND _Hwnd;
+
+					LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 					::std::experimental::io2d::refresh_rate _Refresh_rate;
 					double _Desired_frame_rate;
@@ -2152,6 +2109,8 @@ namespace std {
 					const double _Maximum_frame_rate = 120.0;
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Native_surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Native_context;
+					optional<experimental::io2d::brush> _Letterbox_brush;
+					::std::experimental::io2d::brush _Default_brush;
 
 					void _Make_native_surface_and_context();
 					void _Make_native_surface_and_context(::std::error_code& ec) noexcept;

@@ -177,7 +177,6 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 
 display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
 	: surface({ nullptr, nullptr }, preferredFormat)
-	, _Default_brush(bgra_color::transparent_black())
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
 	, _Scaling(scl)
@@ -186,7 +185,6 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Draw_fn()
 	, _Size_change_fn()
 	, _User_scaling_fn()
-	, _Letterbox_brush()
 	, _Auto_clear(false)
 	, _Wndw(None)
 	, _Can_draw(false)
@@ -194,7 +192,9 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Desired_frame_rate(fps)
 	, _Redraw_requested(true)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
-	, _Native_context(nullptr, &cairo_destroy) {
+	, _Native_context(nullptr, &cairo_destroy)
+	, _Letterbox_brush()
+	, _Default_brush(bgra_color::transparent_black()) {
 	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
 		throw invalid_argument("Invalid parameter.");
 	}
@@ -232,14 +232,16 @@ display_surface::~display_surface() {
 		XDestroyWindow(_Display.get(), _Wndw);
 		_Wndw = None;
 	}
-	lock_guard<mutex> lg(_Display_mutex);
-	_Display_ref_count--;
-	assert(_Display_ref_count >= 0);
-	if (_Display_ref_count <= 0) {
-		_Display_ref_count = 0;
-		_Display = nullptr;
+	if (_Display != nullptr) {
+		lock_guard<mutex> lg(_Display_mutex);
+		_Display_ref_count--;
+		assert(_Display_ref_count >= 0);
+		if (_Display_ref_count <= 0) {
+			unique_ptr<Display, function<void(Display*)>> emptyDisplay{ nullptr, [](Display*) { return; } };
+			_Display_ref_count = 0;
+			_Display.swap(emptyDisplay);
+		}
 	}
-}
 
 int display_surface::begin_show() {
 	Display* display = _Display.get();
