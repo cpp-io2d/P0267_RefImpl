@@ -216,10 +216,10 @@ void test_image_load_save(display_surface& ds) {
 //	auto invBcsm = bcsm;
 //	invBcsm.invert();
 //
-//	////auto pt = m.invert().transform_point({ 0.0, 0.0 });
-//	////auto pt2 = m.transform_point({ 10.0, 10.0 });
-//	//auto pt = m.transform_point({ 0.0, 0.0 });
-//	//auto pt2 = invScsm.transform_point({ 45.0, 30.0 });
+//	////auto pt = m.invert().transform_pt({ 0.0, 0.0 });
+//	////auto pt2 = m.transform_pt({ 10.0, 10.0 });
+//	//auto pt = m.transform_pt({ 0.0, 0.0 });
+//	//auto pt2 = invScsm.transform_pt({ 45.0, 30.0 });
 //	//auto pt3 = vector_2d{ -26.6666666666666, -30.0 };
 //	//auto pt4 = vector_2d{ -16.6666666666666, -20.0 };
 //	//auto pt5 = vector_2d{ 45.0, 30.0 };

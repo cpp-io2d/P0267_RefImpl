@@ -114,7 +114,7 @@ namespace path_test {
 
 		// Example code goes here.
 		const matrix_2d sclMtx = matrix_2d::init_scale({ 0.9, 1.1 });// .rotate(half_pi<double>);// * matrix_2d::init_rotate(half_pi<double>);
-		auto pt = sclMtx.inverse().transform_point({ 85.0, 100.0 }) +
+		auto pt = sclMtx.inverse().transform_pt({ 85.0, 100.0 }) +
 			point_for_angle(half_pi<double> / 2.0, 50.0);
 		pb.matrix(sclMtx);
 		pb.new_path(pt);

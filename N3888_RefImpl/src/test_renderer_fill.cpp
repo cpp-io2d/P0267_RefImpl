@@ -783,7 +783,7 @@
 //				if (isFilled) {
 //					vec.push_back(fill_line(lineEndPoint, lastMoveToPoint));
 //					auto inverseMatrix = matrix_2d(matrix).invert();
-//					currentPoint = inverseMatrix.transform_point(lastMoveToPoint - origin) + origin;
+//					currentPoint = inverseMatrix.transform_pt(lastMoveToPoint - origin) + origin;
 //					lineEndPoint = lastMoveToPoint;
 //					subPaths.emplace_back(move(vec));
 //				}
@@ -801,12 +801,12 @@
 //				switch (pdt) {
 //				case std::experimental::io2d::path_data_type::path_abs_move:
 //				{
-//					auto pt = matrix.transform_point(currentPoint - origin) + origin;
+//					auto pt = matrix.transform_pt(currentPoint - origin) + origin;
 //					if (hasCurrentPoint) {
 //						add_path_conditional_and_reset_vec_and_vars_fn();
 //					}
 //					currentPoint = item.get<path_abs_move>().to();
-//					pt = matrix.transform_point(currentPoint - origin) + origin;
+//					pt = matrix.transform_pt(currentPoint - origin) + origin;
 //					hasCurrentPoint = true;
 //					hasCurrentLine = false;
 //					lastMoveToPoint = pt;
@@ -815,7 +815,7 @@
 //				case std::experimental::io2d::path_data_type::path_abs_line:
 //				{
 //					currentPoint = item.get<path_abs_line>().to();
-//					auto pt = matrix.transform_point(currentPoint - origin) + origin;
+//					auto pt = matrix.transform_pt(currentPoint - origin) + origin;
 //					if (hasCurrentPoint) {
 //						if (!points_are_the_same(lineEndPoint, pt)) {
 //							vec.push_back(fill_line(lineEndPoint, pt));
@@ -829,7 +829,7 @@
 //					}
 //					else {
 //						currentPoint = item.get<path_abs_line>().to();
-//						auto ltpt = matrix.transform_point(currentPoint - origin) + origin;
+//						auto ltpt = matrix.transform_pt(currentPoint - origin) + origin;
 //						hasCurrentPoint = true;
 //						hasCurrentLine = false;
 //						lastMoveToPoint = ltpt;
@@ -839,9 +839,9 @@
 //				case std::experimental::io2d::path_data_type::path_curve:
 //				{
 //					auto dataItem = item.get<path_curve>();
-//					auto pt1 = matrix.transform_point(dataItem.control_point_1() - origin) + origin;
-//					auto pt2 = matrix.transform_point(dataItem.control_point_2() - origin) + origin;
-//					auto pt3 = matrix.transform_point(dataItem.end_point() - origin) + origin;
+//					auto pt1 = matrix.transform_pt(dataItem.control_point_1() - origin) + origin;
+//					auto pt2 = matrix.transform_pt(dataItem.control_point_2() - origin) + origin;
+//					auto pt3 = matrix.transform_pt(dataItem.end_point() - origin) + origin;
 //					if (!hasCurrentPoint) {
 //						currentPoint = dataItem.control_point_1();
 //						hasCurrentPoint = true;
@@ -886,7 +886,7 @@
 //						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 //					}
 //					currentPoint = item.get<path_rel_move>().to() + currentPoint;
-//					auto pt = matrix.transform_point(currentPoint - origin) + origin;
+//					auto pt = matrix.transform_pt(currentPoint - origin) + origin;
 //					hasCurrentPoint = true;
 //					hasCurrentLine = false;
 //					lastMoveToPoint = pt;
@@ -898,7 +898,7 @@
 //						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 //					}
 //					currentPoint = item.get<path_rel_line>().to() + currentPoint;
-//					auto pt = matrix.transform_point(currentPoint - origin) + origin;
+//					auto pt = matrix.transform_pt(currentPoint - origin) + origin;
 //					if (!points_are_the_same(lineEndPoint, pt)) {
 //						vec.push_back(fill_line(lineEndPoint, pt));
 //						if (!isFilled && hasCurrentLine) {
@@ -915,9 +915,9 @@
 //						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NO_CURRENT_POINT);
 //					}
 //					auto dataItem = item.get<path_rel_cubic_curve>();
-//					auto pt1 = matrix.transform_point(dataItem.control_point_1() + currentPoint - origin) + origin;
-//					auto pt2 = matrix.transform_point(dataItem.control_point_2() + currentPoint - origin) + origin;
-//					auto pt3 = matrix.transform_point(dataItem.end_point() + currentPoint - origin) + origin;
+//					auto pt1 = matrix.transform_pt(dataItem.control_point_1() + currentPoint - origin) + origin;
+//					auto pt2 = matrix.transform_pt(dataItem.control_point_2() + currentPoint - origin) + origin;
+//					auto pt3 = matrix.transform_pt(dataItem.end_point() + currentPoint - origin) + origin;
 //					if (points_are_the_same(lineEndPoint, pt3)) {
 //						// There's no curve at all if the begin and end of the curve are the same point; control points cannot manipulate a line that doesn't exist. 
 //						break;
@@ -990,7 +990,7 @@
 //						ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
 //
 //					if (hasCurrentPoint) {
-//						auto pt = matrix.transform_point(startPt - origin) + origin;
+//						auto pt = matrix.transform_pt(startPt - origin) + origin;
 //						if (!points_are_the_same(lineEndPoint, pt)) {
 //							vec.push_back(fill_line(lineEndPoint, pt));
 //							if (!isFilled && hasCurrentLine) {
@@ -1003,7 +1003,7 @@
 //						}
 //					}
 //					else {
-//						auto pt = matrix.transform_point(startPt - origin) + origin;
+//						auto pt = matrix.transform_pt(startPt - origin) + origin;
 //						currentPoint = startPt;
 //						hasCurrentPoint = true;
 //						hasCurrentLine = false;
@@ -1016,9 +1016,9 @@
 //						auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad }, currTheta);
 //						auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad }, currTheta);
 //						currentPoint = cpt3;
-//						cpt1 = matrix.transform_point(cpt1 - origin) + origin;
-//						cpt2 = matrix.transform_point(cpt2 - origin) + origin;
-//						cpt3 = matrix.transform_point(cpt3 - origin) + origin;
+//						cpt1 = matrix.transform_pt(cpt1 - origin) + origin;
+//						cpt2 = matrix.transform_pt(cpt2 - origin) + origin;
+//						cpt3 = matrix.transform_pt(cpt3 - origin) + origin;
 //						if (points_are_the_same(lineEndPoint, cpt3)) {
 //							// This likely should never happen but I don't have time to investigate just now and this is a safe way of handling it.
 //							continue;
@@ -1097,7 +1097,7 @@
 //						ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
 //
 //					if (hasCurrentPoint) {
-//						auto pt = matrix.transform_point(startPt - origin) + origin;
+//						auto pt = matrix.transform_pt(startPt - origin) + origin;
 //						if (!points_are_the_same(lineEndPoint, pt)) {
 //							vec.push_back(fill_line(lineEndPoint, pt));
 //							if (!isFilled && hasCurrentLine) {
@@ -1110,7 +1110,7 @@
 //						}
 //					}
 //					else {
-//						auto pt = matrix.transform_point(startPt - origin) + origin;
+//						auto pt = matrix.transform_pt(startPt - origin) + origin;
 //						currentPoint = startPt;
 //						hasCurrentPoint = true;
 //						hasCurrentLine = false;
@@ -1123,9 +1123,9 @@
 //						auto cpt2 = ctr + rotCwFn({ pt2.x() * rad, pt2.y() * rad }, currTheta);
 //						auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad }, currTheta);
 //						currentPoint = cpt3;
-//						cpt1 = matrix.transform_point(cpt1 - origin) + origin;
-//						cpt2 = matrix.transform_point(cpt2 - origin) + origin;
-//						cpt3 = matrix.transform_point(cpt3 - origin) + origin;
+//						cpt1 = matrix.transform_pt(cpt1 - origin) + origin;
+//						cpt2 = matrix.transform_pt(cpt2 - origin) + origin;
+//						cpt3 = matrix.transform_pt(cpt3 - origin) + origin;
 //						if (points_are_the_same(lineEndPoint, cpt3)) {
 //							// This likely should never happen but I don't have time to investigate just now and this is a safe way of handling it.
 //							continue;

@@ -880,7 +880,7 @@ namespace std {
 					constexpr double determinant() const noexcept {
 						return _M00 * _M11 - _M01 * _M10;
 					}
-					constexpr vector_2d transform_point(const vector_2d& pt) const noexcept {
+					constexpr vector_2d transform_pt(const vector_2d& pt) const noexcept {
 						auto result = vector_2d{ _M00 * pt.x() + _M10 * pt.y() + _M20, _M01 * pt.x() + _M11 * pt.y() + _M21 };
 						if ((result.x() < numeric_limits<double>::epsilon() * 100.0) &&
 							(-result.x() < numeric_limits<double>::epsilon() * 100.0)) {
@@ -916,6 +916,10 @@ namespace std {
 				}
 				constexpr bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
 					return !(lhs == rhs);
+				}
+
+				constexpr vector_2d operator*(const vector_2d& pt, const matrix_2d& m) {
+					return m.transform_pt(pt);
 				}
 
 				namespace path_data {
@@ -3133,7 +3137,7 @@ namespace std {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
 						currentPoint = item.at();
-						auto pt = m.transform_point(currentPoint - origin) + origin;
+						auto pt = m.transform_pt(currentPoint - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 						closePoint = pt;
 					}
@@ -3150,7 +3154,7 @@ namespace std {
 							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
 						}
 						// Need to assign the untransformed closePoint value to currentPoint.
-						currentPoint = m.inverse().transform_point(closePoint - origin) + origin;
+						currentPoint = m.inverse().transform_pt(closePoint - origin) + origin;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, stack<matrix_2d>& matrices, stack<vector_2d>&) {
@@ -3207,9 +3211,9 @@ namespace std {
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
-						auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
-						auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
-						auto pt3 = m.transform_point(item.end_point() - origin) + origin;
+						auto pt1 = m.transform_pt(item.control_point_1() - origin) + origin;
+						auto pt2 = m.transform_pt(item.control_point_2() - origin) + origin;
+						auto pt3 = m.transform_pt(item.end_point() - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
 							pt2, pt3);
 						currentPoint = item.end_point();
@@ -3218,7 +3222,7 @@ namespace std {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
 						currentPoint = item.to();
-						auto pt = m.transform_point(currentPoint - origin) + origin;
+						auto pt = m.transform_pt(currentPoint - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 						closePoint = pt;
 					}
@@ -3226,9 +3230,9 @@ namespace std {
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
 						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 						//vector_2d beginPt;
-						auto controlPt = m.transform_point(item.control_point() - origin) + origin;
-						auto endPt = m.transform_point(item.end_point() - origin) + origin;
-						auto beginPt = m.transform_point(currentPoint - origin) + origin;
+						auto controlPt = m.transform_pt(item.control_point() - origin) + origin;
+						auto endPt = m.transform_pt(item.end_point() - origin) + origin;
+						auto beginPt = m.transform_pt(currentPoint - origin) + origin;
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
@@ -3331,19 +3335,19 @@ namespace std {
 						auto currTheta = startAng;
 
 						for (; bezCount > 0; bezCount--) {
-							const auto rapt0 = m.transform_point(rotCntrCwFn(pt0, currTheta));
-							const auto rapt1 = m.transform_point(rotCntrCwFn(pt1, currTheta));
-							const auto rapt2 = m.transform_point(rotCntrCwFn(pt2, currTheta));
-							const auto rapt3 = m.transform_point(rotCntrCwFn(pt3, currTheta));
+							const auto rapt0 = m.transform_pt(rotCntrCwFn(pt0, currTheta));
+							const auto rapt1 = m.transform_pt(rotCntrCwFn(pt1, currTheta));
+							const auto rapt2 = m.transform_pt(rotCntrCwFn(pt2, currTheta));
+							const auto rapt3 = m.transform_pt(rotCntrCwFn(pt3, currTheta));
 							auto cpt0 = ctr + rapt0;
 							auto cpt1 = ctr + rapt1;
 							auto cpt2 = ctr + rapt2;
 							auto cpt3 = ctr + rapt3;
 							currentPoint = cpt3;
-							cpt0 = origM.transform_point(cpt0);
-							cpt1 = origM.transform_point(cpt1);
-							cpt2 = origM.transform_point(cpt2);
-							cpt3 = origM.transform_point(cpt3);
+							cpt0 = origM.transform_pt(cpt0);
+							cpt1 = origM.transform_pt(cpt1);
+							cpt2 = origM.transform_pt(cpt2);
+							cpt3 = origM.transform_pt(cpt3);
 
 							v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
 							currTheta -= theta;
@@ -3394,7 +3398,7 @@ namespace std {
 				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
 				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
 				//		currentPoint = item.at();
-				//		auto pt = m.transform_point(currentPoint - origin) + origin;
+				//		auto pt = m.transform_pt(currentPoint - origin) + origin;
 				//		v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 				//		closePoint = pt;
 				//		ec.clear();
@@ -3402,7 +3406,7 @@ namespace std {
 				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
 				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
 				//		currentPoint = currentPoint + item.at();
-				//		auto pt = m.transform_point(currentPoint - origin) + origin;
+				//		auto pt = m.transform_pt(currentPoint - origin) + origin;
 				//		v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 				//		closePoint = pt;
 				//		ec.clear();
@@ -3418,7 +3422,7 @@ namespace std {
 				//		}
 				//		auto invM = m.inverse();
 				//		// Need to assign the untransformed closePoint value to currentPoint.
-				//		currentPoint = invM.transform_point(closePoint - origin) + origin;
+				//		currentPoint = invM.transform_pt(closePoint - origin) + origin;
 				//		ec.clear();
 				//	}
 				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
@@ -3441,9 +3445,9 @@ namespace std {
 				//	}
 				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
 				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-				//		auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
-				//		auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
-				//		auto pt3 = m.transform_point(item.end_point() - origin) + origin;
+				//		auto pt1 = m.transform_pt(item.control_point_1() - origin) + origin;
+				//		auto pt2 = m.transform_pt(item.control_point_2() - origin) + origin;
+				//		auto pt3 = m.transform_pt(item.end_point() - origin) + origin;
 				//		v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
 				//			pt2, pt3);
 				//		currentPoint = item.end_point();
@@ -3452,7 +3456,7 @@ namespace std {
 				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
 				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
 				//		currentPoint = item.to();
-				//		auto pt = m.transform_point(currentPoint - origin) + origin;
+				//		auto pt = m.transform_pt(currentPoint - origin) + origin;
 				//		v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 				//		ec.clear();
 				//	}
@@ -3460,9 +3464,9 @@ namespace std {
 				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
 				//		// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 				//		vector_2d beginPt;
-				//		auto controlPt = m.transform_point(item.control_point() - origin) + origin;
-				//		auto endPt = m.transform_point(item.end_point() - origin) + origin;
-				//		beginPt = m.transform_point(currentPoint - origin) + origin;
+				//		auto controlPt = m.transform_pt(item.control_point() - origin) + origin;
+				//		auto endPt = m.transform_pt(item.end_point() - origin) + origin;
+				//		beginPt = m.transform_pt(currentPoint - origin) + origin;
 				//		vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 				//		vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 				//		v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
@@ -3566,19 +3570,19 @@ namespace std {
 				//		auto currTheta = startAng;
 
 				//		for (; bezCount > 0; bezCount--) {
-				//			const auto rapt0 = m.transform_point(rotCntrCwFn(pt0, currTheta));
-				//			const auto rapt1 = m.transform_point(rotCntrCwFn(pt1, currTheta));
-				//			const auto rapt2 = m.transform_point(rotCntrCwFn(pt2, currTheta));
-				//			const auto rapt3 = m.transform_point(rotCntrCwFn(pt3, currTheta));
+				//			const auto rapt0 = m.transform_pt(rotCntrCwFn(pt0, currTheta));
+				//			const auto rapt1 = m.transform_pt(rotCntrCwFn(pt1, currTheta));
+				//			const auto rapt2 = m.transform_pt(rotCntrCwFn(pt2, currTheta));
+				//			const auto rapt3 = m.transform_pt(rotCntrCwFn(pt3, currTheta));
 				//			auto cpt0 = ctr + rapt0;
 				//			auto cpt1 = ctr + rapt1;
 				//			auto cpt2 = ctr + rapt2;
 				//			auto cpt3 = ctr + rapt3;
 				//			currentPoint = cpt3;
-				//			cpt0 = origM.transform_point(cpt0);
-				//			cpt1 = origM.transform_point(cpt1);
-				//			cpt2 = origM.transform_point(cpt2);
-				//			cpt3 = origM.transform_point(cpt3);
+				//			cpt0 = origM.transform_pt(cpt0);
+				//			cpt1 = origM.transform_pt(cpt1);
+				//			cpt2 = origM.transform_pt(cpt2);
+				//			cpt3 = origM.transform_pt(cpt3);
 
 				//			v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
 				//			currTheta -= theta;
@@ -3589,11 +3593,11 @@ namespace std {
 				//	}
 				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
 				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-				//		auto pt1 = m.transform_point(item.control_point_1() + currentPoint -
+				//		auto pt1 = m.transform_pt(item.control_point_1() + currentPoint -
 				//			origin) + origin;
-				//		auto pt2 = m.transform_point(item.control_point_2() + currentPoint -
+				//		auto pt2 = m.transform_pt(item.control_point_2() + currentPoint -
 				//			origin) + origin;
-				//		auto pt3 = m.transform_point(item.end_point() + currentPoint - origin) +
+				//		auto pt3 = m.transform_pt(item.end_point() + currentPoint - origin) +
 				//			origin;
 				//		v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
 				//			pt1, pt2, pt3);
@@ -3603,7 +3607,7 @@ namespace std {
 				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
 				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
 				//		currentPoint = item.to() + currentPoint;
-				//		auto pt = m.transform_point(currentPoint - origin) + origin;
+				//		auto pt = m.transform_pt(currentPoint - origin) + origin;
 				//		v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 				//		ec.clear();
 				//	}
@@ -3611,9 +3615,9 @@ namespace std {
 				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
 				//		// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 				//		vector_2d beginPt;
-				//		auto controlPt = m.transform_point(item.control_point() + currentPoint - origin) + origin;
-				//		auto endPt = m.transform_point(item.end_point() + currentPoint - origin) + origin;
-				//		beginPt = m.transform_point(currentPoint - origin) + origin;
+				//		auto controlPt = m.transform_pt(item.control_point() + currentPoint - origin) + origin;
+				//		auto endPt = m.transform_pt(item.end_point() + currentPoint - origin) + origin;
+				//		beginPt = m.transform_pt(currentPoint - origin) + origin;
 				//		vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 				//		vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 				//		v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);

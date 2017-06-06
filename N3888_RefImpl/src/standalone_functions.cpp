@@ -39,7 +39,7 @@ namespace std {
 				vector_2d point_for_angle(double ang, double mgn) noexcept {
 					vector_2d v{ mgn, 0.0 };
 					auto m = matrix_2d::init_rotate(ang);
-					auto result = m.transform_point(v);
+					auto result = m.transform_pt(v);
 					if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
 						result.x(result.x() < 0.0 ? -0.0 : 0.0);
 					}

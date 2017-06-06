@@ -56,9 +56,9 @@
 //
 //		template <class T, enable_if_t<is_same_v<T, path_data::abs_cubic_curve>, abs_cubic_curve_sfinae> = abs_cubic_curve_sfinae_val>
 //		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
-//			auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
-//			auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
-//			auto pt3 = m.transform_point(item.end_point() - origin) + origin;
+//			auto pt1 = m.transform_pt(item.control_point_1() - origin) + origin;
+//			auto pt2 = m.transform_pt(item.control_point_2() - origin) + origin;
+//			auto pt3 = m.transform_pt(item.end_point() - origin) + origin;
 //			if (!currentPoint.has_value()) {
 //				currentPoint = item.control_point_1();
 //				v.emplace_back(in_place_type<path_data::abs_move>, pt1);
@@ -83,12 +83,12 @@
 //		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
 //			if (currentPoint.has_value()) {
 //				currentPoint = item.to();
-//				auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+//				auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //				v.emplace_back(in_place_type<path_data::abs_line>, pt);
 //			}
 //			else {
 //				currentPoint = item.to();
-//				auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+//				auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //				v.emplace_back(in_place_type<path_data::abs_move>, pt);
 //				v.emplace_back(in_place_type<path_data::abs_line>, pt);
 //				closePoint = pt;
@@ -97,7 +97,7 @@
 //		template <class T, enable_if_t<is_same_v<T, path_data::abs_move>, abs_move_sfinae> = abs_move_sfinae_val>
 //		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
 //			currentPoint = item.to();
-//			auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+//			auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //			v.emplace_back(in_place_type<path_data::abs_move>, pt);
 //			closePoint = pt;
 //		}
@@ -105,8 +105,8 @@
 //		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
 //			// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 //			vector_2d beginPt;
-//			auto controlPt = m.transform_point(item.control_point() - origin) + origin;
-//			auto endPt = m.transform_point(item.end_point() - origin) + origin;
+//			auto controlPt = m.transform_pt(item.control_point() - origin) + origin;
+//			auto endPt = m.transform_pt(item.end_point() - origin) + origin;
 //			if (!currentPoint.has_value()) {
 //				currentPoint = item.control_point();
 //				v.emplace_back(in_place_type<path_data::abs_move>, controlPt);
@@ -114,7 +114,7 @@
 //				beginPt = controlPt;
 //			}
 //			else {
-//				beginPt = m.transform_point(currentPoint.value() - origin) + origin;
+//				beginPt = m.transform_pt(currentPoint.value() - origin) + origin;
 //			}
 //			vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 //			vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
@@ -173,12 +173,12 @@
 //					ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
 //				if (currentPoint.has_value()) {
 //					currentPoint = startPt;
-//					auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+//					auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //					v.emplace_back(in_place_type<path_data::abs_line>, pt);
 //				}
 //				else {
 //					currentPoint = startPt;
-//					auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+//					auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //					v.emplace_back(in_place_type<path_data::abs_move>, pt);
 //					closePoint = pt;
 //				}
@@ -189,9 +189,9 @@
 //					auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad },
 //						currTheta);
 //					currentPoint = cpt3;
-//					cpt1 = m.transform_point(cpt1 - origin) + origin;
-//					cpt2 = m.transform_point(cpt2 - origin) + origin;
-//					cpt3 = m.transform_point(cpt3 - origin) + origin;
+//					cpt1 = m.transform_pt(cpt1 - origin) + origin;
+//					cpt2 = m.transform_pt(cpt2 - origin) + origin;
+//					cpt3 = m.transform_pt(cpt3 - origin) + origin;
 //					v.emplace_back(in_place_type<path_data::abs_cubic_curve>, cpt1,
 //						cpt2, cpt3);
 //					currTheta += theta;
@@ -246,12 +246,12 @@
 //					ctr + rotCwFn({ pt0.x() * rad, pt0.y() * rad }, currTheta);
 //				if (currentPoint.has_value()) {
 //					currentPoint = startPt;
-//					auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+//					auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //					v.emplace_back(in_place_type<path_data::abs_line>, pt);
 //				}
 //				else {
 //					currentPoint = startPt;
-//					auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+//					auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //					v.emplace_back(in_place_type<path_data::abs_move>, pt);
 //					closePoint = pt;
 //				}
@@ -263,9 +263,9 @@
 //					auto cpt3 = ctr + rotCwFn({ pt3.x() * rad, pt3.y() * rad },
 //						currTheta);
 //					currentPoint = cpt3;
-//					cpt1 = m.transform_point(cpt1 - origin) + origin;
-//					cpt2 = m.transform_point(cpt2 - origin) + origin;
-//					cpt3 = m.transform_point(cpt3 - origin) + origin;
+//					cpt1 = m.transform_pt(cpt1 - origin) + origin;
+//					cpt2 = m.transform_pt(cpt2 - origin) + origin;
+//					cpt3 = m.transform_pt(cpt3 - origin) + origin;
 //					v.emplace_back(in_place_type<path_data::abs_cubic_curve>, cpt1,
 //						cpt2, cpt3);
 //					currTheta -= theta;
@@ -298,7 +298,7 @@
 //				}
 //				auto invM = matrix_2d{ m }.invert();
 //				// Need to assign the untransformed closePoint value to currentPoint.
-//				currentPoint = invM.transform_point(closePoint - origin) + origin;
+//				currentPoint = invM.transform_pt(closePoint - origin) + origin;
 //			}
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::new_path>, new_path_sfinae> = new_path_sfinae_val>
@@ -310,11 +310,11 @@
 //			if (!currentPoint.has_value()) {
 //				throw system_error(make_error_code(io2d_error::invalid_path_data));
 //			}
-//			auto pt1 = m.transform_point(item.control_point_1() + currentPoint.value() -
+//			auto pt1 = m.transform_pt(item.control_point_1() + currentPoint.value() -
 //				origin) + origin;
-//			auto pt2 = m.transform_point(item.control_point_2() + currentPoint.value() -
+//			auto pt2 = m.transform_pt(item.control_point_2() + currentPoint.value() -
 //				origin) + origin;
-//			auto pt3 = m.transform_point(item.end_point() + currentPoint.value() - origin) +
+//			auto pt3 = m.transform_pt(item.end_point() + currentPoint.value() - origin) +
 //				origin;
 //			v.emplace_back(in_place_type<path_data::abs_cubic_curve>,
 //				pt1, pt2, pt3);
@@ -341,7 +341,7 @@
 //				throw system_error(make_error_code(io2d_error::invalid_path_data));
 //			}
 //			currentPoint = item.to() + currentPoint.value();
-//			auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+//			auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //			v.emplace_back(in_place_type<path_data::abs_line>, pt);
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::rel_move>, rel_move_sfinae> = rel_move_sfinae_val>
@@ -350,7 +350,7 @@
 //				throw system_error(make_error_code(io2d_error::invalid_path_data));
 //			}
 //			currentPoint = item.to() + currentPoint.value();
-//			auto pt = m.transform_point(currentPoint.value() - origin) + origin;
+//			auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //			v.emplace_back(in_place_type<path_data::abs_move>, pt);
 //			closePoint = pt;
 //		}
@@ -361,11 +361,11 @@
 //			}
 //			// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 //			vector_2d beginPt;
-//			auto controlPt = m.transform_point(item.control_point() + currentPoint.value() -
+//			auto controlPt = m.transform_pt(item.control_point() + currentPoint.value() -
 //				origin) + origin;
-//			auto endPt = m.transform_point(item.end_point() + currentPoint.value() -
+//			auto endPt = m.transform_pt(item.end_point() + currentPoint.value() -
 //				origin) + origin;
-//			beginPt = m.transform_point(currentPoint.value() - origin) + origin;
+//			beginPt = m.transform_pt(currentPoint.value() - origin) + origin;
 //			vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 //			vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 //			v.emplace_back(in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
