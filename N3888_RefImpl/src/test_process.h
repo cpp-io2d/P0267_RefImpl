@@ -73,11 +73,11 @@
 //			const auto m2 = m;
 //			const auto o2 = origin;
 //			currentPoint.reset();
-//			path_factory_process_visit<path_data::change_origin>::template perform(path_data::change_origin{ item.center() }, v, m, origin, currentPoint, closePoint);
-//			path_factory_process_visit<path_data::change_matrix>::template perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit<path_data::set_origin>::template perform(path_data::set_origin{ item.center() }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit<path_data::set_matrix>::template perform(path_data::abs_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit<path_data::arc_clockwise>::template perform(path_data::arc_clockwise{ item.center(), item.y_radius(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
-//			path_factory_process_visit<path_data::change_matrix>::template perform(path_data::change_matrix{ m2 }, v, m, origin, currentPoint, closePoint);
-//			path_factory_process_visit<path_data::change_origin>::template perform(path_data::change_origin{ o2 }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit<path_data::abs_matrix>::template perform(path_data::abs_matrix{ m2 }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit<path_data::set_origin>::template perform(path_data::set_origin{ o2 }, v, m, origin, currentPoint, closePoint);
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::abs_line>, abs_line_sfinae> = abs_line_sfinae_val>
 //		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
@@ -272,7 +272,7 @@
 //				}
 //			}
 //		}
-//		template <class T, enable_if_t<is_same_v<T, path_data::change_matrix>, change_matrix_sfinae> = change_matrix_sfinae_val>
+//		template <class T, enable_if_t<is_same_v<T, path_data::abs_matrix>, change_matrix_sfinae> = change_matrix_sfinae_val>
 //		static void perform(const T& item, vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, optional<vector_2d>&, vector_2d&) {
 //			if (!m.is_finite()) {
 //				throw system_error(make_error_code(io2d_error::invalid_matrix));
@@ -283,7 +283,7 @@
 //			}
 //			m = item.matrix();
 //		}
-//		template <class T, enable_if_t<is_same_v<T, path_data::change_origin>, change_origin_sfinae> = change_origin_sfinae_val>
+//		template <class T, enable_if_t<is_same_v<T, path_data::set_origin>, change_origin_sfinae> = change_origin_sfinae_val>
 //		static void perform(const T& item, vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, optional<vector_2d>&, vector_2d&) {
 //			origin = item.origin();
 //		}
@@ -329,11 +329,11 @@
 //			const auto o2 = origin;
 //			const auto cpt2 = currentPoint;
 //			currentPoint.reset();
-//			path_factory_process_visit::template perform(path_data::change_origin{ item.center() + cpt2.value() }, v, m, origin, currentPoint, closePoint);
-//			path_factory_process_visit::template perform(path_data::change_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit::template perform(path_data::set_origin{ item.center() + cpt2.value() }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit::template perform(path_data::abs_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit::template perform(path_data::arc_clockwise{ item.center() + cpt2.value(), item.y_radius(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
-//			path_factory_process_visit::template perform(path_data::change_matrix{ m2 }, v, m, origin, currentPoint, closePoint);
-//			path_factory_process_visit::template perform(path_data::change_origin{ o2 }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit::template perform(path_data::abs_matrix{ m2 }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit::template perform(path_data::set_origin{ o2 }, v, m, origin, currentPoint, closePoint);
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::rel_line>, rel_line_sfinae> = rel_line_sfinae_val>
 //		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {

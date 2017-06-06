@@ -162,10 +162,8 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
-copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
-copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Bscmake />
     <Manifest>
@@ -195,10 +193,8 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
-copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
-copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Bscmake />
     <Lib>
@@ -224,10 +220,8 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
-copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
-copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
@@ -253,10 +247,8 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
-copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
-copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Bscmake />
   </ItemDefinitionGroup>
@@ -284,10 +276,8 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
-copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
-copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
@@ -322,10 +312,8 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
-copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
-copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Bscmake />
     <Lib>
@@ -356,10 +344,8 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
-copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
-copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
@@ -391,10 +377,8 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
-copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
-copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Bscmake />
   </ItemDefinitionGroup>
@@ -403,37 +387,18 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="io2d.h" />
-    <ClInclude Include="Resource.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="throw_helpers.h" />
-    <ClInclude Include="xcairoenumhelpers.h" />
     <ClInclude Include="xdiagnostics.h" />
     <ClInclude Include="xinclwindows_h.h" />
     <ClInclude Include="xio2d.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="color_stop.cpp" />
     <ClCompile Include="display_surface-common.cpp" />
     <ClCompile Include="display_surface-win32.cpp" />
     <ClCompile Include="image_surface.cpp" />
     <ClCompile Include="io2d_error_category.cpp" />
-    <ClCompile Include="mapped_surface.cpp" />
-    <ClCompile Include="matrix_2d.cpp" />
-    <ClCompile Include="brush.cpp" />
-    <ClCompile Include="vector_2d.cpp" />
     <ClCompile Include="rgba_color.cpp" />
     <ClCompile Include="standalone_functions.cpp" />
     <ClCompile Include="surface.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="N3888_RefImpl.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="2016_06_22.png" />
-    <Image Include="2017_03_05.jpg" />
-    <Image Include="alpha8.png" />
-    <Image Include="N3888_RefImpl.ico" />
-    <Image Include="small.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

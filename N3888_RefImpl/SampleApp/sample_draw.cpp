@@ -387,16 +387,16 @@ void draw_radial_circles(display_surface& ds) {
 	//pf.rectangle({ { 100.0, 100.0 }, { 500.0, 500.0 } });
 	pf.new_path({ 100.0, 100.0 });
 	pf.line_to({ 500.0, 100.0 });
-	pf.change_matrix(matrix_2d::init_shear_x(0.25));
+	pf.matrix(matrix_2d::init_shear_x(0.25));
 	pf.line_to({ 500.0, 500.0 });
 	pf.close_path();
-	pf.change_matrix(matrix_2d::init_identity());
+	pf.matrix(matrix_2d());
 	pf.line_to({ 50.0, 150.0 });
 	pf.new_path({ 520.0, 520.0 });
 	pf.line_to({ 600.0, 600.0 });
-	pf.change_matrix(matrix_2d::init_scale({ 2.0, 1.0 }));
+	pf.matrix(matrix_2d::init_scale({ 2.0, 1.0 }));
 	//pf.arc_clockwise({ 300.0, 700.0 }, 100.0, three_pi_over_two<double>, two_pi<double>);
-	pf.change_matrix(matrix_2d::init_identity());
+	pf.matrix(matrix_2d());
 	pf.new_path({ 520.0, 10.0 });
 	pf.cubic_curve_to({ 480.0, 60.0 }, { 560.0, 60.0 }, { 520.0, 10.0 });
 	path_group p(pf);
@@ -413,7 +413,7 @@ void draw_radial_circles(display_surface& ds) {
 	//optional<brush_props> bp{};
 	//bp.emplace(wrap_mode::repeat);
 	//ds.fill(radialBrush, p, bp);
-	ds.fill(radialBrush, p, { wrap_mode::repeat });
+	ds.fill(radialBrush, p, brush_props{ wrap_mode::repeat, filter::nearest });
 	//ds.brush(brush(rgba_color::red()));
 	ds.stroke(brush{ rgba_color::red() }, p);
 	pf.clear();
@@ -433,7 +433,7 @@ void draw_radial_circles(display_surface& ds) {
 	//ds.matrix(matrix_2d::init_translate({ 0.0, 310.0 }));
 	//ds.path_group(p);
 	//ds.fill_rule(fill_rule::even_odd);
-	ds.stroke(radialBrush, p, brush_props{ wrap_mode::repeat, filter::good, fill_rule::even_odd }, stroke_props{ 10.0 }, nullopt, render_props{ matrix_2d::init_translate({0.0, 310.0}) });
+	ds.stroke(radialBrush, p, brush_props{ wrap_mode::repeat, filter::nearest, fill_rule::even_odd }, stroke_props{ 10.0 }, nullopt, render_props{ antialias::good, matrix_2d::init_translate({0.0, 310.0}) });
 
 	//render_ellipse(ds, { 200.0, 600.0 }, 250.0, 100.0, rgba_color(0.0, 1.0, 1.0, 1.0));
 
@@ -759,14 +759,14 @@ void draw_radial_circles(display_surface& ds) {
 //			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 //				* (i % 2 == 1 ? 1.0 : -1.0));
 //			const auto center = vector_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
-//			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
-//			ds.immediate().change_origin(center);
+//			ds.immediate().abs_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+//			ds.immediate().set_origin(center);
 //			ds.immediate().arc_negative(center, radius - 3.0, half_pi<double>, -half_pi<double>);
 //		}
 //		else {
 //			const vector_2d center{ radius * i * 2.0 + radius + beginX, y };
-//			ds.immediate().change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
-//			ds.immediate().change_origin(center);
+//			ds.immediate().abs_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+//			ds.immediate().set_origin(center);
 //			ds.immediate().arc_negative(center, radius - 3.0, half_pi<double>, -half_pi<double>);
 //		}
 //		double greyColor = 1.0 - (currVal / (elementCount - 1.0));
@@ -774,8 +774,8 @@ void draw_radial_circles(display_surface& ds) {
 //	}
 //
 //	ds.immediate().clear();
-//	ds.immediate().change_origin({ 250.0, 450.0 });
-//	ds.immediate().change_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 2.5 }));
+//	ds.immediate().set_origin({ 250.0, 450.0 });
+//	ds.immediate().abs_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 2.5 }));
 //	ds.immediate().rectangle({ 200.0, 400.0, 100.0, 100.0 });
 //	ds.line_width(3.0);
 //	ds.stroke_immediate(rgba_color::red());
@@ -948,14 +948,14 @@ void draw_radial_circles(display_surface& ds) {
 //			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0 : (radius * 4.0 * (normalizedTime < 0.5 ? normalizedTime : 1.0 - normalizedTime)))
 //				* (i % 2 == 1 ? 1.0 : -1.0));
 //			const auto center = vector_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
-//			pf.change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
-//			pf.change_origin(center);
+//			pf.abs_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0) * matrix_2d::init_translate({ 0.0, 50.0 }));
+//			pf.set_origin(center);
 //			pf.arc_negative(center, radius - 3.0, half_pi<double>, -half_pi<double>);
 //		}
 //		else {
 //			const vector_2d center{ radius * i * 2.0 + radius + beginX, y };
-//			pf.change_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0));
-//			pf.change_origin(center);
+//			pf.abs_matrix(matrix_2d::init_scale({ 1.0, 1.5 }) * matrix_2d::init_rotate(pi<double> / 4.0));
+//			pf.set_origin(center);
 //			pf.arc_negative(center, radius - 3.0, half_pi<double>, -half_pi<double>);
 //		}
 //		ds.path_group(path_group(pf));
@@ -966,8 +966,8 @@ void draw_radial_circles(display_surface& ds) {
 //	}
 //
 //	pf.clear();
-//	pf.change_origin({ 250.0, 450.0 });
-//	pf.change_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
+//	pf.set_origin({ 250.0, 450.0 });
+//	pf.abs_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 //	pf.rectangle({ 200.0, 400.0, 100.0, 100.0 });
 //	ds.path_group(path_group(pf));
 //	auto redBrush = brush(solid_color_brush_factory(rgba_color::red()));

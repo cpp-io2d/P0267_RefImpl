@@ -88,6 +88,13 @@ namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
+				enum class antialias {
+					none,
+					fast,
+					good,
+					best
+				};
+
 				enum class fill_rule {
 					winding,
 					even_odd
@@ -246,15 +253,29 @@ namespace std {
 						return _Y;
 					}
 
-					double magnitude() const noexcept;
+					double magnitude() const noexcept {
+						return sqrt(_X * _X + _Y * _Y);
+					}
 					constexpr double magnitude_squared() const noexcept {
 						return _X * _X + _Y * _Y;
 					}
 					constexpr double dot(const vector_2d& other) const noexcept {
 						return _X * other._X + _Y * other._Y;
 					}
-					double angular_direction() const noexcept;
-					vector_2d to_unit() const noexcept;
+
+					double angular_direction() const noexcept {
+						auto v = atan2(_Y, _X);
+						if (v < 0.0) {
+							v += two_pi<double>;
+						}
+						return v;
+					}
+
+					vector_2d to_unit() const noexcept {
+						auto leng = magnitude();
+
+						return vector_2d{ _X / leng, _Y / leng };
+					}
 
 					constexpr vector_2d& operator+=(const vector_2d& rhs) noexcept;
 					constexpr vector_2d& operator-=(const vector_2d& rhs) noexcept;
@@ -448,68 +469,39 @@ namespace std {
 					return{ _X + _Width, _Y + _Height };
 				}
 
-				class ellipse {
+				class circle {
 					vector_2d _Center;
-					vector_2d _Radius;
+					double _Radius;
 				public:
-					constexpr ellipse() noexcept { }
-					constexpr ellipse(const vector_2d& ctr, double r) noexcept
+					constexpr circle() noexcept
+						: _Center()
+						, _Radius() {}
+					constexpr circle(const vector_2d& ctr, double r) noexcept
 						: _Center(ctr)
-						, _Radius({ r, r }) {
-					}
-					constexpr ellipse(const vector_2d& ctr, const vector_2d& r) noexcept
-						: _Center(ctr)
-						, _Radius(r) {
-					}
+						, _Radius(r) {}
 
 					constexpr void center(const vector_2d& ctr) noexcept {
 						_Center = ctr;
 					}
-					constexpr void radius(const vector_2d& r) noexcept {
+					constexpr void radius(double r) noexcept {
 						_Radius = r;
-					}
-					constexpr void x_radius(double val) noexcept {
-						_Radius.x(val);
-					}
-					constexpr void y_radius(double val) noexcept {
-						_Radius.y(val);
 					}
 
 					constexpr vector_2d center() const noexcept {
 						return _Center;
 					}
-					constexpr vector_2d radius() const noexcept {
+					constexpr double radius() const noexcept {
 						return _Radius;
 					}
-					constexpr double x_radius() const noexcept {
-						return _Radius.x();
+
+					constexpr bool operator==(const circle& rhs) noexcept {
+						return _Center == rhs._Center && _Radius == rhs._Radius;
 					}
-					constexpr double y_radius() const noexcept {
-						return _Radius.y();
+					constexpr bool operator!=(const circle& rhs) noexcept {
+						return !((*this) == rhs);
 					}
 				};
 
-				class circle {
-					ellipse _Ellipse;
-				public:
-					constexpr circle() noexcept {}
-					constexpr circle(const vector_2d& ctr, double r) noexcept
-						: _Ellipse(ctr, { r, r }) {}
-
-					constexpr void center(const vector_2d& ctr) noexcept {
-						_Ellipse.center(ctr);
-					}
-					constexpr void radius(double r) noexcept {
-						_Ellipse.radius({ r, r });
-					}
-
-					constexpr vector_2d center() const noexcept {
-						return _Ellipse.center();
-					}
-					constexpr double radius() const noexcept {
-						return _Ellipse.radius().x();
-					}
-				};
 				enum class _Color_is_integral {};
 				constexpr _Color_is_integral _Color_is_integral_val{};
 				enum class _Color_is_floating {};
@@ -523,7 +515,7 @@ namespace std {
 				public:
 					constexpr rgba_color() noexcept { }
 					template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
-					constexpr rgba_color(T r, T g, T b, T a = 0xFF)
+					constexpr rgba_color(T r, T g, T b, T a = static_cast<T>(0xFF))
 						: _R(static_cast<double>(::std::min<double>(::std::max<double>((r / 255.0), 0.0), 1.0)))
 						, _G(static_cast<double>(::std::min<double>(::std::max<double>((g / 255.0), 0.0), 1.0)))
 						, _B(static_cast<double>(::std::min<double>(::std::max<double>((b / 255.0), 0.0), 1.0)))
@@ -536,16 +528,16 @@ namespace std {
 						, _A(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(a), 0.0), 1.0))) {
 					}
 
-					void r(double val) noexcept {
+					constexpr void r(double val) noexcept {
 						_R = val * _A;
 					}
-					void g(double val) noexcept {
+					constexpr void g(double val) noexcept {
 						_G = val * _A;
 					}
-					void b(double val) noexcept {
+					constexpr void b(double val) noexcept {
 						_B = val * _A;
 					}
-					void a(double val) noexcept {
+					constexpr void a(double val) noexcept {
 						_A = val;
 					}
 
@@ -711,7 +703,7 @@ namespace std {
 					static const rgba_color& yellow() noexcept;
 					static const rgba_color& yellow_green() noexcept;
 
-					rgba_color& operator*=(double rhs) {
+					constexpr rgba_color& operator*=(double rhs) {
 						rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
 						r(::std::min(r() * rhs, 1.0));
 						g(::std::min(g() * rhs, 1.0));
@@ -748,6 +740,9 @@ namespace std {
 					};
 				}
 
+				class matrix_2d;
+				constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
+
 				class matrix_2d {
 					double _M00 = 1.0;
 					double _M01 = 0.0;
@@ -767,16 +762,22 @@ namespace std {
 						_M21 = m21;
 					}
 
-					constexpr static matrix_2d init_identity() noexcept {
-						return{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
-					}
 					constexpr static matrix_2d init_translate(const vector_2d& value) noexcept {
 						return{ 1.0, 0.0, 0.0, 1.0, value.x(), value.y() };
 					}
 					constexpr static matrix_2d init_scale(const vector_2d& value) noexcept {
 						return{ value.x(), 0.0, 0.0, value.y(), 0.0, 0.0 };
 					}
-					static matrix_2d init_rotate(double radians) noexcept;
+					static matrix_2d init_rotate(double radians) noexcept {
+						auto sine = sin(radians);
+						auto cosine = cos(radians);
+						return{ cosine, -sine, sine, cosine, 0.0, 0.0 };
+					}
+					static matrix_2d init_reflect(double radians) noexcept {
+						auto sine = sin(radians * 2.0);
+						auto cosine = cos(radians * 2.0);
+						return{ cosine, sine, sine, -cosine, 0.0, 0.0 };
+					}
 					constexpr static matrix_2d init_shear_x(double factor) noexcept {
 						return{ 1.0, 0.0, factor, 1.0, 0.0, 0.0 };
 					}
@@ -803,13 +804,30 @@ namespace std {
 					constexpr void m21(double value) noexcept {
 						_M21 = value;
 					}
-					matrix_2d& translate(const vector_2d& value) noexcept;
-					matrix_2d& scale(const vector_2d& value) noexcept;
-					matrix_2d& rotate(double radians) noexcept;
-					matrix_2d& shear_x(double factor) noexcept;
-					matrix_2d& shear_y(double factor) noexcept;
-					matrix_2d& invert();
-					matrix_2d& invert(::std::error_code& ec) noexcept;
+					constexpr matrix_2d& translate(const vector_2d& value) noexcept {
+						*this = *this * init_translate(value);
+						return *this;
+					}
+					constexpr matrix_2d& scale(const vector_2d& value) noexcept {
+						*this = *this * init_scale(value);
+						return *this;
+					}
+					matrix_2d& rotate(double radians) noexcept {
+						*this = *this * init_rotate(radians);
+						return *this;
+					}
+					matrix_2d& reflect(double radians) noexcept {
+						*this = *this * init_reflect(radians);
+						return *this;
+					}
+					constexpr matrix_2d& shear_x(double factor) noexcept {
+						*this = *this * init_shear_x(factor);
+						return *this;
+					}
+					constexpr matrix_2d& shear_y(double factor) noexcept {
+						*this = *this * init_shear_y(factor);
+						return *this;
+					}
 
 					// Observers
 					constexpr double m00() const noexcept {
@@ -832,6 +850,17 @@ namespace std {
 					}
 					constexpr bool is_invertible() const noexcept {
 						return (_M00 * _M11 - _M01 * _M10) != 0.0;
+					}
+					constexpr matrix_2d inverse() const noexcept {
+						const auto inverseDeterminant = 1.0 / determinant();
+						return matrix_2d{
+							(_M11 * 1.0 - 0.0 * _M21) * inverseDeterminant,
+							-(_M01 * 1.0 - 0.0 * _M21) * inverseDeterminant,
+							-(_M10 * 1.0 - 0.0 * _M20) * inverseDeterminant,
+							(_M00 * 1.0 - 0.0 * _M20) * inverseDeterminant,
+							(_M10 * _M21 - _M11 * _M20) * inverseDeterminant,
+							-(_M00 * _M21 - _M01 * _M20) * inverseDeterminant
+						};
 					}
 				private:
 					constexpr bool _Is_finite_check(double val) const noexcept {
@@ -864,7 +893,10 @@ namespace std {
 						return result;
 					}
 
-					matrix_2d& operator*=(const matrix_2d& rhs) noexcept;
+					constexpr matrix_2d& operator*=(const matrix_2d& rhs) {
+						*this = (*this) * rhs;
+						return *this;
+					}
 				};
 
 				constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
@@ -1198,13 +1230,13 @@ namespace std {
 						}
 					};
 
-					class change_matrix {
+					class abs_matrix {
 						matrix_2d _Matrix;
 					public:
-						constexpr explicit change_matrix(const matrix_2d& m) noexcept
+						constexpr explicit abs_matrix(const matrix_2d& m) noexcept
 							: _Matrix(m) {
 						}
-						constexpr change_matrix() noexcept {}
+						constexpr abs_matrix() noexcept {}
 
 						constexpr void matrix(const matrix_2d& value) noexcept {
 							_Matrix = value;
@@ -1213,22 +1245,59 @@ namespace std {
 							return _Matrix;
 						}
 
-						constexpr bool operator==(const change_matrix& rhs) const noexcept {
+						constexpr bool operator==(const abs_matrix& rhs) const noexcept {
 							return _Matrix == rhs._Matrix;
 						}
 
-						constexpr bool operator!=(const change_matrix& rhs) const noexcept {
+						constexpr bool operator!=(const abs_matrix& rhs) const noexcept {
 							return !((*this) == rhs);
 						}
 					};
 
-					class change_origin {
+					class rel_matrix {
+						matrix_2d _Matrix;
+					public:
+						constexpr explicit rel_matrix(const matrix_2d& m) noexcept
+							: _Matrix(m) {
+						}
+						constexpr rel_matrix() noexcept {}
+
+						constexpr void matrix(const matrix_2d& value) noexcept {
+							_Matrix = value;
+						}
+						constexpr matrix_2d matrix() const noexcept {
+							return _Matrix;
+						}
+
+						constexpr bool operator==(const rel_matrix& rhs) const noexcept {
+							return _Matrix == rhs._Matrix;
+						}
+
+						constexpr bool operator!=(const rel_matrix& rhs) const noexcept {
+							return !((*this) == rhs);
+						}
+					};
+
+					class revert_matrix {
+					public:
+						constexpr revert_matrix() noexcept {}
+
+						constexpr bool operator==(const revert_matrix&) const noexcept {
+							return true;
+						}
+
+						constexpr bool operator!=(const revert_matrix&) const noexcept {
+							return false;
+						}
+					};
+
+					class abs_origin {
 						vector_2d _Origin = {};
 					public:
-						constexpr explicit change_origin(const vector_2d& origin) noexcept
+						constexpr explicit abs_origin(const vector_2d& origin) noexcept
 							: _Origin(origin) {
 						}
-						constexpr change_origin() noexcept {}
+						constexpr abs_origin() noexcept {}
 
 						constexpr void origin(const vector_2d& value) noexcept {
 							_Origin = value;
@@ -1237,23 +1306,61 @@ namespace std {
 							return _Origin;
 						}
 
-						constexpr bool operator==(const change_origin& rhs) const noexcept {
+						constexpr bool operator==(const abs_origin& rhs) const noexcept {
 							return _Origin == rhs._Origin;
 						}
 
-						constexpr bool operator!=(const change_origin& rhs) const noexcept {
+						constexpr bool operator!=(const abs_origin& rhs) const noexcept {
 							return !((*this) == rhs);
 						}
 					};
 
-					using path_data_types = ::std::variant<abs_cubic_curve, abs_line, abs_new_path,
-						abs_quadratic_curve, arc, change_matrix, change_origin, close_path,
-						rel_cubic_curve, rel_line, rel_new_path, rel_quadratic_curve>;
+					class rel_origin {
+						vector_2d _Origin = {};
+					public:
+						constexpr explicit rel_origin(const vector_2d& origin) noexcept
+							: _Origin(origin) {
+						}
+						constexpr rel_origin() noexcept {}
+
+						constexpr void origin(const vector_2d& value) noexcept {
+							_Origin = value;
+						}
+						constexpr vector_2d origin() const noexcept {
+							return _Origin;
+						}
+
+						constexpr bool operator==(const rel_origin& rhs) const noexcept {
+							return _Origin == rhs._Origin;
+						}
+
+						constexpr bool operator!=(const rel_origin& rhs) const noexcept {
+							return !((*this) == rhs);
+						}
+					};
+
+					class revert_origin {
+					public:
+						constexpr revert_origin() noexcept {}
+
+						constexpr bool operator==(const revert_origin&) const noexcept {
+							return true;
+						}
+
+						constexpr bool operator!=(const revert_origin&) const noexcept {
+							return false;
+						}
+					};
+
+					using path_item = variant<abs_new_path, rel_new_path, close_path,
+						abs_matrix, rel_matrix, revert_matrix, abs_origin, rel_origin, revert_origin,
+						abs_cubic_curve, abs_line, abs_quadratic_curve, arc,
+						rel_cubic_curve, rel_line, rel_quadratic_curve>;
 				}
 
 				// Forward declaration.
 				class surface;
-				template <class Allocator = allocator<path_data::path_data_types>>
+				template <class Allocator = allocator<path_data::path_item>>
 				class path_builder;
 
 				class path_group {
@@ -1266,10 +1373,6 @@ namespace std {
 					explicit path_group(const path_builder<Allocator>& p);
 					template <class Allocator>
 					path_group(const path_builder<Allocator>& p, std::error_code& ec) noexcept;
-					//path_group(const path_group&) = default;
-					//path_group& operator=(const path_group&) = default;
-					//path_group(path_group&&) = default;
-					//path_group& operator=(path_group&&) = default;
 
 					native_handle_type native_handle() {
 						return _Cairo_path.get();
@@ -1285,10 +1388,18 @@ namespace std {
 				constexpr static _Path_data_rel_new_path _Path_data_rel_new_path_val = {};
 				enum class _Path_data_close_path {};
 				constexpr static _Path_data_close_path _Path_data_close_path_val = {};
-				enum class _Path_data_change_matrix {};
-				constexpr static _Path_data_change_matrix _Path_data_change_matrix_val = {};
-				enum class _Path_data_change_origin {};
-				constexpr static _Path_data_change_origin _Path_data_change_origin_val = {};
+				enum class _Path_data_abs_matrix {};
+				constexpr static _Path_data_abs_matrix _Path_data_abs_matrix_val = {};
+				enum class _Path_data_rel_matrix {};
+				constexpr static _Path_data_rel_matrix _Path_data_rel_matrix_val = {};
+				enum class _Path_data_revert_matrix {};
+				constexpr static _Path_data_revert_matrix _Path_data_revert_matrix_val = {};
+				enum class _Path_data_abs_origin {};
+				constexpr static _Path_data_abs_origin _Path_data_abs_origin_val = {};
+				enum class _Path_data_rel_origin {};
+				constexpr static _Path_data_rel_origin _Path_data_rel_origin_val = {};
+				enum class _Path_data_revert_origin {};
+				constexpr static _Path_data_revert_origin _Path_data_revert_origin_val = {};
 				enum class _Path_data_abs_cubic_curve {};
 				constexpr static _Path_data_abs_cubic_curve _Path_data_abs_cubic_curve_val = {};
 				enum class _Path_data_abs_line {};
@@ -1386,20 +1497,36 @@ namespace std {
 					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::arc&, vector_2d&) noexcept {
 						assert(false && "Arcs should have been transformed into cubic curves.");
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::change_matrix&, vector_2d&) noexcept {
-						assert(false && "Change matrix should have been eliminated.");
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_matrix&, vector_2d&) noexcept {
+						assert(false && "Abs matrix should have been eliminated.");
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::change_origin&, vector_2d&) noexcept {
-						assert(false && "Change origin should have been eliminated.");
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_matrix&, vector_2d&) noexcept {
+						assert(false && "Rel matrix should have been eliminated.");
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::revert_matrix&, vector_2d&) noexcept {
+						assert(false && "Revert matrix should have been eliminated.");
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_origin>, _Path_data_abs_origin> = _Path_data_abs_origin_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_origin&, vector_2d&) noexcept {
+						assert(false && "Abs origin should have been eliminated.");
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_origin>, _Path_data_rel_origin> = _Path_data_rel_origin_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_origin&, vector_2d&) noexcept {
+						assert(false && "Rel origin should have been eliminated.");
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_origin>, _Path_data_revert_origin> = _Path_data_revert_origin_val>
+					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::revert_origin&, vector_2d&) noexcept {
+						assert(false && "Revert origin should have been eliminated.");
 					}
 				};
 
 				template <class Allocator>
-				::std::vector<path_data::path_data_types> _Process_path_data(const path_builder<Allocator>&);
-				template <class Allocator>
-				::std::vector<path_data::path_data_types> _Process_path_data(const path_builder<Allocator>&, ::std::error_code&) noexcept;
+				::std::vector<path_data::path_item> _Interpret_path_items(const path_builder<Allocator>&);
+				//template <class Allocator>
+				//::std::vector<path_data::path_data_types> _Interpret_path_items(const path_builder<Allocator>&, ::std::error_code&) noexcept;
 
 				template <class Allocator>
 				inline path_group::path_group(const path_builder<Allocator>& pf)
@@ -1414,7 +1541,7 @@ namespace std {
 						path = nullptr;
 					}
 				}) {
-					auto processedVec = _Process_path_data<Allocator>(pf);
+					auto processedVec = _Interpret_path_items<Allocator>(pf);
 					::std::vector<cairo_path_data_t> vec;
 					vector_2d lastMoveToPoint;
 					for (const auto& val : processedVec) {
@@ -1445,7 +1572,7 @@ namespace std {
 						path = nullptr;
 					}
 				}) {
-					auto processedVec = _Process_path_data<Allocator>(pf, ec);
+					auto processedVec = _Interpret_path_items<Allocator>(pf, ec);
 					if (static_cast<bool>(ec)) {
 						return;
 					}
@@ -1470,20 +1597,16 @@ namespace std {
 
 				template <class Allocator>
 				class path_builder {
-					::std::vector<path_data::path_data_types, Allocator> _Data;
-					//optional<vector_2d> _Current_point;
-					//vector_2d _Last_move_to_point;
-					//matrix_2d _Transform_matrix;
-					//vector_2d _Origin;
+					::std::vector<path_data::path_item, Allocator> _Data;
 				public:
-					using value_type = path_data::path_data_types;
+					using value_type = path_data::path_item;
 					using allocator_type = Allocator;
 					using reference = value_type&;
 					using const_reference = const value_type&;
-					using size_type = ::std::vector<path_data::path_data_types>::size_type;
-					using difference_type = ::std::vector<path_data::path_data_types>::difference_type;
-					using iterator = ::std::vector<path_data::path_data_types>::iterator;
-					using const_iterator = ::std::vector<path_data::path_data_types>::const_iterator;
+					using size_type = ::std::vector<path_data::path_item>::size_type;
+					using difference_type = ::std::vector<path_data::path_item>::difference_type;
+					using iterator = ::std::vector<path_data::path_item>::iterator;
+					using const_iterator = ::std::vector<path_data::path_item>::const_iterator;
 					using reverse_iterator = std::reverse_iterator<iterator>;
 					using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -1506,8 +1629,7 @@ namespace std {
 					path_builder& operator=(path_builder&& x)
 						noexcept(
 							allocator_traits<Allocator>::propagate_on_container_move_assignment::value
-							||
-							allocator_traits<Allocator>::is_always_equal::value);
+							|| allocator_traits<Allocator>::is_always_equal::value);
 					path_builder& operator=(initializer_list<value_type> il);
 					template <class InputIterator>
 					void assign(InputIterator first, InputIterator last);
@@ -1550,8 +1672,12 @@ namespace std {
 					void new_path(const vector_2d& v) noexcept;
 					void rel_new_path(const vector_2d& v) noexcept;
 					void close_path() noexcept;
-					void change_matrix(const matrix_2d& m) noexcept;
-					void change_origin(const vector_2d& pt) noexcept;
+					void matrix(const matrix_2d& m) noexcept;
+					void rel_matrix(const matrix_2d& m) noexcept;
+					void revert_matrix() noexcept;
+					void origin(const vector_2d& pt) noexcept;
+					void rel_origin(const vector_2d& pt) noexcept;
+					void revert_origin() noexcept;
 					void arc(const vector_2d& radius, double rot, double sang = pi<double>) noexcept;
 					void cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1,
 						const vector_2d& pt2) noexcept;
@@ -1598,7 +1724,7 @@ namespace std {
 						auto rhsEnd = rhs._Data.end();
 						auto lhsIter = _Data.begin();
 						auto rhsIter = rhs._Data.begin();
-						for (; lhsIter != lhsEnd && 
+						for (; lhsIter != lhsEnd &&
 							rhsIter != rhsEnd; ++lhsIter, ++rhsIter) {
 							assert(lhsIter != lhsEnd && "Unexpected path_builder op== size mismatch. rhs greater than lhs.");
 							assert(rhsIter != rhsEnd && "Unexpected path_builder op== size mismatch. lhs greater than rhs.");
@@ -1628,29 +1754,54 @@ namespace std {
 
 				class color_stop {
 				private:
-					double _Offset = 0.0;
-					rgba_color _Color = rgba_color::black();
+					double _Offset;
+					rgba_color _Color;
 				public:
-					color_stop() noexcept = default;
-					color_stop(double offset, const rgba_color& color);
+					constexpr color_stop() noexcept
+						: _Offset(0.0)
+						, _Color(rgba_color{}) {}
+					constexpr color_stop(double offset, const rgba_color& color)
+						: _Offset(offset)
+						, _Color(color) {}
 
-					void offset(double value) noexcept;
-					void color(const rgba_color& value) noexcept;
+					constexpr void offset(double value) noexcept {
+						_Offset = value;
+					}
+					constexpr void color(const rgba_color& value) noexcept {
+						_Color = value;
+					}
 
-					double offset() const noexcept;
-					rgba_color color() const noexcept;
+					constexpr double offset() const noexcept {
+						return _Offset;
+					}
+					constexpr rgba_color color() const noexcept {
+						return _Color;
+					}
+
+					constexpr bool operator==(const color_stop& rhs) {
+						return _Offset == rhs._Offset && _Color == rhs._Color;
+					}
+
+					constexpr bool operator!=(const color_stop& rhs) {
+						return !((*this) == rhs);
+					}
 				};
 
 				class render_props {
+					antialias _Antialiasing = antialias::good;
 					matrix_2d _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
-					experimental::io2d::compositing_op _Compositing = experimental::io2d::compositing_op::over;
+					compositing_op _Compositing = compositing_op::over;
 				public:
 					constexpr render_props() noexcept {}
-					constexpr explicit render_props(const matrix_2d& m,
+					constexpr explicit render_props(antialias a, const matrix_2d& m = matrix_2d{},
 						compositing_op co = compositing_op::over) noexcept
-						: _Matrix(m)
+						: _Antialiasing(a)
+						, _Matrix(m)
 						, _Compositing(co) {}
 
+					constexpr void antialiasing(antialias a) noexcept {
+						_Antialiasing = a;
+					}
 					constexpr void compositing(compositing_op co) noexcept {
 						_Compositing = co;
 					}
@@ -1658,6 +1809,9 @@ namespace std {
 						_Matrix = m;
 					}
 
+					constexpr antialias antialiasing() const noexcept {
+						return _Antialiasing;
+					}
 					constexpr compositing_op compositing() const noexcept {
 						return _Compositing;
 					}
@@ -1763,13 +1917,14 @@ namespace std {
 
 				class brush_props {
 					experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::none;
-					experimental::io2d::filter _Filter = experimental::io2d::filter::good;
+					experimental::io2d::filter _Filter = experimental::io2d::filter::bilinear;
 					experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
-					matrix_2d _Matrix = matrix_2d{};
+					matrix_2d _Matrix;
 
 				public:
-					constexpr brush_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::none,
-						experimental::io2d::filter fi = experimental::io2d::filter::good,
+					constexpr brush_props() noexcept {}
+					constexpr brush_props(experimental::io2d::wrap_mode w,
+						experimental::io2d::filter fi = experimental::io2d::filter::bilinear,
 						experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding,
 						matrix_2d m = matrix_2d{}) noexcept
 						: _Wrap_mode(w)
@@ -1778,11 +1933,11 @@ namespace std {
 						, _Matrix(m) {
 					}
 
-					constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept {
-						_Wrap_mode = w;
-					}
 					constexpr void filter(experimental::io2d::filter fi) noexcept {
 						_Filter = fi;
+					}
+					constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept {
+						_Wrap_mode = w;
 					}
 					constexpr void fill_rule(experimental::io2d::fill_rule fr) noexcept {
 						_Fill_rule = fr;
@@ -1791,11 +1946,11 @@ namespace std {
 						_Matrix = m;
 					}
 
-					constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept {
-						return _Wrap_mode;
-					}
 					constexpr experimental::io2d::filter filter() const noexcept {
 						return _Filter;
+					}
+					constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept {
+						return _Wrap_mode;
 					}
 					constexpr experimental::io2d::fill_rule fill_rule() const noexcept {
 						return _Fill_rule;
@@ -1851,8 +2006,8 @@ namespace std {
 					typedef cairo_pattern_t* native_handle_type;
 
 				private:
-					// Precondition: nh has already had its reference count incremented (either in creation or with cairo_pattern_reference).
-					brush(native_handle_type nh) noexcept;
+					//// Precondition: nh has already had its reference count incremented (either in creation or with cairo_pattern_reference).
+					//brush(native_handle_type nh) noexcept;
 
 					::std::shared_ptr<cairo_pattern_t> _Brush;
 					::std::shared_ptr<image_surface> _Image_surface;
@@ -2204,52 +2359,854 @@ namespace std {
 					return angle;
 				}
 
+				inline cairo_status_t _Io2d_error_to_cairo_status_t(::std::experimental::io2d::io2d_error s) {
+					switch (s) {
+					case ::std::experimental::io2d::io2d_error::success:
+						return CAIRO_STATUS_SUCCESS;
+					case ::std::experimental::io2d::io2d_error::invalid_restore:
+						return CAIRO_STATUS_INVALID_RESTORE;
+					case ::std::experimental::io2d::io2d_error::invalid_matrix:
+						return CAIRO_STATUS_INVALID_MATRIX;
+					case ::std::experimental::io2d::io2d_error::invalid_status:
+						return CAIRO_STATUS_INVALID_STATUS;
+					case ::std::experimental::io2d::io2d_error::null_pointer:
+						return CAIRO_STATUS_NULL_POINTER;
+					case ::std::experimental::io2d::io2d_error::invalid_string:
+						return CAIRO_STATUS_INVALID_STRING;
+					case ::std::experimental::io2d::io2d_error::invalid_path_data:
+						return CAIRO_STATUS_INVALID_PATH_DATA;
+					case ::std::experimental::io2d::io2d_error::read_error:
+						return CAIRO_STATUS_READ_ERROR;
+					case ::std::experimental::io2d::io2d_error::write_error:
+						return CAIRO_STATUS_WRITE_ERROR;
+					case ::std::experimental::io2d::io2d_error::surface_finished:
+						return CAIRO_STATUS_SURFACE_FINISHED;
+					case ::std::experimental::io2d::io2d_error::invalid_dash:
+						return CAIRO_STATUS_INVALID_DASH;
+					case ::std::experimental::io2d::io2d_error::invalid_index:
+						assert("Unexpected value io2d_error::invalid_index." && false);
+						return CAIRO_STATUS_INVALID_INDEX;
+					case ::std::experimental::io2d::io2d_error::clip_not_representable:
+						return CAIRO_STATUS_CLIP_NOT_REPRESENTABLE;
+					case ::std::experimental::io2d::io2d_error::invalid_stride:
+						return CAIRO_STATUS_INVALID_STRIDE;
+					case ::std::experimental::io2d::io2d_error::user_font_immutable:
+						return CAIRO_STATUS_USER_FONT_IMMUTABLE;
+					case ::std::experimental::io2d::io2d_error::user_font_error:
+						return CAIRO_STATUS_USER_FONT_ERROR;
+					case ::std::experimental::io2d::io2d_error::invalid_clusters:
+						return CAIRO_STATUS_INVALID_CLUSTERS;
+					case ::std::experimental::io2d::io2d_error::device_error:
+						return CAIRO_STATUS_DEVICE_ERROR;
+					case ::std::experimental::io2d::io2d_error::invalid_mesh_construction:
+						return CAIRO_STATUS_INVALID_MESH_CONSTRUCTION;
+					default:
+						throw ::std::runtime_error("Unknown io2d_error value.");
+					}
+				}
+
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
+				inline bool _Cairo_status_t_to_io2d_error(cairo_status_t cs, ::std::experimental::io2d::io2d_error& result) {
+					switch (cs) {
+#if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1, 13, 1)
+					case CAIRO_STATUS_JBIG2_GLOBAL_MISSING:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+#endif
+					case CAIRO_STATUS_SUCCESS:
+						result = ::std::experimental::io2d::io2d_error::success;
+						return true;
+					case CAIRO_STATUS_NO_MEMORY:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					case CAIRO_STATUS_INVALID_RESTORE:
+						result = ::std::experimental::io2d::io2d_error::invalid_restore;
+						return true;
+					case CAIRO_STATUS_INVALID_POP_GROUP:
+						assert("Unexpected value CAIRO_STATUS_INVALID_POP_GROUP." && false);
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_NO_CURRENT_POINT:
+						result = ::std::experimental::io2d::io2d_error::invalid_path_data;
+						return true;
+					case CAIRO_STATUS_INVALID_MATRIX:
+						result = ::std::experimental::io2d::io2d_error::invalid_matrix;
+						return true;
+					case CAIRO_STATUS_INVALID_STATUS:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_NULL_POINTER:
+						result = ::std::experimental::io2d::io2d_error::null_pointer;
+						return true;
+					case CAIRO_STATUS_INVALID_STRING:
+						result = ::std::experimental::io2d::io2d_error::invalid_string;
+						return true;
+					case CAIRO_STATUS_INVALID_PATH_DATA:
+						result = ::std::experimental::io2d::io2d_error::invalid_path_data;
+						return true;
+					case CAIRO_STATUS_READ_ERROR:
+						result = ::std::experimental::io2d::io2d_error::read_error;
+						return true;
+					case CAIRO_STATUS_WRITE_ERROR:
+						result = ::std::experimental::io2d::io2d_error::write_error;
+						return true;
+					case CAIRO_STATUS_SURFACE_FINISHED:
+						result = ::std::experimental::io2d::io2d_error::surface_finished;
+						return true;
+					case CAIRO_STATUS_SURFACE_TYPE_MISMATCH:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_PATTERN_TYPE_MISMATCH:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_INVALID_CONTENT:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					case CAIRO_STATUS_INVALID_FORMAT:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					case CAIRO_STATUS_INVALID_VISUAL:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_FILE_NOT_FOUND:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					case CAIRO_STATUS_INVALID_DASH:
+						result = ::std::experimental::io2d::io2d_error::invalid_dash;
+						return true;
+					case CAIRO_STATUS_INVALID_DSC_COMMENT:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_INVALID_INDEX:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					case CAIRO_STATUS_CLIP_NOT_REPRESENTABLE:
+						result = ::std::experimental::io2d::io2d_error::clip_not_representable;
+						return true;
+					case CAIRO_STATUS_TEMP_FILE_ERROR:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_INVALID_STRIDE:
+						result = ::std::experimental::io2d::io2d_error::invalid_stride;
+						return true;
+					case CAIRO_STATUS_FONT_TYPE_MISMATCH:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_USER_FONT_IMMUTABLE:
+						result = ::std::experimental::io2d::io2d_error::user_font_immutable;
+						return true;
+					case CAIRO_STATUS_USER_FONT_ERROR:
+						result = ::std::experimental::io2d::io2d_error::user_font_error;
+						return true;
+					case CAIRO_STATUS_NEGATIVE_COUNT:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					case CAIRO_STATUS_INVALID_CLUSTERS:
+						result = ::std::experimental::io2d::io2d_error::invalid_clusters;
+						return true;
+					case CAIRO_STATUS_INVALID_SLANT:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_INVALID_WEIGHT:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_INVALID_SIZE:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					case CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					case CAIRO_STATUS_DEVICE_TYPE_MISMATCH:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_DEVICE_ERROR:
+						result = ::std::experimental::io2d::io2d_error::device_error;
+						return true;
+					case CAIRO_STATUS_INVALID_MESH_CONSTRUCTION:
+						result = ::std::experimental::io2d::io2d_error::invalid_mesh_construction;
+						return true;
+					case CAIRO_STATUS_DEVICE_FINISHED:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return true;
+					case CAIRO_STATUS_LAST_STATUS:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					default:
+						result = ::std::experimental::io2d::io2d_error::invalid_status;
+						return false;
+					}
+				}
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+
+				inline cairo_antialias_t _Antialias_to_cairo_antialias_t(::std::experimental::io2d::antialias aa) {
+					switch (aa) {
+					case ::std::experimental::io2d::antialias::none:
+						return CAIRO_ANTIALIAS_NONE;
+					case ::std::experimental::io2d::antialias::fast:
+						return CAIRO_ANTIALIAS_FAST;
+					case ::std::experimental::io2d::antialias::good:
+						return CAIRO_ANTIALIAS_GOOD;
+					case ::std::experimental::io2d::antialias::best:
+						return CAIRO_ANTIALIAS_BEST;
+					default:
+						throw ::std::runtime_error("Unknown antialias value.");
+					}
+				}
+
+				inline cairo_fill_rule_t _Fill_rule_to_cairo_fill_rule_t(::std::experimental::io2d::fill_rule fr) {
+					switch (fr) {
+					case ::std::experimental::io2d::fill_rule::winding:
+						return CAIRO_FILL_RULE_WINDING;
+					case ::std::experimental::io2d::fill_rule::even_odd:
+						return CAIRO_FILL_RULE_EVEN_ODD;
+					default:
+						throw ::std::runtime_error("Unknown fill_rule value.");
+					}
+				}
+
+				inline ::std::experimental::io2d::fill_rule _Cairo_fill_rule_t_to_fill_rule(cairo_fill_rule_t cfr) {
+					switch (cfr) {
+					case CAIRO_FILL_RULE_WINDING:
+						return ::std::experimental::io2d::fill_rule::winding;
+					case CAIRO_FILL_RULE_EVEN_ODD:
+						return ::std::experimental::io2d::fill_rule::even_odd;
+					default:
+						throw ::std::runtime_error("Unknown cairo_fill_rule_t value.");
+					}
+				}
+
+				inline cairo_line_cap_t _Line_cap_to_cairo_line_cap_t(::std::experimental::io2d::line_cap lc) {
+					switch (lc) {
+					case ::std::experimental::io2d::line_cap::none:
+						return CAIRO_LINE_CAP_BUTT;
+					case ::std::experimental::io2d::line_cap::round:
+						return CAIRO_LINE_CAP_ROUND;
+					case ::std::experimental::io2d::line_cap::square:
+						return CAIRO_LINE_CAP_SQUARE;
+					default:
+						throw ::std::runtime_error("Unknown line_cap value.");
+					}
+				}
+
+				inline ::std::experimental::io2d::line_cap _Cairo_line_cap_t_to_line_cap(cairo_line_cap_t clc) {
+					switch (clc) {
+					case CAIRO_LINE_CAP_BUTT:
+						return ::std::experimental::io2d::line_cap::none;
+					case CAIRO_LINE_CAP_ROUND:
+						return ::std::experimental::io2d::line_cap::round;
+					case CAIRO_LINE_CAP_SQUARE:
+						return ::std::experimental::io2d::line_cap::square;
+					default:
+						throw ::std::runtime_error("Unknown cairo_line_cap_t value.");
+					}
+				}
+
+				inline cairo_line_join_t _Line_join_to_cairo_line_join_t(::std::experimental::io2d::line_join lj) {
+					switch (lj) {
+					case ::std::experimental::io2d::line_join::miter:
+						return CAIRO_LINE_JOIN_MITER;
+					case ::std::experimental::io2d::line_join::round:
+						return CAIRO_LINE_JOIN_ROUND;
+					case ::std::experimental::io2d::line_join::bevel:
+						return CAIRO_LINE_JOIN_BEVEL;
+					case ::std::experimental::io2d::line_join::miter_or_bevel:
+						return CAIRO_LINE_JOIN_MITER;
+					default:
+						throw ::std::runtime_error("Unknown line_join value.");
+					}
+				}
+
+				inline ::std::experimental::io2d::line_join _Cairo_line_join_t_to_line_join(cairo_line_join_t clj) {
+					switch (clj) {
+					case CAIRO_LINE_JOIN_MITER:
+						return ::std::experimental::io2d::line_join::miter_or_bevel;
+					case CAIRO_LINE_JOIN_ROUND:
+						return ::std::experimental::io2d::line_join::round;
+					case CAIRO_LINE_JOIN_BEVEL:
+						return ::std::experimental::io2d::line_join::bevel;
+					default:
+						throw ::std::runtime_error("Unknown cairo_line_join_t value.");
+					}
+				}
+
+				inline cairo_operator_t _Compositing_operator_to_cairo_operator_t(::std::experimental::io2d::compositing_op co) {
+					switch (co)
+					{
+					case ::std::experimental::io2d::compositing_op::clear:
+						return CAIRO_OPERATOR_CLEAR;
+					case ::std::experimental::io2d::compositing_op::source:
+						return CAIRO_OPERATOR_SOURCE;
+					case ::std::experimental::io2d::compositing_op::over:
+						return CAIRO_OPERATOR_OVER;
+					case ::std::experimental::io2d::compositing_op::in:
+						return CAIRO_OPERATOR_IN;
+					case ::std::experimental::io2d::compositing_op::out:
+						return CAIRO_OPERATOR_OUT;
+					case ::std::experimental::io2d::compositing_op::atop:
+						return CAIRO_OPERATOR_ATOP;
+					case ::std::experimental::io2d::compositing_op::dest:
+						return CAIRO_OPERATOR_DEST;
+					case ::std::experimental::io2d::compositing_op::dest_over:
+						return CAIRO_OPERATOR_DEST_OVER;
+					case ::std::experimental::io2d::compositing_op::dest_in:
+						return CAIRO_OPERATOR_DEST_IN;
+					case ::std::experimental::io2d::compositing_op::dest_out:
+						return CAIRO_OPERATOR_DEST_OUT;
+					case ::std::experimental::io2d::compositing_op::dest_atop:
+						return CAIRO_OPERATOR_DEST_ATOP;
+					case ::std::experimental::io2d::compositing_op::xor_op:
+						return CAIRO_OPERATOR_XOR;
+					case ::std::experimental::io2d::compositing_op::add:
+						return CAIRO_OPERATOR_ADD;
+					case ::std::experimental::io2d::compositing_op::saturate:
+						return CAIRO_OPERATOR_SATURATE;
+					case ::std::experimental::io2d::compositing_op::multiply:
+						return CAIRO_OPERATOR_MULTIPLY;
+					case ::std::experimental::io2d::compositing_op::screen:
+						return CAIRO_OPERATOR_SCREEN;
+					case ::std::experimental::io2d::compositing_op::overlay:
+						return CAIRO_OPERATOR_OVERLAY;
+					case ::std::experimental::io2d::compositing_op::darken:
+						return CAIRO_OPERATOR_DARKEN;
+					case ::std::experimental::io2d::compositing_op::lighten:
+						return CAIRO_OPERATOR_LIGHTEN;
+					case ::std::experimental::io2d::compositing_op::color_dodge:
+						return CAIRO_OPERATOR_COLOR_DODGE;
+					case ::std::experimental::io2d::compositing_op::color_burn:
+						return CAIRO_OPERATOR_COLOR_BURN;
+					case ::std::experimental::io2d::compositing_op::hard_light:
+						return CAIRO_OPERATOR_HARD_LIGHT;
+					case ::std::experimental::io2d::compositing_op::soft_light:
+						return CAIRO_OPERATOR_SOFT_LIGHT;
+					case ::std::experimental::io2d::compositing_op::difference:
+						return CAIRO_OPERATOR_DIFFERENCE;
+					case ::std::experimental::io2d::compositing_op::exclusion:
+						return CAIRO_OPERATOR_EXCLUSION;
+					case ::std::experimental::io2d::compositing_op::hsl_hue:
+						return CAIRO_OPERATOR_HSL_HUE;
+					case ::std::experimental::io2d::compositing_op::hsl_saturation:
+						return CAIRO_OPERATOR_HSL_SATURATION;
+					case ::std::experimental::io2d::compositing_op::hsl_color:
+						return CAIRO_OPERATOR_HSL_COLOR;
+					case ::std::experimental::io2d::compositing_op::hsl_luminosity:
+						return CAIRO_OPERATOR_HSL_LUMINOSITY;
+					default:
+						throw ::std::runtime_error("Unknown compositing_op value.");
+					}
+				}
+
+				inline ::std::experimental::io2d::compositing_op _Cairo_operator_t_to_compositing_operator(cairo_operator_t co) {
+					switch (co)
+					{
+					case CAIRO_OPERATOR_CLEAR:
+						return ::std::experimental::io2d::compositing_op::clear;
+					case CAIRO_OPERATOR_SOURCE:
+						return ::std::experimental::io2d::compositing_op::source;
+					case CAIRO_OPERATOR_OVER:
+						return ::std::experimental::io2d::compositing_op::over;
+					case CAIRO_OPERATOR_IN:
+						return ::std::experimental::io2d::compositing_op::in;
+					case CAIRO_OPERATOR_OUT:
+						return ::std::experimental::io2d::compositing_op::out;
+					case CAIRO_OPERATOR_ATOP:
+						return ::std::experimental::io2d::compositing_op::atop;
+					case CAIRO_OPERATOR_DEST:
+						return ::std::experimental::io2d::compositing_op::dest;
+					case CAIRO_OPERATOR_DEST_OVER:
+						return ::std::experimental::io2d::compositing_op::dest_over;
+					case CAIRO_OPERATOR_DEST_IN:
+						return ::std::experimental::io2d::compositing_op::dest_in;
+					case CAIRO_OPERATOR_DEST_OUT:
+						return ::std::experimental::io2d::compositing_op::dest_out;
+					case CAIRO_OPERATOR_DEST_ATOP:
+						return ::std::experimental::io2d::compositing_op::dest_atop;
+					case CAIRO_OPERATOR_XOR:
+						return ::std::experimental::io2d::compositing_op::xor_op;
+					case CAIRO_OPERATOR_ADD:
+						return ::std::experimental::io2d::compositing_op::add;
+					case CAIRO_OPERATOR_SATURATE:
+						return ::std::experimental::io2d::compositing_op::saturate;
+					case CAIRO_OPERATOR_MULTIPLY:
+						return ::std::experimental::io2d::compositing_op::multiply;
+					case CAIRO_OPERATOR_SCREEN:
+						return ::std::experimental::io2d::compositing_op::screen;
+					case CAIRO_OPERATOR_OVERLAY:
+						return ::std::experimental::io2d::compositing_op::overlay;
+					case CAIRO_OPERATOR_DARKEN:
+						return ::std::experimental::io2d::compositing_op::darken;
+					case CAIRO_OPERATOR_LIGHTEN:
+						return ::std::experimental::io2d::compositing_op::lighten;
+					case CAIRO_OPERATOR_COLOR_DODGE:
+						return ::std::experimental::io2d::compositing_op::color_dodge;
+					case CAIRO_OPERATOR_COLOR_BURN:
+						return ::std::experimental::io2d::compositing_op::color_burn;
+					case CAIRO_OPERATOR_HARD_LIGHT:
+						return ::std::experimental::io2d::compositing_op::hard_light;
+					case CAIRO_OPERATOR_SOFT_LIGHT:
+						return ::std::experimental::io2d::compositing_op::soft_light;
+					case CAIRO_OPERATOR_DIFFERENCE:
+						return ::std::experimental::io2d::compositing_op::difference;
+					case CAIRO_OPERATOR_EXCLUSION:
+						return ::std::experimental::io2d::compositing_op::exclusion;
+					case CAIRO_OPERATOR_HSL_HUE:
+						return ::std::experimental::io2d::compositing_op::hsl_hue;
+					case CAIRO_OPERATOR_HSL_SATURATION:
+						return ::std::experimental::io2d::compositing_op::hsl_saturation;
+					case CAIRO_OPERATOR_HSL_COLOR:
+						return ::std::experimental::io2d::compositing_op::hsl_color;
+					case CAIRO_OPERATOR_HSL_LUMINOSITY:
+						return ::std::experimental::io2d::compositing_op::hsl_luminosity;
+					default:
+						throw ::std::runtime_error("Unknown cairo_operator_t value.");
+					}
+				}
+
+				inline cairo_format_t _Format_to_cairo_format_t(::std::experimental::io2d::format f) {
+					switch (f) {
+					case ::std::experimental::io2d::format::invalid:
+						return CAIRO_FORMAT_INVALID;
+					case ::std::experimental::io2d::format::argb32:
+						return CAIRO_FORMAT_ARGB32;
+					case ::std::experimental::io2d::format::xrgb32:
+						return CAIRO_FORMAT_RGB24;
+					case ::std::experimental::io2d::format::a8:
+						return CAIRO_FORMAT_A8;
+					case ::std::experimental::io2d::format::a1:
+						return CAIRO_FORMAT_A1;
+					case ::std::experimental::io2d::format::rgb16_565:
+						return CAIRO_FORMAT_RGB16_565;
+					case ::std::experimental::io2d::format::rgb30:
+						return CAIRO_FORMAT_RGB30;
+					default:
+						throw ::std::runtime_error("Unknown format value.");
+					}
+				}
+
+				inline ::std::experimental::io2d::format _Cairo_format_t_to_format(cairo_format_t cf) {
+					switch (cf) {
+					case CAIRO_FORMAT_INVALID:
+						return ::std::experimental::io2d::format::invalid;
+					case CAIRO_FORMAT_ARGB32:
+						return ::std::experimental::io2d::format::argb32;
+					case CAIRO_FORMAT_RGB24:
+						return ::std::experimental::io2d::format::xrgb32;
+					case CAIRO_FORMAT_A8:
+						return ::std::experimental::io2d::format::a8;
+					case CAIRO_FORMAT_A1:
+						return ::std::experimental::io2d::format::a1;
+					case CAIRO_FORMAT_RGB16_565:
+						return ::std::experimental::io2d::format::rgb16_565;
+					case CAIRO_FORMAT_RGB30:
+						return ::std::experimental::io2d::format::rgb30;
+					default:
+						throw ::std::runtime_error("Unknown cairo_format_t value.");
+					}
+				}
+
+				inline cairo_content_t _Cairo_content_t_for_cairo_format_t(cairo_format_t cf) {
+					switch (cf)
+					{
+					case CAIRO_FORMAT_INVALID:
+						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
+						throw ::std::runtime_error("CAIRO_FORMAT_INVALID has no content equivalent.");
+					case CAIRO_FORMAT_ARGB32:
+						return CAIRO_CONTENT_COLOR_ALPHA;
+					case CAIRO_FORMAT_RGB24:
+						return CAIRO_CONTENT_COLOR;
+					case CAIRO_FORMAT_A8:
+						return CAIRO_CONTENT_ALPHA;
+					case CAIRO_FORMAT_A1:
+						return CAIRO_CONTENT_ALPHA;
+					case CAIRO_FORMAT_RGB16_565:
+						return CAIRO_CONTENT_COLOR;
+					case CAIRO_FORMAT_RGB30:
+						return CAIRO_CONTENT_COLOR;
+					default:
+						throw ::std::runtime_error("Unknown cairo_format_t value.");
+					}
+				}
+
+				inline cairo_extend_t _Extend_to_cairo_extend_t(::std::experimental::io2d::wrap_mode e) {
+					switch (e) {
+					case ::std::experimental::io2d::wrap_mode::none:
+						return CAIRO_EXTEND_NONE;
+					case ::std::experimental::io2d::wrap_mode::repeat:
+						return CAIRO_EXTEND_REPEAT;
+					case ::std::experimental::io2d::wrap_mode::reflect:
+						return CAIRO_EXTEND_REFLECT;
+					case ::std::experimental::io2d::wrap_mode::pad:
+						return CAIRO_EXTEND_PAD;
+					default:
+						throw ::std::runtime_error("Unknown wrap_mode value.");
+					}
+				}
+
+				inline ::std::experimental::io2d::wrap_mode _Cairo_extend_t_to_extend(cairo_extend_t ce) {
+					switch (ce) {
+					case CAIRO_EXTEND_NONE:
+						return ::std::experimental::io2d::wrap_mode::none;
+					case CAIRO_EXTEND_REPEAT:
+						return ::std::experimental::io2d::wrap_mode::repeat;
+					case CAIRO_EXTEND_REFLECT:
+						return ::std::experimental::io2d::wrap_mode::reflect;
+					case CAIRO_EXTEND_PAD:
+						return ::std::experimental::io2d::wrap_mode::pad;
+					default:
+						throw ::std::runtime_error("Unknown cairo_extend_t value.");
+					}
+				}
+
+				inline cairo_filter_t _Filter_to_cairo_filter_t(::std::experimental::io2d::filter f) {
+					switch (f) {
+					case ::std::experimental::io2d::filter::fast:
+						return CAIRO_FILTER_FAST;
+					case ::std::experimental::io2d::filter::good:
+						return CAIRO_FILTER_GOOD;
+					case ::std::experimental::io2d::filter::best:
+						return CAIRO_FILTER_BEST;
+					case ::std::experimental::io2d::filter::nearest:
+						return CAIRO_FILTER_NEAREST;
+					case ::std::experimental::io2d::filter::bilinear:
+						return CAIRO_FILTER_BILINEAR;
+					default:
+						throw ::std::runtime_error("Unknown filter value.");
+					}
+				}
+
+				inline ::std::experimental::io2d::filter _Cairo_filter_t_to_filter(cairo_filter_t cf) {
+					switch (cf) {
+					case CAIRO_FILTER_FAST:
+						return ::std::experimental::io2d::filter::fast;
+					case CAIRO_FILTER_GOOD:
+						return ::std::experimental::io2d::filter::good;
+					case CAIRO_FILTER_BEST:
+						return ::std::experimental::io2d::filter::best;
+					case CAIRO_FILTER_NEAREST:
+						return ::std::experimental::io2d::filter::nearest;
+					case CAIRO_FILTER_BILINEAR:
+						return ::std::experimental::io2d::filter::bilinear;
+					case CAIRO_FILTER_GAUSSIAN:
+						throw ::std::runtime_error("Unexpected cairo_filter_t value CAIRO_FILTER_GAUSSIAN.");
+					default:
+						throw ::std::runtime_error("Unknown cairo_filter_t value.");
+					}
+				}
+
+				inline cairo_pattern_type_t _Brush_type_to_cairo_pattern_type_t(::std::experimental::io2d::brush_type bt) {
+					switch (bt) {
+					case ::std::experimental::io2d::brush_type::solid_color:
+						return CAIRO_PATTERN_TYPE_SOLID;
+					case ::std::experimental::io2d::brush_type::surface:
+						return CAIRO_PATTERN_TYPE_SURFACE;
+					case ::std::experimental::io2d::brush_type::linear:
+						return CAIRO_PATTERN_TYPE_LINEAR;
+					case ::std::experimental::io2d::brush_type::radial:
+						return CAIRO_PATTERN_TYPE_RADIAL;
+						//case ::std::experimental::io2d::brush_type::mesh:
+						//	return CAIRO_PATTERN_TYPE_MESH;
+					default:
+						throw ::std::runtime_error("Unknown brush_type value.");
+					}
+				}
+
+				inline ::std::experimental::io2d::brush_type _Cairo_pattern_type_t_to_brush_type(cairo_pattern_type_t cpt) {
+					switch (cpt) {
+					case CAIRO_PATTERN_TYPE_SOLID:
+						return ::std::experimental::io2d::brush_type::solid_color;
+					case CAIRO_PATTERN_TYPE_SURFACE:
+						return ::std::experimental::io2d::brush_type::surface;
+					case CAIRO_PATTERN_TYPE_LINEAR:
+						return ::std::experimental::io2d::brush_type::linear;
+					case CAIRO_PATTERN_TYPE_RADIAL:
+						return ::std::experimental::io2d::brush_type::radial;
+					case CAIRO_PATTERN_TYPE_MESH:
+						throw ::std::runtime_error("Unsupported cairo_pattern_type_t value 'CAIRO_PATTERN_TYPE_MESH'.");
+						//return ::std::experimental::io2d::brush_type::mesh;
+					case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+						throw ::std::runtime_error("Unsupported cairo_pattern_type_t value 'CAIRO_PATTERN_TYPE_RASTER_SOURCE'.");
+					default:
+						throw ::std::runtime_error("Unknown cairo_pattern_type_t value.");
+					}
+				}
+
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
+				// Creates the appropriate error_code for a given cairo_status_t value.
+				// cairo_status_t values which are implementation detail errors are all mapped to make_error_code(io2d_error::invalid_status).
+				inline ::std::error_code _Cairo_status_t_to_std_error_code(cairo_status_t cs) noexcept {
+					switch (cs) {
+#if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1, 13, 1)
+					case CAIRO_STATUS_JBIG2_GLOBAL_MISSING:
+						assert(false && "Unexpected post cairo 1.12.16 value CAIRO_STATUS_JBIG2_GLOBAL_MISSING, though this should not occur due to cairo's compatibility guarantee.");
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+#endif
+					case CAIRO_STATUS_SUCCESS:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::success);
+					case CAIRO_STATUS_NO_MEMORY:
+						return ::std::make_error_code(::std::errc::not_enough_memory);
+					case CAIRO_STATUS_INVALID_RESTORE:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_restore);
+					case CAIRO_STATUS_INVALID_POP_GROUP:
+						assert(false && "Unexpected value CAIRO_STATUS_INVALID_POP_GROUP.");
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_NO_CURRENT_POINT:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_path_data);
+					case CAIRO_STATUS_INVALID_MATRIX:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_matrix);
+					case CAIRO_STATUS_INVALID_STATUS:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_NULL_POINTER:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::null_pointer);
+					case CAIRO_STATUS_INVALID_STRING:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_string);
+					case CAIRO_STATUS_INVALID_PATH_DATA:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_path_data);
+					case CAIRO_STATUS_READ_ERROR:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::read_error);
+					case CAIRO_STATUS_WRITE_ERROR:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::write_error);
+					case CAIRO_STATUS_SURFACE_FINISHED:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::surface_finished);
+					case CAIRO_STATUS_SURFACE_TYPE_MISMATCH:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_PATTERN_TYPE_MISMATCH:
+						assert(false && "Unexpected value CAIRO_STATUS_PATTERN_TYPE_MISMATCH.");
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_INVALID_CONTENT:
+						return ::std::make_error_code(::std::errc::invalid_argument);
+					case CAIRO_STATUS_INVALID_FORMAT:
+						return ::std::make_error_code(::std::errc::invalid_argument);
+					case CAIRO_STATUS_INVALID_VISUAL:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_FILE_NOT_FOUND:
+						return ::std::make_error_code(::std::errc::no_such_file_or_directory);
+					case CAIRO_STATUS_INVALID_DASH:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_dash);
+					case CAIRO_STATUS_INVALID_DSC_COMMENT:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_INVALID_INDEX:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_index);
+					case CAIRO_STATUS_CLIP_NOT_REPRESENTABLE:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::clip_not_representable);
+					case CAIRO_STATUS_TEMP_FILE_ERROR:
+						// Even though it's an I/O error, this is an implementation detail error and as such is invalid_status.
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_INVALID_STRIDE:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_stride);
+					case CAIRO_STATUS_FONT_TYPE_MISMATCH:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_USER_FONT_IMMUTABLE:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::user_font_immutable);
+					case CAIRO_STATUS_USER_FONT_ERROR:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::user_font_error);
+					case CAIRO_STATUS_NEGATIVE_COUNT:
+						assert(false && "CAIRO_STATUS_NEGATIVE_COUNT should not occur because the library API should prevent the existence of negative count values.");
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_INVALID_CLUSTERS:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_clusters);
+					case CAIRO_STATUS_INVALID_SLANT:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_INVALID_WEIGHT:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_INVALID_SIZE:
+						return ::std::make_error_code(::std::errc::invalid_argument);
+					case CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED:
+						assert(false && "CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED encountered but the API doesn't expose user fonts so this status should never occur. What happened?");
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_DEVICE_TYPE_MISMATCH:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_DEVICE_ERROR:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::device_error);
+					case CAIRO_STATUS_INVALID_MESH_CONSTRUCTION:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_mesh_construction);
+					case CAIRO_STATUS_DEVICE_FINISHED:
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					case CAIRO_STATUS_LAST_STATUS:
+						assert(false && "Unexpected value CAIRO_STATUS_LAST_STATUS. The runtime version of cairo is likely newer than the version of cairo this implementation was compiled against.");
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					default:
+						assert(false && "Unknown cairo_status_t value caught by default case. The runtime version of cairo is likely newer than the version of cairo this implementation was compiled against, though this still should not occur due to cairo's compatibility guarantee.");
+						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
+					}
+				}
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+
+				// Throws an exception of type:
+				// -  bad_alloc : If the value of s is CAIRO_STATUS_NO_MEMORY.
+				// -  invalid_argument: If the value of s is CAIRO_STATUS_INVALID_FORMAT, CAIRO_STATUS_INVALID_CONTENT, or CAIRO_STATUS_INVALID_SIZE.
+				// -  out_of_range : If the value of s is CAIRO_STATUS_INVALID_INDEX.
+				// -  system_error : For all other s values, with its error_code being the return value of _Cairo_status_t_to_std_error_code(s).
+				// If the value of s is CAIRO_STATUS_LAST_STATUS, CAIRO_STATUS_INVALID_POP_GROUP, CAIRO_STATUS_NEGATIVE_COUNT, CAIRO_STATUS_PATTERN_TYPE_MISMATCH,
+				// CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED, or an unknown value, it triggers an assertion failure. If assertion checks are disabled, an exception
+				// of type system_error with an error code of make_error_code(io2d_error::invalid_status) will be thrown.
+				inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
+					assert(s != CAIRO_STATUS_LAST_STATUS && s != CAIRO_STATUS_INVALID_POP_GROUP && s != CAIRO_STATUS_NEGATIVE_COUNT);
+					if (s != CAIRO_STATUS_SUCCESS) {
+						if (s == CAIRO_STATUS_NO_MEMORY) {
+							throw ::std::bad_alloc{};
+						}
+						else {
+							if (s == CAIRO_STATUS_INVALID_FORMAT || s == CAIRO_STATUS_INVALID_CONTENT || s == CAIRO_STATUS_INVALID_SIZE) {
+								if (s == CAIRO_STATUS_INVALID_FORMAT) {
+									throw ::std::invalid_argument{ "The value of a format type argument is invalid." };
+								}
+								else {
+									if (s == CAIRO_STATUS_INVALID_CONTENT) {
+										throw ::std::invalid_argument{ "The value of a content type argument is invalid." };
+									}
+									else {
+										throw ::std::invalid_argument{ "A value of a size parameter is invalid." };
+									}
+								}
+							}
+							else {
+								if (s == CAIRO_STATUS_INVALID_INDEX) {
+									throw ::std::out_of_range{ "An index parameter has an invalid value." };
+								}
+							}
+
+							throw ::std::system_error(_Cairo_status_t_to_std_error_code(s));
+						}
+					}
+				}
+
+				// Checks for equality between two floating point numbers using an epsilon value to specify the equality tolerance limit.
+				// See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+				template <typename T>
+				inline bool _Almost_equal_relative(T a, T b, T epsilon = ::std::numeric_limits<T>::epsilon()) noexcept {
+					auto diff = ::std::abs(a - b);
+					a = ::std::abs(a);
+					b = ::std::abs(b);
+					auto largest = (b > a) ? b : a;
+					if (diff <= largest * epsilon) {
+						return true;
+					}
+					return false;
+				}
+
+				// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0 } 'angle' radians around { 0.0, 0.0 } in a clockwise ('clockwise' == true) or
+				// counterclockwise ('clockwise' == false) direction.
+				inline ::std::experimental::io2d::vector_2d _Rotate_point_absolute_angle(const ::std::experimental::io2d::vector_2d& center, double radius, double angle, bool clockwise = true) {
+					if (clockwise) {
+						::std::experimental::io2d::vector_2d pt{ radius * ::std::cos(angle), -(radius * -::std::sin(angle)) };
+						pt.x(pt.x() + center.x());
+						pt.y(pt.y() + center.y());
+						return pt;
+					}
+					else {
+						::std::experimental::io2d::vector_2d pt{ radius * ::std::cos(angle), radius * -::std::sin(angle) };
+						pt.x(pt.x() + center.x());
+						pt.y(pt.y() + center.y());
+						return pt;
+					}
+				}
+
+				// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'.
+				inline int _Double_to_int(double value, bool nearestNeighbor = true) {
+					if (nearestNeighbor) {
+						// Round to the nearest neighbor.
+						return static_cast<int>(::std::round(value));
+					}
+					// Otherwise truncate.
+					return static_cast<int>(::std::trunc(value));
+				}
+
+				template <typename T>
+				inline int _Container_size_to_int(const T& container) noexcept {
+					assert(container.size() <= static_cast<unsigned int>(::std::numeric_limits<int>::max()));
+					return static_cast<int>(container.size());
+				}
+
 				template <class _TItem>
-				struct _Path_factory_process_visit {
+				struct _Path_item_interpret_visitor {
 					constexpr static double twoThirds = 2.0 / 3.0;
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
 						currentPoint = item.at();
 						auto pt = m.transform_point(currentPoint - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 						closePoint = pt;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
-						currentPoint = currentPoint + item.at();
-						auto pt = m.transform_point(currentPoint - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
-						closePoint = pt;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>& matrices, stack<vector_2d>& origins) {
+						_Path_item_interpret_visitor::template _Interpret(path_data::abs_new_path(currentPoint + item.at()), v, m, origin, currentPoint, closePoint, matrices, origins);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-					static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
+					static void _Interpret(const T&, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
 						v.emplace_back(::std::in_place_type<path_data::close_path>);
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>,
 							closePoint);
 						if (!m.is_finite() || !m.is_invertible()) {
 							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
 						}
-						auto invM = matrix_2d{ m }.invert();
 						// Need to assign the untransformed closePoint value to currentPoint.
-						currentPoint = invM.transform_point(closePoint - origin) + origin;
+						currentPoint = m.inverse().transform_point(closePoint - origin) + origin;
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&) {
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, stack<matrix_2d>& matrices, stack<vector_2d>&) {
 						if (!m.is_finite()) {
 							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
 						}
 						if (!m.is_invertible()) {
 							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
 						}
+						matrices.push(m);
 						m = item.matrix();
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&) {
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, stack<matrix_2d>& matrices, stack<vector_2d>&) {
+						const auto updateM = m * item.matrix();
+						if (!updateM.is_finite()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
+						}
+						if (!updateM.is_invertible()) {
+							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
+						}
+						matrices.push(m);
+						m = updateM;
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
+					static void _Interpret(const T&, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, stack<matrix_2d>& matrices, stack<vector_2d>&) {
+						if (matrices.empty()) {
+							m = matrix_2d{};
+						}
+						else {
+							m = matrices.top();
+							matrices.pop();
+						}
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_origin>, _Path_data_abs_origin> = _Path_data_abs_origin_val>
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
+						origins.push(origin);
 						origin = item.origin();
 					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_origin>, _Path_data_rel_origin> = _Path_data_rel_origin_val>
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
+						origins.push(origin);
+						origin = origin + item.origin();
+					}
+					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_origin>, _Path_data_revert_origin> = _Path_data_revert_origin_val>
+					static void _Interpret(const T&, ::std::vector<path_data::path_item>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
+						if (origins.empty()) {
+							origin = vector_2d{};
+						}
+						else {
+							origin = origins.top();
+							origins.pop();
+						}
+					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
 						auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
 						auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
 						auto pt3 = m.transform_point(item.end_point() - origin) + origin;
@@ -2259,14 +3216,14 @@ namespace std {
 						closePoint = pt3;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
 						currentPoint = item.to();
 						auto pt = m.transform_point(currentPoint - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 						closePoint = pt;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
 						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 						//vector_2d beginPt;
 						auto controlPt = m.transform_point(item.control_point() - origin) + origin;
@@ -2279,7 +3236,7 @@ namespace std {
 						closePoint = endPt;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc>, _Path_data_arc> = _Path_data_arc_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
 						const double rot = item.rotation();
 						const double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
 						if (abs(rot) < oneThousandthOfADegreeInRads) {
@@ -2290,8 +3247,7 @@ namespace std {
 						const vector_2d rad = item.radius();
 						auto startAng = item.start_angle();
 						const auto origM = m;
-						m = matrix_2d::init_identity();
-						m.scale(rad);
+						m = matrix_2d::init_scale(rad);
 						const auto origOrigin = origin;
 						auto centerOffset = (point_for_angle(two_pi<double> -startAng) * rad);
 						centerOffset.y(-centerOffset.y());
@@ -2396,312 +3352,297 @@ namespace std {
 						m = origM;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
-						auto pt1 = m.transform_point(item.control_point_1() + currentPoint -
-							origin) + origin;
-						auto pt2 = m.transform_point(item.control_point_2() + currentPoint -
-							origin) + origin;
-						auto pt3 = m.transform_point(item.end_point() + currentPoint - origin) +
-							origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
-							pt1, pt2, pt3);
-						currentPoint = item.end_point() + currentPoint;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>& matrices, stack<vector_2d>& origins) {
+						auto pt1 = currentPoint + item.control_point_1();
+						auto pt2 = currentPoint + item.control_point_1() + item.control_point_2();
+						auto pt3 = currentPoint + item.control_point_1() + item.control_point_2() + item.end_point();
+						_Path_item_interpret_visitor::template _Interpret(path_data::abs_cubic_curve(pt1, pt2, pt3), v, m, origin, currentPoint, closePoint, matrices, origins);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
-						currentPoint = item.to() + currentPoint;
-						auto pt = m.transform_point(currentPoint - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>& matrices, stack<vector_2d>& origins) {
+						_Path_item_interpret_visitor::template _Interpret(path_data::abs_line(currentPoint + item.to()), v, m, origin, currentPoint, closePoint, matrices, origins);
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&) {
-						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-						vector_2d beginPt;
-						auto controlPt = m.transform_point(item.control_point() + currentPoint -
-							origin) + origin;
-						auto endPt = m.transform_point(item.end_point() + currentPoint -
-							origin) + origin;
-						beginPt = m.transform_point(currentPoint - origin) + origin;
-						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
-						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
-						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-						currentPoint = item.end_point() + currentPoint;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>& matrices, stack<vector_2d>& origins) {
+						_Path_item_interpret_visitor::template _Interpret(path_data::abs_quadratic_curve(currentPoint + item.control_point(), currentPoint + item.control_point() + item.end_point()), v, m, origin, currentPoint, closePoint, matrices, origins);
 					}
 				};
 
 				template <class Allocator>
-				inline ::std::vector<path_data::path_data_types> _Process_path_data(const path_builder<Allocator>& pf) {
+				inline ::std::vector<path_data::path_item> _Interpret_path_items(const path_builder<Allocator>& pf) {
 					matrix_2d m;
 					vector_2d origin;
 					vector_2d currentPoint; // Tracks the untransformed current point.
 					vector_2d closePoint;   // Tracks the transformed close point.
-					::std::vector<path_data::path_data_types> v;
+					::std::stack<matrix_2d> matrices;
+					::std::stack<vector_2d> origins;
+					::std::vector<path_data::path_item> v;
 
-					for (const path_data::path_data_types& val : pf) {
-						::std::visit([&m, &origin, &currentPoint, &closePoint, &v](auto&& item) {
+					for (const path_data::path_item& val : pf) {
+						::std::visit([&m, &origin, &currentPoint, &closePoint, &matrices, &origins, &v](auto&& item) {
 							using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-							_Path_factory_process_visit<T>::template _Perform<T>(item, v, m, origin, currentPoint, closePoint);
+							_Path_item_interpret_visitor<T>::template _Interpret<T>(item, v, m, origin, currentPoint, closePoint, matrices, origins);
 						}, val);
 					}
 					return v;
 				}
 
-				template <class _TItem>
-				struct _Path_factory_process_visit_noexcept {
-					constexpr static double twoThirds = 2.0 / 3.0;
+				//template <class _TItem>
+				//struct _Path_factory_process_visit_noexcept {
+				//	constexpr static double twoThirds = 2.0 / 3.0;
 
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
-						currentPoint = item.at();
-						auto pt = m.transform_point(currentPoint - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
-						closePoint = pt;
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
-						currentPoint = currentPoint + item.at();
-						auto pt = m.transform_point(currentPoint - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
-						closePoint = pt;
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-					static void _Perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
-						v.emplace_back(::std::in_place_type<path_data::close_path>);
-						v.emplace_back(::std::in_place_type<path_data::abs_new_path>,
-							closePoint);
-						if (!m.is_finite() || !m.is_invertible()) {
-							ec = ::std::make_error_code(io2d_error::invalid_matrix);
-							return;
-						}
-						auto invM = matrix_2d{ m }.invert();
-						// Need to assign the untransformed closePoint value to currentPoint.
-						currentPoint = invM.transform_point(closePoint - origin) + origin;
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_matrix>, _Path_data_change_matrix> = _Path_data_change_matrix_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, ::std::error_code& ec) noexcept {
-						if (!m.is_finite()) {
-							ec = ::std::make_error_code(io2d_error::invalid_matrix);
-							return;
-						}
-						if (!m.is_invertible()) {
-							ec = ::std::make_error_code(io2d_error::invalid_matrix);
-							return;
-						}
-						m = item.matrix();
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::change_origin>, _Path_data_change_origin> = _Path_data_change_origin_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, ::std::error_code& ec) noexcept {
-						origin = item.origin();
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
-						auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
-						auto pt3 = m.transform_point(item.end_point() - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
-							pt2, pt3);
-						currentPoint = item.end_point();
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						currentPoint = item.to();
-						auto pt = m.transform_point(currentPoint - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-						vector_2d beginPt;
-						auto controlPt = m.transform_point(item.control_point() - origin) + origin;
-						auto endPt = m.transform_point(item.end_point() - origin) + origin;
-						beginPt = m.transform_point(currentPoint - origin) + origin;
-						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
-						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
-						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-						currentPoint = item.end_point();
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc>, _Path_data_arc> = _Path_data_arc_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						const double rot = item.rotation();
-						const double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
-						if (abs(rot) < oneThousandthOfADegreeInRads) {
-							// Return if the rotation is less than one thousandth of one degree; it's a degenerate path segment.
-							return;
-						}
-						const auto clockwise = (rot < 0.0) ? true : false;
-						const vector_2d rad = item.radius();
-						auto startAng = item.start_angle();
-						const auto origM = m;
-						m = matrix_2d::init_identity();
-						m.scale(rad);
-						const auto origOrigin = origin;
-						auto centerOffset = (point_for_angle(two_pi<double> -startAng) * rad);
-						centerOffset.y(-centerOffset.y());
-						auto ctr = currentPoint - centerOffset;
-						origin = ctr;
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
+				//		currentPoint = item.at();
+				//		auto pt = m.transform_point(currentPoint - origin) + origin;
+				//		v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+				//		closePoint = pt;
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
+				//		currentPoint = currentPoint + item.at();
+				//		auto pt = m.transform_point(currentPoint - origin) + origin;
+				//		v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+				//		closePoint = pt;
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
+				//	static void _Interpret(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, ::std::error_code& ec) noexcept {
+				//		v.emplace_back(::std::in_place_type<path_data::close_path>);
+				//		v.emplace_back(::std::in_place_type<path_data::abs_new_path>,
+				//			closePoint);
+				//		if (!m.is_finite() || !m.is_invertible()) {
+				//			ec = ::std::make_error_code(io2d_error::invalid_matrix);
+				//			return;
+				//		}
+				//		auto invM = m.inverse();
+				//		// Need to assign the untransformed closePoint value to currentPoint.
+				//		currentPoint = invM.transform_point(closePoint - origin) + origin;
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, ::std::error_code& ec) noexcept {
+				//		if (!m.is_finite()) {
+				//			ec = ::std::make_error_code(io2d_error::invalid_matrix);
+				//			return;
+				//		}
+				//		if (!m.is_invertible()) {
+				//			ec = ::std::make_error_code(io2d_error::invalid_matrix);
+				//			return;
+				//		}
+				//		m = item.matrix();
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_origin>, _Path_data_abs_origin> = _Path_data_abs_origin_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, ::std::error_code& ec) noexcept {
+				//		origin = item.origin();
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+				//		auto pt1 = m.transform_point(item.control_point_1() - origin) + origin;
+				//		auto pt2 = m.transform_point(item.control_point_2() - origin) + origin;
+				//		auto pt3 = m.transform_point(item.end_point() - origin) + origin;
+				//		v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
+				//			pt2, pt3);
+				//		currentPoint = item.end_point();
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+				//		currentPoint = item.to();
+				//		auto pt = m.transform_point(currentPoint - origin) + origin;
+				//		v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+				//		// Turn it into a cubic curve since cairo doesn't have quadratic curves.
+				//		vector_2d beginPt;
+				//		auto controlPt = m.transform_point(item.control_point() - origin) + origin;
+				//		auto endPt = m.transform_point(item.end_point() - origin) + origin;
+				//		beginPt = m.transform_point(currentPoint - origin) + origin;
+				//		vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
+				//		vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
+				//		v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
+				//		currentPoint = item.end_point();
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc>, _Path_data_arc> = _Path_data_arc_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+				//		const double rot = item.rotation();
+				//		const double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
+				//		if (abs(rot) < oneThousandthOfADegreeInRads) {
+				//			// Return if the rotation is less than one thousandth of one degree; it's a degenerate path segment.
+				//			return;
+				//		}
+				//		const auto clockwise = (rot < 0.0) ? true : false;
+				//		const vector_2d rad = item.radius();
+				//		auto startAng = item.start_angle();
+				//		const auto origM = m;
+				//		m = matrix_2d::init_identity();
+				//		m.scale(rad);
+				//		const auto origOrigin = origin;
+				//		auto centerOffset = (point_for_angle(two_pi<double> -startAng) * rad);
+				//		centerOffset.y(-centerOffset.y());
+				//		auto ctr = currentPoint - centerOffset;
+				//		origin = ctr;
 
-						vector_2d pt0, pt1, pt2, pt3;
-						int bezCount = 1;
-						double theta = rot;
+				//		vector_2d pt0, pt1, pt2, pt3;
+				//		int bezCount = 1;
+				//		double theta = rot;
 
-						while (abs(theta) > half_pi<double>) {
-							theta /= 2.0;
-							bezCount += bezCount;
-						}
+				//		while (abs(theta) > half_pi<double>) {
+				//			theta /= 2.0;
+				//			bezCount += bezCount;
+				//		}
 
-						double phi = (theta / 2.0);
-						const auto cosPhi = cos(-phi);
-						const auto sinPhi = sin(-phi);
+				//		double phi = (theta / 2.0);
+				//		const auto cosPhi = cos(-phi);
+				//		const auto sinPhi = sin(-phi);
 
-						pt0.x(cosPhi);
-						pt0.y(-sinPhi);
-						pt3.x(pt0.x());
-						pt3.y(-pt0.y());
-						pt1.x((4.0 - cosPhi) / 3.0);
-						pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
-						pt2.x(pt1.x());
-						pt2.y(-pt1.y());
-						auto rotCntrCwFn = [](const vector_2d& pt, double a) -> vector_2d {
-							auto result = vector_2d{ pt.x() * cos(a) - pt.y() * sin(a),
-								pt.x() * sin(a) + pt.y() * cos(a) };
-							if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
-								result.x(result.x() < 0.0 ? -0.0 : 0.0);
-							}
-							if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
-								result.y(result.y() < 0.0 ? -0.0 : 0.0);
-							}
-							return result;
-						};
-						auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
-							auto result = vector_2d{ pt.x() * cos(a) - pt.y() * sin(a),
-								-(pt.x() * sin(a) + pt.y() * cos(a)) };
-							if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
-								result.x(result.x() < 0.0 ? -0.0 : 0.0);
-							}
-							if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
-								result.y(result.y() < 0.0 ? -0.0 : 0.0);
-							}
-							return result;
-						};
+				//		pt0.x(cosPhi);
+				//		pt0.y(-sinPhi);
+				//		pt3.x(pt0.x());
+				//		pt3.y(-pt0.y());
+				//		pt1.x((4.0 - cosPhi) / 3.0);
+				//		pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
+				//		pt2.x(pt1.x());
+				//		pt2.y(-pt1.y());
+				//		auto rotCntrCwFn = [](const vector_2d& pt, double a) -> vector_2d {
+				//			auto result = vector_2d{ pt.x() * cos(a) - pt.y() * sin(a),
+				//				pt.x() * sin(a) + pt.y() * cos(a) };
+				//			if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
+				//				result.x(result.x() < 0.0 ? -0.0 : 0.0);
+				//			}
+				//			if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
+				//				result.y(result.y() < 0.0 ? -0.0 : 0.0);
+				//			}
+				//			return result;
+				//		};
+				//		auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
+				//			auto result = vector_2d{ pt.x() * cos(a) - pt.y() * sin(a),
+				//				-(pt.x() * sin(a) + pt.y() * cos(a)) };
+				//			if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
+				//				result.x(result.x() < 0.0 ? -0.0 : 0.0);
+				//			}
+				//			if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
+				//				result.y(result.y() < 0.0 ? -0.0 : 0.0);
+				//			}
+				//			return result;
+				//		};
 
-						startAng = two_pi<double> -startAng;
+				//		startAng = two_pi<double> -startAng;
 
-						if (clockwise) {
-							pt0 = rotCwFn(pt0, phi);
-							pt1 = rotCwFn(pt1, phi);
-							pt2 = rotCwFn(pt2, phi);
-							pt3 = rotCwFn(pt3, phi);
-							auto shflPt = pt3;
-							pt3 = pt0;
-							pt0 = shflPt;
-							shflPt = pt2;
-							pt2 = pt1;
-							pt1 = shflPt;
-						}
-						else {
-							pt0 = rotCntrCwFn(pt0, phi);
-							pt1 = rotCntrCwFn(pt1, phi);
-							pt2 = rotCntrCwFn(pt2, phi);
-							pt3 = rotCntrCwFn(pt3, phi);
-							pt0.y(-pt0.y());
-							pt1.y(-pt1.y());
-							pt2.y(-pt2.y());
-							pt3.y(-pt3.y());
-							auto shflPt = pt3;
-							pt3 = pt0;
-							pt0 = shflPt;
-							shflPt = pt2;
-							pt2 = pt1;
-							pt1 = shflPt;
-						}
-						auto currTheta = startAng;
+				//		if (clockwise) {
+				//			pt0 = rotCwFn(pt0, phi);
+				//			pt1 = rotCwFn(pt1, phi);
+				//			pt2 = rotCwFn(pt2, phi);
+				//			pt3 = rotCwFn(pt3, phi);
+				//			auto shflPt = pt3;
+				//			pt3 = pt0;
+				//			pt0 = shflPt;
+				//			shflPt = pt2;
+				//			pt2 = pt1;
+				//			pt1 = shflPt;
+				//		}
+				//		else {
+				//			pt0 = rotCntrCwFn(pt0, phi);
+				//			pt1 = rotCntrCwFn(pt1, phi);
+				//			pt2 = rotCntrCwFn(pt2, phi);
+				//			pt3 = rotCntrCwFn(pt3, phi);
+				//			pt0.y(-pt0.y());
+				//			pt1.y(-pt1.y());
+				//			pt2.y(-pt2.y());
+				//			pt3.y(-pt3.y());
+				//			auto shflPt = pt3;
+				//			pt3 = pt0;
+				//			pt0 = shflPt;
+				//			shflPt = pt2;
+				//			pt2 = pt1;
+				//			pt1 = shflPt;
+				//		}
+				//		auto currTheta = startAng;
 
-						for (; bezCount > 0; bezCount--) {
-							const auto rapt0 = m.transform_point(rotCntrCwFn(pt0, currTheta));
-							const auto rapt1 = m.transform_point(rotCntrCwFn(pt1, currTheta));
-							const auto rapt2 = m.transform_point(rotCntrCwFn(pt2, currTheta));
-							const auto rapt3 = m.transform_point(rotCntrCwFn(pt3, currTheta));
-							auto cpt0 = ctr + rapt0;
-							auto cpt1 = ctr + rapt1;
-							auto cpt2 = ctr + rapt2;
-							auto cpt3 = ctr + rapt3;
-							currentPoint = cpt3;
-							cpt0 = origM.transform_point(cpt0);
-							cpt1 = origM.transform_point(cpt1);
-							cpt2 = origM.transform_point(cpt2);
-							cpt3 = origM.transform_point(cpt3);
+				//		for (; bezCount > 0; bezCount--) {
+				//			const auto rapt0 = m.transform_point(rotCntrCwFn(pt0, currTheta));
+				//			const auto rapt1 = m.transform_point(rotCntrCwFn(pt1, currTheta));
+				//			const auto rapt2 = m.transform_point(rotCntrCwFn(pt2, currTheta));
+				//			const auto rapt3 = m.transform_point(rotCntrCwFn(pt3, currTheta));
+				//			auto cpt0 = ctr + rapt0;
+				//			auto cpt1 = ctr + rapt1;
+				//			auto cpt2 = ctr + rapt2;
+				//			auto cpt3 = ctr + rapt3;
+				//			currentPoint = cpt3;
+				//			cpt0 = origM.transform_point(cpt0);
+				//			cpt1 = origM.transform_point(cpt1);
+				//			cpt2 = origM.transform_point(cpt2);
+				//			cpt3 = origM.transform_point(cpt3);
 
-							v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
-							currTheta -= theta;
-						}
-						origin = origOrigin;
-						m = origM;
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						auto pt1 = m.transform_point(item.control_point_1() + currentPoint -
-							origin) + origin;
-						auto pt2 = m.transform_point(item.control_point_2() + currentPoint -
-							origin) + origin;
-						auto pt3 = m.transform_point(item.end_point() + currentPoint - origin) +
-							origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
-							pt1, pt2, pt3);
-						currentPoint = item.end_point() + currentPoint;
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						currentPoint = item.to() + currentPoint;
-						auto pt = m.transform_point(currentPoint - origin) + origin;
-						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-						ec.clear();
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-					static void _Perform(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
-						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-						vector_2d beginPt;
-						auto controlPt = m.transform_point(item.control_point() + currentPoint - origin) + origin;
-						auto endPt = m.transform_point(item.end_point() + currentPoint - origin) + origin;
-						beginPt = m.transform_point(currentPoint - origin) + origin;
-						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
-						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
-						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-						currentPoint = item.end_point() + currentPoint;
-						ec.clear();
-					}
-				};
+				//			v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
+				//			currTheta -= theta;
+				//		}
+				//		origin = origOrigin;
+				//		m = origM;
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+				//		auto pt1 = m.transform_point(item.control_point_1() + currentPoint -
+				//			origin) + origin;
+				//		auto pt2 = m.transform_point(item.control_point_2() + currentPoint -
+				//			origin) + origin;
+				//		auto pt3 = m.transform_point(item.end_point() + currentPoint - origin) +
+				//			origin;
+				//		v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>,
+				//			pt1, pt2, pt3);
+				//		currentPoint = item.end_point() + currentPoint;
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+				//		currentPoint = item.to() + currentPoint;
+				//		auto pt = m.transform_point(currentPoint - origin) + origin;
+				//		v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
+				//		ec.clear();
+				//	}
+				//	template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
+				//	static void _Interpret(const T& item, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, ::std::error_code& ec) noexcept {
+				//		// Turn it into a cubic curve since cairo doesn't have quadratic curves.
+				//		vector_2d beginPt;
+				//		auto controlPt = m.transform_point(item.control_point() + currentPoint - origin) + origin;
+				//		auto endPt = m.transform_point(item.end_point() + currentPoint - origin) + origin;
+				//		beginPt = m.transform_point(currentPoint - origin) + origin;
+				//		vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
+				//		vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
+				//		v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
+				//		currentPoint = item.end_point() + currentPoint;
+				//		ec.clear();
+				//	}
+				//};
 
-				template <class Allocator>
-				::std::vector<path_data::path_data_types> _Process_path_data(const path_builder<Allocator>& pf, ::std::error_code& ec) noexcept {
-					matrix_2d m;
-					vector_2d origin;
-					vector_2d currentPoint; // Tracks the untransformed current point.
-					bool hasCurrentPoint = false;
-					vector_2d closePoint;   // Tracks the transformed close point.
-					::std::vector<path_data::path_data_types> v;
+				//template <class Allocator>
+				//::std::vector<path_data::path_data_types> _Interpret_path_items(const path_builder<Allocator>& pf, ::std::error_code& ec) noexcept {
+				//	matrix_2d m;
+				//	vector_2d origin;
+				//	vector_2d currentPoint; // Tracks the untransformed current point.
+				//	bool hasCurrentPoint = false;
+				//	vector_2d closePoint;   // Tracks the transformed close point.
+				//	::std::vector<path_data::path_data_types> v;
 
-					for (const path_data::path_data_types& val : pf) {
-						::std::visit([&m, &origin, &currentPoint, &hasCurrentPoint, &closePoint, &v, &ec](auto&& item) {
-							using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-							_Path_factory_process_visit_noexcept<T>::template _Perform<T>(item, v, m, origin, currentPoint, hasCurrentPoint, closePoint, ec);
-						}, val);
-						if (static_cast<bool>(ec)) {
-							//v.clear();
-							return v;
-						}
-					}
-					return v;
-				}
+				//	for (const path_data::path_data_types& val : pf) {
+				//		::std::visit([&m, &origin, &currentPoint, &hasCurrentPoint, &closePoint, &v, &ec](auto&& item) {
+				//			using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
+				//			_Path_factory_process_visit_noexcept<T>::template _Interpret<T>(item, v, m, origin, currentPoint, hasCurrentPoint, closePoint, ec);
+				//		}, val);
+				//		if (static_cast<bool>(ec)) {
+				//			//v.clear();
+				//			return v;
+				//		}
+				//	}
+				//	return v;
+				//}
 
 				template<class Allocator>
 				inline path_builder<Allocator>::path_builder(const Allocator &a) noexcept
@@ -2948,13 +3889,33 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::change_matrix(const matrix_2d& m) noexcept {
-					_Data.emplace_back(in_place_type<path_data::change_matrix>, m);
+				inline void path_builder<Allocator>::matrix(const matrix_2d& m) noexcept {
+					_Data.emplace_back(in_place_type<path_data::abs_matrix>, m);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::change_origin(const vector_2d& pt) noexcept {
-					_Data.emplace_back(in_place_type<path_data::change_origin>, pt);
+				inline void path_builder<Allocator>::rel_matrix(const matrix_2d& m) noexcept {
+					_Data.emplace_back(in_place_type<path_data::rel_matrix>, m);
+				}
+
+				template<class Allocator>
+				inline void path_builder<Allocator>::revert_matrix() noexcept {
+					_Data.emplace_back(in_place_type<path_data::revert_matrix>);
+				}
+
+				template<class Allocator>
+				inline void path_builder<Allocator>::origin(const vector_2d& pt) noexcept {
+					_Data.emplace_back(in_place_type<path_data::abs_origin>, pt);
+				}
+
+				template<class Allocator>
+				inline void path_builder<Allocator>::rel_origin(const vector_2d& pt) noexcept {
+					_Data.emplace_back(in_place_type<path_data::rel_origin>, pt);
+				}
+
+				template<class Allocator>
+				inline void path_builder<Allocator>::revert_origin() noexcept {
+					_Data.emplace_back(in_place_type<path_data::revert_origin>);
 				}
 
 				template<class Allocator>
@@ -3067,6 +4028,7 @@ namespace std {
 				inline brush::brush(const circle& start, const circle& end,
 					InputIterator first, InputIterator last)
 					: _Brush()
+					, _Image_surface()
 					, _Brush_type(brush_type::radial) {
 					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
 					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
@@ -3077,196 +4039,193 @@ namespace std {
 					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 				}
 
-#if defined(_MSC_VER) && defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch-enum"
-#endif
-				// Creates the appropriate error_code for a given cairo_status_t value.
-				// cairo_status_t values which are implementation detail errors are all mapped to make_error_code(io2d_error::invalid_status).
-				inline ::std::error_code _Cairo_status_t_to_std_error_code(cairo_status_t cs) noexcept {
-					switch (cs) {
-#if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1, 13, 1)
-					case CAIRO_STATUS_JBIG2_GLOBAL_MISSING:
-						assert(false && "Unexpected post cairo 1.12.16 value CAIRO_STATUS_JBIG2_GLOBAL_MISSING, though this should not occur due to cairo's compatibility guarantee.");
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-#endif
-					case CAIRO_STATUS_SUCCESS:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::success);
-					case CAIRO_STATUS_NO_MEMORY:
-						return ::std::make_error_code(::std::errc::not_enough_memory);
-					case CAIRO_STATUS_INVALID_RESTORE:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_restore);
-					case CAIRO_STATUS_INVALID_POP_GROUP:
-						assert(false && "Unexpected value CAIRO_STATUS_INVALID_POP_GROUP.");
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_NO_CURRENT_POINT:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_path_data);
-					case CAIRO_STATUS_INVALID_MATRIX:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_matrix);
-					case CAIRO_STATUS_INVALID_STATUS:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_NULL_POINTER:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::null_pointer);
-					case CAIRO_STATUS_INVALID_STRING:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_string);
-					case CAIRO_STATUS_INVALID_PATH_DATA:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_path_data);
-					case CAIRO_STATUS_READ_ERROR:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::read_error);
-					case CAIRO_STATUS_WRITE_ERROR:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::write_error);
-					case CAIRO_STATUS_SURFACE_FINISHED:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::surface_finished);
-					case CAIRO_STATUS_SURFACE_TYPE_MISMATCH:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_PATTERN_TYPE_MISMATCH:
-						assert(false && "Unexpected value CAIRO_STATUS_PATTERN_TYPE_MISMATCH.");
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_INVALID_CONTENT:
-						return ::std::make_error_code(::std::errc::invalid_argument);
-					case CAIRO_STATUS_INVALID_FORMAT:
-						return ::std::make_error_code(::std::errc::invalid_argument);
-					case CAIRO_STATUS_INVALID_VISUAL:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_FILE_NOT_FOUND:
-						return ::std::make_error_code(::std::errc::no_such_file_or_directory);
-					case CAIRO_STATUS_INVALID_DASH:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_dash);
-					case CAIRO_STATUS_INVALID_DSC_COMMENT:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_INVALID_INDEX:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_index);
-					case CAIRO_STATUS_CLIP_NOT_REPRESENTABLE:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::clip_not_representable);
-					case CAIRO_STATUS_TEMP_FILE_ERROR:
-						// Even though it's an I/O error, this is an implementation detail error and as such is invalid_status.
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_INVALID_STRIDE:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_stride);
-					case CAIRO_STATUS_FONT_TYPE_MISMATCH:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_USER_FONT_IMMUTABLE:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::user_font_immutable);
-					case CAIRO_STATUS_USER_FONT_ERROR:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::user_font_error);
-					case CAIRO_STATUS_NEGATIVE_COUNT:
-						assert(false && "CAIRO_STATUS_NEGATIVE_COUNT should not occur because the library API should prevent the existence of negative count values.");
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_INVALID_CLUSTERS:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_clusters);
-					case CAIRO_STATUS_INVALID_SLANT:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_INVALID_WEIGHT:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_INVALID_SIZE:
-						return ::std::make_error_code(::std::errc::invalid_argument);
-					case CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED:
-						assert(false && "CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED encountered but the API doesn't expose user fonts so this status should never occur. What happened?");
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_DEVICE_TYPE_MISMATCH:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_DEVICE_ERROR:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::device_error);
-					case CAIRO_STATUS_INVALID_MESH_CONSTRUCTION:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_mesh_construction);
-					case CAIRO_STATUS_DEVICE_FINISHED:
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					case CAIRO_STATUS_LAST_STATUS:
-						assert(false && "Unexpected value CAIRO_STATUS_LAST_STATUS. The runtime version of cairo is likely newer than the version of cairo this implementation was compiled against.");
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					default:
-						assert(false && "Unknown cairo_status_t value caught by default case. The runtime version of cairo is likely newer than the version of cairo this implementation was compiled against, though this still should not occur due to cairo's compatibility guarantee.");
-						return ::std::make_error_code(::std::experimental::io2d::io2d_error::invalid_status);
-					}
+				inline brush::native_handle_type brush::native_handle() const noexcept {
+					return _Brush.get();
 				}
-#if defined(_MSC_VER) && defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
-				// Throws an exception of type:
-				// -  bad_alloc : If the value of s is CAIRO_STATUS_NO_MEMORY.
-				// -  invalid_argument: If the value of s is CAIRO_STATUS_INVALID_FORMAT, CAIRO_STATUS_INVALID_CONTENT, or CAIRO_STATUS_INVALID_SIZE.
-				// -  out_of_range : If the value of s is CAIRO_STATUS_INVALID_INDEX.
-				// -  system_error : For all other s values, with its error_code being the return value of _Cairo_status_t_to_std_error_code(s).
-				// If the value of s is CAIRO_STATUS_LAST_STATUS, CAIRO_STATUS_INVALID_POP_GROUP, CAIRO_STATUS_NEGATIVE_COUNT, CAIRO_STATUS_PATTERN_TYPE_MISMATCH,
-				// CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED, or an unknown value, it triggers an assertion failure. If assertion checks are disabled, an exception
-				// of type system_error with an error code of make_error_code(io2d_error::invalid_status) will be thrown.
-				inline void _Throw_if_failed_cairo_status_t(::cairo_status_t s) {
-					assert(s != CAIRO_STATUS_LAST_STATUS && s != CAIRO_STATUS_INVALID_POP_GROUP && s != CAIRO_STATUS_NEGATIVE_COUNT);
-					if (s != CAIRO_STATUS_SUCCESS) {
-						if (s == CAIRO_STATUS_NO_MEMORY) {
-							throw ::std::bad_alloc{};
-						}
-						else {
-							if (s == CAIRO_STATUS_INVALID_FORMAT || s == CAIRO_STATUS_INVALID_CONTENT || s == CAIRO_STATUS_INVALID_SIZE) {
-								if (s == CAIRO_STATUS_INVALID_FORMAT) {
-									throw ::std::invalid_argument{ "The value of a format type argument is invalid." };
-								}
-								else {
-									if (s == CAIRO_STATUS_INVALID_CONTENT) {
-										throw ::std::invalid_argument{ "The value of a content type argument is invalid." };
-									}
-									else {
-										throw ::std::invalid_argument{ "A value of a size parameter is invalid." };
-									}
-								}
-							}
-							else {
-								if (s == CAIRO_STATUS_INVALID_INDEX) {
-									throw ::std::out_of_range{ "An index parameter has an invalid value." };
-								}
-							}
+				//inline brush::brush(brush::native_handle_type nh) noexcept
+				//	: _Brush(nh, &cairo_pattern_destroy)
+				//	, _Image_surface()
+				//	, _Brush_type(_Cairo_pattern_type_t_to_brush_type(cairo_pattern_get_type(nh))) {
+				//}
 
-							throw ::std::system_error(_Cairo_status_t_to_std_error_code(s));
-						}
+				inline brush::brush(const rgba_color& color)
+					: _Brush()
+					, _Image_surface()
+					, _Brush_type(brush_type::solid_color) {
+					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_rgba(color.r(), color.g(), color.b(), color.a()), &cairo_pattern_destroy);
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+				}
+
+				inline brush::brush(const vector_2d& begin, const vector_2d& end,
+					::std::initializer_list<color_stop> il)
+					: _Brush()
+					, _Image_surface()
+					, _Brush_type(brush_type::linear) {
+					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+
+					for (const color_stop& stop : il) {
+						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+					}
+
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+				}
+
+				inline brush::brush(const circle& start, const circle& end,
+					::std::initializer_list<color_stop> il)
+					: _Brush()
+					, _Image_surface()
+					, _Brush_type(brush_type::radial) {
+					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+
+					for (const color_stop& stop : il) {
+						cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+					}
+
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+				}
+
+				inline brush::brush(image_surface&& img)
+					: _Brush()
+					, _Image_surface(make_shared<image_surface>(::std::move(img)))
+					, _Brush_type(brush_type::surface) {
+					//if (img.is_finished()) {
+					//	_Throw_if_failed_cairo_status_t(CAIRO_STATUS_SURFACE_FINISHED);
+					//}
+					_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(_Image_surface.get()->native_handle().csfce), &cairo_pattern_destroy);
+					_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+				}
+
+				inline brush_type brush::type() const noexcept {
+					return _Brush_type;
+				}
+
+				inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of)
+					: _Mapped_surface(nh)
+					, _Map_of(map_of) {
+					assert(_Mapped_surface.csfce != nullptr && _Map_of.csfce != nullptr);
+					auto status = cairo_surface_status(_Mapped_surface.csfce);
+					if (status != CAIRO_STATUS_SUCCESS) {
+						cairo_surface_unmap_image(_Mapped_surface.csfce, _Map_of.csfce);
+						_Mapped_surface = { nullptr, nullptr };
+						_Map_of = { nullptr, nullptr };
+						_Throw_if_failed_cairo_status_t(status);
+					}
+					// Reference the surface that is mapped to ensure it isn't accidentally destroyed while the map still exists.
+					cairo_surface_reference(_Map_of.csfce);
+				}
+
+				inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, error_code& ec) noexcept
+					: _Mapped_surface(nh)
+					, _Map_of(map_of) {
+					assert(_Mapped_surface.csfce != nullptr && _Map_of.csfce != nullptr);
+					auto status = cairo_surface_status(_Mapped_surface.csfce);
+					if (status != CAIRO_STATUS_SUCCESS) {
+						cairo_surface_unmap_image(_Mapped_surface.csfce, _Map_of.csfce);
+						_Mapped_surface = { nullptr, nullptr };
+						_Map_of = { nullptr, nullptr };
+						ec = _Cairo_status_t_to_std_error_code(status);
+						return;
+					}
+					// Reference the surface that is mapped to ensure it isn't accidentally destroyed while the map still exists.
+					cairo_surface_reference(_Map_of.csfce);
+					ec.clear();
+				}
+
+				inline mapped_surface::~mapped_surface() {
+					if (_Mapped_surface.csfce != nullptr) {
+						cairo_surface_unmap_image(_Map_of.csfce, _Mapped_surface.csfce);
+						// Remove the reference we added to the surface that was mapped.
+						cairo_surface_destroy(_Map_of.csfce);
+						_Mapped_surface.csfce = nullptr;
+						_Map_of.csfce = nullptr;
 					}
 				}
 
-				// Checks for equality between two floating point numbers using an epsilon value to specify the equality tolerance limit.
-				// See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
-				template <typename T>
-				inline bool _Almost_equal_relative(T a, T b, T epsilon = ::std::numeric_limits<T>::epsilon()) noexcept {
-					auto diff = ::std::abs(a - b);
-					a = ::std::abs(a);
-					b = ::std::abs(b);
-					auto largest = (b > a) ? b : a;
-					if (diff <= largest * epsilon) {
-						return true;
-					}
-					return false;
+				inline void mapped_surface::commit_changes() {
+					cairo_surface_mark_dirty(_Mapped_surface.csfce);
 				}
 
-				// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0 } 'angle' radians around { 0.0, 0.0 } in a clockwise ('clockwise' == true) or
-				// counterclockwise ('clockwise' == false) direction.
-				inline ::std::experimental::io2d::vector_2d _Rotate_point_absolute_angle(const ::std::experimental::io2d::vector_2d& center, double radius, double angle, bool clockwise = true) {
-					if (clockwise) {
-						::std::experimental::io2d::vector_2d pt{ radius * ::std::cos(angle), -(radius * -::std::sin(angle)) };
-						pt.x(pt.x() + center.x());
-						pt.y(pt.y() + center.y());
-						return pt;
-					}
-					else {
-						::std::experimental::io2d::vector_2d pt{ radius * ::std::cos(angle), radius * -::std::sin(angle) };
-						pt.x(pt.x() + center.x());
-						pt.y(pt.y() + center.y());
-						return pt;
-					}
+				inline void mapped_surface::commit_changes(::std::error_code& ec) noexcept {
+					cairo_surface_mark_dirty(_Mapped_surface.csfce);
+					ec.clear();
 				}
 
-				// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'.
-				inline int _Double_to_int(double value, bool nearestNeighbor = true) {
-					if (nearestNeighbor) {
-						// Round to the nearest neighbor.
-						return static_cast<int>(::std::round(value));
-					}
-					// Otherwise truncate.
-					return static_cast<int>(::std::trunc(value));
+				inline void mapped_surface::commit_changes(const rectangle& area) {
+					cairo_surface_mark_dirty_rectangle(_Mapped_surface.csfce, static_cast<int>(area.x()), static_cast<int>(area.y()),
+						static_cast<int>(area.width()), static_cast<int>(area.height()));
 				}
 
-				template <typename T>
-				inline int _Container_size_to_int(const T& container) noexcept {
-					assert(container.size() <= static_cast<unsigned int>(::std::numeric_limits<int>::max()));
-					return static_cast<int>(container.size());
+				inline void mapped_surface::commit_changes(const rectangle& area, error_code& ec) noexcept {
+					cairo_surface_mark_dirty_rectangle(_Mapped_surface.csfce, static_cast<int>(area.x()), static_cast<int>(area.y()),
+						static_cast<int>(area.width()), static_cast<int>(area.height()));
+					ec.clear();
+				}
+
+				inline unsigned char* mapped_surface::data() {
+					auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
+					if (result == nullptr) {
+						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
+					}
+					return result;
+				}
+
+				inline unsigned char* mapped_surface::data(error_code& ec) noexcept {
+					auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
+					if (result == nullptr) {
+						ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NULL_POINTER);
+						return result;
+					}
+					ec.clear();
+					return result;
+				}
+
+				inline const unsigned char* mapped_surface::data() const {
+					auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
+					if (result == nullptr) {
+						_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
+					}
+					return result;
+				}
+
+				inline const unsigned char* mapped_surface::data(error_code& ec) const noexcept {
+					auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
+					if (result == nullptr) {
+						ec = _Cairo_status_t_to_std_error_code(CAIRO_STATUS_NULL_POINTER);
+						return result;
+					}
+					ec.clear();
+					return result;
+				}
+
+				inline ::std::experimental::io2d::format mapped_surface::format() const noexcept {
+					if (cairo_surface_status(_Mapped_surface.csfce) != CAIRO_STATUS_SUCCESS) {
+						return experimental::io2d::format::invalid;
+					}
+					return _Cairo_format_t_to_format(cairo_image_surface_get_format(_Mapped_surface.csfce));
+				}
+
+				inline int mapped_surface::width() const noexcept {
+					if (format() == experimental::io2d::format::invalid) {
+						return 0;
+					}
+					return cairo_image_surface_get_width(_Mapped_surface.csfce);
+				}
+
+				inline int mapped_surface::height() const noexcept {
+					if (format() == experimental::io2d::format::invalid) {
+						return 0;
+					}
+					return cairo_image_surface_get_height(_Mapped_surface.csfce);
+				}
+
+				inline int mapped_surface::stride() const noexcept {
+					if (format() == experimental::io2d::format::invalid) {
+						return 0;
+					}
+					return cairo_image_surface_get_stride(_Mapped_surface.csfce);
 				}
 			}
 		}

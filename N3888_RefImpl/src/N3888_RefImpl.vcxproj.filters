@@ -15,18 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="throw_helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="xcairoenumhelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="io2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -56,49 +44,12 @@
     <ClCompile Include="io2d_error_category.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="matrix_2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="display_surface-win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="display_surface-common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="brush.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vector_2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mapped_surface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="color_stop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="N3888_RefImpl.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="N3888_RefImpl.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="2016_06_22.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="alpha8.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="2017_03_05.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="win32\Dependency installation instructions.txt" />

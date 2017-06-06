@@ -4,19 +4,13 @@
 
 lib_LTLIBRARIES =		libio2d.la
 
-libio2d_la_SOURCES =		brush.cpp \
-				color_stop.cpp \
-				display_surface-common.cpp \
+libio2d_la_SOURCES =		display_surface-common.cpp \
 				image_surface.cpp \
 				io2d_error_category.cpp \
-				mapped_surface.cpp \
-				matrix_2d.cpp \
 				rgba_color.cpp \
 				standalone_functions.cpp \
 				surface.cpp \
-				vector_2d.cpp \
 				throw_helpers.h \
-				xcairoenumhelpers.h \
 				xdiagnostics.h
 
 if USE_XCB

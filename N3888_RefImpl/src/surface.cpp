@@ -1,5 +1,4 @@
 #include "io2d.h"
-#include "xcairoenumhelpers.h"
 
 using namespace std;
 using namespace std::experimental;
@@ -110,6 +109,7 @@ void surface::clear() {
 namespace {
 	void _Set_render_props(cairo_t* context, const optional<render_props>& r) {
 		if (r == nullopt) {
+			cairo_set_antialias(context, _Antialias_to_cairo_antialias_t(antialias::good));
 			cairo_identity_matrix(context);
 			cairo_set_operator(context, CAIRO_OPERATOR_OVER);
 		}
@@ -117,6 +117,7 @@ namespace {
 			const render_props& props = r.value();
 			const matrix_2d m = props.surface_matrix();
 			cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+			cairo_set_antialias(context, _Antialias_to_cairo_antialias_t(props.antialiasing()));
 			cairo_set_matrix(context, &cm);
 			cairo_set_operator(context, _Compositing_operator_to_cairo_operator_t(props.compositing()));
 		}
@@ -171,7 +172,7 @@ namespace {
 		if (bp == nullopt) {
 			auto p = b.native_handle();
 			cairo_pattern_set_extend(p, CAIRO_EXTEND_NONE);
-			cairo_pattern_set_filter(p, CAIRO_FILTER_GOOD);
+			cairo_pattern_set_filter(p, CAIRO_FILTER_BILINEAR);
 			cairo_pattern_set_matrix(p, &_Cairo_identity_matrix);
 			cairo_set_fill_rule(context, CAIRO_FILL_RULE_WINDING);
 		}

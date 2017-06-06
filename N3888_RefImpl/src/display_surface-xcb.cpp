@@ -1,5 +1,4 @@
 #include "io2d.h"
-#include "xcairoenumhelpers.h"
 #include <cairo-xcb.h>
 #include <chrono>
 #include <cstdlib>

@@ -588,7 +588,7 @@
 //			return interpolate(get<1>(f.color_stop(lowColorIndex)), lowColorOffset, get<1>(f.color_stop(highColorIndex)), highColorOffset, t);
 //		}
 //
-//		rectangle fill_extents_from_paths(const vector<vector<path_data::path_data_types>>&);
+//		rectangle fill_extents_from_paths(const vector<vector<path_data::path_item>>&);
 //		rectangle fill_extents_from_paths(const vector<vector<path_data::path_data_types>>& data) {
 //			vector_2d pt0;
 //			vector_2d pt1;

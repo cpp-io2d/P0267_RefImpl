@@ -4,20 +4,33 @@
 #include <assert.h>
 #include <sstream>
 #include <ios>
+#include "path_examples.h"
 
 using namespace std;
 using namespace std::chrono;
 using namespace std::experimental::io2d;
+using namespace path_test;
 
 vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool closePath = false, vector_2d scale = vector_2d{ 1.0, 1.0 }, const vector_2d locadd = vector_2d{ 200.0, 0.0 });
 vector_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, vector_2d location, bool closePath = false, vector_2d scale = vector_2d{ 1.0, 1.0 }, const vector_2d locadd = vector_2d{ 200.0, 0.0 });
 
+void make_path_examples();
+void make_path_examples() {
+	path_test_1();
+	path_test_2();
+	path_test_3();
+	path_test_4();
+	path_test_5();
+	path_test_6();
+}
+
 int main() {
-	auto ds = make_display_surface(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
-	sample_draw sd;
-	ds.draw_callback(sd);
-	ds.begin_show();
-	ds.begin_show();
+	make_path_examples();
+	//auto ds = make_display_surface(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+	//sample_draw sd;
+	//ds.draw_callback(sd);
+	//ds.begin_show();
+	//ds.begin_show();
 	return 0;
 	//	auto imgSfc = make_image_surface(format::argb32, 300, 200);
 	//	auto bkgrndBrush = brush(rgba_color::black());
@@ -66,7 +79,7 @@ int main() {
 	//	double locY = 140.0;
 	//	vector_2d location{ beginLocX, locY };
 	//	pb.clear();
-	//	pb.change_matrix(matrix_2d::init_translate({ 400.0, 400.0 }).rotate(to_radians(-45)).scale({ 0.5, 0.5 }));
+	//	pb.abs_matrix(matrix_2d::init_translate({ 400.0, 400.0 }).rotate(to_radians(-45)).scale({ 0.5, 0.5 }));
 	//	location = testArcClockwiseEndAngle(pb, location, false, { 60.0, 60.0 });
 	//
 	//	locY += 200;

@@ -1,5 +1,5 @@
 #include "io2d.h"
-#include "xcairoenumhelpers.h"
+
 #include <sstream>
 #include <string>
 #include <iostream>
