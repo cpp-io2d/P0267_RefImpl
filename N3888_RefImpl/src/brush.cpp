@@ -13,7 +13,7 @@ brush::brush(brush::native_handle_type nh) noexcept
 	, _Brush_type(_Cairo_pattern_type_t_to_brush_type(cairo_pattern_get_type(nh))) {
 }
 
-brush::brush(const bgra_color& color)
+brush::brush(const rgba_color& color)
 : _Brush()
 , _Image_surface()
 , _Brush_type(brush_type::solid_color) {
@@ -21,7 +21,7 @@ brush::brush(const bgra_color& color)
 	_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 }
 
-//brush::brush(const bgra_color& color, error_code& ec) noexcept
+//brush::brush(const rgba_color& color, error_code& ec) noexcept
 //	: _Brush()
 //	, _Image_surface()
 //	, _Brush_type(brush_type::solid_color) {

@@ -510,36 +510,31 @@ namespace std {
 						return _Ellipse.radius().x();
 					}
 				};
-				//enum class _Color_is_integral {};
-				//constexpr _Color_is_integral _Color_is_integral_val{};
-				//enum class _Color_is_floating {};
-				//constexpr _Color_is_floating _Color_is_floating_val{};
+				enum class _Color_is_integral {};
+				constexpr _Color_is_integral _Color_is_integral_val{};
+				enum class _Color_is_floating {};
+				constexpr _Color_is_floating _Color_is_floating_val{};
 
-				class bgra_color {
+				class rgba_color {
 					double _R = 0.0;
 					double _G = 0.0;
 					double _B = 0.0;
 					double _A = 1.0;
 				public:
-					constexpr bgra_color() noexcept { }
-					constexpr bgra_color(double r, double g, double b, double a = 1.0) noexcept
-						: _R(r)
-						, _G(g)
-						, _B(b)
-						, _A(a) { }
-					//template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
-					//constexpr bgra_color(T r, T g, T b, T a = 0xFF)
-					//	: _R(static_cast<double>(::std::min<double>(::std::max<double>((r / 255.0), 0.0), 1.0)))
-					//	, _G(static_cast<double>(::std::min<double>(::std::max<double>((g / 255.0), 0.0), 1.0)))
-					//	, _B(static_cast<double>(::std::min<double>(::std::max<double>((b / 255.0), 0.0), 1.0)))
-					//	, _A(static_cast<double>(::std::min<double>(::std::max<double>((a / 255.0), 0.0), 1.0))) { }
-					//template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
-					//constexpr bgra_color(T r, T g, T b, T a = 1.0)
-					//	: _R(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(r), 0.0), 1.0)))
-					//	, _G(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(g), 0.0), 1.0)))
-					//	, _B(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(b), 0.0), 1.0)))
-					//	, _A(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(a), 0.0), 1.0))) {
-					//}
+					constexpr rgba_color() noexcept { }
+					template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+					constexpr rgba_color(T r, T g, T b, T a = 0xFF)
+						: _R(static_cast<double>(::std::min<double>(::std::max<double>((r / 255.0), 0.0), 1.0)))
+						, _G(static_cast<double>(::std::min<double>(::std::max<double>((g / 255.0), 0.0), 1.0)))
+						, _B(static_cast<double>(::std::min<double>(::std::max<double>((b / 255.0), 0.0), 1.0)))
+						, _A(static_cast<double>(::std::min<double>(::std::max<double>((a / 255.0), 0.0), 1.0))) { }
+					template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
+					constexpr rgba_color(T r, T g, T b, T a = 1.0)
+						: _R(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(r), 0.0), 1.0)))
+						, _G(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(g), 0.0), 1.0)))
+						, _B(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(b), 0.0), 1.0)))
+						, _A(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(a), 0.0), 1.0))) {
+					}
 
 					void r(double val) noexcept {
 						_R = val * _A;
@@ -567,156 +562,156 @@ namespace std {
 						return _A;
 					}
 
-					static const bgra_color& alice_blue() noexcept;
-					static const bgra_color& antique_white() noexcept;
-					static const bgra_color& aqua() noexcept;
-					static const bgra_color& aquamarine() noexcept;
-					static const bgra_color& azure() noexcept;
-					static const bgra_color& beige() noexcept;
-					static const bgra_color& bisque() noexcept;
-					static const bgra_color& black() noexcept;
-					static const bgra_color& blanched_almond() noexcept;
-					static const bgra_color& blue() noexcept;
-					static const bgra_color& blue_violet() noexcept;
-					static const bgra_color& brown() noexcept;
-					static const bgra_color& burly_wood() noexcept;
-					static const bgra_color& cadet_blue() noexcept;
-					static const bgra_color& chartreuse() noexcept;
-					static const bgra_color& chocolate() noexcept;
-					static const bgra_color& coral() noexcept;
-					static const bgra_color& cornflower_blue() noexcept;
-					static const bgra_color& cornsilk() noexcept;
-					static const bgra_color& crimson() noexcept;
-					static const bgra_color& cyan() noexcept;
-					static const bgra_color& dark_blue() noexcept;
-					static const bgra_color& dark_cyan() noexcept;
-					static const bgra_color& dark_goldenrod() noexcept;
-					static const bgra_color& dark_gray() noexcept;
-					static const bgra_color& dark_green() noexcept;
-					static const bgra_color& dark_grey() noexcept;
-					static const bgra_color& dark_khaki() noexcept;
-					static const bgra_color& dark_magenta() noexcept;
-					static const bgra_color& dark_olive_green() noexcept;
-					static const bgra_color& dark_orange() noexcept;
-					static const bgra_color& dark_orchid() noexcept;
-					static const bgra_color& dark_red() noexcept;
-					static const bgra_color& dark_salmon() noexcept;
-					static const bgra_color& dark_sea_green() noexcept;
-					static const bgra_color& dark_slate_blue() noexcept;
-					static const bgra_color& dark_slate_gray() noexcept;
-					static const bgra_color& dark_slate_grey() noexcept;
-					static const bgra_color& dark_turquoise() noexcept;
-					static const bgra_color& dark_violet() noexcept;
-					static const bgra_color& deep_pink() noexcept;
-					static const bgra_color& deep_sky_blue() noexcept;
-					static const bgra_color& dim_gray() noexcept;
-					static const bgra_color& dim_grey() noexcept;
-					static const bgra_color& dodger_blue() noexcept;
-					static const bgra_color& firebrick() noexcept;
-					static const bgra_color& floral_white() noexcept;
-					static const bgra_color& forest_green() noexcept;
-					static const bgra_color& fuchsia() noexcept;
-					static const bgra_color& gainsboro() noexcept;
-					static const bgra_color& ghost_white() noexcept;
-					static const bgra_color& gold() noexcept;
-					static const bgra_color& goldenrod() noexcept;
-					static const bgra_color& gray() noexcept;
-					static const bgra_color& green() noexcept;
-					static const bgra_color& green_yellow() noexcept;
-					static const bgra_color& grey() noexcept;
-					static const bgra_color& honeydew() noexcept;
-					static const bgra_color& hot_pink() noexcept;
-					static const bgra_color& indian_red() noexcept;
-					static const bgra_color& indigo() noexcept;
-					static const bgra_color& ivory() noexcept;
-					static const bgra_color& khaki() noexcept;
-					static const bgra_color& lavender() noexcept;
-					static const bgra_color& lavender_blush() noexcept;
-					static const bgra_color& lawn_green() noexcept;
-					static const bgra_color& lemon_chiffon() noexcept;
-					static const bgra_color& light_blue() noexcept;
-					static const bgra_color& light_coral() noexcept;
-					static const bgra_color& light_cyan() noexcept;
-					static const bgra_color& light_goldenrod_yellow() noexcept;
-					static const bgra_color& light_gray() noexcept;
-					static const bgra_color& light_green() noexcept;
-					static const bgra_color& light_grey() noexcept;
-					static const bgra_color& light_pink() noexcept;
-					static const bgra_color& light_salmon() noexcept;
-					static const bgra_color& light_sea_green() noexcept;
-					static const bgra_color& light_sky_blue() noexcept;
-					static const bgra_color& light_slate_gray() noexcept;
-					static const bgra_color& light_slate_grey() noexcept;
-					static const bgra_color& light_steel_blue() noexcept;
-					static const bgra_color& light_yellow() noexcept;
-					static const bgra_color& lime() noexcept;
-					static const bgra_color& lime_green() noexcept;
-					static const bgra_color& linen() noexcept;
-					static const bgra_color& magenta() noexcept;
-					static const bgra_color& maroon() noexcept;
-					static const bgra_color& medium_aquamarine() noexcept;
-					static const bgra_color& medium_blue() noexcept;
-					static const bgra_color& medium_orchid() noexcept;
-					static const bgra_color& medium_purple() noexcept;
-					static const bgra_color& medium_sea_green() noexcept;
-					static const bgra_color& medium_slate_blue() noexcept;
-					static const bgra_color& medium_spring_green() noexcept;
-					static const bgra_color& medium_turquoise() noexcept;
-					static const bgra_color& medium_violet_red() noexcept;
-					static const bgra_color& midnight_blue() noexcept;
-					static const bgra_color& mint_cream() noexcept;
-					static const bgra_color& misty_rose() noexcept;
-					static const bgra_color& moccasin() noexcept;
-					static const bgra_color& navajo_white() noexcept;
-					static const bgra_color& navy() noexcept;
-					static const bgra_color& old_lace() noexcept;
-					static const bgra_color& olive() noexcept;
-					static const bgra_color& olive_drab() noexcept;
-					static const bgra_color& orange() noexcept;
-					static const bgra_color& orange_red() noexcept;
-					static const bgra_color& orchid() noexcept;
-					static const bgra_color& pale_goldenrod() noexcept;
-					static const bgra_color& pale_green() noexcept;
-					static const bgra_color& pale_turquoise() noexcept;
-					static const bgra_color& pale_violet_red() noexcept;
-					static const bgra_color& papaya_whip() noexcept;
-					static const bgra_color& peach_puff() noexcept;
-					static const bgra_color& peru() noexcept;
-					static const bgra_color& pink() noexcept;
-					static const bgra_color& plum() noexcept;
-					static const bgra_color& powder_blue() noexcept;
-					static const bgra_color& purple() noexcept;
-					static const bgra_color& red() noexcept;
-					static const bgra_color& rosy_brown() noexcept;
-					static const bgra_color& royal_blue() noexcept;
-					static const bgra_color& saddle_brown() noexcept;
-					static const bgra_color& salmon() noexcept;
-					static const bgra_color& sandy_brown() noexcept;
-					static const bgra_color& sea_green() noexcept;
-					static const bgra_color& sea_shell() noexcept;
-					static const bgra_color& sienna() noexcept;
-					static const bgra_color& silver() noexcept;
-					static const bgra_color& sky_blue() noexcept;
-					static const bgra_color& slate_blue() noexcept;
-					static const bgra_color& slate_gray() noexcept;
-					static const bgra_color& slate_grey() noexcept;
-					static const bgra_color& snow() noexcept;
-					static const bgra_color& spring_green() noexcept;
-					static const bgra_color& steel_blue() noexcept;
-					static const bgra_color& tan() noexcept;
-					static const bgra_color& teal() noexcept;
-					static const bgra_color& thistle() noexcept;
-					static const bgra_color& tomato() noexcept;
-					static const bgra_color& transparent_black() noexcept; // Note: Not in CSS3.
-					static const bgra_color& turquoise() noexcept;
-					static const bgra_color& violet() noexcept;
-					static const bgra_color& wheat() noexcept;
-					static const bgra_color& white() noexcept;
-					static const bgra_color& white_smoke() noexcept;
-					static const bgra_color& yellow() noexcept;
-					static const bgra_color& yellow_green() noexcept;
+					static const rgba_color& alice_blue() noexcept;
+					static const rgba_color& antique_white() noexcept;
+					static const rgba_color& aqua() noexcept;
+					static const rgba_color& aquamarine() noexcept;
+					static const rgba_color& azure() noexcept;
+					static const rgba_color& beige() noexcept;
+					static const rgba_color& bisque() noexcept;
+					static const rgba_color& black() noexcept;
+					static const rgba_color& blanched_almond() noexcept;
+					static const rgba_color& blue() noexcept;
+					static const rgba_color& blue_violet() noexcept;
+					static const rgba_color& brown() noexcept;
+					static const rgba_color& burly_wood() noexcept;
+					static const rgba_color& cadet_blue() noexcept;
+					static const rgba_color& chartreuse() noexcept;
+					static const rgba_color& chocolate() noexcept;
+					static const rgba_color& coral() noexcept;
+					static const rgba_color& cornflower_blue() noexcept;
+					static const rgba_color& cornsilk() noexcept;
+					static const rgba_color& crimson() noexcept;
+					static const rgba_color& cyan() noexcept;
+					static const rgba_color& dark_blue() noexcept;
+					static const rgba_color& dark_cyan() noexcept;
+					static const rgba_color& dark_goldenrod() noexcept;
+					static const rgba_color& dark_gray() noexcept;
+					static const rgba_color& dark_green() noexcept;
+					static const rgba_color& dark_grey() noexcept;
+					static const rgba_color& dark_khaki() noexcept;
+					static const rgba_color& dark_magenta() noexcept;
+					static const rgba_color& dark_olive_green() noexcept;
+					static const rgba_color& dark_orange() noexcept;
+					static const rgba_color& dark_orchid() noexcept;
+					static const rgba_color& dark_red() noexcept;
+					static const rgba_color& dark_salmon() noexcept;
+					static const rgba_color& dark_sea_green() noexcept;
+					static const rgba_color& dark_slate_blue() noexcept;
+					static const rgba_color& dark_slate_gray() noexcept;
+					static const rgba_color& dark_slate_grey() noexcept;
+					static const rgba_color& dark_turquoise() noexcept;
+					static const rgba_color& dark_violet() noexcept;
+					static const rgba_color& deep_pink() noexcept;
+					static const rgba_color& deep_sky_blue() noexcept;
+					static const rgba_color& dim_gray() noexcept;
+					static const rgba_color& dim_grey() noexcept;
+					static const rgba_color& dodger_blue() noexcept;
+					static const rgba_color& firebrick() noexcept;
+					static const rgba_color& floral_white() noexcept;
+					static const rgba_color& forest_green() noexcept;
+					static const rgba_color& fuchsia() noexcept;
+					static const rgba_color& gainsboro() noexcept;
+					static const rgba_color& ghost_white() noexcept;
+					static const rgba_color& gold() noexcept;
+					static const rgba_color& goldenrod() noexcept;
+					static const rgba_color& gray() noexcept;
+					static const rgba_color& green() noexcept;
+					static const rgba_color& green_yellow() noexcept;
+					static const rgba_color& grey() noexcept;
+					static const rgba_color& honeydew() noexcept;
+					static const rgba_color& hot_pink() noexcept;
+					static const rgba_color& indian_red() noexcept;
+					static const rgba_color& indigo() noexcept;
+					static const rgba_color& ivory() noexcept;
+					static const rgba_color& khaki() noexcept;
+					static const rgba_color& lavender() noexcept;
+					static const rgba_color& lavender_blush() noexcept;
+					static const rgba_color& lawn_green() noexcept;
+					static const rgba_color& lemon_chiffon() noexcept;
+					static const rgba_color& light_blue() noexcept;
+					static const rgba_color& light_coral() noexcept;
+					static const rgba_color& light_cyan() noexcept;
+					static const rgba_color& light_goldenrod_yellow() noexcept;
+					static const rgba_color& light_gray() noexcept;
+					static const rgba_color& light_green() noexcept;
+					static const rgba_color& light_grey() noexcept;
+					static const rgba_color& light_pink() noexcept;
+					static const rgba_color& light_salmon() noexcept;
+					static const rgba_color& light_sea_green() noexcept;
+					static const rgba_color& light_sky_blue() noexcept;
+					static const rgba_color& light_slate_gray() noexcept;
+					static const rgba_color& light_slate_grey() noexcept;
+					static const rgba_color& light_steel_blue() noexcept;
+					static const rgba_color& light_yellow() noexcept;
+					static const rgba_color& lime() noexcept;
+					static const rgba_color& lime_green() noexcept;
+					static const rgba_color& linen() noexcept;
+					static const rgba_color& magenta() noexcept;
+					static const rgba_color& maroon() noexcept;
+					static const rgba_color& medium_aquamarine() noexcept;
+					static const rgba_color& medium_blue() noexcept;
+					static const rgba_color& medium_orchid() noexcept;
+					static const rgba_color& medium_purple() noexcept;
+					static const rgba_color& medium_sea_green() noexcept;
+					static const rgba_color& medium_slate_blue() noexcept;
+					static const rgba_color& medium_spring_green() noexcept;
+					static const rgba_color& medium_turquoise() noexcept;
+					static const rgba_color& medium_violet_red() noexcept;
+					static const rgba_color& midnight_blue() noexcept;
+					static const rgba_color& mint_cream() noexcept;
+					static const rgba_color& misty_rose() noexcept;
+					static const rgba_color& moccasin() noexcept;
+					static const rgba_color& navajo_white() noexcept;
+					static const rgba_color& navy() noexcept;
+					static const rgba_color& old_lace() noexcept;
+					static const rgba_color& olive() noexcept;
+					static const rgba_color& olive_drab() noexcept;
+					static const rgba_color& orange() noexcept;
+					static const rgba_color& orange_red() noexcept;
+					static const rgba_color& orchid() noexcept;
+					static const rgba_color& pale_goldenrod() noexcept;
+					static const rgba_color& pale_green() noexcept;
+					static const rgba_color& pale_turquoise() noexcept;
+					static const rgba_color& pale_violet_red() noexcept;
+					static const rgba_color& papaya_whip() noexcept;
+					static const rgba_color& peach_puff() noexcept;
+					static const rgba_color& peru() noexcept;
+					static const rgba_color& pink() noexcept;
+					static const rgba_color& plum() noexcept;
+					static const rgba_color& powder_blue() noexcept;
+					static const rgba_color& purple() noexcept;
+					static const rgba_color& red() noexcept;
+					static const rgba_color& rosy_brown() noexcept;
+					static const rgba_color& royal_blue() noexcept;
+					static const rgba_color& saddle_brown() noexcept;
+					static const rgba_color& salmon() noexcept;
+					static const rgba_color& sandy_brown() noexcept;
+					static const rgba_color& sea_green() noexcept;
+					static const rgba_color& sea_shell() noexcept;
+					static const rgba_color& sienna() noexcept;
+					static const rgba_color& silver() noexcept;
+					static const rgba_color& sky_blue() noexcept;
+					static const rgba_color& slate_blue() noexcept;
+					static const rgba_color& slate_gray() noexcept;
+					static const rgba_color& slate_grey() noexcept;
+					static const rgba_color& snow() noexcept;
+					static const rgba_color& spring_green() noexcept;
+					static const rgba_color& steel_blue() noexcept;
+					static const rgba_color& tan() noexcept;
+					static const rgba_color& teal() noexcept;
+					static const rgba_color& thistle() noexcept;
+					static const rgba_color& tomato() noexcept;
+					static const rgba_color& transparent_black() noexcept; // Note: Not in CSS3.
+					static const rgba_color& turquoise() noexcept;
+					static const rgba_color& violet() noexcept;
+					static const rgba_color& wheat() noexcept;
+					static const rgba_color& white() noexcept;
+					static const rgba_color& white_smoke() noexcept;
+					static const rgba_color& yellow() noexcept;
+					static const rgba_color& yellow_green() noexcept;
 
-					bgra_color& operator*=(double rhs) {
+					rgba_color& operator*=(double rhs) {
 						rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
 						r(::std::min(r() * rhs, 1.0));
 						g(::std::min(g() * rhs, 1.0));
@@ -726,14 +721,14 @@ namespace std {
 					}
 				};
 
-				inline constexpr bool operator==(const bgra_color& lhs, const bgra_color& rhs) {
+				inline constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs) {
 					return lhs.r() == rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
 				}
-				inline constexpr bool operator!=(const bgra_color& lhs, const bgra_color& rhs) {
+				inline constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs) {
 					return !(lhs == rhs);
 				}
 
-				inline constexpr bgra_color operator*(const bgra_color& lhs, double rhs) {
+				inline constexpr rgba_color operator*(const rgba_color& lhs, double rhs) {
 					rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
 					return{
 						::std::min(lhs.r() * rhs, 1.0),
@@ -743,7 +738,7 @@ namespace std {
 					};
 				}
 
-				inline constexpr bgra_color operator*(double lhs, const bgra_color& rhs) {
+				inline constexpr rgba_color operator*(double lhs, const rgba_color& rhs) {
 					lhs = ::std::max(::std::min(lhs, 1.0), 0.0);
 					return{
 						::std::min(lhs * rhs.r(), 1.0),
@@ -751,21 +746,6 @@ namespace std {
 						::std::min(lhs * rhs.b(), 1.0),
 						::std::min(lhs * rhs.a(), 1.0)
 					};
-				}
-
-
-				inline namespace literals {
-					// Note: The _ prefix is added because certain compilers reject attempts to add a non-user-defined literal
-					inline double operator""_ubyte(unsigned long long value) noexcept {
-						return ::std::max(0.0, ::std::min(1.0, static_cast<double>(value) / 255.0));
-					}
-
-					// Note: The _ prefix is added because certain compilers reject attempts to add a non-user-defined literal
-					inline double operator "" _unorm(long double value) noexcept {
-						auto result = ::std::max(0.0, ::std::min(1.0, static_cast<double>(value)));
-						result = ::std::nearbyint(result * 255.0); // We need to ensure it is one of the discrete values between 0 and 255.
-						return result / 255.0;
-					}
 				}
 
 				class matrix_2d {
@@ -1649,16 +1629,16 @@ namespace std {
 				class color_stop {
 				private:
 					double _Offset = 0.0;
-					bgra_color _Color = bgra_color::black();
+					rgba_color _Color = rgba_color::black();
 				public:
 					color_stop() noexcept = default;
-					color_stop(double offset, const bgra_color& color);
+					color_stop(double offset, const rgba_color& color);
 
 					void offset(double value) noexcept;
-					void color(const bgra_color& value) noexcept;
+					void color(const rgba_color& value) noexcept;
 
 					double offset() const noexcept;
-					bgra_color color() const noexcept;
+					rgba_color color() const noexcept;
 				};
 
 				class render_props {
@@ -1881,7 +1861,7 @@ namespace std {
 				public:
 					native_handle_type native_handle() const noexcept;
 
-					explicit brush(const bgra_color& c);
+					explicit brush(const rgba_color& c);
 
 					template <class InputIterator>
 					brush(const vector_2d& begin, const vector_2d& end,

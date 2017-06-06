@@ -23,7 +23,7 @@ void draw_radial_circles(display_surface& ds);
 //wostream& operator<<(wostream& os, const vector_2d& pt);
 //vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL);
 //void draw_hello_world(display_surface& ds);
-//void draw_test_compositing_operators(display_surface& ds, compositing_op secondRectCompOp, compositing_op firstRectCompOp = compositing_op::over, bool clipToRects = false, bool clipToTriangle = false, bool strokePaths = false, bool mask = false, const bgra_color& backgroundColor = bgra_color::transparent_black(), const bgra_color& firstColor = bgra_color::red() * 0.8, const bgra_color& secondColor = bgra_color::teal() * 0.4);
+//void draw_test_compositing_operators(display_surface& ds, compositing_op secondRectCompOp, compositing_op firstRectCompOp = compositing_op::over, bool clipToRects = false, bool clipToTriangle = false, bool strokePaths = false, bool mask = false, const rgba_color& backgroundColor = rgba_color::transparent_black(), const rgba_color& firstColor = rgba_color::red() * 0.8, const rgba_color& secondColor = rgba_color::teal() * 0.4);
 //void draw_sort_visualization_immediate(display_surface& ds, double elapsedTimeInMilliseconds);
 //void draw_sort_visualization(display_surface& ds, double elapsedTimeInMilliseconds);
 //void test_compositing_operators_different_pixel_formats(display_surface& ds, compositing_op co);
@@ -41,7 +41,7 @@ void sample_draw::operator()(display_surface& ds) {
 	//test_image_load_save(ds);
 	//test_path_functionality(ds);
 	draw_radial_circles(ds);
-	//ds.paint(bgra_color::cornflower_blue());
+	//ds.paint(rgba_color::cornflower_blue());
 	//path_builder<> pf;
 	//pf.new_path();
 	////static auto previousTime = steady_clock::now();
@@ -50,15 +50,15 @@ void sample_draw::operator()(display_surface& ds) {
 	////previousTime = currentTime;
 	//draw_sort_visualization_immediate(ds, ds.elapsed_draw_time());
 
-	//constexpr auto flColor = bgra_color(1.0, 0.0, 1.0, 1.0);
-	//constexpr auto intColor = bgra_color(255, 0, 255, 255);
+	//constexpr auto flColor = rgba_color(1.0, 0.0, 1.0, 1.0);
+	//constexpr auto intColor = rgba_color(255, 0, 255, 255);
 	//static_assert(flColor.r() == 1.0, "Huh floating?");
 	//static_assert(intColor.r() == 1.0, "Huh integral?");
 
 	//path_builder<> pb;
 	//pb.new_path();
 	//pb.rectangle({ 30.0, 30.0, 800.0, 600.0 });
-	//ds.paint(brush{ bgra_color::cornflower_blue() });
+	//ds.paint(brush{ rgba_color::cornflower_blue() });
 
 	////test_clip_transformation(ds);
 	////test_paint(ds);
@@ -108,7 +108,7 @@ void test_image_load_save(display_surface& ds) {
 	brush imgBrush{ make_image_surface(imgSfc) };
 	//brush alphaBrush{ make_image_surface(alphaSfc) };
 
-	ds.paint(brush{ bgra_color::cornflower_blue() });
+	ds.paint(brush{ rgba_color::cornflower_blue() });
 	ds.paint(imgBrush);
 	//ds.mask(imgBrush, alphaBrush, path_builder<>{});
 	ds.flush();
@@ -118,13 +118,13 @@ void test_image_load_save(display_surface& ds) {
 //	ds.save();
 //
 //	image_surface imgSfc{ format::argb32, 500, 500 };
-//	imgSfc.paint(bgra_color::green());
+//	imgSfc.paint(rgba_color::green());
 //	imgSfc.immediate().abs_move({ 0.0, 250.0 });
 //	imgSfc.immediate().abs_line({ 250.0, 0.0 });
 //	imgSfc.immediate().abs_line({ 500.0,250.0 });
 //	imgSfc.immediate().abs_line({ 250.0,500.0 });
 //	imgSfc.immediate().close_path();
-//	imgSfc.fill_immediate(bgra_color::white());
+//	imgSfc.fill_immediate(rgba_color::white());
 //
 //	ds.matrix(matrix_2d::init_translate({ 0.0, 0.0 }));
 //	//ds.matrix(matrix_2d::init_translate({ 100.0, 100.0 }));
@@ -143,30 +143,30 @@ void test_image_load_save(display_surface& ds) {
 //
 //void test_extend_none_on_boundary(display_surface& ds) {
 //	image_surface imgSfc{ format::argb32, 500, 500 };
-//	imgSfc.paint(bgra_color::green());
+//	imgSfc.paint(rgba_color::green());
 //	imgSfc.immediate().abs_move({ 0.0, 250.0 });
 //	imgSfc.immediate().abs_line({ 250.0, 0.0 });
 //	imgSfc.immediate().abs_line({ 500.0,250.0 });
 //	imgSfc.immediate().abs_line({ 250.0,500.0 });
 //	imgSfc.immediate().close_path();
-//	imgSfc.fill_immediate(bgra_color::white());
+//	imgSfc.fill_immediate(rgba_color::white());
 //
 //	ds.clear();
 //	ds.immediate().clear();
-//	ds.paint(bgra_color::red());
+//	ds.paint(rgba_color::red());
 //	ds.immediate().rectangle({ 20.0, 20.0, static_cast<double>(ds.width()), static_cast<double>(ds.height()) });
 //	ds.fill_immediate(imgSfc, matrix_2d::init_translate({ -20.0, -20.0 }), wrap_mode::none, filter::bilinear);
 //}
 //
 //void test_mask(display_surface& ds) {
 //	image_surface imgSfc{ format::argb32, 500, 500 };
-//	imgSfc.paint(bgra_color::white(), 0.5);
+//	imgSfc.paint(rgba_color::white(), 0.5);
 //	imgSfc.immediate().abs_move({ 0.0, 250.0 });
 //	imgSfc.immediate().abs_line({ 250.0, 0.0 });
 //	imgSfc.immediate().abs_line({ 500.0,250.0 });
 //	imgSfc.immediate().abs_line({ 250.0,500.0 });
 //	imgSfc.immediate().close_path();
-//	imgSfc.fill_immediate(bgra_color::white());
+//	imgSfc.fill_immediate(rgba_color::white());
 //	//imgSfc.matrix(matrix_2d::init_translate({ -50.0, 50.0 }));
 //	//imgSfc.matrix(matrix_2d::init_scale({ 0.5, 1.5 }));
 //	//surface_brush_factory sbf(imgSfc);
@@ -176,9 +176,9 @@ void test_image_load_save(display_surface& ds) {
 //	//br.wrap_mode(wrap_mode::none);
 //
 //	//radial_brush_factory rbf{ {250.0, 250.0}, 0.0, {250.0, 250.0}, 250.0 };
-//	//rbf.add_color_stop(0.0, bgra_color::red());
-//	//rbf.add_color_stop(0.5, bgra_color::lime() * 0.5);
-//	//rbf.add_color_stop(1.0, bgra_color::blue());
+//	//rbf.add_color_stop(0.0, rgba_color::red());
+//	//rbf.add_color_stop(0.5, rgba_color::lime() * 0.5);
+//	//rbf.add_color_stop(1.0, rgba_color::blue());
 //	//brush br{ rbf };
 //	//br.wrap_mode(wrap_mode::repeat);
 //	//br.filter(filter::nearest);
@@ -186,11 +186,11 @@ void test_image_load_save(display_surface& ds) {
 //	ds.save();
 //	ds.clear();
 //	ds.immediate().clear();
-//	ds.paint(bgra_color::red());
+//	ds.paint(rgba_color::red());
 //	ds.immediate().rectangle({ 0.0, 0.0, static_cast<double>(ds.width()), static_cast<double>(ds.height())});
 //	//ds.matrix(matrix_2d::init_scale({ 0.5, 1.5 }));
-//	//ds.mask_immediate(br, bgra_color::blue());
-//	ds.mask_immediate(imgSfc, bgra_color::blue(), matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double> * 0.25));
+//	//ds.mask_immediate(br, rgba_color::blue());
+//	ds.mask_immediate(imgSfc, rgba_color::blue(), matrix_2d::init_translate({ -50.0, -50.0 }).rotate(half_pi<double> * 0.25));
 //	//ds.fill_immediate(br);
 //	ds.restore();
 //}
@@ -200,13 +200,13 @@ void test_image_load_save(display_surface& ds) {
 //	ds.clear();
 //
 //	image_surface imgSfc{ format::argb32, 500, 500 };
-//	imgSfc.paint(bgra_color::green());
+//	imgSfc.paint(rgba_color::green());
 //	imgSfc.immediate().abs_move({ 0.0, 250.0 });
 //	imgSfc.immediate().abs_line({ 250.0, 0.0 });
 //	imgSfc.immediate().abs_line({ 500.0,250.0 });
 //	imgSfc.immediate().abs_line({ 250.0,500.0 });
 //	imgSfc.immediate().close_path();
-//	imgSfc.fill_immediate(bgra_color::white());
+//	imgSfc.fill_immediate(rgba_color::white());
 //	auto m = matrix_2d::init_scale({ 1.5, 1.0 }).translate({ 20.0, 20.0 });// .invert().translate({ -10.0, -10.0 });
 //	auto scsm = m;
 //	//auto ucsm = matrix_2d::init_identity();
@@ -225,17 +225,17 @@ void test_image_load_save(display_surface& ds) {
 //	//auto pt5 = vector_2d{ 45.0, 30.0 };
 //	ds.matrix(m);
 //	ds.paint(imgSfc, matrix_2d::init_translate({ -10.0, -10.0 })/*init_identity()*//*init_scale({ 1.0, 1.5 }).translate({ -20.0, -20.0 })*/, wrap_mode::repeat, filter::nearest);
-//	//ds.paint(bgra_color::red());
-//	//auto br = brush(solid_color_brush_factory(bgra_color::red()));
+//	//ds.paint(rgba_color::red());
+//	//auto br = brush(solid_color_brush_factory(rgba_color::red()));
 //	//br.wrap_mode(wrap_mode::none);
 //	//ds.brush(br);
 //	ds.paint();
 //
 //
 //	//auto lbf = linear_brush_factory({ 0.0, 0.0 }, { 50.0, 50.0 });
-//	//lbf.add_color_stop(0.0, bgra_color::red());
-//	//lbf.add_color_stop(0.5, bgra_color::lime());
-//	//lbf.add_color_stop(1.0, bgra_color::blue());
+//	//lbf.add_color_stop(0.0, rgba_color::red());
+//	//lbf.add_color_stop(0.5, rgba_color::lime());
+//	//lbf.add_color_stop(1.0, rgba_color::blue());
 //	//auto linBrush = brush(lbf);
 //	//linBrush.wrap_mode(wrap_mode::repeat);
 //	//linBrush.matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
@@ -251,11 +251,11 @@ void test_image_load_save(display_surface& ds) {
 void test_stroke_rules(display_surface& ds) {
 	ds.clear();
 	vector<color_stop> csg;
-	csg.emplace_back(0.0, bgra_color::orange());
-	csg.emplace_back(0.25, bgra_color::red());
-	csg.emplace_back(0.5, bgra_color::lime_green());
-	csg.emplace_back(0.75, bgra_color::blue());
-	csg.emplace_back(1.0, bgra_color::gray());
+	csg.emplace_back(0.0, rgba_color::orange());
+	csg.emplace_back(0.25, rgba_color::red());
+	csg.emplace_back(0.5, rgba_color::lime_green());
+	csg.emplace_back(0.75, rgba_color::blue());
+	csg.emplace_back(1.0, rgba_color::gray());
 	brush linearGrad({ 0.0, 0.0 }, { 0.0, 100.0 }, begin(csg), end(csg));
 	//linearGrad.wrap_mode(wrap_mode::reflect);
 	ds.paint(linearGrad);
@@ -271,7 +271,7 @@ void test_stroke_rules(display_surface& ds) {
 	//ds.line_width(12.0);
 	//ds.immediate().move_to({ 0.0, 199.0 });
 	//ds.immediate().line_to({ 1280.9, 199.0 });
-	//ds.stroke_immediate(bgra_color::cornflower_blue());
+	//ds.stroke_immediate(rgba_color::cornflower_blue());
 	//ds.immediate().clear();
 
 	//ds.line_width(40.0);
@@ -297,14 +297,14 @@ void test_stroke_rules(display_surface& ds) {
 	//ds.immediate().close_path();
 	//ds.immediate().rel_line({ 5.0, 10.0 });
 	//ds.immediate().rel_line({ -20.0, 0.0 });
-	//ds.stroke_immediate(bgra_color::black());
+	//ds.stroke_immediate(rgba_color::black());
 
 	//ds.restore();
 }
 
 void test_path_functionality(display_surface& ds) {
 	// Clear to background color.
-	ds.paint(brush{ bgra_color::cornflower_blue() });
+	ds.paint(brush{ rgba_color::cornflower_blue() });
 	path_builder<> pf{};
 	//void new_path(const vector_2d& pt) noexcept;
 	vector_2d v, cpt1, cpt2, ept;
@@ -359,7 +359,7 @@ void test_path_functionality(display_surface& ds) {
 	//pf.close_path();
 
 	auto pg = path_group(pf);
-	ds.stroke(brush{ bgra_color::red() }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1240.0, 680.0) });
+	ds.stroke(brush{ rgba_color::red() }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1240.0, 680.0) });
 
 	pf.clear();
 
@@ -375,13 +375,13 @@ void test_path_functionality(display_surface& ds) {
 
 void draw_radial_circles(display_surface& ds) {
 	// Clear to background color.
-	ds.paint(brush{ bgra_color::magenta() });
-	ds.paint(brush{ bgra_color::cornflower_blue() }, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1200.0, 640.0) });
+	ds.paint(brush{ rgba_color::magenta() });
+	ds.paint(brush{ rgba_color::cornflower_blue() }, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1200.0, 640.0) });
 	vector<color_stop> csv;
-	csv.emplace_back(0.0, bgra_color::white());
+	csv.emplace_back(0.0, rgba_color::white());
 	brush radialBrush{ {{ 200.5, 300.0 }, 0.0}, {{ 300.0, 300.0 }, 100.0 }, {
-		{ 0.0, bgra_color::white() }, { 0.25, bgra_color::red() },
-		{ 0.5, bgra_color::green() }, { 0.75, bgra_color::blue() }, { 1.0, bgra_color::black() } } };
+		{ 0.0, rgba_color::white() }, { 0.25, rgba_color::red() },
+		{ 0.5, rgba_color::green() }, { 0.75, rgba_color::blue() }, { 1.0, rgba_color::black() } } };
 
 	path_builder<> pf;
 	//pf.rectangle({ { 100.0, 100.0 }, { 500.0, 500.0 } });
@@ -414,8 +414,8 @@ void draw_radial_circles(display_surface& ds) {
 	//bp.emplace(wrap_mode::repeat);
 	//ds.fill(radialBrush, p, bp);
 	ds.fill(radialBrush, p, { wrap_mode::repeat });
-	//ds.brush(brush(bgra_color::red()));
-	ds.stroke(brush{ bgra_color::red() }, p);
+	//ds.brush(brush(rgba_color::red()));
+	ds.stroke(brush{ rgba_color::red() }, p);
 	pf.clear();
 	//pf.new_path({ 900.0, 200.0 });
 	//pf.arc_clockwise({ 900.0, 200.0 }, 50.0, 0.0, two_pi<double>);
@@ -435,7 +435,7 @@ void draw_radial_circles(display_surface& ds) {
 	//ds.fill_rule(fill_rule::even_odd);
 	ds.stroke(radialBrush, p, brush_props{ wrap_mode::repeat, filter::good, fill_rule::even_odd }, stroke_props{ 10.0 }, nullopt, render_props{ matrix_2d::init_translate({0.0, 310.0}) });
 
-	//render_ellipse(ds, { 200.0, 600.0 }, 250.0, 100.0, bgra_color(0.0, 1.0, 1.0, 1.0));
+	//render_ellipse(ds, { 200.0, 600.0 }, 250.0, 100.0, rgba_color(0.0, 1.0, 1.0, 1.0));
 
 	//radialFactory.radial_circles({ 200.5, 300.0 }, 0.0, { 300.0, 300.0 }, 100.0);
 	//auto radialBrush = brush(radialFactory);
@@ -460,12 +460,12 @@ void draw_radial_circles(display_surface& ds) {
 	//	auto linearFactory = linear_brush_factory();
 	//	linearFactory.begin_point({ 200.0, 0.0 });
 	//	linearFactory.end_point({ 601.0, 0.0 });
-	//	linearFactory.add_color_stop(0.0, bgra_color::white());
-	//	linearFactory.add_color_stop(0.25, bgra_color::red());
-	//	linearFactory.add_color_stop(0.5, bgra_color::lime());
-	//	linearFactory.add_color_stop(0.6, bgra_color::red());
-	//	linearFactory.add_color_stop(0.5, bgra_color::blue());
-	//	linearFactory.add_color_stop(1.0, bgra_color::white());
+	//	linearFactory.add_color_stop(0.0, rgba_color::white());
+	//	linearFactory.add_color_stop(0.25, rgba_color::red());
+	//	linearFactory.add_color_stop(0.5, rgba_color::lime());
+	//	linearFactory.add_color_stop(0.6, rgba_color::red());
+	//	linearFactory.add_color_stop(0.5, rgba_color::blue());
+	//	linearFactory.add_color_stop(1.0, rgba_color::white());
 	//
 	//	ds.immediate().clear();
 	//	ds.immediate().rectangle({ { 200.0, 280.0 }, { 602.0, 520.0 } });
@@ -581,16 +581,16 @@ void draw_radial_circles(display_surface& ds) {
 //	imsfc.immediate().abs_move({ 40.0, 0.0 });
 //	imsfc.immediate().rel_cubic_curve({ -35.0, 70.0 }, { -35.0, 70.0 }, { 0.0, 140.0 });
 //	imsfc.immediate().rel_cubic_curve({ 35.0, -70.0 }, { 35.0, -70.0 }, { 0.0, -140.0 });
-//	imsfc.brush({ bgra_color::white() });
+//	imsfc.brush({ rgba_color::white() });
 //	imsfc.fill_immediate();
 //}
 //
 //void draw_hello_world(display_surface& ds) {
-//	//ds.render_text("Hello world", { 100.0, 100.0 }, brush(bgra_color::white()));
+//	//ds.render_text("Hello world", { 100.0, 100.0 }, brush(rgba_color::white()));
 //}
 //
 //// For testing purposes only.
-//void draw_test_compositing_operators(display_surface& ds, compositing_op secondRectCompOp, compositing_op firstRectCompOp, bool clipToRects, bool clipToTriangle, bool strokePaths, bool mask, const bgra_color& backgroundColor, const bgra_color& firstColor, const bgra_color& secondColor) {
+//void draw_test_compositing_operators(display_surface& ds, compositing_op secondRectCompOp, compositing_op firstRectCompOp, bool clipToRects, bool clipToTriangle, bool strokePaths, bool mask, const rgba_color& backgroundColor, const rgba_color& firstColor, const rgba_color& secondColor) {
 //	// Parameter validation.
 //	if (clipToRects && clipToTriangle) {
 //		throw invalid_argument("clipToRects and clipToTriangle cannot both be set to true.");
@@ -660,7 +660,7 @@ void draw_radial_circles(display_surface& ds) {
 //		////	imsfc.immediate().abs_move({ 40.0, 0.0 });
 //		////	imsfc.immediate().rel_cubic_curve({ -35.0, 70.0 }, { -35.0, 70.0 }, { 0.0, 140.0 });
 //		////	imsfc.immediate().rel_cubic_curve({ 35.0, -70.0 }, { 35.0, -70.0 }, { 0.0, -140.0 });
-//		////	imsfc.brush({ bgra_color::white() });
+//		////	imsfc.brush({ rgba_color::white() });
 //		////	imsfc.fill_immediate();
 //		////	return move(imsfc);
 //		////}, 
@@ -678,16 +678,16 @@ void draw_radial_circles(display_surface& ds) {
 //		ds.line_width(2.0);
 //
 //		ds.path_group(firstRectPath);
-//		ds.brush(brush(solid_color_brush_factory(bgra_color::teal())));
+//		ds.brush(brush(solid_color_brush_factory(rgba_color::teal())));
 //		ds.stroke();
 //
 //		ds.path_group(secondRectPath);
-//		ds.brush(brush(solid_color_brush_factory(bgra_color::red())));
+//		ds.brush(brush(solid_color_brush_factory(rgba_color::red())));
 //		ds.stroke();
 //
 //		if (clipToTriangle) {
 //			ds.path_group(triangleClipPath);
-//			ds.brush(brush(solid_color_brush_factory(bgra_color::yellow())));
+//			ds.brush(brush(solid_color_brush_factory(rgba_color::yellow())));
 //			ds.stroke();
 //		}
 //	}
@@ -712,16 +712,16 @@ void draw_radial_circles(display_surface& ds) {
 //	elapsedTimes.pop_front();
 //	elapsedTimes.push_back(elapsedTimeInMilliseconds);
 //
-//	ds.paint(bgra_color::cornflower_blue()); // Paint background.
+//	ds.paint(rgba_color::cornflower_blue()); // Paint background.
 //
 //	ds.immediate().clear();
 //	ds.immediate().arc({ 100.0, 100.0 }, 50.0, 0.0, half_pi<double>);
 //	auto initLineWidth = ds.line_width();
 //	ds.line_width(8.0);
-//	ds.stroke_immediate(bgra_color::black());
+//	ds.stroke_immediate(rgba_color::black());
 //	ds.immediate().clear();
 //	ds.immediate().arc_negative({ 300.0, 100.0 }, 50.0, 0.0, half_pi<double>);
-//	ds.stroke_immediate(bgra_color::brown());
+//	ds.stroke_immediate(rgba_color::brown());
 //	ds.immediate().clear();
 //	ds.line_width(initLineWidth);
 //
@@ -731,24 +731,24 @@ void draw_radial_circles(display_surface& ds) {
 //	const double y = trunc(clextents.height() * 0.5);
 //
 //	auto linearTest1 = linear_brush_factory({ 400.0, 400.0 }, { 400.0, 500.0 });
-//	linearTest1.add_color_stop(0.0, bgra_color::black());
-//	linearTest1.add_color_stop(0.3, bgra_color::yellow());
-//	linearTest1.add_color_stop(0.5, bgra_color::blue());
-//	linearTest1.add_color_stop(0.3, bgra_color::lime());
-//	linearTest1.add_color_stop(0.5, bgra_color::black());
-//	linearTest1.add_color_stop(0.7, bgra_color::purple());
-//	linearTest1.add_color_stop(0.5, bgra_color::red());
-//	//	linearTest1.add_color_stop(1.0, bgra_color::black());
-//	linearTest1.add_color_stop(0.7, bgra_color::orange());
-//	linearTest1.add_color_stop(0.8, bgra_color::green());
-//	linearTest1.add_color_stop(0.8, bgra_color::yellow());
-//	linearTest1.add_color_stop(1.0, bgra_color::white());
+//	linearTest1.add_color_stop(0.0, rgba_color::black());
+//	linearTest1.add_color_stop(0.3, rgba_color::yellow());
+//	linearTest1.add_color_stop(0.5, rgba_color::blue());
+//	linearTest1.add_color_stop(0.3, rgba_color::lime());
+//	linearTest1.add_color_stop(0.5, rgba_color::black());
+//	linearTest1.add_color_stop(0.7, rgba_color::purple());
+//	linearTest1.add_color_stop(0.5, rgba_color::red());
+//	//	linearTest1.add_color_stop(1.0, rgba_color::black());
+//	linearTest1.add_color_stop(0.7, rgba_color::orange());
+//	linearTest1.add_color_stop(0.8, rgba_color::green());
+//	linearTest1.add_color_stop(0.8, rgba_color::yellow());
+//	linearTest1.add_color_stop(1.0, rgba_color::white());
 //	ds.immediate().rectangle({ 400.0, 400.0, 200.0, 200.0 });
 //	ds.fill_immediate(brush(linearTest1));
 //
 //	ds.font_resource("Segoe UI", 40.0);
 //	auto str = string("Phase ").append(to_string(x + 1));
-//	ds.render_text(str, { beginX, 50.0 }, bgra_color::white());
+//	ds.render_text(str, { beginX, 50.0 }, rgba_color::white());
 //
 //	for (size_t i = 0; i < elementCount; ++i) {
 //		ds.immediate().clear();
@@ -778,13 +778,13 @@ void draw_radial_circles(display_surface& ds) {
 //	ds.immediate().change_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 2.5 }));
 //	ds.immediate().rectangle({ 200.0, 400.0, 100.0, 100.0 });
 //	ds.line_width(3.0);
-//	ds.stroke_immediate(bgra_color::red());
+//	ds.stroke_immediate(rgba_color::red());
 //	//auto radialFactory = radial_brush_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
-//	//radialFactory.add_color_stop(0.0, bgra_color::black());
-//	//radialFactory.add_color_stop(0.25, bgra_color::red());
-//	//radialFactory.add_color_stop(0.5, bgra_color::green());
-//	//radialFactory.add_color_stop(0.75, bgra_color::blue());
-//	//radialFactory.add_color_stop(1.0, bgra_color::white());
+//	//radialFactory.add_color_stop(0.0, rgba_color::black());
+//	//radialFactory.add_color_stop(0.25, rgba_color::red());
+//	//radialFactory.add_color_stop(0.5, rgba_color::green());
+//	//radialFactory.add_color_stop(0.75, rgba_color::blue());
+//	//radialFactory.add_color_stop(1.0, rgba_color::white());
 //	//auto radialBrush = ds.create_brush(radialFactory);
 //	//radialBrush.wrap_mode(wrap_mode::reflect);
 //	//ds.fill_immediate(radialBrush);
@@ -796,18 +796,18 @@ void draw_radial_circles(display_surface& ds) {
 //	//meshFactory.curve({ 60.0, 30.0 }, { 130.0, 60.0 }, { 100.0, 100.0 });
 //	//meshFactory.curve({ 60.0, 70.0 }, { 30.0, 130.0 }, { 0.0, 100.0 });
 //	//meshFactory.curve({ 30.0, 70.0 }, { -30.0, 30.0 }, { 0.0, 0.0 });
-//	//meshFactory.corner_color(0, bgra_color::red());
-//	//meshFactory.corner_color(1, bgra_color::lime());
-//	//meshFactory.corner_color(2, bgra_color::blue());
-//	//meshFactory.corner_color(3, bgra_color::yellow());
+//	//meshFactory.corner_color(0, rgba_color::red());
+//	//meshFactory.corner_color(1, rgba_color::lime());
+//	//meshFactory.corner_color(2, rgba_color::blue());
+//	//meshFactory.corner_color(3, rgba_color::yellow());
 //	//meshFactory.end_patch();
 //	//meshFactory.begin_patch();
 //	//meshFactory.abs_move({ 100.0, 100.0 });
 //	//meshFactory.abs_line({ 130.0, 130.0 });
 //	//meshFactory.abs_line({ 130.0, 70.0 });
-//	//meshFactory.corner_color(0, bgra_color::red());
-//	//meshFactory.corner_color(1, bgra_color::lime());
-//	//meshFactory.corner_color(2, bgra_color::blue());
+//	//meshFactory.corner_color(0, rgba_color::red());
+//	//meshFactory.corner_color(1, rgba_color::lime());
+//	//meshFactory.corner_color(2, rgba_color::blue());
 //	//meshFactory.end_patch();
 //	//auto meshBrush = brush(meshFactory);
 //	//meshBrush.matrix(matrix_2d::init_translate({ -200.0, -400.0 }));
@@ -818,8 +818,8 @@ void draw_radial_circles(display_surface& ds) {
 //	imgSfc.immediate().abs_line({ 40.0, 40.0 });
 //	imgSfc.immediate().abs_line({ 0.0, 40.0 });
 //	imgSfc.immediate().close_path();
-//	imgSfc.paint(bgra_color::green());
-//	imgSfc.fill_immediate(bgra_color::yellow());
+//	imgSfc.paint(rgba_color::green());
+//	imgSfc.fill_immediate(rgba_color::yellow());
 //
 //	auto sfcFactory = surface_brush_factory(imgSfc);
 //	auto sfcBrush = brush(sfcFactory);
@@ -830,12 +830,12 @@ void draw_radial_circles(display_surface& ds) {
 //	ds.line_join(line_join::miter_or_bevel);
 //	ds.miter_limit(1.0);
 //	ds.line_width(10.0);
-//	ds.stroke_immediate(bgra_color::red());
+//	ds.stroke_immediate(rgba_color::red());
 //	ds.fill_immediate(sfcBrush);
 //
 //	auto linearFactory = linear_brush_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
-//	linearFactory.add_color_stop(0.0, bgra_color::chartreuse());
-//	linearFactory.add_color_stop(1.0, bgra_color::salmon());
+//	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
+//	linearFactory.add_color_stop(1.0, rgba_color::salmon());
 //	auto linearBrush = brush(linearFactory);
 //	linearBrush.wrap_mode(wrap_mode::repeat);
 //	ds.immediate().clear();
@@ -843,7 +843,7 @@ void draw_radial_circles(display_surface& ds) {
 //	ds.immediate().rel_line({ 0.0, 100.0 });
 //	ds.immediate().rel_line({ 10.0, -100.0 });
 //	ds.line_join(line_join::miter);
-//	ds.stroke_immediate(bgra_color::red());
+//	ds.stroke_immediate(rgba_color::red());
 //	ds.fill_immediate(linearBrush);
 //
 //	ds.immediate().clear();
@@ -856,8 +856,8 @@ void draw_radial_circles(display_surface& ds) {
 //	ds.dashes(dashes{ { 0.0, 10.0 }, 0.0 });
 //	ds.line_width(5.0);
 //	ds.line_cap(line_cap::round);
-//	ds.fill_immediate(bgra_color::blue());
-//	ds.stroke_immediate(bgra_color::orange());
+//	ds.fill_immediate(rgba_color::blue());
+//	ds.stroke_immediate(rgba_color::orange());
 //	// Reset dashes to be a solid line.
 //	ds.dashes(nullopt);
 //	ds.line_cap(line_cap::none);
@@ -865,7 +865,7 @@ void draw_radial_circles(display_surface& ds) {
 //	ds.immediate().clear();
 //	ds.immediate().curve({ 610.0, 400.0 }, { 660.0, 300.0 }, { 710.0, 400.0 });
 //	ds.immediate().close_path();
-//	ds.stroke_immediate(bgra_color::yellow_green());
+//	ds.stroke_immediate(rgba_color::yellow_green());
 //	auto sumOfElapsedTimes = accumulate(begin(elapsedTimes), end(elapsedTimes), 0.0);
 //	auto countOfElapsedTimes = static_cast<double>(elapsedTimes.size());
 //	auto fps = 1000.0 / (sumOfElapsedTimes / countOfElapsedTimes);
@@ -884,22 +884,22 @@ void draw_radial_circles(display_surface& ds) {
 //	ds.immediate().clear();
 //	//ds.immediate().add_text(ds.font_resource(), fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 50.0 });
 //	//ds.immediate().add_glyph_run(ds.font_resource(), gr);
-//	//ds.fill_immediate(bgra_color::dark_red());
-//	ds.render_glyph_run(gr, bgra_color::dark_red());
+//	//ds.fill_immediate(rgba_color::dark_red());
+//	ds.render_glyph_run(gr, rgba_color::dark_red());
 //	
-//	////ds.render_text(fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 50.0 }, bgra_color::dark_red());
+//	////ds.render_text(fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 50.0 }, rgba_color::dark_red());
 //	////fpsStr = stringstream();
 //	////fpsStr << static_cast<int>(timer) << " " << elapsedTimeInMilliseconds;
-//	////ds.render_text(fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 150.0 }, bgra_color::dark_red());
+//	////ds.render_text(fpsStr.str(), { static_cast<double>(ds.width()) - 400.0, 150.0 }, rgba_color::dark_red());
 //	
 //	ds.matrix(origM);
 //
 //	//auto radialFactory = radial_brush_factory({ 115.2, 102.4 }, 25.6, { 102.4, 102.4 }, 128.0);
-//	//radialFactory.add_color_stop(0.0, bgra_color::white());
-//	////radialFactory.add_color_stop(0.25, bgra_color::red());
-//	////radialFactory.add_color_stop(0.5, bgra_color::green());
-//	////radialFactory.add_color_stop(0.75, bgra_color::blue());
-//	//radialFactory.add_color_stop(1.0, bgra_color::black());
+//	//radialFactory.add_color_stop(0.0, rgba_color::white());
+//	////radialFactory.add_color_stop(0.25, rgba_color::red());
+//	////radialFactory.add_color_stop(0.5, rgba_color::green());
+//	////radialFactory.add_color_stop(0.75, rgba_color::blue());
+//	//radialFactory.add_color_stop(1.0, rgba_color::black());
 //	//auto radialBrush = brush(radialFactory);
 //	//radialBrush.wrap_mode(wrap_mode::pad);
 //	//ds.immediate().clear();
@@ -923,7 +923,7 @@ void draw_radial_circles(display_surface& ds) {
 //	const auto phaseCount = vec.size();
 //	assert(phaseCount > 0);
 //	const size_t x = min(static_cast<size_t>(timer / phaseTime), max(static_cast<size_t>(phaseCount - 1U), static_cast<size_t>(0U)));
-//	auto cornflowerBlueBrush = brush(solid_color_brush_factory(bgra_color::cornflower_blue()));
+//	auto cornflowerBlueBrush = brush(solid_color_brush_factory(rgba_color::cornflower_blue()));
 //	ds.brush(cornflowerBlueBrush);
 //	ds.paint(); // Paint background.
 //
@@ -932,7 +932,7 @@ void draw_radial_circles(display_surface& ds) {
 //	const double beginX = trunc(clextents.width() * 0.1);
 //	const double y = trunc(clextents.height() * 0.5);
 //
-//	auto whiteBrush = brush(bgra_color::white());
+//	auto whiteBrush = brush(rgba_color::white());
 //	ds.brush(whiteBrush);
 //	//ds.font_resource("Segoe UI", 40.0);
 //	//ds.render_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0 });
@@ -970,24 +970,24 @@ void draw_radial_circles(display_surface& ds) {
 //	pf.change_matrix(matrix_2d::init_shear_x(0.5).scale({ 2.0, 1.0 }));
 //	pf.rectangle({ 200.0, 400.0, 100.0, 100.0 });
 //	ds.path_group(path_group(pf));
-//	auto redBrush = brush(solid_color_brush_factory(bgra_color::red()));
+//	auto redBrush = brush(solid_color_brush_factory(rgba_color::red()));
 //	ds.brush(redBrush);
 //	ds.line_width(3.0);
 //	ds.stroke();
 //	auto radialFactory = radial_brush_factory({ 250.0, 450.0 }, 0.0, { 250.0, 450.0 }, 80.0);
-//	radialFactory.add_color_stop(0.0, bgra_color::black());
-//	radialFactory.add_color_stop(0.25, bgra_color::red());
-//	radialFactory.add_color_stop(0.5, bgra_color::green());
-//	radialFactory.add_color_stop(0.75, bgra_color::blue());
-//	radialFactory.add_color_stop(1.0, bgra_color::white());
+//	radialFactory.add_color_stop(0.0, rgba_color::black());
+//	radialFactory.add_color_stop(0.25, rgba_color::red());
+//	radialFactory.add_color_stop(0.5, rgba_color::green());
+//	radialFactory.add_color_stop(0.75, rgba_color::blue());
+//	radialFactory.add_color_stop(1.0, rgba_color::white());
 //	auto radialBrush = brush(radialFactory);
 //	radialBrush.wrap_mode(wrap_mode::reflect);
 //	ds.brush(radialBrush);
 //	ds.fill();
 //
 //	auto linearFactory = linear_brush_factory({ 510.0, 460.0 }, { 530.0, 480.0 });
-//	linearFactory.add_color_stop(0.0, bgra_color::chartreuse());
-//	linearFactory.add_color_stop(1.0, bgra_color::salmon());
+//	linearFactory.add_color_stop(0.0, rgba_color::chartreuse());
+//	linearFactory.add_color_stop(1.0, rgba_color::salmon());
 //	auto linearBrush = brush(linearFactory);
 //	linearBrush.wrap_mode(wrap_mode::repeat);
 //	pf.clear();
@@ -1110,5 +1110,5 @@ void draw_radial_circles(display_surface& ds) {
 //	(void)r;
 //	auto cs0 = get<1>(f.color_stop(0));
 //	auto length = (circ1 - circ0).magnitude();
-//	bgra_color result{ 1.0 - ((r / length) * cs0.r()), 1.0 - ((r / length) * cs0.g()), 1.0 - ((r / length) * cs0.b()) };
+//	rgba_color result{ 1.0 - ((r / length) * cs0.r()), 1.0 - ((r / length) * cs0.g()), 1.0 - ((r / length) * cs0.b()) };
 //}

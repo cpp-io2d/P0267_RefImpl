@@ -232,7 +232,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Native_surface(nullptr, &cairo_surface_destroy)
 	, _Native_context(nullptr, &cairo_destroy)
 	, _Letterbox_brush()
-	, _Default_brush(bgra_color::transparent_black()) {
+	, _Default_brush(rgba_color::transparent_black()) {
 	call_once(_Window_class_registered_flag, _MyRegisterClass, static_cast<HINSTANCE>(GetModuleHandleW(nullptr)));
 
 	// Record the desired client window size

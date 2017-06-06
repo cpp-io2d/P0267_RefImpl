@@ -20,8 +20,8 @@ int main() {
 	ds.begin_show();
 	return 0;
 	//	auto imgSfc = make_image_surface(format::argb32, 300, 200);
-	//	auto bkgrndBrush = brush(bgra_color::black());
-	//	auto frgrndBrush = brush(bgra_color::white());
+	//	auto bkgrndBrush = brush(rgba_color::black());
+	//	auto frgrndBrush = brush(rgba_color::white());
 	//	path_builder<> pb{};
 	//
 	//	pb.clear();

@@ -5,8 +5,8 @@ using namespace std::experimental::io2d;
 
 //void path_test() {
 //	auto imgSfc = make_image_surface(format::argb32, 300, 200);
-//	brush backBrush{ bgra_color::black() };
-//	brush foreBrush{ bgra_color::white() };
+//	brush backBrush{ rgba_color::black() };
+//	brush foreBrush{ rgba_color::white() };
 //	path_builder<> pb{};
 //	imgSfc.paint(backBrush);
 //	// Example code goes here.
@@ -22,8 +22,8 @@ using namespace std::experimental::io2d;
 namespace path_test {
 	void path_test_1() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ bgra_color::black() };
-		brush foreBrush{ bgra_color::white() };
+		brush backBrush{ rgba_color::black() };
+		brush foreBrush{ rgba_color::white() };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
 
@@ -45,8 +45,8 @@ namespace path_test {
 
 	void path_test_2() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ bgra_color::black() };
-		brush foreBrush{ bgra_color::white() };
+		brush backBrush{ rgba_color::black() };
+		brush foreBrush{ rgba_color::white() };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
 
@@ -75,8 +75,8 @@ namespace path_test {
 
 	void path_test_3() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ bgra_color::black() };
-		brush foreBrush{ bgra_color::white() };
+		brush backBrush{ rgba_color::black() };
+		brush foreBrush{ rgba_color::white() };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
 
@@ -98,8 +98,8 @@ namespace path_test {
 
 	void path_test_4() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ bgra_color::black() };
-		brush foreBrush{ bgra_color::white() };
+		brush backBrush{ rgba_color::black() };
+		brush foreBrush{ rgba_color::white() };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
 
@@ -121,8 +121,8 @@ namespace path_test {
 
 	void path_test_5() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ bgra_color::black() };
-		brush foreBrush{ bgra_color::white() };
+		brush backBrush{ rgba_color::black() };
+		brush foreBrush{ rgba_color::white() };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
 
