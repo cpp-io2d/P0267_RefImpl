@@ -7,6 +7,7 @@ using namespace std::experimental::io2d;
 //	auto imgSfc = make_image_surface(format::argb32, 300, 200);
 //	brush backBrush{ rgba_color::black() };
 //	brush foreBrush{ rgba_color::white() };
+//	render_props aliased{ antialias::none };
 //	path_builder<> pb{};
 //	imgSfc.paint(backBrush);
 //	// Example code goes here.
@@ -114,10 +115,13 @@ namespace path_test {
 
 		// Example code goes here.
 		const matrix_2d sclMtx = matrix_2d::init_scale({ 0.9, 1.1 });// .rotate(half_pi<double>);// * matrix_2d::init_rotate(half_pi<double>);
-		auto pt = sclMtx.inverse().transform_pt({ 85.0, 100.0 }) +
+		//auto pt = sclMtx.inverse().transform_pt({ 85.0, 100.0 }) +
+		//	point_for_angle(half_pi<double> / 2.0, 50.0);
+		auto pt = vector_2d{ 85.0, 100.0 } +
 			point_for_angle(half_pi<double> / 2.0, 50.0);
-		pb.matrix(sclMtx);
+		//pb.matrix(sclMtx);
 		pb.new_path(pt);
+		pb.matrix(sclMtx);
 		pb.arc({ 50.0, 50.0 }, three_pi_over_two<double>, half_pi<double> / 2.0);
 		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 10.0 });// , nullopt, aliased);
 		pb.clear();
@@ -136,6 +140,7 @@ namespace path_test {
 		pb.close_path();
 		imgSfc.fill(foreBrush, pb);
 		pb.insert(pb.begin(), path_data::abs_matrix(matrix_2d::init_translate({ 80.0, 0.0 })));
+		pb.insert(pb.begin() + 2, path_data::revert_matrix());
 		imgSfc.fill(foreBrush, pb);
 		// Example code ends.
 #ifdef _Filesystem_support_test
@@ -164,6 +169,7 @@ namespace path_test {
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		imgSfc.fill(blueBrush, pb);
 		pb.insert(pb.begin(), path_data::abs_matrix(matrix_2d::init_translate({ 135.0, 0.0 })));
+		pb.insert(pb.begin() + 2, path_data::revert_matrix());
 		imgSfc.fill(blueBrush, pb);
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		// Example code ends.
@@ -181,21 +187,25 @@ namespace path_test {
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
-
 		// Example code goes here.
-		pb.new_path({ 90.0, 90.0 });
-//		pb.abs_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
-		//pb.rel_line_to({ 0.0, 30.0 });
-		pb.arc({ 20.0, 16.0 }, three_pi_over_two<double>, pi<double> + half_pi<double> / 2.0);
+		auto pt = vector_2d{ 80.0, 100.0 };
+		pb.new_path(pt);
+		pb.arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
 
-		//pb.abs_matrix(matrix_2d::init_shear_x(tan(half_pi<double> / 2.0)).reflect(half_pi<double>));
-		//pb.rel_line_to({ 100.0, 0.0 });
-		//pb.rel_line_to({ 0.0, 160.0 });
-		//pb.rel_line_to({ -100.0, 0.0 });
-		////pb.rel_line_to({ 0.0, -160.0 });
-		//pb.close_path();
+		auto rot = matrix_2d::init_rotate(half_pi<double> / 2.0);
+		pt.x(pt.x() + 50.0);
+		pb.new_path(pt);
+		pb.matrix(rot);
+		pb.arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
 
-		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 10.0 }, nullopt, aliased);
+		pb.revert_matrix();
+		rot = matrix_2d::init_rotate(half_pi<double>);
+		pt.x(pt.x() + 50.0);
+		pb.new_path(pt);
+		pb.matrix(rot.translate({ 20.0, 10.0 }));
+		pb.arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+
+		imgSfc.stroke(foreBrush, pb, nullopt, nullopt, nullopt, aliased);
 		// Example code ends.
 #ifdef _Filesystem_support_test
 		imgSfc.save(experimental::filesystem::path("pathexample06.png"), image_data_format::png);
@@ -203,4 +213,34 @@ namespace path_test {
 		imgSfc.save("pathexample06.png"s, image_data_format::png);
 #endif
 	}
+
+//	void path_test_6() {
+//		auto imgSfc = make_image_surface(format::argb32, 300, 200);
+//		brush backBrush{ rgba_color::black() };
+//		brush foreBrush{ rgba_color::white() };
+//		render_props aliased{ antialias::none };
+//		path_builder<> pb{};
+//		imgSfc.paint(backBrush);
+//
+//		// Example code goes here.
+//		pb.new_path({ 90.0, 90.0 });
+//		//		pb.abs_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
+//				//pb.rel_line_to({ 0.0, 30.0 });
+//		pb.arc({ 20.0, 16.0 }, three_pi_over_two<double>, pi<double> +half_pi<double> / 2.0);
+//
+//		//pb.abs_matrix(matrix_2d::init_shear_x(tan(half_pi<double> / 2.0)).reflect(half_pi<double>));
+//		//pb.rel_line_to({ 100.0, 0.0 });
+//		//pb.rel_line_to({ 0.0, 160.0 });
+//		//pb.rel_line_to({ -100.0, 0.0 });
+//		////pb.rel_line_to({ 0.0, -160.0 });
+//		//pb.close_path();
+//
+//		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 10.0 }, nullopt, aliased);
+//		// Example code ends.
+//#ifdef _Filesystem_support_test
+//		imgSfc.save(experimental::filesystem::path("pathexample06.png"), image_data_format::png);
+//#else
+//		imgSfc.save("pathexample06.png"s, image_data_format::png);
+//#endif
+//	}
 }

@@ -3136,25 +3136,31 @@ namespace std {
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
-						currentPoint = item.at();
-						auto pt = m.transform_pt(currentPoint - origin) + origin;
+						const auto pt = m.transform_pt(item.at() - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+						currentPoint = pt;
 						closePoint = pt;
 					}
+
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>& matrices, stack<vector_2d>& origins) {
-						_Path_item_interpret_visitor::template _Interpret(path_data::abs_new_path(currentPoint + item.at()), v, m, origin, currentPoint, closePoint, matrices, origins);
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
+						const auto pt = currentPoint + m.transform_pt(item.at() - origin) + origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+						currentPoint = pt;
+						closePoint = pt;
 					}
+
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-					static void _Interpret(const T&, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
+					static void _Interpret(const T&, ::std::vector<path_data::path_item>& v, matrix_2d&, vector_2d&, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
 						v.emplace_back(::std::in_place_type<path_data::close_path>);
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>,
 							closePoint);
-						if (!m.is_finite() || !m.is_invertible()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
-						}
-						// Need to assign the untransformed closePoint value to currentPoint.
-						currentPoint = m.inverse().transform_pt(closePoint - origin) + origin;
+						currentPoint = closePoint;
+						//if (!m.is_finite() || !m.is_invertible()) {
+						//	throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
+						//}
+						//// Need to assign the untransformed closePoint value to currentPoint.
+						//currentPoint = m.inverse().transform_pt(closePoint - origin) + origin;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, stack<matrix_2d>& matrices, stack<vector_2d>&) {
@@ -3190,14 +3196,14 @@ namespace std {
 						}
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_origin>, _Path_data_abs_origin> = _Path_data_abs_origin_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
 						origins.push(origin);
-						origin = item.origin();
+						origin = item.origin() * m;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_origin>, _Path_data_rel_origin> = _Path_data_rel_origin_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
 						origins.push(origin);
-						origin = origin + item.origin();
+						origin = origin + item.origin() * m;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_origin>, _Path_data_revert_origin> = _Path_data_revert_origin_val>
 					static void _Interpret(const T&, ::std::vector<path_data::path_item>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
@@ -3210,35 +3216,33 @@ namespace std {
 						}
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
-						auto pt1 = m.transform_pt(item.control_point_1() - origin) + origin;
-						auto pt2 = m.transform_pt(item.control_point_2() - origin) + origin;
-						auto pt3 = m.transform_pt(item.end_point() - origin) + origin;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
+						const auto pt1 = m.transform_pt(item.control_point_1() - origin) + origin;
+						const auto pt2 = m.transform_pt(item.control_point_2() - origin) + origin;
+						const auto pt3 = m.transform_pt(item.end_point() - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
 							pt2, pt3);
-						currentPoint = item.end_point();
-						closePoint = pt3;
+						currentPoint = pt3;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
-						currentPoint = item.to();
-						auto pt = m.transform_pt(currentPoint - origin) + origin;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
+						const auto pt = m.transform_pt(item.to() - origin) + origin;
 						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
-						closePoint = pt;
+						currentPoint = pt;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
 						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 						//vector_2d beginPt;
-						auto controlPt = m.transform_pt(item.control_point() - origin) + origin;
-						auto endPt = m.transform_pt(item.end_point() - origin) + origin;
-						auto beginPt = m.transform_pt(currentPoint - origin) + origin;
+						const auto controlPt = m.transform_pt(item.control_point() - origin) + origin;
+						const auto endPt = m.transform_pt(item.end_point() - origin) + origin;
+						const auto beginPt = m.transform_pt(currentPoint - origin) + origin;
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
-						currentPoint = item.end_point();
-						closePoint = endPt;
+						currentPoint = endPt;
 					}
+
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc>, _Path_data_arc> = _Path_data_arc_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
 						const double rot = item.rotation();
@@ -3333,7 +3337,10 @@ namespace std {
 							pt1 = shflPt;
 						}
 						auto currTheta = startAng;
-
+						const auto calcAdjustedCurrPt = ((ctr + (rotCntrCwFn(pt0, currTheta) * m)) * origM);
+						auto adjustVal = calcAdjustedCurrPt - currentPoint;
+						vector_2d tempCurrPt;
+						// The C in example 4 is now messed up. Also, the 
 						for (; bezCount > 0; bezCount--) {
 							const auto rapt0 = m.transform_pt(rotCntrCwFn(pt0, currTheta));
 							const auto rapt1 = m.transform_pt(rotCntrCwFn(pt1, currTheta));
@@ -3348,27 +3355,46 @@ namespace std {
 							cpt1 = origM.transform_pt(cpt1);
 							cpt2 = origM.transform_pt(cpt2);
 							cpt3 = origM.transform_pt(cpt3);
-
+							cpt0 -= adjustVal;
+							cpt1 -= adjustVal;
+							cpt2 -= adjustVal;
+							cpt3 -= adjustVal;
+							tempCurrPt = cpt3;
 							v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
 							currTheta -= theta;
 						}
 						origin = origOrigin;
 						m = origM;
 					}
+
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>& matrices, stack<vector_2d>& origins) {
-						auto pt1 = currentPoint + item.control_point_1();
-						auto pt2 = currentPoint + item.control_point_1() + item.control_point_2();
-						auto pt3 = currentPoint + item.control_point_1() + item.control_point_2() + item.end_point();
-						_Path_item_interpret_visitor::template _Interpret(path_data::abs_cubic_curve(pt1, pt2, pt3), v, m, origin, currentPoint, closePoint, matrices, origins);
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
+						const auto pt1 = ((item.control_point_1() - origin) * m) + origin;
+						const auto pt2 = ((item.control_point_2() - origin) * m) + origin;
+						const auto pt3 = ((item.end_point() - origin) * m) + origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, currentPoint + pt1, currentPoint + pt1 + pt2, currentPoint + pt1 + pt2 + pt3);
+						currentPoint = currentPoint + pt1 + pt2 + pt3;
+						//_Path_item_interpret_visitor::template _Interpret(path_data::abs_cubic_curve(pt1, pt2, pt3), v, m, origin, currentPoint, closePoint, matrices, origins);
 					}
+
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>& matrices, stack<vector_2d>& origins) {
-						_Path_item_interpret_visitor::template _Interpret(path_data::abs_line(currentPoint + item.to()), v, m, origin, currentPoint, closePoint, matrices, origins);
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
+						const auto pt = currentPoint + ((item.to() - origin) * m) + origin;
+						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
+						currentPoint = pt;
+						//_Path_item_interpret_visitor::template _Interpret(path_data::abs_line(currentPoint + item.to()), v, m, origin, currentPoint, closePoint, matrices, origins);
 					}
+
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>& matrices, stack<vector_2d>& origins) {
-						_Path_item_interpret_visitor::template _Interpret(path_data::abs_quadratic_curve(currentPoint + item.control_point(), currentPoint + item.control_point() + item.end_point()), v, m, origin, currentPoint, closePoint, matrices, origins);
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
+						const auto controlPt = currentPoint + ((item.control_point() - origin) * m) + origin;// m.transform_pt(item.control_point() - origin) + origin;
+						const auto endPt = currentPoint + ((item.control_point() - origin) * m) + origin + ((item.end_point() - origin) * m) + origin; //m.transform_pt(item.end_point() - origin) + origin;
+						const auto beginPt = currentPoint;
+						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
+						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
+						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
+						currentPoint = endPt;
+						//_Path_item_interpret_visitor::template _Interpret(path_data::abs_quadratic_curve(currentPoint + item.control_point(), currentPoint + item.control_point() + item.end_point()), v, m, origin, currentPoint, closePoint, matrices, origins);
 					}
 				};
 
