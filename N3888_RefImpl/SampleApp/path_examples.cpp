@@ -115,13 +115,16 @@ namespace path_test {
 
 		// Example code goes here.
 		const matrix_2d sclMtx = matrix_2d::init_scale({ 0.9, 1.1 });// .rotate(half_pi<double>);// * matrix_2d::init_rotate(half_pi<double>);
+		const vector_2d rad{ 50.0, 50.0 };
+		auto pt = sclMtx.inverse().transform_pt({ 85.0, 100.0 }) +
+			point_for_angle(half_pi<double> / 2.0, rad);
 		//auto pt = sclMtx.inverse().transform_pt({ 85.0, 100.0 }) +
 		//	point_for_angle(half_pi<double> / 2.0, 50.0);
-		auto pt = vector_2d{ 85.0, 100.0 } +
-			point_for_angle(half_pi<double> / 2.0, 50.0);
-		//pb.matrix(sclMtx);
-		pb.new_path(pt);
+		//auto pt = vector_2d{ 85.0, 100.0 } +
+		//	point_for_angle(half_pi<double> / 2.0, 50.0);
 		pb.matrix(sclMtx);
+		pb.new_path(pt);
+		//pb.matrix(sclMtx);
 		pb.arc({ 50.0, 50.0 }, three_pi_over_two<double>, half_pi<double> / 2.0);
 		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 10.0 });// , nullopt, aliased);
 		pb.clear();
@@ -140,7 +143,7 @@ namespace path_test {
 		pb.close_path();
 		imgSfc.fill(foreBrush, pb);
 		pb.insert(pb.begin(), path_data::abs_matrix(matrix_2d::init_translate({ 80.0, 0.0 })));
-		pb.insert(pb.begin() + 2, path_data::revert_matrix());
+		//pb.insert(pb.begin() + 2, path_data::revert_matrix());
 		imgSfc.fill(foreBrush, pb);
 		// Example code ends.
 #ifdef _Filesystem_support_test
@@ -169,7 +172,7 @@ namespace path_test {
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		imgSfc.fill(blueBrush, pb);
 		pb.insert(pb.begin(), path_data::abs_matrix(matrix_2d::init_translate({ 135.0, 0.0 })));
-		pb.insert(pb.begin() + 2, path_data::revert_matrix());
+		//pb.insert(pb.begin() + 2, path_data::revert_matrix());
 		imgSfc.fill(blueBrush, pb);
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		// Example code ends.
@@ -214,7 +217,159 @@ namespace path_test {
 #endif
 	}
 
-//	void path_test_6() {
+	void path_test_7() {
+		auto imgSfc = make_image_surface(format::argb32, 300, 200);
+		brush backBrush{ rgba_color::black() };
+		brush foreBrush{ rgba_color::white() };
+		render_props aliased{ antialias::none };
+		path_builder<> pb{};
+		imgSfc.paint(backBrush);
+
+		// Example code goes here.
+		auto scl = matrix_2d::init_scale({ 0.5, 1.0 });
+		auto rot = matrix_2d::init_rotate(half_pi<double>);
+		auto trn = matrix_2d::init_translate({ 20.0, 20.0 });
+		pb.new_path({ 10.0, 150.0 });
+		pb.matrix(rot);
+		pb.quadratic_curve_to({ 30.0, 120.0 }, { 50.0, 150.0 });
+		pb.revert_matrix();
+		pb.new_path({ 110.0, 150.0 });
+		pb.origin({ 110.0, 150.0 });
+		pb.matrix(rot);
+		pb.quadratic_curve_to({ 130.0, 120.0 }, { 150.0, 150.0 });
+		pb.revert_matrix();
+		pb.revert_origin();
+		pb.new_path({ 170.0, 150.0 });
+		pb.origin({ 170.0, 150.0 });
+		pb.matrix(rot);
+		pb.rel_quadratic_curve_to({ 20.0, -30.0 }, { 20.0, 30.0 });
+		pb.revert_matrix();
+		pb.revert_origin();
+		pb.new_path({ 230.0, 150.0 });
+		pb.rel_origin({ 0.0, 0.0 });
+		pb.matrix(rot);
+		pb.rel_quadratic_curve_to({ 20.0, -30.0 }, { 20.0, 30.0 });
+		pb.revert_matrix();
+		pb.revert_origin();
+		pb.new_path({ 290.0, 150.0 });
+		pb.matrix(rot);
+		pb.rel_quadratic_curve_to({ 20.0, -30.0 }, { 20.0, 30.0 });
+		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 2.0 }, nullopt, aliased);
+		// Example code ends.
+		string fileName = "pathexample07.png";
+#ifdef _Filesystem_support_test
+		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
+#else
+		imgSfc.save(fileName, image_data_format::png);
+#endif
+	}
+
+	void path_test_8() {
+		auto imgSfc = make_image_surface(format::argb32, 300, 200);
+		brush backBrush{ rgba_color::black() };
+		brush foreBrush{ rgba_color::white() };
+		render_props aliased{ antialias::none };
+		path_builder<> pb{};
+		imgSfc.paint(backBrush);
+
+		// Example code goes here.
+		auto scl = matrix_2d::init_scale({ 0.5, 1.0 });
+		auto rot = matrix_2d::init_rotate(half_pi<double> / 2.0);
+		auto trn = matrix_2d::init_translate({ 20.0, 20.0 });
+		pb.matrix(scl);
+		pb.new_path({ 40.0, 50.0 });
+		pb.line_to({ 80.0, 50.0 });
+		pb.new_path({ 40.0, 150.0 });
+		pb.rel_line_to({ 40.0, 0.0 });
+		pb.revert_matrix();
+		pb.new_path({ 60.0, 150.0 });
+		pb.origin({ 60.0, 150.0 });
+		pb.matrix(rot);
+		pb.line_to({ 80.0, 150.0 });
+		pb.rel_line_to({ 0.0, -20.0 });
+		pb.revert_matrix();
+		pb.revert_origin();
+		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 2.0 }, nullopt, aliased);
+		// Example code ends.
+		string fileName = "pathexample08.png";
+#ifdef _Filesystem_support_test
+		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
+#else
+		imgSfc.save(fileName, image_data_format::png);
+#endif
+	}
+
+	void path_test_9() {
+		auto imgSfc = make_image_surface(format::argb32, 300, 200);
+		brush backBrush{ rgba_color::black() };
+		brush foreBrush{ rgba_color::white() };
+		render_props aliased{ antialias::none };
+		path_builder<> pb{};
+		imgSfc.paint(backBrush);
+
+		// Example code goes here.
+		auto scl = matrix_2d::init_scale({ 0.5, 1.0 });
+		auto rot = matrix_2d::init_rotate(half_pi<double> / 2.0);
+		auto trn = matrix_2d::init_translate({ 20.0, 20.0 });
+		pb.matrix(scl);
+		pb.new_path({ 40.0, 50.0 });
+		pb.line_to({ 80.0, 50.0 });
+		pb.new_path({ 40.0, 150.0 });
+		pb.rel_line_to({ 40.0, 0.0 });
+		pb.revert_matrix();
+		pb.new_path({ 60.0, 150.0 });
+		pb.origin({ 60.0, 150.0 });
+		pb.matrix(rot);
+		pb.line_to({ 80.0, 150.0 });
+		pb.rel_line_to({ 0.0, -20.0 });
+		pb.revert_matrix();
+		pb.revert_origin();
+		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 2.0 }, nullopt, aliased);
+		// Example code ends.
+		string fileName = "pathexample09.png";
+#ifdef _Filesystem_support_test
+		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
+#else
+		imgSfc.save(fileName, image_data_format::png);
+#endif
+	}
+
+	void path_test_10() {
+		auto imgSfc = make_image_surface(format::argb32, 300, 200);
+		brush backBrush{ rgba_color::black() };
+		brush foreBrush{ rgba_color::white() };
+		render_props aliased{ antialias::none };
+		path_builder<> pb{};
+		imgSfc.paint(backBrush);
+
+		// Example code goes here.
+		auto scl = matrix_2d::init_scale({ 0.5, 1.0 });
+		auto rot = matrix_2d::init_rotate(half_pi<double> / 2.0);
+		auto trn = matrix_2d::init_translate({ 20.0, 20.0 });
+		pb.matrix(scl);
+		pb.new_path({ 40.0, 50.0 });
+		pb.line_to({ 80.0, 50.0 });
+		pb.new_path({ 40.0, 150.0 });
+		pb.rel_line_to({ 40.0, 0.0 });
+		pb.revert_matrix();
+		pb.new_path({ 60.0, 150.0 });
+		pb.origin({ 60.0, 150.0 });
+		pb.matrix(rot);
+		pb.line_to({ 80.0, 150.0 });
+		pb.rel_line_to({ 0.0, -20.0 });
+		pb.revert_matrix();
+		pb.revert_origin();
+		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 2.0 }, nullopt, aliased);
+		// Example code ends.
+		string fileName = "pathexample10.png";
+#ifdef _Filesystem_support_test
+		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
+#else
+		imgSfc.save(fileName, image_data_format::png);
+#endif
+	}
+//
+//	void path_test_1X() {
 //		auto imgSfc = make_image_surface(format::argb32, 300, 200);
 //		brush backBrush{ rgba_color::black() };
 //		brush foreBrush{ rgba_color::white() };
@@ -223,24 +378,15 @@ namespace path_test {
 //		imgSfc.paint(backBrush);
 //
 //		// Example code goes here.
-//		pb.new_path({ 90.0, 90.0 });
-//		//		pb.abs_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
-//				//pb.rel_line_to({ 0.0, 30.0 });
-//		pb.arc({ 20.0, 16.0 }, three_pi_over_two<double>, pi<double> +half_pi<double> / 2.0);
 //
-//		//pb.abs_matrix(matrix_2d::init_shear_x(tan(half_pi<double> / 2.0)).reflect(half_pi<double>));
-//		//pb.rel_line_to({ 100.0, 0.0 });
-//		//pb.rel_line_to({ 0.0, 160.0 });
-//		//pb.rel_line_to({ -100.0, 0.0 });
-//		////pb.rel_line_to({ 0.0, -160.0 });
-//		//pb.close_path();
+//		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 2.0 }, nullopt, aliased);
 //
-//		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 10.0 }, nullopt, aliased);
 //		// Example code ends.
+//		string fileName = "pathexample.png";
 //#ifdef _Filesystem_support_test
-//		imgSfc.save(experimental::filesystem::path("pathexample06.png"), image_data_format::png);
+//		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
 //#else
-//		imgSfc.save("pathexample06.png"s, image_data_format::png);
+//		imgSfc.save(fileName, image_data_format::png);
 //#endif
 //	}
 }

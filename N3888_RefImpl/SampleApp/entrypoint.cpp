@@ -22,9 +22,31 @@ void make_path_examples() {
 	path_test_4();
 	path_test_5();
 	path_test_6();
+	path_test_7();
+	path_test_8();
+	path_test_9();
+	path_test_10();
 }
 
 int main() {
+	auto pt = vector_2d{ 80.0, 100.0 };
+	path_data::arc testArc{};
+	vector_2d ctr, endPt;
+	testArc = path_data::arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+	ctr = testArc.center(pt);
+	endPt = testArc.end_pt(pt);
+	auto rot = matrix_2d::init_rotate(half_pi<double> / 2.0);
+	pt.x(pt.x() + 50.0);
+	testArc = path_data::arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+	ctr = testArc.center(pt, rot);
+	endPt = testArc.end_pt(pt, rot);
+
+	rot = matrix_2d::init_rotate(half_pi<double>);
+	pt.x(pt.x() + 50.0);
+	testArc = path_data::arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+	ctr = testArc.center(pt, rot);
+	endPt = testArc.end_pt(pt, rot);
+
 	make_path_examples();
 	//auto ds = make_display_surface(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
 	//sample_draw sd;

@@ -40,22 +40,38 @@ namespace std {
 					vector_2d v{ mgn, 0.0 };
 					auto m = matrix_2d::init_rotate(ang);
 					auto result = m.transform_pt(v);
-					if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
-						result.x(result.x() < 0.0 ? -0.0 : 0.0);
-					}
-					if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
-						result.y(result.y() < 0.0 ? -0.0 : 0.0);
-					}
+					result.x(_Round_floating_point_to_zero(result.x()));
+					result.y(_Round_floating_point_to_zero(result.y()));
+					//if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
+					//	result.x(result.x() < 0.0 ? -0.0 : 0.0);
+					//}
+					//if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
+					//	result.y(result.y() < 0.0 ? -0.0 : 0.0);
+					//}
 					return result;
 				}
 
-				double angle_for_point(const vector_2d& ctr, const vector_2d& pt, const vector_2d& scl) noexcept {
+				vector_2d point_for_angle(double ang, const vector_2d& rad) noexcept {
+					vector_2d v{ 1.0, 0.0 };
+					auto m = matrix_2d::init_rotate(ang);
+					auto result = m.transform_pt(v);
+					result *= rad;
+					result.x(_Round_floating_point_to_zero(result.x()));
+					result.y(_Round_floating_point_to_zero(result.y()));
+					//if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
+					//	result.x(result.x() < 0.0 ? -0.0 : 0.0);
+					//}
+					//if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
+					//	result.y(result.y() < 0.0 ? -0.0 : 0.0);
+					//}
+					return result;
+				}
+
+				double angle_for_point(const vector_2d& ctr, const vector_2d& pt) noexcept {
 					//auto xDiff = ctr.x() - pt.x();
 					//auto yDiff = ctr.y() - pt.y();
 					auto xDiff = pt.x() - ctr.x();
 					auto yDiff = -(pt.y() - ctr.y());
-					xDiff *= scl.x();
-					yDiff *= scl.y();
 					auto angle = atan2(yDiff, xDiff);
 					const double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
 					if ((abs(angle) < oneThousandthOfADegreeInRads) || abs(angle - two_pi<double>) < oneThousandthOfADegreeInRads) {
