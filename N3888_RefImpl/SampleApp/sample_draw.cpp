@@ -270,7 +270,7 @@ void test_stroke_rules(display_surface& ds) {
 
 	//ds.line_width(12.0);
 	//ds.immediate().move_to({ 0.0, 199.0 });
-	//ds.immediate().line_to({ 1280.9, 199.0 });
+	//ds.immediate().line({ 1280.9, 199.0 });
 	//ds.stroke_immediate(rgba_color::cornflower_blue());
 	//ds.immediate().clear();
 
@@ -286,9 +286,9 @@ void test_stroke_rules(display_surface& ds) {
 	//ds.line_cap(line_cap::round);
 	//ds.line_join(line_join::miter_or_bevel);
 	//ds.immediate().move_to({ 200.0, 200.0 });
-	//ds.immediate().rel_line_to({ 0.0, 100.0 });
+	//ds.immediate().rel_line({ 0.0, 100.0 });
 	//ds.immediate().move_to({ 200.0, 335.0 });
-	//ds.immediate().rel_line_to({ 0.0, 200.0 });
+	//ds.immediate().rel_line({ 0.0, 200.0 });
 
 	//ds.matrix(matrix_2d::init_scale({ 0.5, 1.0 }).rotate(half_pi<double> / 2.0));
 	//ds.matrix(matrix_2d::init_rotate(half_pi<double> / 2.0).scale({ 0.5, 1.0 }));
@@ -313,34 +313,34 @@ void test_path_functionality(display_surface& ds) {
 	//void rel_new_path(const vector_2d& dpt) noexcept;
 	v = { 30.0, 0.0 };
 	pf.rel_new_path(v);
-	//void line_to(const vector_2d& pt) noexcept;
+	//void line(const vector_2d& pt) noexcept;
 	v = { 80.0, 10.0 };
-	pf.line_to(v);
-	//void rel_line_to(const vector_2d& dpt) noexcept;
+	pf.line(v);
+	//void rel_line(const vector_2d& dpt) noexcept;
 	v = { 0.0, 40.0 };
-	pf.rel_line_to(v);
+	pf.rel_line(v);
 	//void close_path() noexcept;
 	pf.close_path();
 
 	pf.new_path({ 50.0, 50.0 });
-	pf.line_to({ 1240.0, 50.0 });
+	pf.line({ 1240.0, 50.0 });
 	pf.new_path({ 50.0, 80.0 });
-	pf.line_to({ 900.0, 80.0 });
+	pf.line({ 900.0, 80.0 });
 	//void new_path() noexcept;
 	v = { 200.0, 20.0 };
 	pf.new_path(v);
 	////pf.move_to(v);
-	//pf.line_to(v); // Should behave as a move_to.
+	//pf.line(v); // Should behave as a move_to.
 	cpt1 = { 300.0, 60.0 };
 	cpt2 = { 100.0, 100.0 };
 	ept = { 200.0, 140.0 };
-	pf.cubic_curve_to(cpt1, cpt2, ept);
+	pf.cubic_curve(cpt1, cpt2, ept);
 
 	v = { 30.0, 300.0 };
 	pf.new_path(v);
 	vector_2d qcpt = { 100.0, 230.0 };
 	ept = { 170.0, 300.0 };
-	pf.quadratic_curve_to(qcpt, ept);
+	pf.quadratic_curve(qcpt, ept);
 
 	//pf.new_path({ 600.0, 100.0 });
 	//pf.arc_clockwise(circle{ { 600.0, 100.0 }, 50.0 }, 0.0, half_pi<double>);
@@ -353,9 +353,9 @@ void test_path_functionality(display_surface& ds) {
 
 	//pf.new_path({ 500.0, 300.0 });
 	//pf.transform_matrix(matrix_2d::init_rotate(half_pi<double> / 2.0));
-	//pf.rel_line_to({ 200.0, 0.0 });
-	//pf.rel_line_to({ 0.0, 100.0 });
-	//pf.rel_line_to({ -200.0, 0.0 });
+	//pf.rel_line({ 200.0, 0.0 });
+	//pf.rel_line({ 0.0, 100.0 });
+	//pf.rel_line({ -200.0, 0.0 });
 	//pf.close_path();
 
 	auto pg = path_group(pf);
@@ -370,7 +370,7 @@ void test_path_functionality(display_surface& ds) {
 	//pf.rel_ellipse({ { 200.0, 0.0 },{ 80.0, 40.0 } });
 	//pf.transform_matrix(matrix_2d{});
 	//pf.new_path({ 200.0, 0.0 });
-	//pf.line_to({ 200.0, 800.0 });
+	//pf.line({ 200.0, 800.0 });
 }
 
 void draw_radial_circles(display_surface& ds) {
@@ -386,19 +386,19 @@ void draw_radial_circles(display_surface& ds) {
 	path_builder<> pf;
 	//pf.rectangle({ { 100.0, 100.0 }, { 500.0, 500.0 } });
 	pf.new_path({ 100.0, 100.0 });
-	pf.line_to({ 500.0, 100.0 });
+	pf.line({ 500.0, 100.0 });
 	pf.matrix(matrix_2d::init_shear_x(0.25));
-	pf.line_to({ 500.0, 500.0 });
+	pf.line({ 500.0, 500.0 });
 	pf.close_path();
 	pf.matrix(matrix_2d());
-	pf.line_to({ 50.0, 150.0 });
+	pf.line({ 50.0, 150.0 });
 	pf.new_path({ 520.0, 520.0 });
-	pf.line_to({ 600.0, 600.0 });
+	pf.line({ 600.0, 600.0 });
 	pf.matrix(matrix_2d::init_scale({ 2.0, 1.0 }));
 	//pf.arc_clockwise({ 300.0, 700.0 }, 100.0, three_pi_over_two<double>, two_pi<double>);
 	pf.matrix(matrix_2d());
 	pf.new_path({ 520.0, 10.0 });
-	pf.cubic_curve_to({ 480.0, 60.0 }, { 560.0, 60.0 }, { 520.0, 10.0 });
+	pf.cubic_curve({ 480.0, 60.0 }, { 560.0, 60.0 }, { 520.0, 10.0 });
 	path_group p(pf);
 	//ds.path_group(p);
 	//ds.brush(radialBrush);

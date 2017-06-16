@@ -1333,71 +1333,34 @@ namespace std {
 						}
 					};
 
-					class abs_origin {
-						vector_2d _Origin = {};
-					public:
-						constexpr explicit abs_origin(const vector_2d& origin) noexcept
-							: _Origin(origin) {
-						}
-						constexpr abs_origin() noexcept {}
-
-						constexpr void origin(const vector_2d& value) noexcept {
-							_Origin = value;
-						}
-						constexpr vector_2d origin() const noexcept {
-							return _Origin;
-						}
-
-						constexpr bool operator==(const abs_origin& rhs) const noexcept {
-							return _Origin == rhs._Origin;
-						}
-
-						constexpr bool operator!=(const abs_origin& rhs) const noexcept {
-							return !((*this) == rhs);
-						}
-					};
-
-					class rel_origin {
-						vector_2d _Origin = {};
-					public:
-						constexpr explicit rel_origin(const vector_2d& origin) noexcept
-							: _Origin(origin) {
-						}
-						constexpr rel_origin() noexcept {}
-
-						constexpr void origin(const vector_2d& value) noexcept {
-							_Origin = value;
-						}
-						constexpr vector_2d origin() const noexcept {
-							return _Origin;
-						}
-
-						constexpr bool operator==(const rel_origin& rhs) const noexcept {
-							return _Origin == rhs._Origin;
-						}
-
-						constexpr bool operator!=(const rel_origin& rhs) const noexcept {
-							return !((*this) == rhs);
-						}
-					};
-
-					class revert_origin {
-					public:
-						constexpr revert_origin() noexcept {}
-
-						constexpr bool operator==(const revert_origin&) const noexcept {
-							return true;
-						}
-
-						constexpr bool operator!=(const revert_origin&) const noexcept {
-							return false;
-						}
-					};
-
 					using path_item = variant<abs_new_path, rel_new_path, close_path,
-						abs_matrix, rel_matrix, revert_matrix, abs_origin, rel_origin, revert_origin,
+						abs_matrix, rel_matrix, revert_matrix,
 						abs_cubic_curve, abs_line, abs_quadratic_curve, arc,
 						rel_cubic_curve, rel_line, rel_quadratic_curve>;
+				}
+
+				inline vector_2d arc_start(const vector_2d& ctr, double sang, const vector_2d& rad, const matrix_2d& m = matrix_2d{}) noexcept {
+					auto lmtx = m;
+					lmtx.m20(0.0); lmtx.m21(0.0); // Eliminate translation.
+					auto pt = point_for_angle(sang, rad);
+					return ctr + pt * lmtx;
+				}
+
+				inline vector_2d arc_center(const vector_2d& cpt, double sang, const vector_2d& rad, const matrix_2d& m = matrix_2d{}) noexcept {
+					auto lmtx = m;
+					lmtx.m20(0.0); lmtx.m21(0.0); // Eliminate translation.
+					auto centerOffset = point_for_angle(two_pi<double> - sang, rad);
+					centerOffset.y(-centerOffset.y());
+					return cpt - centerOffset * lmtx;
+				}
+
+				inline vector_2d arc_end(const vector_2d& cpt, double eang, const vector_2d& rad, const matrix_2d& m = matrix_2d{}) noexcept {
+					auto lmtx = m;
+					auto tfrm = matrix_2d::init_rotate(eang);
+					lmtx.m20(0.0); lmtx.m21(0.0); // Eliminate translation.
+					auto pt = (rad * tfrm);
+					pt.y(-pt.y());
+					return cpt + pt * lmtx;
 				}
 
 				// Forward declaration.
@@ -1436,12 +1399,6 @@ namespace std {
 				constexpr static _Path_data_rel_matrix _Path_data_rel_matrix_val = {};
 				enum class _Path_data_revert_matrix {};
 				constexpr static _Path_data_revert_matrix _Path_data_revert_matrix_val = {};
-				enum class _Path_data_abs_origin {};
-				constexpr static _Path_data_abs_origin _Path_data_abs_origin_val = {};
-				enum class _Path_data_rel_origin {};
-				constexpr static _Path_data_rel_origin _Path_data_rel_origin_val = {};
-				enum class _Path_data_revert_origin {};
-				constexpr static _Path_data_revert_origin _Path_data_revert_origin_val = {};
 				enum class _Path_data_abs_cubic_curve {};
 				constexpr static _Path_data_abs_cubic_curve _Path_data_abs_cubic_curve_val = {};
 				enum class _Path_data_abs_line {};
@@ -1550,18 +1507,6 @@ namespace std {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
 					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::revert_matrix&, vector_2d&) noexcept {
 						assert(false && "Revert matrix should have been eliminated.");
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_origin>, _Path_data_abs_origin> = _Path_data_abs_origin_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_origin&, vector_2d&) noexcept {
-						assert(false && "Abs origin should have been eliminated.");
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_origin>, _Path_data_rel_origin> = _Path_data_rel_origin_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_origin&, vector_2d&) noexcept {
-						assert(false && "Rel origin should have been eliminated.");
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_origin>, _Path_data_revert_origin> = _Path_data_revert_origin_val>
-					constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::revert_origin&, vector_2d&) noexcept {
-						assert(false && "Revert origin should have been eliminated.");
 					}
 				};
 
@@ -1717,19 +1662,16 @@ namespace std {
 					void matrix(const matrix_2d& m) noexcept;
 					void rel_matrix(const matrix_2d& m) noexcept;
 					void revert_matrix() noexcept;
-					void origin(const vector_2d& pt) noexcept;
-					void rel_origin(const vector_2d& pt) noexcept;
-					void revert_origin() noexcept;
 					void arc(const vector_2d& radius, double rot, double sang = pi<double>) noexcept;
-					void cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1,
+					void cubic_curve(const vector_2d& pt0, const vector_2d& pt1,
 						const vector_2d& pt2) noexcept;
-					void line_to(const vector_2d& pt) noexcept;
-					void quadratic_curve_to(const vector_2d& pt0, const vector_2d& pt1)
+					void line(const vector_2d& pt) noexcept;
+					void quadratic_curve(const vector_2d& pt0, const vector_2d& pt1)
 						noexcept;
-					void rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1,
+					void rel_cubic_curve(const vector_2d& dpt0, const vector_2d& dpt1,
 						const vector_2d& dpt2) noexcept;
-					void rel_line_to(const vector_2d& dpt) noexcept;
-					void rel_quadratic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1)
+					void rel_line(const vector_2d& dpt) noexcept;
+					void rel_quadratic_curve(const vector_2d& dpt0, const vector_2d& dpt1)
 						noexcept;
 					template <class... Args>
 					reference emplace_back(Args&&... args);
@@ -1884,9 +1826,9 @@ namespace std {
 						, _Fill_rule(fr) {
 						path_builder<> clip;
 						clip.new_path(r.top_left());
-						clip.rel_line_to({ r.width(), 0.0 });
-						clip.rel_line_to({ 0.0, r.height() });
-						clip.rel_line_to({ -r.width(), 0.0 });
+						clip.rel_line({ r.width(), 0.0 });
+						clip.rel_line({ 0.0, r.height() });
+						clip.rel_line({ -r.width(), 0.0 });
 						clip.close_path();
 						_Clip = path_group(clip);
 					}
@@ -3170,56 +3112,43 @@ namespace std {
 					constexpr static double twoThirds = 2.0 / 3.0;
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
-						const auto pt = m.transform_pt(item.at() - origin) + origin;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&) noexcept {
+						const auto pt = m.transform_pt({ 0.0, 0.0 }) + item.at();
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 						currentPoint = pt;
 						closePoint = pt;
 					}
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d&, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
-						const auto origM = m;
-						m.m20(0.0); m.m21(0.0); // obliterate translation since this is relative.
-						const auto pt = currentPoint + item.at() * m;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&) noexcept {
+						auto amtx = m;
+						amtx.m20(0.0); amtx.m21(0.0); // obliterate translation since this is relative.
+						const auto pt = currentPoint + item.at() * amtx;
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 						currentPoint = pt;
 						closePoint = pt;
-						m = origM;
 					}
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-					static void _Interpret(const T&, ::std::vector<path_data::path_item>& v, matrix_2d&, vector_2d&, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&, stack<vector_2d>&) {
+					static void _Interpret(const T&, ::std::vector<path_data::path_item>& v, matrix_2d&, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&) noexcept {
 						v.emplace_back(::std::in_place_type<path_data::close_path>);
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>,
 							closePoint);
 						currentPoint = closePoint;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, stack<matrix_2d>& matrices, stack<vector_2d>&) {
-						if (!m.is_finite()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
-						}
-						if (!m.is_invertible()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
-						}
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, stack<matrix_2d>& matrices) noexcept {
 						matrices.push(m);
 						m = item.matrix();
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, stack<matrix_2d>& matrices, stack<vector_2d>&) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, stack<matrix_2d>& matrices) noexcept {
 						const auto updateM = m * item.matrix();
-						if (!updateM.is_finite()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
-						}
-						if (!updateM.is_invertible()) {
-							throw ::std::system_error(::std::make_error_code(io2d_error::invalid_matrix));
-						}
 						matrices.push(m);
 						m = updateM;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
-					static void _Interpret(const T&, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, vector_2d&, stack<matrix_2d>& matrices, stack<vector_2d>&) {
+					static void _Interpret(const T&, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d&, vector_2d&, stack<matrix_2d>& matrices) noexcept {
 						if (matrices.empty()) {
 							m = matrix_2d{};
 						}
@@ -3228,51 +3157,28 @@ namespace std {
 							matrices.pop();
 						}
 					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_origin>, _Path_data_abs_origin> = _Path_data_abs_origin_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
-						origins.push(origin);
-						origin = item.origin() * m;
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_origin>, _Path_data_rel_origin> = _Path_data_rel_origin_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
-						const auto origM = m;
-						m.m20(0.0); m.m21(0.0); // obliterate translation since this is relative.
-						origins.push(origin);
-						origin = origin + item.origin() * m;
-						m = origM;
-					}
-					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_origin>, _Path_data_revert_origin> = _Path_data_revert_origin_val>
-					static void _Interpret(const T&, ::std::vector<path_data::path_item>&, matrix_2d&, vector_2d& origin, vector_2d&, vector_2d&, stack<matrix_2d>&, stack<vector_2d>& origins) {
-						if (origins.empty()) {
-							origin = vector_2d{};
-						}
-						else {
-							origin = origins.top();
-							origins.pop();
-						}
-					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
-						const auto pt1 = m.transform_pt(item.control_point_1() - origin) + origin;
-						const auto pt2 = m.transform_pt(item.control_point_2() - origin) + origin;
-						const auto pt3 = m.transform_pt(item.end_point() - origin) + origin;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
+						const auto pt1 = m.transform_pt(item.control_point_1() - currentPoint) + currentPoint;
+						const auto pt2 = m.transform_pt(item.control_point_2() - currentPoint) + currentPoint;
+						const auto pt3 = m.transform_pt(item.end_point() - currentPoint) + currentPoint;
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
 							pt2, pt3);
 						currentPoint = pt3;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
-						const auto pt = m.transform_pt(item.to() - origin) + origin;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
+						const auto pt = m.transform_pt(item.to() - currentPoint) + currentPoint;
 						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 						currentPoint = pt;
 					}
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
 						// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 						//vector_2d beginPt;
-						const auto controlPt = m.transform_pt(item.control_point() - origin) + origin;
-						const auto endPt = m.transform_pt(item.end_point() - origin) + origin;
-						const auto beginPt = m.transform_pt(currentPoint - origin) + origin;
+						const auto controlPt = m.transform_pt(item.control_point() - currentPoint) + currentPoint;
+						const auto endPt = m.transform_pt(item.end_point() - currentPoint) + currentPoint;
+						const auto beginPt = currentPoint;
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
@@ -3280,7 +3186,7 @@ namespace std {
 					}
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc>, _Path_data_arc> = _Path_data_arc_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& origin, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
 						const double rot = item.rotation();
 						const double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
 						if (abs(rot) < oneThousandthOfADegreeInRads) {
@@ -3292,11 +3198,9 @@ namespace std {
 						auto startAng = item.start_angle();
 						const auto origM = m;
 						m = matrix_2d::init_scale(rad);
-						const auto origOrigin = origin;
 						auto centerOffset = (point_for_angle(two_pi<double> -startAng) * rad);
 						centerOffset.y(-centerOffset.y());
 						auto ctr = currentPoint - centerOffset;
-						origin = ctr;
 
 						vector_2d pt0, pt1, pt2, pt3;
 						int bezCount = 1;
@@ -3324,12 +3228,6 @@ namespace std {
 								pt.x() * sin(a) + pt.y() * cos(a) };
 							result.x(_Round_floating_point_to_zero(result.x()));
 							result.y(_Round_floating_point_to_zero(result.y()));
-							//if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
-							//	result.x(result.x() < 0.0 ? -0.0 : 0.0);
-							//}
-							//if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
-							//	result.y(result.y() < 0.0 ? -0.0 : 0.0);
-							//}
 							return result;
 						};
 						auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
@@ -3337,12 +3235,6 @@ namespace std {
 								-(pt.x() * sin(a) + pt.y() * cos(a)) };
 							result.x(_Round_floating_point_to_zero(result.x()));
 							result.y(_Round_floating_point_to_zero(result.y()));
-							//if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
-							//	result.x(result.x() < 0.0 ? -0.0 : 0.0);
-							//}
-							//if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
-							//	result.y(result.y() < 0.0 ? -0.0 : 0.0);
-							//}
 							return result;
 						};
 
@@ -3380,7 +3272,6 @@ namespace std {
 						const auto calcAdjustedCurrPt = ((ctr + (rotCntrCwFn(pt0, currTheta) * m)) * origM);
 						auto adjustVal = calcAdjustedCurrPt - currentPoint;
 						vector_2d tempCurrPt;
-						// The C in example 4 is now messed up. Also, the 
 						for (; bezCount > 0; bezCount--) {
 							const auto rapt0 = m.transform_pt(rotCntrCwFn(pt0, currTheta));
 							const auto rapt1 = m.transform_pt(rotCntrCwFn(pt1, currTheta));
@@ -3390,7 +3281,6 @@ namespace std {
 							auto cpt1 = ctr + rapt1;
 							auto cpt2 = ctr + rapt2;
 							auto cpt3 = ctr + rapt3;
-							currentPoint = cpt3;
 							cpt0 = origM.transform_pt(cpt0);
 							cpt1 = origM.transform_pt(cpt1);
 							cpt2 = origM.transform_pt(cpt2);
@@ -3399,65 +3289,59 @@ namespace std {
 							cpt1 -= adjustVal;
 							cpt2 -= adjustVal;
 							cpt3 -= adjustVal;
-							tempCurrPt = cpt3;
+							currentPoint = cpt3;
 							v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
 							currTheta -= theta;
 						}
-						origin = origOrigin;
 						m = origM;
 					}
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d&, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
-						const auto origM = m;
-						m.m20(0.0); m.m21(0.0); // obliterate translation since this is relative.
-						const auto pt1 = item.control_point_1() * m;
-						const auto pt2 = item.control_point_2() * m;
-						const auto pt3 = item.end_point()* m;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
+						auto amtx = m;
+						amtx.m20(0.0); amtx.m21(0.0); // obliterate translation since this is relative.
+						const auto pt1 = item.control_point_1() * amtx;
+						const auto pt2 = item.control_point_2() * amtx;
+						const auto pt3 = item.end_point()* amtx;
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, currentPoint + pt1, currentPoint + pt1 + pt2, currentPoint + pt1 + pt2 + pt3);
 						currentPoint = currentPoint + pt1 + pt2 + pt3;
-						m = origM;
 					}
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d&, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
-						const auto origM = m;
-						m.m20(0.0); m.m21(0.0); // obliterate translation since this is relative.
-						const auto pt = currentPoint + item.to() * m;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
+						auto amtx = m;
+						amtx.m20(0.0); amtx.m21(0.0); // obliterate translation since this is relative.
+						const auto pt = currentPoint + item.to() * amtx;
 						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 						currentPoint = pt;
-						m = origM;
 					}
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d&, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&, stack<vector_2d>&) {
-						const auto origM = m;
-						m.m20(0.0); m.m21(0.0); // obliterate translation since this is relative.
-						const auto controlPt = currentPoint + item.control_point() * m;
-						const auto endPt = currentPoint + item.control_point() * m + item.end_point() * m;
+					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
+						auto amtx = m;
+						amtx.m20(0.0); amtx.m21(0.0); // obliterate translation since this is relative.
+						const auto controlPt = currentPoint + item.control_point() * amtx;
+						const auto endPt = currentPoint + item.control_point() * amtx + item.end_point() * amtx;
 						const auto beginPt = currentPoint;
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
 						currentPoint = endPt;
-						m = origM;
 					}
 				};
 
 				template <class Allocator>
 				inline ::std::vector<path_data::path_item> _Interpret_path_items(const path_builder<Allocator>& pf) {
 					matrix_2d m;
-					vector_2d origin;
 					vector_2d currentPoint; // Tracks the untransformed current point.
 					vector_2d closePoint;   // Tracks the transformed close point.
 					::std::stack<matrix_2d> matrices;
-					::std::stack<vector_2d> origins;
 					::std::vector<path_data::path_item> v;
 
 					for (const path_data::path_item& val : pf) {
-						::std::visit([&m, &origin, &currentPoint, &closePoint, &matrices, &origins, &v](auto&& item) {
+						::std::visit([&m, &currentPoint, &closePoint, &matrices, &v](auto&& item) {
 							using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-							_Path_item_interpret_visitor<T>::template _Interpret<T>(item, v, m, origin, currentPoint, closePoint, matrices, origins);
+							_Path_item_interpret_visitor<T>::template _Interpret<T>(item, v, m, currentPoint, closePoint, matrices);
 						}, val);
 					}
 					return v;
@@ -3723,52 +3607,37 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::origin(const vector_2d& pt) noexcept {
-					_Data.emplace_back(in_place_type<path_data::abs_origin>, pt);
-				}
-
-				template<class Allocator>
-				inline void path_builder<Allocator>::rel_origin(const vector_2d& pt) noexcept {
-					_Data.emplace_back(in_place_type<path_data::rel_origin>, pt);
-				}
-
-				template<class Allocator>
-				inline void path_builder<Allocator>::revert_origin() noexcept {
-					_Data.emplace_back(in_place_type<path_data::revert_origin>);
-				}
-
-				template<class Allocator>
 				inline void path_builder<Allocator>::arc(const vector_2d& rad, double rot, const double sang) noexcept {
 					_Data.emplace_back(in_place_type<path_data::arc>, rad, rot, sang);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::cubic_curve_to(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2) noexcept {
+				inline void path_builder<Allocator>::cubic_curve(const vector_2d& pt0, const vector_2d& pt1, const vector_2d& pt2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_cubic_curve>, pt0, pt1, pt2);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::line_to(const vector_2d& pt) noexcept {
+				inline void path_builder<Allocator>::line(const vector_2d& pt) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_line>, pt);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::quadratic_curve_to(const vector_2d& pt0, const vector_2d& pt1) noexcept {
+				inline void path_builder<Allocator>::quadratic_curve(const vector_2d& pt0, const vector_2d& pt1) noexcept {
 					_Data.emplace_back(in_place_type<path_data::abs_quadratic_curve>, pt0, pt1);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::rel_cubic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2) noexcept {
+				inline void path_builder<Allocator>::rel_cubic_curve(const vector_2d& dpt0, const vector_2d& dpt1, const vector_2d& dpt2) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_cubic_curve>, dpt0, dpt1, dpt2);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::rel_line_to(const vector_2d& dpt) noexcept {
+				inline void path_builder<Allocator>::rel_line(const vector_2d& dpt) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_line>, dpt);
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::rel_quadratic_curve_to(const vector_2d& dpt0, const vector_2d& dpt1) noexcept {
+				inline void path_builder<Allocator>::rel_quadratic_curve(const vector_2d& dpt0, const vector_2d& dpt1) noexcept {
 					_Data.emplace_back(in_place_type<path_data::rel_quadratic_curve>, dpt0, dpt1);
 				}
 

@@ -61,9 +61,9 @@ int main() {
 	//
 	//	pb.clear();
 	//	pb.new_path({ 80.0, 20.0 });
-	//	pb.line_to({ 220.0, 20.0 });
-	//	pb.rel_line_to({ 60.0, 160.0 });
-	//	pb.rel_line_to({ -260.0, 0.0 });
+	//	pb.line({ 220.0, 20.0 });
+	//	pb.rel_line({ 60.0, 160.0 });
+	//	pb.rel_line({ -260.0, 0.0 });
 	//	pb.close_path();
 	//
 	//	imgSfc.paint(bkgrndBrush);
@@ -75,15 +75,15 @@ int main() {
 	//#endif
 	//	pb.clear();
 	//	pb.new_path({ 20.0, 20.0 });
-	//	pb.rel_line_to({ 100.0, 0.0 });
-	//	pb.rel_line_to({ 0.0, 160.0 });
-	//	pb.rel_line_to({ -100.0, 0.0 });
-	//	pb.rel_line_to({ 0.0, -160.0 });
+	//	pb.rel_line({ 100.0, 0.0 });
+	//	pb.rel_line({ 0.0, 160.0 });
+	//	pb.rel_line({ -100.0, 0.0 });
+	//	pb.rel_line({ 0.0, -160.0 });
 	//
 	//	pb.new_path({ 180.0, 20.0 });
-	//	pb.rel_line_to({ 100.0, 0.0 });
-	//	pb.rel_line_to({ 0.0, 160.0 });
-	//	pb.rel_line_to({ -100.0, 0.0 });
+	//	pb.rel_line({ 100.0, 0.0 });
+	//	pb.rel_line({ 0.0, 160.0 });
+	//	pb.rel_line({ -100.0, 0.0 });
 	//	pb.close_path();
 	//
 	//	imgSfc.paint(bkgrndBrush);
@@ -158,7 +158,7 @@ vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool 
 	// Test end angle 90 degree increments starting at 180.
 	pb.new_path(location);
 	const vector_2d initialRelLine{ 40.0, 0.0 };
-	pb.rel_line_to(initialRelLine);
+	pb.rel_line(initialRelLine);
 	location += initialRelLine;
 	pb.arc(rad, -pi<double>, pi<double>);
 	if (closePath) {
@@ -189,7 +189,7 @@ vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool 
 	location += locadd;
 	pb.new_path(location + vector_2d{ 0.0, 0.0 });
 	pb.arc(rad, -two_pi<double>, pi<double>);
-	pb.rel_line_to({ -40.0, 0.0 });
+	pb.rel_line({ -40.0, 0.0 });
 	if (closePath) {
 		pb.close_path();
 	}
@@ -226,7 +226,7 @@ vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool 
 	location += locadd;
 	pb.new_path(location + vector_2d{ 0.0, 0.0 });
 	pb.arc(rad, -two_pi<double>, three_pi_over_two<double> +quarterPi);
-	pb.rel_line_to({ 40.0, 40.0 });
+	pb.rel_line({ 40.0, 40.0 });
 	if (closePath) {
 		pb.close_path();
 	}
@@ -240,7 +240,7 @@ vector_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, vector_2d location
 	// Test end angle 90 degree increments starting at 180.
 	pb.new_path(location);
 	const vector_2d initialRelLine{ 40.0, 0.0 };
-	pb.rel_line_to(initialRelLine);
+	pb.rel_line(initialRelLine);
 	location += initialRelLine;
 	pb.arc(rad, pi<double>, pi<double>);
 	if (closePath) {
@@ -271,7 +271,7 @@ vector_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, vector_2d location
 	location += locadd;
 	pb.new_path(location + vector_2d{ 0.0, 0.0 });
 	pb.arc(rad, two_pi<double>, pi<double>);
-	pb.rel_line_to({ -40.0, 0.0 });
+	pb.rel_line({ -40.0, 0.0 });
 	if (closePath) {
 		pb.close_path();
 	}
@@ -308,7 +308,7 @@ vector_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, vector_2d location
 	location += locadd;
 	pb.new_path(location + vector_2d{ 0.0, 0.0 });
 	pb.arc(rad, two_pi<double>, three_pi_over_two<double> +quarterPi);
-	pb.rel_line_to({ 40.0, 40.0 });// *scale);
+	pb.rel_line({ 40.0, 40.0 });// *scale);
 	if (closePath) {
 		pb.close_path();
 	}
