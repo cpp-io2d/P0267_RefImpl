@@ -569,154 +569,154 @@ namespace std {
 						return _A;
 					}
 
-					static const rgba_color& alice_blue() noexcept;
-					static const rgba_color& antique_white() noexcept;
-					static const rgba_color& aqua() noexcept;
-					static const rgba_color& aquamarine() noexcept;
-					static const rgba_color& azure() noexcept;
-					static const rgba_color& beige() noexcept;
-					static const rgba_color& bisque() noexcept;
-					static const rgba_color& black() noexcept;
-					static const rgba_color& blanched_almond() noexcept;
-					static const rgba_color& blue() noexcept;
-					static const rgba_color& blue_violet() noexcept;
-					static const rgba_color& brown() noexcept;
-					static const rgba_color& burly_wood() noexcept;
-					static const rgba_color& cadet_blue() noexcept;
-					static const rgba_color& chartreuse() noexcept;
-					static const rgba_color& chocolate() noexcept;
-					static const rgba_color& coral() noexcept;
-					static const rgba_color& cornflower_blue() noexcept;
-					static const rgba_color& cornsilk() noexcept;
-					static const rgba_color& crimson() noexcept;
-					static const rgba_color& cyan() noexcept;
-					static const rgba_color& dark_blue() noexcept;
-					static const rgba_color& dark_cyan() noexcept;
-					static const rgba_color& dark_goldenrod() noexcept;
-					static const rgba_color& dark_gray() noexcept;
-					static const rgba_color& dark_green() noexcept;
-					static const rgba_color& dark_grey() noexcept;
-					static const rgba_color& dark_khaki() noexcept;
-					static const rgba_color& dark_magenta() noexcept;
-					static const rgba_color& dark_olive_green() noexcept;
-					static const rgba_color& dark_orange() noexcept;
-					static const rgba_color& dark_orchid() noexcept;
-					static const rgba_color& dark_red() noexcept;
-					static const rgba_color& dark_salmon() noexcept;
-					static const rgba_color& dark_sea_green() noexcept;
-					static const rgba_color& dark_slate_blue() noexcept;
-					static const rgba_color& dark_slate_gray() noexcept;
-					static const rgba_color& dark_slate_grey() noexcept;
-					static const rgba_color& dark_turquoise() noexcept;
-					static const rgba_color& dark_violet() noexcept;
-					static const rgba_color& deep_pink() noexcept;
-					static const rgba_color& deep_sky_blue() noexcept;
-					static const rgba_color& dim_gray() noexcept;
-					static const rgba_color& dim_grey() noexcept;
-					static const rgba_color& dodger_blue() noexcept;
-					static const rgba_color& firebrick() noexcept;
-					static const rgba_color& floral_white() noexcept;
-					static const rgba_color& forest_green() noexcept;
-					static const rgba_color& fuchsia() noexcept;
-					static const rgba_color& gainsboro() noexcept;
-					static const rgba_color& ghost_white() noexcept;
-					static const rgba_color& gold() noexcept;
-					static const rgba_color& goldenrod() noexcept;
-					static const rgba_color& gray() noexcept;
-					static const rgba_color& green() noexcept;
-					static const rgba_color& green_yellow() noexcept;
-					static const rgba_color& grey() noexcept;
-					static const rgba_color& honeydew() noexcept;
-					static const rgba_color& hot_pink() noexcept;
-					static const rgba_color& indian_red() noexcept;
-					static const rgba_color& indigo() noexcept;
-					static const rgba_color& ivory() noexcept;
-					static const rgba_color& khaki() noexcept;
-					static const rgba_color& lavender() noexcept;
-					static const rgba_color& lavender_blush() noexcept;
-					static const rgba_color& lawn_green() noexcept;
-					static const rgba_color& lemon_chiffon() noexcept;
-					static const rgba_color& light_blue() noexcept;
-					static const rgba_color& light_coral() noexcept;
-					static const rgba_color& light_cyan() noexcept;
-					static const rgba_color& light_goldenrod_yellow() noexcept;
-					static const rgba_color& light_gray() noexcept;
-					static const rgba_color& light_green() noexcept;
-					static const rgba_color& light_grey() noexcept;
-					static const rgba_color& light_pink() noexcept;
-					static const rgba_color& light_salmon() noexcept;
-					static const rgba_color& light_sea_green() noexcept;
-					static const rgba_color& light_sky_blue() noexcept;
-					static const rgba_color& light_slate_gray() noexcept;
-					static const rgba_color& light_slate_grey() noexcept;
-					static const rgba_color& light_steel_blue() noexcept;
-					static const rgba_color& light_yellow() noexcept;
-					static const rgba_color& lime() noexcept;
-					static const rgba_color& lime_green() noexcept;
-					static const rgba_color& linen() noexcept;
-					static const rgba_color& magenta() noexcept;
-					static const rgba_color& maroon() noexcept;
-					static const rgba_color& medium_aquamarine() noexcept;
-					static const rgba_color& medium_blue() noexcept;
-					static const rgba_color& medium_orchid() noexcept;
-					static const rgba_color& medium_purple() noexcept;
-					static const rgba_color& medium_sea_green() noexcept;
-					static const rgba_color& medium_slate_blue() noexcept;
-					static const rgba_color& medium_spring_green() noexcept;
-					static const rgba_color& medium_turquoise() noexcept;
-					static const rgba_color& medium_violet_red() noexcept;
-					static const rgba_color& midnight_blue() noexcept;
-					static const rgba_color& mint_cream() noexcept;
-					static const rgba_color& misty_rose() noexcept;
-					static const rgba_color& moccasin() noexcept;
-					static const rgba_color& navajo_white() noexcept;
-					static const rgba_color& navy() noexcept;
-					static const rgba_color& old_lace() noexcept;
-					static const rgba_color& olive() noexcept;
-					static const rgba_color& olive_drab() noexcept;
-					static const rgba_color& orange() noexcept;
-					static const rgba_color& orange_red() noexcept;
-					static const rgba_color& orchid() noexcept;
-					static const rgba_color& pale_goldenrod() noexcept;
-					static const rgba_color& pale_green() noexcept;
-					static const rgba_color& pale_turquoise() noexcept;
-					static const rgba_color& pale_violet_red() noexcept;
-					static const rgba_color& papaya_whip() noexcept;
-					static const rgba_color& peach_puff() noexcept;
-					static const rgba_color& peru() noexcept;
-					static const rgba_color& pink() noexcept;
-					static const rgba_color& plum() noexcept;
-					static const rgba_color& powder_blue() noexcept;
-					static const rgba_color& purple() noexcept;
-					static const rgba_color& red() noexcept;
-					static const rgba_color& rosy_brown() noexcept;
-					static const rgba_color& royal_blue() noexcept;
-					static const rgba_color& saddle_brown() noexcept;
-					static const rgba_color& salmon() noexcept;
-					static const rgba_color& sandy_brown() noexcept;
-					static const rgba_color& sea_green() noexcept;
-					static const rgba_color& sea_shell() noexcept;
-					static const rgba_color& sienna() noexcept;
-					static const rgba_color& silver() noexcept;
-					static const rgba_color& sky_blue() noexcept;
-					static const rgba_color& slate_blue() noexcept;
-					static const rgba_color& slate_gray() noexcept;
-					static const rgba_color& slate_grey() noexcept;
-					static const rgba_color& snow() noexcept;
-					static const rgba_color& spring_green() noexcept;
-					static const rgba_color& steel_blue() noexcept;
-					static const rgba_color& tan() noexcept;
-					static const rgba_color& teal() noexcept;
-					static const rgba_color& thistle() noexcept;
-					static const rgba_color& tomato() noexcept;
-					static const rgba_color& transparent_black() noexcept; // Note: Not in CSS3.
-					static const rgba_color& turquoise() noexcept;
-					static const rgba_color& violet() noexcept;
-					static const rgba_color& wheat() noexcept;
-					static const rgba_color& white() noexcept;
-					static const rgba_color& white_smoke() noexcept;
-					static const rgba_color& yellow() noexcept;
-					static const rgba_color& yellow_green() noexcept;
+					static const rgba_color alice_blue;
+					static const rgba_color antique_white;
+					static const rgba_color aqua;
+					static const rgba_color aquamarine;
+					static const rgba_color azure;
+					static const rgba_color beige;
+					static const rgba_color bisque;
+					static const rgba_color black;
+					static const rgba_color blanched_almond;
+					static const rgba_color blue;
+					static const rgba_color blue_violet;
+					static const rgba_color brown;
+					static const rgba_color burly_wood;
+					static const rgba_color cadet_blue;
+					static const rgba_color chartreuse;
+					static const rgba_color chocolate;
+					static const rgba_color coral;
+					static const rgba_color cornflower_blue;
+					static const rgba_color cornsilk;
+					static const rgba_color crimson;
+					static const rgba_color cyan;
+					static const rgba_color dark_blue;
+					static const rgba_color dark_cyan;
+					static const rgba_color dark_goldenrod;
+					static const rgba_color dark_gray;
+					static const rgba_color dark_green;
+					static const rgba_color dark_grey;
+					static const rgba_color dark_khaki;
+					static const rgba_color dark_magenta;
+					static const rgba_color dark_olive_green;
+					static const rgba_color dark_orange;
+					static const rgba_color dark_orchid;
+					static const rgba_color dark_red;
+					static const rgba_color dark_salmon;
+					static const rgba_color dark_sea_green;
+					static const rgba_color dark_slate_blue;
+					static const rgba_color dark_slate_gray;
+					static const rgba_color dark_slate_grey;
+					static const rgba_color dark_turquoise;
+					static const rgba_color dark_violet;
+					static const rgba_color deep_pink;
+					static const rgba_color deep_sky_blue;
+					static const rgba_color dim_gray;
+					static const rgba_color dim_grey;
+					static const rgba_color dodger_blue;
+					static const rgba_color firebrick;
+					static const rgba_color floral_white;
+					static const rgba_color forest_green;
+					static const rgba_color fuchsia;
+					static const rgba_color gainsboro;
+					static const rgba_color ghost_white;
+					static const rgba_color gold;
+					static const rgba_color goldenrod;
+					static const rgba_color gray;
+					static const rgba_color green;
+					static const rgba_color green_yellow;
+					static const rgba_color grey;
+					static const rgba_color honeydew;
+					static const rgba_color hot_pink;
+					static const rgba_color indian_red;
+					static const rgba_color indigo;
+					static const rgba_color ivory;
+					static const rgba_color khaki;
+					static const rgba_color lavender;
+					static const rgba_color lavender_blush;
+					static const rgba_color lawn_green;
+					static const rgba_color lemon_chiffon;
+					static const rgba_color light_blue;
+					static const rgba_color light_coral;
+					static const rgba_color light_cyan;
+					static const rgba_color light_goldenrod_yellow;
+					static const rgba_color light_gray;
+					static const rgba_color light_green;
+					static const rgba_color light_grey;
+					static const rgba_color light_pink;
+					static const rgba_color light_salmon;
+					static const rgba_color light_sea_green;
+					static const rgba_color light_sky_blue;
+					static const rgba_color light_slate_gray;
+					static const rgba_color light_slate_grey;
+					static const rgba_color light_steel_blue;
+					static const rgba_color light_yellow;
+					static const rgba_color lime;
+					static const rgba_color lime_green;
+					static const rgba_color linen;
+					static const rgba_color magenta;
+					static const rgba_color maroon;
+					static const rgba_color medium_aquamarine;
+					static const rgba_color medium_blue;
+					static const rgba_color medium_orchid;
+					static const rgba_color medium_purple;
+					static const rgba_color medium_sea_green;
+					static const rgba_color medium_slate_blue;
+					static const rgba_color medium_spring_green;
+					static const rgba_color medium_turquoise;
+					static const rgba_color medium_violet_red;
+					static const rgba_color midnight_blue;
+					static const rgba_color mint_cream;
+					static const rgba_color misty_rose;
+					static const rgba_color moccasin;
+					static const rgba_color navajo_white;
+					static const rgba_color navy;
+					static const rgba_color old_lace;
+					static const rgba_color olive;
+					static const rgba_color olive_drab;
+					static const rgba_color orange;
+					static const rgba_color orange_red;
+					static const rgba_color orchid;
+					static const rgba_color pale_goldenrod;
+					static const rgba_color pale_green;
+					static const rgba_color pale_turquoise;
+					static const rgba_color pale_violet_red;
+					static const rgba_color papaya_whip;
+					static const rgba_color peach_puff;
+					static const rgba_color peru;
+					static const rgba_color pink;
+					static const rgba_color plum;
+					static const rgba_color powder_blue;
+					static const rgba_color purple;
+					static const rgba_color red;
+					static const rgba_color rosy_brown;
+					static const rgba_color royal_blue;
+					static const rgba_color saddle_brown;
+					static const rgba_color salmon;
+					static const rgba_color sandy_brown;
+					static const rgba_color sea_green;
+					static const rgba_color sea_shell;
+					static const rgba_color sienna;
+					static const rgba_color silver;
+					static const rgba_color sky_blue;
+					static const rgba_color slate_blue;
+					static const rgba_color slate_gray;
+					static const rgba_color slate_grey;
+					static const rgba_color snow;
+					static const rgba_color spring_green;
+					static const rgba_color steel_blue;
+					static const rgba_color tan;
+					static const rgba_color teal;
+					static const rgba_color thistle;
+					static const rgba_color tomato;
+					static const rgba_color transparent_black;
+					static const rgba_color turquoise;
+					static const rgba_color violet;
+					static const rgba_color wheat;
+					static const rgba_color white;
+					static const rgba_color white_smoke;
+					static const rgba_color yellow;
+					static const rgba_color yellow_green;
 
 					constexpr rgba_color& operator*=(double rhs) {
 						rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
@@ -3131,6 +3131,11 @@ namespace std {
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
 					static void _Interpret(const T&, ::std::vector<path_data::path_item>& v, matrix_2d&, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&) noexcept {
+						const auto& item = v.rbegin();
+						auto idx = item->index();
+						if (idx == 0 || idx == 1) {
+							return; // degenerate path
+						}
 						v.emplace_back(::std::in_place_type<path_data::close_path>);
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>,
 							closePoint);
@@ -3162,6 +3167,9 @@ namespace std {
 						const auto pt1 = m.transform_pt(item.control_point_1() - currentPoint) + currentPoint;
 						const auto pt2 = m.transform_pt(item.control_point_2() - currentPoint) + currentPoint;
 						const auto pt3 = m.transform_pt(item.end_point() - currentPoint) + currentPoint;
+						if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
+							return; // degenerate path segment
+						}
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
 							pt2, pt3);
 						currentPoint = pt3;
@@ -3169,6 +3177,9 @@ namespace std {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
 						const auto pt = m.transform_pt(item.to() - currentPoint) + currentPoint;
+						if (currentPoint == pt) {
+							return; // degenerate path segment
+						}
 						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 						currentPoint = pt;
 					}
@@ -3178,6 +3189,9 @@ namespace std {
 						//vector_2d beginPt;
 						const auto controlPt = m.transform_pt(item.control_point() - currentPoint) + currentPoint;
 						const auto endPt = m.transform_pt(item.end_point() - currentPoint) + currentPoint;
+						if (currentPoint == controlPt && controlPt == endPt) {
+							return; // degenerate path segment
+						}
 						const auto beginPt = currentPoint;
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
@@ -3303,6 +3317,9 @@ namespace std {
 						const auto pt1 = item.control_point_1() * amtx;
 						const auto pt2 = item.control_point_2() * amtx;
 						const auto pt3 = item.end_point()* amtx;
+						if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
+							return; // degenerate path segment
+						}
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, currentPoint + pt1, currentPoint + pt1 + pt2, currentPoint + pt1 + pt2 + pt3);
 						currentPoint = currentPoint + pt1 + pt2 + pt3;
 					}
@@ -3312,6 +3329,9 @@ namespace std {
 						auto amtx = m;
 						amtx.m20(0.0); amtx.m21(0.0); // obliterate translation since this is relative.
 						const auto pt = currentPoint + item.to() * amtx;
+						if (currentPoint == pt) {
+							return; // degenerate path segment
+						}
 						v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
 						currentPoint = pt;
 					}
@@ -3323,6 +3343,9 @@ namespace std {
 						const auto controlPt = currentPoint + item.control_point() * amtx;
 						const auto endPt = currentPoint + item.control_point() * amtx + item.end_point() * amtx;
 						const auto beginPt = currentPoint;
+						if (currentPoint == controlPt && controlPt == endPt) {
+							return; // degenerate path segment
+						}
 						vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 						vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 						v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);

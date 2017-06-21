@@ -23,8 +23,8 @@ using namespace std::experimental::io2d;
 namespace path_test {
 	void path_test_1() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -47,8 +47,8 @@ namespace path_test {
 
 	void path_test_2() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -78,8 +78,8 @@ namespace path_test {
 
 	void path_test_3() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -107,8 +107,8 @@ namespace path_test {
 
 	void path_test_4() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -156,72 +156,8 @@ namespace path_test {
 
 	void path_test_5() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
-		render_props aliased{ antialias::none };
-		path_builder<> pb{};
-		imgSfc.paint(backBrush);
-
-		// Example code goes here.
-		brush blueBrush{ rgba_color::blue() };
-		stroke_props ten{ 10.0 };
-		pb.new_path({ 30.0, 30.0 });
-		pb.rel_line({ 105.0, 0.0 });
-		pb.rel_line({ 0.0, 140.0 });
-		pb.rel_line({ -105.0, 0.0 });
-		pb.close_path();
-		imgSfc.stroke(foreBrush, pb, nullopt, ten);
-		imgSfc.fill(blueBrush, pb);
-		pb.insert(pb.begin(), path_data::abs_matrix(matrix_2d::init_translate({ 135.0, 0.0 })));
-		//pb.insert(pb.begin() + 2, path_data::revert_matrix());
-		imgSfc.fill(blueBrush, pb);
-		imgSfc.stroke(foreBrush, pb, nullopt, ten);
-		// Example code ends.
-#ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path("pathexample05.png"), image_data_format::png);
-#else
-		imgSfc.save("pathexample05.png"s, image_data_format::png);
-#endif
-	}
-
-	void path_test_6() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
-		render_props aliased{ antialias::none };
-		path_builder<> pb{};
-		imgSfc.paint(backBrush);
-		// Example code goes here.
-		auto pt = vector_2d{ 80.0, 100.0 };
-		pb.new_path(pt);
-		pb.arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
-
-		auto rot = matrix_2d::init_rotate(half_pi<double> / 2.0);
-		pt.x(pt.x() + 50.0);
-		pb.new_path(pt);
-		pb.matrix(rot);
-		pb.arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
-
-		pb.revert_matrix();
-		rot = matrix_2d::init_rotate(half_pi<double>);
-		pt.x(pt.x() + 50.0);
-		pb.new_path(pt);
-		pb.matrix(rot.translate({ 20.0, 10.0 }));
-		pb.arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
-
-		imgSfc.stroke(foreBrush, pb, nullopt, nullopt, nullopt, aliased);
-		// Example code ends.
-#ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path("pathexample06.png"), image_data_format::png);
-#else
-		imgSfc.save("pathexample06.png"s, image_data_format::png);
-#endif
-	}
-
-	void path_test_7() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -259,7 +195,7 @@ namespace path_test {
 		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 2.0 }, nullopt, aliased);
 
 		// Example code ends.
-		string fileName = "pathexample07.png";
+		string fileName = "pathexample05.png";
 #ifdef _Filesystem_support_test
 		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
 #else
@@ -267,10 +203,74 @@ namespace path_test {
 #endif
 	}
 
+	void path_test_6() {
+		auto imgSfc = make_image_surface(format::argb32, 300, 200);
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
+		render_props aliased{ antialias::none };
+		path_builder<> pb{};
+		imgSfc.paint(backBrush);
+		// Example code goes here.
+		auto pt = vector_2d{ 80.0, 100.0 };
+		pb.new_path(pt);
+		pb.arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+
+		auto rot = matrix_2d::init_rotate(half_pi<double> / 2.0);
+		pt.x(pt.x() + 50.0);
+		pb.new_path(pt);
+		pb.matrix(rot);
+		pb.arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+
+		pb.revert_matrix();
+		rot = matrix_2d::init_rotate(half_pi<double>);
+		pt.x(pt.x() + 50.0);
+		pb.new_path(pt);
+		pb.matrix(rot.translate({ 20.0, 10.0 }));
+		pb.arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+
+		imgSfc.stroke(foreBrush, pb, nullopt, nullopt, nullopt, aliased);
+		// Example code ends.
+#ifdef _Filesystem_support_test
+		imgSfc.save(experimental::filesystem::path("pathexample06.png"), image_data_format::png);
+#else
+		imgSfc.save("pathexample06.png"s, image_data_format::png);
+#endif
+	}
+
+	void path_test_7() {
+		auto imgSfc = make_image_surface(format::argb32, 300, 200);
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
+		render_props aliased{ antialias::none };
+		path_builder<> pb{};
+		imgSfc.paint(backBrush);
+
+		// Example code goes here.
+		brush blueBrush{ rgba_color::blue };
+		stroke_props ten{ 10.0 };
+		pb.new_path({ 30.0, 30.0 });
+		pb.rel_line({ 105.0, 0.0 });
+		pb.rel_line({ 0.0, 140.0 });
+		pb.rel_line({ -105.0, 0.0 });
+		pb.close_path();
+		imgSfc.stroke(foreBrush, pb, nullopt, ten);
+		imgSfc.fill(blueBrush, pb);
+		pb.insert(pb.begin(), path_data::abs_matrix(matrix_2d::init_translate({ 135.0, 0.0 })));
+		//pb.insert(pb.begin() + 2, path_data::revert_matrix());
+		imgSfc.fill(blueBrush, pb);
+		imgSfc.stroke(foreBrush, pb, nullopt, ten);
+		// Example code ends.
+#ifdef _Filesystem_support_test
+		imgSfc.save(experimental::filesystem::path("pathexample07.png"), image_data_format::png);
+#else
+		imgSfc.save("pathexample07.png"s, image_data_format::png);
+#endif
+	}
+
 	void path_test_8() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -304,8 +304,8 @@ namespace path_test {
 
 	void path_test_9() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -339,8 +339,8 @@ namespace path_test {
 
 	void path_test_10() {
 		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black() };
-		brush foreBrush{ rgba_color::white() };
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -374,8 +374,8 @@ namespace path_test {
 //
 //	void path_test_1X() {
 //		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-//		brush backBrush{ rgba_color::black() };
-//		brush foreBrush{ rgba_color::white() };
+//		brush backBrush{ rgba_color::black };
+//		brush foreBrush{ rgba_color::white };
 //		render_props aliased{ antialias::none };
 //		path_builder<> pb{};
 //		imgSfc.paint(backBrush);

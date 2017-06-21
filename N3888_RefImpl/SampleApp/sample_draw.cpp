@@ -108,7 +108,7 @@ void test_image_load_save(display_surface& ds) {
 	brush imgBrush{ make_image_surface(imgSfc) };
 	//brush alphaBrush{ make_image_surface(alphaSfc) };
 
-	ds.paint(brush{ rgba_color::cornflower_blue() });
+	ds.paint(brush{ rgba_color::cornflower_blue });
 	ds.paint(imgBrush);
 	//ds.mask(imgBrush, alphaBrush, path_builder<>{});
 	ds.flush();
@@ -251,11 +251,11 @@ void test_image_load_save(display_surface& ds) {
 void test_stroke_rules(display_surface& ds) {
 	ds.clear();
 	vector<color_stop> csg;
-	csg.emplace_back(0.0, rgba_color::orange());
-	csg.emplace_back(0.25, rgba_color::red());
-	csg.emplace_back(0.5, rgba_color::lime_green());
-	csg.emplace_back(0.75, rgba_color::blue());
-	csg.emplace_back(1.0, rgba_color::gray());
+	csg.emplace_back(0.0, rgba_color::orange);
+	csg.emplace_back(0.25, rgba_color::red);
+	csg.emplace_back(0.5, rgba_color::lime_green);
+	csg.emplace_back(0.75, rgba_color::blue);
+	csg.emplace_back(1.0, rgba_color::gray);
 	brush linearGrad({ 0.0, 0.0 }, { 0.0, 100.0 }, begin(csg), end(csg));
 	//linearGrad.wrap_mode(wrap_mode::reflect);
 	ds.paint(linearGrad);
@@ -304,7 +304,7 @@ void test_stroke_rules(display_surface& ds) {
 
 void test_path_functionality(display_surface& ds) {
 	// Clear to background color.
-	ds.paint(brush{ rgba_color::cornflower_blue() });
+	ds.paint(brush{ rgba_color::cornflower_blue });
 	path_builder<> pf{};
 	//void new_path(const vector_2d& pt) noexcept;
 	vector_2d v, cpt1, cpt2, ept;
@@ -359,7 +359,7 @@ void test_path_functionality(display_surface& ds) {
 	//pf.close_path();
 
 	auto pg = path_group(pf);
-	ds.stroke(brush{ rgba_color::red() }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1240.0, 680.0) });
+	ds.stroke(brush{ rgba_color::red }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1240.0, 680.0) });
 
 	pf.clear();
 
@@ -375,13 +375,13 @@ void test_path_functionality(display_surface& ds) {
 
 void draw_radial_circles(display_surface& ds) {
 	// Clear to background color.
-	ds.paint(brush{ rgba_color::magenta() });
-	ds.paint(brush{ rgba_color::cornflower_blue() }, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1200.0, 640.0) });
+	ds.paint(brush{ rgba_color::magenta });
+	ds.paint(brush{ rgba_color::cornflower_blue }, nullopt, nullopt, clip_props{ rectangle(40.0, 40.0, 1200.0, 640.0) });
 	vector<color_stop> csv;
-	csv.emplace_back(0.0, rgba_color::white());
+	csv.emplace_back(0.0, rgba_color::white);
 	brush radialBrush{ {{ 200.5, 300.0 }, 0.0}, {{ 300.0, 300.0 }, 100.0 }, {
-		{ 0.0, rgba_color::white() }, { 0.25, rgba_color::red() },
-		{ 0.5, rgba_color::green() }, { 0.75, rgba_color::blue() }, { 1.0, rgba_color::black() } } };
+		{ 0.0, rgba_color::white }, { 0.25, rgba_color::red },
+		{ 0.5, rgba_color::green }, { 0.75, rgba_color::blue }, { 1.0, rgba_color::black } } };
 
 	path_builder<> pf;
 	//pf.rectangle({ { 100.0, 100.0 }, { 500.0, 500.0 } });
@@ -415,7 +415,7 @@ void draw_radial_circles(display_surface& ds) {
 	//ds.fill(radialBrush, p, bp);
 	ds.fill(radialBrush, p, brush_props{ wrap_mode::repeat, filter::nearest });
 	//ds.brush(brush(rgba_color::red()));
-	ds.stroke(brush{ rgba_color::red() }, p);
+	ds.stroke(brush{ rgba_color::red }, p);
 	pf.clear();
 	//pf.new_path({ 900.0, 200.0 });
 	//pf.arc_clockwise({ 900.0, 200.0 }, 50.0, 0.0, two_pi<double>);

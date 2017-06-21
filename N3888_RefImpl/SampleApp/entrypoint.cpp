@@ -5,11 +5,13 @@
 #include <sstream>
 #include <ios>
 #include "path_examples.h"
+#include "brush_examples.h"
 
 using namespace std;
 using namespace std::chrono;
 using namespace std::experimental::io2d;
 using namespace path_test;
+using namespace brush_test;
 
 vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool closePath = false, vector_2d scale = vector_2d{ 1.0, 1.0 }, const vector_2d locadd = vector_2d{ 200.0, 0.0 });
 vector_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, vector_2d location, bool closePath = false, vector_2d scale = vector_2d{ 1.0, 1.0 }, const vector_2d locadd = vector_2d{ 200.0, 0.0 });
@@ -28,26 +30,32 @@ void make_path_examples() {
 	path_test_10();
 }
 
+void make_brush_examples();
+void make_brush_examples() {
+	solid_color_test_01();
+}
 int main() {
-	auto pt = vector_2d{ 80.0, 100.0 };
-	path_data::arc testArc{};
-	vector_2d ctr, endPt;
-	testArc = path_data::arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
-	ctr = testArc.center(pt);
-	endPt = testArc.end_pt(pt);
-	auto rot = matrix_2d::init_rotate(half_pi<double> / 2.0);
-	pt.x(pt.x() + 50.0);
-	testArc = path_data::arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
-	ctr = testArc.center(pt, rot);
-	endPt = testArc.end_pt(pt, rot);
+	//auto pt = vector_2d{ 80.0, 100.0 };
+	//path_data::arc testArc{};
+	//vector_2d ctr, endPt;
+	//testArc = path_data::arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+	//ctr = testArc.center(pt);
+	//endPt = testArc.end_pt(pt);
+	//auto rot = matrix_2d::init_rotate(half_pi<double> / 2.0);
+	//pt.x(pt.x() + 50.0);
+	//testArc = path_data::arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+	//ctr = testArc.center(pt, rot);
+	//endPt = testArc.end_pt(pt, rot);
 
-	rot = matrix_2d::init_rotate(half_pi<double>);
-	pt.x(pt.x() + 50.0);
-	testArc = path_data::arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
-	ctr = testArc.center(pt, rot);
-	endPt = testArc.end_pt(pt, rot);
+	//rot = matrix_2d::init_rotate(half_pi<double>);
+	//pt.x(pt.x() + 50.0);
+	//testArc = path_data::arc({ 30.0, 30.0 }, half_pi<double>, half_pi<double>);
+	//ctr = testArc.center(pt, rot);
+	//endPt = testArc.end_pt(pt, rot);
 
 	make_path_examples();
+	make_brush_examples();
+
 	//auto ds = make_display_surface(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
 	//sample_draw sd;
 	//ds.draw_callback(sd);

@@ -297,11 +297,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="brush_examples.cpp" />
     <ClCompile Include="entrypoint.cpp" />
     <ClCompile Include="path_examples.cpp" />
     <ClCompile Include="sample_draw.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="brush_examples.h" />
     <ClInclude Include="path_examples.h" />
     <ClInclude Include="sample_draw.h" />
   </ItemGroup>
