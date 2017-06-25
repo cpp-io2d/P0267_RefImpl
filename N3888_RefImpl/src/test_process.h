@@ -52,7 +52,7 @@
 //
 //	template <class _TItem>
 //	struct path_factory_process_visit {
-//		constexpr static double twoThirds = 2.0 / 3.0;
+//		constexpr static float twoThirds = 2.0 / 3.0;
 //
 //		template <class T, enable_if_t<is_same_v<T, path_data::abs_cubic_curve>, abs_cubic_curve_sfinae> = abs_cubic_curve_sfinae_val>
 //		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
@@ -75,7 +75,7 @@
 //			currentPoint.reset();
 //			path_factory_process_visit<path_data::set_origin>::template perform(path_data::set_origin{ item.center() }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit<path_data::set_matrix>::template perform(path_data::abs_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
-//			path_factory_process_visit<path_data::arc_clockwise>::template perform(path_data::arc_clockwise{ item.center(), item.y_radius(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit<path_data::arc_clockwise>::template perform(path_data::arc_clockwise{ item.center(), item.y_radius(), 0.0, two_pi<float> }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit<path_data::abs_matrix>::template perform(path_data::abs_matrix{ m2 }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit<path_data::set_origin>::template perform(path_data::set_origin{ o2 }, v, m, origin, currentPoint, closePoint);
 //		}
@@ -137,13 +137,13 @@
 //				auto ang1 = item.angle_1();
 //				auto ang2 = item.angle_2();
 //				while (ang2 < ang1) {
-//					ang2 += two_pi<double>;
+//					ang2 += two_pi<float>;
 //				}
 //				vector_2d pt0, pt1, pt2, pt3;
 //				int bezCount = 1;
-//				double theta = ang2 - ang1;
-//				double phi{};
-//				while (theta >= half_pi<double>) {
+//				float theta = ang2 - ang1;
+//				float phi{};
+//				while (theta >= half_pi<float>) {
 //					theta /= 2.0;
 //					bezCount += bezCount;
 //				}
@@ -159,7 +159,7 @@
 //				pt2.x(pt1.x());
 //				pt2.y(-pt1.y());
 //				phi = -phi;
-//				auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
+//				auto rotCwFn = [](const vector_2d& pt, float a) -> vector_2d {
 //					return { pt.x() * cos(a) + pt.y() * sin(a),
 //						-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
 //				};
@@ -206,13 +206,13 @@
 //				auto ang1 = item.angle_1();
 //				auto ang2 = item.angle_2();
 //				while (ang2 > ang1) {
-//					ang2 -= two_pi<double>;
+//					ang2 -= two_pi<float>;
 //				}
 //				vector_2d pt0, pt1, pt2, pt3;
 //				int bezCount = 1;
-//				double theta = ang1 - ang2;
-//				double phi{};
-//				while (theta >= half_pi<double>) {
+//				float theta = ang1 - ang2;
+//				float phi{};
+//				while (theta >= half_pi<float>) {
 //					theta /= 2.0;
 //					bezCount += bezCount;
 //				}
@@ -227,7 +227,7 @@
 //				pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
 //				pt2.x(pt1.x());
 //				pt2.y(-pt1.y());
-//				auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
+//				auto rotCwFn = [](const vector_2d& pt, float a) -> vector_2d {
 //					return { pt.x() * cos(a) + pt.y() * sin(a),
 //						-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
 //				};
@@ -331,7 +331,7 @@
 //			currentPoint.reset();
 //			path_factory_process_visit::template perform(path_data::set_origin{ item.center() + cpt2.value() }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit::template perform(path_data::abs_matrix{ matrix_2d::init_scale({ item.x_radius() / item.y_radius(), 1.0 }) * m }, v, m, origin, currentPoint, closePoint);
-//			path_factory_process_visit::template perform(path_data::arc_clockwise{ item.center() + cpt2.value(), item.y_radius(), 0.0, two_pi<double> }, v, m, origin, currentPoint, closePoint);
+//			path_factory_process_visit::template perform(path_data::arc_clockwise{ item.center() + cpt2.value(), item.y_radius(), 0.0, two_pi<float> }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit::template perform(path_data::abs_matrix{ m2 }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit::template perform(path_data::set_origin{ o2 }, v, m, origin, currentPoint, closePoint);
 //		}

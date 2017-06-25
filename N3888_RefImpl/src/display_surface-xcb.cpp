@@ -55,11 +55,11 @@ void display_surface::_Resize_window() {
 	xcb_flush(_Connection.get());
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float fps)
 	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, fps) {
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float fps)
 	: surface({ nullptr, nullptr }, preferredFormat)
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
@@ -205,10 +205,10 @@ int display_surface::begin_show() {
 	unique_ptr<xcb_generic_event_t, decltype(&::free)> event{ nullptr, &::free };
 
 	auto previousTime = steady_clock::now();
-	_Elapsed_draw_time = 0.0;
+	_Elapsed_draw_time = 0.0F;
 	while (!exit) {
 		auto currentTime = steady_clock::now();
-		auto elapsedTimeIncrement = static_cast<double>(duration_cast<nanoseconds>(currentTime - previousTime).count());
+		auto elapsedTimeIncrement = static_cast<float>(duration_cast<nanoseconds>(currentTime - previousTime).count());
 		_Elapsed_draw_time += elapsedTimeIncrement;
 		previousTime = currentTime;
 		while (_Poll_for_xcb_event(event, _Connection.get())) {
@@ -238,12 +238,12 @@ int display_surface::begin_show() {
 				}
 				_Render_to_native_surface();
 
-				_Elapsed_draw_time = 0.0;
+				_Elapsed_draw_time = 0.0F;
 				//if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
 				//	_Elapsed_draw_time -= elapsedTimeIncrement;
 				//}
 				//else {
-				//	_Elapsed_draw_time = 0.0;
+				//	_Elapsed_draw_time = 0.0F;
 				//}
 			} break;
 			// StructureNotifyMask events:
@@ -314,12 +314,12 @@ int display_surface::begin_show() {
 					}
 					_Render_to_native_surface();
 
-					_Elapsed_draw_time = 0.0;
+					_Elapsed_draw_time = 0.0F;
 					//if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
 					//	_Elapsed_draw_time -= elapsedTimeIncrement;
 					//}
 					//else {
-					//	_Elapsed_draw_time = 0.0;
+					//	_Elapsed_draw_time = 0.0F;
 					//}
 				}
 			} break;
@@ -415,7 +415,7 @@ int display_surface::begin_show() {
 				_Redraw_requested = false;
 			}
 
-			auto desiredElapsed = 1'000'000'000.0 / _Desired_frame_rate;
+			auto desiredElapsed = 1'000'000'000.0F / _Desired_frame_rate;
 
 			if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
 				// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
@@ -439,11 +439,11 @@ int display_surface::begin_show() {
 					}
 				}
 				else {
-					_Elapsed_draw_time = 0.0;
+					_Elapsed_draw_time = 0.0F;
 				}
 			}
 		}
 	}
-	_Elapsed_draw_time = 0.0;
+	_Elapsed_draw_time = 0.0F;
 	return 0;
 }

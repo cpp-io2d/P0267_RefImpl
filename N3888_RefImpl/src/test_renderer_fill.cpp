@@ -99,8 +99,8 @@
 //			reinterpret_cast<uint32_t *>(data)[x + y * stride] = value;
 //		}
 //
-//		bool t_is_valid_for_extend(double, wrap_mode);
-//		bool t_is_valid_for_extend(double t, wrap_mode e) {
+//		bool t_is_valid_for_extend(float, wrap_mode);
+//		bool t_is_valid_for_extend(float t, wrap_mode e) {
 //			switch (e)
 //			{
 //			case std::experimental::io2d::v1::wrap_mode::none:
@@ -117,7 +117,7 @@
 //			}
 //		}
 //
-//		void render_ellipse(display_surface& ds, const vector_2d& center, double xRadius, double yRadius, const bgra_color& color) {
+//		void render_ellipse(display_surface& ds, const vector_2d& center, float xRadius, float yRadius, const bgra_color& color) {
 //			// See: http://members.chello.at/~easyfilter/bresenham.html
 //			ds.map([&center, &xRadius, &yRadius, &color](mapped_surface& ms) -> void {
 //				auto width = ms.width();
@@ -364,7 +364,7 @@
 //
 //					for (int y = startY; y < endY; y++) {
 //						auto py = y - center0y;
-//						double t;
+//						float t;
 //						auto B = px * dx + py * dy + radius0 * dr;
 //						auto C = px * px + py * py - radius0 * radius0;
 //						const auto epsilon = 0.0000000001;
@@ -441,8 +441,8 @@
 //			});
 //		}
 //
-//		bgra_color interpolate(const bgra_color&, double, const bgra_color&, double, double);
-//		bgra_color interpolate(const bgra_color& lc, double loff, const bgra_color& hc, double hoff, double t) {
+//		bgra_color interpolate(const bgra_color&, float, const bgra_color&, float, float);
+//		bgra_color interpolate(const bgra_color& lc, float loff, const bgra_color& hc, float hoff, float t) {
 //			// loff must be the lower value and cannot equal hoff (avoids improper results and divide by zero).
 //			assert(loff < hoff);
 //
@@ -458,7 +458,7 @@
 //			};
 //		}
 //
-//		bgra_color get_interpolated_color(const radial_brush_factory& f, double t, wrap_mode e) {
+//		bgra_color get_interpolated_color(const radial_brush_factory& f, float t, wrap_mode e) {
 //			switch (e)
 //			{
 //			case std::experimental::io2d::v1::wrap_mode::none:
@@ -717,7 +717,7 @@
 //			return _Almost_equal_relative(point.y(), slope * point.x() + yIntercept);
 //		}
 //
-//		vector_2d de_casteljau(const array<vector_2d, 4>& p, array<vector_2d, 4>::size_type j, unsigned int k, double t) {
+//		vector_2d de_casteljau(const array<vector_2d, 4>& p, array<vector_2d, 4>::size_type j, unsigned int k, float t) {
 //			if (k == 1) {
 //				assert(j < 3);
 //				return (1.0 - t) * p[j] + t * p[j + 1];
@@ -727,7 +727,7 @@
 //			}
 //		}
 //
-//		array<vector_2d, 8> split_curve_at_t(const vector_2d& startPt, const vector_2d& controlPt1, const vector_2d& controlPt2, const vector_2d& endPt, double t) {
+//		array<vector_2d, 8> split_curve_at_t(const vector_2d& startPt, const vector_2d& controlPt1, const vector_2d& controlPt2, const vector_2d& endPt, float t) {
 //			array<vector_2d, 8> result;
 //			array<vector_2d, 4> p;
 //			p[0] = startPt;
@@ -944,22 +944,22 @@
 //					auto ang2 = ad.angle_2();
 //					while (ang2 < ang1) {
 //#if _Variable_templates_conditional_support_test
-//						ang2 += two_pi<double>;
+//						ang2 += two_pi<float>;
 //#else
-//						ang2 += two_pi<double>();
+//						ang2 += two_pi<float>();
 //#endif
 //					}
 //					vector_2d pt0, pt1, pt2, pt3;
 //					int bezCount = 1;
-//					double theta = ang2 - ang1;
-//					double phi;
+//					float theta = ang2 - ang1;
+//					float phi;
 //#if _Variable_templates_conditional_support_test
-//					while (theta >= half_pi<double>) {
+//					while (theta >= half_pi<float>) {
 //						theta /= 2.0;
 //						bezCount += bezCount;
 //					}
 //#else
-//					while (theta >= half_pi<double>()) {
+//					while (theta >= half_pi<float>()) {
 //						theta /= 2.0;
 //						bezCount += bezCount;
 //					}
@@ -976,7 +976,7 @@
 //					pt2.x(pt1.x());
 //					pt2.y(-pt1.y());
 //					phi = -phi;
-//					auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
+//					auto rotCwFn = [](const vector_2d& pt, float a) -> vector_2d {
 //						return{ pt.x() * cos(a) + pt.y() * sin(a),
 //							-(pt.x() * -sin(a) + pt.y() * cos(a)) };
 //					};
@@ -1047,22 +1047,22 @@
 //					auto ang2 = ad.angle_2();
 //					while (ang2 > ang1) {
 //#if _Variable_templates_conditional_support_test
-//						ang2 -= two_pi<double>;
+//						ang2 -= two_pi<float>;
 //#else
-//						ang2 -= two_pi<double>();
+//						ang2 -= two_pi<float>();
 //#endif
 //					}
 //					vector_2d pt0, pt1, pt2, pt3;
 //					int bezCount = 1;
-//					double theta = ang1 - ang2;
-//					double phi;
+//					float theta = ang1 - ang2;
+//					float phi;
 //#if _Variable_templates_conditional_support_test
-//					while (theta >= half_pi<double>) {
+//					while (theta >= half_pi<float>) {
 //						theta /= 2.0;
 //						bezCount += bezCount;
 //					}
 //#else
-//					while (theta >= half_pi<double>()) {
+//					while (theta >= half_pi<float>()) {
 //						theta /= 2.0;
 //						bezCount += bezCount;
 //					}
@@ -1078,7 +1078,7 @@
 //					pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
 //					pt2.x(pt1.x());
 //					pt2.y(-pt1.y());
-//					auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
+//					auto rotCwFn = [](const vector_2d& pt, float a) -> vector_2d {
 //						return{ pt.x() * cos(a) + pt.y() * sin(a),
 //							-(pt.x() * -sin(a) + pt.y() * cos(a)) };
 //					};
@@ -1189,7 +1189,7 @@
 //			}
 //
 //			// See: http://stackoverflow.com/a/565282/465211 .
-//			auto cross_product_magnitude_vector_2d_fn = [](const vector_2d& first, const vector_2d& second) -> double {
+//			auto cross_product_magnitude_vector_2d_fn = [](const vector_2d& first, const vector_2d& second) -> float {
 //				// A cross product is typically an operation on two 3D vectors that produces a 3D vector result; applying it to
 //				// two vector_2d's only lets us compute the 'z' component which is all we need here.
 //				return first.x() * second.y() - second.x() * first.y();

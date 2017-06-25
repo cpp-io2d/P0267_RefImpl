@@ -44,7 +44,7 @@ namespace std {
 				::std::error_code _Cairo_status_t_to_std_error_code(cairo_status_t cs) noexcept;
 				void _Throw_if_failed_cairo_status_t(::cairo_status_t);
 
-				constexpr cairo_matrix_t _Cairo_identity_matrix{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
+				constexpr cairo_matrix_t _Cairo_identity_matrix{ 1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F };
 
 				enum class io2d_error {
 					success,
@@ -207,9 +207,9 @@ namespace std {
 				constexpr _Round_floating_point_to_zero_sfinae _Round_floating_point_to_zero_sfinae_val{};
 				template <class T, enable_if_t<is_floating_point_v<T>, _Round_floating_point_to_zero_sfinae> = _Round_floating_point_to_zero_sfinae_val>
 				constexpr T _Round_floating_point_to_zero(const T v) noexcept {
-					if ((v > static_cast<T>(0.0) && v < numeric_limits<T>::epsilon() * 1000.0) ||
-						(v < static_cast<T>(0.0) && -v < numeric_limits<T>::epsilon() * 1000.0)) {
-						return (v > static_cast<T>(0.0)) ? static_cast<T>(0.0) : static_cast<T>(-0.0);
+					if ((v > static_cast<T>(0.0F) && v < numeric_limits<T>::epsilon() * 1000.0F) ||
+						(v < static_cast<T>(0.0F) && -v < numeric_limits<T>::epsilon() * 1000.0F)) {
+						return (v > static_cast<T>(0.0F)) ? static_cast<T>(0.0F) : static_cast<T>(-0.0F);
 					}
 					return v;
 				}
@@ -241,43 +241,43 @@ namespace std {
 				const ::std::error_category& io2d_category() noexcept;
 
 				class vector_2d {
-					double _X = 0.0;
-					double _Y = 0.0;
+					float _X = 0.0F;
+					float _Y = 0.0F;
 				public:
 					constexpr vector_2d() noexcept { }
-					constexpr vector_2d(double x, double y) noexcept
+					constexpr vector_2d(float x, float y) noexcept
 						: _X(x)
 						, _Y(y) {
 					}
 
-					constexpr void x(double value) noexcept {
+					constexpr void x(float value) noexcept {
 						_X = value;
 					}
-					constexpr void y(double value) noexcept {
+					constexpr void y(float value) noexcept {
 						_Y = value;
 					}
 
-					constexpr double x() const noexcept {
+					constexpr float x() const noexcept {
 						return _X;
 					}
-					constexpr double y() const noexcept {
+					constexpr float y() const noexcept {
 						return _Y;
 					}
 
-					double magnitude() const noexcept {
+					float magnitude() const noexcept {
 						return sqrt(_X * _X + _Y * _Y);
 					}
-					constexpr double magnitude_squared() const noexcept {
+					constexpr float magnitude_squared() const noexcept {
 						return _X * _X + _Y * _Y;
 					}
-					constexpr double dot(const vector_2d& other) const noexcept {
+					constexpr float dot(const vector_2d& other) const noexcept {
 						return _X * other._X + _Y * other._Y;
 					}
 
-					double angular_direction() const noexcept {
+					float angular_direction() const noexcept {
 						auto v = atan2(_Y, _X);
-						if (v < 0.0) {
-							v += two_pi<double>;
+						if (v < 0.0F) {
+							v += two_pi<float>;
 						}
 						return v;
 					}
@@ -290,9 +290,9 @@ namespace std {
 
 					constexpr vector_2d& operator+=(const vector_2d& rhs) noexcept;
 					constexpr vector_2d& operator-=(const vector_2d& rhs) noexcept;
-					constexpr vector_2d& operator*=(double rhs) noexcept;
+					constexpr vector_2d& operator*=(float rhs) noexcept;
 					constexpr vector_2d& operator*=(const vector_2d& rhs) noexcept;
-					constexpr vector_2d& operator/=(double rhs) noexcept;
+					constexpr vector_2d& operator/=(float rhs) noexcept;
 					constexpr vector_2d& operator/=(const vector_2d& rhs) noexcept;
 				};
 
@@ -332,7 +332,7 @@ namespace std {
 					return *this;
 				}
 
-				inline constexpr vector_2d& vector_2d::operator*=(double rhs) noexcept {
+				inline constexpr vector_2d& vector_2d::operator*=(float rhs) noexcept {
 					_X *= rhs;
 					_Y *= rhs;
 					return *this;
@@ -344,11 +344,11 @@ namespace std {
 					return *this;
 				}
 
-				inline constexpr vector_2d operator*(const vector_2d& lhs, double rhs) noexcept {
+				inline constexpr vector_2d operator*(const vector_2d& lhs, float rhs) noexcept {
 					return vector_2d{ lhs.x() * rhs, lhs.y() * rhs };
 				}
 
-				inline constexpr vector_2d operator*(double lhs, const vector_2d& rhs) noexcept {
+				inline constexpr vector_2d operator*(float lhs, const vector_2d& rhs) noexcept {
 					return vector_2d{ lhs * rhs.x(), lhs * rhs.y() };
 				}
 
@@ -356,7 +356,7 @@ namespace std {
 					return vector_2d{ lhs.x() * rhs.x(), lhs.y() * rhs.y() };
 				}
 
-				inline constexpr vector_2d& vector_2d::operator/=(double rhs) noexcept {
+				inline constexpr vector_2d& vector_2d::operator/=(float rhs) noexcept {
 					_X /= rhs;
 					_Y /= rhs;
 					return *this;
@@ -368,11 +368,11 @@ namespace std {
 					return *this;
 				}
 
-				inline constexpr vector_2d operator/(const vector_2d& lhs, double rhs) noexcept {
+				inline constexpr vector_2d operator/(const vector_2d& lhs, float rhs) noexcept {
 					return vector_2d{ lhs.x() / rhs, lhs.y() / rhs };
 				}
 
-				inline constexpr vector_2d operator/(double lhs, const vector_2d& rhs) noexcept {
+				inline constexpr vector_2d operator/(float lhs, const vector_2d& rhs) noexcept {
 					return vector_2d{ lhs / rhs.x(), lhs / rhs.y() };
 				}
 
@@ -380,18 +380,18 @@ namespace std {
 					return vector_2d{ lhs.x() / rhs.x(), lhs.y() / rhs.y() };
 				}
 
-				double angle_for_point(const vector_2d& ctr, const vector_2d& pt) noexcept;
-				vector_2d point_for_angle(double ang, double mgn = 1.0) noexcept;
-				vector_2d point_for_angle(double ang, const vector_2d& rad) noexcept;
+				float angle_for_point(const vector_2d& ctr, const vector_2d& pt) noexcept;
+				vector_2d point_for_angle(float ang, float mgn = 1.0F) noexcept;
+				vector_2d point_for_angle(float ang, const vector_2d& rad) noexcept;
 
 				class rectangle {
-					double _X = 0.0;
-					double _Y = 0.0;
-					double _Width = 0.0;
-					double _Height = 0.0;
+					float _X = 0.0F;
+					float _Y = 0.0F;
+					float _Width = 0.0F;
+					float _Height = 0.0F;
 				public:
 					constexpr rectangle() noexcept { }
-					constexpr rectangle(double x, double y, double width, double height) noexcept
+					constexpr rectangle(float x, float y, float width, float height) noexcept
 						: _X(x)
 						, _Y(y)
 						, _Width(width)
@@ -400,20 +400,20 @@ namespace std {
 					constexpr rectangle(const vector_2d& tl, const vector_2d& br) noexcept
 						: _X(tl.x())
 						, _Y(tl.y())
-						, _Width(::std::max(0.0, br.x() - tl.x()))
-						, _Height(::std::max(0.0, br.y() - tl.y())) {
+						, _Width(::std::max(0.0F, br.x() - tl.x()))
+						, _Height(::std::max(0.0F, br.y() - tl.y())) {
 					}
 
-					constexpr void x(double value) noexcept {
+					constexpr void x(float value) noexcept {
 						_X = value;
 					}
-					constexpr void y(double value) noexcept {
+					constexpr void y(float value) noexcept {
 						_Y = value;
 					}
-					constexpr void width(double value) noexcept {
+					constexpr void width(float value) noexcept {
 						_Width = value;
 					}
-					constexpr void height(double value) noexcept {
+					constexpr void height(float value) noexcept {
 						_Height = value;
 					}
 					constexpr void top_left(const vector_2d& value) noexcept {
@@ -421,18 +421,18 @@ namespace std {
 						_Y = value.y();
 					}
 					constexpr void bottom_right(const vector_2d& value) noexcept {
-						_Width = max(0.0, value.x() - _X);
-						_Height = max(0.0, value.y() - _Y);
+						_Width = max(0.0F, value.x() - _X);
+						_Height = max(0.0F, value.y() - _Y);
 					}
 
-					constexpr double x() const noexcept;
-					constexpr double y() const noexcept;
-					constexpr double width() const noexcept;
-					constexpr double height() const noexcept;
-					constexpr double left() const noexcept;
-					constexpr double right() const noexcept;
-					constexpr double top() const noexcept;
-					constexpr double bottom() const noexcept;
+					constexpr float x() const noexcept;
+					constexpr float y() const noexcept;
+					constexpr float width() const noexcept;
+					constexpr float height() const noexcept;
+					constexpr float left() const noexcept;
+					constexpr float right() const noexcept;
+					constexpr float top() const noexcept;
+					constexpr float bottom() const noexcept;
 					constexpr vector_2d top_left() const noexcept;
 					constexpr vector_2d bottom_right() const noexcept;
 
@@ -444,35 +444,35 @@ namespace std {
 					}
 				};
 
-				inline constexpr double rectangle::x() const noexcept {
+				inline constexpr float rectangle::x() const noexcept {
 					return _X;
 				}
 
-				inline constexpr double rectangle::y() const noexcept {
+				inline constexpr float rectangle::y() const noexcept {
 					return _Y;
 				}
 
-				inline constexpr double rectangle::width() const noexcept {
+				inline constexpr float rectangle::width() const noexcept {
 					return _Width;
 				}
 
-				inline constexpr double rectangle::height() const noexcept {
+				inline constexpr float rectangle::height() const noexcept {
 					return _Height;
 				}
 
-				inline constexpr double rectangle::left() const noexcept {
+				inline constexpr float rectangle::left() const noexcept {
 					return _X;
 				}
 
-				inline constexpr double rectangle::right() const noexcept {
+				inline constexpr float rectangle::right() const noexcept {
 					return _X + _Width;
 				}
 
-				inline constexpr double rectangle::top() const noexcept {
+				inline constexpr float rectangle::top() const noexcept {
 					return _Y;
 				}
 
-				inline constexpr double rectangle::bottom() const noexcept {
+				inline constexpr float rectangle::bottom() const noexcept {
 					return _Y + _Height;
 				}
 
@@ -486,26 +486,26 @@ namespace std {
 
 				class circle {
 					vector_2d _Center;
-					double _Radius;
+					float _Radius;
 				public:
 					constexpr circle() noexcept
 						: _Center()
 						, _Radius() {}
-					constexpr circle(const vector_2d& ctr, double r) noexcept
+					constexpr circle(const vector_2d& ctr, float r) noexcept
 						: _Center(ctr)
 						, _Radius(r) {}
 
 					constexpr void center(const vector_2d& ctr) noexcept {
 						_Center = ctr;
 					}
-					constexpr void radius(double r) noexcept {
+					constexpr void radius(float r) noexcept {
 						_Radius = r;
 					}
 
 					constexpr vector_2d center() const noexcept {
 						return _Center;
 					}
-					constexpr double radius() const noexcept {
+					constexpr float radius() const noexcept {
 						return _Radius;
 					}
 
@@ -523,49 +523,49 @@ namespace std {
 				constexpr _Color_is_floating _Color_is_floating_val{};
 
 				class rgba_color {
-					double _R = 0.0;
-					double _G = 0.0;
-					double _B = 0.0;
-					double _A = 1.0;
+					float _R = 0.0F;
+					float _G = 0.0F;
+					float _B = 0.0F;
+					float _A = 1.0F;
 				public:
 					constexpr rgba_color() noexcept { }
 					template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
 					constexpr rgba_color(T r, T g, T b, T a = static_cast<T>(0xFF))
-						: _R(static_cast<double>(::std::min<double>(::std::max<double>((r / 255.0), 0.0), 1.0)))
-						, _G(static_cast<double>(::std::min<double>(::std::max<double>((g / 255.0), 0.0), 1.0)))
-						, _B(static_cast<double>(::std::min<double>(::std::max<double>((b / 255.0), 0.0), 1.0)))
-						, _A(static_cast<double>(::std::min<double>(::std::max<double>((a / 255.0), 0.0), 1.0))) { }
+						: _R(static_cast<float>(::std::min<float>(::std::max<float>((r / 255.0F), 0.0F), 1.0F)))
+						, _G(static_cast<float>(::std::min<float>(::std::max<float>((g / 255.0F), 0.0F), 1.0F)))
+						, _B(static_cast<float>(::std::min<float>(::std::max<float>((b / 255.0F), 0.0F), 1.0F)))
+						, _A(static_cast<float>(::std::min<float>(::std::max<float>((a / 255.0F), 0.0F), 1.0F))) { }
 					template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
-					constexpr rgba_color(T r, T g, T b, T a = 1.0)
-						: _R(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(r), 0.0), 1.0)))
-						, _G(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(g), 0.0), 1.0)))
-						, _B(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(b), 0.0), 1.0)))
-						, _A(static_cast<double>(::std::min<T>(::std::max<T>(static_cast<double>(a), 0.0), 1.0))) {
+					constexpr rgba_color(T r, T g, T b, T a = 1.0F)
+						: _R(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(r), 0.0F), 1.0F)))
+						, _G(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(g), 0.0F), 1.0F)))
+						, _B(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(b), 0.0F), 1.0F)))
+						, _A(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(a), 0.0F), 1.0F))) {
 					}
 
-					constexpr void r(double val) noexcept {
+					constexpr void r(float val) noexcept {
 						_R = val * _A;
 					}
-					constexpr void g(double val) noexcept {
+					constexpr void g(float val) noexcept {
 						_G = val * _A;
 					}
-					constexpr void b(double val) noexcept {
+					constexpr void b(float val) noexcept {
 						_B = val * _A;
 					}
-					constexpr void a(double val) noexcept {
+					constexpr void a(float val) noexcept {
 						_A = val;
 					}
 
-					constexpr double r() const noexcept {
+					constexpr float r() const noexcept {
 						return _R;
 					}
-					constexpr double g() const noexcept {
+					constexpr float g() const noexcept {
 						return _G;
 					}
-					constexpr double b() const noexcept {
+					constexpr float b() const noexcept {
 						return _B;
 					}
-					constexpr double a() const noexcept {
+					constexpr float a() const noexcept {
 						return _A;
 					}
 
@@ -720,18 +720,18 @@ namespace std {
 
 					template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
 					constexpr rgba_color& operator*=(T rhs) {
-						r(::std::min(r() * rhs / 255.0, 1.0));
-						g(::std::min(g() * rhs / 255.0, 1.0));
-						b(::std::min(b() * rhs / 255.0, 1.0));
-						a(::std::min(a() * rhs / 255.0, 1.0));
+						r(::std::min(r() * rhs / 255.0F, 1.0F));
+						g(::std::min(g() * rhs / 255.0F, 1.0F));
+						b(::std::min(b() * rhs / 255.0F, 1.0F));
+						a(::std::min(a() * rhs / 255.0F, 1.0F));
 						return *this;
 					}
 					template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
 					constexpr rgba_color& operator*=(U rhs) {
-						r(::std::min(r() * rhs, 1.0));
-						g(::std::min(g() * rhs, 1.0));
-						b(::std::min(b() * rhs, 1.0));
-						a(::std::min(a() * rhs, 1.0));
+						r(::std::min(r() * rhs, 1.0F));
+						g(::std::min(g() * rhs, 1.0F));
+						b(::std::min(b() * rhs, 1.0F));
+						a(::std::min(a() * rhs, 1.0F));
 						return *this;
 					}
 				};
@@ -745,45 +745,45 @@ namespace std {
 
 				template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
 				inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
-					rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
+					rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
 					return{
-						::std::min(lhs.r() * rhs, 1.0),
-						::std::min(lhs.g() * rhs, 1.0),
-						::std::min(lhs.b() * rhs, 1.0),
-						::std::min(lhs.a() * rhs, 1.0)
+						::std::min(lhs.r() * rhs, 1.0F),
+						::std::min(lhs.g() * rhs, 1.0F),
+						::std::min(lhs.b() * rhs, 1.0F),
+						::std::min(lhs.a() * rhs, 1.0F)
 					};
 				}
 
 				template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
 				inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
-					rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
+					rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
 					return{
-						::std::min(lhs.r() * rhs / 255.0, 1.0),
-						::std::min(lhs.g() * rhs / 255.0, 1.0),
-						::std::min(lhs.b() * rhs / 255.0, 1.0),
-						::std::min(lhs.a() * rhs / 255.0, 1.0)
+						::std::min(lhs.r() * rhs / 255.0F, 1.0F),
+						::std::min(lhs.g() * rhs / 255.0F, 1.0F),
+						::std::min(lhs.b() * rhs / 255.0F, 1.0F),
+						::std::min(lhs.a() * rhs / 255.0F, 1.0F)
 					};
 				}
 
 				template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
 				inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
-					lhs = ::std::max(::std::min(lhs, 1.0), 0.0);
+					lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
 					return{
-						::std::min(lhs * rhs.r(), 1.0),
-						::std::min(lhs * rhs.g(), 1.0),
-						::std::min(lhs * rhs.b(), 1.0),
-						::std::min(lhs * rhs.a(), 1.0)
+						::std::min(lhs * rhs.r(), 1.0F),
+						::std::min(lhs * rhs.g(), 1.0F),
+						::std::min(lhs * rhs.b(), 1.0F),
+						::std::min(lhs * rhs.a(), 1.0F)
 					};
 				}
 
 				template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
 				inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
-					lhs = ::std::max(::std::min(lhs, 1.0), 0.0);
+					lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
 					return{
-						::std::min(lhs / 255.0 * rhs.r(), 1.0),
-						::std::min(lhs / 255.0 * rhs.g(), 1.0),
-						::std::min(lhs / 255.0 * rhs.b(), 1.0),
-						::std::min(lhs / 255.0 * rhs.a(), 1.0)
+						::std::min(lhs / 255.0F * rhs.r(), 1.0F),
+						::std::min(lhs / 255.0F * rhs.g(), 1.0F),
+						::std::min(lhs / 255.0F * rhs.b(), 1.0F),
+						::std::min(lhs / 255.0F * rhs.a(), 1.0F)
 					};
 				}
 
@@ -791,16 +791,16 @@ namespace std {
 				constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
 
 				class matrix_2d {
-					double _M00 = 1.0;
-					double _M01 = 0.0;
-					double _M10 = 0.0;
-					double _M11 = 1.0;
-					double _M20 = 0.0;
-					double _M21 = 0.0;
+					float _M00 = 1.0F;
+					float _M01 = 0.0F;
+					float _M10 = 0.0F;
+					float _M11 = 1.0F;
+					float _M20 = 0.0F;
+					float _M21 = 0.0F;
 				public:
 
 					constexpr matrix_2d() noexcept = default;
-					constexpr matrix_2d(double m00, double m01, double m10, double m11, double m20, double m21) noexcept {
+					constexpr matrix_2d(float m00, float m01, float m10, float m11, float m20, float m21) noexcept {
 						_M00 = m00;
 						_M01 = m01;
 						_M10 = m10;
@@ -810,49 +810,49 @@ namespace std {
 					}
 
 					constexpr static matrix_2d init_translate(const vector_2d& value) noexcept {
-						return{ 1.0, 0.0, 0.0, 1.0, value.x(), value.y() };
+						return{ 1.0F, 0.0F, 0.0F, 1.0F, value.x(), value.y() };
 					}
 					constexpr static matrix_2d init_scale(const vector_2d& value) noexcept {
-						return{ value.x(), 0.0, 0.0, value.y(), 0.0, 0.0 };
+						return{ value.x(), 0.0F, 0.0F, value.y(), 0.0F, 0.0F };
 					}
-					static matrix_2d init_rotate(double radians) noexcept {
+					static matrix_2d init_rotate(float radians) noexcept {
 						auto sine = sin(radians);
 						auto cosine = cos(radians);
 						sine = _Round_floating_point_to_zero(sine);
 						cosine = _Round_floating_point_to_zero(cosine);
-						return{ cosine, -sine, sine, cosine, 0.0, 0.0 };
+						return{ cosine, -sine, sine, cosine, 0.0F, 0.0F };
 					}
-					static matrix_2d init_reflect(double radians) noexcept {
-						auto sine = sin(radians * 2.0);
-						auto cosine = cos(radians * 2.0);
+					static matrix_2d init_reflect(float radians) noexcept {
+						auto sine = sin(radians * 2.0F);
+						auto cosine = cos(radians * 2.0F);
 						sine = _Round_floating_point_to_zero(sine);
 						cosine = _Round_floating_point_to_zero(cosine);
-						return{ cosine, sine, sine, -cosine, 0.0, 0.0 };
+						return{ cosine, sine, sine, -cosine, 0.0F, 0.0F };
 					}
-					constexpr static matrix_2d init_shear_x(double factor) noexcept {
-						return{ 1.0, 0.0, factor, 1.0, 0.0, 0.0 };
+					constexpr static matrix_2d init_shear_x(float factor) noexcept {
+						return{ 1.0F, 0.0F, factor, 1.0F, 0.0F, 0.0F };
 					}
-					constexpr static matrix_2d init_shear_y(double factor) noexcept {
-						return{ 1.0, factor, 0.0, 1.0, 0.0, 0.0 };
+					constexpr static matrix_2d init_shear_y(float factor) noexcept {
+						return{ 1.0F, factor, 0.0F, 1.0F, 0.0F, 0.0F };
 					}
 
 					// Modifiers
-					constexpr void m00(double value) noexcept {
+					constexpr void m00(float value) noexcept {
 						_M00 = value;
 					}
-					constexpr void m01(double value) noexcept {
+					constexpr void m01(float value) noexcept {
 						_M01 = value;
 					}
-					constexpr void m10(double value) noexcept {
+					constexpr void m10(float value) noexcept {
 						_M10 = value;
 					}
-					constexpr void m11(double value) noexcept {
+					constexpr void m11(float value) noexcept {
 						_M11 = value;
 					}
-					constexpr void m20(double value) noexcept {
+					constexpr void m20(float value) noexcept {
 						_M20 = value;
 					}
-					constexpr void m21(double value) noexcept {
+					constexpr void m21(float value) noexcept {
 						_M21 = value;
 					}
 					constexpr matrix_2d& translate(const vector_2d& value) noexcept {
@@ -863,85 +863,85 @@ namespace std {
 						*this = *this * init_scale(value);
 						return *this;
 					}
-					matrix_2d& rotate(double radians) noexcept {
+					matrix_2d& rotate(float radians) noexcept {
 						*this = *this * init_rotate(radians);
 						return *this;
 					}
-					matrix_2d& reflect(double radians) noexcept {
+					matrix_2d& reflect(float radians) noexcept {
 						*this = *this * init_reflect(radians);
 						return *this;
 					}
-					constexpr matrix_2d& shear_x(double factor) noexcept {
+					constexpr matrix_2d& shear_x(float factor) noexcept {
 						*this = *this * init_shear_x(factor);
 						return *this;
 					}
-					constexpr matrix_2d& shear_y(double factor) noexcept {
+					constexpr matrix_2d& shear_y(float factor) noexcept {
 						*this = *this * init_shear_y(factor);
 						return *this;
 					}
 
 					// Observers
-					constexpr double m00() const noexcept {
+					constexpr float m00() const noexcept {
 						return _M00;
 					}
-					constexpr double m01() const noexcept {
+					constexpr float m01() const noexcept {
 						return _M01;
 					}
-					constexpr double m10() const noexcept {
+					constexpr float m10() const noexcept {
 						return _M10;
 					}
-					constexpr double m11() const noexcept {
+					constexpr float m11() const noexcept {
 						return _M11;
 					}
-					constexpr double m20() const noexcept {
+					constexpr float m20() const noexcept {
 						return _M20;
 					}
-					constexpr double m21() const noexcept {
+					constexpr float m21() const noexcept {
 						return _M21;
 					}
 					constexpr bool is_invertible() const noexcept {
-						return (_M00 * _M11 - _M01 * _M10) != 0.0;
+						return (_M00 * _M11 - _M01 * _M10) != 0.0F;
 					}
 					constexpr matrix_2d inverse() const noexcept {
-						const auto inverseDeterminant = 1.0 / determinant();
+						const auto inverseDeterminant = 1.0F / determinant();
 						return matrix_2d{
-							(_M11 * 1.0 - 0.0 * _M21) * inverseDeterminant,
-							-(_M01 * 1.0 - 0.0 * _M21) * inverseDeterminant,
-							-(_M10 * 1.0 - 0.0 * _M20) * inverseDeterminant,
-							(_M00 * 1.0 - 0.0 * _M20) * inverseDeterminant,
+							(_M11 * 1.0F - 0.0F * _M21) * inverseDeterminant,
+							-(_M01 * 1.0F - 0.0F * _M21) * inverseDeterminant,
+							-(_M10 * 1.0F - 0.0F * _M20) * inverseDeterminant,
+							(_M00 * 1.0F - 0.0F * _M20) * inverseDeterminant,
 							(_M10 * _M21 - _M11 * _M20) * inverseDeterminant,
 							-(_M00 * _M21 - _M01 * _M20) * inverseDeterminant
 						};
 					}
 				private:
-					constexpr bool _Is_finite_check(double val) const noexcept {
-						return val != numeric_limits<double>::infinity() &&
-							val != -numeric_limits<double>::infinity() &&
+					constexpr bool _Is_finite_check(float val) const noexcept {
+						return val != numeric_limits<float>::infinity() &&
+							val != -numeric_limits<float>::infinity() &&
 							!(val != val); // This checks for both types of NaN. Compilers should not optimize this away but the only way to be sure is to check the documentation and any compiler switches you may be using.
 					}
 				public:
 					constexpr bool is_finite() const noexcept {
-						static_assert(numeric_limits<double>::is_iec559 == true, "This implementation relies on IEEE 754 floating point behavior.");
-						return numeric_limits<double>::is_iec559 &&
+						static_assert(numeric_limits<float>::is_iec559 == true, "This implementation relies on IEEE 754 floating point behavior.");
+						return numeric_limits<float>::is_iec559 &&
 							_Is_finite_check(_M00) &&
 							_Is_finite_check(_M01) &&
 							_Is_finite_check(_M10) &&
 							_Is_finite_check(_M11);
 					}
-					constexpr double determinant() const noexcept {
+					constexpr float determinant() const noexcept {
 						return _M00 * _M11 - _M01 * _M10;
 					}
 					constexpr vector_2d transform_pt(const vector_2d& pt) const noexcept {
 						auto result = vector_2d{ _M00 * pt.x() + _M10 * pt.y() + _M20, _M01 * pt.x() + _M11 * pt.y() + _M21 };
 						result.x(_Round_floating_point_to_zero(result.x()));
 						result.y(_Round_floating_point_to_zero(result.y()));
-						//if ((result.x() < numeric_limits<double>::epsilon() * 100.0) &&
-						//	(-result.x() < numeric_limits<double>::epsilon() * 100.0)) {
-						//	result.x(result.x() < 0 ? -0.0 : 0.0);
+						//if ((result.x() < numeric_limits<float>::epsilon() * 100.0F) &&
+						//	(-result.x() < numeric_limits<float>::epsilon() * 100.0F)) {
+						//	result.x(result.x() < 0 ? -0.0F : 0.0F);
 						//}
-						//if ((result.y() < numeric_limits<double>::epsilon() * 100.0) &&
-						//	(-result.y() < numeric_limits<double>::epsilon() * 100.0)) {
-						//	result.y(result.y() < 0 ? -0.0 : 0.0);
+						//if ((result.y() < numeric_limits<float>::epsilon() * 100.0F) &&
+						//	(-result.y() < numeric_limits<float>::epsilon() * 100.0F)) {
+						//	result.y(result.y() < 0 ? -0.0F : 0.0F);
 						//}
 						return result;
 					}
@@ -1245,12 +1245,12 @@ namespace std {
 
 					class arc {
 						vector_2d _Radius;
-						double _Rotation;
-						double _Start_angle;
+						float _Rotation;
+						float _Start_angle;
 					public:
 						constexpr arc() noexcept
-							: arc(vector_2d{ 10.0, 10.0 }, pi<double>, pi<double>) { }
-						constexpr arc(const vector_2d& rad, double rot, double sang = pi<double>) noexcept
+							: arc(vector_2d{ 10.0F, 10.0F }, pi<float>, pi<float>) { }
+						constexpr arc(const vector_2d& rad, float rot, float sang = pi<float>) noexcept
 							: _Radius(rad)
 							, _Rotation(rot)
 							, _Start_angle(sang) {
@@ -1259,27 +1259,27 @@ namespace std {
 						constexpr void radius(const vector_2d& rad) noexcept {
 							_Radius = rad;
 						}
-						constexpr void rotation(double rot) noexcept {
+						constexpr void rotation(float rot) noexcept {
 							_Rotation = rot;
 						}
-						constexpr void start_angle(double sang) noexcept {
+						constexpr void start_angle(float sang) noexcept {
 							_Start_angle = sang;
 						}
 
 						constexpr vector_2d radius() const noexcept {
 							return _Radius;
 						}
-						constexpr double rotation() const noexcept {
+						constexpr float rotation() const noexcept {
 							return _Rotation;
 						}
-						constexpr double start_angle() const noexcept {
+						constexpr float start_angle() const noexcept {
 							return _Start_angle;
 						}
 
 						vector_2d center(const vector_2d& cpt, const matrix_2d& m = matrix_2d{}) const noexcept {
 							auto lmtx = m;
-							lmtx.m20(0.0); lmtx.m21(0.0); // Eliminate translation.
-							auto centerOffset = point_for_angle(two_pi<double> - _Start_angle, _Radius);
+							lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
+							auto centerOffset = point_for_angle(two_pi<float> - _Start_angle, _Radius);
 							centerOffset.y(-centerOffset.y());
 							return cpt - centerOffset * lmtx;
 						}
@@ -1287,7 +1287,7 @@ namespace std {
 						vector_2d end_pt(const vector_2d& cpt, const matrix_2d& m = matrix_2d{}) const noexcept {
 							auto lmtx = m;
 							auto tfrm = matrix_2d::init_rotate(_Start_angle + _Rotation);
-							lmtx.m20(0.0); lmtx.m21(0.0); // Eliminate translation.
+							lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
 							auto pt = (_Radius * tfrm);
 							pt.y(-pt.y());
 							return cpt + pt * lmtx;
@@ -1371,25 +1371,25 @@ namespace std {
 						rel_cubic_curve, rel_line, rel_quadratic_curve>;
 				}
 
-				inline vector_2d arc_start(const vector_2d& ctr, double sang, const vector_2d& rad, const matrix_2d& m = matrix_2d{}) noexcept {
+				inline vector_2d arc_start(const vector_2d& ctr, float sang, const vector_2d& rad, const matrix_2d& m = matrix_2d{}) noexcept {
 					auto lmtx = m;
-					lmtx.m20(0.0); lmtx.m21(0.0); // Eliminate translation.
+					lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
 					auto pt = point_for_angle(sang, rad);
 					return ctr + pt * lmtx;
 				}
 
-				inline vector_2d arc_center(const vector_2d& cpt, double sang, const vector_2d& rad, const matrix_2d& m = matrix_2d{}) noexcept {
+				inline vector_2d arc_center(const vector_2d& cpt, float sang, const vector_2d& rad, const matrix_2d& m = matrix_2d{}) noexcept {
 					auto lmtx = m;
-					lmtx.m20(0.0); lmtx.m21(0.0); // Eliminate translation.
-					auto centerOffset = point_for_angle(two_pi<double> - sang, rad);
+					lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
+					auto centerOffset = point_for_angle(two_pi<float> - sang, rad);
 					centerOffset.y(-centerOffset.y());
 					return cpt - centerOffset * lmtx;
 				}
 
-				inline vector_2d arc_end(const vector_2d& cpt, double eang, const vector_2d& rad, const matrix_2d& m = matrix_2d{}) noexcept {
+				inline vector_2d arc_end(const vector_2d& cpt, float eang, const vector_2d& rad, const matrix_2d& m = matrix_2d{}) noexcept {
 					auto lmtx = m;
 					auto tfrm = matrix_2d::init_rotate(eang);
-					lmtx.m20(0.0); lmtx.m21(0.0); // Eliminate translation.
+					lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
 					auto pt = (rad * tfrm);
 					pt.y(-pt.y());
 					return cpt + pt * lmtx;
@@ -1694,7 +1694,7 @@ namespace std {
 					void matrix(const matrix_2d& m) noexcept;
 					void rel_matrix(const matrix_2d& m) noexcept;
 					void revert_matrix() noexcept;
-					void arc(const vector_2d& radius, double rot, double sang = pi<double>) noexcept;
+					void arc(const vector_2d& radius, float rot, float sang = pi<float>) noexcept;
 					void cubic_curve(const vector_2d& pt0, const vector_2d& pt1,
 						const vector_2d& pt2) noexcept;
 					void line(const vector_2d& pt) noexcept;
@@ -1770,24 +1770,24 @@ namespace std {
 
 				class color_stop {
 				private:
-					double _Offset;
+					float _Offset;
 					rgba_color _Color;
 				public:
 					constexpr color_stop() noexcept
-						: _Offset(0.0)
+						: _Offset(0.0F)
 						, _Color(rgba_color{}) {}
-					constexpr color_stop(double offset, const rgba_color& color)
+					constexpr color_stop(float offset, const rgba_color& color)
 						: _Offset(offset)
 						, _Color(color) {}
 
-					constexpr void offset(double value) noexcept {
+					constexpr void offset(float value) noexcept {
 						_Offset = value;
 					}
 					constexpr void color(const rgba_color& value) noexcept {
 						_Color = value;
 					}
 
-					constexpr double offset() const noexcept {
+					constexpr float offset() const noexcept {
 						return _Offset;
 					}
 					constexpr rgba_color color() const noexcept {
@@ -1858,9 +1858,9 @@ namespace std {
 						, _Fill_rule(fr) {
 						path_builder<> clip;
 						clip.new_path(r.top_left());
-						clip.rel_line({ r.width(), 0.0 });
-						clip.rel_line({ 0.0, r.height() });
-						clip.rel_line({ -r.width(), 0.0 });
+						clip.rel_line({ r.width(), 0.0F });
+						clip.rel_line({ 0.0F, r.height() });
+						clip.rel_line({ -r.width(), 0.0F });
 						clip.close_path();
 						_Clip = path_group(clip);
 					}
@@ -1888,23 +1888,23 @@ namespace std {
 				};
 
 				class stroke_props {
-					double _Line_width = 2.0;
-					double _Miter_limit = 10.0;
+					float _Line_width = 2.0F;
+					float _Miter_limit = 10.0F;
 					experimental::io2d::line_cap _Line_cap = experimental::io2d::line_cap::none;
 					experimental::io2d::line_join _Line_join = experimental::io2d::line_join::miter;
 					//optional<dashes> _Dashes;
 				public:
 					constexpr stroke_props() noexcept {}
-					constexpr explicit stroke_props(double w,
+					constexpr explicit stroke_props(float w,
 						experimental::io2d::line_cap lc = experimental::io2d::line_cap::none,
 						experimental::io2d::line_join lj = experimental::io2d::line_join::miter,
-						double ml = 10.0) noexcept
+						float ml = 10.0F) noexcept
 						: _Line_width(w)
 						, _Miter_limit(ml)
 						, _Line_cap(lc)
 						, _Line_join(lj) {}
 
-					constexpr void line_width(double w) noexcept {
+					constexpr void line_width(float w) noexcept {
 						_Line_width = w;
 					}
 					constexpr void line_cap(experimental::io2d::line_cap lc) noexcept {
@@ -1913,11 +1913,11 @@ namespace std {
 					constexpr void line_join(experimental::io2d::line_join lj) noexcept {
 						_Line_join = lj;
 					}
-					constexpr void miter_limit(double ml) noexcept {
+					constexpr void miter_limit(float ml) noexcept {
 						_Miter_limit = ml;
 					}
 
-					constexpr double line_width() const noexcept {
+					constexpr float line_width() const noexcept {
 						return _Line_width;
 					}
 					constexpr experimental::io2d::line_cap line_cap() const noexcept {
@@ -1926,7 +1926,7 @@ namespace std {
 					constexpr experimental::io2d::line_join line_join() const noexcept {
 						return _Line_join;
 					}
-					constexpr double miter_limit() const noexcept {
+					constexpr float miter_limit() const noexcept {
 						return _Miter_limit;
 					}
 				};
@@ -2060,7 +2060,7 @@ namespace std {
 				class mapped_surface;
 
 				//tuple<dashes, offset>
-				typedef ::std::tuple<::std::vector<double>, double> dashes;
+				typedef ::std::tuple<::std::vector<float>, float> dashes;
 
 				class surface {
 				public:
@@ -2069,7 +2069,7 @@ namespace std {
 					::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> _Surface;
 					::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Context;
 
-					const double _Line_join_miter_miter_limit = 10000.0;
+					const float _Line_join_miter_miter_limit = 10000.0F;
 
 					rectangle _Dirty_rect;
 					::std::experimental::io2d::format _Format;
@@ -2253,11 +2253,11 @@ namespace std {
 					LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 					::std::experimental::io2d::refresh_rate _Refresh_rate;
-					double _Desired_frame_rate;
+					float _Desired_frame_rate;
 					bool _Redraw_requested;
-					double _Elapsed_draw_time;
-					const double _Minimum_frame_rate = 0.01;
-					const double _Maximum_frame_rate = 120.0;
+					float _Elapsed_draw_time;
+					const float _Minimum_frame_rate = 0.01F;
+					const float _Maximum_frame_rate = 120.0F;
 					::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Native_surface;
 					::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Native_context;
 					optional<experimental::io2d::brush> _Letterbox_brush;
@@ -2291,13 +2291,13 @@ namespace std {
 					display_surface& operator=(display_surface&& other) /*noexcept*/ = default;
 
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
-						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0);
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, float fps = 30.0F);
 					//display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::error_code& ec,
-					//	::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0) noexcept;
+					//	::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, float fps = 30.0F) noexcept;
 
 					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
 						int preferredDisplayWidth, int preferredDisplayHeight,
-						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, double fps = 30.0);
+						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, float fps = 30.0F);
 
 					~display_surface();
 
@@ -2314,7 +2314,7 @@ namespace std {
 					void letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp = nullopt) noexcept;
 					void auto_clear(bool val) noexcept;
 					void refresh_rate(::std::experimental::io2d::refresh_rate rr) noexcept;
-					bool desired_frame_rate(double fps) noexcept;
+					bool desired_frame_rate(float fps) noexcept;
 					void redraw_required() noexcept;
 
 					int begin_show();
@@ -2334,16 +2334,16 @@ namespace std {
 					optional<brush_props> letterbox_brush_props() const noexcept;
 					bool auto_clear() const noexcept;
 					experimental::io2d::refresh_rate refresh_rate() const noexcept;
-					double desired_frame_rate() const noexcept;
-					double elapsed_draw_time() const noexcept;
+					float desired_frame_rate() const noexcept;
+					float elapsed_draw_time() const noexcept;
 				};
 
 				int format_stride_for_width(format format, int width) noexcept;
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0);
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0) noexcept;
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F) noexcept;
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat,
-					int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, double desiredFramerate = 30.0) noexcept;
+					int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F) noexcept;
 				image_surface make_image_surface(format format, int width, int height);
 				image_surface make_image_surface(format format, int width, int height, ::std::error_code& ec) noexcept;
 				image_surface make_image_surface(image_surface& sfc);
@@ -2353,21 +2353,21 @@ namespace std {
 				constexpr static _To_degrees_sfinae _To_degrees_sfinae_val = {};
 
 				template <class T, enable_if_t<is_arithmetic_v<T>, _To_radians_sfinae> = _To_radians_sfinae_val>
-				constexpr double to_radians(T deg) noexcept {
-					auto angle = static_cast<double>(deg) / 360.0 * two_pi<double>;
-					double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
-					if (((angle > 0.0) && (angle < oneThousandthOfADegreeInRads)) || ((angle < 0.0) && (-angle < oneThousandthOfADegreeInRads))) {
-						return (angle < 0.0) ? -0.0 : 0.0;
+				constexpr float to_radians(T deg) noexcept {
+					auto angle = static_cast<float>(deg) / 360.0F * two_pi<float>;
+					float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
+					if (((angle > 0.0F) && (angle < oneThousandthOfADegreeInRads)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegreeInRads))) {
+						return (angle < 0.0F) ? -0.0F : 0.0F;
 					}
 					return angle;
 				}
 
 				template <class T, enable_if_t<is_arithmetic_v<T>, _To_degrees_sfinae> = _To_degrees_sfinae_val>
-				constexpr double to_degrees(T rad) noexcept {
-					auto angle = static_cast<double>(rad) / two_pi<double> * 360.0;
-					double oneThousandthOfADegree = 0.001;
-					if (((angle > 0.0) && (angle < oneThousandthOfADegree)) || ((angle < 0.0) && (-angle < oneThousandthOfADegree))) {
-						return (angle < 0.0) ? -0.0 : 0.0;
+				constexpr float to_degrees(T rad) noexcept {
+					auto angle = static_cast<float>(rad) / two_pi<float> * 360.0F;
+					float oneThousandthOfADegree = 0.001F;
+					if (((angle > 0.0F) && (angle < oneThousandthOfADegree)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegree))) {
+						return (angle < 0.0F) ? -0.0F : 0.0F;
 					}
 					return angle;
 				}
@@ -3106,9 +3106,9 @@ namespace std {
 					return false;
 				}
 
-				// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0 } 'angle' radians around { 0.0, 0.0 } in a clockwise ('clockwise' == true) or
+				// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0F } 'angle' radians around { 0.0F, 0.0F } in a clockwise ('clockwise' == true) or
 				// counterclockwise ('clockwise' == false) direction.
-				inline ::std::experimental::io2d::vector_2d _Rotate_point_absolute_angle(const ::std::experimental::io2d::vector_2d& center, double radius, double angle, bool clockwise = true) {
+				inline ::std::experimental::io2d::vector_2d _Rotate_point_absolute_angle(const ::std::experimental::io2d::vector_2d& center, float radius, float angle, bool clockwise = true) {
 					if (clockwise) {
 						::std::experimental::io2d::vector_2d pt{ radius * ::std::cos(angle), -(radius * -::std::sin(angle)) };
 						pt.x(pt.x() + center.x());
@@ -3124,7 +3124,7 @@ namespace std {
 				}
 
 				// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'.
-				inline int _Double_to_int(double value, bool nearestNeighbor = true) {
+				inline int _Double_to_int(float value, bool nearestNeighbor = true) {
 					if (nearestNeighbor) {
 						// Round to the nearest neighbor.
 						return static_cast<int>(::std::round(value));
@@ -3141,11 +3141,11 @@ namespace std {
 
 				template <class _TItem>
 				struct _Path_item_interpret_visitor {
-					constexpr static double twoThirds = 2.0 / 3.0;
+					constexpr static float twoThirds = 2.0F / 3.0F;
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&) noexcept {
-						const auto pt = m.transform_pt({ 0.0, 0.0 }) + item.at();
+						const auto pt = m.transform_pt({ 0.0F, 0.0F }) + item.at();
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 						currentPoint = pt;
 						closePoint = pt;
@@ -3154,7 +3154,7 @@ namespace std {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d& closePoint, stack<matrix_2d>&) noexcept {
 						auto amtx = m;
-						amtx.m20(0.0); amtx.m21(0.0); // obliterate translation since this is relative.
+						amtx.m20(0.0F); amtx.m21(0.0F); // obliterate translation since this is relative.
 						const auto pt = currentPoint + item.at() * amtx;
 						v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 						currentPoint = pt;
@@ -3233,31 +3233,31 @@ namespace std {
 
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc>, _Path_data_arc> = _Path_data_arc_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
-						const double rot = item.rotation();
-						const double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
+						const float rot = item.rotation();
+						const float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
 						if (abs(rot) < oneThousandthOfADegreeInRads) {
 							// Return if the rotation is less than one thousandth of one degree; it's a degenerate path segment.
 							return;
 						}
-						const auto clockwise = (rot < 0.0) ? true : false;
+						const auto clockwise = (rot < 0.0F) ? true : false;
 						const vector_2d rad = item.radius();
 						auto startAng = item.start_angle();
 						const auto origM = m;
 						m = matrix_2d::init_scale(rad);
-						auto centerOffset = (point_for_angle(two_pi<double> -startAng) * rad);
+						auto centerOffset = (point_for_angle(two_pi<float> -startAng) * rad);
 						centerOffset.y(-centerOffset.y());
 						auto ctr = currentPoint - centerOffset;
 
 						vector_2d pt0, pt1, pt2, pt3;
 						int bezCount = 1;
-						double theta = rot;
+						float theta = rot;
 
-						while (abs(theta) > half_pi<double>) {
-							theta /= 2.0;
+						while (abs(theta) > half_pi<float>) {
+							theta /= 2.0F;
 							bezCount += bezCount;
 						}
 
-						double phi = (theta / 2.0);
+						float phi = (theta / 2.0F);
 						const auto cosPhi = cos(-phi);
 						const auto sinPhi = sin(-phi);
 
@@ -3265,18 +3265,18 @@ namespace std {
 						pt0.y(-sinPhi);
 						pt3.x(pt0.x());
 						pt3.y(-pt0.y());
-						pt1.x((4.0 - cosPhi) / 3.0);
-						pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
+						pt1.x((4.0F - cosPhi) / 3.0F);
+						pt1.y(-(((1.0F - cosPhi) * (3.0F - cosPhi)) / (3.0F * sinPhi)));
 						pt2.x(pt1.x());
 						pt2.y(-pt1.y());
-						auto rotCntrCwFn = [](const vector_2d& pt, double a) -> vector_2d {
+						auto rotCntrCwFn = [](const vector_2d& pt, float a) -> vector_2d {
 							auto result = vector_2d{ pt.x() * cos(a) - pt.y() * sin(a),
 								pt.x() * sin(a) + pt.y() * cos(a) };
 							result.x(_Round_floating_point_to_zero(result.x()));
 							result.y(_Round_floating_point_to_zero(result.y()));
 							return result;
 						};
-						auto rotCwFn = [](const vector_2d& pt, double a) -> vector_2d {
+						auto rotCwFn = [](const vector_2d& pt, float a) -> vector_2d {
 							auto result = vector_2d{ pt.x() * cos(a) - pt.y() * sin(a),
 								-(pt.x() * sin(a) + pt.y() * cos(a)) };
 							result.x(_Round_floating_point_to_zero(result.x()));
@@ -3284,7 +3284,7 @@ namespace std {
 							return result;
 						};
 
-						startAng = two_pi<double> -startAng;
+						startAng = two_pi<float> -startAng;
 
 						if (clockwise) {
 							pt0 = rotCwFn(pt0, phi);
@@ -3345,7 +3345,7 @@ namespace std {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
 						auto amtx = m;
-						amtx.m20(0.0); amtx.m21(0.0); // obliterate translation since this is relative.
+						amtx.m20(0.0F); amtx.m21(0.0F); // obliterate translation since this is relative.
 						const auto pt1 = item.control_point_1() * amtx;
 						const auto pt2 = item.control_point_2() * amtx;
 						const auto pt3 = item.end_point()* amtx;
@@ -3359,7 +3359,7 @@ namespace std {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
 						auto amtx = m;
-						amtx.m20(0.0); amtx.m21(0.0); // obliterate translation since this is relative.
+						amtx.m20(0.0F); amtx.m21(0.0F); // obliterate translation since this is relative.
 						const auto pt = currentPoint + item.to() * amtx;
 						if (currentPoint == pt) {
 							return; // degenerate path segment
@@ -3371,7 +3371,7 @@ namespace std {
 					template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
 					static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, vector_2d& currentPoint, vector_2d&, stack<matrix_2d>&) noexcept {
 						auto amtx = m;
-						amtx.m20(0.0); amtx.m21(0.0); // obliterate translation since this is relative.
+						amtx.m20(0.0F); amtx.m21(0.0F); // obliterate translation since this is relative.
 						const auto controlPt = currentPoint + item.control_point() * amtx;
 						const auto endPt = currentPoint + item.control_point() * amtx + item.end_point() * amtx;
 						const auto beginPt = currentPoint;
@@ -3662,7 +3662,7 @@ namespace std {
 				}
 
 				template<class Allocator>
-				inline void path_builder<Allocator>::arc(const vector_2d& rad, double rot, const double sang) noexcept {
+				inline void path_builder<Allocator>::arc(const vector_2d& rad, float rot, const float sang) noexcept {
 					_Data.emplace_back(in_place_type<path_data::arc>, rad, rot, sang);
 				}
 

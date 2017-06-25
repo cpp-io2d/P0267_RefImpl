@@ -21,28 +21,28 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 // 	static auto previousTime = steady_clock::now();
 
 	if (_Width == _Display_width && _Height == _Display_height) {
-		cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
+		cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0F, 0.0F);
 		cairo_paint(_Native_context.get());
 	}
 	else {
-		const auto whRatio = static_cast<double>(_Width) / static_cast<double>(_Height);
-		const auto displayWHRatio = static_cast<double>(_Display_width) / static_cast<double>(_Display_height);
+		const auto whRatio = static_cast<float>(_Width) / static_cast<float>(_Height);
+		const auto displayWHRatio = static_cast<float>(_Display_width) / static_cast<float>(_Display_height);
 		cairo_matrix_t ctm;
 		auto nativeContext = _Native_context.get();
 		//cairo_save(nativeContext);
-		double rectX, rectY, rectWidth, rectHeight;
+		float rectX, rectY, rectWidth, rectHeight;
 		if (whRatio < displayWHRatio) {
 			cairo_new_path(nativeContext);
-			const auto displayHeightAsDouble = static_cast<double>(_Display_height);
+			const auto displayHeightAsDouble = static_cast<float>(_Display_height);
 			rectWidth = trunc(displayHeightAsDouble * whRatio);
 			rectHeight = displayHeightAsDouble;
-			rectX = trunc(abs(rectWidth - static_cast<double>(_Display_width)) / 2.0);
-			rectY = 0.0;
+			rectX = trunc(abs(rectWidth - static_cast<float>(_Display_width)) / 2.0F);
+			rectY = 0.0F;
 			cairo_rectangle(nativeContext, rectX, rectY, rectWidth, rectHeight);
 
-			const auto heightRatio = static_cast<double>(_Height) / static_cast<double>(_Display_height);
+			const auto heightRatio = static_cast<float>(_Height) / static_cast<float>(_Display_height);
 			cairo_matrix_init_scale(&ctm, heightRatio, heightRatio);
-			cairo_matrix_translate(&ctm, -rectX, 0.0);
+			cairo_matrix_translate(&ctm, -rectX, 0.0F);
 			unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
 			cairo_pattern_set_matrix(pat.get(), &ctm);
 			cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
@@ -51,9 +51,9 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 			cairo_fill(_Native_context.get());
 			//cairo_restore(nativeContext);
 			if (_Scaling == std::experimental::io2d::scaling::letterbox) {
-				const auto lboxWidth = trunc((static_cast<double>(_Display_width) - rectWidth) / 2.0);
-				cairo_rectangle(nativeContext, 0.0, 0.0, lboxWidth, rectHeight);
-				cairo_rectangle(nativeContext, rectWidth + lboxWidth, 0.0, lboxWidth, rectHeight);
+				const auto lboxWidth = trunc((static_cast<float>(_Display_width) - rectWidth) / 2.0F);
+				cairo_rectangle(nativeContext, 0.0F, 0.0F, lboxWidth, rectHeight);
+				cairo_rectangle(nativeContext, rectWidth + lboxWidth, 0.0F, lboxWidth, rectHeight);
 				//cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.wrap_mode()));
 				//cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
 				//cairo_matrix_t cPttnMatrix;
@@ -92,16 +92,16 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 		}
 		else {
 			cairo_new_path(nativeContext);
-			const auto displayWidthAsDouble = static_cast<double>(_Display_width);
+			const auto displayWidthAsDouble = static_cast<float>(_Display_width);
 			rectWidth = displayWidthAsDouble;
 			rectHeight = trunc(displayWidthAsDouble / whRatio);
-			rectX = 0.0;
-			rectY = trunc(abs(rectHeight - static_cast<double>(_Display_height)) / 2.0);
+			rectX = 0.0F;
+			rectY = trunc(abs(rectHeight - static_cast<float>(_Display_height)) / 2.0F);
 			cairo_rectangle(nativeContext, rectX, rectY, rectWidth, rectHeight);
 
-			const auto widthRatio = static_cast<double>(_Width) / static_cast<double>(_Display_width);
+			const auto widthRatio = static_cast<float>(_Width) / static_cast<float>(_Display_width);
 			cairo_matrix_init_scale(&ctm, widthRatio, widthRatio);
-			cairo_matrix_translate(&ctm, 0.0, -rectY);
+			cairo_matrix_translate(&ctm, 0.0F, -rectY);
 			unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
 			cairo_pattern_set_matrix(pat.get(), &ctm);
 			cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
@@ -110,9 +110,9 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 			cairo_fill(_Native_context.get());
 			//cairo_restore(nativeContext);
 			if (_Scaling == std::experimental::io2d::scaling::letterbox) {
-				const auto lboxHeight = trunc((static_cast<double>(_Display_height) - rectHeight) / 2.0);
-				cairo_rectangle(nativeContext, 0.0, 0.0, rectWidth, lboxHeight);
-				cairo_rectangle(nativeContext, 0.0, rectHeight + lboxHeight, rectWidth, lboxHeight);
+				const auto lboxHeight = trunc((static_cast<float>(_Display_height) - rectHeight) / 2.0F);
+				cairo_rectangle(nativeContext, 0.0F, 0.0F, rectWidth, lboxHeight);
+				cairo_rectangle(nativeContext, 0.0F, rectHeight + lboxHeight, rectWidth, lboxHeight);
 				//cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.wrap_mode()));
 				//cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
 				//cairo_matrix_t cPttnMatrix;
@@ -152,10 +152,10 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 	}
 
 // 	auto currentTime = steady_clock::now();
-// 	auto elapsedTimeIncrement = static_cast<double>(duration_cast<nanoseconds>(currentTime - previousTime).count());
+// 	auto elapsedTimeIncrement = static_cast<float>(duration_cast<nanoseconds>(currentTime - previousTime).count());
 // 	previousTime = currentTime;
 // 	stringstream timingStr;
-// 	timingStr << "timing: " << elapsedTimeIncrement / 1'000'000.0 << endl;
+// 	timingStr << "timing: " << elapsedTimeIncrement / 1'000'000.0F << endl;
 // 	cerr << timingStr.str().c_str();
 }
 
@@ -197,7 +197,7 @@ void display_surface::_Render_to_native_surface() {
 			}
 		}
 		cairo_matrix_t ctm;
-		cairo_matrix_init_scale(&ctm, 1.0 / (static_cast<double>(_Display_width) / userRect.width()), 1.0 / (static_cast<double>(_Display_height) / userRect.height()));
+		cairo_matrix_init_scale(&ctm, 1.0F / (static_cast<float>(_Display_width) / userRect.width()), 1.0F / (static_cast<float>(_Display_height) / userRect.height()));
 		cairo_matrix_translate(&ctm, -userRect.x(), -userRect.y());
 		unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
 		cairo_pattern_set_matrix(pat.get(), &ctm);
@@ -225,18 +225,18 @@ void display_surface::_Render_to_native_surface() {
 		{
 			// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
 			if (_Width == _Display_width && _Height == _Display_height) {
-				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
+				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0F, 0.0F);
 				cairo_paint(_Native_context.get());
 			}
 			else {
-				auto widthRatio = static_cast<double>(_Display_width) / static_cast<double>(_Width);
-				auto heightRatio = static_cast<double>(_Display_height) / static_cast<double>(_Height);
+				auto widthRatio = static_cast<float>(_Display_width) / static_cast<float>(_Width);
+				auto heightRatio = static_cast<float>(_Display_height) / static_cast<float>(_Height);
 				if (widthRatio < heightRatio) {
-					cairo_set_source_rgb(_Native_context.get(), 0.0, 0.0, 0.0);
+					cairo_set_source_rgb(_Native_context.get(), 0.0F, 0.0F, 0.0F);
 					cairo_paint(_Native_context.get());
 					cairo_matrix_t ctm;
-					cairo_matrix_init_scale(&ctm, 1.0 / heightRatio, 1.0 / heightRatio);
-					cairo_matrix_translate(&ctm, trunc(abs(static_cast<double>(_Display_width - (_Width * heightRatio)) / 2.0)), 0.0);
+					cairo_matrix_init_scale(&ctm, 1.0F / heightRatio, 1.0F / heightRatio);
+					cairo_matrix_translate(&ctm, trunc(abs(static_cast<float>(_Display_width - (_Width * heightRatio)) / 2.0F)), 0.0F);
 					unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
 					cairo_pattern_set_matrix(pat.get(), &ctm);
 					cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
@@ -245,11 +245,11 @@ void display_surface::_Render_to_native_surface() {
 					cairo_paint(_Native_context.get());
 				}
 				else {
-					cairo_set_source_rgb(_Native_context.get(), 0.0, 0.0, 0.0);
+					cairo_set_source_rgb(_Native_context.get(), 0.0F, 0.0F, 0.0F);
 					cairo_paint(_Native_context.get());
 					cairo_matrix_t ctm;
-					cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / widthRatio);
-					cairo_matrix_translate(&ctm, 0.0, trunc(abs(static_cast<double>(_Display_height - (_Height * widthRatio)) / 2.0)));
+					cairo_matrix_init_scale(&ctm, 1.0F / widthRatio, 1.0F / widthRatio);
+					cairo_matrix_translate(&ctm, 0.0F, trunc(abs(static_cast<float>(_Display_height - (_Height * widthRatio)) / 2.0F)));
 					unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
 					cairo_pattern_set_matrix(pat.get(), &ctm);
 					cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
@@ -263,14 +263,14 @@ void display_surface::_Render_to_native_surface() {
 		{
 			// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
 			if (_Width == _Display_width && _Height == _Display_height) {
-				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
+				cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0F, 0.0F);
 				cairo_paint(_Native_context.get());
 			}
 			else {
-				auto widthRatio = static_cast<double>(_Display_width) / static_cast<double>(_Width);
-				auto heightRatio = static_cast<double>(_Display_height) / static_cast<double>(_Height);
+				auto widthRatio = static_cast<float>(_Display_width) / static_cast<float>(_Width);
+				auto heightRatio = static_cast<float>(_Display_height) / static_cast<float>(_Height);
 				cairo_matrix_t ctm;
-				cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / heightRatio);
+				cairo_matrix_init_scale(&ctm, 1.0F / widthRatio, 1.0F / heightRatio);
 				unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Surface.get()), &cairo_pattern_destroy);
 				cairo_pattern_set_matrix(pat.get(), &ctm);
 				cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
@@ -281,7 +281,7 @@ void display_surface::_Render_to_native_surface() {
 		} break;
 		case std::experimental::io2d::scaling::none:
 		{
-			cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0, 0.0);
+			cairo_set_source_surface(_Native_context.get(), _Surface.get(), 0.0F, 0.0F);
 			cairo_paint(_Native_context.get());
 		} break;
 		default:
@@ -368,12 +368,12 @@ void display_surface::auto_clear(bool val) noexcept {
 
 void display_surface::refresh_rate(experimental::io2d::refresh_rate rr) noexcept {
 	if (rr == experimental::io2d::refresh_rate::fixed && _Refresh_rate != rr) {
-		_Elapsed_draw_time = 0.0;
+		_Elapsed_draw_time = 0.0F;
 	}
 	_Refresh_rate = rr;
 }
 
-bool display_surface::desired_frame_rate(double fps) noexcept {
+bool display_surface::desired_frame_rate(float fps) noexcept {
 	if (!isfinite(fps)) {
 		return true;
 	}
@@ -415,11 +415,11 @@ int display_surface::display_height() const noexcept {
 }
 
 vector_2d display_surface::dimensions() const noexcept {
-	return { static_cast<double>(_Width), static_cast<double>(_Height) };
+	return { static_cast<float>(_Width), static_cast<float>(_Height) };
 }
 
 vector_2d display_surface::display_dimensions() const noexcept {
-	return { static_cast<double>(_Display_width), static_cast<double>(_Display_height) };
+	return { static_cast<float>(_Display_width), static_cast<float>(_Display_height) };
 }
 
 experimental::io2d::scaling display_surface::scaling() const noexcept {
@@ -457,10 +457,10 @@ experimental::io2d::refresh_rate display_surface::refresh_rate() const noexcept 
 	return _Refresh_rate;
 }
 
-double display_surface::desired_frame_rate() const noexcept {
+float display_surface::desired_frame_rate() const noexcept {
 	return _Desired_frame_rate;
 }
 
-double display_surface::elapsed_draw_time() const noexcept {
-	return _Elapsed_draw_time / 1'000'000.0;
+float display_surface::elapsed_draw_time() const noexcept {
+	return _Elapsed_draw_time / 1'000'000.0F;
 }

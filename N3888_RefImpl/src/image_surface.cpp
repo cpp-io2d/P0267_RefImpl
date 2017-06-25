@@ -265,9 +265,9 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					const unsigned char* pixelValue = (pixelData.get() + (i * dataStride) + (j * 4));
-					unsigned char blue = static_cast<unsigned char>(pixelValue[0] / 255.0 * 31.0 + 0.5);
-					unsigned char green = static_cast<unsigned char>(pixelValue[1] / 255.0 * 63.0 + 0.5);
-					unsigned char red = static_cast<unsigned char>(pixelValue[2] / 255.0 * 31.0 + 0.5);
+					unsigned char blue = static_cast<unsigned char>(pixelValue[0] / 255.0F * 31.0F + 0.5F);
+					unsigned char green = static_cast<unsigned char>(pixelValue[1] / 255.0F * 63.0F + 0.5F);
+					unsigned char red = static_cast<unsigned char>(pixelValue[2] / 255.0F * 31.0F + 0.5F);
 					mapData[(i * mapStride) + (j * 2)] = static_cast<unsigned char>(((blue & 0b00011111)) | ((green & 0b00000111) << 5));
 					mapData[(i * mapStride) + (j * 2) + 1] = static_cast<unsigned char>(((green & 0b00111000) >> 3) | ((red & 0b00011111) << 3));
 				}
@@ -356,9 +356,9 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					const unsigned char* pixelValue = (pixelData.get() + (i * pitch) + (j * 4));
-					unsigned char blue = static_cast<unsigned char>(pixelValue[0] / 255.0 * 31.0 + 0.5);
-					unsigned char green = static_cast<unsigned char>(pixelValue[1] / 255.0 * 63.0 + 0.5);
-					unsigned char red = static_cast<unsigned char>(pixelValue[2] / 255.0 * 31.0 + 0.5);
+					unsigned char blue = static_cast<unsigned char>(pixelValue[0] / 255.0F * 31.0F + 0.5F);
+					unsigned char green = static_cast<unsigned char>(pixelValue[1] / 255.0F * 63.0F + 0.5F);
+					unsigned char red = static_cast<unsigned char>(pixelValue[2] / 255.0F * 31.0F + 0.5F);
 					mapData[(i * mapStride) + (j * 2)] = static_cast<unsigned char>((((blue & 0b0001'1111)) | ((green & 0b0000'0111) << 5)));
 					mapData[(i * mapStride) + (j * 2) + 1] = static_cast<unsigned char>((((green & 0b0011'1000) >> 3) | ((red & 0b0001'1111) << 3)));
 				}
@@ -370,9 +370,9 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 				for (int j = 0; j < w; j++) {
 					const unsigned char* pixelValue = (pixelData.get() + (i * pitch) + (j * 4));
 
-					uint16_t blue16 = static_cast<uint16_t>(pixelValue[0] / 255.0 * 1023.0 + 0.5);
-					uint16_t green16 = static_cast<uint16_t>(pixelValue[1] / 255.0 * 1023.0 + 0.5);
-					uint16_t red16 = static_cast<uint16_t>(pixelValue[2] / 255.0 * 1023.0 + 0.5);
+					uint16_t blue16 = static_cast<uint16_t>(pixelValue[0] / 255.0F * 1023.0F + 0.5F);
+					uint16_t green16 = static_cast<uint16_t>(pixelValue[1] / 255.0F * 1023.0F + 0.5F);
+					uint16_t red16 = static_cast<uint16_t>(pixelValue[2] / 255.0F * 1023.0F + 0.5F);
 					mapData[(i * mapStride) + (j * 4) + 0] = static_cast<unsigned char>(blue16 & 0b0000'0000'1111'1111);
 					mapData[(i * mapStride) + (j * 4) + 1] = static_cast<unsigned char>(((blue16 & 0b0000'0011'0000'0000) >> 8) | ((green16 & 0b0000'0000'0011'1111) << 2));
 					mapData[(i * mapStride) + (j * 4) + 2] = static_cast<unsigned char>(((green16 & 0b0000'0011'1100'0000) >> 6) | ((red16 & 0b0000'0000'0000'1111) << 4));
@@ -460,9 +460,9 @@ void image_surface::save(string f, image_data_format idf) {
 			pngImg.format = PNG_FORMAT_BGRA; // We need to convert the data ourselves and pad it out to 32 bits.
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
-					unsigned char blue = static_cast<unsigned char>((mapData[(i * mapStride) + (j * 2)] & 0b0001'1111) / 31.0 * 255.0 + 0.5);
-					unsigned char green = static_cast<unsigned char>((((mapData[(i * mapStride) + (j * 2)] & 0b1110'0000) >> 5) | ((mapData[(i * mapStride) + (j * 2) + 1] & 0b0000'0111) << 3)) / 63.0 * 255.0 + 0.5);
-					unsigned char red = static_cast<unsigned char>(((mapData[(i * mapStride) + (j * 2) + 1] & 0b1111'1000) >> 3) / 31.0 * 255.0 + 0.5);
+					unsigned char blue = static_cast<unsigned char>((mapData[(i * mapStride) + (j * 2)] & 0b0001'1111) / 31.0F * 255.0F + 0.5F);
+					unsigned char green = static_cast<unsigned char>((((mapData[(i * mapStride) + (j * 2)] & 0b1110'0000) >> 5) | ((mapData[(i * mapStride) + (j * 2) + 1] & 0b0000'0111) << 3)) / 63.0F * 255.0F + 0.5F);
+					unsigned char red = static_cast<unsigned char>(((mapData[(i * mapStride) + (j * 2) + 1] & 0b1111'1000) >> 3) / 31.0F * 255.0F + 0.5F);
 					const unsigned char alpha{ 0xFF };
 					auto sfcPixel = (sfcData.get() + (i * sfcStride) + (j * 4));
 					sfcPixel[0] = blue;
@@ -606,9 +606,9 @@ void image_surface::save(string f, image_data_format idf) {
 		{
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
-					unsigned char blue = static_cast<unsigned char>((mapData[(i * mapStride) + (j * 2)] & 0b0001'1111) / 31.0 * 255.0 + 0.5);
-					unsigned char green = static_cast<unsigned char>((((mapData[(i * mapStride) + (j * 2)] & 0b1110'0000) >> 5) | ((mapData[(i * mapStride) + (j * 2) + 1] & 0b0000'0111) << 3)) / 63.0 * 255.0 + 0.5);
-					unsigned char red = static_cast<unsigned char>(((mapData[(i * mapStride) + (j * 2) + 1] & 0b1111'1000) >> 3) / 31.0 * 255.0 + 0.5);
+					unsigned char blue = static_cast<unsigned char>((mapData[(i * mapStride) + (j * 2)] & 0b0001'1111) / 31.0F * 255.0F + 0.5F);
+					unsigned char green = static_cast<unsigned char>((((mapData[(i * mapStride) + (j * 2)] & 0b1110'0000) >> 5) | ((mapData[(i * mapStride) + (j * 2) + 1] & 0b0000'0111) << 3)) / 63.0F * 255.0F + 0.5F);
+					unsigned char red = static_cast<unsigned char>(((mapData[(i * mapStride) + (j * 2) + 1] & 0b1111'1000) >> 3) / 31.0F * 255.0F + 0.5F);
 					const unsigned char alpha{ 0xFF };
 					auto sfcPixel = (sfcData.get() + (i * sfcStride) + (j * 4));
 					sfcPixel[0] = blue;
@@ -628,9 +628,9 @@ void image_surface::save(string f, image_data_format idf) {
 					uint16_t red10 = static_cast<uint16_t>(((pixelData[2] & 0b0000'0000'1111'0000) >> 4) | ((pixelData[3] & 0b0000'0000'0011'1111) << 4));
 					const unsigned char alpha{ 0xFF };
 					auto sfcPixel = (sfcData.get() + (i * sfcStride) + (j * 4));
-					sfcPixel[0] = static_cast<unsigned char>(blue10 / 1023.0 * 255.0 + 0.5);
-					sfcPixel[1] = static_cast<unsigned char>(green10 / 1023.0 * 255.0 + 0.5);
-					sfcPixel[2] = static_cast<unsigned char>(red10 / 1023.0 * 255.0 + 0.5);
+					sfcPixel[0] = static_cast<unsigned char>(blue10 / 1023.0F * 255.0F + 0.5F);
+					sfcPixel[1] = static_cast<unsigned char>(green10 / 1023.0F * 255.0F + 0.5F);
+					sfcPixel[2] = static_cast<unsigned char>(red10 / 1023.0F * 255.0F + 0.5F);
 					sfcPixel[3] = alpha;
 				}
 			}

@@ -13,11 +13,11 @@ namespace std {
 					return ec;
 				}
 
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, double desiredFramerate) {
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, float desiredFramerate) {
 					return { preferredWidth, preferredHeight, preferredFormat, scl, rr, desiredFramerate };
 				}
 
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, double desiredFramerate) {
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, float desiredFramerate) {
 					return { preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight,scl, rr, desiredFramerate };
 				}
 
@@ -36,53 +36,42 @@ namespace std {
 					return retval;
 				}
 
-				vector_2d point_for_angle(double ang, double mgn) noexcept {
-					vector_2d v{ mgn, 0.0 };
+				vector_2d point_for_angle(float ang, float mgn) noexcept {
+					vector_2d v{ mgn, 0.0F };
 					auto m = matrix_2d::init_rotate(ang);
 					auto result = m.transform_pt(v);
 					result.x(_Round_floating_point_to_zero(result.x()));
 					result.y(_Round_floating_point_to_zero(result.y()));
-					//if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
-					//	result.x(result.x() < 0.0 ? -0.0 : 0.0);
+					//if (abs(result.x()) < numeric_limits<float>::epsilon() * 100.0F) {
+					//	result.x(result.x() < 0.0F ? -0.0F : 0.0F);
 					//}
-					//if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
-					//	result.y(result.y() < 0.0 ? -0.0 : 0.0);
+					//if (abs(result.y()) < numeric_limits<float>::epsilon() * 100.0F) {
+					//	result.y(result.y() < 0.0F ? -0.0F : 0.0F);
 					//}
 					return result;
 				}
 
-				vector_2d point_for_angle(double ang, const vector_2d& rad) noexcept {
-					vector_2d v{ 1.0, 0.0 };
+				vector_2d point_for_angle(float ang, const vector_2d& rad) noexcept {
+					vector_2d v{ 1.0F, 0.0F };
 					auto m = matrix_2d::init_rotate(ang);
 					auto result = m.transform_pt(v);
 					result *= rad;
 					result.x(_Round_floating_point_to_zero(result.x()));
 					result.y(_Round_floating_point_to_zero(result.y()));
-					//if (abs(result.x()) < numeric_limits<double>::epsilon() * 100.0) {
-					//	result.x(result.x() < 0.0 ? -0.0 : 0.0);
-					//}
-					//if (abs(result.y()) < numeric_limits<double>::epsilon() * 100.0) {
-					//	result.y(result.y() < 0.0 ? -0.0 : 0.0);
-					//}
 					return result;
 				}
 
-				double angle_for_point(const vector_2d& ctr, const vector_2d& pt) noexcept {
-					//auto xDiff = ctr.x() - pt.x();
-					//auto yDiff = ctr.y() - pt.y();
+				float angle_for_point(const vector_2d& ctr, const vector_2d& pt) noexcept {
 					auto xDiff = pt.x() - ctr.x();
 					auto yDiff = -(pt.y() - ctr.y());
 					auto angle = atan2(yDiff, xDiff);
-					const double oneThousandthOfADegreeInRads = pi<double> / 180'000.0;
-					if ((abs(angle) < oneThousandthOfADegreeInRads) || abs(angle - two_pi<double>) < oneThousandthOfADegreeInRads) {
-						//|| (angle > 0.0 && (abs(angle - two_pi<double>) < numeric_limits<double>::epsilon() * 100.0))) {
-						return 0.0;
+					const float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
+					if ((abs(angle) < oneThousandthOfADegreeInRads) || abs(angle - two_pi<float>) < oneThousandthOfADegreeInRads) {
+						return 0.0F;
 					}
-					if (angle < 0.0) {
-						return angle + two_pi<double>;
-						//return abs(angle);
+					if (angle < 0.0F) {
+						return angle + two_pi<float>;
 					}
-					//return two_pi<double> - angle;
 					return angle;
 				}
 

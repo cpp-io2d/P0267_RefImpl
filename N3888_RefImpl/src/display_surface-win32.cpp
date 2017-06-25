@@ -15,7 +15,7 @@ using namespace std::experimental::io2d;
 [[noreturn]]
 inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const char* message) {
 	if (message != nullptr) {
-		// Updated Note: Changed to static_cast due to 4.7/3 [conv.integral]. // Old Note: C-style cast because system_error requires an int but GetLastError returns a DWORD (i.e. unsigned long) but ordinary WinError.h values never exceed the max value of an int.
+		// Updated Note: Changed to static_cast due to 4.7F/3 [conv.integral]. // Old Note: C-style cast because system_error requires an int but GetLastError returns a DWORD (i.e. unsigned long) but ordinary WinError.h values never exceed the max value of an int.
 		throw system_error(static_cast<int>(getLastErrorValue), system_category(), message);
 	}
 	else {
@@ -208,11 +208,11 @@ namespace {
 	once_flag _Window_class_registered_flag;
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double desiredFramerate)
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float desiredFramerate)
 	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, desiredFramerate) {
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, double fps)
+display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float fps)
 	: surface({ nullptr, nullptr }, preferredFormat)
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
@@ -400,7 +400,7 @@ int display_surface::begin_show() {
 	if (_Draw_fn == nullptr) {
 		throw system_error(make_error_code(errc::operation_would_block));
 	}
-	_Elapsed_draw_time = 0.0;
+	_Elapsed_draw_time = 0.0F;
 #ifdef _IO2D_WIN32FRAMERATE
 	auto previousTime = steady_clock::now();
 	long long int elapsedDrawNanoseconds = 0LL;
@@ -410,7 +410,7 @@ int display_surface::begin_show() {
 	while (msg.message != WM_QUIT) {
 #ifdef _IO2D_WIN32FRAMERATE
 		auto currentTime = steady_clock::now();
-		auto elapsedTimeIncrement = static_cast<double>(duration_cast<nanoseconds>(currentTime - previousTime).count());
+		auto elapsedTimeIncrement = static_cast<float>(duration_cast<nanoseconds>(currentTime - previousTime).count());
 		_Elapsed_draw_time += elapsedTimeIncrement;
 		elapsedDrawNanoseconds += duration_cast<nanoseconds>(currentTime - previousTime).count();
 		previousTime = currentTime;
@@ -439,9 +439,9 @@ int display_surface::begin_show() {
 						_Redraw_requested = false;
 					}
 
-					const auto desiredElapsed = 1'000'000'000.0 / _Desired_frame_rate;
+					const auto desiredElapsed = 1'000'000'000.0F / _Desired_frame_rate;
 #ifdef _IO2D_WIN32FRAMERATE
-					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00 / _Desired_frame_rate);
+					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00F / _Desired_frame_rate);
 #endif
 					if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
 						// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
@@ -475,7 +475,7 @@ int display_surface::begin_show() {
 #endif
 						}
 						else {
-							_Elapsed_draw_time = 0.0;
+							_Elapsed_draw_time = 0.0F;
 #ifdef _IO2D_WIN32FRAMERATE
 							elapsedDrawNanoseconds = 0LL;
 #endif
@@ -490,12 +490,12 @@ int display_surface::begin_show() {
 				DispatchMessage(&msg);
 
 				if (msg.message == WM_PAINT) {
-					const auto desiredElapsed = 1'000'000'000.0 / _Desired_frame_rate;
+					const auto desiredElapsed = 1'000'000'000.0F / _Desired_frame_rate;
 #ifdef _IO2D_WIN32FRAMERATE
 					elapsedNanoseconds.pop_front();
 					elapsedNanoseconds.push_back(chrono::nanoseconds(elapsedDrawNanoseconds));
 
-					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00 / _Desired_frame_rate);
+					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00F / _Desired_frame_rate);
 #endif
 					if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
 						while (_Elapsed_draw_time >= desiredElapsed) {
@@ -508,7 +508,7 @@ int display_surface::begin_show() {
 #endif
 					}
 					else {
-						_Elapsed_draw_time = 0.0;
+						_Elapsed_draw_time = 0.0F;
 #ifdef _IO2D_WIN32FRAMERATE
 						elapsedDrawNanoseconds = 0LL;
 #endif
@@ -532,7 +532,7 @@ int display_surface::begin_show() {
 				sumNanoElapsed += val.count();
 			}
 			auto avgNanoFrameTime = (sumNanoElapsed / elapsedNanoseconds.size());
-			const auto fpsNano = 1'000'000'000.0 / avgNanoFrameTime;
+			const auto fpsNano = 1'000'000'000.0F / avgNanoFrameTime;
 			wstringstream fpsStr;
 			fpsStr << "FPS: " << fixed << setprecision(5) << fpsNano;
 			wstring fpsStr_Str;
@@ -545,7 +545,7 @@ int display_surface::begin_show() {
 		}
 #endif
 	}
-	_Elapsed_draw_time = 0.0;
+	_Elapsed_draw_time = 0.0F;
 	return static_cast<int>(msg.wParam);
 }
 

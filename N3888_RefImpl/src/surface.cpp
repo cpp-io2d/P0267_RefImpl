@@ -5,7 +5,7 @@ using namespace std::experimental;
 using namespace std::experimental::io2d;
 
 //namespace {
-//	const vector_2d _Font_default_size{ 16.0, 16.0 };
+//	const vector_2d _Font_default_size{ 16.0F, 16.0F };
 //}
 //
 surface::surface(format fmt, int width, int height)
@@ -142,7 +142,7 @@ namespace {
 		}
 	}
 
-	void _Set_stroke_props(cairo_t* context, const optional<stroke_props>& s, double miterMax, const optional<dashes>& ds) {
+	void _Set_stroke_props(cairo_t* context, const optional<stroke_props>& s, float miterMax, const optional<dashes>& ds) {
 		if (s == nullopt) {
 			cairo_set_line_width(context, 2.0);
 			cairo_set_line_cap(context, CAIRO_LINE_CAP_BUTT);
@@ -154,14 +154,19 @@ namespace {
 			cairo_set_line_width(context, props.line_width());
 			cairo_set_line_cap(context, _Line_cap_to_cairo_line_cap_t(props.line_cap()));
 			cairo_set_line_join(context, _Line_join_to_cairo_line_join_t(props.line_join()));
-			cairo_set_miter_limit(context, ::std::min<double>(miterMax, props.miter_limit()));
+			cairo_set_miter_limit(context, ::std::min<float>(miterMax, props.miter_limit()));
 		}
 		if (ds == nullopt) {
 			cairo_set_dash(context, nullptr, 0, 0.0);
 		}
 		else {
 			const auto& d = ds.value();
-			cairo_set_dash(context, get<0>(d).data(), _Container_size_to_int(get<0>(d)), get<1>(d));
+			const auto& dFloatVal = get<0>(d);
+			vector<double> dashAsDouble(dFloatVal.size());
+			for (const auto& val : dFloatVal) {
+				dashAsDouble.push_back(static_cast<double>(val));
+			}
+			cairo_set_dash(context, dashAsDouble.data(), _Container_size_to_int(dashAsDouble), static_cast<double>(get<1>(d)));
 			if (cairo_status(context) == CAIRO_STATUS_INVALID_DASH) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_DASH);
 			}
