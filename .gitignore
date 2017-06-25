@@ -236,3 +236,7 @@ compile
 /N3888_RefImpl/.vs/N3888_RefImpl/v15
 Debug_Clang_C2
 Release_Clang_C2
+/.vs
+/.vs/P0267_RefImpl/v15/Browse.VC.db
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite

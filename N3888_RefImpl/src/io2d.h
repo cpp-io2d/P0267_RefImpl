@@ -37,6 +37,14 @@
 #include "xinclwindows_h.h"
 #endif
 
+#if defined BUILD_IO2D_API_DLL 
+#define _IO2D_API __declspec(dllexport)
+#elif defined USE_IO2D_API_DLL
+#define _IO2D_API __declspec(dllimport)
+#else
+#define _IO2D_API
+#endif
+
 namespace std {
 	namespace experimental {
 		namespace io2d {
@@ -79,11 +87,11 @@ namespace std {
 	//struct is_error_code_enum<::cairo_status_t>
 	//	: public ::std::true_type{ };
 
-	::std::error_condition make_error_condition(experimental::io2d::io2d_error e) noexcept;
+	_IO2D_API ::std::error_condition make_error_condition(experimental::io2d::io2d_error e) noexcept;
 
 	//	::std::error_code make_error_code(cairo_status_t e) noexcept;
 
-	::std::error_code make_error_code(experimental::io2d::io2d_error e) noexcept;
+	_IO2D_API ::std::error_code make_error_code(experimental::io2d::io2d_error e) noexcept;
 
 	namespace experimental {
 		namespace io2d {
@@ -238,7 +246,7 @@ namespace std {
 #endif
 #endif
 
-				const ::std::error_category& io2d_category() noexcept;
+				_IO2D_API const ::std::error_category& io2d_category() noexcept;
 
 				class vector_2d {
 					float _X = 0.0F;
@@ -380,9 +388,9 @@ namespace std {
 					return vector_2d{ lhs.x() / rhs.x(), lhs.y() / rhs.y() };
 				}
 
-				float angle_for_point(const vector_2d& ctr, const vector_2d& pt) noexcept;
-				vector_2d point_for_angle(float ang, float mgn = 1.0F) noexcept;
-				vector_2d point_for_angle(float ang, const vector_2d& rad) noexcept;
+				_IO2D_API float angle_for_point(const vector_2d& ctr, const vector_2d& pt) noexcept;
+				_IO2D_API vector_2d point_for_angle(float ang, float mgn = 1.0) noexcept;
+				_IO2D_API vector_2d point_for_angle(float ang, const vector_2d& rad) noexcept;
 
 				class rectangle {
 					float _X = 0.0F;
@@ -569,154 +577,154 @@ namespace std {
 						return _A;
 					}
 
-					static const rgba_color alice_blue;
-					static const rgba_color antique_white;
-					static const rgba_color aqua;
-					static const rgba_color aquamarine;
-					static const rgba_color azure;
-					static const rgba_color beige;
-					static const rgba_color bisque;
-					static const rgba_color black;
-					static const rgba_color blanched_almond;
-					static const rgba_color blue;
-					static const rgba_color blue_violet;
-					static const rgba_color brown;
-					static const rgba_color burly_wood;
-					static const rgba_color cadet_blue;
-					static const rgba_color chartreuse;
-					static const rgba_color chocolate;
-					static const rgba_color coral;
-					static const rgba_color cornflower_blue;
-					static const rgba_color cornsilk;
-					static const rgba_color crimson;
-					static const rgba_color cyan;
-					static const rgba_color dark_blue;
-					static const rgba_color dark_cyan;
-					static const rgba_color dark_goldenrod;
-					static const rgba_color dark_gray;
-					static const rgba_color dark_green;
-					static const rgba_color dark_grey;
-					static const rgba_color dark_khaki;
-					static const rgba_color dark_magenta;
-					static const rgba_color dark_olive_green;
-					static const rgba_color dark_orange;
-					static const rgba_color dark_orchid;
-					static const rgba_color dark_red;
-					static const rgba_color dark_salmon;
-					static const rgba_color dark_sea_green;
-					static const rgba_color dark_slate_blue;
-					static const rgba_color dark_slate_gray;
-					static const rgba_color dark_slate_grey;
-					static const rgba_color dark_turquoise;
-					static const rgba_color dark_violet;
-					static const rgba_color deep_pink;
-					static const rgba_color deep_sky_blue;
-					static const rgba_color dim_gray;
-					static const rgba_color dim_grey;
-					static const rgba_color dodger_blue;
-					static const rgba_color firebrick;
-					static const rgba_color floral_white;
-					static const rgba_color forest_green;
-					static const rgba_color fuchsia;
-					static const rgba_color gainsboro;
-					static const rgba_color ghost_white;
-					static const rgba_color gold;
-					static const rgba_color goldenrod;
-					static const rgba_color gray;
-					static const rgba_color green;
-					static const rgba_color green_yellow;
-					static const rgba_color grey;
-					static const rgba_color honeydew;
-					static const rgba_color hot_pink;
-					static const rgba_color indian_red;
-					static const rgba_color indigo;
-					static const rgba_color ivory;
-					static const rgba_color khaki;
-					static const rgba_color lavender;
-					static const rgba_color lavender_blush;
-					static const rgba_color lawn_green;
-					static const rgba_color lemon_chiffon;
-					static const rgba_color light_blue;
-					static const rgba_color light_coral;
-					static const rgba_color light_cyan;
-					static const rgba_color light_goldenrod_yellow;
-					static const rgba_color light_gray;
-					static const rgba_color light_green;
-					static const rgba_color light_grey;
-					static const rgba_color light_pink;
-					static const rgba_color light_salmon;
-					static const rgba_color light_sea_green;
-					static const rgba_color light_sky_blue;
-					static const rgba_color light_slate_gray;
-					static const rgba_color light_slate_grey;
-					static const rgba_color light_steel_blue;
-					static const rgba_color light_yellow;
-					static const rgba_color lime;
-					static const rgba_color lime_green;
-					static const rgba_color linen;
-					static const rgba_color magenta;
-					static const rgba_color maroon;
-					static const rgba_color medium_aquamarine;
-					static const rgba_color medium_blue;
-					static const rgba_color medium_orchid;
-					static const rgba_color medium_purple;
-					static const rgba_color medium_sea_green;
-					static const rgba_color medium_slate_blue;
-					static const rgba_color medium_spring_green;
-					static const rgba_color medium_turquoise;
-					static const rgba_color medium_violet_red;
-					static const rgba_color midnight_blue;
-					static const rgba_color mint_cream;
-					static const rgba_color misty_rose;
-					static const rgba_color moccasin;
-					static const rgba_color navajo_white;
-					static const rgba_color navy;
-					static const rgba_color old_lace;
-					static const rgba_color olive;
-					static const rgba_color olive_drab;
-					static const rgba_color orange;
-					static const rgba_color orange_red;
-					static const rgba_color orchid;
-					static const rgba_color pale_goldenrod;
-					static const rgba_color pale_green;
-					static const rgba_color pale_turquoise;
-					static const rgba_color pale_violet_red;
-					static const rgba_color papaya_whip;
-					static const rgba_color peach_puff;
-					static const rgba_color peru;
-					static const rgba_color pink;
-					static const rgba_color plum;
-					static const rgba_color powder_blue;
-					static const rgba_color purple;
-					static const rgba_color red;
-					static const rgba_color rosy_brown;
-					static const rgba_color royal_blue;
-					static const rgba_color saddle_brown;
-					static const rgba_color salmon;
-					static const rgba_color sandy_brown;
-					static const rgba_color sea_green;
-					static const rgba_color sea_shell;
-					static const rgba_color sienna;
-					static const rgba_color silver;
-					static const rgba_color sky_blue;
-					static const rgba_color slate_blue;
-					static const rgba_color slate_gray;
-					static const rgba_color slate_grey;
-					static const rgba_color snow;
-					static const rgba_color spring_green;
-					static const rgba_color steel_blue;
-					static const rgba_color tan;
-					static const rgba_color teal;
-					static const rgba_color thistle;
-					static const rgba_color tomato;
-					static const rgba_color transparent_black;
-					static const rgba_color turquoise;
-					static const rgba_color violet;
-					static const rgba_color wheat;
-					static const rgba_color white;
-					static const rgba_color white_smoke;
-					static const rgba_color yellow;
-					static const rgba_color yellow_green;
+					_IO2D_API static const rgba_color alice_blue;
+					_IO2D_API static const rgba_color antique_white;
+					_IO2D_API static const rgba_color aqua;
+					_IO2D_API static const rgba_color aquamarine;
+					_IO2D_API static const rgba_color azure;
+					_IO2D_API static const rgba_color beige;
+					_IO2D_API static const rgba_color bisque;
+					_IO2D_API static const rgba_color black;
+					_IO2D_API static const rgba_color blanched_almond;
+					_IO2D_API static const rgba_color blue;
+					_IO2D_API static const rgba_color blue_violet;
+					_IO2D_API static const rgba_color brown;
+					_IO2D_API static const rgba_color burly_wood;
+					_IO2D_API static const rgba_color cadet_blue;
+					_IO2D_API static const rgba_color chartreuse;
+					_IO2D_API static const rgba_color chocolate;
+					_IO2D_API static const rgba_color coral;
+					_IO2D_API static const rgba_color cornflower_blue;
+					_IO2D_API static const rgba_color cornsilk;
+					_IO2D_API static const rgba_color crimson;
+					_IO2D_API static const rgba_color cyan;
+					_IO2D_API static const rgba_color dark_blue;
+					_IO2D_API static const rgba_color dark_cyan;
+					_IO2D_API static const rgba_color dark_goldenrod;
+					_IO2D_API static const rgba_color dark_gray;
+					_IO2D_API static const rgba_color dark_green;
+					_IO2D_API static const rgba_color dark_grey;
+					_IO2D_API static const rgba_color dark_khaki;
+					_IO2D_API static const rgba_color dark_magenta;
+					_IO2D_API static const rgba_color dark_olive_green;
+					_IO2D_API static const rgba_color dark_orange;
+					_IO2D_API static const rgba_color dark_orchid;
+					_IO2D_API static const rgba_color dark_red;
+					_IO2D_API static const rgba_color dark_salmon;
+					_IO2D_API static const rgba_color dark_sea_green;
+					_IO2D_API static const rgba_color dark_slate_blue;
+					_IO2D_API static const rgba_color dark_slate_gray;
+					_IO2D_API static const rgba_color dark_slate_grey;
+					_IO2D_API static const rgba_color dark_turquoise;
+					_IO2D_API static const rgba_color dark_violet;
+					_IO2D_API static const rgba_color deep_pink;
+					_IO2D_API static const rgba_color deep_sky_blue;
+					_IO2D_API static const rgba_color dim_gray;
+					_IO2D_API static const rgba_color dim_grey;
+					_IO2D_API static const rgba_color dodger_blue;
+					_IO2D_API static const rgba_color firebrick;
+					_IO2D_API static const rgba_color floral_white;
+					_IO2D_API static const rgba_color forest_green;
+					_IO2D_API static const rgba_color fuchsia;
+					_IO2D_API static const rgba_color gainsboro;
+					_IO2D_API static const rgba_color ghost_white;
+					_IO2D_API static const rgba_color gold;
+					_IO2D_API static const rgba_color goldenrod;
+					_IO2D_API static const rgba_color gray;
+					_IO2D_API static const rgba_color green;
+					_IO2D_API static const rgba_color green_yellow;
+					_IO2D_API static const rgba_color grey;
+					_IO2D_API static const rgba_color honeydew;
+					_IO2D_API static const rgba_color hot_pink;
+					_IO2D_API static const rgba_color indian_red;
+					_IO2D_API static const rgba_color indigo;
+					_IO2D_API static const rgba_color ivory;
+					_IO2D_API static const rgba_color khaki;
+					_IO2D_API static const rgba_color lavender;
+					_IO2D_API static const rgba_color lavender_blush;
+					_IO2D_API static const rgba_color lawn_green;
+					_IO2D_API static const rgba_color lemon_chiffon;
+					_IO2D_API static const rgba_color light_blue;
+					_IO2D_API static const rgba_color light_coral;
+					_IO2D_API static const rgba_color light_cyan;
+					_IO2D_API static const rgba_color light_goldenrod_yellow;
+					_IO2D_API static const rgba_color light_gray;
+					_IO2D_API static const rgba_color light_green;
+					_IO2D_API static const rgba_color light_grey;
+					_IO2D_API static const rgba_color light_pink;
+					_IO2D_API static const rgba_color light_salmon;
+					_IO2D_API static const rgba_color light_sea_green;
+					_IO2D_API static const rgba_color light_sky_blue;
+					_IO2D_API static const rgba_color light_slate_gray;
+					_IO2D_API static const rgba_color light_slate_grey;
+					_IO2D_API static const rgba_color light_steel_blue;
+					_IO2D_API static const rgba_color light_yellow;
+					_IO2D_API static const rgba_color lime;
+					_IO2D_API static const rgba_color lime_green;
+					_IO2D_API static const rgba_color linen;
+					_IO2D_API static const rgba_color magenta;
+					_IO2D_API static const rgba_color maroon;
+					_IO2D_API static const rgba_color medium_aquamarine;
+					_IO2D_API static const rgba_color medium_blue;
+					_IO2D_API static const rgba_color medium_orchid;
+					_IO2D_API static const rgba_color medium_purple;
+					_IO2D_API static const rgba_color medium_sea_green;
+					_IO2D_API static const rgba_color medium_slate_blue;
+					_IO2D_API static const rgba_color medium_spring_green;
+					_IO2D_API static const rgba_color medium_turquoise;
+					_IO2D_API static const rgba_color medium_violet_red;
+					_IO2D_API static const rgba_color midnight_blue;
+					_IO2D_API static const rgba_color mint_cream;
+					_IO2D_API static const rgba_color misty_rose;
+					_IO2D_API static const rgba_color moccasin;
+					_IO2D_API static const rgba_color navajo_white;
+					_IO2D_API static const rgba_color navy;
+					_IO2D_API static const rgba_color old_lace;
+					_IO2D_API static const rgba_color olive;
+					_IO2D_API static const rgba_color olive_drab;
+					_IO2D_API static const rgba_color orange;
+					_IO2D_API static const rgba_color orange_red;
+					_IO2D_API static const rgba_color orchid;
+					_IO2D_API static const rgba_color pale_goldenrod;
+					_IO2D_API static const rgba_color pale_green;
+					_IO2D_API static const rgba_color pale_turquoise;
+					_IO2D_API static const rgba_color pale_violet_red;
+					_IO2D_API static const rgba_color papaya_whip;
+					_IO2D_API static const rgba_color peach_puff;
+					_IO2D_API static const rgba_color peru;
+					_IO2D_API static const rgba_color pink;
+					_IO2D_API static const rgba_color plum;
+					_IO2D_API static const rgba_color powder_blue;
+					_IO2D_API static const rgba_color purple;
+					_IO2D_API static const rgba_color red;
+					_IO2D_API static const rgba_color rosy_brown;
+					_IO2D_API static const rgba_color royal_blue;
+					_IO2D_API static const rgba_color saddle_brown;
+					_IO2D_API static const rgba_color salmon;
+					_IO2D_API static const rgba_color sandy_brown;
+					_IO2D_API static const rgba_color sea_green;
+					_IO2D_API static const rgba_color sea_shell;
+					_IO2D_API static const rgba_color sienna;
+					_IO2D_API static const rgba_color silver;
+					_IO2D_API static const rgba_color sky_blue;
+					_IO2D_API static const rgba_color slate_blue;
+					_IO2D_API static const rgba_color slate_gray;
+					_IO2D_API static const rgba_color slate_grey;
+					_IO2D_API static const rgba_color snow;
+					_IO2D_API static const rgba_color spring_green;
+					_IO2D_API static const rgba_color steel_blue;
+					_IO2D_API static const rgba_color tan;
+					_IO2D_API static const rgba_color teal;
+					_IO2D_API static const rgba_color thistle;
+					_IO2D_API static const rgba_color tomato;
+					_IO2D_API static const rgba_color transparent_black;
+					_IO2D_API static const rgba_color turquoise;
+					_IO2D_API static const rgba_color violet;
+					_IO2D_API static const rgba_color wheat;
+					_IO2D_API static const rgba_color white;
+					_IO2D_API static const rgba_color white_smoke;
+					_IO2D_API static const rgba_color yellow;
+					_IO2D_API static const rgba_color yellow_green;
 
 					template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
 					constexpr rgba_color& operator*=(T rhs) {
@@ -2074,50 +2082,50 @@ namespace std {
 					rectangle _Dirty_rect;
 					::std::experimental::io2d::format _Format;
 
-					surface(::std::experimental::io2d::format fmt, int width, int height);
+					_IO2D_API surface(::std::experimental::io2d::format fmt, int width, int height);
 
-					surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
+					_IO2D_API surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
 				protected:
 					surface(surface&& other) noexcept = default;
 					surface& operator=(surface&& other) noexcept = default;
 
 				public:
-					native_handle_type native_handle() const;
+					_IO2D_API native_handle_type native_handle() const;
 
 					// \ref{\iotwod.surface.cons}, constructors:
 					surface() = delete;
 
 					// \ref{\iotwod.surface.modifiers.state}, state modifiers:
-					void flush();
-					void flush(::std::error_code& ec) noexcept;
-					void mark_dirty();
-					void mark_dirty(const rectangle& rect);
-					void map(const ::std::function<void(mapped_surface&)>& action);
-					void map(const ::std::function<void(mapped_surface&, error_code&)>& action, ::std::error_code& ec);
-					void map(const ::std::function<void(mapped_surface&)>& action, const rectangle& extents);
-					void map(const ::std::function<void(mapped_surface&, error_code&)>& action, const rectangle& extents, ::std::error_code& ec);
+					_IO2D_API void flush();
+					_IO2D_API void flush(::std::error_code& ec) noexcept;
+					_IO2D_API void mark_dirty();
+					_IO2D_API void mark_dirty(const rectangle& rect);
+					_IO2D_API void map(const ::std::function<void(mapped_surface&)>& action);
+					_IO2D_API void map(const ::std::function<void(mapped_surface&, error_code&)>& action, ::std::error_code& ec);
+					_IO2D_API void map(const ::std::function<void(mapped_surface&)>& action, const rectangle& extents);
+					_IO2D_API void map(const ::std::function<void(mapped_surface&, error_code&)>& action, const rectangle& extents, ::std::error_code& ec);
 
 					// \ref{\iotwod.surface.modifiers.render}, render modifiers:
-					void clear();
-					void paint(const brush& b, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+					_IO2D_API void clear();
+					_IO2D_API void paint(const brush& b, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 					template <class Allocator>
 					void fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt) {
 						path_group pg(pf);
 						fill(b, pg, bp, rp, cl);
 					}
-					void fill(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+					_IO2D_API void fill(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 					template <class Allocator>
 					void stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt) {
 						path_group pg(pf);
 						stroke(b, pg, bp, sp, d, rp, cl);
 					}
-					void stroke(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+					_IO2D_API void stroke(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 					template <class Allocator>
 					void mask(const brush& b, const brush& mb, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>&rp = nullopt, const optional<clip_props>& cl = nullopt) {
 						path_group pg(pf);
 						mask(b, mb, pg, bp, mp, rp, cl);
 					}
-					void mask(const brush& b, const brush& mb, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+					_IO2D_API void mask(const brush& b, const brush& mb, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 				};
 
 				enum class image_data_format {
@@ -2130,23 +2138,23 @@ namespace std {
 				public:
 					image_surface(image_surface&& other) /*noexcept*/ = default;
 					image_surface& operator=(image_surface&& other) /*noexcept*/ = default;
-					image_surface(::std::experimental::io2d::format fmt, int width, int height);
+					_IO2D_API image_surface(::std::experimental::io2d::format fmt, int width, int height);
 #ifdef _Filesystem_support_test
-					image_surface(::std::experimental::filesystem::path f, experimental::io2d::format fmt, image_data_format idf);
+					_IO2D_API image_surface(::std::experimental::filesystem::path f, experimental::io2d::format fmt, image_data_format idf);
 #else
 					image_surface(::std::string f, experimental::io2d::format fmt, image_data_format idf);
 #endif
 					// Modifiers
 #ifdef _Filesystem_support_test
-					void save(::std::experimental::filesystem::path f, image_data_format idf);
+					_IO2D_API void save(::std::experimental::filesystem::path f, image_data_format idf);
 #else
 					void save(::std::string f, image_data_format idf);
 #endif
 					// Observers
-					::std::experimental::io2d::format format() const noexcept;
-					int width() const noexcept;
-					int height() const noexcept;
-					int stride() const noexcept;
+					_IO2D_API ::std::experimental::io2d::format format() const noexcept;
+					_IO2D_API int width() const noexcept;
+					_IO2D_API int height() const noexcept;
+					_IO2D_API int stride() const noexcept;
 				};
 
 				class mapped_surface {
@@ -2211,7 +2219,7 @@ namespace std {
 
 				const int _Display_surface_ptr_window_data_byte_offset = 0;
 
-				LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+				_IO2D_API LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 
 				class display_surface : public surface {
@@ -2282,7 +2290,7 @@ namespace std {
 #elif defined(USE_XLIB)
 					typedef _Xlib_display_surface_native_handle native_handle_type;
 #endif
-					native_handle_type native_handle() const;
+					_IO2D_API native_handle_type native_handle() const;
 
 					//display_surface() = delete;
 					//display_surface(const display_surface&) = delete;
@@ -2290,63 +2298,63 @@ namespace std {
 					display_surface(display_surface&& other) /*noexcept*/ = default;
 					display_surface& operator=(display_surface&& other) /*noexcept*/ = default;
 
-					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
+					_IO2D_API display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
 						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, float fps = 30.0F);
 					//display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::error_code& ec,
 					//	::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, float fps = 30.0F) noexcept;
 
-					display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
+					_IO2D_API display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
 						int preferredDisplayWidth, int preferredDisplayHeight,
 						::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, float fps = 30.0F);
 
-					~display_surface();
+					_IO2D_API ~display_surface();
 
-					void draw_callback(const ::std::function<void(display_surface& sfc)>& fn);
-					void size_change_callback(const ::std::function<void(display_surface& sfc)>& fn);
-					void width(int w) noexcept;
-					void height(int h) noexcept;
-					void display_width(int w) noexcept;
-					void display_height(int h) noexcept;
-					void dimensions(int w, int h) noexcept;
-					void display_dimensions(int dw, int dh) noexcept;
-					void scaling(experimental::io2d::scaling scl) noexcept;
-					void user_scaling_callback(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn);
-					void letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp = nullopt) noexcept;
-					void auto_clear(bool val) noexcept;
-					void refresh_rate(::std::experimental::io2d::refresh_rate rr) noexcept;
-					bool desired_frame_rate(float fps) noexcept;
-					void redraw_required() noexcept;
+					_IO2D_API void draw_callback(const ::std::function<void(display_surface& sfc)>& fn);
+					_IO2D_API void size_change_callback(const ::std::function<void(display_surface& sfc)>& fn);
+					_IO2D_API void width(int w) noexcept;
+					_IO2D_API void height(int h) noexcept;
+					_IO2D_API void display_width(int w) noexcept;
+					_IO2D_API void display_height(int h) noexcept;
+					_IO2D_API void dimensions(int w, int h) noexcept;
+					_IO2D_API void display_dimensions(int dw, int dh) noexcept;
+					_IO2D_API void scaling(experimental::io2d::scaling scl) noexcept;
+					_IO2D_API void user_scaling_callback(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn);
+					_IO2D_API void letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp = nullopt) noexcept;
+					_IO2D_API void auto_clear(bool val) noexcept;
+					_IO2D_API void refresh_rate(::std::experimental::io2d::refresh_rate rr) noexcept;
+					_IO2D_API bool desired_frame_rate(float fps) noexcept;
+					_IO2D_API void redraw_required() noexcept;
 
-					int begin_show();
-					void end_show() noexcept;
+					_IO2D_API int begin_show();
+					_IO2D_API void end_show() noexcept;
 
-					experimental::io2d::format format() const noexcept;
-					int width() const noexcept;
-					int height() const noexcept;
-					int display_width() const noexcept;
-					int display_height() const noexcept;
-					vector_2d dimensions() const noexcept;
-					vector_2d display_dimensions() const noexcept;
-					experimental::io2d::scaling scaling() const noexcept;
-					function<experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback() const;
-					function<experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback(::std::error_code& ec) const noexcept;
-					const optional<brush>& letterbox_brush() const noexcept;
-					optional<brush_props> letterbox_brush_props() const noexcept;
-					bool auto_clear() const noexcept;
-					experimental::io2d::refresh_rate refresh_rate() const noexcept;
-					float desired_frame_rate() const noexcept;
-					float elapsed_draw_time() const noexcept;
+					_IO2D_API experimental::io2d::format format() const noexcept;
+					_IO2D_API int width() const noexcept;
+					_IO2D_API int height() const noexcept;
+					_IO2D_API int display_width() const noexcept;
+					_IO2D_API int display_height() const noexcept;
+					_IO2D_API vector_2d dimensions() const noexcept;
+					_IO2D_API vector_2d display_dimensions() const noexcept;
+					_IO2D_API experimental::io2d::scaling scaling() const noexcept;
+					_IO2D_API function<experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback() const;
+					_IO2D_API function<experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback(::std::error_code& ec) const noexcept;
+					_IO2D_API const optional<brush>& letterbox_brush() const noexcept;
+					_IO2D_API optional<brush_props> letterbox_brush_props() const noexcept;
+					_IO2D_API bool auto_clear() const noexcept;
+					_IO2D_API experimental::io2d::refresh_rate refresh_rate() const noexcept;
+					_IO2D_API float desired_frame_rate() const noexcept;
+					_IO2D_API float elapsed_draw_time() const noexcept;
 				};
 
-				int format_stride_for_width(format format, int width) noexcept;
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
+				_IO2D_API int format_stride_for_width(format format, int width) noexcept;
+				_IO2D_API display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F) noexcept;
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
+				_IO2D_API display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat,
 					int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F) noexcept;
-				image_surface make_image_surface(format format, int width, int height);
+				_IO2D_API image_surface make_image_surface(format format, int width, int height);
 				image_surface make_image_surface(format format, int width, int height, ::std::error_code& ec) noexcept;
-				image_surface make_image_surface(image_surface& sfc);
+				_IO2D_API image_surface make_image_surface(image_surface& sfc);
 				enum class _To_radians_sfinae {};
 				constexpr static _To_radians_sfinae _To_radians_sfinae_val = {};
 				enum class _To_degrees_sfinae {};
