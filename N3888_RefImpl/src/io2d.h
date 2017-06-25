@@ -718,8 +718,16 @@ namespace std {
 					static const rgba_color yellow;
 					static const rgba_color yellow_green;
 
-					constexpr rgba_color& operator*=(double rhs) {
-						rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
+					template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+					constexpr rgba_color& operator*=(T rhs) {
+						r(::std::min(r() * rhs / 255.0, 1.0));
+						g(::std::min(g() * rhs / 255.0, 1.0));
+						b(::std::min(b() * rhs / 255.0, 1.0));
+						a(::std::min(a() * rhs / 255.0, 1.0));
+						return *this;
+					}
+					template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+					constexpr rgba_color& operator*=(U rhs) {
 						r(::std::min(r() * rhs, 1.0));
 						g(::std::min(g() * rhs, 1.0));
 						b(::std::min(b() * rhs, 1.0));
@@ -735,7 +743,8 @@ namespace std {
 					return !(lhs == rhs);
 				}
 
-				inline constexpr rgba_color operator*(const rgba_color& lhs, double rhs) {
+				template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
+				inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
 					rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
 					return{
 						::std::min(lhs.r() * rhs, 1.0),
@@ -745,13 +754,36 @@ namespace std {
 					};
 				}
 
-				inline constexpr rgba_color operator*(double lhs, const rgba_color& rhs) {
+				template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+				inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
+					rhs = ::std::max(::std::min(rhs, 1.0), 0.0);
+					return{
+						::std::min(lhs.r() * rhs / 255.0, 1.0),
+						::std::min(lhs.g() * rhs / 255.0, 1.0),
+						::std::min(lhs.b() * rhs / 255.0, 1.0),
+						::std::min(lhs.a() * rhs / 255.0, 1.0)
+					};
+				}
+
+				template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
+				inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
 					lhs = ::std::max(::std::min(lhs, 1.0), 0.0);
 					return{
 						::std::min(lhs * rhs.r(), 1.0),
 						::std::min(lhs * rhs.g(), 1.0),
 						::std::min(lhs * rhs.b(), 1.0),
 						::std::min(lhs * rhs.a(), 1.0)
+					};
+				}
+
+				template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+				inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
+					lhs = ::std::max(::std::min(lhs, 1.0), 0.0);
+					return{
+						::std::min(lhs / 255.0 * rhs.r(), 1.0),
+						::std::min(lhs / 255.0 * rhs.g(), 1.0),
+						::std::min(lhs / 255.0 * rhs.b(), 1.0),
+						::std::min(lhs / 255.0 * rhs.a(), 1.0)
 					};
 				}
 
