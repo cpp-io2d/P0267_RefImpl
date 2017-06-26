@@ -128,10 +128,6 @@ image_surface::image_surface(experimental::filesystem::path f, experimental::io2
 image_surface::image_surface(string f, experimental::io2d::format fmt, image_data_format idf)
 #endif
 	: surface({ nullptr, nullptr }, fmt) {
-
-	if (fmt == format::a1) {
-		throw runtime_error("Not implemented.");
-	}
 //	basic_ifstream<unsigned char, unsignedCharTraits> fileStream;
 //#ifdef _Filesystem_support_test
 //	fileStream.open(f.string(), ios_base::in | ios_base::binary | ios_base::ate);
@@ -255,11 +251,6 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 				}
 			}
 		} break;
-		case std::experimental::io2d::v1::format::a1:
-		{
-			cairo_surface_unmap_image(_Surface.get(), mapSfc);
-			throw runtime_error("Not supported.");
-		} break;
 		case std::experimental::io2d::v1::format::rgb16_565:
 		{
 			for (int i = 0; i < h; i++) {
@@ -345,11 +336,6 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 		{
 			cairo_surface_unmap_image(_Surface.get(), mapSfc);
 			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
-		} break;
-		case std::experimental::io2d::v1::format::a1:
-		{
-			cairo_surface_unmap_image(_Surface.get(), mapSfc);
-			throw runtime_error("Not supported.");
 		} break;
 		case std::experimental::io2d::v1::format::rgb16_565:
 		{
@@ -449,11 +435,6 @@ void image_surface::save(string f, image_data_format idf) {
 					sfcDataPtr[(i * sfcStride) + (j * 4) + 3] = mapData[(i * mapStride) + j];
 				}
 			}
-		} break;
-		case std::experimental::io2d::v1::format::a1: // This format is going to be obliterated in R5.
-		{
-			pngImg.format = PNG_FORMAT_BGRA; // The pixels are stored in bits with a 32-bit int, native-endian.
-			throw runtime_error("Not supported.");
 		} break;
 		case std::experimental::io2d::v1::format::rgb16_565:
 		{
@@ -599,9 +580,6 @@ void image_surface::save(string f, image_data_format idf) {
 		{
 			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
 		} break;
-		case std::experimental::io2d::v1::format::a1:
-			throw runtime_error("Not supported.");
-			break;
 		case std::experimental::io2d::v1::format::rgb16_565:
 		{
 			for (int i = 0; i < h; i++) {

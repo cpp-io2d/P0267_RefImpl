@@ -127,7 +127,6 @@ namespace std {
 					argb32,
 					xrgb32,
 					a8,
-					a1,
 					rgb16_565,
 					rgb30
 				};
@@ -2553,8 +2552,6 @@ namespace std {
 						return CAIRO_FORMAT_RGB24;
 					case ::std::experimental::io2d::format::a8:
 						return CAIRO_FORMAT_A8;
-					case ::std::experimental::io2d::format::a1:
-						return CAIRO_FORMAT_A1;
 					case ::std::experimental::io2d::format::rgb16_565:
 						return CAIRO_FORMAT_RGB16_565;
 					case ::std::experimental::io2d::format::rgb30:
@@ -2574,12 +2571,12 @@ namespace std {
 						return ::std::experimental::io2d::format::xrgb32;
 					case CAIRO_FORMAT_A8:
 						return ::std::experimental::io2d::format::a8;
-					case CAIRO_FORMAT_A1:
-						return ::std::experimental::io2d::format::a1;
 					case CAIRO_FORMAT_RGB16_565:
 						return ::std::experimental::io2d::format::rgb16_565;
 					case CAIRO_FORMAT_RGB30:
 						return ::std::experimental::io2d::format::rgb30;
+					case CAIRO_FORMAT_A1:
+						// intentional fallthrough
 					default:
 						throw ::std::runtime_error("Unknown cairo_format_t value.");
 					}
@@ -3381,12 +3378,6 @@ namespace std {
 				inline brush::native_handle_type brush::native_handle() const noexcept {
 					return _Brush.get();
 				}
-
-				//inline brush::brush(brush::native_handle_type nh) noexcept
-				//	: _Brush(nh, &cairo_pattern_destroy)
-				//	, _Image_surface()
-				//	, _Brush_type(_Cairo_pattern_type_t_to_brush_type(cairo_pattern_get_type(nh))) {
-				//}
 
 				inline brush::brush(const rgba_color& color)
 					: _Brush()
