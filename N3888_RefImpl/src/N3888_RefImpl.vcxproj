@@ -395,7 +395,6 @@
     <ClCompile Include="display_surface-common.cpp" />
     <ClCompile Include="display_surface-win32.cpp" />
     <ClCompile Include="image_surface.cpp" />
-    <ClCompile Include="io2d_error_category.cpp" />
     <ClCompile Include="rgba_color.cpp" />
     <ClCompile Include="standalone_functions.cpp" />
     <ClCompile Include="surface.cpp" />

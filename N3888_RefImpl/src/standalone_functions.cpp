@@ -8,11 +8,6 @@ namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
-				const ::std::error_category& io2d_category() noexcept {
-					static io2d_error_category ec;
-					return ec;
-				}
-
 				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, float desiredFramerate) {
 					return { preferredWidth, preferredHeight, preferredFormat, scl, rr, desiredFramerate };
 				}
@@ -82,15 +77,3 @@ namespace std {
 		}
 	}
 }
-
-namespace std {
-	::std::error_condition make_error_condition(io2d_error err) noexcept {
-		return ::std::error_condition(static_cast<int>(err), io2d_category());
-	}
-
-	::std::error_code make_error_code(io2d_error e) noexcept {
-		return ::std::error_code(static_cast<int>(e), io2d_category());
-	}
-
-}
-

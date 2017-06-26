@@ -8,6 +8,8 @@ using namespace std::experimental::io2d;
 //	const vector_2d _Font_default_size{ 16.0F, 16.0F };
 //}
 //
+constexpr cairo_matrix_t _Cairo_identity_matrix{ 1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F };
+
 surface::surface(format fmt, int width, int height)
 	: _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy))
