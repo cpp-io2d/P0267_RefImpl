@@ -2193,7 +2193,7 @@ namespace std {
 
 					static Bool _X11_if_event_pred(Display* display, XEvent* event, XPointer arg);
 #elif  defined(_WIN32) || (_WIN64)
-					friend LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+					friend _IO2D_API LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 					DWORD _Window_style;
 					HWND _Hwnd;
 
