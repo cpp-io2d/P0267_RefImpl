@@ -242,3 +242,5 @@ Release_Clang_C2
 /.vs/slnx.sqlite
 *.tlog
 *.idb
+*.exp
+*.lib
