@@ -1,6 +1,6 @@
 #include "Maths.h"
 
-asteroids::vector_2d asteroids::rotate(const vector_2d& point, float theta, const vector_2d& origin)
+rocks_in_space::vector_2d rocks_in_space::rotate(const vector_2d& point, float theta, const vector_2d& origin)
 {
 	const auto translation = point - origin;
 	const auto s = sin(theta);
@@ -9,7 +9,7 @@ asteroids::vector_2d asteroids::rotate(const vector_2d& point, float theta, cons
 	return vector_2d{ translation.x() * c - translation.y() * s, translation.x() * s + translation.y() * c } +origin;
 }
 
-bool asteroids::intersects(vector_2d a1, vector_2d a2, vector_2d b1, vector_2d b2)
+bool rocks_in_space::intersects(vector_2d a1, vector_2d a2, vector_2d b1, vector_2d b2)
 {
 	assert(!(a1 == a2 || b1 == b2));
 
@@ -48,3 +48,32 @@ bool asteroids::intersects(vector_2d a1, vector_2d a2, vector_2d b1, vector_2d b
 	return !(intersection_point < 0.0 || intersection_point > a2_length);
 }
 
+bool rocks_in_space::intersects(const rectangle& a, const rectangle& b)
+{
+	return contains(a, b.top_left()) ||
+		contains(a, b.bottom_right()) ||
+		contains(a, vector_2d(b.top(), b.right())) ||
+		contains(a, vector_2d(b.bottom(), b.left())) ||
+		contains(b, a.top_left()) ||
+		contains(b, a.bottom_right()) ||
+		contains(b, vector_2d(a.top(), a.right())) ||
+		contains(b, vector_2d(a.bottom(), a.left()));
+}
+
+bool rocks_in_space::contains(const rectangle& r, const vector_2d& p)
+{
+	return p.x() >= r.left() &&
+		p.x() <= r.right() &&
+		p.y() >= r.top() &&
+		p.y() <= r.bottom();
+}
+
+float rocks_in_space::radius(const rectangle& r)
+{
+	return (r.top_left() - r.bottom_right()).magnitude() / 2.0f;
+}
+
+rocks_in_space::rectangle rocks_in_space::translate(const rectangle& r, const vector_2d& v)
+{
+	return{ r.x() + v.x(), r.y() + v.y(), r.width(), r.height() };
+}

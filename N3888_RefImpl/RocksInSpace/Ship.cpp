@@ -6,20 +6,20 @@
 
 namespace
 {
-	using asteroids::path_vertices;
-	using asteroids::path_buffer;
-	using asteroids::vector_2d;
+	using rocks_in_space::path_vertices;
+	using rocks_in_space::path_buffer;
+	using rocks_in_space::vector_2d;
 
 	path_vertices ship_vb{ vector_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } };
-	const asteroids::path_buffer ship_shape{ 6, ship_vb };
+	const rocks_in_space::path_buffer ship_shape{ 6, ship_vb };
 }
 
-asteroids::ship::ship(const controllable_physics& cp)
+rocks_in_space::ship::ship(const controllable_physics& cp)
 	: m_physics(cp)
 	, m_path(ship_shape)
 {}
 
-asteroids::ship_update asteroids::ship::update()
+rocks_in_space::ship_update rocks_in_space::ship::update()
 {
 	if (anti_clockwise())
 	{
@@ -42,7 +42,7 @@ asteroids::ship_update asteroids::ship::update()
 	return{ fire(), m_physics.position(), m_physics.orientation() };
 }
 
-void asteroids::ship::draw(display_surface& ds)
+void rocks_in_space::ship::draw(display_surface& ds)
 {
 	using namespace std::experimental::io2d;
 
@@ -59,12 +59,12 @@ void asteroids::ship::draw(display_surface& ds)
 	ds.stroke(brush{ rgba_color::white }, path);
 }
 
-asteroids::missile::missile(const vector_2d& position, float orientation, bool active)
+rocks_in_space::missile::missile(const vector_2d& position, float orientation, bool active)
 	: m_physics(position, pol_to_car({ missile_travel_distance_per_tick, orientation }))
 	, m_age(active ? 0.0F : max_missile_age)
 {}
 
-bool asteroids::missile::update()
+bool rocks_in_space::missile::update()
 {
 	if (!active()) return true;
 
@@ -73,17 +73,17 @@ bool asteroids::missile::update()
 	return active();
 }
 
-void asteroids::missile::destroy()
+void rocks_in_space::missile::destroy()
 {
 	m_age = max_missile_age;
 }
 
-bool asteroids::missile::active() const
+bool rocks_in_space::missile::active() const
 {
 	return (m_age < max_missile_age);
 }
 
-void asteroids::missile::draw(display_surface& ds)
+void rocks_in_space::missile::draw(display_surface& ds)
 {
 	using namespace std::experimental::io2d;
 

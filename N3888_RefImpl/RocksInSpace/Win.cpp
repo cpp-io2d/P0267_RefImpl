@@ -12,12 +12,12 @@ namespace
 	auto hyperspace_key = 'O';
 }
 
-void asteroids::get_key_states()
+void rocks_in_space::get_key_states()
 {
 	press() = { GetKeyState(anti_clockwise_key) < 0, GetKeyState(clockwise_key) < 0, GetKeyState(thrust_key) < 0, GetKeyState(fire_key) < 0, GetKeyState(hyperspace_key) < 0 };
 }
 
 int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-	asteroids::main();
+	rocks_in_space::main();
 }

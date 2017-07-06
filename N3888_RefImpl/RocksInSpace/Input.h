@@ -1,6 +1,6 @@
 #pragma once
 
-namespace asteroids
+namespace rocks_in_space
 {
 	struct keypress
 	{

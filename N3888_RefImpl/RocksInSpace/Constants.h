@@ -1,6 +1,6 @@
 #pragma once
 
-namespace asteroids
+namespace rocks_in_space
 {
 	constexpr auto playing_field_width{ 640.0F };
 	constexpr auto playing_field_height{ 480.0F };
@@ -19,6 +19,7 @@ namespace asteroids
 	constexpr auto spin_left{ 0.01F };
 	constexpr auto spin_right{ -0.01F };
 	constexpr auto thrust_force{ 0.001F };
+	constexpr auto max_ship_speed{ 0.9F };
 
 	constexpr auto missile_travel_distance_per_tick{ 1.0F };
 	constexpr auto max_missile_age{ 30.0F };

@@ -3,8 +3,8 @@
 
 namespace
 {
-	using asteroids::path_vertices;
-	using asteroids::vector_2d;
+	using rocks_in_space::path_vertices;
+	using rocks_in_space::vector_2d;
 
 	path_vertices a1_vb = { vector_2d{ -2, 4 },{ 2, -2 },{ 2, 2 },{ 2, -2 },{ -1, -2 },{ 1, -2 },{ -3, -2 },{ -3, 0 },{ -2, 2 },{ 0, 4 },{ 2, 2 } };
 	path_vertices a2_vb = { vector_2d{ -2, 4 },{ 2, -1 },{ 2, 1 },{ 2, -2 },{ -2, -1 },{ 2, -2 },{ -2, -3 },{ -3, 1 },{ -1, -1 },{ -2, 2 },{ 1, 2 },{ -1, 2 },{ 2, 2 } };
@@ -12,19 +12,19 @@ namespace
 	path_vertices a4_vb = { vector_2d{ -1, 4 },{ 3, 0 },{ 2, -3 },{ 0, -2 },{ -2, -3 },{ -2, 0 },{ 0, 3 },{ -2, -3 },{ -2, 3 },{ 2, 1 },{ -2, 1 },{ 3, 3 } };
 }
 
-const asteroids::path_buffer asteroids::asteroid::a1 = { 11, a1_vb };
-const asteroids::path_buffer asteroids::asteroid::a2 = { 13, a2_vb };
-const asteroids::path_buffer asteroids::asteroid::a3 = { 12, a3_vb };
-const asteroids::path_buffer asteroids::asteroid::a4 = { 12, a4_vb };
+const rocks_in_space::path_buffer rocks_in_space::asteroid::a1 = { 11, a1_vb };
+const rocks_in_space::path_buffer rocks_in_space::asteroid::a2 = { 13, a2_vb };
+const rocks_in_space::path_buffer rocks_in_space::asteroid::a3 = { 12, a3_vb };
+const rocks_in_space::path_buffer rocks_in_space::asteroid::a4 = { 12, a4_vb };
 
 
 
-void asteroids::asteroid::update()
+void rocks_in_space::asteroid::update()
 {
 	if (m_active) m_physics.update();
 }
 
-asteroids::asteroid_destruction asteroids::asteroid::destroy()
+rocks_in_space::asteroid_destruction rocks_in_space::asteroid::destroy()
 {
 	m_active = false;
 	if (m_size == big_asteroid_size)	return{ big_asteroid_score, medium_asteroid_size, &m_physics };
@@ -32,7 +32,7 @@ asteroids::asteroid_destruction asteroids::asteroid::destroy()
 	return{ small_asteroid_score, 0.0, nullptr };
 }
 
-void asteroids::asteroid::draw(std::experimental::io2d::display_surface& ds) const
+void rocks_in_space::asteroid::draw(std::experimental::io2d::display_surface& ds) const
 {
 	using namespace std::experimental::io2d;
 

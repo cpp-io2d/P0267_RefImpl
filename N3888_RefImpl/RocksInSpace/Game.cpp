@@ -4,10 +4,10 @@
 
 namespace
 {
-	static const asteroids::path_buffer* asteroid_vbs[] = { &asteroids::asteroid::a1, &asteroids::asteroid::a2, &asteroids::asteroid::a3, &asteroids::asteroid::a4 };
+	static const rocks_in_space::path_buffer* asteroid_vbs[] = { &rocks_in_space::asteroid::a1, &rocks_in_space::asteroid::a2, &rocks_in_space::asteroid::a3, &rocks_in_space::asteroid::a4 };
 }
 
-asteroids::game::game()
+rocks_in_space::game::game()
 	: m_level{ 1 }
 	, m_score {	0 }
 	, m_ship(controllable_physics{
@@ -25,7 +25,7 @@ asteroids::game::game()
 	generate_level();
 }
 
-void asteroids::game::update(display_surface& ds)
+void rocks_in_space::game::update(display_surface& ds)
 {
 	using namespace std::experimental::io2d;
 
@@ -40,7 +40,7 @@ void asteroids::game::update(display_surface& ds)
 	draw_missiles(ds);
 }
 
-void asteroids::game::generate_level()
+void rocks_in_space::game::generate_level()
 {
 	auto count = m_level * 2 + 2;
 	std::uniform_int_distribution<> edge(1, 4);
@@ -63,17 +63,17 @@ void asteroids::game::generate_level()
 	}
 }
 
-void asteroids::game::update_asteroids()
+void rocks_in_space::game::update_asteroids()
 {
 	for (auto& a : m_asteroids) { a.update(); }
 }
 
-void asteroids::game::draw_asteroids(display_surface& ds)
+void rocks_in_space::game::draw_asteroids(display_surface& ds)
 {
 	for (auto& a : m_asteroids) { a.draw(ds); }
 }
 
-void asteroids::game::update_ship()
+void rocks_in_space::game::update_ship()
 {
 	auto missile = m_ship.update();
 	if (missile.m_launch && m_ship_missile_count < max_missiles)
@@ -88,7 +88,7 @@ void asteroids::game::update_ship()
 	}
 }
 
-void asteroids::game::update_missiles()
+void rocks_in_space::game::update_missiles()
 {
 	auto ad = std::vector<asteroid_destruction>{};
 	ad.reserve(max_missiles);
@@ -124,21 +124,21 @@ void asteroids::game::update_missiles()
 	}
 }
 
-void asteroids::game::draw_ship(display_surface& ds)
+void rocks_in_space::game::draw_ship(display_surface& ds)
 {
 	m_ship.draw(ds);
 }
 
-void asteroids::game::draw_missiles(display_surface& ds)
+void rocks_in_space::game::draw_missiles(display_surface& ds)
 {
 	for (auto& m : m_ship_missiles) { m.draw(ds); }
 }
 
-int asteroids::main()
+int rocks_in_space::main()
 {
 	using namespace std::experimental::io2d;
 
-	asteroids::game sd;
+	rocks_in_space::game sd;
 	auto ds = make_display_surface(640, 480, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
 	ds.draw_callback([&](display_surface& ds) {sd.update(ds); });
 	return ds.begin_show();
