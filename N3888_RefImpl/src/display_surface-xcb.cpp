@@ -79,7 +79,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 	, _Native_surface(nullptr, &cairo_surface_destroy)
 	, _Native_context(nullptr, &cairo_destroy)
 	, _Letterbox_brush()
-	, _Default_brush(bgra_color::transparent_black()) {
+	, _Default_brush(rgba_color::transparent_black) {
 	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
 		throw invalid_argument("Invalid parameter.");
 	}
