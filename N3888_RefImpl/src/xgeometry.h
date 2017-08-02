@@ -17,10 +17,10 @@ namespace std::experimental::io2d {
 				, _Height(height) {
 			}
 			constexpr bounding_box(const point_2d& tl, const point_2d& br) noexcept
-				: _X(tl.x())
-				, _Y(tl.y())
-				, _Width(::std::max(0.0F, br.x() - tl.x()))
-				, _Height(::std::max(0.0F, br.y() - tl.y())) {
+				: _X(tl.x)
+				, _Y(tl.y)
+				, _Width(::std::max(0.0F, br.x - tl.x))
+				, _Height(::std::max(0.0F, br.y - tl.y)) {
 			}
 
 			constexpr void x(float value) noexcept {
@@ -36,12 +36,12 @@ namespace std::experimental::io2d {
 				_Height = value;
 			}
 			constexpr void top_left(const point_2d& value) noexcept {
-				_X = value.x();
-				_Y = value.y();
+				_X = value.x;
+				_Y = value.y;
 			}
 			constexpr void bottom_right(const point_2d& value) noexcept {
-				_Width = max(0.0F, value.x() - _X);
-				_Height = max(0.0F, value.y() - _Y);
+				_Width = max(0.0F, value.x - _X);
+				_Height = max(0.0F, value.y - _Y);
 			}
 
 			constexpr float x() const noexcept;
@@ -55,12 +55,7 @@ namespace std::experimental::io2d {
 			constexpr point_2d top_left() const noexcept;
 			constexpr point_2d bottom_right() const noexcept;
 
-			constexpr bool operator==(const bounding_box& rhs) const noexcept {
-				return _X == rhs._X && _Y == rhs._Y && _Width == rhs._Width && _Height == rhs._Height;
-			}
-			constexpr bool operator!=(const bounding_box& rhs) const noexcept {
-				return !((*this) == rhs);
-			}
+			friend constexpr bool operator==(const bounding_box& lhs, const bounding_box& rhs) noexcept;
 		};
 
 		inline constexpr float bounding_box::x() const noexcept {
@@ -138,9 +133,13 @@ namespace std::experimental::io2d {
 
 		class bounding_box;
 		constexpr bool operator==(const bounding_box& lhs, const bounding_box& rhs)
-			noexcept;
+			noexcept {
+			return lhs._X == rhs._X && lhs._Y == rhs._Y && lhs._Width == rhs._Width && lhs._Height == rhs._Height;
+		}
 		constexpr bool operator!=(const bounding_box& lhs, const bounding_box& rhs)
-			noexcept;
+			noexcept {
+			return !(lhs == rhs);
+		}
 		class circle;
 		constexpr bool operator==(const circle& lhs, const circle& rhs) noexcept;
 		constexpr bool operator!=(const circle& lhs, const circle& rhs) noexcept;

@@ -48,95 +48,25 @@ namespace std::experimental::io2d {
 			}
 		}
 
-		//class point_2d {
-		//	float _X = 0.0F;
-		//	float _Y = 0.0F;
-		//public:
-		//	constexpr point_2d() noexcept { }
-		//	constexpr point_2d(float x, float y) noexcept
-		//		: _X(x)
-		//		, _Y(y) {
-		//	}
-
-		//	constexpr void x(float value) noexcept {
-		//		_X = value;
-		//	}
-		//	constexpr void y(float value) noexcept {
-		//		_Y = value;
-		//	}
-
-		//	constexpr float x() const noexcept {
-		//		return _X;
-		//	}
-		//	constexpr float y() const noexcept {
-		//		return _Y;
-		//	}
-
-		//	float magnitude() const noexcept {
-		//		return sqrt(_X * _X + _Y * _Y);
-		//	}
-		//	constexpr float magnitude_squared() const noexcept {
-		//		return _X * _X + _Y * _Y;
-		//	}
-		//	constexpr float dot(const point_2d& other) const noexcept {
-		//		return _X * other._X + _Y * other._Y;
-		//	}
-
-		//	float angular_direction() const noexcept {
-		//		auto v = atan2(_Y, _X);
-		//		if (v < 0.0F) {
-		//			v += two_pi<float>;
-		//		}
-		//		return v;
-		//	}
-
-		//	point_2d to_unit() const noexcept {
-		//		auto leng = magnitude();
-
-		//		return point_2d{ _X / leng, _Y / leng };
-		//	}
-
-		//	constexpr point_2d& operator+=(const point_2d& rhs) noexcept;
-		//	constexpr point_2d& operator-=(const point_2d& rhs) noexcept;
-		//	constexpr point_2d& operator*=(float rhs) noexcept;
-		//	constexpr point_2d& operator*=(const point_2d& rhs) noexcept;
-		//	constexpr point_2d& operator/=(float rhs) noexcept;
-		//	constexpr point_2d& operator/=(const point_2d& rhs) noexcept;
-		//};
-
 		inline constexpr point_2d::point_2d() noexcept
 			: point_2d(0.0f, 0.0f) {}
-		inline constexpr point_2d::point_2d(float x, float y) noexcept
-			: _X(x)
-			, _Y(y) {
-		}
-
-		inline constexpr void point_2d::x(float value) noexcept {
-			_X = value;
-		}
-		inline constexpr void point_2d::y(float value) noexcept {
-			_Y = value;
-		}
-
-		inline constexpr float point_2d::x() const noexcept {
-			return _X;
-		}
-		inline constexpr float point_2d::y() const noexcept {
-			return _Y;
+		inline constexpr point_2d::point_2d(float xval, float yval) noexcept
+			: x(xval)
+			, y(yval) {
 		}
 
 		inline float point_2d::magnitude() const noexcept {
-			return sqrt(_X * _X + _Y * _Y);
+			return sqrt(x * x + y * y);
 		}
 		inline constexpr float point_2d::magnitude_squared() const noexcept {
-			return _X * _X + _Y * _Y;
+			return x * x + y * y;
 		}
 		inline constexpr float point_2d::dot(const point_2d& other) const noexcept {
-			return _X * other._X + _Y * other._Y;
+			return x * other.x + y * other.y;
 		}
 
 		inline float point_2d::angular_direction() const noexcept {
-			auto v = atan2(_Y, _X);
+			auto v = atan2(y, x);
 			if (v < 0.0F) {
 				v += two_pi<float>;
 			}
@@ -146,11 +76,11 @@ namespace std::experimental::io2d {
 		inline point_2d point_2d::to_unit() const noexcept {
 			auto leng = magnitude();
 
-			return point_2d{ _X / leng, _Y / leng };
+			return point_2d{ x / leng, y / leng };
 		}
 
 		inline constexpr bool operator==(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return lhs.x() == rhs.x() && lhs.y() == rhs.y();
+			return lhs.x == rhs.x && lhs.y == rhs.y;
 		}
 
 		inline constexpr bool operator!=(const point_2d& lhs, const point_2d& rhs) noexcept {
@@ -162,75 +92,75 @@ namespace std::experimental::io2d {
 		}
 
 		inline constexpr point_2d operator+(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs.x() + rhs.x(), lhs.y() + rhs.y() };
+			return point_2d{ lhs.x + rhs.x, lhs.y + rhs.y };
 		}
 
 		inline constexpr point_2d& point_2d::operator+=(const point_2d& rhs) noexcept {
-			_X = _X + rhs.x();
-			_Y = _Y + rhs.y();
+			x = x + rhs.x;
+			y = y + rhs.y;
 			return *this;
 		}
 
 		inline constexpr point_2d operator-(const point_2d& lhs) noexcept {
-			return point_2d{ -lhs.x(), -lhs.y() };
+			return point_2d{ -lhs.x, -lhs.y };
 		}
 
 		inline constexpr point_2d operator-(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs.x() - rhs.x(), lhs.y() - rhs.y() };
+			return point_2d{ lhs.x - rhs.x, lhs.y - rhs.y };
 		}
 
 		inline constexpr point_2d& point_2d::operator-=(const point_2d& rhs) noexcept {
-			_X = _X - rhs.x();
-			_Y = _Y - rhs.y();
+			x = x - rhs.x;
+			y = y - rhs.y;
 			return *this;
 		}
 
 		inline constexpr point_2d& point_2d::operator*=(float rhs) noexcept {
-			_X *= rhs;
-			_Y *= rhs;
+			x *= rhs;
+			y *= rhs;
 			return *this;
 		}
 
 		inline constexpr point_2d& point_2d::operator*=(const point_2d& rhs) noexcept {
-			_X *= rhs.x();
-			_Y *= rhs.y();
+			x *= rhs.x;
+			y *= rhs.y;
 			return *this;
 		}
 
 		inline constexpr point_2d operator*(const point_2d& lhs, float rhs) noexcept {
-			return point_2d{ lhs.x() * rhs, lhs.y() * rhs };
+			return point_2d{ lhs.x * rhs, lhs.y * rhs };
 		}
 
 		inline constexpr point_2d operator*(float lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs * rhs.x(), lhs * rhs.y() };
+			return point_2d{ lhs * rhs.x, lhs * rhs.y };
 		}
 
 		inline constexpr point_2d operator*(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs.x() * rhs.x(), lhs.y() * rhs.y() };
+			return point_2d{ lhs.x * rhs.x, lhs.y * rhs.y };
 		}
 
 		inline constexpr point_2d& point_2d::operator/=(float rhs) noexcept {
-			_X /= rhs;
-			_Y /= rhs;
+			x /= rhs;
+			y /= rhs;
 			return *this;
 		}
 
 		inline constexpr point_2d& point_2d::operator/=(const point_2d& rhs) noexcept {
-			_X /= rhs.x();
-			_Y /= rhs.y();
+			x /= rhs.x;
+			y /= rhs.y;
 			return *this;
 		}
 
 		inline constexpr point_2d operator/(const point_2d& lhs, float rhs) noexcept {
-			return point_2d{ lhs.x() / rhs, lhs.y() / rhs };
+			return point_2d{ lhs.x / rhs, lhs.y / rhs };
 		}
 
 		inline constexpr point_2d operator/(float lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs / rhs.x(), lhs / rhs.y() };
+			return point_2d{ lhs / rhs.x, lhs / rhs.y };
 		}
 
 		inline constexpr point_2d operator/(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs.x() / rhs.x(), lhs.y() / rhs.y() };
+			return point_2d{ lhs.x / rhs.x, lhs.y / rhs.y };
 		}
 
 		//class matrix_2d;
@@ -330,9 +260,9 @@ namespace std::experimental::io2d {
 			return _M00 * _M11 - _M01 * _M10;
 		}
 		inline constexpr point_2d matrix_2d::transform_pt(point_2d pt) const noexcept {
-			auto result = point_2d{ _M00 * pt.x() + _M10 * pt.y() + _M20, _M01 * pt.x() + _M11 * pt.y() + _M21 };
-			result.x(_Round_floating_point_to_zero(result.x()));
-			result.y(_Round_floating_point_to_zero(result.y()));
+			auto result = point_2d{ _M00 * pt.x + _M10 * pt.y + _M20, _M01 * pt.x + _M11 * pt.y + _M21 };
+			result.x = _Round_floating_point_to_zero(result.x);
+			result.y = _Round_floating_point_to_zero(result.y);
 			return result;
 		}
 
@@ -669,7 +599,7 @@ namespace std::experimental::io2d {
 					auto lmtx = m;
 					lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
 					auto centerOffset = point_for_angle(two_pi<float> -_Start_angle, _Radius);
-					centerOffset.y(-centerOffset.y());
+					centerOffset.y = -centerOffset.y;
 					return cpt - centerOffset * lmtx;
 				}
 
@@ -678,7 +608,7 @@ namespace std::experimental::io2d {
 					auto tfrm = matrix_2d::init_rotate(_Start_angle + _Rotation);
 					lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
 					auto pt = (_Radius * tfrm);
-					pt.y(-pt.y());
+					pt.y = -pt.y;
 					return cpt + pt * lmtx;
 				}
 
@@ -771,7 +701,7 @@ namespace std::experimental::io2d {
 			auto lmtx = m;
 			lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
 			auto centerOffset = point_for_angle(two_pi<float> -sang, rad);
-			centerOffset.y(-centerOffset.y());
+			centerOffset.y = -centerOffset.y;
 			return cpt - centerOffset * lmtx;
 		}
 
@@ -780,7 +710,7 @@ namespace std::experimental::io2d {
 			auto tfrm = matrix_2d::init_rotate(eang);
 			lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
 			auto pt = (rad * tfrm);
-			pt.y(-pt.y());
+			pt.y = -pt.y;
 			return cpt + pt * lmtx;
 		}
 
@@ -845,7 +775,7 @@ namespace std::experimental::io2d {
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
 				cpdItem = {};
-				cpdItem.point = { pt.x(), pt.y() };
+				cpdItem.point = { pt.x, pt.y };
 				lastMoveToPoint = pt;
 				vec.push_back(cpdItem);
 			}
@@ -858,7 +788,7 @@ namespace std::experimental::io2d {
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
 				cpdItem = {};
-				cpdItem.point = { pt.x(), pt.y() };
+				cpdItem.point = { pt.x, pt.y };
 				vec.push_back(cpdItem);
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
@@ -871,13 +801,13 @@ namespace std::experimental::io2d {
 				cpdItem.header.length = 4;
 				vec.push_back(cpdItem);
 				cpdItem = {};
-				cpdItem.point = { pt1.x(), pt1.y() };
+				cpdItem.point = { pt1.x, pt1.y };
 				vec.push_back(cpdItem);
 				cpdItem = {};
-				cpdItem.point = { pt2.x(), pt2.y() };
+				cpdItem.point = { pt2.x, pt2.y };
 				vec.push_back(cpdItem);
 				cpdItem = {};
-				cpdItem.point = { pt3.x(), pt3.y() };
+				cpdItem.point = { pt3.x, pt3.y };
 				vec.push_back(cpdItem);
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
@@ -898,7 +828,7 @@ namespace std::experimental::io2d {
 				cpdItem.header.length = 2;
 				vec.push_back(cpdItem);
 				cpdItem = {};
-				cpdItem.point = { lastMoveToPoint.x(), lastMoveToPoint.y() };
+				cpdItem.point = { lastMoveToPoint.x, lastMoveToPoint.y };
 				vec.push_back(cpdItem);
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
@@ -2143,14 +2073,14 @@ namespace std::experimental::io2d {
 		inline ::std::experimental::io2d::point_2d _Rotate_point_absolute_angle(const ::std::experimental::io2d::point_2d& center, float radius, float angle, bool clockwise = true) {
 			if (clockwise) {
 				::std::experimental::io2d::point_2d pt{ radius * ::std::cos(angle), -(radius * -::std::sin(angle)) };
-				pt.x(pt.x() + center.x());
-				pt.y(pt.y() + center.y());
+				pt.x = pt.x + center.x;
+				pt.y = pt.y + center.y;
 				return pt;
 			}
 			else {
 				::std::experimental::io2d::point_2d pt{ radius * ::std::cos(angle), radius * -::std::sin(angle) };
-				pt.x(pt.x() + center.x());
-				pt.y(pt.y() + center.y());
+				pt.x = pt.x + center.x;
+				pt.y = pt.y + center.y;
 				return pt;
 			}
 		}
@@ -2257,8 +2187,8 @@ namespace std::experimental::io2d {
 					return; // degenerate path segment
 				}
 				const auto beginPt = currentPoint;
-				point_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
-				point_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
+				point_2d cpt1 = { ((controlPt.x - beginPt.x) * twoThirds) + beginPt.x, ((controlPt.y - beginPt.y) * twoThirds) + beginPt.y };
+				point_2d cpt2 = { ((controlPt.x - endPt.x) * twoThirds) + endPt.x, ((controlPt.y - endPt.y) * twoThirds) + endPt.y };
 				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
 				currentPoint = endPt;
 			}
@@ -2277,7 +2207,7 @@ namespace std::experimental::io2d {
 				const auto origM = m;
 				m = matrix_2d::init_scale(rad);
 				auto centerOffset = (point_for_angle(two_pi<float> -startAng) * rad);
-				centerOffset.y(-centerOffset.y());
+				centerOffset.y = -centerOffset.y;
 				auto ctr = currentPoint - centerOffset;
 
 				point_2d pt0, pt1, pt2, pt3;
@@ -2293,26 +2223,26 @@ namespace std::experimental::io2d {
 				const auto cosPhi = cos(-phi);
 				const auto sinPhi = sin(-phi);
 
-				pt0.x(cosPhi);
-				pt0.y(-sinPhi);
-				pt3.x(pt0.x());
-				pt3.y(-pt0.y());
-				pt1.x((4.0F - cosPhi) / 3.0F);
-				pt1.y(-(((1.0F - cosPhi) * (3.0F - cosPhi)) / (3.0F * sinPhi)));
-				pt2.x(pt1.x());
-				pt2.y(-pt1.y());
+				pt0.x = cosPhi;
+				pt0.y = -sinPhi;
+				pt3.x = pt0.x;
+				pt3.y = -pt0.y;
+				pt1.x = (4.0F - cosPhi) / 3.0F;
+				pt1.y = -(((1.0F - cosPhi) * (3.0F - cosPhi)) / (3.0F * sinPhi));
+				pt2.x = pt1.x;
+				pt2.y = -pt1.y;
 				auto rotCntrCwFn = [](const point_2d& pt, float a) -> point_2d {
-					auto result = point_2d{ pt.x() * cos(a) - pt.y() * sin(a),
-						pt.x() * sin(a) + pt.y() * cos(a) };
-					result.x(_Round_floating_point_to_zero(result.x()));
-					result.y(_Round_floating_point_to_zero(result.y()));
+					auto result = point_2d{ pt.x * cos(a) - pt.y * sin(a),
+						pt.x * sin(a) + pt.y * cos(a) };
+					result.x = _Round_floating_point_to_zero(result.x);
+					result.y = _Round_floating_point_to_zero(result.y);
 					return result;
 				};
 				auto rotCwFn = [](const point_2d& pt, float a) -> point_2d {
-					auto result = point_2d{ pt.x() * cos(a) - pt.y() * sin(a),
-						-(pt.x() * sin(a) + pt.y() * cos(a)) };
-					result.x(_Round_floating_point_to_zero(result.x()));
-					result.y(_Round_floating_point_to_zero(result.y()));
+					auto result = point_2d{ pt.x * cos(a) - pt.y * sin(a),
+						-(pt.x * sin(a) + pt.y * cos(a)) };
+					result.x = _Round_floating_point_to_zero(result.x);
+					result.y = _Round_floating_point_to_zero(result.y);
 					return result;
 				};
 
@@ -2335,10 +2265,10 @@ namespace std::experimental::io2d {
 					pt1 = rotCntrCwFn(pt1, phi);
 					pt2 = rotCntrCwFn(pt2, phi);
 					pt3 = rotCntrCwFn(pt3, phi);
-					pt0.y(-pt0.y());
-					pt1.y(-pt1.y());
-					pt2.y(-pt2.y());
-					pt3.y(-pt3.y());
+					pt0.y = -pt0.y;
+					pt1.y = -pt1.y;
+					pt2.y = -pt2.y;
+					pt3.y = -pt3.y;
 					auto shflPt = pt3;
 					pt3 = pt0;
 					pt0 = shflPt;
@@ -2410,8 +2340,8 @@ namespace std::experimental::io2d {
 				if (currentPoint == controlPt && controlPt == endPt) {
 					return; // degenerate path segment
 				}
-				point_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
-				point_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
+				point_2d cpt1 = { ((controlPt.x - beginPt.x) * twoThirds) + beginPt.x, ((controlPt.y - beginPt.y) * twoThirds) + beginPt.y };
+				point_2d cpt2 = { ((controlPt.x - endPt.x) * twoThirds) + endPt.x, ((controlPt.y - endPt.y) * twoThirds) + endPt.y };
 				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
 				currentPoint = endPt;
 			}
@@ -2789,7 +2719,7 @@ namespace std::experimental::io2d {
 			: _Brush()
 			, _Image_surface()
 			, _Brush_type(brush_type::linear) {
-			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x, begin.y, end.x, end.y), &cairo_pattern_destroy);
 			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
 			for (auto it = first; it != last; ++it) {
@@ -2805,7 +2735,7 @@ namespace std::experimental::io2d {
 			: _Brush()
 			, _Image_surface()
 			, _Brush_type(brush_type::radial) {
-			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x, start.center().y, start.radius(), end.center().x, end.center().y, end.radius()), &cairo_pattern_destroy);
 			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 			for (auto it = first; it != last; ++it) {
 				auto stop = *it;
@@ -2831,7 +2761,7 @@ namespace std::experimental::io2d {
 			: _Brush()
 			, _Image_surface()
 			, _Brush_type(brush_type::linear) {
-			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x, begin.y, end.x, end.y), &cairo_pattern_destroy);
 			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
 			for (const color_stop& stop : il) {
@@ -2846,7 +2776,7 @@ namespace std::experimental::io2d {
 			: _Brush()
 			, _Image_surface()
 			, _Brush_type(brush_type::radial) {
-			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x, start.center().y, start.radius(), end.center().x, end.center().y, end.radius()), &cairo_pattern_destroy);
 			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
 			for (const color_stop& stop : il) {

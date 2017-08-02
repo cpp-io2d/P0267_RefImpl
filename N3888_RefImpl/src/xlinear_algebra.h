@@ -4,18 +4,13 @@ namespace std::experimental::io2d {
 	inline namespace v1 {
 
 		class point_2d {
-			float _X = 0.0f;
-			float _Y = 0.0f;
 		public:
 			// \ref{\iotwod.\pointtwod.cons}, constructors:
 			constexpr point_2d() noexcept;
 			constexpr point_2d(float x, float y) noexcept;
 
-			constexpr void x(float value) noexcept;
-			constexpr void y(float value) noexcept;
-
-			constexpr float x() const noexcept;
-			constexpr float y() const noexcept;
+			float x;
+			float y;
 
 			// \ref{\iotwod.\pointtwod.observers}, observers:
 			constexpr float dot(const point_2d& other) const noexcept;
@@ -82,10 +77,10 @@ namespace std::experimental::io2d {
 
 			// \ref{\iotwod.\matrixtwod.staticfactories}, static factory functions:
 			constexpr static matrix_2d init_translate(const point_2d& value) noexcept {
-				return{ 1.0F, 0.0F, 0.0F, 1.0F, value.x(), value.y() };
+				return{ 1.0F, 0.0F, 0.0F, 1.0F, value.x, value.y };
 			}
 			constexpr static matrix_2d init_scale(const point_2d& value) noexcept {
-				return{ value.x(), 0.0F, 0.0F, value.y(), 0.0F, 0.0F };
+				return{ value.x, 0.0F, 0.0F, value.y, 0.0F, 0.0F };
 			}
 			static matrix_2d init_rotate(float radians) noexcept {
 				auto sine = sin(radians);

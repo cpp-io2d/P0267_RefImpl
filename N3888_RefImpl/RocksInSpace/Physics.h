@@ -129,5 +129,5 @@ inline float rocks_in_space::controllable_physics::orientation() const
 
 inline rocks_in_space::point_2d rocks_in_space::screen_space(const point_2d& v)
 {
-	return{ v.x(), playing_field_height - v.y() };
+	return{ v.x, playing_field_height - v.y };
 }

@@ -216,14 +216,14 @@ namespace path_test {
 		pb.arc({ 30.0F, 30.0F }, half_pi<float>, half_pi<float>);
 
 		auto rot = matrix_2d::init_rotate(half_pi<float> / 2.0F);
-		pt.x(pt.x() + 50.0F);
+		pt.x = pt.x + 50.0F;
 		pb.new_path(pt);
 		pb.matrix(rot);
 		pb.arc({ 30.0F, 30.0F }, half_pi<float>, half_pi<float>);
 
 		pb.revert_matrix();
 		rot = matrix_2d::init_rotate(half_pi<float>);
-		pt.x(pt.x() + 50.0F);
+		pt.x = pt.x + 50.0F;
 		pb.new_path(pt);
 		pb.matrix(rot.translate({ 20.0F, 10.0F }));
 		pb.arc({ 30.0F, 30.0F }, half_pi<float>, half_pi<float>);
