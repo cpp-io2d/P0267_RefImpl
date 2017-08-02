@@ -471,6 +471,7 @@
     <ClInclude Include="xdiagnostics.h" />
     <ClInclude Include="xinclwindows_h.h" />
     <ClInclude Include="xio2d.h" />
+    <ClInclude Include="xio2d_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="display_surface-common.cpp" />

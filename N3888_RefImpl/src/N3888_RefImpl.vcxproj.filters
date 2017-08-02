@@ -27,6 +27,9 @@
     <ClInclude Include="xinclwindows_h.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xio2d_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="surface.cpp">
