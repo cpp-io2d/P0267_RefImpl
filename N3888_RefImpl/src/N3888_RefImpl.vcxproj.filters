@@ -33,6 +33,15 @@
     <ClInclude Include="xcolor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xlinear_algebra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xpath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="surface.cpp">

@@ -353,8 +353,8 @@ void display_surface::scaling(experimental::io2d::scaling scl) noexcept {
 	_Scaling = scl;
 }
 
-void display_surface::user_scaling_callback(const function<experimental::io2d::rectangle(const display_surface&, bool&)>& fn) {
-	_User_scaling_fn = make_unique<function<experimental::io2d::rectangle(const display_surface&, bool&)>>(fn);
+void display_surface::user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn) {
+	_User_scaling_fn = make_unique<function<experimental::io2d::bounding_box(const display_surface&, bool&)>>(fn);
 }
 
 void display_surface::letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp) noexcept {
@@ -426,11 +426,11 @@ experimental::io2d::scaling display_surface::scaling() const noexcept {
 	return _Scaling;
 }
 
-::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> display_surface::user_scaling_callback() const {
+::std::function<::std::experimental::io2d::bounding_box(const display_surface&, bool&)> display_surface::user_scaling_callback() const {
 	return *_User_scaling_fn;
 }
 
-::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)> display_surface::user_scaling_callback(error_code& ec) const noexcept {
+::std::function<::std::experimental::io2d::bounding_box(const display_surface&, bool&)> display_surface::user_scaling_callback(error_code& ec) const noexcept {
 	try {
 		ec.clear();
 		return *_User_scaling_fn;

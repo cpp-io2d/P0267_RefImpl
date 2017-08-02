@@ -470,9 +470,12 @@
     <ClInclude Include="io2d.h" />
     <ClInclude Include="xcolor.h" />
     <ClInclude Include="xdiagnostics.h" />
+    <ClInclude Include="xgeometry.h" />
     <ClInclude Include="xinclwindows_h.h" />
     <ClInclude Include="xio2d.h" />
     <ClInclude Include="xio2d_impl.h" />
+    <ClInclude Include="xlinear_algebra.h" />
+    <ClInclude Include="xpath.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="display_surface-common.cpp" />

@@ -47,7 +47,7 @@ void surface::mark_dirty() {
 	cairo_surface_mark_dirty(_Surface.get());
 }
 
-void surface::mark_dirty(const rectangle& rect) {
+void surface::mark_dirty(const bounding_box& rect) {
 	_Dirty_rect = rect;
 	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Double_to_int(rect.x()), _Double_to_int(rect.y()), _Double_to_int(rect.width()), _Double_to_int(rect.height()));
 }
@@ -75,7 +75,7 @@ void surface::map(const ::std::function<void(mapped_surface&, error_code&)>& act
 	ec.clear();
 }
 
-void surface::map(const ::std::function<void(mapped_surface&)>& action, const rectangle& extents) {
+void surface::map(const ::std::function<void(mapped_surface&)>& action, const bounding_box& extents) {
 	if (action != nullptr) {
 		cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
 		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr });
@@ -84,7 +84,7 @@ void surface::map(const ::std::function<void(mapped_surface&)>& action, const re
 	mark_dirty(extents);
 }
 
-void surface::map(const ::std::function<void(mapped_surface&, error_code&)>& action, const rectangle& extents, error_code& ec) {
+void surface::map(const ::std::function<void(mapped_surface&, error_code&)>& action, const bounding_box& extents, error_code& ec) {
 	if (action != nullptr) {
 		cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
 		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr }, ec);

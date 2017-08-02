@@ -31,14 +31,6 @@
 #include "xinclwindows_h.h"
 #endif
 
-#if defined BUILD_IO2D_API_DLL 
-#define _IO2D_API __declspec(dllexport)
-#elif defined USE_IO2D_API_DLL
-#define _IO2D_API __declspec(dllimport)
-#else
-#define _IO2D_API
-#endif
-
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		// Throws an exception of type:
@@ -240,139 +232,6 @@ namespace std::experimental::io2d {
 		inline constexpr vector_2d operator/(const vector_2d& lhs, const vector_2d& rhs) noexcept {
 			return vector_2d{ lhs.x() / rhs.x(), lhs.y() / rhs.y() };
 		}
-
-		class rectangle {
-			float _X = 0.0F;
-			float _Y = 0.0F;
-			float _Width = 0.0F;
-			float _Height = 0.0F;
-		public:
-			constexpr rectangle() noexcept { }
-			constexpr rectangle(float x, float y, float width, float height) noexcept
-				: _X(x)
-				, _Y(y)
-				, _Width(width)
-				, _Height(height) {
-			}
-			constexpr rectangle(const vector_2d& tl, const vector_2d& br) noexcept
-				: _X(tl.x())
-				, _Y(tl.y())
-				, _Width(::std::max(0.0F, br.x() - tl.x()))
-				, _Height(::std::max(0.0F, br.y() - tl.y())) {
-			}
-
-			constexpr void x(float value) noexcept {
-				_X = value;
-			}
-			constexpr void y(float value) noexcept {
-				_Y = value;
-			}
-			constexpr void width(float value) noexcept {
-				_Width = value;
-			}
-			constexpr void height(float value) noexcept {
-				_Height = value;
-			}
-			constexpr void top_left(const vector_2d& value) noexcept {
-				_X = value.x();
-				_Y = value.y();
-			}
-			constexpr void bottom_right(const vector_2d& value) noexcept {
-				_Width = max(0.0F, value.x() - _X);
-				_Height = max(0.0F, value.y() - _Y);
-			}
-
-			constexpr float x() const noexcept;
-			constexpr float y() const noexcept;
-			constexpr float width() const noexcept;
-			constexpr float height() const noexcept;
-			constexpr float left() const noexcept;
-			constexpr float right() const noexcept;
-			constexpr float top() const noexcept;
-			constexpr float bottom() const noexcept;
-			constexpr vector_2d top_left() const noexcept;
-			constexpr vector_2d bottom_right() const noexcept;
-
-			constexpr bool operator==(const rectangle& rhs) const noexcept {
-				return _X == rhs._X && _Y == rhs._Y && _Width == rhs._Width && _Height == rhs._Height;
-			}
-			constexpr bool operator!=(const rectangle& rhs) const noexcept {
-				return !((*this) == rhs);
-			}
-		};
-
-		inline constexpr float rectangle::x() const noexcept {
-			return _X;
-		}
-
-		inline constexpr float rectangle::y() const noexcept {
-			return _Y;
-		}
-
-		inline constexpr float rectangle::width() const noexcept {
-			return _Width;
-		}
-
-		inline constexpr float rectangle::height() const noexcept {
-			return _Height;
-		}
-
-		inline constexpr float rectangle::left() const noexcept {
-			return _X;
-		}
-
-		inline constexpr float rectangle::right() const noexcept {
-			return _X + _Width;
-		}
-
-		inline constexpr float rectangle::top() const noexcept {
-			return _Y;
-		}
-
-		inline constexpr float rectangle::bottom() const noexcept {
-			return _Y + _Height;
-		}
-
-		inline constexpr vector_2d rectangle::top_left() const noexcept {
-			return{ _X, _Y };
-		}
-
-		inline constexpr vector_2d rectangle::bottom_right() const noexcept {
-			return{ _X + _Width, _Y + _Height };
-		}
-
-		class circle {
-			vector_2d _Center;
-			float _Radius;
-		public:
-			constexpr circle() noexcept
-				: _Center()
-				, _Radius() {}
-			constexpr circle(const vector_2d& ctr, float r) noexcept
-				: _Center(ctr)
-				, _Radius(r) {}
-
-			constexpr void center(const vector_2d& ctr) noexcept {
-				_Center = ctr;
-			}
-			constexpr void radius(float r) noexcept {
-				_Radius = r;
-			}
-
-			constexpr vector_2d center() const noexcept {
-				return _Center;
-			}
-			constexpr float radius() const noexcept {
-				return _Radius;
-			}
-
-			constexpr bool operator==(const circle& rhs) noexcept {
-				return _Center == rhs._Center && _Radius == rhs._Radius;
-			}
-			constexpr bool operator!=(const circle& rhs) noexcept {
-				return !((*this) == rhs);
-			}
-		};
 
 		//class matrix_2d;
 		//constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
@@ -1259,7 +1118,7 @@ namespace std::experimental::io2d {
 			void clear() noexcept;
 
 			// Observers
-			::std::experimental::io2d::rectangle path_extents() const;
+			::std::experimental::io2d::bounding_box path_extents() const;
 
 			bool operator==(const path_builder& rhs) const noexcept {
 				if (size() != rhs.size()) {
@@ -1382,7 +1241,7 @@ namespace std::experimental::io2d {
 				: _Clip(pg)
 				, _Fill_rule(fr) { }
 
-			explicit clip_props(const rectangle& r,
+			explicit clip_props(const bounding_box& r,
 				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding)
 				: _Clip()
 				, _Fill_rule(fr) {
@@ -1598,7 +1457,7 @@ namespace std::experimental::io2d {
 
 			const float _Line_join_miter_miter_limit = 10000.0F;
 
-			rectangle _Dirty_rect;
+			bounding_box _Dirty_rect;
 			::std::experimental::io2d::format _Format;
 
 			_IO2D_API surface(::std::experimental::io2d::format fmt, int width, int height);
@@ -1618,11 +1477,11 @@ namespace std::experimental::io2d {
 			_IO2D_API void flush();
 			_IO2D_API void flush(::std::error_code& ec) noexcept;
 			_IO2D_API void mark_dirty();
-			_IO2D_API void mark_dirty(const rectangle& rect);
+			_IO2D_API void mark_dirty(const bounding_box& rect);
 			_IO2D_API void map(const ::std::function<void(mapped_surface&)>& action);
 			_IO2D_API void map(const ::std::function<void(mapped_surface&, error_code&)>& action, ::std::error_code& ec);
-			_IO2D_API void map(const ::std::function<void(mapped_surface&)>& action, const rectangle& extents);
-			_IO2D_API void map(const ::std::function<void(mapped_surface&, error_code&)>& action, const rectangle& extents, ::std::error_code& ec);
+			_IO2D_API void map(const ::std::function<void(mapped_surface&)>& action, const bounding_box& extents);
+			_IO2D_API void map(const ::std::function<void(mapped_surface&, error_code&)>& action, const bounding_box& extents, ::std::error_code& ec);
 
 			// \ref{\iotwod.surface.modifiers.render}, render modifiers:
 			_IO2D_API void clear();
@@ -1695,8 +1554,8 @@ namespace std::experimental::io2d {
 			// Modifiers
 			void commit_changes();
 			void commit_changes(::std::error_code& ec) noexcept;
-			void commit_changes(const rectangle& area);
-			void commit_changes(const rectangle& area, ::std::error_code& ec) noexcept;
+			void commit_changes(const bounding_box& area);
+			void commit_changes(const bounding_box& area, ::std::error_code& ec) noexcept;
 
 			unsigned char* data();
 			unsigned char* data(::std::error_code& ec) noexcept;
@@ -1751,7 +1610,7 @@ namespace std::experimental::io2d {
 			int _Height;
 			::std::unique_ptr<::std::function<void(display_surface& sfc)>> _Draw_fn;
 			::std::unique_ptr<::std::function<void(display_surface& sfc)>> _Size_change_fn;
-			::std::unique_ptr<::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>> _User_scaling_fn;
+			::std::unique_ptr<::std::function<::std::experimental::io2d::bounding_box(const display_surface&, bool&)>> _User_scaling_fn;
 			optional<brush_props> _Letterbox_brush_props;
 			typedef bool _Auto_clear_type;
 			bool _Auto_clear;
@@ -1837,7 +1696,7 @@ namespace std::experimental::io2d {
 			_IO2D_API void dimensions(int w, int h) noexcept;
 			_IO2D_API void display_dimensions(int dw, int dh) noexcept;
 			_IO2D_API void scaling(experimental::io2d::scaling scl) noexcept;
-			_IO2D_API void user_scaling_callback(const ::std::function<::std::experimental::io2d::rectangle(const display_surface&, bool&)>& fn);
+			_IO2D_API void user_scaling_callback(const ::std::function<::std::experimental::io2d::bounding_box(const display_surface&, bool&)>& fn);
 			_IO2D_API void letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp = nullopt) noexcept;
 			_IO2D_API void auto_clear(bool val) noexcept;
 			_IO2D_API void refresh_rate(::std::experimental::io2d::refresh_rate rr) noexcept;
@@ -1855,8 +1714,8 @@ namespace std::experimental::io2d {
 			_IO2D_API vector_2d dimensions() const noexcept;
 			_IO2D_API vector_2d display_dimensions() const noexcept;
 			_IO2D_API experimental::io2d::scaling scaling() const noexcept;
-			_IO2D_API function<experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback() const;
-			_IO2D_API function<experimental::io2d::rectangle(const display_surface&, bool&)> user_scaling_callback(::std::error_code& ec) const noexcept;
+			_IO2D_API function<experimental::io2d::bounding_box(const display_surface&, bool&)> user_scaling_callback() const;
+			_IO2D_API function<experimental::io2d::bounding_box(const display_surface&, bool&)> user_scaling_callback(::std::error_code& ec) const noexcept;
 			_IO2D_API const optional<brush>& letterbox_brush() const noexcept;
 			_IO2D_API optional<brush_props> letterbox_brush_props() const noexcept;
 			_IO2D_API bool auto_clear() const noexcept;
@@ -3063,12 +2922,12 @@ namespace std::experimental::io2d {
 			ec.clear();
 		}
 
-		inline void mapped_surface::commit_changes(const rectangle& area) {
+		inline void mapped_surface::commit_changes(const bounding_box& area) {
 			cairo_surface_mark_dirty_rectangle(_Mapped_surface.csfce, static_cast<int>(area.x()), static_cast<int>(area.y()),
 				static_cast<int>(area.width()), static_cast<int>(area.height()));
 		}
 
-		inline void mapped_surface::commit_changes(const rectangle& area, error_code& ec) noexcept {
+		inline void mapped_surface::commit_changes(const bounding_box& area, error_code& ec) noexcept {
 			cairo_surface_mark_dirty_rectangle(_Mapped_surface.csfce, static_cast<int>(area.x()), static_cast<int>(area.y()),
 				static_cast<int>(area.width()), static_cast<int>(area.height()));
 			ec.clear();

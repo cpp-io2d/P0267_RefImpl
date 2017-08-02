@@ -273,5 +273,18 @@ namespace std::experimental::io2d {
 			};
 		}
 
+		constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs)
+			noexcept;
+		constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs)
+			noexcept;
+		template <class T>
+		constexpr rgba_color operator*(const rgba_color& lhs, T rhs) noexcept;
+		template <class U>
+		constexpr rgba_color operator*(const rgba_color& lhs, U rhs) noexcept;
+		template <class T>
+		constexpr rgba_color operator*(T lhs, const rgba_color& rhs) noexcept;
+		template <class U>
+		constexpr rgba_color operator*(U lhs, const rgba_color& rhs) noexcept;
+
 	}
 }

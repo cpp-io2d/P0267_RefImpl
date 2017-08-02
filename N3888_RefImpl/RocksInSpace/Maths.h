@@ -5,7 +5,7 @@
 namespace rocks_in_space
 {
 	using vector_2d = std::experimental::io2d::vector_2d;
-	using rectangle = std::experimental::io2d::rectangle;
+	using bounding_box = std::experimental::io2d::bounding_box;
 
 	class polar_2d
 	{
@@ -23,15 +23,15 @@ namespace rocks_in_space
 	template <class T> constexpr T	eighth_tau	= T(tau<T> / T(8.0L));
 
 	bool		intersects(vector_2d, vector_2d, vector_2d, vector_2d);
-	bool		intersects(const rectangle&, const rectangle&);
-	bool		contains(const rectangle&, const vector_2d&);
+	bool		intersects(const bounding_box&, const bounding_box&);
+	bool		contains(const bounding_box&, const vector_2d&);
 
 	vector_2d	pol_to_car(const polar_2d& p);
 	polar_2d	car_to_pol(const vector_2d& v);
-	float		radius(const rectangle&);
+	float		radius(const bounding_box&);
 
 	vector_2d	rotate(const vector_2d& point, float theta, const vector_2d& origin);
-	rectangle	translate(const rectangle&, const vector_2d&);
+	bounding_box	translate(const bounding_box&, const vector_2d&);
 }
 
 inline rocks_in_space::polar_2d::polar_2d(float r_in, float theta_in)

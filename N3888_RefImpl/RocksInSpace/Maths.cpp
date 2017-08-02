@@ -48,7 +48,7 @@ bool rocks_in_space::intersects(vector_2d a1, vector_2d a2, vector_2d b1, vector
 	return !(intersection_point < 0.0 || intersection_point > a2_length);
 }
 
-bool rocks_in_space::intersects(const rectangle& a, const rectangle& b)
+bool rocks_in_space::intersects(const bounding_box& a, const bounding_box& b)
 {
 	return contains(a, b.top_left()) ||
 		contains(a, b.bottom_right()) ||
@@ -60,7 +60,7 @@ bool rocks_in_space::intersects(const rectangle& a, const rectangle& b)
 		contains(b, vector_2d(a.bottom(), a.left()));
 }
 
-bool rocks_in_space::contains(const rectangle& r, const vector_2d& p)
+bool rocks_in_space::contains(const bounding_box& r, const vector_2d& p)
 {
 	return p.x() >= r.left() &&
 		p.x() <= r.right() &&
@@ -68,12 +68,12 @@ bool rocks_in_space::contains(const rectangle& r, const vector_2d& p)
 		p.y() <= r.bottom();
 }
 
-float rocks_in_space::radius(const rectangle& r)
+float rocks_in_space::radius(const bounding_box& r)
 {
 	return (r.top_left() - r.bottom_right()).magnitude() / 2.0f;
 }
 
-rocks_in_space::rectangle rocks_in_space::translate(const rectangle& r, const vector_2d& v)
+rocks_in_space::bounding_box rocks_in_space::translate(const bounding_box& r, const vector_2d& v)
 {
 	return{ r.x() + v.x(), r.y() + v.y(), r.width(), r.height() };
 }

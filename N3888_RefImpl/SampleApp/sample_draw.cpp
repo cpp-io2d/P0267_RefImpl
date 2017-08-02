@@ -57,7 +57,7 @@ void sample_draw::operator()(display_surface& ds) {
 
 	//path_builder<> pb;
 	//pb.new_path();
-	//pb.rectangle({ 30.0F, 30.0F, 800.0F, 600.0F });
+	//pb.bounding_box({ 30.0F, 30.0F, 800.0F, 600.0F });
 	//ds.paint(brush{ rgba_color::cornflower_blue() });
 
 	////test_clip_transformation(ds);
@@ -129,13 +129,13 @@ void test_image_load_save(display_surface& ds) {
 //	ds.matrix(matrix_2d::init_translate({ 0.0F, 0.0F }));
 //	//ds.matrix(matrix_2d::init_translate({ 100.0F, 100.0F }));
 //	ds.immediate().clear();
-//	ds.immediate().rectangle({ 0.0F, 0.0F, 500.0F, 500.0F });
+//	ds.immediate().bounding_box({ 0.0F, 0.0F, 500.0F, 500.0F });
 //	ds.clip_immediate();
 //
 //	ds.matrix(matrix_2d::init_translate({ 100.0F, 100.0F }));
 //	//ds.matrix(matrix_2d::init_translate({ 0.0F, 0.0F }));
 //	//ds.immediate().clear();
-//	//ds.immediate().rectangle({ 0.0F, 0.0F, 500.0F, 500.0F });
+//	//ds.immediate().bounding_box({ 0.0F, 0.0F, 500.0F, 500.0F });
 //	ds.paint(imgSfc);
 //
 //	ds.restore();
@@ -154,7 +154,7 @@ void test_image_load_save(display_surface& ds) {
 //	ds.clear();
 //	ds.immediate().clear();
 //	ds.paint(rgba_color::red());
-//	ds.immediate().rectangle({ 20.0F, 20.0F, static_cast<float>(ds.width()), static_cast<float>(ds.height()) });
+//	ds.immediate().bounding_box({ 20.0F, 20.0F, static_cast<float>(ds.width()), static_cast<float>(ds.height()) });
 //	ds.fill_immediate(imgSfc, matrix_2d::init_translate({ -20.0F, -20.0F }), wrap_mode::none, filter::bilinear);
 //}
 //
@@ -187,7 +187,7 @@ void test_image_load_save(display_surface& ds) {
 //	ds.clear();
 //	ds.immediate().clear();
 //	ds.paint(rgba_color::red());
-//	ds.immediate().rectangle({ 0.0F, 0.0F, static_cast<float>(ds.width()), static_cast<float>(ds.height())});
+//	ds.immediate().bounding_box({ 0.0F, 0.0F, static_cast<float>(ds.width()), static_cast<float>(ds.height())});
 //	//ds.matrix(matrix_2d::init_scale({ 0.5F, 1.5F }));
 //	//ds.mask_immediate(br, rgba_color::blue());
 //	ds.mask_immediate(imgSfc, rgba_color::blue(), matrix_2d::init_translate({ -50.0F, -50.0F }).rotate(half_pi<float> * 0.25F));
@@ -239,7 +239,7 @@ void test_image_load_save(display_surface& ds) {
 //	//auto linBrush = brush(lbf);
 //	//linBrush.wrap_mode(wrap_mode::repeat);
 //	//linBrush.matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F));
-//	//ds.immediate().rectangle({ { 50.0F, 50.0F}, {500.0F, 500.0F} });
+//	//ds.immediate().bounding_box({ { 50.0F, 50.0F}, {500.0F, 500.0F} });
 //	//ds.clip_immediate();
 //	//ds.matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F));
 //	//ds.brush(linBrush);
@@ -359,7 +359,7 @@ void test_path_functionality(display_surface& ds) {
 	//pf.close_path();
 
 	auto pg = path_group(pf);
-	ds.stroke(brush{ rgba_color::red }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ rectangle(40.0F, 40.0F, 1240.0F, 680.0F) });
+	ds.stroke(brush{ rgba_color::red }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ bounding_box(40.0F, 40.0F, 1240.0F, 680.0F) });
 
 	pf.clear();
 
@@ -376,7 +376,7 @@ void test_path_functionality(display_surface& ds) {
 void draw_radial_circles(display_surface& ds) {
 	// Clear to background color.
 	ds.paint(brush{ rgba_color::magenta });
-	ds.paint(brush{ rgba_color::cornflower_blue }, nullopt, nullopt, clip_props{ rectangle(40.0F, 40.0F, 1200.0F, 640.0F) });
+	ds.paint(brush{ rgba_color::cornflower_blue }, nullopt, nullopt, clip_props{ bounding_box(40.0F, 40.0F, 1200.0F, 640.0F) });
 	vector<color_stop> csv;
 	csv.emplace_back(0.0F, rgba_color::white);
 	brush radialBrush{ {{ 200.5F, 300.0F }, 0.0F}, {{ 300.0F, 300.0F }, 100.0F }, {
@@ -384,7 +384,7 @@ void draw_radial_circles(display_surface& ds) {
 		{ 0.5F, rgba_color::green }, { 0.75F, rgba_color::blue }, { 1.0F, rgba_color::black } } };
 
 	path_builder<> pf;
-	//pf.rectangle({ { 100.0F, 100.0F }, { 500.0F, 500.0F } });
+	//pf.bounding_box({ { 100.0F, 100.0F }, { 500.0F, 500.0F } });
 	pf.new_path({ 100.0F, 100.0F });
 	pf.line({ 500.0F, 100.0F });
 	pf.matrix(matrix_2d::init_shear_x(0.25F));
@@ -442,7 +442,7 @@ void draw_radial_circles(display_surface& ds) {
 	//radialBrush.wrap_mode(wrap_mode::repeat);
 	////radialBrush.matrix(matrix_2d::init_scale({ 2.0F, 2.0F }));
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 100.0F, 100.0F }, { 500.0F, 500.0F } });
+	//ds.immediate().bounding_box({ { 100.0F, 100.0F }, { 500.0F, 500.0F } });
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 115.2F, 102.4F }, 25.6F, { 102.4F, 102.4F }, 128.0F);
@@ -450,7 +450,7 @@ void draw_radial_circles(display_surface& ds) {
 	//radialBrush.wrap_mode(wrap_mode::pad);
 	//ds.immediate().clear();
 	//ds.immediate().arc({ 128.0F, 128.0F }, 76.8F, 0.0F, 2 * pi);
-	////ds.immediate().rectangle({ 0.0F, 0.0F, 250.0F, 250.0F });
+	////ds.immediate().bounding_box({ 0.0F, 0.0F, 250.0F, 250.0F });
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 400.0F, 200.0F }, 100.0F, { 600.0F, 200.0F }, 100.0F);
@@ -468,41 +468,41 @@ void draw_radial_circles(display_surface& ds) {
 	//	linearFactory.add_color_stop(1.0F, rgba_color::white());
 	//
 	//	ds.immediate().clear();
-	//	ds.immediate().rectangle({ { 200.0F, 280.0F }, { 602.0F, 520.0F } });
+	//	ds.immediate().bounding_box({ { 200.0F, 280.0F }, { 602.0F, 520.0F } });
 	//	ds.fill_immediate(brush(linearFactory));
 	//}
 	//
 	//radialFactory.radial_circles({ 600.0F, 200.0F }, 100.0F, { 400.0F, 200.0F }, 100.0F);
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 280.0F, 80.0F }, { 720.0F, 320.0F } });
+	//ds.immediate().bounding_box({ { 280.0F, 80.0F }, { 720.0F, 320.0F } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::pad);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 400.0F, 450.0F }, 100.0F, { 600.0F, 450.0F }, 100.0F);
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 280.0F, 330.0F }, { 720.0F, 570.0F } });
+	//ds.immediate().bounding_box({ { 280.0F, 330.0F }, { 720.0F, 570.0F } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::none);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 1000.0F, 200.0F }, 100.0F, { 1000.0F, 200.0F }, 20.0F);
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 880.0F, 80.0F }, { 1120.0F, 320.0F } });
+	//ds.immediate().bounding_box({ { 880.0F, 80.0F }, { 1120.0F, 320.0F } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::reflect);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 1000.0F, 450.0F }, 20.0F, { 1000.0F, 450.0F }, 100.0F);
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 880.0F, 330.0F }, { 1120.0F, 570.0F } });
+	//ds.immediate().bounding_box({ { 880.0F, 330.0F }, { 1120.0F, 570.0F } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::repeat);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 105.0F, 100.0F }, 0.0F, { 200.0F, 100.0F }, 100.0F);
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 0.0F, 0.0F }, { 520.0F, 200.0F } });
+	//ds.immediate().bounding_box({ { 0.0F, 0.0F }, { 520.0F, 200.0F } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::repeat);
 	//ds.fill_immediate(radialBrush);
@@ -510,35 +510,35 @@ void draw_radial_circles(display_surface& ds) {
 	//
 	//radialFactory.radial_circles({ 200.0F, 200.0F }, 100.0F, { 400.0F, 200.0F }, 100.0F);
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 80.0F, 80.0F }, { 520.0F, 320.0F } });
+	//ds.immediate().bounding_box({ { 80.0F, 80.0F }, { 520.0F, 320.0F } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::none);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 200.0F, 450.0F }, 100.0F, { 400.0F, 450.0F }, 100.0F);
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 80.0F, 330.0F }, { 520.0F, 570.0F } });
+	//ds.immediate().bounding_box({ { 80.0F, 330.0F }, { 520.0F, 570.0F } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::pad);
 	//ds.fill_immediate(radialBrush);
 	//
 	////radialFactory.radial_circles({ 200.0F, 450.0F }, 100.0F, { 400.0F, 450.0F }, 100.0F);
 	////ds.immediate().clear();
-	////ds.immediate().rectangle({ { 80.0F, 330.0F }, { 520.0F, 570.0F } });
+	////ds.immediate().bounding_box({ { 80.0F, 330.0F }, { 520.0F, 570.0F } });
 	////radialBrush = brush(radialFactory);
 	////radialBrush.wrap_mode(wrap_mode::pad);
 	////ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 700.0F, 200.0F }, 100.0F, { 900.0F, 200.0F }, 100.0F);
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 580.0F, 80.0F }, { 1020.0F, 320.0F } });
+	//ds.immediate().bounding_box({ { 580.0F, 80.0F }, { 1020.0F, 320.0F } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::reflect);
 	//ds.fill_immediate(radialBrush);
 	//
 	//radialFactory.radial_circles({ 700.0F, 450.0F }, 100.0F, { 900.0F, 450.0F }, 100.0F);
 	//ds.immediate().clear();
-	//ds.immediate().rectangle({ { 580.0F, 330.0F }, { 1020.0F, 570.0F } });
+	//ds.immediate().bounding_box({ { 580.0F, 330.0F }, { 1020.0F, 570.0F } });
 	//radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::repeat);
 	//ds.fill_immediate(radialBrush);
@@ -603,15 +603,15 @@ void draw_radial_circles(display_surface& ds) {
 //
 //	auto pb = path_builder<>();
 //
-//	pb.rectangle({ 10.0F, 10.0F, 120.0F, 90.0F });
+//	pb.bounding_box({ 10.0F, 10.0F, 120.0F, 90.0F });
 //	auto firstRectPath = path_group(pb);
 //
 //	pb.clear();
-//	pb.rectangle({ 50.0F, 40.0F, 120.0F, 90.0F });
+//	pb.bounding_box({ 50.0F, 40.0F, 120.0F, 90.0F });
 //	auto secondRectPath = path_group(pb);
 //
 //	pb.clear();
-//	pb.rectangle({ 30.0F, 25.0F, 70.0F, 70.0F });
+//	pb.bounding_box({ 30.0F, 25.0F, 70.0F, 70.0F });
 //	auto bothRectsClipPath = path_group(pb);
 //
 //	pb.clear();
@@ -743,7 +743,7 @@ void draw_radial_circles(display_surface& ds) {
 //	linearTest1.add_color_stop(0.8F, rgba_color::green());
 //	linearTest1.add_color_stop(0.8F, rgba_color::yellow());
 //	linearTest1.add_color_stop(1.0F, rgba_color::white());
-//	ds.immediate().rectangle({ 400.0F, 400.0F, 200.0F, 200.0F });
+//	ds.immediate().bounding_box({ 400.0F, 400.0F, 200.0F, 200.0F });
 //	ds.fill_immediate(brush(linearTest1));
 //
 //	ds.font_resource("Segoe UI", 40.0F);
@@ -776,7 +776,7 @@ void draw_radial_circles(display_surface& ds) {
 //	ds.immediate().clear();
 //	ds.immediate().set_origin({ 250.0F, 450.0F });
 //	ds.immediate().abs_matrix(matrix_2d::init_shear_x(0.5F).scale({ 2.0F, 2.5F }));
-//	ds.immediate().rectangle({ 200.0F, 400.0F, 100.0F, 100.0F });
+//	ds.immediate().bounding_box({ 200.0F, 400.0F, 100.0F, 100.0F });
 //	ds.line_width(3.0F);
 //	ds.stroke_immediate(rgba_color::red());
 //	//auto radialFactory = radial_brush_factory({ 250.0F, 450.0F }, 0.0F, { 250.0F, 450.0F }, 80.0F);
@@ -825,8 +825,8 @@ void draw_radial_circles(display_surface& ds) {
 //	auto sfcBrush = brush(sfcFactory);
 //	sfcBrush.wrap_mode(wrap_mode::repeat);
 //	ds.immediate().clear();
-//	ds.immediate().rectangle({ 500.0F, 450.0F, 100.0F, 100.0F });
-//	ds.immediate().rectangle({ 525.0F, 425.0F, 50.0F, 150.0F });
+//	ds.immediate().bounding_box({ 500.0F, 450.0F, 100.0F, 100.0F });
+//	ds.immediate().bounding_box({ 525.0F, 425.0F, 50.0F, 150.0F });
 //	ds.line_join(line_join::miter_or_bevel);
 //	ds.miter_limit(1.0F);
 //	ds.line_width(10.0F);
@@ -904,7 +904,7 @@ void draw_radial_circles(display_surface& ds) {
 //	//radialBrush.wrap_mode(wrap_mode::pad);
 //	//ds.immediate().clear();
 //	////ds.immediate().arc({ 128.0F, 128.0F }, 76.8F, 0.0F, 2 * pi);
-//	//ds.immediate().rectangle({ 0.0F, 0.0F, 250.0F, 250.0F });
+//	//ds.immediate().bounding_box({ 0.0F, 0.0F, 250.0F, 250.0F });
 //	//ds.fill_immediate(radialBrush);
 //
 //	timer = (timer > phaseTime * (phaseCount + 2)) ? 0.0F : timer + elapsedTimeInMilliseconds;
@@ -968,7 +968,7 @@ void draw_radial_circles(display_surface& ds) {
 //	pf.clear();
 //	pf.set_origin({ 250.0F, 450.0F });
 //	pf.abs_matrix(matrix_2d::init_shear_x(0.5F).scale({ 2.0F, 1.0F }));
-//	pf.rectangle({ 200.0F, 400.0F, 100.0F, 100.0F });
+//	pf.bounding_box({ 200.0F, 400.0F, 100.0F, 100.0F });
 //	ds.path_group(path_group(pf));
 //	auto redBrush = brush(solid_color_brush_factory(rgba_color::red()));
 //	ds.brush(redBrush);
@@ -991,8 +991,8 @@ void draw_radial_circles(display_surface& ds) {
 //	auto linearBrush = brush(linearFactory);
 //	linearBrush.wrap_mode(wrap_mode::repeat);
 //	pf.clear();
-//	pf.rectangle({ 500.0F, 450.0F, 100.0F, 100.0F });
-//	pf.rectangle({ 525.0F, 425.0F, 50.0F, 150.0F });
+//	pf.bounding_box({ 500.0F, 450.0F, 100.0F, 100.0F });
+//	pf.bounding_box({ 525.0F, 425.0F, 50.0F, 150.0F });
 //	ds.line_join(line_join::miter_or_bevel);
 //	ds.miter_limit(1.0F);
 //	ds.line_width(10.0F);
