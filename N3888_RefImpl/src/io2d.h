@@ -27,6 +27,8 @@
 #include <filesystem>
 #endif
 
+#include "xcolor.h"
+
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		using dashes = tuple<vector<float>, float>;
