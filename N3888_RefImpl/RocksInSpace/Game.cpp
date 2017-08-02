@@ -11,8 +11,8 @@ rocks_in_space::game::game()
 	: m_level{ 1 }
 	, m_score {	0 }
 	, m_ship(controllable_physics{
-	physics{ vector_2d{ playing_field_width / 2, playing_field_height / 2 },{ vector_2d{ 0, 0 } } },
-	vector_2d{ 0, 0 },
+	physics{ point_2d{ playing_field_width / 2, playing_field_height / 2 },{ point_2d{ 0, 0 } } },
+	point_2d{ 0, 0 },
 	0.0 })
 	, m_ship_missile_count(0)
 	, m_next_ship_missile(0)
@@ -55,10 +55,10 @@ void rocks_in_space::game::generate_level()
 	{
 		switch (edge(m_gen))
 		{
-		case 1:	m_asteroids.emplace_back(physics{ vector_2d{ 0.0F, y(m_gen) },					pol_to_car(polar_2d{ initial_speed, theta(m_gen) }) }, path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], big_asteroid_size), big_asteroid_size); break;
-		case 2:	m_asteroids.emplace_back(physics{ vector_2d{ playing_field_width, y(m_gen) },	pol_to_car(polar_2d{ initial_speed, theta(m_gen) }) }, path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], big_asteroid_size), big_asteroid_size); break;
-		case 3:	m_asteroids.emplace_back(physics{ vector_2d{ x(m_gen), 0.0F },					pol_to_car(polar_2d{ initial_speed, theta(m_gen) }) }, path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], big_asteroid_size), big_asteroid_size); break;
-		case 4:	m_asteroids.emplace_back(physics{ vector_2d{ x(m_gen), playing_field_height },	pol_to_car(polar_2d{ initial_speed, theta(m_gen) }) }, path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], big_asteroid_size), big_asteroid_size); break;
+		case 1:	m_asteroids.emplace_back(physics{ point_2d{ 0.0F, y(m_gen) },					pol_to_car(polar_2d{ initial_speed, theta(m_gen) }) }, path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], big_asteroid_size), big_asteroid_size); break;
+		case 2:	m_asteroids.emplace_back(physics{ point_2d{ playing_field_width, y(m_gen) },	pol_to_car(polar_2d{ initial_speed, theta(m_gen) }) }, path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], big_asteroid_size), big_asteroid_size); break;
+		case 3:	m_asteroids.emplace_back(physics{ point_2d{ x(m_gen), 0.0F },					pol_to_car(polar_2d{ initial_speed, theta(m_gen) }) }, path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], big_asteroid_size), big_asteroid_size); break;
+		case 4:	m_asteroids.emplace_back(physics{ point_2d{ x(m_gen), playing_field_height },	pol_to_car(polar_2d{ initial_speed, theta(m_gen) }) }, path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], big_asteroid_size), big_asteroid_size); break;
 		}
 	}
 }

@@ -13,8 +13,8 @@ using namespace std::experimental::io2d;
 using namespace path_test;
 using namespace brush_test;
 
-vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool closePath = false, vector_2d scale = vector_2d{ 1.0, 1.0 }, const vector_2d locadd = vector_2d{ 200.0, 0.0 });
-vector_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, vector_2d location, bool closePath = false, vector_2d scale = vector_2d{ 1.0, 1.0 }, const vector_2d locadd = vector_2d{ 200.0, 0.0 });
+point_2d testArcClockwiseEndAngle(path_builder<>& pb, point_2d location, bool closePath = false, point_2d scale = point_2d{ 1.0, 1.0 }, const point_2d locadd = point_2d{ 200.0, 0.0 });
+point_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, point_2d location, bool closePath = false, point_2d scale = point_2d{ 1.0, 1.0 }, const point_2d locadd = point_2d{ 200.0, 0.0 });
 
 void make_path_examples();
 void make_path_examples() {
@@ -35,9 +35,9 @@ void make_brush_examples() {
 	solid_color_test_01();
 }
 int main() {
-	//auto pt = vector_2d{ 80.0, 100.0 };
+	//auto pt = point_2d{ 80.0, 100.0 };
 	//path_data::arc testArc{};
-	//vector_2d ctr, endPt;
+	//point_2d ctr, endPt;
 	//testArc = path_data::arc({ 30.0, 30.0 }, half_pi<float>, half_pi<float>);
 	//ctr = testArc.center(pt);
 	//endPt = testArc.end_pt(pt);
@@ -107,7 +107,7 @@ int main() {
 	//	auto tempImgSfc = make_image_surface(format::argb32, 2000, 1200);
 	//	const float beginLocX = 100.0;
 	//	float locY = 140.0;
-	//	vector_2d location{ beginLocX, locY };
+	//	point_2d location{ beginLocX, locY };
 	//	pb.clear();
 	//	pb.abs_matrix(matrix_2d::init_translate({ 400.0, 400.0 }).rotate(to_radians(-45)).scale({ 0.5, 0.5 }));
 	//	location = testArcClockwiseEndAngle(pb, location, false, { 60.0, 60.0 });
@@ -158,14 +158,14 @@ int main() {
 	//	return 0;
 }
 
-vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool closePath, vector_2d rad, const vector_2d locadd) {
+point_2d testArcClockwiseEndAngle(path_builder<>& pb, point_2d location, bool closePath, point_2d rad, const point_2d locadd) {
 	const float quarterPi = half_pi<float> / 2.0;
 
-	vector_2d ctrVal{};
+	point_2d ctrVal{};
 
 	// Test end angle 90 degree increments starting at 180.
 	pb.new_path(location);
-	const vector_2d initialRelLine{ 40.0, 0.0 };
+	const point_2d initialRelLine{ 40.0, 0.0 };
 	pb.rel_line(initialRelLine);
 	location += initialRelLine;
 	pb.arc(rad, -pi<float>, pi<float>);
@@ -174,28 +174,28 @@ vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool 
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, -pi<float>, half_pi<float>);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, -pi<float>, 0.0);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, -pi<float>, three_pi_over_two<float>);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, -two_pi<float>, pi<float>);
 	pb.rel_line({ -40.0, 0.0 });
 	if (closePath) {
@@ -204,35 +204,35 @@ vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool 
 
 	// Test end angle 90 degree intervals starting at 135
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, -pi<float>, pi<float> -quarterPi);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, -pi<float>, quarterPi);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, -pi<float>, -quarterPi);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, -pi<float>, pi<float> +quarterPi);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, -two_pi<float>, three_pi_over_two<float> +quarterPi);
 	pb.rel_line({ 40.0, 40.0 });
 	if (closePath) {
@@ -242,12 +242,12 @@ vector_2d testArcClockwiseEndAngle(path_builder<>& pb, vector_2d location, bool 
 	return location + locadd;
 }
 
-vector_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, vector_2d location, bool closePath, vector_2d rad, const vector_2d locadd) {
+point_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, point_2d location, bool closePath, point_2d rad, const point_2d locadd) {
 	const float quarterPi = half_pi<float> / 2.0;
 
 	// Test end angle 90 degree increments starting at 180.
 	pb.new_path(location);
-	const vector_2d initialRelLine{ 40.0, 0.0 };
+	const point_2d initialRelLine{ 40.0, 0.0 };
 	pb.rel_line(initialRelLine);
 	location += initialRelLine;
 	pb.arc(rad, pi<float>, pi<float>);
@@ -256,28 +256,28 @@ vector_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, vector_2d location
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, pi<float>, half_pi<float>);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, pi<float>, 0.0);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, pi<float>, three_pi_over_two<float>);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, two_pi<float>, pi<float>);
 	pb.rel_line({ -40.0, 0.0 });
 	if (closePath) {
@@ -286,35 +286,35 @@ vector_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, vector_2d location
 
 	// Test end angle 90 degree intervals starting at 135
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, pi<float>, pi<float> -quarterPi);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, pi<float>, quarterPi);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, pi<float>, -quarterPi);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, pi<float>, pi<float> +quarterPi);
 	if (closePath) {
 		pb.close_path();
 	}
 
 	location += locadd;
-	pb.new_path(location + vector_2d{ 0.0, 0.0 });
+	pb.new_path(location + point_2d{ 0.0, 0.0 });
 	pb.arc(rad, two_pi<float>, three_pi_over_two<float> +quarterPi);
 	pb.rel_line({ 40.0, 40.0 });// *scale);
 	if (closePath) {

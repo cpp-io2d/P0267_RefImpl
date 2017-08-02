@@ -1,15 +1,15 @@
 #include "Maths.h"
 
-rocks_in_space::vector_2d rocks_in_space::rotate(const vector_2d& point, float theta, const vector_2d& origin)
+rocks_in_space::point_2d rocks_in_space::rotate(const point_2d& point, float theta, const point_2d& origin)
 {
 	const auto translation = point - origin;
 	const auto s = sin(theta);
 	const auto c = cos(theta);
 
-	return vector_2d{ translation.x() * c - translation.y() * s, translation.x() * s + translation.y() * c } +origin;
+	return point_2d{ translation.x() * c - translation.y() * s, translation.x() * s + translation.y() * c } +origin;
 }
 
-bool rocks_in_space::intersects(vector_2d a1, vector_2d a2, vector_2d b1, vector_2d b2)
+bool rocks_in_space::intersects(point_2d a1, point_2d a2, point_2d b1, point_2d b2)
 {
 	assert(!(a1 == a2 || b1 == b2));
 
@@ -52,15 +52,15 @@ bool rocks_in_space::intersects(const bounding_box& a, const bounding_box& b)
 {
 	return contains(a, b.top_left()) ||
 		contains(a, b.bottom_right()) ||
-		contains(a, vector_2d(b.top(), b.right())) ||
-		contains(a, vector_2d(b.bottom(), b.left())) ||
+		contains(a, point_2d(b.top(), b.right())) ||
+		contains(a, point_2d(b.bottom(), b.left())) ||
 		contains(b, a.top_left()) ||
 		contains(b, a.bottom_right()) ||
-		contains(b, vector_2d(a.top(), a.right())) ||
-		contains(b, vector_2d(a.bottom(), a.left()));
+		contains(b, point_2d(a.top(), a.right())) ||
+		contains(b, point_2d(a.bottom(), a.left()));
 }
 
-bool rocks_in_space::contains(const bounding_box& r, const vector_2d& p)
+bool rocks_in_space::contains(const bounding_box& r, const point_2d& p)
 {
 	return p.x() >= r.left() &&
 		p.x() <= r.right() &&
@@ -73,7 +73,7 @@ float rocks_in_space::radius(const bounding_box& r)
 	return (r.top_left() - r.bottom_right()).magnitude() / 2.0f;
 }
 
-rocks_in_space::bounding_box rocks_in_space::translate(const bounding_box& r, const vector_2d& v)
+rocks_in_space::bounding_box rocks_in_space::translate(const bounding_box& r, const point_2d& v)
 {
 	return{ r.x() + v.x(), r.y() + v.y(), r.width(), r.height() };
 }

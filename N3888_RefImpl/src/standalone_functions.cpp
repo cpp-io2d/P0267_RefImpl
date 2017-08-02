@@ -31,8 +31,8 @@ namespace std {
 					return retval;
 				}
 
-				vector_2d point_for_angle(float ang, float mgn) noexcept {
-					vector_2d v{ mgn, 0.0F };
+				point_2d point_for_angle(float ang, float mgn) noexcept {
+					point_2d v{ mgn, 0.0F };
 					auto m = matrix_2d::init_rotate(ang);
 					auto result = m.transform_pt(v);
 					result.x(_Round_floating_point_to_zero(result.x()));
@@ -46,8 +46,8 @@ namespace std {
 					return result;
 				}
 
-				vector_2d point_for_angle(float ang, vector_2d rad) noexcept {
-					vector_2d v{ 1.0F, 0.0F };
+				point_2d point_for_angle(float ang, point_2d rad) noexcept {
+					point_2d v{ 1.0F, 0.0F };
 					auto m = matrix_2d::init_rotate(ang);
 					auto result = m.transform_pt(v);
 					result *= rad;
@@ -56,7 +56,7 @@ namespace std {
 					return result;
 				}
 
-				float angle_for_point(vector_2d ctr, vector_2d pt) noexcept {
+				float angle_for_point(point_2d ctr, point_2d pt) noexcept {
 					auto xDiff = pt.x() - ctr.x();
 					auto yDiff = -(pt.y() - ctr.y());
 					auto angle = atan2(yDiff, xDiff);

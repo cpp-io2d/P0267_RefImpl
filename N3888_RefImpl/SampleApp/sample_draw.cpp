@@ -20,7 +20,7 @@ void test_stroke_rules(display_surface& ds);
 void test_path_functionality(display_surface& ds);
 void draw_radial_circles(display_surface& ds);
 //void test_draw_radial_circles(display_surface& ds);
-//wostream& operator<<(wostream& os, const vector_2d& pt);
+//wostream& operator<<(wostream& os, const point_2d& pt);
 //vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL);
 //void draw_hello_world(display_surface& ds);
 //void draw_test_compositing_operators(display_surface& ds, compositing_op secondRectCompOp, compositing_op firstRectCompOp = compositing_op::over, bool clipToRects = false, bool clipToTriangle = false, bool strokePaths = false, bool mask = false, const rgba_color& backgroundColor = rgba_color::transparent_black(), const rgba_color& firstColor = rgba_color::red() * 0.8F, const rgba_color& secondColor = rgba_color::teal() * 0.4F);
@@ -220,9 +220,9 @@ void test_image_load_save(display_surface& ds) {
 //	////auto pt2 = m.transform_pt({ 10.0F, 10.0F });
 //	//auto pt = m.transform_pt({ 0.0F, 0.0F });
 //	//auto pt2 = invScsm.transform_pt({ 45.0F, 30.0F });
-//	//auto pt3 = vector_2d{ -26.6666666666666F, -30.0F };
-//	//auto pt4 = vector_2d{ -16.6666666666666F, -20.0F };
-//	//auto pt5 = vector_2d{ 45.0F, 30.0F };
+//	//auto pt3 = point_2d{ -26.6666666666666F, -30.0F };
+//	//auto pt4 = point_2d{ -16.6666666666666F, -20.0F };
+//	//auto pt5 = point_2d{ 45.0F, 30.0F };
 //	ds.matrix(m);
 //	ds.paint(imgSfc, matrix_2d::init_translate({ -10.0F, -10.0F })/*init_identity()*//*init_scale({ 1.0F, 1.5F }).translate({ -20.0F, -20.0F })*/, wrap_mode::repeat, filter::nearest);
 //	//ds.paint(rgba_color::red());
@@ -306,17 +306,17 @@ void test_path_functionality(display_surface& ds) {
 	// Clear to background color.
 	ds.paint(brush{ rgba_color::cornflower_blue });
 	path_builder<> pf{};
-	//void new_path(const vector_2d& pt) noexcept;
-	vector_2d v, cpt1, cpt2, ept;
+	//void new_path(const point_2d& pt) noexcept;
+	point_2d v, cpt1, cpt2, ept;
 	v = { 10.0F, 10.0F };
 	pf.new_path(v);
-	//void rel_new_path(const vector_2d& dpt) noexcept;
+	//void rel_new_path(const point_2d& dpt) noexcept;
 	v = { 30.0F, 0.0F };
 	pf.rel_new_path(v);
-	//void line(const vector_2d& pt) noexcept;
+	//void line(const point_2d& pt) noexcept;
 	v = { 80.0F, 10.0F };
 	pf.line(v);
-	//void rel_line(const vector_2d& dpt) noexcept;
+	//void rel_line(const point_2d& dpt) noexcept;
 	v = { 0.0F, 40.0F };
 	pf.rel_line(v);
 	//void close_path() noexcept;
@@ -338,7 +338,7 @@ void test_path_functionality(display_surface& ds) {
 
 	v = { 30.0F, 300.0F };
 	pf.new_path(v);
-	vector_2d qcpt = { 100.0F, 230.0F };
+	point_2d qcpt = { 100.0F, 230.0F };
 	ept = { 170.0F, 300.0F };
 	pf.quadratic_curve(qcpt, ept);
 
@@ -406,7 +406,7 @@ void draw_radial_circles(display_surface& ds) {
 	//// For debug inspection testing only; uncomment if needed.
 	//auto fe = ds.fill_extents();
 	//auto se = ds.stroke_extents();
-	//vector_2d pt{ 110.0F, 300.0F };
+	//point_2d pt{ 110.0F, 300.0F };
 	//auto inFill = ds.in_fill(pt);
 	//// End for debug inspection testing only.
 
@@ -758,13 +758,13 @@ void draw_radial_circles(display_surface& ds) {
 //			const auto x1r = radius * i * 2.0F + radius + beginX, x2r = radius * i2 * 2.0F + radius + beginX;
 //			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0F : (radius * 4.0F * (normalizedTime < 0.5F ? normalizedTime : 1.0F - normalizedTime)))
 //				* (i % 2 == 1 ? 1.0F : -1.0F));
-//			const auto center = vector_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
+//			const auto center = point_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
 //			ds.immediate().abs_matrix(matrix_2d::init_scale({ 1.0F, 1.5F }) * matrix_2d::init_rotate(pi<float> / 4.0F) * matrix_2d::init_translate({ 0.0F, 50.0F }));
 //			ds.immediate().set_origin(center);
 //			ds.immediate().arc_negative(center, radius - 3.0F, half_pi<float>, -half_pi<float>);
 //		}
 //		else {
-//			const vector_2d center{ radius * i * 2.0F + radius + beginX, y };
+//			const point_2d center{ radius * i * 2.0F + radius + beginX, y };
 //			ds.immediate().abs_matrix(matrix_2d::init_scale({ 1.0F, 1.5F }) * matrix_2d::init_rotate(pi<float> / 4.0F) * matrix_2d::init_translate({ 0.0F, 50.0F }));
 //			ds.immediate().set_origin(center);
 //			ds.immediate().arc_negative(center, radius - 3.0F, half_pi<float>, -half_pi<float>);
@@ -947,13 +947,13 @@ void draw_radial_circles(display_surface& ds) {
 //			const auto x1r = radius * i * 2.0F + radius + beginX, x2r = radius * i2 * 2.0F + radius + beginX;
 //			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0F : (radius * 4.0F * (normalizedTime < 0.5F ? normalizedTime : 1.0F - normalizedTime)))
 //				* (i % 2 == 1 ? 1.0F : -1.0F));
-//			const auto center = vector_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
+//			const auto center = point_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
 //			pf.abs_matrix(matrix_2d::init_scale({ 1.0F, 1.5F }) * matrix_2d::init_rotate(pi<float> / 4.0F) * matrix_2d::init_translate({ 0.0F, 50.0F }));
 //			pf.set_origin(center);
 //			pf.arc_negative(center, radius - 3.0F, half_pi<float>, -half_pi<float>);
 //		}
 //		else {
-//			const vector_2d center{ radius * i * 2.0F + radius + beginX, y };
+//			const point_2d center{ radius * i * 2.0F + radius + beginX, y };
 //			pf.abs_matrix(matrix_2d::init_scale({ 1.0F, 1.5F }) * matrix_2d::init_rotate(pi<float> / 4.0F));
 //			pf.set_origin(center);
 //			pf.arc_negative(center, radius - 3.0F, half_pi<float>, -half_pi<float>);
@@ -1030,18 +1030,18 @@ void draw_radial_circles(display_surface& ds) {
 //
 //namespace {
 //
-//	//vector<vector_2d> curve_intersects_line_segment(const vector_2d& firstStart, const vector_2d& firstControl1, const vector_2d& firstControl2, const vector_2d& firstEnd,
-//	//	const vector_2d& secondStart, const vector_2d& secondEnd) {
+//	//vector<point_2d> curve_intersects_line_segment(const point_2d& firstStart, const point_2d& firstControl1, const point_2d& firstControl2, const point_2d& firstEnd,
+//	//	const point_2d& secondStart, const point_2d& secondEnd) {
 //
 //	//}
 //
-//	//vector<vector_2d> curve_intersects_curve(const vector_2d& firstStart, const vector_2d& firstControl1, const vector_2d& firstControl2, const vector_2d& firstEnd,
-//	//	const vector_2d& secondStart, const vector_2d& secondControl1, const vector_2d& secondControl2, const vector_2d& secondEnd) {
+//	//vector<point_2d> curve_intersects_curve(const point_2d& firstStart, const point_2d& firstControl1, const point_2d& firstControl2, const point_2d& firstEnd,
+//	//	const point_2d& secondStart, const point_2d& secondControl1, const point_2d& secondControl2, const point_2d& secondEnd) {
 //
 //	//}
 //
-//	//vector<vector<vector_2d>> path_curve_non_intersecting_sub_paths(const vector_2d& startPt, const vector_2d& controlPt1, const vector_2d& controlPt2, const vector_2d& endPt) noexcept;
-//	//vector<vector<vector_2d>> path_curve_non_intersecting_sub_paths(const vector_2d& startPt, const vector_2d& controlPt1, const vector_2d& controlPt2, const vector_2d& endPt) noexcept {
+//	//vector<vector<point_2d>> path_curve_non_intersecting_sub_paths(const point_2d& startPt, const point_2d& controlPt1, const point_2d& controlPt2, const point_2d& endPt) noexcept;
+//	//vector<vector<point_2d>> path_curve_non_intersecting_sub_paths(const point_2d& startPt, const point_2d& controlPt1, const point_2d& controlPt2, const point_2d& endPt) noexcept {
 //
 //	//}
 //
@@ -1077,8 +1077,8 @@ void draw_radial_circles(display_surface& ds) {
 //	//}
 //}
 //
-//void test_draw_circle(display_surface&, const vector_2d&, const radial_brush_factory&);
-//void test_draw_circle(display_surface& /*ds*/, const vector_2d& coords, const radial_brush_factory& f) {
+//void test_draw_circle(display_surface&, const point_2d&, const radial_brush_factory&);
+//void test_draw_circle(display_surface& /*ds*/, const point_2d& coords, const radial_brush_factory& f) {
 //	// Can get t for s_fn via a simple magnitude. Determine the rotation angle of coords around center0, determine the point on circle 0 with that angle then the point on cirle 1 with that angle then get the distances from circle 0 pt to coords and from circle 0 pt to circle 1 pt and t = (dist(circ0, coords) / dist(circ0, circ1).
 //	auto circles = f.radial_circles();
 //	auto center0 = get<0>(circles);
@@ -1092,7 +1092,7 @@ void draw_radial_circles(display_surface& ds) {
 //	}
 //	auto circ0 = _Rotate_point_absolute_angle(center0, radius0, angle);
 //	auto circ1 = _Rotate_point_absolute_angle(center1, radius1, angle);
-//	auto dist_fn = [](const vector_2d& from, const vector_2d& to) -> float { return to.magnitude() > from.magnitude() ? (to - from).magnitude() : -(to - from).magnitude(); };
+//	auto dist_fn = [](const point_2d& from, const point_2d& to) -> float { return to.magnitude() > from.magnitude() ? (to - from).magnitude() : -(to - from).magnitude(); };
 //	if (_Almost_equal_relative(dist_fn(circ0, circ1), 0.0F)) {
 //		return;
 //	}

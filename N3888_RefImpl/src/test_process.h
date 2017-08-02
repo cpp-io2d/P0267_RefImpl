@@ -55,7 +55,7 @@
 //		constexpr static float twoThirds = 2.0 / 3.0;
 //
 //		template <class T, enable_if_t<is_same_v<T, path_data::abs_cubic_curve>, abs_cubic_curve_sfinae> = abs_cubic_curve_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			auto pt1 = m.transform_pt(item.control_point_1() - origin) + origin;
 //			auto pt2 = m.transform_pt(item.control_point_2() - origin) + origin;
 //			auto pt3 = m.transform_pt(item.end_point() - origin) + origin;
@@ -69,7 +69,7 @@
 //			currentPoint = item.end_point();
 //		}
 //		template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_ellipse>, abs_ellipse_sfinae> = abs_ellipse_sfinae_val>
-//		static void perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			const auto m2 = m;
 //			const auto o2 = origin;
 //			currentPoint.reset();
@@ -80,7 +80,7 @@
 //			path_factory_process_visit<path_data::set_origin>::template perform(path_data::set_origin{ o2 }, v, m, origin, currentPoint, closePoint);
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::abs_line>, abs_line_sfinae> = abs_line_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			if (currentPoint.has_value()) {
 //				currentPoint = item.to();
 //				auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
@@ -95,16 +95,16 @@
 //			}
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::abs_move>, abs_move_sfinae> = abs_move_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			currentPoint = item.to();
 //			auto pt = m.transform_pt(currentPoint.value() - origin) + origin;
 //			v.emplace_back(in_place_type<path_data::abs_move>, pt);
 //			closePoint = pt;
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::abs_quadratic_curve>, abs_quadratic_curve_sfinae> = abs_quadratic_curve_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-//			vector_2d beginPt;
+//			point_2d beginPt;
 //			auto controlPt = m.transform_pt(item.control_point() - origin) + origin;
 //			auto endPt = m.transform_pt(item.end_point() - origin) + origin;
 //			if (!currentPoint.has_value()) {
@@ -116,13 +116,13 @@
 //			else {
 //				beginPt = m.transform_pt(currentPoint.value() - origin) + origin;
 //			}
-//			vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
-//			vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
+//			point_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
+//			point_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 //			v.emplace_back(in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
 //			currentPoint = item.end_point();
 //		}
 //		template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_rectangle>, abs_rectangle_sfinae> = abs_rectangle_sfinae_val>
-//		static void perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			path_factory_process_visit::template perform(path_data::abs_move{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit::template perform(path_data::rel_line{ { item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit::template perform(path_data::rel_line{ { 0.0, item.height() } }, v, m, origin, currentPoint, closePoint);
@@ -130,7 +130,7 @@
 //			path_factory_process_visit::template perform(path_data::close_path{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::arc_clockwise>, arc_clockwise_sfinae> = arc_clockwise_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			{
 //				auto ctr = item.center();
 //				auto rad = item.radius();
@@ -139,7 +139,7 @@
 //				while (ang2 < ang1) {
 //					ang2 += two_pi<float>;
 //				}
-//				vector_2d pt0, pt1, pt2, pt3;
+//				point_2d pt0, pt1, pt2, pt3;
 //				int bezCount = 1;
 //				float theta = ang2 - ang1;
 //				float phi{};
@@ -159,7 +159,7 @@
 //				pt2.x(pt1.x());
 //				pt2.y(-pt1.y());
 //				phi = -phi;
-//				auto rotCwFn = [](const vector_2d& pt, float a) -> vector_2d {
+//				auto rotCwFn = [](const point_2d& pt, float a) -> point_2d {
 //					return { pt.x() * cos(a) + pt.y() * sin(a),
 //						-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
 //				};
@@ -199,7 +199,7 @@
 //			}
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::arc_counterclockwise>, arc_counterclockwise_sfinae> = arc_counterclockwise_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			{
 //				auto ctr = item.center();
 //				auto rad = item.radius();
@@ -208,7 +208,7 @@
 //				while (ang2 > ang1) {
 //					ang2 -= two_pi<float>;
 //				}
-//				vector_2d pt0, pt1, pt2, pt3;
+//				point_2d pt0, pt1, pt2, pt3;
 //				int bezCount = 1;
 //				float theta = ang1 - ang2;
 //				float phi{};
@@ -227,7 +227,7 @@
 //				pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
 //				pt2.x(pt1.x());
 //				pt2.y(-pt1.y());
-//				auto rotCwFn = [](const vector_2d& pt, float a) -> vector_2d {
+//				auto rotCwFn = [](const point_2d& pt, float a) -> point_2d {
 //					return { pt.x() * cos(a) + pt.y() * sin(a),
 //						-(pt.x() * -(sin(a)) + pt.y() * cos(a)) };
 //				};
@@ -273,7 +273,7 @@
 //			}
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::abs_matrix>, change_matrix_sfinae> = change_matrix_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>&, matrix_2d& m, vector_2d&, optional<vector_2d>&, vector_2d&) {
+//		static void perform(const T& item, vector<path_data::path_data_types>&, matrix_2d& m, point_2d&, optional<point_2d>&, point_2d&) {
 //			if (!m.is_finite()) {
 //				throw system_error(make_error_code(io2d_error::invalid_matrix));
 //			}
@@ -284,11 +284,11 @@
 //			m = item.matrix();
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::set_origin>, change_origin_sfinae> = change_origin_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>&, matrix_2d&, vector_2d& origin, optional<vector_2d>&, vector_2d&) {
+//		static void perform(const T& item, vector<path_data::path_data_types>&, matrix_2d&, point_2d& origin, optional<point_2d>&, point_2d&) {
 //			origin = item.origin();
 //		}
 //		template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, close_path_sfinae> = close_path_sfinae_val>
-//		static void perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T&, ::std::vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			if (currentPoint.has_value()) {
 //				v.emplace_back(::std::in_place_type<path_data::close_path>, closePoint);
 //				v.emplace_back(::std::in_place_type<path_data::abs_move>,
@@ -302,11 +302,11 @@
 //			}
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::new_path>, new_path_sfinae> = new_path_sfinae_val>
-//		static void perform(const T&, vector<path_data::path_data_types>&, matrix_2d&, vector_2d&, optional<vector_2d>& currentPoint, vector_2d&) {
+//		static void perform(const T&, vector<path_data::path_data_types>&, matrix_2d&, point_2d&, optional<point_2d>& currentPoint, point_2d&) {
 //			currentPoint.reset();
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::rel_cubic_curve>, rel_cubic_curve_sfinae> = rel_cubic_curve_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d&) {
 //			if (!currentPoint.has_value()) {
 //				throw system_error(make_error_code(io2d_error::invalid_path_data));
 //			}
@@ -321,7 +321,7 @@
 //			currentPoint = item.end_point() + currentPoint.value();
 //		}
 //		template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_ellipse>, rel_ellipse_sfinae> = rel_ellipse_sfinae_val>
-//		static void perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			if (!currentPoint.has_value()) {
 //				throw ::std::system_error(::std::make_error_code(io2d_error::invalid_path_data));
 //			}
@@ -336,7 +336,7 @@
 //			path_factory_process_visit::template perform(path_data::set_origin{ o2 }, v, m, origin, currentPoint, closePoint);
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::rel_line>, rel_line_sfinae> = rel_line_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d&) {
 //			if (!currentPoint.has_value()) {
 //				throw system_error(make_error_code(io2d_error::invalid_path_data));
 //			}
@@ -345,7 +345,7 @@
 //			v.emplace_back(in_place_type<path_data::abs_line>, pt);
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::rel_move>, rel_move_sfinae> = rel_move_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			if (!currentPoint.has_value()) {
 //				throw system_error(make_error_code(io2d_error::invalid_path_data));
 //			}
@@ -355,24 +355,24 @@
 //			closePoint = pt;
 //		}
 //		template <class T, enable_if_t<is_same_v<T, path_data::rel_quadratic_curve>, rel_quadratic_curve_sfinae> = rel_quadratic_curve_sfinae_val>
-//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d&) {
+//		static void perform(const T& item, vector<path_data::path_data_types>& v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d&) {
 //			if (!currentPoint.has_value()) {
 //				throw system_error(make_error_code(io2d_error::invalid_path_data));
 //			}
 //			// Turn it into a cubic curve since cairo doesn't have quadratic curves.
-//			vector_2d beginPt;
+//			point_2d beginPt;
 //			auto controlPt = m.transform_pt(item.control_point() + currentPoint.value() -
 //				origin) + origin;
 //			auto endPt = m.transform_pt(item.end_point() + currentPoint.value() -
 //				origin) + origin;
 //			beginPt = m.transform_pt(currentPoint.value() - origin) + origin;
-//			vector_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
-//			vector_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
+//			point_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
+//			point_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 //			v.emplace_back(in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
 //			currentPoint = item.end_point() + currentPoint.value();
 //		}
 //		template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_rectangle>, rel_rectangle_sfinae> = rel_rectangle_sfinae_val>
-//		static void perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, vector_2d& origin, optional<vector_2d>& currentPoint, vector_2d& closePoint) {
+//		static void perform(const T& item, ::std::vector<path_data::path_data_types>&v, matrix_2d& m, point_2d& origin, optional<point_2d>& currentPoint, point_2d& closePoint) {
 //			path_factory_process_visit::template perform(path_data::rel_move{ { item.x(), item.y() } }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit::template perform(path_data::rel_line{ { item.width(), 0.0 } }, v, m, origin, currentPoint, closePoint);
 //			path_factory_process_visit::template perform(path_data::rel_line{ { 0.0, item.height() } }, v, m, origin, currentPoint, closePoint);
@@ -384,9 +384,9 @@
 //	template <class Allocator>
 //	inline vector<path_data::path_data_types> process_path_data(const path_builder<Allocator>& pf) {
 //		matrix_2d m;
-//		vector_2d origin;
-//		optional<vector_2d> currentPoint = optional<vector_2d>{}; // Tracks the untransformed current point.
-//		vector_2d closePoint;   // Tracks the transformed close point.
+//		point_2d origin;
+//		optional<point_2d> currentPoint = optional<point_2d>{}; // Tracks the untransformed current point.
+//		point_2d closePoint;   // Tracks the transformed close point.
 //		vector<path_data::path_data_types> v;
 //
 //		for (const path_data::path_data_types& val : pf) {

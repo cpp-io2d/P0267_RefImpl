@@ -7,11 +7,11 @@
 
 namespace rocks_in_space
 {
-	using pos = vector_2d;
-	using vel = vector_2d;
-	using acc = vector_2d;
+	using pos = point_2d;
+	using vel = point_2d;
+	using acc = point_2d;
 
-	using path_vertices = std::array<vector_2d, 13>;
+	using path_vertices = std::array<point_2d, 13>;
 
 	struct path_buffer
 	{
@@ -72,8 +72,8 @@ namespace rocks_in_space
 	void							constrain_pos(pos&);
 	void							constrain_vel(vel&);
 	void							constrain_ori(double&);
-	vector_2d						screen_space(const vector_2d& v);
-	bool							collides(const collision& a, const std::array<vector_2d, 2>& missile_path);
+	point_2d						screen_space(const point_2d& v);
+	bool							collides(const collision& a, const std::array<point_2d, 2>& missile_path);
 }
 
 inline rocks_in_space::physics::physics(const pos& position, const vel& velocity)
@@ -127,7 +127,7 @@ inline float rocks_in_space::controllable_physics::orientation() const
 	return m_orientation;
 }
 
-inline rocks_in_space::vector_2d rocks_in_space::screen_space(const vector_2d& v)
+inline rocks_in_space::point_2d rocks_in_space::screen_space(const point_2d& v)
 {
 	return{ v.x(), playing_field_height - v.y() };
 }

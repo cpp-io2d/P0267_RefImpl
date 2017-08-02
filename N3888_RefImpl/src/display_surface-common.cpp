@@ -414,11 +414,11 @@ int display_surface::display_height() const noexcept {
 	return _Display_height;
 }
 
-vector_2d display_surface::dimensions() const noexcept {
+point_2d display_surface::dimensions() const noexcept {
 	return { static_cast<float>(_Width), static_cast<float>(_Height) };
 }
 
-vector_2d display_surface::display_dimensions() const noexcept {
+point_2d display_surface::display_dimensions() const noexcept {
 	return { static_cast<float>(_Display_width), static_cast<float>(_Display_height) };
 }
 

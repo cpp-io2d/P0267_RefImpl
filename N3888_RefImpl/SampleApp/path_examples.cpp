@@ -115,12 +115,12 @@ namespace path_test {
 
 		// Example code goes here.
 		const matrix_2d sclMtx = matrix_2d::init_scale({ 0.9F, 1.1F });// .rotate(half_pi<float>);// * matrix_2d::init_rotate(half_pi<float>);
-		const vector_2d rad{ 50.0F, 50.0F };
+		const point_2d rad{ 50.0F, 50.0F };
 		//auto pt = sclMtx.inverse().transform_pt({ 85.0F, 100.0F }) +
 		//	point_for_angle(half_pi<float> / 2.0F, rad);
 		//auto pt = sclMtx.inverse().transform_pt({ 85.0F, 100.0F }) +
 		//	point_for_angle(half_pi<float> / 2.0F, 50.0F);
-		//auto pt = vector_2d{ 85.0F, 100.0F } + 
+		//auto pt = point_2d{ 85.0F, 100.0F } + 
 		//	point_for_angle(half_pi<float> / 2.0F, rad);
 		auto pt = arc_start({ 85.0F, 100.0F }, half_pi<float> / 2.0F, { 50.0F, 50.0F }, sclMtx);
 		pb.matrix(sclMtx);
@@ -211,7 +211,7 @@ namespace path_test {
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
 		// Example code goes here.
-		auto pt = vector_2d{ 80.0F, 100.0F };
+		auto pt = point_2d{ 80.0F, 100.0F };
 		pb.new_path(pt);
 		pb.arc({ 30.0F, 30.0F }, half_pi<float>, half_pi<float>);
 

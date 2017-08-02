@@ -117,7 +117,7 @@
 //			}
 //		}
 //
-//		void render_ellipse(display_surface& ds, const vector_2d& center, float xRadius, float yRadius, const bgra_color& color) {
+//		void render_ellipse(display_surface& ds, const point_2d& center, float xRadius, float yRadius, const bgra_color& color) {
 //			// See: http://members.chello.at/~easyfilter/bresenham.html
 //			ds.map([&center, &xRadius, &yRadius, &color](mapped_surface& ms) -> void {
 //				auto width = ms.width();
@@ -590,17 +590,17 @@
 //
 //		rectangle fill_extents_from_paths(const vector<vector<path_data::path_item>>&);
 //		rectangle fill_extents_from_paths(const vector<vector<path_data::path_data_types>>& data) {
-//			vector_2d pt0;
-//			vector_2d pt1;
+//			point_2d pt0;
+//			point_2d pt1;
 //
 //			//matrix_2d currMatrix = matrix_2d::init_identity();
-//			vector_2d currOrigin;
+//			point_2d currOrigin;
 //
 //			bool hasCurrentPoint = false;
 //			bool hasExtents = false;
 //
-//			vector_2d lastMoveToPoint;
-//			vector_2d currentPoint;
+//			point_2d lastMoveToPoint;
+//			point_2d currentPoint;
 //
 //			// pt0 will hold min values; pt1 will hold max values.
 //			for (const auto& vec : data) {
@@ -636,8 +636,8 @@
 //					case std::experimental::io2d::path_data_type::path_curve:
 //					{
 //						assert(hasCurrentPoint);
-//						vector_2d cte0{};
-//						vector_2d cte1{};
+//						point_2d cte0{};
+//						point_2d cte1{};
 //						auto dataItem = item.get<experimental::io2d::path_curve>();
 //						auto itemPt1 = dataItem.control_point_1();
 //						auto itemPt2 = dataItem.control_point_2();
@@ -704,8 +704,8 @@
 //			return{ pt0, pt1 };
 //		}
 //
-//		bool point_is_on_line(const vector_2d&, const vector_2d&, const vector_2d&);
-//		bool point_is_on_line(const vector_2d& linePt1, const vector_2d& linePt2, const vector_2d& point) {
+//		bool point_is_on_line(const point_2d&, const point_2d&, const point_2d&);
+//		bool point_is_on_line(const point_2d& linePt1, const point_2d& linePt2, const point_2d& point) {
 //			if (_Almost_equal_relative(linePt1.x(), linePt2.x())) {
 //				if (_Almost_equal_relative(linePt1.x(), point.x()) || _Almost_equal_relative(linePt2.x(), point.x())) {
 //					return true;
@@ -717,7 +717,7 @@
 //			return _Almost_equal_relative(point.y(), slope * point.x() + yIntercept);
 //		}
 //
-//		vector_2d de_casteljau(const array<vector_2d, 4>& p, array<vector_2d, 4>::size_type j, unsigned int k, float t) {
+//		point_2d de_casteljau(const array<point_2d, 4>& p, array<point_2d, 4>::size_type j, unsigned int k, float t) {
 //			if (k == 1) {
 //				assert(j < 3);
 //				return (1.0 - t) * p[j] + t * p[j + 1];
@@ -727,9 +727,9 @@
 //			}
 //		}
 //
-//		array<vector_2d, 8> split_curve_at_t(const vector_2d& startPt, const vector_2d& controlPt1, const vector_2d& controlPt2, const vector_2d& endPt, float t) {
-//			array<vector_2d, 8> result;
-//			array<vector_2d, 4> p;
+//		array<point_2d, 8> split_curve_at_t(const point_2d& startPt, const point_2d& controlPt1, const point_2d& controlPt2, const point_2d& endPt, float t) {
+//			array<point_2d, 8> result;
+//			array<point_2d, 4> p;
 //			p[0] = startPt;
 //			p[1] = controlPt1;
 //			p[2] = controlPt2;
@@ -748,27 +748,27 @@
 //		vector<vector<fill_path_data_item>> path_data_to_transformed_fill_only_sub_paths(const vector<path_data_item>&);
 //		vector<vector<fill_path_data_item>> path_data_to_transformed_fill_only_sub_paths(const vector<path_data_item>& pathData) {
 //			auto matrix = matrix_2d::init_identity();
-//			vector_2d origin;
+//			point_2d origin;
 //			bool hasCurrentPoint = false;
 //			// Untransformed because we use it to add to raw relative points for transformation.
-//			vector_2d currentPoint;
+//			point_2d currentPoint;
 //
 //			// Transformed because we need to know where the transformed last move to point is when we receive a close path instruction and the matrix and origin may have since changed such that we wouldn't be able to calculate it correctly anymore.
-//			vector_2d lastMoveToPoint;
+//			point_2d lastMoveToPoint;
 //			auto pdSize = pathData.size();
 //			vector<fill_path_data_item> vec;
 //			vector<vector<fill_path_data_item>> subPaths;
 //
 //			bool isFilled = false;
 //			bool hasCurrentLine = false;
-//			vector_2d lineBeginPoint;
-//			vector_2d lineEndPoint;
+//			point_2d lineBeginPoint;
+//			point_2d lineEndPoint;
 //
-//			auto points_are_the_same = [](const vector_2d& a, const vector_2d& b) -> bool {
+//			auto points_are_the_same = [](const point_2d& a, const point_2d& b) -> bool {
 //				return _Almost_equal_relative(a.x(), b.x()) && _Almost_equal_relative(a.y(), b.y());
 //			};
 //			// The existing path_data_item structure or interpretation will be insufficient from here on because it relies on previous points yet we are planning geometry that could have "reversed" components, i.e. those where the "start point" is the end and the "end point" is the start. Need to reconcile the fact that some path_data_item objects can be in "reverse" in order to maintain winding order while still splitting geometries into non-intersecting geometries.
-//			auto curve_is_a_line_fn = [&isFilled, &subPaths, &points_are_the_same](const vector_2d& beginPt, const vector_2d& control1Pt, const vector_2d& control2Pt, const vector_2d& endPt) -> bool {
+//			auto curve_is_a_line_fn = [&isFilled, &subPaths, &points_are_the_same](const point_2d& beginPt, const point_2d& control1Pt, const point_2d& control2Pt, const point_2d& endPt) -> bool {
 //				// If the begin point and end point are the same, this is a dead spot. There is no line for the control points to manipulate. This should be tested for in advance.
 //				assert(!points_are_the_same(beginPt, endPt));
 //
@@ -949,7 +949,7 @@
 //						ang2 += two_pi<float>();
 //#endif
 //					}
-//					vector_2d pt0, pt1, pt2, pt3;
+//					point_2d pt0, pt1, pt2, pt3;
 //					int bezCount = 1;
 //					float theta = ang2 - ang1;
 //					float phi;
@@ -976,7 +976,7 @@
 //					pt2.x(pt1.x());
 //					pt2.y(-pt1.y());
 //					phi = -phi;
-//					auto rotCwFn = [](const vector_2d& pt, float a) -> vector_2d {
+//					auto rotCwFn = [](const point_2d& pt, float a) -> point_2d {
 //						return{ pt.x() * cos(a) + pt.y() * sin(a),
 //							-(pt.x() * -sin(a) + pt.y() * cos(a)) };
 //					};
@@ -1052,7 +1052,7 @@
 //						ang2 -= two_pi<float>();
 //#endif
 //					}
-//					vector_2d pt0, pt1, pt2, pt3;
+//					point_2d pt0, pt1, pt2, pt3;
 //					int bezCount = 1;
 //					float theta = ang1 - ang2;
 //					float phi;
@@ -1078,7 +1078,7 @@
 //					pt1.y(-(((1.0 - cosPhi) * (3.0 - cosPhi)) / (3.0 * sinPhi)));
 //					pt2.x(pt1.x());
 //					pt2.y(-pt1.y());
-//					auto rotCwFn = [](const vector_2d& pt, float a) -> vector_2d {
+//					auto rotCwFn = [](const point_2d& pt, float a) -> point_2d {
 //						return{ pt.x() * cos(a) + pt.y() * sin(a),
 //							-(pt.x() * -sin(a) + pt.y() * cos(a)) };
 //					};
@@ -1180,8 +1180,8 @@
 //		}
 //
 //		// Note: This function returns false if the line segments are collinear.
-//		bool line_segment_intersects_line_segment(const vector_2d&, const vector_2d&, const vector_2d&, const vector_2d&, vector_2d&);
-//		bool line_segment_intersects_line_segment(const vector_2d& firstStart, const vector_2d& firstEnd, const vector_2d& secondStart, const vector_2d& secondEnd, vector_2d& intersectionPoint) {
+//		bool line_segment_intersects_line_segment(const point_2d&, const point_2d&, const point_2d&, const point_2d&, point_2d&);
+//		bool line_segment_intersects_line_segment(const point_2d& firstStart, const point_2d& firstEnd, const point_2d& secondStart, const point_2d& secondEnd, point_2d& intersectionPoint) {
 //			if (!rectangle_intersects_rectangle({ min(firstStart.x(), firstEnd.x()), min(firstStart.y(), firstEnd.y()), abs(firstStart.x() - firstEnd.x()), abs(firstStart.y() - firstEnd.y()) },
 //			{ min(secondStart.x(), secondEnd.x()), min(secondStart.y(), secondEnd.y()), abs(secondStart.x() - secondEnd.x()), abs(secondStart.y() - secondEnd.y()) })) {
 //				intersectionPoint = {};
@@ -1189,9 +1189,9 @@
 //			}
 //
 //			// See: http://stackoverflow.com/a/565282/465211 .
-//			auto cross_product_magnitude_vector_2d_fn = [](const vector_2d& first, const vector_2d& second) -> float {
+//			auto cross_product_magnitude_vector_2d_fn = [](const point_2d& first, const point_2d& second) -> float {
 //				// A cross product is typically an operation on two 3D vectors that produces a 3D vector result; applying it to
-//				// two vector_2d's only lets us compute the 'z' component which is all we need here.
+//				// two point_2d's only lets us compute the 'z' component which is all we need here.
 //				return first.x() * second.y() - second.x() * first.y();
 //			};
 //			// p = firstStart

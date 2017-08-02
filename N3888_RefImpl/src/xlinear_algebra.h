@@ -3,13 +3,13 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 
-		class vector_2d {
+		class point_2d {
 			float _X = 0.0f;
 			float _Y = 0.0f;
 		public:
 			// \ref{\iotwod.\pointtwod.cons}, constructors:
-			constexpr vector_2d() noexcept;
-			constexpr vector_2d(float x, float y) noexcept;
+			constexpr point_2d() noexcept;
+			constexpr point_2d(float x, float y) noexcept;
 
 			constexpr void x(float value) noexcept;
 			constexpr void y(float value) noexcept;
@@ -18,33 +18,33 @@ namespace std::experimental::io2d {
 			constexpr float y() const noexcept;
 
 			// \ref{\iotwod.\pointtwod.observers}, observers:
-			constexpr float dot(const vector_2d& other) const noexcept;
+			constexpr float dot(const point_2d& other) const noexcept;
 			float magnitude() const noexcept;
 			constexpr float magnitude_squared() const noexcept;
 			float angular_direction() const noexcept;
-			vector_2d to_unit() const noexcept;
-			constexpr vector_2d zero() const noexcept;
+			point_2d to_unit() const noexcept;
+			constexpr point_2d zero() const noexcept;
 
 			// \ref{\iotwod.\pointtwod.member.ops}, member operators:
-			constexpr vector_2d& operator+=(const vector_2d& rhs) noexcept;
-			constexpr vector_2d& operator-=(const vector_2d& rhs) noexcept;
-			constexpr vector_2d& operator*=(float rhs) noexcept;
-			constexpr vector_2d& operator*=(const vector_2d& rhs) noexcept;
-			constexpr vector_2d& operator/=(float rhs) noexcept;
-			constexpr vector_2d& operator/=(const vector_2d& rhs) noexcept;
+			constexpr point_2d& operator+=(const point_2d& rhs) noexcept;
+			constexpr point_2d& operator-=(const point_2d& rhs) noexcept;
+			constexpr point_2d& operator*=(float rhs) noexcept;
+			constexpr point_2d& operator*=(const point_2d& rhs) noexcept;
+			constexpr point_2d& operator/=(float rhs) noexcept;
+			constexpr point_2d& operator/=(const point_2d& rhs) noexcept;
 		};
-		constexpr bool operator==(const vector_2d& lhs, const vector_2d& rhs)
+		constexpr bool operator==(const point_2d& lhs, const point_2d& rhs)
 			noexcept;
-		constexpr bool operator!=(const vector_2d& lhs, const vector_2d& rhs)
+		constexpr bool operator!=(const point_2d& lhs, const point_2d& rhs)
 			noexcept;
-		constexpr vector_2d operator+(const vector_2d& lhs) noexcept;
-		constexpr vector_2d operator+(const vector_2d& lhs, const vector_2d& rhs)
+		constexpr point_2d operator+(const point_2d& lhs) noexcept;
+		constexpr point_2d operator+(const point_2d& lhs, const point_2d& rhs)
 			noexcept;
-		constexpr vector_2d operator-(const vector_2d& lhs) noexcept;
-		constexpr vector_2d operator-(const vector_2d& lhs, const vector_2d& rhs)
+		constexpr point_2d operator-(const point_2d& lhs) noexcept;
+		constexpr point_2d operator-(const point_2d& lhs, const point_2d& rhs)
 			noexcept;
-		constexpr vector_2d operator*(const vector_2d& lhs, float rhs) noexcept;
-		constexpr vector_2d operator*(float lhs, const vector_2d& rhs) noexcept;
+		constexpr point_2d operator*(const point_2d& lhs, float rhs) noexcept;
+		constexpr point_2d operator*(float lhs, const point_2d& rhs) noexcept;
 
 		class matrix_2d {
 			float _M00 = 1.0F;
@@ -81,10 +81,10 @@ namespace std::experimental::io2d {
 			constexpr float m21() const noexcept;
 
 			// \ref{\iotwod.\matrixtwod.staticfactories}, static factory functions:
-			constexpr static matrix_2d init_translate(const vector_2d& value) noexcept {
+			constexpr static matrix_2d init_translate(const point_2d& value) noexcept {
 				return{ 1.0F, 0.0F, 0.0F, 1.0F, value.x(), value.y() };
 			}
-			constexpr static matrix_2d init_scale(const vector_2d& value) noexcept {
+			constexpr static matrix_2d init_scale(const point_2d& value) noexcept {
 				return{ value.x(), 0.0F, 0.0F, value.y(), 0.0F, 0.0F };
 			}
 			static matrix_2d init_rotate(float radians) noexcept {
@@ -109,10 +109,10 @@ namespace std::experimental::io2d {
 			}
 
 			// \ref{\iotwod.\matrixtwod.modifiers}, modifiers:
-			constexpr matrix_2d& translate(vector_2d v) noexcept;
-			constexpr matrix_2d& scale(vector_2d v) noexcept;
+			constexpr matrix_2d& translate(point_2d v) noexcept;
+			constexpr matrix_2d& scale(point_2d v) noexcept;
 			matrix_2d& rotate(float radians) noexcept;
-			matrix_2d& rotate(float radians, vector_2d origin) noexcept;
+			matrix_2d& rotate(float radians, point_2d origin) noexcept;
 			matrix_2d& reflect(float radians) noexcept;
 			constexpr matrix_2d& shear_x(float factor) noexcept;
 			constexpr matrix_2d& shear_y(float factor) noexcept;
@@ -122,7 +122,7 @@ namespace std::experimental::io2d {
 			constexpr bool is_invertible() const noexcept;
 			constexpr float determinant() const noexcept;
 			constexpr matrix_2d inverse() const noexcept;
-			constexpr vector_2d transform_pt(vector_2d pt) const noexcept;
+			constexpr point_2d transform_pt(point_2d pt) const noexcept;
 
 			// \ref{\iotwod.\matrixtwod.member.ops}, matrix_2d member operators:
 			constexpr matrix_2d& operator*=(const matrix_2d& rhs) noexcept;
@@ -135,7 +135,7 @@ namespace std::experimental::io2d {
 			noexcept;
 		constexpr bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs)
 			noexcept;
-		constexpr vector_2d operator*(vector_2d v, const matrix_2d& m)
+		constexpr point_2d operator*(point_2d v, const matrix_2d& m)
 			noexcept;
 		constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs)
 			noexcept;

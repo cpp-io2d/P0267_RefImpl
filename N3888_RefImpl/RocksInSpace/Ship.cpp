@@ -8,9 +8,9 @@ namespace
 {
 	using rocks_in_space::path_vertices;
 	using rocks_in_space::path_buffer;
-	using rocks_in_space::vector_2d;
+	using rocks_in_space::point_2d;
 
-	path_vertices ship_vb{ vector_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } };
+	path_vertices ship_vb{ point_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } };
 	const rocks_in_space::path_buffer ship_shape{ 6, ship_vb };
 }
 
@@ -59,7 +59,7 @@ void rocks_in_space::ship::draw(display_surface& ds)
 	ds.stroke(brush{ rgba_color::white }, path);
 }
 
-rocks_in_space::missile::missile(const vector_2d& position, float orientation, bool active)
+rocks_in_space::missile::missile(const point_2d& position, float orientation, bool active)
 	: m_physics(position, pol_to_car({ missile_travel_distance_per_tick, orientation }))
 	, m_age(active ? 0.0F : max_missile_age)
 {}

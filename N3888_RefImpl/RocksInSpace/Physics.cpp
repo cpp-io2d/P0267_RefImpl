@@ -57,7 +57,7 @@ void rocks_in_space::constrain_vel(vel& v)
 	}
 }
 
-bool rocks_in_space::collides(const collision& a, const std::array<vector_2d, 2>& missile_path)
+bool rocks_in_space::collides(const collision& a, const std::array<point_2d, 2>& missile_path)
 {
 	auto delta = a.m_position - missile_path[0];
 	if (delta.magnitude() > a.m_radius)

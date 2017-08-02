@@ -16,7 +16,7 @@ namespace std::experimental::io2d {
 				, _Width(width)
 				, _Height(height) {
 			}
-			constexpr bounding_box(const vector_2d& tl, const vector_2d& br) noexcept
+			constexpr bounding_box(const point_2d& tl, const point_2d& br) noexcept
 				: _X(tl.x())
 				, _Y(tl.y())
 				, _Width(::std::max(0.0F, br.x() - tl.x()))
@@ -35,11 +35,11 @@ namespace std::experimental::io2d {
 			constexpr void height(float value) noexcept {
 				_Height = value;
 			}
-			constexpr void top_left(const vector_2d& value) noexcept {
+			constexpr void top_left(const point_2d& value) noexcept {
 				_X = value.x();
 				_Y = value.y();
 			}
-			constexpr void bottom_right(const vector_2d& value) noexcept {
+			constexpr void bottom_right(const point_2d& value) noexcept {
 				_Width = max(0.0F, value.x() - _X);
 				_Height = max(0.0F, value.y() - _Y);
 			}
@@ -52,8 +52,8 @@ namespace std::experimental::io2d {
 			constexpr float right() const noexcept;
 			constexpr float top() const noexcept;
 			constexpr float bottom() const noexcept;
-			constexpr vector_2d top_left() const noexcept;
-			constexpr vector_2d bottom_right() const noexcept;
+			constexpr point_2d top_left() const noexcept;
+			constexpr point_2d bottom_right() const noexcept;
 
 			constexpr bool operator==(const bounding_box& rhs) const noexcept {
 				return _X == rhs._X && _Y == rhs._Y && _Width == rhs._Width && _Height == rhs._Height;
@@ -95,33 +95,33 @@ namespace std::experimental::io2d {
 			return _Y + _Height;
 		}
 
-		inline constexpr vector_2d bounding_box::top_left() const noexcept {
+		inline constexpr point_2d bounding_box::top_left() const noexcept {
 			return{ _X, _Y };
 		}
 
-		inline constexpr vector_2d bounding_box::bottom_right() const noexcept {
+		inline constexpr point_2d bounding_box::bottom_right() const noexcept {
 			return{ _X + _Width, _Y + _Height };
 		}
 
 		class circle {
-			vector_2d _Center;
+			point_2d _Center;
 			float _Radius;
 		public:
 			constexpr circle() noexcept
 				: _Center()
 				, _Radius() {}
-			constexpr circle(const vector_2d& ctr, float r) noexcept
+			constexpr circle(const point_2d& ctr, float r) noexcept
 				: _Center(ctr)
 				, _Radius(r) {}
 
-			constexpr void center(const vector_2d& ctr) noexcept {
+			constexpr void center(const point_2d& ctr) noexcept {
 				_Center = ctr;
 			}
 			constexpr void radius(float r) noexcept {
 				_Radius = r;
 			}
 
-			constexpr vector_2d center() const noexcept {
+			constexpr point_2d center() const noexcept {
 				return _Center;
 			}
 			constexpr float radius() const noexcept {

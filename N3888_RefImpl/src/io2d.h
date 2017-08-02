@@ -289,15 +289,15 @@ namespace std::experimental::io2d {
 		image_surface make_image_surface(format format, int width, int height,
 			error_code& ec) noexcept;
 		image_surface copy_image_surface(image_surface& sfc) noexcept;
-		float angle_for_point(vector_2d ctr, vector_2d pt,
-			vector_2d scl = vector_2d{ 1.0f, 1.0f }) noexcept;
-		vector_2d point_for_angle(float ang, float rad = 1.0f) noexcept;
-		vector_2d point_for_angle(float ang, vector_2d rad) noexcept;
-		vector_2d arc_start(vector_2d ctr, float sang, vector_2d rad,
+		float angle_for_point(point_2d ctr, point_2d pt,
+			point_2d scl = point_2d{ 1.0f, 1.0f }) noexcept;
+		point_2d point_for_angle(float ang, float rad = 1.0f) noexcept;
+		point_2d point_for_angle(float ang, point_2d rad) noexcept;
+		point_2d arc_start(point_2d ctr, float sang, point_2d rad,
 			const matrix_2d& m = matrix_2d{}) noexcept;
-		vector_2d arc_center(vector_2d cpt, float sang, vector_2d rad,
+		point_2d arc_center(point_2d cpt, float sang, point_2d rad,
 			const matrix_2d& m = matrix_2d{}) noexcept;
-		vector_2d arc_end(vector_2d cpt, float eang, vector_2d rad,
+		point_2d arc_end(point_2d cpt, float eang, point_2d rad,
 			const matrix_2d& m = matrix_2d{}) noexcept;
 	}
 }

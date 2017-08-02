@@ -5,7 +5,7 @@ using namespace std::experimental;
 using namespace std::experimental::io2d;
 
 //namespace {
-//	const vector_2d _Font_default_size{ 16.0F, 16.0F };
+//	const point_2d _Font_default_size{ 16.0F, 16.0F };
 //}
 //
 constexpr cairo_matrix_t _Cairo_identity_matrix{ 1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F };
