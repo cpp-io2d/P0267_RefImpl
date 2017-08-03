@@ -496,41 +496,6 @@ namespace std::experimental::io2d {
 			ec.clear();
 		}
 
-		class color_stop {
-		private:
-			float _Offset;
-			rgba_color _Color;
-		public:
-			constexpr color_stop() noexcept
-				: _Offset(0.0F)
-				, _Color(rgba_color{}) {}
-			constexpr color_stop(float offset, const rgba_color& color)
-				: _Offset(offset)
-				, _Color(color) {}
-
-			constexpr void offset(float value) noexcept {
-				_Offset = value;
-			}
-			constexpr void color(const rgba_color& value) noexcept {
-				_Color = value;
-			}
-
-			constexpr float offset() const noexcept {
-				return _Offset;
-			}
-			constexpr rgba_color color() const noexcept {
-				return _Color;
-			}
-
-			constexpr bool operator==(const color_stop& rhs) {
-				return _Offset == rhs._Offset && _Color == rhs._Color;
-			}
-
-			constexpr bool operator!=(const color_stop& rhs) {
-				return !((*this) == rhs);
-			}
-		};
-
 		class render_props {
 			antialias _Antialiasing = antialias::good;
 			matrix_2d _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
@@ -744,38 +709,6 @@ namespace std::experimental::io2d {
 		};
 
 		class image_surface;
-
-		class brush {
-		public:
-			typedef cairo_pattern_t* native_handle_type;
-
-		private:
-			::std::shared_ptr<cairo_pattern_t> _Brush;
-			::std::shared_ptr<image_surface> _Image_surface;
-			brush_type _Brush_type;
-
-		public:
-			native_handle_type native_handle() const noexcept;
-
-			explicit brush(const rgba_color& c);
-
-			template <class InputIterator>
-			brush(const point_2d& begin, const point_2d& end,
-				InputIterator first, InputIterator last);
-			brush(const point_2d& begin, const point_2d& end,
-				::std::initializer_list<color_stop> il);
-
-			template <class InputIterator>
-			brush(const circle& start, const circle& end,
-				InputIterator first, InputIterator last);
-
-			brush(const circle& start, const circle& end,
-				::std::initializer_list<color_stop> il);
-
-			explicit brush(image_surface&& img);
-
-			brush_type type() const noexcept;
-		};
 
 		struct _Surface_native_handles {
 			::cairo_surface_t* csfce;

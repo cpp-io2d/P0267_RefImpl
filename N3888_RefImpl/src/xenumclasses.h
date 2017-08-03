@@ -81,28 +81,6 @@ namespace std::experimental::io2d {
 			rgb30
 		};
 
-		enum class wrap_mode {
-			none,
-			repeat,
-			reflect,
-			pad
-		};
-
-		enum class filter {
-			fast,
-			good,
-			best,
-			nearest,
-			bilinear
-		};
-
-		enum class brush_type {
-			solid_color,
-			surface,
-			linear,
-			radial
-		};
-
 		enum class scaling {
 			letterbox, // Same as uniform except that the display_surface is cleared using the letterbox brush first
 			uniform, // Maintain aspect ratio and center as needed, ignoring side areas that are not drawn to
