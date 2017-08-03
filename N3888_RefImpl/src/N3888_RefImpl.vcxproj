@@ -468,6 +468,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="io2d.h" />
+    <ClInclude Include="xbrushes.h" />
     <ClInclude Include="xcolor.h" />
     <ClInclude Include="xdiagnostics.h" />
     <ClInclude Include="xenumclasses.h" />
@@ -477,6 +478,7 @@
     <ClInclude Include="xio2d_impl.h" />
     <ClInclude Include="xlinear_algebra.h" />
     <ClInclude Include="xpath.h" />
+    <ClInclude Include="xsurfaces.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="display_surface-common.cpp" />
