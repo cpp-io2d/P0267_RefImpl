@@ -123,7 +123,7 @@ void test_image_load_save(display_surface& ds) {
 //	imgSfc.immediate().abs_line({ 250.0F, 0.0F });
 //	imgSfc.immediate().abs_line({ 500.0F,250.0F });
 //	imgSfc.immediate().abs_line({ 250.0F,500.0F });
-//	imgSfc.immediate().close_path();
+//	imgSfc.immediate().close_figure();
 //	imgSfc.fill_immediate(rgba_color::white());
 //
 //	ds.matrix(matrix_2d::init_translate({ 0.0F, 0.0F }));
@@ -148,7 +148,7 @@ void test_image_load_save(display_surface& ds) {
 //	imgSfc.immediate().abs_line({ 250.0F, 0.0F });
 //	imgSfc.immediate().abs_line({ 500.0F,250.0F });
 //	imgSfc.immediate().abs_line({ 250.0F,500.0F });
-//	imgSfc.immediate().close_path();
+//	imgSfc.immediate().close_figure();
 //	imgSfc.fill_immediate(rgba_color::white());
 //
 //	ds.clear();
@@ -165,7 +165,7 @@ void test_image_load_save(display_surface& ds) {
 //	imgSfc.immediate().abs_line({ 250.0F, 0.0F });
 //	imgSfc.immediate().abs_line({ 500.0F,250.0F });
 //	imgSfc.immediate().abs_line({ 250.0F,500.0F });
-//	imgSfc.immediate().close_path();
+//	imgSfc.immediate().close_figure();
 //	imgSfc.fill_immediate(rgba_color::white());
 //	//imgSfc.matrix(matrix_2d::init_translate({ -50.0F, 50.0F }));
 //	//imgSfc.matrix(matrix_2d::init_scale({ 0.5F, 1.5F }));
@@ -205,7 +205,7 @@ void test_image_load_save(display_surface& ds) {
 //	imgSfc.immediate().abs_line({ 250.0F, 0.0F });
 //	imgSfc.immediate().abs_line({ 500.0F,250.0F });
 //	imgSfc.immediate().abs_line({ 250.0F,500.0F });
-//	imgSfc.immediate().close_path();
+//	imgSfc.immediate().close_figure();
 //	imgSfc.fill_immediate(rgba_color::white());
 //	auto m = matrix_2d::init_scale({ 1.5F, 1.0F }).translate({ 20.0F, 20.0F });// .invert().translate({ -10.0F, -10.0F });
 //	auto scsm = m;
@@ -280,7 +280,7 @@ void test_stroke_rules(display_surface& ds) {
 	//ds.line_cap(line_cap::round);
 	//ds.line_join(line_join::miter_or_bevel);
 	//ds.immediate().move_to({ 700.0F, 200.0F });
-	//ds.immediate().close_path();
+	//ds.immediate().close_figure();
 
 	//ds.line_width(40.0F);
 	//ds.line_cap(line_cap::round);
@@ -294,7 +294,7 @@ void test_stroke_rules(display_surface& ds) {
 	//ds.matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F).scale({ 0.5F, 1.0F }));
 	//ds.immediate().rel_move({ 20.0F, 0.0F });
 	//ds.immediate().rel_move({ 0.0F, 10.0F });
-	//ds.immediate().close_path();
+	//ds.immediate().close_figure();
 	//ds.immediate().rel_line({ 5.0F, 10.0F });
 	//ds.immediate().rel_line({ -20.0F, 0.0F });
 	//ds.stroke_immediate(rgba_color::black());
@@ -310,17 +310,17 @@ void test_path_functionality(display_surface& ds) {
 	point_2d v, cpt1, cpt2, ept;
 	v = { 10.0F, 10.0F };
 	pf.new_path(v);
-	//void rel_new_path(const point_2d& dpt) noexcept;
+	//void rel_new_figure(const point_2d& dpt) noexcept;
 	v = { 30.0F, 0.0F };
-	pf.rel_new_path(v);
+	pf.rel_new_figure(v);
 	//void line(const point_2d& pt) noexcept;
 	v = { 80.0F, 10.0F };
 	pf.line(v);
 	//void rel_line(const point_2d& dpt) noexcept;
 	v = { 0.0F, 40.0F };
 	pf.rel_line(v);
-	//void close_path() noexcept;
-	pf.close_path();
+	//void close_figure() noexcept;
+	pf.close_figure();
 
 	pf.new_path({ 50.0F, 50.0F });
 	pf.line({ 1240.0F, 50.0F });
@@ -356,7 +356,7 @@ void test_path_functionality(display_surface& ds) {
 	//pf.rel_line({ 200.0F, 0.0F });
 	//pf.rel_line({ 0.0F, 100.0F });
 	//pf.rel_line({ -200.0F, 0.0F });
-	//pf.close_path();
+	//pf.close_figure();
 
 	auto pg = path_group(pf);
 	ds.stroke(brush{ rgba_color::red }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ bounding_box(40.0F, 40.0F, 1240.0F, 680.0F) });
@@ -389,7 +389,7 @@ void draw_radial_circles(display_surface& ds) {
 	pf.line({ 500.0F, 100.0F });
 	pf.matrix(matrix_2d::init_shear_x(0.25F));
 	pf.line({ 500.0F, 500.0F });
-	pf.close_path();
+	pf.close_figure();
 	pf.matrix(matrix_2d());
 	pf.line({ 50.0F, 150.0F });
 	pf.new_path({ 520.0F, 520.0F });
@@ -618,7 +618,7 @@ void draw_radial_circles(display_surface& ds) {
 //	pb.abs_move({ 85.0F, 25.0F });
 //	pb.abs_line({ 150.0F, 115.0F });
 //	pb.abs_line({ 30.0F, 115.0F });
-//	pb.close_path();
+//	pb.close_figure();
 //	auto triangleClipPath = path_group(pb);
 //
 //	ds.brush(backgroundBrush);
@@ -817,7 +817,7 @@ void draw_radial_circles(display_surface& ds) {
 //	imgSfc.immediate().abs_move({ 0.0F, 0.0F });
 //	imgSfc.immediate().abs_line({ 40.0F, 40.0F });
 //	imgSfc.immediate().abs_line({ 0.0F, 40.0F });
-//	imgSfc.immediate().close_path();
+//	imgSfc.immediate().close_figure();
 //	imgSfc.paint(rgba_color::green());
 //	imgSfc.fill_immediate(rgba_color::yellow());
 //
@@ -864,7 +864,7 @@ void draw_radial_circles(display_surface& ds) {
 //
 //	ds.immediate().clear();
 //	ds.immediate().curve({ 610.0F, 400.0F }, { 660.0F, 300.0F }, { 710.0F, 400.0F });
-//	ds.immediate().close_path();
+//	ds.immediate().close_figure();
 //	ds.stroke_immediate(rgba_color::yellow_green());
 //	auto sumOfElapsedTimes = accumulate(begin(elapsedTimes), end(elapsedTimes), 0.0F);
 //	auto countOfElapsedTimes = static_cast<float>(elapsedTimes.size());

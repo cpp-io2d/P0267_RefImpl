@@ -253,402 +253,6 @@ namespace std::experimental::io2d {
 			return m.transform_pt(pt);
 		}
 
-		namespace path_data {
-			class abs_new_path {
-				point_2d _Data = {};
-			public:
-				constexpr abs_new_path() noexcept {}
-
-				constexpr abs_new_path(const point_2d& pt) noexcept
-					: _Data(pt) {}
-
-				constexpr void at(const point_2d& pt) noexcept {
-					_Data = pt;
-				}
-
-				constexpr point_2d at() const noexcept {
-					return _Data;
-				}
-
-				constexpr bool operator==(const abs_new_path& rhs) const noexcept {
-					return _Data == rhs._Data;
-				}
-
-				constexpr bool operator!=(const abs_new_path& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class rel_new_path {
-				point_2d _Data = {};
-			public:
-				constexpr rel_new_path() noexcept {}
-
-				constexpr rel_new_path(const point_2d& pt) noexcept
-					: _Data(pt) {}
-
-				constexpr void at(const point_2d& pt) noexcept {
-					_Data = pt;
-				}
-
-				constexpr point_2d at() const noexcept {
-					return _Data;
-				}
-
-				constexpr bool operator==(const rel_new_path& rhs) const noexcept {
-					return _Data == rhs._Data;
-				}
-
-				constexpr bool operator!=(const rel_new_path& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class close_path {
-			public:
-				constexpr close_path() noexcept {}
-
-				constexpr bool operator==(const close_path&) const noexcept {
-					return true;
-				}
-
-				constexpr bool operator!=(const close_path& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class abs_line {
-				point_2d _Data = {};
-			public:
-				constexpr explicit abs_line(const point_2d& to) noexcept
-					: _Data(to) {
-				}
-				constexpr abs_line() noexcept {}
-
-				constexpr void to(const point_2d& value) noexcept {
-					_Data = value;
-				}
-
-				constexpr point_2d to() const noexcept {
-					return _Data;
-				}
-
-				constexpr bool operator==(const abs_line& rhs) const noexcept {
-					return _Data == rhs._Data;
-				}
-
-				constexpr bool operator!=(const abs_line& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class rel_line {
-				point_2d _Data = {};
-			public:
-				constexpr explicit rel_line(const point_2d& to) noexcept
-					: _Data(to) {
-				}
-				constexpr rel_line() noexcept {}
-
-				constexpr void to(const point_2d& value) noexcept {
-					_Data = value;
-				}
-
-				constexpr point_2d to() const noexcept {
-					return _Data;
-				}
-
-				constexpr bool operator==(const rel_line& rhs) const noexcept {
-					return _Data == rhs._Data;
-				}
-
-				constexpr bool operator!=(const rel_line& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class abs_cubic_curve {
-				point_2d _Control_pt1 = {};
-				point_2d _Control_pt2 = {};
-				point_2d _End_pt = {};
-			public:
-				constexpr abs_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept
-					: _Control_pt1(controlPoint1)
-					, _Control_pt2(controlPoint2)
-					, _End_pt(endPoint) {
-				}
-				constexpr abs_cubic_curve() noexcept {}
-
-				constexpr void control_point_1(const point_2d& value) noexcept {
-					_Control_pt1 = value;
-				}
-				constexpr void control_point_2(const point_2d& value) noexcept {
-					_Control_pt2 = value;
-				}
-				constexpr void end_point(const point_2d& value) noexcept {
-					_End_pt = value;
-				}
-
-				constexpr point_2d control_point_1() const noexcept {
-					return _Control_pt1;
-				}
-				constexpr point_2d control_point_2() const noexcept {
-					return _Control_pt2;
-				}
-				constexpr point_2d end_point() const noexcept {
-					return _End_pt;
-				}
-
-				constexpr bool operator==(const abs_cubic_curve& rhs) const noexcept {
-					return (_Control_pt1 == rhs._Control_pt1) &&
-						(_Control_pt2 == rhs._Control_pt2) &&
-						(_End_pt == rhs._End_pt);
-				}
-
-				constexpr bool operator!=(const abs_cubic_curve& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class rel_cubic_curve {
-				point_2d _Control_pt1 = {};
-				point_2d _Control_pt2 = {};
-				point_2d _End_pt = {};
-			public:
-				constexpr rel_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept
-					: _Control_pt1(controlPoint1)
-					, _Control_pt2(controlPoint2)
-					, _End_pt(endPoint) {
-				}
-				constexpr rel_cubic_curve() noexcept {}
-
-				constexpr void control_point_1(const point_2d& value) noexcept {
-					_Control_pt1 = value;
-				}
-				constexpr void control_point_2(const point_2d& value) noexcept {
-					_Control_pt2 = value;
-				}
-				constexpr void end_point(const point_2d& value) noexcept {
-					_End_pt = value;
-				}
-
-				constexpr point_2d control_point_1() const noexcept {
-					return _Control_pt1;
-				}
-				constexpr point_2d control_point_2() const noexcept {
-					return _Control_pt2;
-				}
-				constexpr point_2d end_point() const noexcept {
-					return _End_pt;
-				}
-
-				constexpr bool operator==(const rel_cubic_curve& rhs) const noexcept {
-					return (_Control_pt1 == rhs._Control_pt1) &&
-						(_Control_pt2 == rhs._Control_pt2) &&
-						(_End_pt == rhs._End_pt);
-				}
-
-				constexpr bool operator!=(const rel_cubic_curve& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class abs_quadratic_curve {
-				point_2d _Control_pt = {};
-				point_2d _End_pt = {};
-			public:
-				constexpr abs_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept
-					: _Control_pt(cp)
-					, _End_pt(ep) {
-				}
-				constexpr abs_quadratic_curve() noexcept {}
-
-				constexpr void control_point(const point_2d& value) noexcept {
-					_Control_pt = value;
-				}
-				constexpr void end_point(const point_2d& value) noexcept {
-					_End_pt = value;
-				}
-
-				constexpr point_2d control_point() const noexcept {
-					return _Control_pt;
-				}
-				constexpr point_2d end_point() const noexcept {
-					return _End_pt;
-				}
-
-				constexpr bool operator==(const abs_quadratic_curve& rhs) const noexcept {
-					return (_Control_pt == rhs._Control_pt) &&
-						(_End_pt == rhs._End_pt);
-				}
-
-				constexpr bool operator!=(const abs_quadratic_curve& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class rel_quadratic_curve {
-				point_2d _Control_pt = {};
-				point_2d _End_pt = {};
-			public:
-				constexpr rel_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept
-					: _Control_pt(cp)
-					, _End_pt(ep) {
-				}
-				constexpr rel_quadratic_curve() noexcept {}
-
-				constexpr void control_point(const point_2d& value) noexcept {
-					_Control_pt = value;
-				}
-				constexpr void end_point(const point_2d& value) noexcept {
-					_End_pt = value;
-				}
-
-				constexpr point_2d control_point() const noexcept {
-					return _Control_pt;
-				}
-				constexpr point_2d end_point() const noexcept {
-					return _End_pt;
-				}
-
-				constexpr bool operator==(const rel_quadratic_curve& rhs) const noexcept {
-					return (_Control_pt == rhs._Control_pt) &&
-						(_End_pt == rhs._End_pt);
-				}
-
-				constexpr bool operator!=(const rel_quadratic_curve& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class arc {
-				point_2d _Radius;
-				float _Rotation;
-				float _Start_angle;
-			public:
-				constexpr arc() noexcept
-					: arc(point_2d{ 10.0F, 10.0F }, pi<float>, pi<float>) { }
-				constexpr arc(const point_2d& rad, float rot, float sang = pi<float>) noexcept
-					: _Radius(rad)
-					, _Rotation(rot)
-					, _Start_angle(sang) {
-				}
-
-				constexpr void radius(const point_2d& rad) noexcept {
-					_Radius = rad;
-				}
-				constexpr void rotation(float rot) noexcept {
-					_Rotation = rot;
-				}
-				constexpr void start_angle(float sang) noexcept {
-					_Start_angle = sang;
-				}
-
-				constexpr point_2d radius() const noexcept {
-					return _Radius;
-				}
-				constexpr float rotation() const noexcept {
-					return _Rotation;
-				}
-				constexpr float start_angle() const noexcept {
-					return _Start_angle;
-				}
-
-				point_2d center(point_2d cpt, const matrix_2d& m) const noexcept {
-					auto lmtx = m;
-					lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
-					auto centerOffset = point_for_angle(two_pi<float> -_Start_angle, _Radius);
-					centerOffset.y = -centerOffset.y;
-					return cpt - centerOffset * lmtx;
-				}
-
-				point_2d end_pt(point_2d cpt, const matrix_2d& m) const noexcept {
-					auto lmtx = m;
-					auto tfrm = matrix_2d::init_rotate(_Start_angle + _Rotation);
-					lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
-					auto pt = (_Radius * tfrm);
-					pt.y = -pt.y;
-					return cpt + pt * lmtx;
-				}
-
-				constexpr bool operator==(const arc& rhs) const noexcept {
-					return (_Radius == rhs._Radius) &&
-						(_Rotation == rhs._Rotation) &&
-						(_Start_angle == rhs._Start_angle);
-				}
-
-				constexpr bool operator!=(const arc& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class abs_matrix {
-				matrix_2d _Matrix;
-			public:
-				constexpr explicit abs_matrix(const matrix_2d& m) noexcept
-					: _Matrix(m) {
-				}
-				constexpr abs_matrix() noexcept {}
-
-				constexpr void matrix(const matrix_2d& value) noexcept {
-					_Matrix = value;
-				}
-				constexpr matrix_2d matrix() const noexcept {
-					return _Matrix;
-				}
-
-				constexpr bool operator==(const abs_matrix& rhs) const noexcept {
-					return _Matrix == rhs._Matrix;
-				}
-
-				constexpr bool operator!=(const abs_matrix& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class rel_matrix {
-				matrix_2d _Matrix;
-			public:
-				constexpr explicit rel_matrix(const matrix_2d& m) noexcept
-					: _Matrix(m) {
-				}
-				constexpr rel_matrix() noexcept {}
-
-				constexpr void matrix(const matrix_2d& value) noexcept {
-					_Matrix = value;
-				}
-				constexpr matrix_2d matrix() const noexcept {
-					return _Matrix;
-				}
-
-				constexpr bool operator==(const rel_matrix& rhs) const noexcept {
-					return _Matrix == rhs._Matrix;
-				}
-
-				constexpr bool operator!=(const rel_matrix& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
-			};
-
-			class revert_matrix {
-			public:
-				constexpr revert_matrix() noexcept {}
-
-				constexpr bool operator==(const revert_matrix&) const noexcept {
-					return true;
-				}
-
-				constexpr bool operator!=(const revert_matrix&) const noexcept {
-					return false;
-				}
-			};
-
-			using path_item = variant<abs_new_path, rel_new_path, close_path,
-				abs_matrix, rel_matrix, revert_matrix,
-				abs_cubic_curve, abs_line, abs_quadratic_curve, arc,
-				rel_cubic_curve, rel_line, rel_quadratic_curve>;
-		}
-
 		inline point_2d arc_start(point_2d ctr, float sang, point_2d rad, const matrix_2d& m) noexcept {
 			auto lmtx = m;
 			lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
@@ -726,8 +330,8 @@ namespace std::experimental::io2d {
 
 		template <class _TItem>
 		struct _Path_group_perform_visit {
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::abs_new_path& item, point_2d& lastMoveToPoint) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_new_figure>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::abs_new_figure& item, point_2d& lastMoveToPoint) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt = item.at();
 				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
@@ -739,8 +343,8 @@ namespace std::experimental::io2d {
 				vec.push_back(cpdItem);
 			}
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::abs_line& item, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::abs_line& item, point_2d&) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt = item.to();
 				cpdItem.header.type = CAIRO_PATH_LINE_TO;
@@ -750,8 +354,8 @@ namespace std::experimental::io2d {
 				cpdItem.point = { pt.x, pt.y };
 				vec.push_back(cpdItem);
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::abs_cubic_curve& item, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::abs_cubic_curve& item, point_2d&) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt1 = item.control_point_1();
 				auto pt2 = item.control_point_2();
@@ -769,16 +373,16 @@ namespace std::experimental::io2d {
 				cpdItem.point = { pt3.x, pt3.y };
 				vec.push_back(cpdItem);
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_quadratic_curve&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::abs_quadratic_curve&, point_2d&) noexcept {
 				assert(false && "Abs quadratic curves should have been transformed into cubic curves already.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_new_path&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_new_figure>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_new_figure&, point_2d&) noexcept {
 				assert(false && "Rel new path instructions should have been eliminated.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const path_data::close_path&, point_2d& lastMoveToPoint) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::close_figure>, _Path_data_close_path> = _Path_data_close_path_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::close_figure&, point_2d& lastMoveToPoint) noexcept {
 				cairo_path_data_t cpdItem{};
 				cpdItem.header.type = CAIRO_PATH_CLOSE_PATH;
 				cpdItem.header.length = 1;
@@ -790,40 +394,40 @@ namespace std::experimental::io2d {
 				cpdItem.point = { lastMoveToPoint.x, lastMoveToPoint.y };
 				vec.push_back(cpdItem);
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_line&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_line&, point_2d&) noexcept {
 				assert(false && "Rel line should have been transformed into non-relative.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_cubic_curve&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_cubic_curve&, point_2d&) noexcept {
 				assert(false && "Rel curve should have been transformed into non-relative.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_quadratic_curve&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_quadratic_curve&, point_2d&) noexcept {
 				assert(false && "Rel quadratic curves should have been transformed into cubic curves.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc>, _Path_data_arc> = _Path_data_arc_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::arc&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::arc>, _Path_data_arc> = _Path_data_arc_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::arc&, point_2d&) noexcept {
 				assert(false && "Arcs should have been transformed into cubic curves.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::abs_matrix&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::abs_matrix&, point_2d&) noexcept {
 				assert(false && "Abs matrix should have been eliminated.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::rel_matrix&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_matrix&, point_2d&) noexcept {
 				assert(false && "Rel matrix should have been eliminated.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
-			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const path_data::revert_matrix&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
+			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::revert_matrix&, point_2d&) noexcept {
 				assert(false && "Revert matrix should have been eliminated.");
 			}
 		};
 
 		template <class Allocator>
-		::std::vector<path_data::path_item> _Interpret_path_items(const path_builder<Allocator>&);
+		::std::vector<figure_items::figure_item> _Interpret_path_items(const path_builder<Allocator>&);
 		//template <class Allocator>
-		//::std::vector<path_data::path_data_types> _Interpret_path_items(const path_builder<Allocator>&, ::std::error_code&) noexcept;
+		//::std::vector<figure_items::path_data_types> _Interpret_path_items(const path_builder<Allocator>&, ::std::error_code&) noexcept;
 
 		template <class Allocator>
 		inline path_group::path_group(const path_builder<Allocator>& pf)
@@ -890,160 +494,6 @@ namespace std::experimental::io2d {
 			}
 			_Cairo_path->status = CAIRO_STATUS_SUCCESS;
 			ec.clear();
-		}
-
-		template <class Allocator>
-		class path_builder {
-			::std::vector<path_data::path_item, Allocator> _Data;
-		public:
-			using value_type = path_data::path_item;
-			using allocator_type = Allocator;
-			using reference = value_type&;
-			using const_reference = const value_type&;
-			using size_type = ::std::vector<path_data::path_item>::size_type;
-			using difference_type = ::std::vector<path_data::path_item>::difference_type;
-			using iterator = ::std::vector<path_data::path_item>::iterator;
-			using const_iterator = ::std::vector<path_data::path_item>::const_iterator;
-			using reverse_iterator = std::reverse_iterator<iterator>;
-			using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-
-			path_builder() noexcept(noexcept(Allocator())) :
-				path_builder(Allocator()) { }
-			explicit path_builder(const Allocator& a) noexcept;
-			explicit path_builder(size_type n, const Allocator& a = Allocator());
-			path_builder(size_type n, const value_type& value,
-				const Allocator& a = Allocator());
-			template <class InputIterator>
-			path_builder(InputIterator first, InputIterator last,
-				const Allocator& = Allocator());
-			path_builder(const path_builder& pf);
-			path_builder(path_builder&& pf) noexcept;
-			path_builder(const path_builder& pf, const Allocator& a);
-			path_builder(path_builder&& pf, const Allocator& a);
-			path_builder(initializer_list<value_type> il, const Allocator& a = Allocator());
-			~path_builder() { }
-			path_builder& operator=(const path_builder& x);
-			path_builder& operator=(path_builder&& x)
-				noexcept(
-					allocator_traits<Allocator>::propagate_on_container_move_assignment::value
-					|| allocator_traits<Allocator>::is_always_equal::value);
-			path_builder& operator=(initializer_list<value_type> il);
-			template <class InputIterator>
-			void assign(InputIterator first, InputIterator last);
-			void assign(size_type n, const value_type& u);
-			void assign(initializer_list<value_type> il);
-			allocator_type get_allocator() const noexcept;
-
-			iterator begin() noexcept;
-			const_iterator begin() const noexcept;
-			const_iterator cbegin() const noexcept;
-			iterator end() noexcept;
-			const_iterator end() const noexcept;
-			const_iterator cend() const noexcept;
-			reverse_iterator rbegin() noexcept;
-			const_reverse_iterator rbegin() const noexcept;
-			const_reverse_iterator crbegin() const noexcept;
-			reverse_iterator rend() noexcept;
-			const_reverse_iterator rend() const noexcept;
-			const_reverse_iterator crend() const noexcept;
-
-			bool empty() const noexcept;
-			size_type size() const noexcept;
-			size_type max_size() const noexcept;
-			size_type capacity() const noexcept;
-			void resize(size_type sz);
-			void resize(size_type sz, const value_type& c);
-			void reserve(size_type n);
-			void shrink_to_fit();
-
-			reference operator[](size_type n);
-			const_reference operator[](size_type n) const;
-			const_reference at(size_type n) const;
-			reference at(size_type n);
-			reference front();
-			const_reference front() const;
-			reference back();
-			const_reference back() const;
-
-			// Modifiers
-			void new_path(const point_2d& v) noexcept;
-			void rel_new_path(const point_2d& v) noexcept;
-			void close_path() noexcept;
-			void matrix(const matrix_2d& m) noexcept;
-			void rel_matrix(const matrix_2d& m) noexcept;
-			void revert_matrix() noexcept;
-			void arc(const point_2d& radius, float rot, float sang = pi<float>) noexcept;
-			void cubic_curve(const point_2d& pt0, const point_2d& pt1,
-				const point_2d& pt2) noexcept;
-			void line(const point_2d& pt) noexcept;
-			void quadratic_curve(const point_2d& pt0, const point_2d& pt1)
-				noexcept;
-			void rel_cubic_curve(const point_2d& dpt0, const point_2d& dpt1,
-				const point_2d& dpt2) noexcept;
-			void rel_line(const point_2d& dpt) noexcept;
-			void rel_quadratic_curve(const point_2d& dpt0, const point_2d& dpt1)
-				noexcept;
-			template <class... Args>
-			reference emplace_back(Args&&... args);
-			void push_back(const value_type& x);
-			void push_back(value_type&& x);
-			void pop_back();
-
-			template <class... Args>
-			iterator emplace(const_iterator position, Args&&... args);
-			iterator insert(const_iterator position, const value_type& x);
-			iterator insert(const_iterator position, value_type&& x);
-			iterator insert(const_iterator position, size_type n, const value_type& x);
-			template <class InputIterator>
-			iterator insert(const_iterator position, InputIterator first,
-				InputIterator last);
-			iterator insert(const_iterator position,
-				initializer_list<value_type> il);
-			iterator erase(const_iterator position);
-			iterator erase(const_iterator first, const_iterator last);
-			void swap(path_builder&)
-				noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value
-					|| allocator_traits<Allocator>::is_always_equal::value);
-			void clear() noexcept;
-
-			// Observers
-			::std::experimental::io2d::bounding_box path_extents() const;
-
-			bool operator==(const path_builder& rhs) const noexcept {
-				if (size() != rhs.size()) {
-					return false;
-				}
-				//return equal(_Data.cbegin(), _Data.cend(), rhs._Data.cbegin(), rhs._Data.cend());
-				auto lhsEnd = _Data.end();
-				auto rhsEnd = rhs._Data.end();
-				auto lhsIter = _Data.begin();
-				auto rhsIter = rhs._Data.begin();
-				for (; lhsIter != lhsEnd &&
-					rhsIter != rhsEnd; ++lhsIter, ++rhsIter) {
-					assert(lhsIter != lhsEnd && "Unexpected path_builder op== size mismatch. rhs greater than lhs.");
-					assert(rhsIter != rhsEnd && "Unexpected path_builder op== size mismatch. lhs greater than rhs.");
-					if (*lhsIter != *rhsIter) {
-						return false;
-					}
-				}
-				//const size_t dataSize = _Data.size();
-				//for (size_t i = 0; i < dataSize; i++) {
-				//	if (_Data.at(i) != rhs._Data.at(i)) {
-				//		return false;
-				//	}
-				//}
-				return true;
-			}
-			bool operator!=(const path_builder& rhs) const noexcept {
-				return !((*this) == rhs);
-			}
-		};
-
-		// 8.17.8, specialized algorithms:
-		template <class Allocator>
-		void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
-			noexcept(noexcept(lhs.swap(rhs))) {
-			lhs.swap(rhs);
 		}
 
 		class color_stop {
@@ -1139,7 +589,7 @@ namespace std::experimental::io2d {
 				clip.rel_line({ r.width(), 0.0F });
 				clip.rel_line({ 0.0F, r.height() });
 				clip.rel_line({ -r.width(), 0.0F });
-				clip.close_path();
+				clip.close_figure();
 				_Clip = path_group(clip);
 			}
 
@@ -2059,49 +1509,49 @@ namespace std::experimental::io2d {
 		struct _Path_item_interpret_visitor {
 			constexpr static float twoThirds = 2.0F / 3.0F;
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_new_path>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_new_figure>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
 				const auto pt = m.transform_pt({ 0.0F, 0.0F }) + item.at();
-				v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+				v.emplace_back(::std::in_place_type<figure_items::abs_new_figure>, pt);
 				currentPoint = pt;
 				closePoint = pt;
 			}
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_new_figure>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
 				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
 				const auto pt = currentPoint + item.at() * amtx;
-				v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
+				v.emplace_back(::std::in_place_type<figure_items::abs_new_figure>, pt);
 				currentPoint = pt;
 				closePoint = pt;
 			}
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::close_path>, _Path_data_close_path> = _Path_data_close_path_val>
-			static void _Interpret(const T&, ::std::vector<path_data::path_item>& v, matrix_2d&, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::close_figure>, _Path_data_close_path> = _Path_data_close_path_val>
+			static void _Interpret(const T&, ::std::vector<figure_items::figure_item>& v, matrix_2d&, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
 				const auto& item = v.rbegin();
 				auto idx = item->index();
 				if (idx == 0 || idx == 1) {
 					return; // degenerate path
 				}
-				v.emplace_back(::std::in_place_type<path_data::close_path>);
-				v.emplace_back(::std::in_place_type<path_data::abs_new_path>,
+				v.emplace_back(::std::in_place_type<figure_items::close_figure>);
+				v.emplace_back(::std::in_place_type<figure_items::abs_new_figure>,
 					closePoint);
 				currentPoint = closePoint;
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, point_2d&, point_2d&, stack<matrix_2d>& matrices) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>&, matrix_2d& m, point_2d&, point_2d&, stack<matrix_2d>& matrices) noexcept {
 				matrices.push(m);
 				m = item.matrix();
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>&, matrix_2d& m, point_2d&, point_2d&, stack<matrix_2d>& matrices) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>&, matrix_2d& m, point_2d&, point_2d&, stack<matrix_2d>& matrices) noexcept {
 				const auto updateM = m * item.matrix();
 				matrices.push(m);
 				m = updateM;
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
-			static void _Interpret(const T&, ::std::vector<path_data::path_item>&, matrix_2d& m, point_2d&, point_2d&, stack<matrix_2d>& matrices) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
+			static void _Interpret(const T&, ::std::vector<figure_items::figure_item>&, matrix_2d& m, point_2d&, point_2d&, stack<matrix_2d>& matrices) noexcept {
 				if (matrices.empty()) {
 					m = matrix_2d{};
 				}
@@ -2110,29 +1560,29 @@ namespace std::experimental::io2d {
 					matrices.pop();
 				}
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				const auto pt1 = m.transform_pt(item.control_point_1() - currentPoint) + currentPoint;
 				const auto pt2 = m.transform_pt(item.control_point_2() - currentPoint) + currentPoint;
 				const auto pt3 = m.transform_pt(item.end_point() - currentPoint) + currentPoint;
 				if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
 					return; // degenerate path segment
 				}
-				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, pt1,
+				v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, pt1,
 					pt2, pt3);
 				currentPoint = pt3;
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				const auto pt = m.transform_pt(item.to() - currentPoint) + currentPoint;
 				if (currentPoint == pt) {
 					return; // degenerate path segment
 				}
-				v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
+				v.emplace_back(::std::in_place_type<figure_items::abs_line>, pt);
 				currentPoint = pt;
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 				//point_2d beginPt;
 				const auto controlPt = m.transform_pt(item.control_point() - currentPoint) + currentPoint;
@@ -2143,12 +1593,12 @@ namespace std::experimental::io2d {
 				const auto beginPt = currentPoint;
 				point_2d cpt1 = { ((controlPt.x - beginPt.x) * twoThirds) + beginPt.x, ((controlPt.y - beginPt.y) * twoThirds) + beginPt.y };
 				point_2d cpt2 = { ((controlPt.x - endPt.x) * twoThirds) + endPt.x, ((controlPt.y - endPt.y) * twoThirds) + endPt.y };
-				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
+				v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, cpt1, cpt2, endPt);
 				currentPoint = endPt;
 			}
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::arc>, _Path_data_arc> = _Path_data_arc_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::arc>, _Path_data_arc> = _Path_data_arc_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				const float rot = item.rotation();
 				const float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
 				if (abs(rot) < oneThousandthOfADegreeInRads) {
@@ -2252,14 +1702,14 @@ namespace std::experimental::io2d {
 					cpt2 -= adjustVal;
 					cpt3 -= adjustVal;
 					currentPoint = cpt3;
-					v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, cpt3);
+					v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, cpt1, cpt2, cpt3);
 					currTheta -= theta;
 				}
 				m = origM;
 			}
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
 				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
 				const auto pt1 = item.control_point_1() * amtx;
@@ -2268,24 +1718,24 @@ namespace std::experimental::io2d {
 				if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
 					return; // degenerate path segment
 				}
-				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, currentPoint + pt1, currentPoint + pt1 + pt2, currentPoint + pt1 + pt2 + pt3);
+				v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, currentPoint + pt1, currentPoint + pt1 + pt2, currentPoint + pt1 + pt2 + pt3);
 				currentPoint = currentPoint + pt1 + pt2 + pt3;
 			}
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
 				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
 				const auto pt = currentPoint + item.to() * amtx;
 				if (currentPoint == pt) {
 					return; // degenerate path segment
 				}
-				v.emplace_back(::std::in_place_type<path_data::abs_line>, pt);
+				v.emplace_back(::std::in_place_type<figure_items::abs_line>, pt);
 				currentPoint = pt;
 			}
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
 				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
 				const auto controlPt = currentPoint + item.control_point() * amtx;
@@ -2296,20 +1746,20 @@ namespace std::experimental::io2d {
 				}
 				point_2d cpt1 = { ((controlPt.x - beginPt.x) * twoThirds) + beginPt.x, ((controlPt.y - beginPt.y) * twoThirds) + beginPt.y };
 				point_2d cpt2 = { ((controlPt.x - endPt.x) * twoThirds) + endPt.x, ((controlPt.y - endPt.y) * twoThirds) + endPt.y };
-				v.emplace_back(::std::in_place_type<path_data::abs_cubic_curve>, cpt1, cpt2, endPt);
+				v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, cpt1, cpt2, endPt);
 				currentPoint = endPt;
 			}
 		};
 
 		template <class Allocator>
-		inline ::std::vector<path_data::path_item> _Interpret_path_items(const path_builder<Allocator>& pf) {
+		inline ::std::vector<figure_items::figure_item> _Interpret_path_items(const path_builder<Allocator>& pf) {
 			matrix_2d m;
 			point_2d currentPoint; // Tracks the untransformed current point.
 			point_2d closePoint;   // Tracks the transformed close point.
 			::std::stack<matrix_2d> matrices;
-			::std::vector<path_data::path_item> v;
+			::std::vector<figure_items::figure_item> v;
 
-			for (const path_data::path_item& val : pf) {
+			for (const figure_items::figure_item& val : pf) {
 				::std::visit([&m, &currentPoint, &closePoint, &matrices, &v](auto&& item) {
 					using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
 					_Path_item_interpret_visitor<T>::template _Interpret<T>(item, v, m, currentPoint, closePoint, matrices);
@@ -2549,67 +1999,67 @@ namespace std::experimental::io2d {
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::new_path(const point_2d& v) noexcept {
-			_Data.emplace_back(in_place_type<path_data::abs_new_path>, v);
+			_Data.emplace_back(in_place_type<figure_items::abs_new_figure>, v);
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::rel_new_path(const point_2d& v) noexcept {
-			_Data.emplace_back(in_place_type<path_data::rel_new_path>, v);
+		inline void path_builder<Allocator>::rel_new_figure(const point_2d& v) noexcept {
+			_Data.emplace_back(in_place_type<figure_items::rel_new_figure>, v);
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::close_path() noexcept {
-			_Data.emplace_back(in_place_type<path_data::close_path>);
+		inline void path_builder<Allocator>::close_figure() noexcept {
+			_Data.emplace_back(in_place_type<figure_items::close_figure>);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::matrix(const matrix_2d& m) noexcept {
-			_Data.emplace_back(in_place_type<path_data::abs_matrix>, m);
+			_Data.emplace_back(in_place_type<figure_items::abs_matrix>, m);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::rel_matrix(const matrix_2d& m) noexcept {
-			_Data.emplace_back(in_place_type<path_data::rel_matrix>, m);
+			_Data.emplace_back(in_place_type<figure_items::rel_matrix>, m);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::revert_matrix() noexcept {
-			_Data.emplace_back(in_place_type<path_data::revert_matrix>);
+			_Data.emplace_back(in_place_type<figure_items::revert_matrix>);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::arc(const point_2d& rad, float rot, const float sang) noexcept {
-			_Data.emplace_back(in_place_type<path_data::arc>, rad, rot, sang);
+			_Data.emplace_back(in_place_type<figure_items::arc>, rad, rot, sang);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::cubic_curve(const point_2d& pt0, const point_2d& pt1, const point_2d& pt2) noexcept {
-			_Data.emplace_back(in_place_type<path_data::abs_cubic_curve>, pt0, pt1, pt2);
+			_Data.emplace_back(in_place_type<figure_items::abs_cubic_curve>, pt0, pt1, pt2);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::line(const point_2d& pt) noexcept {
-			_Data.emplace_back(in_place_type<path_data::abs_line>, pt);
+			_Data.emplace_back(in_place_type<figure_items::abs_line>, pt);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::quadratic_curve(const point_2d& pt0, const point_2d& pt1) noexcept {
-			_Data.emplace_back(in_place_type<path_data::abs_quadratic_curve>, pt0, pt1);
+			_Data.emplace_back(in_place_type<figure_items::abs_quadratic_curve>, pt0, pt1);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::rel_cubic_curve(const point_2d& dpt0, const point_2d& dpt1, const point_2d& dpt2) noexcept {
-			_Data.emplace_back(in_place_type<path_data::rel_cubic_curve>, dpt0, dpt1, dpt2);
+			_Data.emplace_back(in_place_type<figure_items::rel_cubic_curve>, dpt0, dpt1, dpt2);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::rel_line(const point_2d& dpt) noexcept {
-			_Data.emplace_back(in_place_type<path_data::rel_line>, dpt);
+			_Data.emplace_back(in_place_type<figure_items::rel_line>, dpt);
 		}
 
 		template<class Allocator>
 		inline void path_builder<Allocator>::rel_quadratic_curve(const point_2d& dpt0, const point_2d& dpt1) noexcept {
-			_Data.emplace_back(in_place_type<path_data::rel_quadratic_curve>, dpt0, dpt1);
+			_Data.emplace_back(in_place_type<figure_items::rel_quadratic_curve>, dpt0, dpt1);
 		}
 
 		template<class Allocator>

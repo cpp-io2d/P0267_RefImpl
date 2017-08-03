@@ -14,7 +14,7 @@ namespace brush_test {
 		pb.line({ 220.0, 20.0 });
 		pb.rel_line({ 60.0, 160.0 });
 		pb.rel_line({ -260.0, 0.0 });
-		pb.close_path();
+		pb.close_figure();
 
 		// Example code goes here.
 		brush fillBrush{ rgba_color::orange };

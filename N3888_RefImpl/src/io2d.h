@@ -36,19 +36,8 @@
 #define _IO2D_API
 #endif
 
-#include "xenumclasses.h"
-#include "xcolor.h"
-#include "xlinear_algebra.h"
-#include "xgeometry.h"
-#include "xpath.h"
-#include "xbrushes.h"
-#include "xsurfaces.h"
-
 namespace std::experimental::io2d {
 	inline namespace v1 {
-
-		class image_surface;
-		class display_surface;
 
 		using dashes = tuple<vector<float>, float>;
 
@@ -69,6 +58,20 @@ namespace std::experimental::io2d {
 		constexpr T half_tau = T(3.14159265358979323846264338327950288L);
 		template <class T>
 		constexpr T quarter_tau = T(1.57079632679489661923132169163975144L);
+
+	}
+}
+
+#include "xenumclasses.h"
+#include "xcolor.h"
+#include "xlinear_algebra.h"
+#include "xgeometry.h"
+
+namespace std::experimental::io2d {
+	inline namespace v1 {
+
+		class image_surface;
+		class display_surface;
 
 		int format_stride_for_width(format format, int width) noexcept;
 		display_surface make_display_surface(int preferredWidth,
@@ -100,6 +103,10 @@ namespace std::experimental::io2d {
 			const matrix_2d& m = matrix_2d{}) noexcept;
 	}
 }
+
+#include "xpath.h"
+#include "xbrushes.h"
+#include "xsurfaces.h"
 
 #include "xio2d_impl.h"
 #endif

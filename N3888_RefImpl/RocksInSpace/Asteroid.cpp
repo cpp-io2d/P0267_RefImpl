@@ -47,7 +47,7 @@ void rocks_in_space::asteroid::draw(std::experimental::io2d::display_surface& ds
 		v += vert;
 		path.line(screen_space(v));
 	});
-	path.close_path();
+	path.close_figure();
 
 	ds.stroke(brush{ rgba_color::gray }, path);
 }

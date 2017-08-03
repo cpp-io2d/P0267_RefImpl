@@ -34,7 +34,7 @@ namespace path_test {
 		pb.line({ 220.0F, 20.0F });
 		pb.rel_line({ 60.0F, 160.0F });
 		pb.rel_line({ -260.0F, 0.0F });
-		pb.close_path();
+		pb.close_figure();
 		imgSfc.stroke(foreBrush, pb, nullopt, nullopt, nullopt, aliased);
 
 		// Example code ends.
@@ -64,7 +64,7 @@ namespace path_test {
 		pb.rel_line({ 100.0F, 0.0F });
 		pb.rel_line({ 0.0F, 160.0F });
 		pb.rel_line({ -100.0F, 0.0F });
-		pb.close_path();
+		pb.close_figure();
 
 		imgSfc.stroke(foreBrush, pb, nullopt, stroke_props{ 10.0F }, nullopt, aliased);
 
@@ -87,14 +87,14 @@ namespace path_test {
 		// Example code goes here.
 		pb.new_path({ 20.0F, 20.0F });
 		pb.rel_quadratic_curve({ 60.0F, 120.0F }, { 60.0F, -120.0F });
-		pb.rel_new_path({ 20.0F, 0.0F });
+		pb.rel_new_figure({ 20.0F, 0.0F });
 		pb.rel_quadratic_curve({ 60.0F, 120.0F }, { 60.0F, -120.0F });
-		pb.close_path();
+		pb.close_figure();
 		pb.new_path({ 20.0F, 150.0F });
 		pb.rel_cubic_curve({ 40.0F, -120.0F }, { 40.0F, 120.0F * 2.0F }, { 40.0F, -120.0F });
-		pb.rel_new_path({ 20.0F, 0.0F });
+		pb.rel_new_figure({ 20.0F, 0.0F });
 		pb.rel_cubic_curve({ 40.0F, -120.0F }, { 40.0F, 120.0F * 2.0F }, { 40.0F, -120.0F });
-		pb.close_path();
+		pb.close_figure();
 		imgSfc.stroke(foreBrush, pb, nullopt, nullopt, nullopt, aliased);
 
 		// Example code ends.
@@ -141,10 +141,10 @@ namespace path_test {
 		pb.rel_line({ 0.0F, 25.0F });
 		pb.rel_line({ -10.0F, 0.0F });
 		pb.rel_line({ 0.0F, -25.0F });
-		pb.close_path();
+		pb.close_figure();
 		imgSfc.fill(foreBrush, pb);
-		pb.insert(pb.begin(), path_data::abs_matrix(matrix_2d::init_translate({ 80.0F, 0.0F })));
-		//pb.insert(pb.begin() + 2, path_data::revert_matrix());
+		pb.insert(pb.begin(), figure_items::abs_matrix(matrix_2d::init_translate({ 80.0F, 0.0F })));
+		//pb.insert(pb.begin() + 2, figure_items::revert_matrix());
 		imgSfc.fill(foreBrush, pb);
 		// Example code ends.
 #ifdef _Filesystem_support_test
@@ -252,11 +252,11 @@ namespace path_test {
 		pb.rel_line({ 105.0F, 0.0F });
 		pb.rel_line({ 0.0F, 140.0F });
 		pb.rel_line({ -105.0F, 0.0F });
-		pb.close_path();
+		pb.close_figure();
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		imgSfc.fill(blueBrush, pb);
-		pb.insert(pb.begin(), path_data::abs_matrix(matrix_2d::init_translate({ 135.0F, 0.0F })));
-		//pb.insert(pb.begin() + 2, path_data::revert_matrix());
+		pb.insert(pb.begin(), figure_items::abs_matrix(matrix_2d::init_translate({ 135.0F, 0.0F })));
+		//pb.insert(pb.begin() + 2, figure_items::revert_matrix());
 		imgSfc.fill(blueBrush, pb);
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		// Example code ends.
