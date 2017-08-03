@@ -22,11 +22,11 @@
 #include <cmath>
 #include <chrono>
 
+#include "xio2d.h"
+
 #ifdef _Filesystem_support_test
 #include <filesystem>
 #endif
-
-#include "xio2d.h"
 
 #if defined BUILD_IO2D_API_DLL 
 #define _IO2D_API __declspec(dllexport)
