@@ -1395,11 +1395,6 @@ namespace std::experimental::io2d {
 			_IO2D_API void mask(const brush& b, const brush& mb, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 		};
 
-		enum class image_data_format {
-			png,
-			jpg
-		};
-
 		class image_surface : public surface {
 			friend surface;
 		public:
@@ -1407,15 +1402,15 @@ namespace std::experimental::io2d {
 			image_surface& operator=(image_surface&& other) /*noexcept*/ = default;
 			_IO2D_API image_surface(::std::experimental::io2d::format fmt, int width, int height);
 #ifdef _Filesystem_support_test
-			_IO2D_API image_surface(::std::experimental::filesystem::path f, experimental::io2d::format fmt, image_data_format idf);
+			_IO2D_API image_surface(::std::experimental::filesystem::path f, experimental::io2d::format fmt, image_file_format idf);
 #else
-			image_surface(::std::string f, experimental::io2d::format fmt, image_data_format idf);
+			image_surface(::std::string f, experimental::io2d::format fmt, image_file_format idf);
 #endif
 			// Modifiers
 #ifdef _Filesystem_support_test
-			_IO2D_API void save(::std::experimental::filesystem::path f, image_data_format idf);
+			_IO2D_API void save(::std::experimental::filesystem::path f, image_file_format idf);
 #else
-			void save(::std::string f, image_data_format idf);
+			void save(::std::string f, image_file_format idf);
 #endif
 			// Observers
 			_IO2D_API::std::experimental::io2d::format format() const noexcept;

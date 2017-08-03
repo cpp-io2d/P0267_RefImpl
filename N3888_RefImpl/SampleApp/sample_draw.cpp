@@ -86,21 +86,21 @@ void sample_draw::operator()(display_surface& ds) {
 
 void test_image_load_save(display_surface& ds) {
 #ifdef _Filesystem_support_test
-	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), format::argb32, image_data_format::jpg);
-	//static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_data_format::png);
+	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), format::argb32, image_file_format::jpeg);
+	//static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_file_format::png);
 #else
-	static auto imgSfc = image_surface("2017_03_05.jpg"s, format::argb32, image_data_format::jpg);
-	//static auto alphaSfc = image_surface("alpha8.png"s, format::a8, image_data_format::png);
+	static auto imgSfc = image_surface("2017_03_05.jpg"s, format::argb32, image_file_format::jpeg);
+	//static auto alphaSfc = image_surface("alpha8.png"s, format::a8, image_file_format::png);
 #endif
 	static bool saveOnce = false;
 	if (!saveOnce) {
 #ifdef _Filesystem_support_test
-		//imgSfc.save(filesystem::path("2017-03-05_testsave.png"s), image_data_format::png);
-		imgSfc.save(filesystem::path("2017-03-05_testsave.jpg"s), image_data_format::jpg);
-		//	alphaSfc.save(filesystem::path("alpha8_testsave.png"s), image_data_format::png);
+		//imgSfc.save(filesystem::path("2017-03-05_testsave.png"s), image_file_format::png);
+		imgSfc.save(filesystem::path("2017-03-05_testsave.jpg"s), image_file_format::jpeg);
+		//	alphaSfc.save(filesystem::path("alpha8_testsave.png"s), image_file_format::png);
 #else
-		//	imgSfc.save("2017-03-05_testsave.png"s, image_data_format::png);
-		//	alphaSfc.save("alpha8_testsave.png"s, image_data_format::png);
+		//	imgSfc.save("2017-03-05_testsave.png"s, image_file_format::png);
+		//	alphaSfc.save("alpha8_testsave.png"s, image_file_format::png);
 #endif
 		saveOnce = true;
 	}

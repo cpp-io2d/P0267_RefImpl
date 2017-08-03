@@ -42,6 +42,9 @@
     <ClInclude Include="xpath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xenumclasses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="surface.cpp">

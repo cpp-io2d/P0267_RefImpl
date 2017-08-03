@@ -470,6 +470,7 @@
     <ClInclude Include="io2d.h" />
     <ClInclude Include="xcolor.h" />
     <ClInclude Include="xdiagnostics.h" />
+    <ClInclude Include="xenumclasses.h" />
     <ClInclude Include="xgeometry.h" />
     <ClInclude Include="xinclwindows_h.h" />
     <ClInclude Include="xio2d.h" />

@@ -24,9 +24,9 @@ namespace brush_test {
 		// Example code ends.
 		std::string filename = "brushexample01.png";
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path(filename), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path(filename), image_file_format::png);
 #else
-		imgSfc.save(filename, image_data_format::png);
+		imgSfc.save(filename, image_file_format::png);
 #endif
 
 	}

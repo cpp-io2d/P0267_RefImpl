@@ -14,9 +14,9 @@ using namespace std::experimental::io2d;
 //
 //	// Example code ends.
 //#ifdef _Filesystem_support_test
-//	imgSfc.save(experimental::filesystem::path("pathexample01.png"), image_data_format::png);
+//	imgSfc.save(experimental::filesystem::path("pathexample01.png"), image_file_format::png);
 //#else
-//	imgSfc.save("pathexample01.png"s, image_data_format::png);
+//	imgSfc.save("pathexample01.png"s, image_file_format::png);
 //#endif
 //}
 
@@ -39,9 +39,9 @@ namespace path_test {
 
 		// Example code ends.
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path("pathexample01.png"), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path("pathexample01.png"), image_file_format::png);
 #else
-		imgSfc.save("pathexample01.png"s, image_data_format::png);
+		imgSfc.save("pathexample01.png"s, image_file_format::png);
 #endif
 	}
 
@@ -70,9 +70,9 @@ namespace path_test {
 
 		// Example code ends.
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path("pathexample02.png"), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path("pathexample02.png"), image_file_format::png);
 #else
-		imgSfc.save("pathexample02.png"s, image_data_format::png);
+		imgSfc.save("pathexample02.png"s, image_file_format::png);
 #endif
 	}
 
@@ -99,9 +99,9 @@ namespace path_test {
 
 		// Example code ends.
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path("pathexample03.png"), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path("pathexample03.png"), image_file_format::png);
 #else
-		imgSfc.save("pathexample03.png"s, image_data_format::png);
+		imgSfc.save("pathexample03.png"s, image_file_format::png);
 #endif
 	}
 
@@ -148,9 +148,9 @@ namespace path_test {
 		imgSfc.fill(foreBrush, pb);
 		// Example code ends.
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path("pathexample04.png"), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path("pathexample04.png"), image_file_format::png);
 #else
-		imgSfc.save("pathexample04.png"s, image_data_format::png);
+		imgSfc.save("pathexample04.png"s, image_file_format::png);
 #endif
 	}
 
@@ -197,9 +197,9 @@ namespace path_test {
 		// Example code ends.
 		string fileName = "pathexample05.png";
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path(fileName), image_file_format::png);
 #else
-		imgSfc.save(fileName, image_data_format::png);
+		imgSfc.save(fileName, image_file_format::png);
 #endif
 	}
 
@@ -231,9 +231,9 @@ namespace path_test {
 		imgSfc.stroke(foreBrush, pb, nullopt, nullopt, nullopt, aliased);
 		// Example code ends.
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path("pathexample06.png"), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path("pathexample06.png"), image_file_format::png);
 #else
-		imgSfc.save("pathexample06.png"s, image_data_format::png);
+		imgSfc.save("pathexample06.png"s, image_file_format::png);
 #endif
 	}
 
@@ -261,9 +261,9 @@ namespace path_test {
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		// Example code ends.
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path("pathexample07.png"), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path("pathexample07.png"), image_file_format::png);
 #else
-		imgSfc.save("pathexample07.png"s, image_data_format::png);
+		imgSfc.save("pathexample07.png"s, image_file_format::png);
 #endif
 	}
 
@@ -296,9 +296,9 @@ namespace path_test {
 		// Example code ends.
 		string fileName = "pathexample08.png";
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path(fileName), image_file_format::png);
 #else
-		imgSfc.save(fileName, image_data_format::png);
+		imgSfc.save(fileName, image_file_format::png);
 #endif
 	}
 
@@ -331,9 +331,9 @@ namespace path_test {
 		// Example code ends.
 		string fileName = "pathexample09.png";
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path(fileName), image_file_format::png);
 #else
-		imgSfc.save(fileName, image_data_format::png);
+		imgSfc.save(fileName, image_file_format::png);
 #endif
 	}
 
@@ -366,9 +366,9 @@ namespace path_test {
 		// Example code ends.
 		string fileName = "pathexample10.png";
 #ifdef _Filesystem_support_test
-		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
+		imgSfc.save(experimental::filesystem::path(fileName), image_file_format::png);
 #else
-		imgSfc.save(fileName, image_data_format::png);
+		imgSfc.save(fileName, image_file_format::png);
 #endif
 	}
 //
@@ -387,9 +387,9 @@ namespace path_test {
 //		// Example code ends.
 //		string fileName = "pathexample.png";
 //#ifdef _Filesystem_support_test
-//		imgSfc.save(experimental::filesystem::path(fileName), image_data_format::png);
+//		imgSfc.save(experimental::filesystem::path(fileName), image_file_format::png);
 //#else
-//		imgSfc.save(fileName, image_data_format::png);
+//		imgSfc.save(fileName, image_file_format::png);
 //#endif
 //	}
 }

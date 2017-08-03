@@ -77,9 +77,9 @@ int main() {
 	//	imgSfc.paint(bkgrndBrush);
 	//	imgSfc.stroke(frgrndBrush, pb);
 	//#ifdef _Filesystem_support_test
-	//	imgSfc.save(experimental::filesystem::path("pathexample01.png"), image_data_format::png);
+	//	imgSfc.save(experimental::filesystem::path("pathexample01.png"), image_file_format::png);
 	//#else
-	//	imgSfc.save("pathexample01.png"s, image_data_format::png);
+	//	imgSfc.save("pathexample01.png"s, image_file_format::png);
 	//#endif
 	//	pb.clear();
 	//	pb.new_path({ 20.0, 20.0 });
@@ -97,9 +97,9 @@ int main() {
 	//	imgSfc.paint(bkgrndBrush);
 	//	imgSfc.stroke(frgrndBrush, pb, nullopt, stroke_props{ 10.0 });
 	//#ifdef _Filesystem_support_test
-	//	imgSfc.save(experimental::filesystem::path("pathexample02.png"), image_data_format::png);
+	//	imgSfc.save(experimental::filesystem::path("pathexample02.png"), image_file_format::png);
 	//#else
-	//	imgSfc.save("pathexample02.png"s, image_data_format::png);
+	//	imgSfc.save("pathexample02.png"s, image_file_format::png);
 	//#endif
 
 
@@ -151,9 +151,9 @@ int main() {
 	//	tempImgSfc.paint(bkgrndBrush);
 	//	tempImgSfc.stroke(frgrndBrush, pb, nullopt, stroke_props{ 10.0 });
 	//#ifdef _Filesystem_support_test
-	//	tempImgSfc.save(experimental::filesystem::path("arctesting01.png"), image_data_format::png);
+	//	tempImgSfc.save(experimental::filesystem::path("arctesting01.png"), image_file_format::png);
 	//#else
-	//	tempImgSfc.save("arctesting01.png"s, image_data_format::png);
+	//	tempImgSfc.save("arctesting01.png"s, image_file_format::png);
 	//#endif
 	//	return 0;
 }

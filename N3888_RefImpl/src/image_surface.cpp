@@ -123,9 +123,9 @@ image_surface::image_surface(experimental::io2d::format fmt, int width, int heig
 }
 
 #ifdef _Filesystem_support_test
-image_surface::image_surface(experimental::filesystem::path f, experimental::io2d::format fmt, image_data_format idf)
+image_surface::image_surface(experimental::filesystem::path f, experimental::io2d::format fmt, image_file_format idf)
 #else
-image_surface::image_surface(string f, experimental::io2d::format fmt, image_data_format idf)
+image_surface::image_surface(string f, experimental::io2d::format fmt, image_file_format idf)
 #endif
 	: surface({ nullptr, nullptr }, fmt) {
 //	basic_ifstream<unsigned char, unsignedCharTraits> fileStream;
@@ -198,7 +198,7 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 		throw;
 	}
 
-	if (idf == image_data_format::png) {
+	if (idf == image_file_format::png) {
 #if PNG_LIBPNG_VER < 10600
 		throw runtime_error("libpng versions less than 1.6.X are not supported.");
 #else
@@ -278,7 +278,7 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 		cairo_surface_mark_dirty(_Surface.get());
 #endif
 	}
-	else if (idf == image_data_format::jpg) {
+	else if (idf == image_file_format::jpeg) {
 		unique_ptr<remove_pointer_t<tjhandle>, decltype(&tjDestroy)> upDecompHandle{ tjInitDecompress(), &tjDestroy };
 		if (upDecompHandle == nullptr) {
 			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STATUS);
@@ -381,12 +381,12 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_dat
 }
 
 #ifdef _Filesystem_support_test
-void image_surface::save(experimental::filesystem::path f, image_data_format idf) {
+void image_surface::save(experimental::filesystem::path f, image_file_format idf) {
 #else
-void image_surface::save(string f, image_data_format idf) {
+void image_surface::save(string f, image_file_format idf) {
 #endif
 	switch (idf) {
-	case image_data_format::png:
+	case image_file_format::png:
 	{
 #if PNG_LIBPNG_VER < 10600
 		throw runtime_error("libpng versions less than 1.6.X are not supported.");
@@ -548,7 +548,7 @@ void image_surface::save(string f, image_data_format idf) {
 //		}
 #endif
 	} break;
-	case image_data_format::jpg:
+	case image_file_format::jpeg:
 	{
 		auto map = cairo_surface_map_to_image(_Surface.get(), nullptr);
 		auto mapData = cairo_image_surface_get_data(map);
