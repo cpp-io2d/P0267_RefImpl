@@ -42,38 +42,30 @@ namespace std::experimental::io2d {
 		constexpr point_2d operator*(float lhs, const point_2d& rhs) noexcept;
 
 		class matrix_2d {
-			float _M00 = 1.0F;
-			float _M01 = 0.0F;
-			float _M10 = 0.0F;
-			float _M11 = 1.0F;
-			float _M20 = 0.0F;
-			float _M21 = 0.0F;
-
 		public:
 			constexpr matrix_2d() noexcept
 				: matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f) {}
-			constexpr matrix_2d(float m00, float m01, float m10, float m11, float m20, float m21) noexcept {
-				_M00 = m00;
-				_M01 = m01;
-				_M10 = m10;
-				_M11 = m11;
-				_M20 = m20;
-				_M21 = m21;
+			constexpr matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept
+				: m00(v00)
+				, m01(v01)
+				, m02(0.0f)
+				, m10(v10)
+				, m11(v11)
+				, m12(0.0f)
+				, m20(v20)
+				, m21(v21)
+				, m22(1.0f) {
 			}
 
-			constexpr void m00(float value) noexcept;
-			constexpr void m01(float value) noexcept;
-			constexpr void m10(float value) noexcept;
-			constexpr void m11(float value) noexcept;
-			constexpr void m20(float value) noexcept;
-			constexpr void m21(float value) noexcept;
-
-			constexpr float m00() const noexcept;
-			constexpr float m01() const noexcept;
-			constexpr float m10() const noexcept;
-			constexpr float m11() const noexcept;
-			constexpr float m20() const noexcept;
-			constexpr float m21() const noexcept;
+			float m00;
+			float m01;
+			float m02;
+			float m10;
+			float m11;
+			float m12;
+			float m20;
+			float m21;
+			float m22;
 
 			// \ref{\iotwod.\matrixtwod.staticfactories}, static factory functions:
 			constexpr static matrix_2d init_translate(const point_2d& value) noexcept {

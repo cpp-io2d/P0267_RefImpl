@@ -163,28 +163,6 @@ namespace std::experimental::io2d {
 			return point_2d{ lhs.x / rhs.x, lhs.y / rhs.y };
 		}
 
-		//class matrix_2d;
-		//constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
-
-		// Modifiers
-		inline constexpr void matrix_2d::m00(float value) noexcept {
-			_M00 = value;
-		}
-		inline constexpr void matrix_2d::m01(float value) noexcept {
-			_M01 = value;
-		}
-		inline constexpr void matrix_2d::m10(float value) noexcept {
-			_M10 = value;
-		}
-		inline constexpr void matrix_2d::m11(float value) noexcept {
-			_M11 = value;
-		}
-		inline constexpr void matrix_2d::m20(float value) noexcept {
-			_M20 = value;
-		}
-		inline constexpr void matrix_2d::m21(float value) noexcept {
-			_M21 = value;
-		}
 		inline constexpr matrix_2d& matrix_2d::translate(point_2d value) noexcept {
 			*this = *this * init_translate(value);
 			return *this;
@@ -210,37 +188,18 @@ namespace std::experimental::io2d {
 			return *this;
 		}
 
-		// Observers
-		inline constexpr float matrix_2d::m00() const noexcept {
-			return _M00;
-		}
-		inline constexpr float matrix_2d::m01() const noexcept {
-			return _M01;
-		}
-		inline constexpr float matrix_2d::m10() const noexcept {
-			return _M10;
-		}
-		inline constexpr float matrix_2d::m11() const noexcept {
-			return _M11;
-		}
-		inline constexpr float matrix_2d::m20() const noexcept {
-			return _M20;
-		}
-		inline constexpr float matrix_2d::m21() const noexcept {
-			return _M21;
-		}
 		inline constexpr bool matrix_2d::is_invertible() const noexcept {
-			return (_M00 * _M11 - _M01 * _M10) != 0.0F;
+			return (m00 * m11 - m01 * m10) != 0.0F;
 		}
 		inline constexpr matrix_2d matrix_2d::inverse() const noexcept {
 			const auto inverseDeterminant = 1.0F / determinant();
 			return matrix_2d{
-				(_M11 * 1.0F - 0.0F * _M21) * inverseDeterminant,
-				-(_M01 * 1.0F - 0.0F * _M21) * inverseDeterminant,
-				-(_M10 * 1.0F - 0.0F * _M20) * inverseDeterminant,
-				(_M00 * 1.0F - 0.0F * _M20) * inverseDeterminant,
-				(_M10 * _M21 - _M11 * _M20) * inverseDeterminant,
-				-(_M00 * _M21 - _M01 * _M20) * inverseDeterminant
+				(m11 * 1.0F - 0.0F * m21) * inverseDeterminant,
+				-(m01 * 1.0F - 0.0F * m21) * inverseDeterminant,
+				-(m10 * 1.0F - 0.0F * m20) * inverseDeterminant,
+				(m00 * 1.0F - 0.0F * m20) * inverseDeterminant,
+				(m10 * m21 - m11 * m20) * inverseDeterminant,
+				-(m00 * m21 - m01 * m20) * inverseDeterminant
 			};
 		}
 		inline constexpr bool _Is_finite_check(float val) noexcept {
@@ -251,16 +210,16 @@ namespace std::experimental::io2d {
 		inline constexpr bool matrix_2d::is_finite() const noexcept {
 			static_assert(numeric_limits<float>::is_iec559 == true, "This implementation relies on IEEE 754 floating point behavior.");
 			return numeric_limits<float>::is_iec559 &&
-				_Is_finite_check(_M00) &&
-				_Is_finite_check(_M01) &&
-				_Is_finite_check(_M10) &&
-				_Is_finite_check(_M11);
+				_Is_finite_check(m00) &&
+				_Is_finite_check(m01) &&
+				_Is_finite_check(m10) &&
+				_Is_finite_check(m11);
 		}
 		inline constexpr float matrix_2d::determinant() const noexcept {
-			return _M00 * _M11 - _M01 * _M10;
+			return m00 * m11 - m01 * m10;
 		}
 		inline constexpr point_2d matrix_2d::transform_pt(point_2d pt) const noexcept {
-			auto result = point_2d{ _M00 * pt.x + _M10 * pt.y + _M20, _M01 * pt.x + _M11 * pt.y + _M21 };
+			auto result = point_2d{ m00 * pt.x + m10 * pt.y + m20, m01 * pt.x + m11 * pt.y + m21 };
 			result.x = _Round_floating_point_to_zero(result.x);
 			result.y = _Round_floating_point_to_zero(result.y);
 			return result;
@@ -273,18 +232,18 @@ namespace std::experimental::io2d {
 
 		inline constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
 			return matrix_2d{
-				(lhs.m00() * rhs.m00()) + (lhs.m01() * rhs.m10()),
-				(lhs.m00() * rhs.m01()) + (lhs.m01() * rhs.m11()),
-				(lhs.m10() * rhs.m00()) + (lhs.m11() * rhs.m10()),
-				(lhs.m10() * rhs.m01()) + (lhs.m11() * rhs.m11()),
-				(lhs.m20() * rhs.m00()) + (lhs.m21() * rhs.m10()) + rhs.m20(),
-				(lhs.m20() * rhs.m01()) + (lhs.m21() * rhs.m11()) + rhs.m21()
+				(lhs.m00 * rhs.m00) + (lhs.m01 * rhs.m10),
+				(lhs.m00 * rhs.m01) + (lhs.m01 * rhs.m11),
+				(lhs.m10 * rhs.m00) + (lhs.m11 * rhs.m10),
+				(lhs.m10 * rhs.m01) + (lhs.m11 * rhs.m11),
+				(lhs.m20 * rhs.m00) + (lhs.m21 * rhs.m10) + rhs.m20,
+				(lhs.m20 * rhs.m01) + (lhs.m21 * rhs.m11) + rhs.m21
 			};
 		}
 		inline constexpr bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
-			return lhs.m00() == rhs.m00() && lhs.m01() == rhs.m01() &&
-				lhs.m10() == rhs.m10() && lhs.m11() == rhs.m11() &&
-				lhs.m20() == rhs.m20() && lhs.m21() == rhs.m21();
+			return lhs.m00 == rhs.m00 && lhs.m01 == rhs.m01 &&
+				lhs.m10 == rhs.m10 && lhs.m11 == rhs.m11 &&
+				lhs.m20 == rhs.m20 && lhs.m21 == rhs.m21;
 		}
 		inline constexpr bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
 			return !(lhs == rhs);
@@ -597,7 +556,7 @@ namespace std::experimental::io2d {
 
 				point_2d center(point_2d cpt, const matrix_2d& m) const noexcept {
 					auto lmtx = m;
-					lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
+					lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
 					auto centerOffset = point_for_angle(two_pi<float> -_Start_angle, _Radius);
 					centerOffset.y = -centerOffset.y;
 					return cpt - centerOffset * lmtx;
@@ -606,7 +565,7 @@ namespace std::experimental::io2d {
 				point_2d end_pt(point_2d cpt, const matrix_2d& m) const noexcept {
 					auto lmtx = m;
 					auto tfrm = matrix_2d::init_rotate(_Start_angle + _Rotation);
-					lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
+					lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
 					auto pt = (_Radius * tfrm);
 					pt.y = -pt.y;
 					return cpt + pt * lmtx;
@@ -692,14 +651,14 @@ namespace std::experimental::io2d {
 
 		inline point_2d arc_start(point_2d ctr, float sang, point_2d rad, const matrix_2d& m) noexcept {
 			auto lmtx = m;
-			lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
+			lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
 			auto pt = point_for_angle(sang, rad);
 			return ctr + pt * lmtx;
 		}
 
 		inline point_2d arc_center(point_2d cpt, float sang, point_2d rad, const matrix_2d& m) noexcept {
 			auto lmtx = m;
-			lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
+			lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
 			auto centerOffset = point_for_angle(two_pi<float> -sang, rad);
 			centerOffset.y = -centerOffset.y;
 			return cpt - centerOffset * lmtx;
@@ -708,7 +667,7 @@ namespace std::experimental::io2d {
 		inline point_2d arc_end(point_2d cpt, float eang, point_2d rad, const matrix_2d& m) noexcept {
 			auto lmtx = m;
 			auto tfrm = matrix_2d::init_rotate(eang);
-			lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
+			lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
 			auto pt = (rad * tfrm);
 			pt.y = -pt.y;
 			return cpt + pt * lmtx;
@@ -2116,7 +2075,7 @@ namespace std::experimental::io2d {
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_new_path>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
 			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
-				amtx.m20(0.0F); amtx.m21(0.0F); // obliterate translation since this is relative.
+				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
 				const auto pt = currentPoint + item.at() * amtx;
 				v.emplace_back(::std::in_place_type<path_data::abs_new_path>, pt);
 				currentPoint = pt;
@@ -2307,7 +2266,7 @@ namespace std::experimental::io2d {
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
 			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
-				amtx.m20(0.0F); amtx.m21(0.0F); // obliterate translation since this is relative.
+				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
 				const auto pt1 = item.control_point_1() * amtx;
 				const auto pt2 = item.control_point_2() * amtx;
 				const auto pt3 = item.end_point()* amtx;
@@ -2321,7 +2280,7 @@ namespace std::experimental::io2d {
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
 			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
-				amtx.m20(0.0F); amtx.m21(0.0F); // obliterate translation since this is relative.
+				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
 				const auto pt = currentPoint + item.to() * amtx;
 				if (currentPoint == pt) {
 					return; // degenerate path segment
@@ -2333,7 +2292,7 @@ namespace std::experimental::io2d {
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, path_data::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
 			static void _Interpret(const T& item, ::std::vector<path_data::path_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
-				amtx.m20(0.0F); amtx.m21(0.0F); // obliterate translation since this is relative.
+				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
 				const auto controlPt = currentPoint + item.control_point() * amtx;
 				const auto endPt = currentPoint + item.control_point() * amtx + item.end_point() * amtx;
 				const auto beginPt = currentPoint;

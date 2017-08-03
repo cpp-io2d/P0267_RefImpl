@@ -81,7 +81,7 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 						cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
 						cairo_matrix_t cPttnMatrix;
 						const auto& m = props.matrix();
-						cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+						cairo_matrix_init(&cPttnMatrix, m.m00, m.m01, m.m10, m.m11, m.m20, m.m21);
 						cairo_pattern_set_matrix(pttn, &cPttnMatrix);
 						cairo_set_source(_Native_context.get(), pttn);
 						//cairo_paint(_Native_context.get());
@@ -140,7 +140,7 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 						cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
 						cairo_matrix_t cPttnMatrix;
 						const auto& m = props.matrix();
-						cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+						cairo_matrix_init(&cPttnMatrix, m.m00, m.m01, m.m10, m.m11, m.m20, m.m21);
 						cairo_pattern_set_matrix(pttn, &cPttnMatrix);
 						cairo_set_source(_Native_context.get(), pttn);
 						//cairo_paint(_Native_context.get());
@@ -189,7 +189,7 @@ void display_surface::_Render_to_native_surface() {
 					cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
 					cairo_matrix_t cPttnMatrix;
 					const auto& m = props.matrix();
-					cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+					cairo_matrix_init(&cPttnMatrix, m.m00, m.m01, m.m10, m.m11, m.m20, m.m21);
 					cairo_pattern_set_matrix(pttn, &cPttnMatrix);
 					cairo_set_source(_Native_context.get(), pttn);
 					cairo_paint(_Native_context.get());

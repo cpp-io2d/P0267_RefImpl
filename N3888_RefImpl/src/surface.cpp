@@ -118,7 +118,7 @@ namespace {
 		else {
 			const render_props& props = r.value();
 			const matrix_2d m = props.surface_matrix();
-			cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+			cairo_matrix_t cm{ m.m00, m.m01, m.m10, m.m11, m.m20, m.m21 };
 			cairo_set_antialias(context, _Antialias_to_cairo_antialias_t(props.antialiasing()));
 			cairo_set_matrix(context, &cm);
 			cairo_set_operator(context, _Compositing_operator_to_cairo_operator_t(props.compositing()));
@@ -189,7 +189,7 @@ namespace {
 			cairo_pattern_set_extend(b.native_handle(), _Extend_to_cairo_extend_t(props.wrap_mode()));
 			cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
 			const auto& m = props.matrix();
-			cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+			cairo_matrix_t cm{ m.m00, m.m01, m.m10, m.m11, m.m20, m.m21 };
 			cairo_pattern_set_matrix(p, &cm);
 			cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fill_rule()));
 		}
@@ -208,7 +208,7 @@ namespace {
 			cairo_pattern_set_extend(b.native_handle(), _Extend_to_cairo_extend_t(props.wrap_mode()));
 			cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
 			const auto& m = props.matrix();
-			cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+			cairo_matrix_t cm{ m.m00, m.m01, m.m10, m.m11, m.m20, m.m21 };
 			cairo_pattern_set_matrix(p, &cm);
 		}
 	}
