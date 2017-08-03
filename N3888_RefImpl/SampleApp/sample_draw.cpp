@@ -250,7 +250,7 @@ void test_image_load_save(display_surface& ds) {
 //
 void test_stroke_rules(display_surface& ds) {
 	ds.clear();
-	vector<color_stop> csg;
+	vector<gradient_stop> csg;
 	csg.emplace_back(0.0F, rgba_color::orange);
 	csg.emplace_back(0.25F, rgba_color::red);
 	csg.emplace_back(0.5F, rgba_color::lime_green);
@@ -377,7 +377,7 @@ void draw_radial_circles(display_surface& ds) {
 	// Clear to background color.
 	ds.paint(brush{ rgba_color::magenta });
 	ds.paint(brush{ rgba_color::cornflower_blue }, nullopt, nullopt, clip_props{ bounding_box(40.0F, 40.0F, 1200.0F, 640.0F) });
-	vector<color_stop> csv;
+	vector<gradient_stop> csv;
 	csv.emplace_back(0.0F, rgba_color::white);
 	brush radialBrush{ {{ 200.5F, 300.0F }, 0.0F}, {{ 300.0F, 300.0F }, 100.0F }, {
 		{ 0.0F, rgba_color::white }, { 0.25F, rgba_color::red },
@@ -1108,7 +1108,7 @@ void draw_radial_circles(display_surface& ds) {
 //	(void)x;
 //	(void)y;
 //	(void)r;
-//	auto cs0 = get<1>(f.color_stop(0));
+//	auto cs0 = get<1>(f.gradient_stop(0));
 //	auto length = (circ1 - circ0).magnitude();
 //	rgba_color result{ 1.0F - ((r / length) * cs0.r()), 1.0F - ((r / length) * cs0.g()), 1.0F - ((r / length) * cs0.b()) };
 //}

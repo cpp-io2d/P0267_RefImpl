@@ -2,6 +2,7 @@
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
+
 		namespace figure_items {
 
 			class abs_new_figure {
@@ -616,6 +617,25 @@ namespace std::experimental::io2d {
 		template <class Allocator>
 		void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
 			noexcept(noexcept(lhs.swap(rhs)));
+
+		class path_group {
+			::std::shared_ptr<cairo_path_t> _Cairo_path;
+		public:
+			using native_handle_type = cairo_path*;
+			// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
+			path_group() noexcept = default;
+			template <class Allocator>
+			explicit path_group(const path_builder<Allocator>& p);
+			template <class Allocator>
+			path_group(const path_builder<Allocator>& p, std::error_code& ec) noexcept;
+
+			native_handle_type native_handle() {
+				return _Cairo_path.get();
+			}
+			const cairo_path* native_handle() const {
+				return _Cairo_path.get();
+			}
+		};
 
 	}
 }

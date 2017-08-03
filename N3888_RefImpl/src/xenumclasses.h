@@ -2,75 +2,6 @@
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
-		enum class wrap_mode;
-		enum class filter;
-		enum class brush_type;
-		enum class antialias;
-		enum class fill_rule;
-		enum class line_cap;
-		enum class line_join;
-		enum class compositing_op;
-		enum class format;
-		enum class scaling;
-		enum class refresh_rate;
-		enum class image_file_format;
-
-		enum class antialias {
-			none,
-			fast,
-			good,
-			best
-		};
-
-		enum class fill_rule {
-			winding,
-			even_odd
-		};
-
-		enum class line_cap {
-			none,
-			round,
-			square
-		};
-
-		enum class line_join {
-			miter,
-			round,
-			bevel,
-			miter_or_bevel
-		};
-
-		enum class compositing_op {
-			over,
-			clear,
-			source,
-			in,
-			out,
-			atop,
-			dest,
-			dest_over,
-			dest_in,
-			dest_out,
-			dest_atop,
-			xor_op,
-			add,
-			saturate,
-			multiply,
-			screen,
-			overlay,
-			darken,
-			lighten,
-			color_dodge,
-			color_burn,
-			hard_light,
-			soft_light,
-			difference,
-			exclusion,
-			hsl_hue,
-			hsl_saturation,
-			hsl_color,
-			hsl_luminosity
-		};
 
 		enum class format {
 			invalid,
@@ -89,17 +20,5 @@ namespace std::experimental::io2d {
 			none // Do not scale.
 		};
 
-		enum class refresh_rate {
-			as_needed,
-			as_fast_as_possible,
-			fixed
-		};
-
-		enum class image_file_format {
-			unknown,
-			png,
-			jpeg,
-			tiff
-		};
 	}
 }
