@@ -38,6 +38,80 @@ namespace std::experimental::io2d {
 			}
 		}
 
+		// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'.
+		inline int _Double_to_int(float value, bool nearestNeighbor = true) {
+			if (nearestNeighbor) {
+				// Round to the nearest neighbor.
+				return static_cast<int>(::std::round(value));
+			}
+			// Otherwise truncate.
+			return static_cast<int>(::std::trunc(value));
+		}
+
+		// Checks for equality between two floating point numbers using an epsilon value to specify the equality tolerance limit.
+		// See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+		template <typename T>
+		inline bool _Almost_equal_relative(T a, T b, T epsilon = ::std::numeric_limits<T>::epsilon()) noexcept {
+			auto diff = ::std::abs(a - b);
+			a = ::std::abs(a);
+			b = ::std::abs(b);
+			auto largest = (b > a) ? b : a;
+			if (diff <= largest * epsilon) {
+				return true;
+			}
+			return false;
+		}
+
+		template <typename T>
+		inline int _Container_size_to_int(const T& container) noexcept {
+			assert(container.size() <= static_cast<unsigned int>(::std::numeric_limits<int>::max()));
+			return static_cast<int>(container.size());
+		}
+
+		enum class _To_radians_sfinae {};
+		constexpr static _To_radians_sfinae _To_radians_sfinae_val = {};
+		enum class _To_degrees_sfinae {};
+		constexpr static _To_degrees_sfinae _To_degrees_sfinae_val = {};
+
+		template <class T, enable_if_t<is_arithmetic_v<T>, _To_radians_sfinae> = _To_radians_sfinae_val>
+		constexpr float to_radians(T deg) noexcept {
+			auto angle = static_cast<float>(deg) / 360.0F * two_pi<float>;
+			float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
+			if (((angle > 0.0F) && (angle < oneThousandthOfADegreeInRads)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegreeInRads))) {
+				return (angle < 0.0F) ? -0.0F : 0.0F;
+			}
+			return angle;
+		}
+
+		template <class T, enable_if_t<is_arithmetic_v<T>, _To_degrees_sfinae> = _To_degrees_sfinae_val>
+		constexpr float to_degrees(T rad) noexcept {
+			auto angle = static_cast<float>(rad) / two_pi<float> * 360.0F;
+			float oneThousandthOfADegree = 0.001F;
+			if (((angle > 0.0F) && (angle < oneThousandthOfADegree)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegree))) {
+				return (angle < 0.0F) ? -0.0F : 0.0F;
+			}
+			return angle;
+		}
+
+		// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0F } 'angle' radians around { 0.0F, 0.0F } in a clockwise ('clockwise' == true) or
+		// counterclockwise ('clockwise' == false) direction.
+		inline ::std::experimental::io2d::point_2d _Rotate_point_absolute_angle(const ::std::experimental::io2d::point_2d& center, float radius, float angle, bool clockwise = true) {
+			if (clockwise) {
+				::std::experimental::io2d::point_2d pt{ radius * ::std::cos(angle), -(radius * -::std::sin(angle)) };
+				pt.x = pt.x + center.x;
+				pt.y = pt.y + center.y;
+				return pt;
+			}
+			else {
+				::std::experimental::io2d::point_2d pt{ radius * ::std::cos(angle), radius * -::std::sin(angle) };
+				pt.x = pt.x + center.x;
+				pt.y = pt.y + center.y;
+				return pt;
+			}
+		}
+
+		// linear algebra
+
 		inline constexpr point_2d::point_2d() noexcept
 			: point_2d(0.0f, 0.0f) {}
 		inline constexpr point_2d::point_2d(float xval, float yval) noexcept
@@ -267,6 +341,8 @@ namespace std::experimental::io2d {
 			return cpt + pt * lmtx;
 		}
 
+		// Paths
+
 		enum class _Path_data_abs_new_path {};
 		constexpr static _Path_data_abs_new_path _Path_data_abs_new_path_val = {};
 		enum class _Path_data_rel_new_path {};
@@ -460,40 +536,6 @@ namespace std::experimental::io2d {
 			}
 			_Cairo_path->status = CAIRO_STATUS_SUCCESS;
 			ec.clear();
-		}
-
-		_IO2D_API int format_stride_for_width(format format, int width) noexcept;
-		_IO2D_API display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
-		display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F) noexcept;
-		_IO2D_API display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
-		display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat,
-			int preferredDisplayWidth, int preferredDisplayHeight, ::std::error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F) noexcept;
-		_IO2D_API image_surface make_image_surface(format format, int width, int height);
-		image_surface make_image_surface(format format, int width, int height, ::std::error_code& ec) noexcept;
-		_IO2D_API image_surface make_image_surface(image_surface& sfc);
-		enum class _To_radians_sfinae {};
-		constexpr static _To_radians_sfinae _To_radians_sfinae_val = {};
-		enum class _To_degrees_sfinae {};
-		constexpr static _To_degrees_sfinae _To_degrees_sfinae_val = {};
-
-		template <class T, enable_if_t<is_arithmetic_v<T>, _To_radians_sfinae> = _To_radians_sfinae_val>
-		constexpr float to_radians(T deg) noexcept {
-			auto angle = static_cast<float>(deg) / 360.0F * two_pi<float>;
-			float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
-			if (((angle > 0.0F) && (angle < oneThousandthOfADegreeInRads)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegreeInRads))) {
-				return (angle < 0.0F) ? -0.0F : 0.0F;
-			}
-			return angle;
-		}
-
-		template <class T, enable_if_t<is_arithmetic_v<T>, _To_degrees_sfinae> = _To_degrees_sfinae_val>
-		constexpr float to_degrees(T rad) noexcept {
-			auto angle = static_cast<float>(rad) / two_pi<float> * 360.0F;
-			float oneThousandthOfADegree = 0.001F;
-			if (((angle > 0.0F) && (angle < oneThousandthOfADegree)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegree))) {
-				return (angle < 0.0F) ? -0.0F : 0.0F;
-			}
-			return angle;
 		}
 
 		inline cairo_antialias_t _Antialias_to_cairo_antialias_t(::std::experimental::io2d::antialias aa) {
@@ -860,53 +902,6 @@ namespace std::experimental::io2d {
 			default:
 				throw ::std::runtime_error("Unknown cairo_pattern_type_t value.");
 			}
-		}
-
-		// Checks for equality between two floating point numbers using an epsilon value to specify the equality tolerance limit.
-		// See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
-		template <typename T>
-		inline bool _Almost_equal_relative(T a, T b, T epsilon = ::std::numeric_limits<T>::epsilon()) noexcept {
-			auto diff = ::std::abs(a - b);
-			a = ::std::abs(a);
-			b = ::std::abs(b);
-			auto largest = (b > a) ? b : a;
-			if (diff <= largest * epsilon) {
-				return true;
-			}
-			return false;
-		}
-
-		// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0F } 'angle' radians around { 0.0F, 0.0F } in a clockwise ('clockwise' == true) or
-		// counterclockwise ('clockwise' == false) direction.
-		inline ::std::experimental::io2d::point_2d _Rotate_point_absolute_angle(const ::std::experimental::io2d::point_2d& center, float radius, float angle, bool clockwise = true) {
-			if (clockwise) {
-				::std::experimental::io2d::point_2d pt{ radius * ::std::cos(angle), -(radius * -::std::sin(angle)) };
-				pt.x = pt.x + center.x;
-				pt.y = pt.y + center.y;
-				return pt;
-			}
-			else {
-				::std::experimental::io2d::point_2d pt{ radius * ::std::cos(angle), radius * -::std::sin(angle) };
-				pt.x = pt.x + center.x;
-				pt.y = pt.y + center.y;
-				return pt;
-			}
-		}
-
-		// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'.
-		inline int _Double_to_int(float value, bool nearestNeighbor = true) {
-			if (nearestNeighbor) {
-				// Round to the nearest neighbor.
-				return static_cast<int>(::std::round(value));
-			}
-			// Otherwise truncate.
-			return static_cast<int>(::std::trunc(value));
-		}
-
-		template <typename T>
-		inline int _Container_size_to_int(const T& container) noexcept {
-			assert(container.size() <= static_cast<unsigned int>(::std::numeric_limits<int>::max()));
-			return static_cast<int>(container.size());
 		}
 
 		template <class _TItem>
@@ -1521,6 +1516,8 @@ namespace std::experimental::io2d {
 			_Data.clear();
 		}
 
+		//Brushes
+
 		template <class InputIterator>
 		inline brush::brush(const point_2d& begin, const point_2d& end,
 			InputIterator first, InputIterator last)
@@ -1608,6 +1605,8 @@ namespace std::experimental::io2d {
 		inline brush_type brush::type() const noexcept {
 			return _Brush_type;
 		}
+
+		// Surfaces
 
 		inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of)
 			: _Mapped_surface(nh)
@@ -1734,5 +1733,14 @@ namespace std::experimental::io2d {
 			}
 			return cairo_image_surface_get_stride(_Mapped_surface.csfce);
 		}
+
+		// Free functions
+
+		_IO2D_API int format_stride_for_width(format format, int width) noexcept;
+		_IO2D_API display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
+		_IO2D_API display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
+		_IO2D_API image_surface make_image_surface(format format, int width, int height);
+		_IO2D_API image_surface make_image_surface(image_surface& sfc);
+
 	}
 }
