@@ -18,7 +18,9 @@ namespace std::experimental::io2d {
 			constexpr float magnitude_squared() const noexcept;
 			float angular_direction() const noexcept;
 			point_2d to_unit() const noexcept;
-			constexpr point_2d zero() const noexcept;
+			constexpr static point_2d zero() noexcept {
+				return { 0.0f, 0.0f };
+			}
 
 			// \ref{\iotwod.\pointtwod.member.ops}, member operators:
 			constexpr point_2d& operator+=(const point_2d& rhs) noexcept;
