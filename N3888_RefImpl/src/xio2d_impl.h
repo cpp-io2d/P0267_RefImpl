@@ -498,7 +498,121 @@ namespace std::experimental::io2d {
 			return cpt + pt * lmtx;
 		}
 
-		// Paths
+        // Geometry
+
+        inline constexpr bounding_box::bounding_box() noexcept { }
+        inline constexpr bounding_box::bounding_box(float x, float y, float width, float height) noexcept
+            : _X(x)
+            , _Y(y)
+            , _Width(width)
+            , _Height(height) {
+        }
+        inline constexpr bounding_box::bounding_box(const point_2d& tl, const point_2d& br) noexcept
+            : _X(tl.x)
+            , _Y(tl.y)
+            , _Width(::std::max(0.0F, br.x - tl.x))
+            , _Height(::std::max(0.0F, br.y - tl.y)) {
+        }
+
+        inline constexpr void bounding_box::x(float value) noexcept {
+            _X = value;
+        }
+        inline constexpr void bounding_box::y(float value) noexcept {
+            _Y = value;
+        }
+        inline constexpr void bounding_box::width(float value) noexcept {
+            _Width = value;
+        }
+        inline constexpr void bounding_box::height(float value) noexcept {
+            _Height = value;
+        }
+        inline constexpr void bounding_box::top_left(const point_2d& value) noexcept {
+            _X = value.x;
+            _Y = value.y;
+        }
+        inline constexpr void bounding_box::bottom_right(const point_2d& value) noexcept {
+            _Width = max(0.0F, value.x - _X);
+            _Height = max(0.0F, value.y - _Y);
+        }
+
+        inline constexpr float bounding_box::x() const noexcept {
+            return _X;
+        }
+
+        inline constexpr float bounding_box::y() const noexcept {
+            return _Y;
+        }
+
+        inline constexpr float bounding_box::width() const noexcept {
+            return _Width;
+        }
+
+        inline constexpr float bounding_box::height() const noexcept {
+            return _Height;
+        }
+
+        inline constexpr float bounding_box::left() const noexcept {
+            return _X;
+        }
+
+        inline constexpr float bounding_box::right() const noexcept {
+            return _X + _Width;
+        }
+
+        inline constexpr float bounding_box::top() const noexcept {
+            return _Y;
+        }
+
+        inline constexpr float bounding_box::bottom() const noexcept {
+            return _Y + _Height;
+        }
+
+        inline constexpr point_2d bounding_box::top_left() const noexcept {
+            return{ _X, _Y };
+        }
+
+        inline constexpr point_2d bounding_box::bottom_right() const noexcept {
+            return{ _X + _Width, _Y + _Height };
+        }
+
+        inline constexpr bool operator==(const bounding_box& lhs, const bounding_box& rhs)
+            noexcept {
+            return lhs._X == rhs._X && lhs._Y == rhs._Y && lhs._Width == rhs._Width && lhs._Height == rhs._Height;
+        }
+        inline constexpr bool operator!=(const bounding_box& lhs, const bounding_box& rhs)
+            noexcept {
+            return !(lhs == rhs);
+        }
+
+        inline constexpr circle::circle() noexcept
+            : _Center()
+            , _Radius() {}
+        inline constexpr circle::circle(const point_2d& ctr, float r) noexcept
+            : _Center(ctr)
+            , _Radius(r) {}
+
+        inline constexpr void circle::center(const point_2d& ctr) noexcept {
+            _Center = ctr;
+        }
+        inline constexpr void circle::radius(float r) noexcept {
+            _Radius = r;
+        }
+
+        inline constexpr point_2d circle::center() const noexcept {
+            return _Center;
+        }
+        inline constexpr float circle::radius() const noexcept {
+            return _Radius;
+        }
+
+        inline constexpr bool circle::operator==(const circle& rhs) noexcept {
+            return _Center == rhs._Center && _Radius == rhs._Radius;
+        }
+        inline constexpr bool circle::operator!=(const circle& rhs) noexcept {
+            return !((*this) == rhs);
+        }
+
+        // Paths
 
 		enum class _Path_data_abs_new_path {};
 		constexpr static _Path_data_abs_new_path _Path_data_abs_new_path_val = {};
