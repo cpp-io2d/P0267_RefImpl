@@ -614,6 +614,287 @@ namespace std::experimental::io2d {
 
         // Paths
 
+        namespace figure_items {
+            inline constexpr abs_new_figure::abs_new_figure() noexcept {}
+
+            inline constexpr abs_new_figure::abs_new_figure(const point_2d& pt) noexcept
+                : _Data(pt) {}
+
+            inline constexpr void abs_new_figure::at(const point_2d& pt) noexcept {
+                _Data = pt;
+            }
+
+            inline constexpr point_2d abs_new_figure::at() const noexcept {
+                return _Data;
+            }
+
+            inline constexpr bool abs_new_figure::operator==(const abs_new_figure& rhs) const noexcept {
+                return _Data == rhs._Data;
+            }
+
+            inline constexpr rel_new_figure::rel_new_figure() noexcept {}
+
+            inline constexpr rel_new_figure::rel_new_figure(const point_2d& pt) noexcept
+                : _Data(pt) {}
+
+            inline constexpr void rel_new_figure::at(const point_2d& pt) noexcept {
+                _Data = pt;
+            }
+
+            inline constexpr point_2d rel_new_figure::at() const noexcept {
+                return _Data;
+            }
+
+            inline constexpr bool rel_new_figure::operator==(const rel_new_figure& rhs) const noexcept {
+                return _Data == rhs._Data;
+            }
+
+            inline constexpr close_figure::close_figure() noexcept {}
+
+            inline constexpr bool close_figure::operator==(const close_figure&) const noexcept {
+                return true;
+            }
+
+            inline constexpr abs_matrix::abs_matrix(const matrix_2d& m) noexcept
+                : _Matrix(m) {
+            }
+            inline constexpr abs_matrix::abs_matrix() noexcept {}
+
+            inline constexpr void abs_matrix::matrix(const matrix_2d& value) noexcept {
+                _Matrix = value;
+            }
+            inline constexpr matrix_2d abs_matrix::matrix() const noexcept {
+                return _Matrix;
+            }
+
+            inline constexpr bool abs_matrix::operator==(const abs_matrix& rhs) const noexcept {
+                return _Matrix == rhs._Matrix;
+            }
+
+            inline constexpr rel_matrix::rel_matrix(const matrix_2d& m) noexcept
+                : _Matrix(m) {
+            }
+            inline constexpr rel_matrix::rel_matrix() noexcept {}
+
+            inline constexpr void rel_matrix::matrix(const matrix_2d& value) noexcept {
+                _Matrix = value;
+            }
+            inline constexpr matrix_2d rel_matrix::matrix() const noexcept {
+                return _Matrix;
+            }
+
+            inline constexpr bool rel_matrix::operator==(const rel_matrix& rhs) const noexcept {
+                return _Matrix == rhs._Matrix;
+            }
+
+            inline constexpr revert_matrix::revert_matrix() noexcept {}
+
+            inline constexpr bool revert_matrix::operator==(const revert_matrix&) const noexcept {
+                return true;
+            }
+
+            inline constexpr abs_line::abs_line(const point_2d& to) noexcept
+                : _Data(to) {
+            }
+            inline constexpr abs_line::abs_line() noexcept {}
+
+            inline constexpr void abs_line::to(const point_2d& value) noexcept {
+                _Data = value;
+            }
+
+            inline constexpr point_2d abs_line::to() const noexcept {
+                return _Data;
+            }
+
+            inline constexpr bool abs_line::operator==(const abs_line& rhs) const noexcept {
+                return _Data == rhs._Data;
+            }
+
+            inline constexpr rel_line::rel_line(const point_2d& to) noexcept
+                : _Data(to) {
+            }
+            inline constexpr rel_line::rel_line() noexcept {}
+
+            inline constexpr void rel_line::to(const point_2d& value) noexcept {
+                _Data = value;
+            }
+
+            inline constexpr point_2d rel_line::to() const noexcept {
+                return _Data;
+            }
+
+            inline constexpr bool rel_line::operator==(const rel_line& rhs) const noexcept {
+                return _Data == rhs._Data;
+            }
+
+            inline constexpr abs_quadratic_curve::abs_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept
+                : _Control_pt(cp)
+                , _End_pt(ep) {
+            }
+            inline constexpr abs_quadratic_curve::abs_quadratic_curve() noexcept {}
+
+            inline constexpr void abs_quadratic_curve::control_point(const point_2d& value) noexcept {
+                _Control_pt = value;
+            }
+            inline constexpr void abs_quadratic_curve::end_point(const point_2d& value) noexcept {
+                _End_pt = value;
+            }
+
+            inline constexpr point_2d abs_quadratic_curve::control_point() const noexcept {
+                return _Control_pt;
+            }
+            inline constexpr point_2d abs_quadratic_curve::end_point() const noexcept {
+                return _End_pt;
+            }
+
+            inline constexpr bool abs_quadratic_curve::operator==(const abs_quadratic_curve& rhs) const noexcept {
+                return (_Control_pt == rhs._Control_pt) &&
+                    (_End_pt == rhs._End_pt);
+            }
+
+            inline constexpr rel_quadratic_curve::rel_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept
+                : _Control_pt(cp)
+                , _End_pt(ep) {
+            }
+            inline constexpr rel_quadratic_curve::rel_quadratic_curve() noexcept {}
+
+            inline constexpr void rel_quadratic_curve::control_point(const point_2d& value) noexcept {
+                _Control_pt = value;
+            }
+            inline constexpr void rel_quadratic_curve::end_point(const point_2d& value) noexcept {
+                _End_pt = value;
+            }
+
+            inline constexpr point_2d rel_quadratic_curve::control_point() const noexcept {
+                return _Control_pt;
+            }
+            inline constexpr point_2d rel_quadratic_curve::end_point() const noexcept {
+                return _End_pt;
+            }
+
+            inline constexpr bool rel_quadratic_curve::operator==(const rel_quadratic_curve& rhs) const noexcept {
+                return (_Control_pt == rhs._Control_pt) &&
+                    (_End_pt == rhs._End_pt);
+            }
+
+            inline constexpr abs_cubic_curve::abs_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept
+                : _Control_pt1(controlPoint1)
+                , _Control_pt2(controlPoint2)
+                , _End_pt(endPoint) {
+            }
+            inline constexpr abs_cubic_curve::abs_cubic_curve() noexcept {}
+
+            inline constexpr void abs_cubic_curve::control_point_1(const point_2d& value) noexcept {
+                _Control_pt1 = value;
+            }
+            inline constexpr void abs_cubic_curve::control_point_2(const point_2d& value) noexcept {
+                _Control_pt2 = value;
+            }
+            inline constexpr void abs_cubic_curve::end_point(const point_2d& value) noexcept {
+                _End_pt = value;
+            }
+
+            inline constexpr point_2d abs_cubic_curve::control_point_1() const noexcept {
+                return _Control_pt1;
+            }
+            inline constexpr point_2d abs_cubic_curve::control_point_2() const noexcept {
+                return _Control_pt2;
+            }
+            inline constexpr point_2d abs_cubic_curve::end_point() const noexcept {
+                return _End_pt;
+            }
+
+            inline constexpr bool abs_cubic_curve::operator==(const abs_cubic_curve& rhs) const noexcept {
+                return (_Control_pt1 == rhs._Control_pt1) &&
+                    (_Control_pt2 == rhs._Control_pt2) &&
+                    (_End_pt == rhs._End_pt);
+            }
+
+            inline constexpr rel_cubic_curve::rel_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept
+                : _Control_pt1(controlPoint1)
+                , _Control_pt2(controlPoint2)
+                , _End_pt(endPoint) {
+            }
+            inline constexpr rel_cubic_curve::rel_cubic_curve() noexcept {}
+
+            inline constexpr void rel_cubic_curve::control_point_1(const point_2d& value) noexcept {
+                _Control_pt1 = value;
+            }
+            inline constexpr void rel_cubic_curve::control_point_2(const point_2d& value) noexcept {
+                _Control_pt2 = value;
+            }
+            inline constexpr void rel_cubic_curve::end_point(const point_2d& value) noexcept {
+                _End_pt = value;
+            }
+
+            inline constexpr point_2d rel_cubic_curve::control_point_1() const noexcept {
+                return _Control_pt1;
+            }
+            inline constexpr point_2d rel_cubic_curve::control_point_2() const noexcept {
+                return _Control_pt2;
+            }
+            inline constexpr point_2d rel_cubic_curve::end_point() const noexcept {
+                return _End_pt;
+            }
+
+            inline constexpr bool rel_cubic_curve::operator==(const rel_cubic_curve& rhs) const noexcept {
+                return (_Control_pt1 == rhs._Control_pt1) &&
+                    (_Control_pt2 == rhs._Control_pt2) &&
+                    (_End_pt == rhs._End_pt);
+            }
+
+            inline constexpr arc::arc() noexcept
+                : arc(point_2d{ 10.0F, 10.0F }, pi<float>, pi<float>) { }
+            inline constexpr arc::arc(const point_2d& rad, float rot, float sang) noexcept
+                : _Radius(rad)
+                , _Rotation(rot)
+                , _Start_angle(sang) {
+            }
+
+            inline constexpr void arc::radius(const point_2d& rad) noexcept {
+                _Radius = rad;
+            }
+            inline constexpr void arc::rotation(float rot) noexcept {
+                _Rotation = rot;
+            }
+            inline constexpr void arc::start_angle(float sang) noexcept {
+                _Start_angle = sang;
+            }
+
+            inline constexpr point_2d arc::radius() const noexcept {
+                return _Radius;
+            }
+            inline constexpr float arc::rotation() const noexcept {
+                return _Rotation;
+            }
+            inline constexpr float arc::start_angle() const noexcept {
+                return _Start_angle;
+            }
+
+            inline point_2d arc::center(point_2d cpt, const matrix_2d& m) const noexcept {
+                auto lmtx = m;
+                lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
+                auto centerOffset = point_for_angle(two_pi<float> -_Start_angle, _Radius);
+                centerOffset.y = -centerOffset.y;
+                return cpt - centerOffset * lmtx;
+            }
+
+            inline point_2d arc::end_pt(point_2d cpt, const matrix_2d& m) const noexcept {
+                auto lmtx = m;
+                auto tfrm = matrix_2d::init_rotate(_Start_angle + _Rotation);
+                lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
+                auto pt = (_Radius * tfrm);
+                pt.y = -pt.y;
+                return cpt + pt * lmtx;
+            }
+
+            inline constexpr bool arc::operator==(const arc& rhs) const noexcept {
+                return (_Radius == rhs._Radius) &&
+                    (_Rotation == rhs._Rotation) &&
+                    (_Start_angle == rhs._Start_angle);
+            }
+        }
+
 		enum class _Path_data_abs_new_path {};
 		constexpr static _Path_data_abs_new_path _Path_data_abs_new_path_val = {};
 		enum class _Path_data_rel_new_path {};
@@ -1438,7 +1719,11 @@ namespace std::experimental::io2d {
 			return v;
 		}
 
-		template<class Allocator>
+        template<class Allocator>
+        inline path_builder<Allocator>::path_builder() noexcept(noexcept(Allocator())) :
+            path_builder(Allocator()) { }
+        
+        template<class Allocator>
 		inline path_builder<Allocator>::path_builder(const Allocator &a) noexcept
 			: _Data(a) {
 		}
@@ -1459,7 +1744,10 @@ namespace std::experimental::io2d {
 			: _Data(first, last, a) {
 		}
 
-		template<class Allocator>
+        template<class Allocator>
+        inline path_builder<Allocator>::~path_builder() { }
+        
+        template<class Allocator>
 		template<class InputIterator>
 		inline void path_builder<Allocator>::assign(InputIterator first, InputIterator last) {
 			_Data.assign(first, last);
@@ -1787,7 +2075,34 @@ namespace std::experimental::io2d {
 			_Data.clear();
 		}
 
-		//Brushes
+        template<class Allocator>
+        inline bool path_builder<Allocator>::operator==(const path_builder& rhs) const noexcept {
+            if (size() != rhs.size()) {
+                return false;
+            }
+            //return equal(_Data.cbegin(), _Data.cend(), rhs._Data.cbegin(), rhs._Data.cend());
+            auto lhsEnd = _Data.end();
+            auto rhsEnd = rhs._Data.end();
+            auto lhsIter = _Data.begin();
+            auto rhsIter = rhs._Data.begin();
+            for (; lhsIter != lhsEnd &&
+                rhsIter != rhsEnd; ++lhsIter, ++rhsIter) {
+                assert(lhsIter != lhsEnd && "Unexpected path_builder op== size mismatch. rhs greater than lhs.");
+                assert(rhsIter != rhsEnd && "Unexpected path_builder op== size mismatch. lhs greater than rhs.");
+                if (*lhsIter != *rhsIter) {
+                    return false;
+                }
+            }
+            //const size_t dataSize = _Data.size();
+            //for (size_t i = 0; i < dataSize; i++) {
+            //	if (_Data.at(i) != rhs._Data.at(i)) {
+            //		return false;
+            //	}
+            //}
+            return true;
+        }
+
+        //Brushes
 
 		template <class InputIterator>
 		inline brush::brush(const point_2d& begin, const point_2d& end,
