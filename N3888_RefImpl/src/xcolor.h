@@ -3,57 +3,32 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 
-		enum class _Color_is_integral {};
-		constexpr _Color_is_integral _Color_is_integral_val{};
-		enum class _Color_is_floating {};
-		constexpr _Color_is_floating _Color_is_floating_val{};
+        enum class _Color_is_integral {};
+        constexpr _Color_is_integral _Color_is_integral_val{};
+        enum class _Color_is_floating {};
+        constexpr _Color_is_floating _Color_is_floating_val{};
 
-		class rgba_color {
+        class rgba_color {
 			float _R = 0.0F;
 			float _G = 0.0F;
 			float _B = 0.0F;
 			float _A = 1.0F;
 		public:
-			constexpr rgba_color() noexcept { }
+            constexpr rgba_color() noexcept;
 			template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
-			constexpr rgba_color(T r, T g, T b, T a = static_cast<T>(0xFF))
-				: _R(static_cast<float>(::std::min<float>(::std::max<float>((r / 255.0F), 0.0F), 1.0F)))
-				, _G(static_cast<float>(::std::min<float>(::std::max<float>((g / 255.0F), 0.0F), 1.0F)))
-				, _B(static_cast<float>(::std::min<float>(::std::max<float>((b / 255.0F), 0.0F), 1.0F)))
-				, _A(static_cast<float>(::std::min<float>(::std::max<float>((a / 255.0F), 0.0F), 1.0F))) { }
+            constexpr rgba_color(T r, T g, T b, T a = static_cast<T>(0xFF));
 			template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
-			constexpr rgba_color(T r, T g, T b, T a = 1.0F)
-				: _R(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(r), 0.0F), 1.0F)))
-				, _G(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(g), 0.0F), 1.0F)))
-				, _B(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(b), 0.0F), 1.0F)))
-				, _A(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(a), 0.0F), 1.0F))) {
-			}
+            constexpr rgba_color(T r, T g, T b, T a = 1.0F);
 
-			constexpr void r(float val) noexcept {
-				_R = val * _A;
-			}
-			constexpr void g(float val) noexcept {
-				_G = val * _A;
-			}
-			constexpr void b(float val) noexcept {
-				_B = val * _A;
-			}
-			constexpr void a(float val) noexcept {
-				_A = val;
-			}
+            constexpr void r(float val) noexcept;
+            constexpr void g(float val) noexcept;
+            constexpr void b(float val) noexcept;
+            constexpr void a(float val) noexcept;
 
-			constexpr float r() const noexcept {
-				return _R;
-			}
-			constexpr float g() const noexcept {
-				return _G;
-			}
-			constexpr float b() const noexcept {
-				return _B;
-			}
-			constexpr float a() const noexcept {
-				return _A;
-			}
+            constexpr float r() const noexcept;
+            constexpr float g() const noexcept;
+            constexpr float b() const noexcept;
+            constexpr float a() const noexcept;
 
 			_IO2D_API static const rgba_color alice_blue;
 			_IO2D_API static const rgba_color antique_white;
@@ -205,73 +180,11 @@ namespace std::experimental::io2d {
 			_IO2D_API static const rgba_color yellow_green;
 
 			template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
-			constexpr rgba_color& operator*=(T rhs) {
-				r(::std::min(r() * rhs / 255.0F, 1.0F));
-				g(::std::min(g() * rhs / 255.0F, 1.0F));
-				b(::std::min(b() * rhs / 255.0F, 1.0F));
-				a(::std::min(a() * rhs / 255.0F, 1.0F));
-				return *this;
-			}
-			template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
-			constexpr rgba_color& operator*=(U rhs) {
-				r(::std::min(r() * rhs, 1.0F));
-				g(::std::min(g() * rhs, 1.0F));
-				b(::std::min(b() * rhs, 1.0F));
-				a(::std::min(a() * rhs, 1.0F));
-				return *this;
-			}
+            constexpr rgba_color& operator*=(T rhs);
+
+            template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+            constexpr rgba_color& operator*=(U rhs);
 		};
-
-		inline constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs) noexcept {
-			return lhs.r() == rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
-		}
-		inline constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs) noexcept {
-			return !(lhs == rhs);
-		}
-
-		template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
-		inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
-			rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
-			return{
-				::std::min(lhs.r() * rhs, 1.0F),
-				::std::min(lhs.g() * rhs, 1.0F),
-				::std::min(lhs.b() * rhs, 1.0F),
-				::std::min(lhs.a() * rhs, 1.0F)
-			};
-		}
-
-		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
-		inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
-			rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
-			return{
-				::std::min(lhs.r() * rhs / 255.0F, 1.0F),
-				::std::min(lhs.g() * rhs / 255.0F, 1.0F),
-				::std::min(lhs.b() * rhs / 255.0F, 1.0F),
-				::std::min(lhs.a() * rhs / 255.0F, 1.0F)
-			};
-		}
-
-		template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
-		inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
-			lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
-			return{
-				::std::min(lhs * rhs.r(), 1.0F),
-				::std::min(lhs * rhs.g(), 1.0F),
-				::std::min(lhs * rhs.b(), 1.0F),
-				::std::min(lhs * rhs.a(), 1.0F)
-			};
-		}
-
-		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
-		inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
-			lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
-			return{
-				::std::min(lhs / 255.0F * rhs.r(), 1.0F),
-				::std::min(lhs / 255.0F * rhs.g(), 1.0F),
-				::std::min(lhs / 255.0F * rhs.b(), 1.0F),
-				::std::min(lhs / 255.0F * rhs.a(), 1.0F)
-			};
-		}
 
 		constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs)
 			noexcept;

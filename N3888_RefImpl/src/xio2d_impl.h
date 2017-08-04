@@ -110,6 +110,117 @@ namespace std::experimental::io2d {
 			}
 		}
 
+        // color
+
+        constexpr rgba_color::rgba_color() noexcept { }
+        template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
+        constexpr rgba_color::rgba_color(T r, T g, T b, T a)
+            : _R(static_cast<float>(::std::min<float>(::std::max<float>((r / 255.0F), 0.0F), 1.0F)))
+            , _G(static_cast<float>(::std::min<float>(::std::max<float>((g / 255.0F), 0.0F), 1.0F)))
+            , _B(static_cast<float>(::std::min<float>(::std::max<float>((b / 255.0F), 0.0F), 1.0F)))
+            , _A(static_cast<float>(::std::min<float>(::std::max<float>((a / 255.0F), 0.0F), 1.0F))) { }
+        template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
+        constexpr rgba_color::rgba_color(T r, T g, T b, T a)
+            : _R(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(r), 0.0F), 1.0F)))
+            , _G(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(g), 0.0F), 1.0F)))
+            , _B(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(b), 0.0F), 1.0F)))
+            , _A(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(a), 0.0F), 1.0F))) {
+        }
+
+        constexpr void rgba_color::r(float val) noexcept {
+            _R = val * _A;
+        }
+        constexpr void rgba_color::g(float val) noexcept {
+            _G = val * _A;
+        }
+        constexpr void rgba_color::b(float val) noexcept {
+            _B = val * _A;
+        }
+        constexpr void rgba_color::a(float val) noexcept {
+            _A = val;
+        }
+
+        constexpr float rgba_color::r() const noexcept {
+            return _R;
+        }
+        constexpr float rgba_color::g() const noexcept {
+            return _G;
+        }
+        constexpr float rgba_color::b() const noexcept {
+            return _B;
+        }
+        constexpr float rgba_color::a() const noexcept {
+            return _A;
+        }
+
+        template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
+        constexpr rgba_color& rgba_color::operator*=(T rhs) {
+            r(::std::min(r() * rhs / 255.0F, 1.0F));
+            g(::std::min(g() * rhs / 255.0F, 1.0F));
+            b(::std::min(b() * rhs / 255.0F, 1.0F));
+            a(::std::min(a() * rhs / 255.0F, 1.0F));
+            return *this;
+        }
+        template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating>>
+        constexpr rgba_color& rgba_color::operator*=(U rhs) {
+            r(::std::min(r() * rhs, 1.0F));
+            g(::std::min(g() * rhs, 1.0F));
+            b(::std::min(b() * rhs, 1.0F));
+            a(::std::min(a() * rhs, 1.0F));
+            return *this;
+        }
+
+        inline constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs) noexcept {
+            return lhs.r() == rhs.r() && lhs.g() == rhs.g() && lhs.b() == rhs.b() && lhs.a() == rhs.a();
+        }
+        inline constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs) noexcept {
+            return !(lhs == rhs);
+        }
+
+        template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
+        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
+            rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
+            return{
+                ::std::min(lhs.r() * rhs, 1.0F),
+                ::std::min(lhs.g() * rhs, 1.0F),
+                ::std::min(lhs.b() * rhs, 1.0F),
+                ::std::min(lhs.a() * rhs, 1.0F)
+            };
+        }
+
+        template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
+        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
+            rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
+            return{
+                ::std::min(lhs.r() * rhs / 255.0F, 1.0F),
+                ::std::min(lhs.g() * rhs / 255.0F, 1.0F),
+                ::std::min(lhs.b() * rhs / 255.0F, 1.0F),
+                ::std::min(lhs.a() * rhs / 255.0F, 1.0F)
+            };
+        }
+
+        template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
+        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
+            lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
+            return{
+                ::std::min(lhs * rhs.r(), 1.0F),
+                ::std::min(lhs * rhs.g(), 1.0F),
+                ::std::min(lhs * rhs.b(), 1.0F),
+                ::std::min(lhs * rhs.a(), 1.0F)
+            };
+        }
+
+        template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
+        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
+            lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
+            return{
+                ::std::min(lhs / 255.0F * rhs.r(), 1.0F),
+                ::std::min(lhs / 255.0F * rhs.g(), 1.0F),
+                ::std::min(lhs / 255.0F * rhs.b(), 1.0F),
+                ::std::min(lhs / 255.0F * rhs.a(), 1.0F)
+            };
+        }
+
 		// linear algebra
 
 		inline constexpr point_2d::point_2d() noexcept
@@ -1733,14 +1844,5 @@ namespace std::experimental::io2d {
 			}
 			return cairo_image_surface_get_stride(_Mapped_surface.csfce);
 		}
-
-		// Free functions
-
-		_IO2D_API int format_stride_for_width(format format, int width) noexcept;
-		_IO2D_API display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
-		_IO2D_API display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float desiredFramerate = 30.0F);
-		_IO2D_API image_surface make_image_surface(format format, int width, int height);
-		_IO2D_API image_surface make_image_surface(image_surface& sfc);
-
 	}
 }

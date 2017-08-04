@@ -73,22 +73,22 @@ namespace std::experimental::io2d {
 		class image_surface;
 		class display_surface;
 
-		int format_stride_for_width(format format, int width) noexcept;
-		display_surface make_display_surface(int preferredWidth,
+        _IO2D_API int format_stride_for_width(format format, int width) noexcept;
+        _IO2D_API display_surface make_display_surface(int preferredWidth,
 			int preferredHeight, format preferredFormat,
 			scaling scl = scaling::letterbox);
 		display_surface make_display_surface(int preferredWidth,
 			int preferredHeight, format preferredFormat, error_code& ec,
 			scaling scl = scaling::letterbox) noexcept;
-		display_surface make_display_surface(int preferredWidth,
+        _IO2D_API display_surface make_display_surface(int preferredWidth,
 			int preferredHeight, format preferredFormat, int preferredDisplayWidth,
 			int preferredDisplayHeight, scaling scl = scaling::letterbox);
 		display_surface make_display_surface(int preferredWidth,
 			int preferredHeight, format preferredFormat, int preferredDisplayWidth,
 			int preferredDisplayHeight, error_code& ec,
 			scaling scl = scaling::letterbox) noexcept;
-		image_surface make_image_surface(format format, int width, int height);
-		image_surface make_image_surface(format format, int width, int height,
+        _IO2D_API image_surface make_image_surface(format format, int width, int height);
+        _IO2D_API image_surface make_image_surface(format format, int width, int height,
 			error_code& ec) noexcept;
 		image_surface copy_image_surface(image_surface& sfc) noexcept;
 		float angle_for_point(point_2d ctr, point_2d pt,
