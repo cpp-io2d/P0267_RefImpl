@@ -4,23 +4,31 @@ namespace std::experimental::io2d {
 	inline namespace v1 {
 
 		namespace figure_items {
+			class abs_new_figure;
+			class rel_new_figure;
+			class close_figure;
+			class abs_matrix;
+			class rel_matrix;
+			class revert_matrix;
+			class abs_cubic_curve;
+			class abs_line;
+			class abs_quadratic_curve;
+			class arc;
+			class rel_cubic_curve;
+			class rel_line;
+			class rel_quadratic_curve;
 
 			class abs_new_figure {
 				point_2d _Data = {};
+				friend constexpr bool operator==(const abs_new_figure&, const abs_new_figure&) noexcept;
 			public:
-                constexpr abs_new_figure() noexcept;
+				constexpr abs_new_figure() noexcept;
 
-                constexpr abs_new_figure(const point_2d& pt) noexcept;
+				constexpr abs_new_figure(const point_2d& pt) noexcept;
 
-                constexpr void at(const point_2d& pt) noexcept;
+				constexpr void at(const point_2d& pt) noexcept;
 
-                constexpr point_2d at() const noexcept;
-
-                constexpr bool operator==(const abs_new_figure& rhs) const noexcept;
-
-				constexpr bool operator!=(const abs_new_figure& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr point_2d at() const noexcept;
 			};
 
 			constexpr bool operator==(const abs_new_figure&, const abs_new_figure&)
@@ -30,20 +38,15 @@ namespace std::experimental::io2d {
 
 			class rel_new_figure {
 				point_2d _Data = {};
+				friend constexpr bool operator==(const rel_new_figure&, const rel_new_figure&) noexcept;
 			public:
-                constexpr rel_new_figure() noexcept;
+				constexpr rel_new_figure() noexcept;
 
-                constexpr rel_new_figure(const point_2d& pt) noexcept;
+				constexpr rel_new_figure(const point_2d& pt) noexcept;
 
-                constexpr void at(const point_2d& pt) noexcept;
+				constexpr void at(const point_2d& pt) noexcept;
 
-                constexpr point_2d at() const noexcept;
-
-                constexpr bool operator==(const rel_new_figure& rhs) const noexcept;
-
-				constexpr bool operator!=(const rel_new_figure& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr point_2d at() const noexcept;
 			};
 
 			constexpr bool operator==(const rel_new_figure&, const rel_new_figure&)
@@ -52,14 +55,9 @@ namespace std::experimental::io2d {
 				noexcept;
 
 			class close_figure {
+				friend constexpr bool operator==(const close_figure&, const close_figure&) noexcept;
 			public:
-                constexpr close_figure() noexcept;
-
-                constexpr bool operator==(const close_figure&) const noexcept;
-
-				constexpr bool operator!=(const close_figure& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr close_figure() noexcept;
 			};
 
 			constexpr bool operator==(const close_figure&, const close_figure&) noexcept;
@@ -67,18 +65,13 @@ namespace std::experimental::io2d {
 
 			class abs_matrix {
 				matrix_2d _Matrix;
+				friend constexpr bool operator==(const abs_matrix&, const abs_matrix&) noexcept;
 			public:
-                constexpr explicit abs_matrix(const matrix_2d& m) noexcept;
-                constexpr abs_matrix() noexcept;
+				constexpr explicit abs_matrix(const matrix_2d& m) noexcept;
+				constexpr abs_matrix() noexcept;
 
-                constexpr void matrix(const matrix_2d& value) noexcept;
-                constexpr matrix_2d matrix() const noexcept;
-
-                constexpr bool operator==(const abs_matrix& rhs) const noexcept;
-
-				constexpr bool operator!=(const abs_matrix& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr void matrix(const matrix_2d& value) noexcept;
+				constexpr matrix_2d matrix() const noexcept;
 			};
 
 			constexpr bool operator==(const abs_matrix&, const abs_matrix&) noexcept;
@@ -86,32 +79,22 @@ namespace std::experimental::io2d {
 
 			class rel_matrix {
 				matrix_2d _Matrix;
+				friend constexpr bool operator==(const rel_matrix&, const rel_matrix&) noexcept;
 			public:
-                constexpr explicit rel_matrix(const matrix_2d& m) noexcept;
-                constexpr rel_matrix() noexcept;
+				constexpr explicit rel_matrix(const matrix_2d& m) noexcept;
+				constexpr rel_matrix() noexcept;
 
-                constexpr void matrix(const matrix_2d& value) noexcept;
-                constexpr matrix_2d matrix() const noexcept;
-
-                constexpr bool operator==(const rel_matrix& rhs) const noexcept;
-
-				constexpr bool operator!=(const rel_matrix& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr void matrix(const matrix_2d& value) noexcept;
+				constexpr matrix_2d matrix() const noexcept;
 			};
 
 			constexpr bool operator==(const rel_matrix&, const rel_matrix&) noexcept;
 			constexpr bool operator!=(const rel_matrix&, const rel_matrix&) noexcept;
 
 			class revert_matrix {
+				friend constexpr bool operator==(const revert_matrix&, const revert_matrix&) noexcept;
 			public:
-                constexpr revert_matrix() noexcept;
-
-                constexpr bool operator==(const revert_matrix&) const noexcept;
-
-				constexpr bool operator!=(const revert_matrix&) const noexcept {
-					return false;
-				}
+				constexpr revert_matrix() noexcept;
 			};
 
 			constexpr bool operator==(const revert_matrix&, const revert_matrix&)
@@ -121,19 +104,14 @@ namespace std::experimental::io2d {
 
 			class abs_line {
 				point_2d _Data = {};
+				friend constexpr bool operator==(const abs_line&, const abs_line&) noexcept;
 			public:
-                constexpr explicit abs_line(const point_2d& to) noexcept;
-                constexpr abs_line() noexcept;
+				constexpr explicit abs_line(const point_2d& to) noexcept;
+				constexpr abs_line() noexcept;
 
-                constexpr void to(const point_2d& value) noexcept;
+				constexpr void to(const point_2d& value) noexcept;
 
-                constexpr point_2d to() const noexcept;
-
-                constexpr bool operator==(const abs_line& rhs) const noexcept;
-
-				constexpr bool operator!=(const abs_line& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr point_2d to() const noexcept;
 			};
 
 			constexpr bool operator==(const abs_line&, const abs_line&) noexcept;
@@ -141,19 +119,14 @@ namespace std::experimental::io2d {
 
 			class rel_line {
 				point_2d _Data = {};
+				friend constexpr bool operator==(const rel_line&, const rel_line&) noexcept;
 			public:
-                constexpr explicit rel_line(const point_2d& to) noexcept;
-                constexpr rel_line() noexcept;
+				constexpr explicit rel_line(const point_2d& to) noexcept;
+				constexpr rel_line() noexcept;
 
-                constexpr void to(const point_2d& value) noexcept;
+				constexpr void to(const point_2d& value) noexcept;
 
-                constexpr point_2d to() const noexcept;
-
-                constexpr bool operator==(const rel_line& rhs) const noexcept;
-
-				constexpr bool operator!=(const rel_line& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr point_2d to() const noexcept;
 			};
 
 			constexpr bool operator==(const rel_line&, const rel_line&) noexcept;
@@ -162,21 +135,16 @@ namespace std::experimental::io2d {
 			class abs_quadratic_curve {
 				point_2d _Control_pt = {};
 				point_2d _End_pt = {};
+				friend constexpr bool operator==(const abs_quadratic_curve&, const abs_quadratic_curve&) noexcept;
 			public:
-                constexpr abs_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept;
-                constexpr abs_quadratic_curve() noexcept;
+				constexpr abs_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept;
+				constexpr abs_quadratic_curve() noexcept;
 
-                constexpr void control_point(const point_2d& value) noexcept;
-                constexpr void end_point(const point_2d& value) noexcept;
+				constexpr void control_point(const point_2d& value) noexcept;
+				constexpr void end_point(const point_2d& value) noexcept;
 
-                constexpr point_2d control_point() const noexcept;
-                constexpr point_2d end_point() const noexcept;
-
-                constexpr bool operator==(const abs_quadratic_curve& rhs) const noexcept;
-
-				constexpr bool operator!=(const abs_quadratic_curve& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr point_2d control_point() const noexcept;
+				constexpr point_2d end_point() const noexcept;
 			};
 
 			constexpr bool operator==(const abs_quadratic_curve&,
@@ -187,21 +155,16 @@ namespace std::experimental::io2d {
 			class rel_quadratic_curve {
 				point_2d _Control_pt = {};
 				point_2d _End_pt = {};
+				friend constexpr bool operator==(const rel_quadratic_curve&, const rel_quadratic_curve&) noexcept;
 			public:
-                constexpr rel_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept;
-                constexpr rel_quadratic_curve() noexcept;
+				constexpr rel_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept;
+				constexpr rel_quadratic_curve() noexcept;
 
-                constexpr void control_point(const point_2d& value) noexcept;
-                constexpr void end_point(const point_2d& value) noexcept;
+				constexpr void control_point(const point_2d& value) noexcept;
+				constexpr void end_point(const point_2d& value) noexcept;
 
-                constexpr point_2d control_point() const noexcept;
-                constexpr point_2d end_point() const noexcept;
-
-                constexpr bool operator==(const rel_quadratic_curve& rhs) const noexcept;
-
-				constexpr bool operator!=(const rel_quadratic_curve& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr point_2d control_point() const noexcept;
+				constexpr point_2d end_point() const noexcept;
 			};
 
 			constexpr bool operator==(const rel_quadratic_curve&,
@@ -213,23 +176,18 @@ namespace std::experimental::io2d {
 				point_2d _Control_pt1 = {};
 				point_2d _Control_pt2 = {};
 				point_2d _End_pt = {};
+				friend constexpr bool operator==(const abs_cubic_curve&, const abs_cubic_curve&) noexcept;
 			public:
-                constexpr abs_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept;
-                constexpr abs_cubic_curve() noexcept;
+				constexpr abs_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept;
+				constexpr abs_cubic_curve() noexcept;
 
-                constexpr void control_point_1(const point_2d& value) noexcept;
-                constexpr void control_point_2(const point_2d& value) noexcept;
-                constexpr void end_point(const point_2d& value) noexcept;
+				constexpr void control_point_1(const point_2d& value) noexcept;
+				constexpr void control_point_2(const point_2d& value) noexcept;
+				constexpr void end_point(const point_2d& value) noexcept;
 
-                constexpr point_2d control_point_1() const noexcept;
-                constexpr point_2d control_point_2() const noexcept;
-                constexpr point_2d end_point() const noexcept;
-
-                constexpr bool operator==(const abs_cubic_curve& rhs) const noexcept;
-
-				constexpr bool operator!=(const abs_cubic_curve& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr point_2d control_point_1() const noexcept;
+				constexpr point_2d control_point_2() const noexcept;
+				constexpr point_2d end_point() const noexcept;
 			};
 
 			constexpr bool operator==(const abs_cubic_curve&, const abs_cubic_curve&)
@@ -241,23 +199,18 @@ namespace std::experimental::io2d {
 				point_2d _Control_pt1 = {};
 				point_2d _Control_pt2 = {};
 				point_2d _End_pt = {};
+				friend constexpr bool operator==(const rel_cubic_curve&, const rel_cubic_curve&) noexcept;
 			public:
-                constexpr rel_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept;
-                constexpr rel_cubic_curve() noexcept;
+				constexpr rel_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept;
+				constexpr rel_cubic_curve() noexcept;
 
-                constexpr void control_point_1(const point_2d& value) noexcept;
-                constexpr void control_point_2(const point_2d& value) noexcept;
-                constexpr void end_point(const point_2d& value) noexcept;
+				constexpr void control_point_1(const point_2d& value) noexcept;
+				constexpr void control_point_2(const point_2d& value) noexcept;
+				constexpr void end_point(const point_2d& value) noexcept;
 
-                constexpr point_2d control_point_1() const noexcept;
-                constexpr point_2d control_point_2() const noexcept;
-                constexpr point_2d end_point() const noexcept;
-
-                constexpr bool operator==(const rel_cubic_curve& rhs) const noexcept;
-
-				constexpr bool operator!=(const rel_cubic_curve& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				constexpr point_2d control_point_1() const noexcept;
+				constexpr point_2d control_point_2() const noexcept;
+				constexpr point_2d end_point() const noexcept;
 			};
 
 			constexpr bool operator==(const rel_cubic_curve&, const rel_cubic_curve&)
@@ -269,27 +222,23 @@ namespace std::experimental::io2d {
 				point_2d _Radius;
 				float _Rotation;
 				float _Start_angle;
+
+				friend constexpr bool operator==(const arc&, const arc&) noexcept;
 			public:
-                constexpr arc() noexcept;
-                constexpr arc(const point_2d& rad, float rot, float sang = pi<float>) noexcept;
+				constexpr arc() noexcept;
+				constexpr arc(const point_2d& rad, float rot, float sang = pi<float>) noexcept;
 
-                constexpr void radius(const point_2d& rad) noexcept;
-                constexpr void rotation(float rot) noexcept;
-                constexpr void start_angle(float sang) noexcept;
+				constexpr void radius(const point_2d& rad) noexcept;
+				constexpr void rotation(float rot) noexcept;
+				constexpr void start_angle(float sang) noexcept;
 
-                constexpr point_2d radius() const noexcept;
-                constexpr float rotation() const noexcept;
-                constexpr float start_angle() const noexcept;
+				constexpr point_2d radius() const noexcept;
+				constexpr float rotation() const noexcept;
+				constexpr float start_angle() const noexcept;
 
-                point_2d center(point_2d cpt, const matrix_2d& m) const noexcept;
+				point_2d center(point_2d cpt, const matrix_2d& m) const noexcept;
 
-                point_2d end_pt(point_2d cpt, const matrix_2d& m) const noexcept;
-
-                constexpr bool operator==(const arc& rhs) const noexcept;
-
-				constexpr bool operator!=(const arc& rhs) const noexcept {
-					return !((*this) == rhs);
-				}
+				point_2d end_pt(point_2d cpt, const matrix_2d& m) const noexcept;
 			};
 
 			constexpr bool operator==(const arc&, const arc&) noexcept;
@@ -316,7 +265,7 @@ namespace std::experimental::io2d {
 			using reverse_iterator = std::reverse_iterator<iterator>;
 			using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-            path_builder() noexcept(noexcept(Allocator()));
+			path_builder() noexcept(noexcept(Allocator()));
 			explicit path_builder(const Allocator& a) noexcept;
 			explicit path_builder(size_type n, const Allocator& a = Allocator());
 			path_builder(size_type n, const value_type& value,
@@ -329,7 +278,7 @@ namespace std::experimental::io2d {
 			path_builder(const path_builder& pf, const Allocator& a);
 			path_builder(path_builder&& pf, const Allocator& a);
 			path_builder(initializer_list<value_type> il, const Allocator& a = Allocator());
-            ~path_builder();
+			~path_builder();
 			path_builder& operator=(const path_builder& x);
 			path_builder& operator=(path_builder&& x)
 				noexcept(
@@ -417,18 +366,18 @@ namespace std::experimental::io2d {
 			// Observers
 			::std::experimental::io2d::bounding_box path_extents() const;
 
-            bool operator==(const path_builder& rhs) const noexcept;
+			bool operator==(const path_builder& rhs) const noexcept;
 			bool operator!=(const path_builder& rhs) const noexcept {
 				return !((*this) == rhs);
 			}
 		};
 
 		// 8.17.8, specialized algorithms:
-        template <class Allocator>
-        void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
-            noexcept(noexcept(lhs.swap(rhs))) {
-            lhs.swap(rhs);
-        }
+		template <class Allocator>
+		void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
+			noexcept(noexcept(lhs.swap(rhs))) {
+			lhs.swap(rhs);
+		}
 
 		template <class Allocator>
 		bool operator==(const path_builder<Allocator>& lhs,

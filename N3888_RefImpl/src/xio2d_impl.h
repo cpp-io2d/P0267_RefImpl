@@ -628,8 +628,8 @@ namespace std::experimental::io2d {
                 return _Data;
             }
 
-            inline constexpr bool abs_new_figure::operator==(const abs_new_figure& rhs) const noexcept {
-                return _Data == rhs._Data;
+            inline constexpr bool operator==(const abs_new_figure& lhs, const abs_new_figure& rhs) noexcept {
+                return lhs._Data == rhs._Data;
             }
 
             inline constexpr rel_new_figure::rel_new_figure() noexcept {}
@@ -645,13 +645,13 @@ namespace std::experimental::io2d {
                 return _Data;
             }
 
-            inline constexpr bool rel_new_figure::operator==(const rel_new_figure& rhs) const noexcept {
-                return _Data == rhs._Data;
+			inline constexpr bool operator==(const rel_new_figure& lhs, const rel_new_figure& rhs) noexcept {
+                return lhs._Data == rhs._Data;
             }
 
             inline constexpr close_figure::close_figure() noexcept {}
 
-            inline constexpr bool close_figure::operator==(const close_figure&) const noexcept {
+            inline constexpr bool operator==(const close_figure&, const close_figure&) noexcept {
                 return true;
             }
 
@@ -667,8 +667,8 @@ namespace std::experimental::io2d {
                 return _Matrix;
             }
 
-            inline constexpr bool abs_matrix::operator==(const abs_matrix& rhs) const noexcept {
-                return _Matrix == rhs._Matrix;
+			inline constexpr bool operator==(const abs_matrix& lhs, const abs_matrix& rhs) noexcept {
+                return lhs._Matrix == rhs._Matrix;
             }
 
             inline constexpr rel_matrix::rel_matrix(const matrix_2d& m) noexcept
@@ -683,13 +683,13 @@ namespace std::experimental::io2d {
                 return _Matrix;
             }
 
-            inline constexpr bool rel_matrix::operator==(const rel_matrix& rhs) const noexcept {
-                return _Matrix == rhs._Matrix;
+			inline constexpr bool operator==(const rel_matrix& lhs, const rel_matrix& rhs) noexcept {
+                return lhs._Matrix == rhs._Matrix;
             }
 
             inline constexpr revert_matrix::revert_matrix() noexcept {}
 
-            inline constexpr bool revert_matrix::operator==(const revert_matrix&) const noexcept {
+			inline constexpr bool operator==(const revert_matrix&, const revert_matrix&) noexcept {
                 return true;
             }
 
@@ -706,8 +706,8 @@ namespace std::experimental::io2d {
                 return _Data;
             }
 
-            inline constexpr bool abs_line::operator==(const abs_line& rhs) const noexcept {
-                return _Data == rhs._Data;
+			inline constexpr bool operator==(const abs_line& lhs, const abs_line& rhs) noexcept {
+                return lhs._Data == rhs._Data;
             }
 
             inline constexpr rel_line::rel_line(const point_2d& to) noexcept
@@ -723,8 +723,8 @@ namespace std::experimental::io2d {
                 return _Data;
             }
 
-            inline constexpr bool rel_line::operator==(const rel_line& rhs) const noexcept {
-                return _Data == rhs._Data;
+			inline constexpr bool operator==(const rel_line& lhs, const rel_line& rhs) noexcept {
+                return lhs._Data == rhs._Data;
             }
 
             inline constexpr abs_quadratic_curve::abs_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept
@@ -747,9 +747,9 @@ namespace std::experimental::io2d {
                 return _End_pt;
             }
 
-            inline constexpr bool abs_quadratic_curve::operator==(const abs_quadratic_curve& rhs) const noexcept {
-                return (_Control_pt == rhs._Control_pt) &&
-                    (_End_pt == rhs._End_pt);
+			inline constexpr bool operator==(const abs_quadratic_curve& lhs, const abs_quadratic_curve& rhs) noexcept {
+                return (lhs._Control_pt == rhs._Control_pt) &&
+                    (lhs._End_pt == rhs._End_pt);
             }
 
             inline constexpr rel_quadratic_curve::rel_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept
@@ -772,9 +772,9 @@ namespace std::experimental::io2d {
                 return _End_pt;
             }
 
-            inline constexpr bool rel_quadratic_curve::operator==(const rel_quadratic_curve& rhs) const noexcept {
-                return (_Control_pt == rhs._Control_pt) &&
-                    (_End_pt == rhs._End_pt);
+			inline constexpr bool operator==(const rel_quadratic_curve& lhs, const rel_quadratic_curve& rhs) noexcept {
+                return (lhs._Control_pt == rhs._Control_pt) &&
+                    (lhs._End_pt == rhs._End_pt);
             }
 
             inline constexpr abs_cubic_curve::abs_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept
@@ -804,10 +804,10 @@ namespace std::experimental::io2d {
                 return _End_pt;
             }
 
-            inline constexpr bool abs_cubic_curve::operator==(const abs_cubic_curve& rhs) const noexcept {
-                return (_Control_pt1 == rhs._Control_pt1) &&
-                    (_Control_pt2 == rhs._Control_pt2) &&
-                    (_End_pt == rhs._End_pt);
+			inline constexpr bool operator==(const abs_cubic_curve& lhs, const abs_cubic_curve& rhs) noexcept {
+                return (lhs._Control_pt1 == rhs._Control_pt1) &&
+                    (lhs._Control_pt2 == rhs._Control_pt2) &&
+                    (lhs._End_pt == rhs._End_pt);
             }
 
             inline constexpr rel_cubic_curve::rel_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept
@@ -837,10 +837,10 @@ namespace std::experimental::io2d {
                 return _End_pt;
             }
 
-            inline constexpr bool rel_cubic_curve::operator==(const rel_cubic_curve& rhs) const noexcept {
-                return (_Control_pt1 == rhs._Control_pt1) &&
-                    (_Control_pt2 == rhs._Control_pt2) &&
-                    (_End_pt == rhs._End_pt);
+			inline constexpr bool operator==(const rel_cubic_curve& lhs, const rel_cubic_curve& rhs) noexcept {
+                return (lhs._Control_pt1 == rhs._Control_pt1) &&
+                    (lhs._Control_pt2 == rhs._Control_pt2) &&
+                    (lhs._End_pt == rhs._End_pt);
             }
 
             inline constexpr arc::arc() noexcept
@@ -888,12 +888,16 @@ namespace std::experimental::io2d {
                 return cpt + pt * lmtx;
             }
 
-            inline constexpr bool arc::operator==(const arc& rhs) const noexcept {
-                return (_Radius == rhs._Radius) &&
-                    (_Rotation == rhs._Rotation) &&
-                    (_Start_angle == rhs._Start_angle);
+			inline constexpr bool operator==(const arc& lhs, const arc& rhs) noexcept {
+                return (lhs._Radius == rhs._Radius) &&
+                    (lhs._Rotation == rhs._Rotation) &&
+                    (lhs._Start_angle == rhs._Start_angle);
             }
-        }
+
+			inline constexpr bool operator!=(const arc& lhs, const arc& rhs) noexcept {
+				return !(lhs == rhs);
+			}
+		}
 
 		enum class _Path_data_abs_new_path {};
 		constexpr static _Path_data_abs_new_path _Path_data_abs_new_path_val = {};

@@ -20,7 +20,7 @@ namespace std {
 					return image_surface(fmt, width, height);
 				}
 
-				image_surface make_image_surface(image_surface& sfc) {
+				image_surface copy_image_surface(image_surface& sfc) noexcept {
 					image_surface retval(sfc.format(), sfc.width(), sfc.height());
 					retval.map([&sfc](mapped_surface& rvms) {
 						sfc.map([&rvms](mapped_surface& sfcms) {

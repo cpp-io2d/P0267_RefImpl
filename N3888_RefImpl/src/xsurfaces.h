@@ -70,12 +70,6 @@ namespace std::experimental::io2d {
 			hsl_luminosity
 		};
 
-		enum class refresh_rate {
-			as_needed,
-			as_fast_as_possible,
-			fixed
-		};
-
 		enum class image_file_format {
 			unknown,
 			png,

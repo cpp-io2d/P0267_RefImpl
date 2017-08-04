@@ -76,17 +76,21 @@ namespace std::experimental::io2d {
         _IO2D_API int format_stride_for_width(format format, int width) noexcept;
         _IO2D_API display_surface make_display_surface(int preferredWidth,
 			int preferredHeight, format preferredFormat,
-			scaling scl = scaling::letterbox);
+			scaling scl = scaling::letterbox,
+			refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 		display_surface make_display_surface(int preferredWidth,
 			int preferredHeight, format preferredFormat, error_code& ec,
-			scaling scl = scaling::letterbox) noexcept;
+			scaling scl = scaling::letterbox,
+			refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
         _IO2D_API display_surface make_display_surface(int preferredWidth,
 			int preferredHeight, format preferredFormat, int preferredDisplayWidth,
-			int preferredDisplayHeight, scaling scl = scaling::letterbox);
+			int preferredDisplayHeight, scaling scl = scaling::letterbox,
+			refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 		display_surface make_display_surface(int preferredWidth,
 			int preferredHeight, format preferredFormat, int preferredDisplayWidth,
 			int preferredDisplayHeight, error_code& ec,
-			scaling scl = scaling::letterbox) noexcept;
+			scaling scl = scaling::letterbox,
+			refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
         _IO2D_API image_surface make_image_surface(format format, int width, int height);
         _IO2D_API image_surface make_image_surface(format format, int width, int height,
 			error_code& ec) noexcept;

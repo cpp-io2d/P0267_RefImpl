@@ -11,7 +11,7 @@ namespace rocks_in_space
 	using vel = point_2d;
 	using acc = point_2d;
 
-	using path_vertices = std::array<point_2d, 13>;
+	using path_vertices = std::array<point_2d, 14>;
 
 	struct path_buffer
 	{

@@ -105,7 +105,7 @@ void test_image_load_save(display_surface& ds) {
 		saveOnce = true;
 	}
 
-	brush imgBrush{ make_image_surface(imgSfc) };
+	brush imgBrush{ copy_image_surface(imgSfc) };
 	//brush alphaBrush{ make_image_surface(alphaSfc) };
 
 	ds.paint(brush{ rgba_color::cornflower_blue });
