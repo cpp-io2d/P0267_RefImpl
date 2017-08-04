@@ -112,49 +112,49 @@ namespace std::experimental::io2d {
 
         // color
 
-        constexpr rgba_color::rgba_color() noexcept { }
+        inline constexpr rgba_color::rgba_color() noexcept { }
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        constexpr rgba_color::rgba_color(T r, T g, T b, T a)
+        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a)
             : _R(static_cast<float>(::std::min<float>(::std::max<float>((r / 255.0F), 0.0F), 1.0F)))
             , _G(static_cast<float>(::std::min<float>(::std::max<float>((g / 255.0F), 0.0F), 1.0F)))
             , _B(static_cast<float>(::std::min<float>(::std::max<float>((b / 255.0F), 0.0F), 1.0F)))
             , _A(static_cast<float>(::std::min<float>(::std::max<float>((a / 255.0F), 0.0F), 1.0F))) { }
         template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
-        constexpr rgba_color::rgba_color(T r, T g, T b, T a)
+        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a)
             : _R(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(r), 0.0F), 1.0F)))
             , _G(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(g), 0.0F), 1.0F)))
             , _B(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(b), 0.0F), 1.0F)))
             , _A(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(a), 0.0F), 1.0F))) {
         }
 
-        constexpr void rgba_color::r(float val) noexcept {
+        inline constexpr void rgba_color::r(float val) noexcept {
             _R = val * _A;
         }
-        constexpr void rgba_color::g(float val) noexcept {
+        inline constexpr void rgba_color::g(float val) noexcept {
             _G = val * _A;
         }
-        constexpr void rgba_color::b(float val) noexcept {
+        inline constexpr void rgba_color::b(float val) noexcept {
             _B = val * _A;
         }
-        constexpr void rgba_color::a(float val) noexcept {
+        inline constexpr void rgba_color::a(float val) noexcept {
             _A = val;
         }
 
-        constexpr float rgba_color::r() const noexcept {
+        inline constexpr float rgba_color::r() const noexcept {
             return _R;
         }
-        constexpr float rgba_color::g() const noexcept {
+        inline constexpr float rgba_color::g() const noexcept {
             return _G;
         }
-        constexpr float rgba_color::b() const noexcept {
+        inline constexpr float rgba_color::b() const noexcept {
             return _B;
         }
-        constexpr float rgba_color::a() const noexcept {
+        inline constexpr float rgba_color::a() const noexcept {
             return _A;
         }
 
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        constexpr rgba_color& rgba_color::operator*=(T rhs) {
+        inline constexpr rgba_color& rgba_color::operator*=(T rhs) {
             r(::std::min(r() * rhs / 255.0F, 1.0F));
             g(::std::min(g() * rhs / 255.0F, 1.0F));
             b(::std::min(b() * rhs / 255.0F, 1.0F));
@@ -162,7 +162,7 @@ namespace std::experimental::io2d {
             return *this;
         }
         template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating>>
-        constexpr rgba_color& rgba_color::operator*=(U rhs) {
+        inline constexpr rgba_color& rgba_color::operator*=(U rhs) {
             r(::std::min(r() * rhs, 1.0F));
             g(::std::min(g() * rhs, 1.0F));
             b(::std::min(b() * rhs, 1.0F));
@@ -247,6 +247,10 @@ namespace std::experimental::io2d {
 			}
 			return v;
 		}
+
+        inline constexpr point_2d point_2d::zero() noexcept {
+            return { 0.0f, 0.0f };
+        }
 
 		inline point_2d point_2d::to_unit() const noexcept {
 			auto leng = magnitude();
@@ -338,7 +342,49 @@ namespace std::experimental::io2d {
 			return point_2d{ lhs.x / rhs.x, lhs.y / rhs.y };
 		}
 
-		inline constexpr matrix_2d& matrix_2d::translate(point_2d value) noexcept {
+        inline constexpr matrix_2d::matrix_2d() noexcept
+            : matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f) {}
+        
+        inline constexpr matrix_2d::matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept
+            : m00(v00)
+            , m01(v01)
+            , m02(0.0f)
+            , m10(v10)
+            , m11(v11)
+            , m12(0.0f)
+            , m20(v20)
+            , m21(v21)
+            , m22(1.0f) {
+        }
+        
+        inline constexpr matrix_2d matrix_2d::init_translate(const point_2d& value) noexcept {
+            return{ 1.0F, 0.0F, 0.0F, 1.0F, value.x, value.y };
+        }
+        inline constexpr matrix_2d matrix_2d::init_scale(const point_2d& value) noexcept {
+            return{ value.x, 0.0F, 0.0F, value.y, 0.0F, 0.0F };
+        }
+        inline matrix_2d matrix_2d::init_rotate(float radians) noexcept {
+            auto sine = sin(radians);
+            auto cosine = cos(radians);
+            sine = _Round_floating_point_to_zero(sine);
+            cosine = _Round_floating_point_to_zero(cosine);
+            return{ cosine, -sine, sine, cosine, 0.0F, 0.0F };
+        }
+        inline matrix_2d matrix_2d::init_reflect(float radians) noexcept {
+            auto sine = sin(radians * 2.0F);
+            auto cosine = cos(radians * 2.0F);
+            sine = _Round_floating_point_to_zero(sine);
+            cosine = _Round_floating_point_to_zero(cosine);
+            return{ cosine, sine, sine, -cosine, 0.0F, 0.0F };
+        }
+        inline constexpr matrix_2d matrix_2d::init_shear_x(float factor) noexcept {
+            return{ 1.0F, 0.0F, factor, 1.0F, 0.0F, 0.0F };
+        }
+        inline constexpr matrix_2d matrix_2d::init_shear_y(float factor) noexcept {
+            return{ 1.0F, factor, 0.0F, 1.0F, 0.0F, 0.0F };
+        }
+
+        inline constexpr matrix_2d& matrix_2d::translate(point_2d value) noexcept {
 			*this = *this * init_translate(value);
 			return *this;
 		}

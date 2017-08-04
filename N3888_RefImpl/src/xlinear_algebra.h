@@ -18,9 +18,7 @@ namespace std::experimental::io2d {
 			constexpr float magnitude_squared() const noexcept;
 			float angular_direction() const noexcept;
 			point_2d to_unit() const noexcept;
-			constexpr static point_2d zero() noexcept {
-				return { 0.0f, 0.0f };
-			}
+            constexpr static point_2d zero() noexcept;
 
 			// \ref{\iotwod.\pointtwod.member.ops}, member operators:
 			constexpr point_2d& operator+=(const point_2d& rhs) noexcept;
@@ -45,19 +43,8 @@ namespace std::experimental::io2d {
 
 		class matrix_2d {
 		public:
-			constexpr matrix_2d() noexcept
-				: matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f) {}
-			constexpr matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept
-				: m00(v00)
-				, m01(v01)
-				, m02(0.0f)
-				, m10(v10)
-				, m11(v11)
-				, m12(0.0f)
-				, m20(v20)
-				, m21(v21)
-				, m22(1.0f) {
-			}
+            constexpr matrix_2d() noexcept;
+            constexpr matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept;
 
 			float m00;
 			float m01;
@@ -70,32 +57,12 @@ namespace std::experimental::io2d {
 			float m22;
 
 			// \ref{\iotwod.\matrixtwod.staticfactories}, static factory functions:
-			constexpr static matrix_2d init_translate(const point_2d& value) noexcept {
-				return{ 1.0F, 0.0F, 0.0F, 1.0F, value.x, value.y };
-			}
-			constexpr static matrix_2d init_scale(const point_2d& value) noexcept {
-				return{ value.x, 0.0F, 0.0F, value.y, 0.0F, 0.0F };
-			}
-			static matrix_2d init_rotate(float radians) noexcept {
-				auto sine = sin(radians);
-				auto cosine = cos(radians);
-				sine = _Round_floating_point_to_zero(sine);
-				cosine = _Round_floating_point_to_zero(cosine);
-				return{ cosine, -sine, sine, cosine, 0.0F, 0.0F };
-			}
-			static matrix_2d init_reflect(float radians) noexcept {
-				auto sine = sin(radians * 2.0F);
-				auto cosine = cos(radians * 2.0F);
-				sine = _Round_floating_point_to_zero(sine);
-				cosine = _Round_floating_point_to_zero(cosine);
-				return{ cosine, sine, sine, -cosine, 0.0F, 0.0F };
-			}
-			constexpr static matrix_2d init_shear_x(float factor) noexcept {
-				return{ 1.0F, 0.0F, factor, 1.0F, 0.0F, 0.0F };
-			}
-			constexpr static matrix_2d init_shear_y(float factor) noexcept {
-				return{ 1.0F, factor, 0.0F, 1.0F, 0.0F, 0.0F };
-			}
+            constexpr static matrix_2d init_translate(const point_2d& value) noexcept;
+            constexpr static matrix_2d init_scale(const point_2d& value) noexcept;
+            static matrix_2d init_rotate(float radians) noexcept;
+            static matrix_2d init_reflect(float radians) noexcept;
+            constexpr static matrix_2d init_shear_x(float factor) noexcept;
+            constexpr static matrix_2d init_shear_y(float factor) noexcept;
 
 			// \ref{\iotwod.\matrixtwod.modifiers}, modifiers:
 			constexpr matrix_2d& translate(point_2d v) noexcept;
