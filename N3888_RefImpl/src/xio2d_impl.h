@@ -534,7 +534,7 @@ namespace std::experimental::io2d {
             , _Width(width)
             , _Height(height) {
         }
-        inline constexpr bounding_box::bounding_box(const point_2d& tl, const point_2d& br) noexcept
+        inline constexpr bounding_box::bounding_box(point_2d tl, point_2d br) noexcept
             : _X(tl.x)
             , _Y(tl.y)
             , _Width(::std::max(0.0F, br.x - tl.x))
@@ -553,11 +553,11 @@ namespace std::experimental::io2d {
         inline constexpr void bounding_box::height(float value) noexcept {
             _Height = value;
         }
-        inline constexpr void bounding_box::top_left(const point_2d& value) noexcept {
+        inline constexpr void bounding_box::top_left(point_2d value) noexcept {
             _X = value.x;
             _Y = value.y;
         }
-        inline constexpr void bounding_box::bottom_right(const point_2d& value) noexcept {
+        inline constexpr void bounding_box::bottom_right(point_2d value) noexcept {
             _Width = max(0.0F, value.x - _X);
             _Height = max(0.0F, value.y - _Y);
         }
@@ -576,22 +576,6 @@ namespace std::experimental::io2d {
 
         inline constexpr float bounding_box::height() const noexcept {
             return _Height;
-        }
-
-        inline constexpr float bounding_box::left() const noexcept {
-            return _X;
-        }
-
-        inline constexpr float bounding_box::right() const noexcept {
-            return _X + _Width;
-        }
-
-        inline constexpr float bounding_box::top() const noexcept {
-            return _Y;
-        }
-
-        inline constexpr float bounding_box::bottom() const noexcept {
-            return _Y + _Height;
         }
 
         inline constexpr point_2d bounding_box::top_left() const noexcept {
@@ -614,11 +598,11 @@ namespace std::experimental::io2d {
         inline constexpr circle::circle() noexcept
             : _Center()
             , _Radius() {}
-        inline constexpr circle::circle(const point_2d& ctr, float r) noexcept
+        inline constexpr circle::circle(point_2d ctr, float r) noexcept
             : _Center(ctr)
             , _Radius(r) {}
 
-        inline constexpr void circle::center(const point_2d& ctr) noexcept {
+        inline constexpr void circle::center(point_2d ctr) noexcept {
             _Center = ctr;
         }
         inline constexpr void circle::radius(float r) noexcept {
