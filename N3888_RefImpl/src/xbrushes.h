@@ -3,6 +3,8 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 
+		class image_surface;
+
 		enum class wrap_mode {
 			none,
 			repeat,

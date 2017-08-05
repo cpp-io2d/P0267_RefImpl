@@ -42,13 +42,16 @@
     <ClInclude Include="xpath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="xenumclasses.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="xbrushes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xsurfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xtext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xinput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

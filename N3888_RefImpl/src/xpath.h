@@ -373,11 +373,11 @@ namespace std::experimental::io2d {
 		};
 
 		// 8.17.8, specialized algorithms:
-		template <class Allocator>
+/*		template <class Allocator>
 		void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
 			noexcept(noexcept(lhs.swap(rhs))) {
 			lhs.swap(rhs);
-		}
+		}*/ // compiler error prevents forward declaration
 
 		template <class Allocator>
 		bool operator==(const path_builder<Allocator>& lhs,
@@ -385,10 +385,6 @@ namespace std::experimental::io2d {
 		template <class Allocator>
 		bool operator!=(const path_builder<Allocator>& lhs,
 			const path_builder<Allocator>& rhs) noexcept;
-
-		template <class Allocator>
-		void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
-			noexcept(noexcept(lhs.swap(rhs)));
 
 		class path_group {
 			::std::shared_ptr<cairo_path_t> _Cairo_path;
