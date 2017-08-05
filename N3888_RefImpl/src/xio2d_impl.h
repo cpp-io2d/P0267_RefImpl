@@ -2140,12 +2140,8 @@ namespace std::experimental::io2d {
 			return _Color;
 		}
 
-		inline constexpr bool gradient_stop::operator==(const gradient_stop& rhs) {
-			return _Offset == rhs._Offset && _Color == rhs._Color;
-		}
-
-		inline constexpr bool gradient_stop::operator!=(const gradient_stop& rhs) {
-			return !((*this) == rhs);
+		inline constexpr bool operator==(const gradient_stop& lhs, const gradient_stop& rhs) noexcept {
+			return lhs._Offset == rhs._Offset && lhs._Color == rhs._Color;
 		}
 
 		template <class InputIterator>

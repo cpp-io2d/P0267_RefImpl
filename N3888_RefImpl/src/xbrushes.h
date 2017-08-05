@@ -31,6 +31,7 @@ namespace std::experimental::io2d {
 		private:
 			float _Offset;
 			rgba_color _Color;
+			friend constexpr bool operator==(const gradient_stop& lhs, const gradient_stop& rhs) noexcept;
 		public:
 			constexpr gradient_stop() noexcept;
 			constexpr gradient_stop(float offset, const rgba_color& color);
@@ -40,10 +41,6 @@ namespace std::experimental::io2d {
 
 			constexpr float offset() const noexcept;
 			constexpr rgba_color color() const noexcept;
-
-			constexpr bool operator==(const gradient_stop& rhs);
-
-			constexpr bool operator!=(const gradient_stop& rhs);
 		};
 
 		constexpr bool operator==(const gradient_stop& lhs, const gradient_stop& rhs)
@@ -52,15 +49,13 @@ namespace std::experimental::io2d {
 			noexcept;
 
 		class brush {
-		public:
-			typedef cairo_pattern_t* native_handle_type;
-
-		private:
-			::std::shared_ptr<cairo_pattern_t> _Brush;
-			::std::shared_ptr<image_surface> _Image_surface;
+			shared_ptr<cairo_pattern_t> _Brush;
+			shared_ptr<image_surface> _Image_surface;
 			brush_type _Brush_type;
 
 		public:
+			typedef cairo_pattern_t* native_handle_type;
+
 			native_handle_type native_handle() const noexcept;
 
 			explicit brush(const rgba_color& c);
