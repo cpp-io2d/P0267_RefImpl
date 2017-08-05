@@ -30,34 +30,18 @@ namespace std::experimental::io2d {
 			float _Offset;
 			rgba_color _Color;
 		public:
-			constexpr gradient_stop() noexcept
-				: _Offset(0.0F)
-				, _Color(rgba_color{}) {}
-			constexpr gradient_stop(float offset, const rgba_color& color)
-				: _Offset(offset)
-				, _Color(color) {}
+			constexpr gradient_stop() noexcept;
+			constexpr gradient_stop(float offset, const rgba_color& color);
 
-			constexpr void offset(float value) noexcept {
-				_Offset = value;
-			}
-			constexpr void color(const rgba_color& value) noexcept {
-				_Color = value;
-			}
+			constexpr void offset(float value) noexcept;
+			constexpr void color(const rgba_color& value) noexcept;
 
-			constexpr float offset() const noexcept {
-				return _Offset;
-			}
-			constexpr rgba_color color() const noexcept {
-				return _Color;
-			}
+			constexpr float offset() const noexcept;
+			constexpr rgba_color color() const noexcept;
 
-			constexpr bool operator==(const gradient_stop& rhs) {
-				return _Offset == rhs._Offset && _Color == rhs._Color;
-			}
+			constexpr bool operator==(const gradient_stop& rhs);
 
-			constexpr bool operator!=(const gradient_stop& rhs) {
-				return !((*this) == rhs);
-			}
+			constexpr bool operator!=(const gradient_stop& rhs);
 		};
 
 		constexpr bool operator==(const gradient_stop& lhs, const gradient_stop& rhs)

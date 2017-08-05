@@ -2108,6 +2108,35 @@ namespace std::experimental::io2d {
 
         //Brushes
 
+		inline constexpr gradient_stop::gradient_stop() noexcept
+			: _Offset(0.0F)
+			, _Color(rgba_color{}) {}
+		inline constexpr gradient_stop::gradient_stop(float offset, const rgba_color& color)
+			: _Offset(offset)
+			, _Color(color) {}
+
+		inline constexpr void gradient_stop::offset(float value) noexcept {
+			_Offset = value;
+		}
+		inline constexpr void gradient_stop::color(const rgba_color& value) noexcept {
+			_Color = value;
+		}
+
+		inline constexpr float gradient_stop::offset() const noexcept {
+			return _Offset;
+		}
+		inline constexpr rgba_color gradient_stop::color() const noexcept {
+			return _Color;
+		}
+
+		inline constexpr bool gradient_stop::operator==(const gradient_stop& rhs) {
+			return _Offset == rhs._Offset && _Color == rhs._Color;
+		}
+
+		inline constexpr bool gradient_stop::operator!=(const gradient_stop& rhs) {
+			return !((*this) == rhs);
+		}
+
 		template <class InputIterator>
 		inline brush::brush(const point_2d& begin, const point_2d& end,
 			InputIterator first, InputIterator last)
