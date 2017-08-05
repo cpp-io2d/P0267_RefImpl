@@ -910,10 +910,10 @@ namespace std::experimental::io2d {
 			}
 		}
 
-		enum class _Path_data_abs_new_path {};
-		constexpr static _Path_data_abs_new_path _Path_data_abs_new_path_val = {};
-		enum class _Path_data_rel_new_path {};
-		constexpr static _Path_data_rel_new_path _Path_data_rel_new_path_val = {};
+		enum class _Path_data_abs_new_figure {};
+		constexpr static _Path_data_abs_new_figure _Path_data_abs_new_figure_val = {};
+		enum class _Path_data_rel_new_figure {};
+		constexpr static _Path_data_rel_new_figure _Path_data_rel_new_figure_val = {};
 		enum class _Path_data_close_path {};
 		constexpr static _Path_data_close_path _Path_data_close_path_val = {};
 		enum class _Path_data_abs_matrix {};
@@ -939,7 +939,7 @@ namespace std::experimental::io2d {
 
 		template <class _TItem>
 		struct _Path_group_perform_visit {
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_new_figure>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_new_figure>, _Path_data_abs_new_figure> = _Path_data_abs_new_figure_val>
 			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::abs_new_figure& item, point_2d& lastMoveToPoint) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt = item.at();
@@ -986,7 +986,7 @@ namespace std::experimental::io2d {
 			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::abs_quadratic_curve&, point_2d&) noexcept {
 				assert(false && "Abs quadratic curves should have been transformed into cubic curves already.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_new_figure>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_new_figure>, _Path_data_rel_new_figure> = _Path_data_rel_new_figure_val>
 			constexpr static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_new_figure&, point_2d&) noexcept {
 				assert(false && "Rel new path instructions should have been eliminated.");
 			}
@@ -1475,7 +1475,7 @@ namespace std::experimental::io2d {
 		struct _Path_item_interpret_visitor {
 			constexpr static float twoThirds = 2.0F / 3.0F;
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_new_figure>, _Path_data_abs_new_path> = _Path_data_abs_new_path_val>
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_new_figure>, _Path_data_abs_new_figure> = _Path_data_abs_new_figure_val>
 			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
 				const auto pt = m.transform_pt({ 0.0F, 0.0F }) + item.at();
 				v.emplace_back(::std::in_place_type<figure_items::abs_new_figure>, pt);
@@ -1483,7 +1483,7 @@ namespace std::experimental::io2d {
 				closePoint = pt;
 			}
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_new_figure>, _Path_data_rel_new_path> = _Path_data_rel_new_path_val>
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_new_figure>, _Path_data_rel_new_figure> = _Path_data_rel_new_figure_val>
 			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
 				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.

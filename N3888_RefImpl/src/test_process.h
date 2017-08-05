@@ -32,8 +32,8 @@
 //	constexpr change_origin_sfinae change_origin_sfinae_val = {};
 //	enum class close_path_sfinae {};
 //	constexpr close_path_sfinae close_path_sfinae_val = {};
-//	enum class new_path_sfinae {};
-//	constexpr new_path_sfinae new_path_sfinae_val = {};
+//	enum class new_figure_sfinae {};
+//	constexpr new_figure_sfinae new_figure_sfinae_val = {};
 //	enum class rel_cubic_curve_sfinae {};
 //	constexpr rel_cubic_curve_sfinae rel_cubic_curve_sfinae_val = {};
 //	enum class rel_ellipse_sfinae {};
@@ -301,7 +301,7 @@
 //				currentPoint = invM.transform_pt(closePoint - origin) + origin;
 //			}
 //		}
-//		template <class T, enable_if_t<is_same_v<T, path_data::new_path>, new_path_sfinae> = new_path_sfinae_val>
+//		template <class T, enable_if_t<is_same_v<T, path_data::new_figure>, new_figure_sfinae> = new_figure_sfinae_val>
 //		static void perform(const T&, vector<path_data::path_data_types>&, matrix_2d&, point_2d&, optional<point_2d>& currentPoint, point_2d&) {
 //			currentPoint.reset();
 //		}

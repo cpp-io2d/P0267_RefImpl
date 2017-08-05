@@ -10,7 +10,7 @@ namespace brush_test {
 		brush foreBrush{ rgba_color::white };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
-		pb.new_path({ 80.0, 20.0 });
+		pb.new_figure({ 80.0, 20.0 });
 		pb.line({ 220.0, 20.0 });
 		pb.rel_line({ 60.0, 160.0 });
 		pb.rel_line({ -260.0, 0.0 });

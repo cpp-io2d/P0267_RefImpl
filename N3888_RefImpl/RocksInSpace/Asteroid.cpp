@@ -41,7 +41,7 @@ void rocks_in_space::asteroid::draw(std::experimental::io2d::display_surface& ds
 	auto path = path_builder<>{};
 	path.clear();
 	auto v = m_physics.position() + (m_path.m_vertices[0]);
-	path.new_path(screen_space(v));
+	path.new_figure(screen_space(v));
 	std::for_each(&m_path.m_vertices[1], &m_path.m_vertices[m_path.m_count], [&](const auto& vert)
 	{
 		v += vert;

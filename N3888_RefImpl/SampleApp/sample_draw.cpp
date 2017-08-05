@@ -43,7 +43,7 @@ void sample_draw::operator()(display_surface& ds) {
 	draw_radial_circles(ds);
 	//ds.paint(rgba_color::cornflower_blue());
 	//path_builder<> pf;
-	//pf.new_path();
+	//pf.new_figure();
 	////static auto previousTime = steady_clock::now();
 	////auto currentTime = steady_clock::now();
 	////auto elapsedTime = currentTime - previousTime;
@@ -56,7 +56,7 @@ void sample_draw::operator()(display_surface& ds) {
 	//static_assert(intColor.r() == 1.0F, "Huh integral?");
 
 	//path_builder<> pb;
-	//pb.new_path();
+	//pb.new_figure();
 	//pb.bounding_box({ 30.0F, 30.0F, 800.0F, 600.0F });
 	//ds.paint(brush{ rgba_color::cornflower_blue() });
 
@@ -306,10 +306,10 @@ void test_path_functionality(display_surface& ds) {
 	// Clear to background color.
 	ds.paint(brush{ rgba_color::cornflower_blue });
 	path_builder<> pf{};
-	//void new_path(const point_2d& pt) noexcept;
+	//void new_figure(const point_2d& pt) noexcept;
 	point_2d v, cpt1, cpt2, ept;
 	v = { 10.0F, 10.0F };
-	pf.new_path(v);
+	pf.new_figure(v);
 	//void rel_new_figure(const point_2d& dpt) noexcept;
 	v = { 30.0F, 0.0F };
 	pf.rel_new_figure(v);
@@ -322,13 +322,13 @@ void test_path_functionality(display_surface& ds) {
 	//void close_figure() noexcept;
 	pf.close_figure();
 
-	pf.new_path({ 50.0F, 50.0F });
+	pf.new_figure({ 50.0F, 50.0F });
 	pf.line({ 1240.0F, 50.0F });
-	pf.new_path({ 50.0F, 80.0F });
+	pf.new_figure({ 50.0F, 80.0F });
 	pf.line({ 900.0F, 80.0F });
-	//void new_path() noexcept;
+	//void new_figure() noexcept;
 	v = { 200.0F, 20.0F };
-	pf.new_path(v);
+	pf.new_figure(v);
 	////pf.move_to(v);
 	//pf.line(v); // Should behave as a move_to.
 	cpt1 = { 300.0F, 60.0F };
@@ -337,21 +337,21 @@ void test_path_functionality(display_surface& ds) {
 	pf.cubic_curve(cpt1, cpt2, ept);
 
 	v = { 30.0F, 300.0F };
-	pf.new_path(v);
+	pf.new_figure(v);
 	point_2d qcpt = { 100.0F, 230.0F };
 	ept = { 170.0F, 300.0F };
 	pf.quadratic_curve(qcpt, ept);
 
-	//pf.new_path({ 600.0F, 100.0F });
+	//pf.new_figure({ 600.0F, 100.0F });
 	//pf.arc_clockwise(circle{ { 600.0F, 100.0F }, 50.0F }, 0.0F, half_pi<float>);
-	//pf.new_path({ 600.0F, 100.0F });
+	//pf.new_figure({ 600.0F, 100.0F });
 	//pf.arc_clockwise(circle{ { 600.0F, 100.0F }, 50.0F }, 0.0F, half_pi<float>);
-	//pf.new_path({ 600.0F, 300.0F });
+	//pf.new_figure({ 600.0F, 300.0F });
 	//pf.arc_counterclockwise(circle{ { 600.0F, 300.0F }, 50.0F }, 0.0F, half_pi<float>);
-	//pf.new_path({ 300.0F, 300.0F });
+	//pf.new_figure({ 300.0F, 300.0F });
 	//pf.arc_clockwise(circle{ { 300.0F, 300.0F }, 50.0F }, 0.0F, two_pi<float>);
 
-	//pf.new_path({ 500.0F, 300.0F });
+	//pf.new_figure({ 500.0F, 300.0F });
 	//pf.transform_matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F));
 	//pf.rel_line({ 200.0F, 0.0F });
 	//pf.rel_line({ 0.0F, 100.0F });
@@ -363,13 +363,13 @@ void test_path_functionality(display_surface& ds) {
 
 	pf.clear();
 
-	//pf.new_path({ 200.0F, 200.0F });
+	//pf.new_figure({ 200.0F, 200.0F });
 	////pf.transform_matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F));
 	//pf.ellipse({ { 200.0F, 200.0F },{ 80.0F, 40.0F } });
-	//pf.new_path({ 400.0F, 200.0F });
+	//pf.new_figure({ 400.0F, 200.0F });
 	//pf.rel_ellipse({ { 200.0F, 0.0F },{ 80.0F, 40.0F } });
 	//pf.transform_matrix(matrix_2d{});
-	//pf.new_path({ 200.0F, 0.0F });
+	//pf.new_figure({ 200.0F, 0.0F });
 	//pf.line({ 200.0F, 800.0F });
 }
 
@@ -385,19 +385,19 @@ void draw_radial_circles(display_surface& ds) {
 
 	path_builder<> pf;
 	//pf.bounding_box({ { 100.0F, 100.0F }, { 500.0F, 500.0F } });
-	pf.new_path({ 100.0F, 100.0F });
+	pf.new_figure({ 100.0F, 100.0F });
 	pf.line({ 500.0F, 100.0F });
 	pf.matrix(matrix_2d::init_shear_x(0.25F));
 	pf.line({ 500.0F, 500.0F });
 	pf.close_figure();
 	pf.matrix(matrix_2d());
 	pf.line({ 50.0F, 150.0F });
-	pf.new_path({ 520.0F, 520.0F });
+	pf.new_figure({ 520.0F, 520.0F });
 	pf.line({ 600.0F, 600.0F });
 	pf.matrix(matrix_2d::init_scale({ 2.0F, 1.0F }));
 	//pf.arc_clockwise({ 300.0F, 700.0F }, 100.0F, three_pi_over_two<float>, two_pi<float>);
 	pf.matrix(matrix_2d());
-	pf.new_path({ 520.0F, 10.0F });
+	pf.new_figure({ 520.0F, 10.0F });
 	pf.cubic_curve({ 480.0F, 60.0F }, { 560.0F, 60.0F }, { 520.0F, 10.0F });
 	path_group p(pf);
 	//ds.path_group(p);
@@ -417,15 +417,15 @@ void draw_radial_circles(display_surface& ds) {
 	//ds.brush(brush(rgba_color::red()));
 	ds.stroke(brush{ rgba_color::red }, p);
 	pf.clear();
-	//pf.new_path({ 900.0F, 200.0F });
+	//pf.new_figure({ 900.0F, 200.0F });
 	//pf.arc_clockwise({ 900.0F, 200.0F }, 50.0F, 0.0F, two_pi<float>);
-	//pf.new_path({ 900.0F, 200.0F });
+	//pf.new_figure({ 900.0F, 200.0F });
 	//pf.arc_counterclockwise({ 900.0F, 200.0F }, 75.0F, 0.0F, two_pi<float>);
-	//pf.new_path({ 900.0F, 200.0F });
+	//pf.new_figure({ 900.0F, 200.0F });
 	//pf.arc_clockwise({ 900.0F, 200.0F }, 100.0F, 0.0F, two_pi<float>);
-	//pf.new_path({ 900.0F, 200.0F });
+	//pf.new_figure({ 900.0F, 200.0F });
 	//pf.arc_counterclockwise({ 900.0F, 200.0F }, 125.0F, 0.0F, two_pi<float>);
-	//pf.new_path({ 900.0F, 200.0F });
+	//pf.new_figure({ 900.0F, 200.0F });
 	//pf.arc_clockwise({ 900.0F, 200.0F }, 150.0F, 0.0F, two_pi<float>);
 	p = path_group(pf);
 	//ds.path_group(p);

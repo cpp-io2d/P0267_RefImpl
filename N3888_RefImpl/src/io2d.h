@@ -254,20 +254,24 @@ namespace std {
 
 				display_surface make_display_surface(int preferredWidth,
 					int preferredHeight, format preferredFormat,
-					scaling scl = scaling::letterbox);
+					scaling scl = scaling::letterbox,
+					refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 
 				display_surface make_display_surface(int preferredWidth,
 					int preferredHeight, format preferredFormat, error_code& ec,
-					scaling scl = scaling::letterbox) noexcept;
+					scaling scl = scaling::letterbox,
+					refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 
 				display_surface make_display_surface(int preferredWidth,
 					int preferredHeight, format preferredFormat, int preferredDisplayWidth,
-					int preferredDisplayHeight, scaling scl = scaling::letterbox);
+					int preferredDisplayHeight, scaling scl = scaling::letterbox,
+					refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 
 				display_surface make_display_surface(int preferredWidth,
 					int preferredHeight, format preferredFormat, int preferredDisplayWidth,
 					int preferredDisplayHeight, error_code& ec,
-					scaling scl = scaling::letterbox) noexcept;
+					scaling scl = scaling::letterbox,
+					refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 
 				image_surface make_image_surface(format format, int width, int height);
 

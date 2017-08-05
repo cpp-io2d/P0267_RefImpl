@@ -52,20 +52,20 @@ bool rocks_in_space::intersects(const bounding_box& a, const bounding_box& b)
 {
 	return contains(a, b.top_left()) ||
 		contains(a, b.bottom_right()) ||
-		contains(a, point_2d(b.top(), b.right())) ||
-		contains(a, point_2d(b.bottom(), b.left())) ||
+		contains(a, point_2d(b.y(), b.x() + b.width())) ||
+		contains(a, point_2d(b.y() + b.height(), b.x())) ||
 		contains(b, a.top_left()) ||
 		contains(b, a.bottom_right()) ||
-		contains(b, point_2d(a.top(), a.right())) ||
-		contains(b, point_2d(a.bottom(), a.left()));
+		contains(b, point_2d(a.y(), a.x() + a.width())) ||
+		contains(b, point_2d(a.y() + a.height(), a.x()));
 }
 
 bool rocks_in_space::contains(const bounding_box& r, const point_2d& p)
 {
-	return p.x >= r.left() &&
-		p.x <= r.right() &&
-		p.y >= r.top() &&
-		p.y <= r.bottom();
+	return p.x >= r.x() &&
+		p.x <= r.x() + r.width() &&
+		p.y >= r.y() &&
+		p.y <= r.y() + r.height();
 }
 
 float rocks_in_space::radius(const bounding_box& r)
