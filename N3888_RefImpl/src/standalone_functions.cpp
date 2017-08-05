@@ -56,7 +56,7 @@ namespace std {
 					return result;
 				}
 
-				float angle_for_point(point_2d ctr, point_2d pt) noexcept {
+				float angle_for_point(point_2d ctr, point_2d pt, point_2d) noexcept {
 					auto xDiff = pt.x - ctr.x;
 					auto yDiff = -(pt.y - ctr.y);
 					auto angle = atan2(yDiff, xDiff);
