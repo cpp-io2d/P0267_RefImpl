@@ -143,7 +143,7 @@ namespace std::experimental::io2d {
 		};
 
 		class clip_props {
-			path_group _Clip;
+			interpreted_path _Clip;
 			experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
 		public:
 			clip_props() noexcept = default;
@@ -151,7 +151,7 @@ namespace std::experimental::io2d {
 			explicit clip_props(const path_builder<Allocator> &pf,
 				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
 
-			explicit clip_props(const path_group& pg,
+			explicit clip_props(const interpreted_path& pg,
 				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept;
 
 			explicit clip_props(const bounding_box& r,
@@ -160,11 +160,11 @@ namespace std::experimental::io2d {
 			template <class Allocator>
 			void clip(const path_builder<Allocator>& pf);
 
-			void clip(const path_group& pg) noexcept;
+			void clip(const interpreted_path& pg) noexcept;
 
 			void fill_rule(experimental::io2d::fill_rule fr);
 
-			path_group clip() const noexcept;
+			interpreted_path clip() const noexcept;
 
 			experimental::io2d::fill_rule fill_rule() const noexcept;
 		};
@@ -266,13 +266,13 @@ namespace std::experimental::io2d {
 			_IO2D_API void paint(const brush& b, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
 			void fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
-			_IO2D_API void fill(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			_IO2D_API void fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
 			void stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
-			_IO2D_API void stroke(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			_IO2D_API void stroke(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
 			void mask(const brush& b, const brush& mb, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>&rp = nullopt, const optional<clip_props>& cl = nullopt);
-			_IO2D_API void mask(const brush& b, const brush& mb, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			_IO2D_API void mask(const brush& b, const brush& mb, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 		};
 
 		class image_surface : public surface {

@@ -338,30 +338,25 @@ namespace std::experimental::io2d {
 		}*/ // compiler error prevents forward declaration
 
 		class interpreted_path {
+			shared_ptr<cairo_path_t> _Cairo_path;
 		public:
+			using _Native_handle_type = cairo_path*;
+			_Native_handle_type _Native_handle() const noexcept;
+			// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
+			constexpr interpreted_path() noexcept;
 			template <class Allocator>
-			explicit interpreted_path(const path_builder<Allocator>& pb);
+			explicit interpreted_path(const path_builder<Allocator>& p);
+			//template <class Allocator>
+			//interpreted_path(const path_builder<Allocator>& p, std::error_code& ec) noexcept;
 			template <class ForwardIterator>
 			interpreted_path(ForwardIterator first, ForwardIterator last);
-		};
-
-		class path_group {
-			::std::shared_ptr<cairo_path_t> _Cairo_path;
-		public:
-			using native_handle_type = cairo_path*;
-			// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
-			path_group() noexcept = default;
-			template <class Allocator>
-			explicit path_group(const path_builder<Allocator>& p);
-			template <class Allocator>
-			path_group(const path_builder<Allocator>& p, std::error_code& ec) noexcept;
-
-			native_handle_type native_handle() {
-				return _Cairo_path.get();
-			}
-			const cairo_path* native_handle() const {
-				return _Cairo_path.get();
-			}
+			//template <class ForwardIterator>
+			//interpreted_path(ForwardIterator first, ForwardIterator last, error_code& ec) noexcept;
+			interpreted_path(const interpreted_path& other) noexcept;
+			interpreted_path& operator=(const interpreted_path& other) noexcept;
+			interpreted_path(interpreted_path&& other) noexcept;
+			interpreted_path& operator=(interpreted_path&& other) noexcept;
+			~interpreted_path() noexcept;
 		};
 
 	}

@@ -1038,18 +1038,17 @@ namespace std::experimental::io2d {
 		//template <class Allocator>
 		//::std::vector<figure_items::path_data_types> _Interpret_path_items(const path_builder<Allocator>&, ::std::error_code&) noexcept;
 
+		inline interpreted_path::_Native_handle_type interpreted_path::_Native_handle() const noexcept {
+			return _Cairo_path.get();
+		}
+
+		inline constexpr interpreted_path::interpreted_path() noexcept
+			: _Cairo_path() {}
+
 		template <class Allocator>
-		inline path_group::path_group(const path_builder<Allocator>& pf)
-			: _Cairo_path(new cairo_path_t, [](cairo_path_t* path) {
-			if (path != nullptr) {
-				if (path->data != nullptr) {
-					delete[] path->data;
-					path->data = nullptr;
-					path->status = CAIRO_STATUS_NULL_POINTER;
-				}
-				delete path;
-				path = nullptr;
-			}
+		inline interpreted_path::interpreted_path(const path_builder<Allocator>& pf)
+			: _Cairo_path(new cairo_path_t, [](cairo_path_t*) {
+			// This deleter intentionally left blank. The dtor will deal with this.
 		}) {
 			auto processedVec = _Interpret_path_items<Allocator>(pf);
 			::std::vector<cairo_path_data_t> vec;
@@ -1069,30 +1068,46 @@ namespace std::experimental::io2d {
 			_Cairo_path->status = CAIRO_STATUS_SUCCESS;
 		}
 
-		template<class Allocator>
-		inline path_group::path_group(const path_builder<Allocator>& pf, ::std::error_code& ec) noexcept
-			: _Cairo_path(new cairo_path_t, [](cairo_path_t* path) {
-			if (path != nullptr) {
-				if (path->data != nullptr) {
-					delete[] path->data;
-					path->data = nullptr;
-					path->status = CAIRO_STATUS_NULL_POINTER;
-				}
-				delete path;
-				path = nullptr;
-			}
+		//template<class Allocator>
+		//inline interpreted_path::interpreted_path(const path_builder<Allocator>& pf, ::std::error_code& ec) noexcept
+		//	: _Cairo_path(new cairo_path_t, [](cairo_path_t*) {
+		//	// This deleter intentionally left blank. The dtor will deal with this.
+		//}) {
+		//	auto processedVec = _Interpret_path_items<Allocator>(pf, ec);
+		//	if (static_cast<bool>(ec)) {
+		//		return;
+		//	}
+
+		//	::std::vector<cairo_path_data_t> vec;
+
+		//	for (const auto& val : processedVec) {
+		//		::std::visit([&vec](auto&& item) {
+		//			using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
+		//			_Path_group_perform_visit<T>::template _Perform<T>(vec, item);
+		//		}, val);
+		//	}
+		//	_Cairo_path->num_data = static_cast<int>(vec.size());
+		//	const auto numDataST = vec.size();
+		//	_Cairo_path->data = new cairo_path_data_t[numDataST];
+		//	for (size_t currItemIndex = 0; currItemIndex < numDataST; currItemIndex++) {
+		//		_Cairo_path->data[currItemIndex] = vec[currItemIndex];
+		//	}
+		//	_Cairo_path->status = CAIRO_STATUS_SUCCESS;
+		//	ec.clear();
+		//}
+
+		template <class ForwardIterator>
+		inline interpreted_path::interpreted_path(ForwardIterator first, ForwardIterator last)
+			: _Cairo_path(new cairo_path_t, [](cairo_path_t*) {
+			// This deleter intentionally left blank. The dtor will deal with this.
 		}) {
-			auto processedVec = _Interpret_path_items<Allocator>(pf, ec);
-			if (static_cast<bool>(ec)) {
-				return;
-			}
-
+			auto processedVec = _Interpret_path_items<ForwardIterator>(first, last);
 			::std::vector<cairo_path_data_t> vec;
-
+			point_2d lastMoveToPoint;
 			for (const auto& val : processedVec) {
-				::std::visit([&vec](auto&& item) {
+				::std::visit([&vec, &lastMoveToPoint](auto&& item) {
 					using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-					_Path_group_perform_visit<T>::template _Perform<T>(vec, item);
+					_Path_group_perform_visit<T>::template _Perform<T>(vec, item, lastMoveToPoint);
 				}, val);
 			}
 			_Cairo_path->num_data = static_cast<int>(vec.size());
@@ -1102,7 +1117,38 @@ namespace std::experimental::io2d {
 				_Cairo_path->data[currItemIndex] = vec[currItemIndex];
 			}
 			_Cairo_path->status = CAIRO_STATUS_SUCCESS;
-			ec.clear();
+		}
+
+		inline interpreted_path::interpreted_path(const interpreted_path& other) noexcept
+			: _Cairo_path(other._Cairo_path) {}
+		inline interpreted_path& interpreted_path::operator=(const interpreted_path& other) noexcept {
+			_Cairo_path = other._Cairo_path;
+			return *this;
+		}
+		inline interpreted_path::interpreted_path(interpreted_path&& other) noexcept
+			: _Cairo_path(move(other._Cairo_path)) {
+			other._Cairo_path = nullptr;
+		}
+		inline interpreted_path& interpreted_path::operator=(interpreted_path&& other) noexcept {
+			if (this != &other) {
+				_Cairo_path = move(other._Cairo_path);
+				other._Cairo_path = nullptr;
+			}
+			return *this;
+		}
+
+		inline interpreted_path::~interpreted_path() noexcept {
+			auto path = _Cairo_path.get();
+			if (path != nullptr) {
+				if (path->data != nullptr) {
+					delete[] path->data;
+					path->data = nullptr;
+					path->status = CAIRO_STATUS_NULL_POINTER;
+				}
+				delete path;
+				path = nullptr;
+				_Cairo_path = nullptr;
+			}
 		}
 
 		inline cairo_antialias_t _Antialias_to_cairo_antialias_t(::std::experimental::io2d::antialias aa) {
@@ -1717,24 +1763,45 @@ namespace std::experimental::io2d {
 			}
 		};
 
+		template <class ForwardIterator>
+		inline ::std::vector<figure_items::figure_item> _Interpret_path_items(ForwardIterator first, ForwardIterator last);
+
 		template <class Allocator>
 		inline ::std::vector<figure_items::figure_item> _Interpret_path_items(const path_builder<Allocator>& pf) {
+			//matrix_2d m;
+			//point_2d currentPoint; // Tracks the untransformed current point.
+			//point_2d closePoint;   // Tracks the transformed close point.
+			//::std::stack<matrix_2d> matrices;
+			//::std::vector<figure_items::figure_item> v;
+
+			//for (const figure_items::figure_item& val : pf) {
+			//	::std::visit([&m, &currentPoint, &closePoint, &matrices, &v](auto&& item) {
+			//		using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
+			//		_Path_item_interpret_visitor<T>::template _Interpret<T>(item, v, m, currentPoint, closePoint, matrices);
+			//	}, val);
+			//}
+			//return v;
+			return _Interpret_path_items(begin(pf), end(pf));
+		}
+
+		template <class ForwardIterator>
+		inline ::std::vector<figure_items::figure_item> _Interpret_path_items(ForwardIterator first, ForwardIterator last) {
 			matrix_2d m;
 			point_2d currentPoint; // Tracks the untransformed current point.
 			point_2d closePoint;   // Tracks the transformed close point.
 			::std::stack<matrix_2d> matrices;
 			::std::vector<figure_items::figure_item> v;
 
-			for (const figure_items::figure_item& val : pf) {
+			for (auto val = first; val != last; val++) {
 				::std::visit([&m, &currentPoint, &closePoint, &matrices, &v](auto&& item) {
 					using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
 					_Path_item_interpret_visitor<T>::template _Interpret<T>(item, v, m, currentPoint, closePoint, matrices);
-				}, val);
+				}, *val);
 			}
 			return v;
 		}
 
-        template<class Allocator>
+		template<class Allocator>
         inline path_builder<Allocator>::path_builder() noexcept(noexcept(Allocator())) :
             path_builder(Allocator()) { }
         
@@ -2312,10 +2379,10 @@ namespace std::experimental::io2d {
 		template <class Allocator>
 		inline clip_props::clip_props(const path_builder<Allocator> &pf,
 			experimental::io2d::fill_rule fr)
-			: _Clip(path_group(pf))
+			: _Clip(interpreted_path(pf))
 			, _Fill_rule(fr) { }
 
-		inline clip_props::clip_props(const path_group& pg,
+		inline clip_props::clip_props(const interpreted_path& pg,
 			experimental::io2d::fill_rule fr) noexcept
 			: _Clip(pg)
 			, _Fill_rule(fr) { }
@@ -2330,15 +2397,15 @@ namespace std::experimental::io2d {
 			clip.rel_line({ 0.0F, r.height() });
 			clip.rel_line({ -r.width(), 0.0F });
 			clip.close_figure();
-			_Clip = path_group(clip);
+			_Clip = interpreted_path(clip);
 		}
 
 		template <class Allocator>
 		inline void clip_props::clip(const path_builder<Allocator>& pf) {
-			_Clip = path_group(pf);
+			_Clip = interpreted_path(pf);
 		}
 
-		inline void clip_props::clip(const path_group& pg) noexcept {
+		inline void clip_props::clip(const interpreted_path& pg) noexcept {
 			_Clip = pg;
 		}
 
@@ -2346,7 +2413,7 @@ namespace std::experimental::io2d {
 			_Fill_rule = fr;
 		}
 
-		inline path_group clip_props::clip() const noexcept {
+		inline interpreted_path clip_props::clip() const noexcept {
 			return _Clip;
 		}
 
@@ -2420,19 +2487,19 @@ namespace std::experimental::io2d {
 
 		template <class Allocator>
 		inline void surface::fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
-			path_group pg(pf);
+			interpreted_path pg(pf);
 			fill(b, pg, bp, rp, cl);
 		}
 
 		template <class Allocator>
 		inline void surface::stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl) {
-			path_group pg(pf);
+			interpreted_path pg(pf);
 			stroke(b, pg, bp, sp, d, rp, cl);
 		}
 
 		template <class Allocator>
 		inline void surface::mask(const brush& b, const brush& mb, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>&rp, const optional<clip_props>& cl) {
-			path_group pg(pf);
+			interpreted_path pg(pf);
 			mask(b, mb, pg, bp, mp, rp, cl);
 		}
 

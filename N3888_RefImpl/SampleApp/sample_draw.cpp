@@ -358,7 +358,7 @@ void test_path_functionality(display_surface& ds) {
 	//pf.rel_line({ -200.0F, 0.0F });
 	//pf.close_figure();
 
-	auto pg = path_group(pf);
+	auto pg = interpreted_path(pf);
 	ds.stroke(brush{ rgba_color::red }, pg, nullopt, nullopt, nullopt, nullopt, clip_props{ bounding_box(40.0F, 40.0F, 1240.0F, 680.0F) });
 
 	pf.clear();
@@ -399,7 +399,7 @@ void draw_radial_circles(display_surface& ds) {
 	pf.matrix(matrix_2d());
 	pf.new_figure({ 520.0F, 10.0F });
 	pf.cubic_curve({ 480.0F, 60.0F }, { 560.0F, 60.0F }, { 520.0F, 10.0F });
-	path_group p(pf);
+	interpreted_path p(pf);
 	//ds.path_group(p);
 	//ds.brush(radialBrush);
 
@@ -427,7 +427,7 @@ void draw_radial_circles(display_surface& ds) {
 	//pf.arc_counterclockwise({ 900.0F, 200.0F }, 125.0F, 0.0F, two_pi<float>);
 	//pf.new_figure({ 900.0F, 200.0F });
 	//pf.arc_clockwise({ 900.0F, 200.0F }, 150.0F, 0.0F, two_pi<float>);
-	p = path_group(pf);
+	p = interpreted_path(pf);
 	//ds.path_group(p);
 	ds.stroke(radialBrush, p);
 	//ds.matrix(matrix_2d::init_translate({ 0.0F, 310.0F }));

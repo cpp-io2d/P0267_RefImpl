@@ -135,7 +135,7 @@ namespace {
 			const auto& props = c.value();
 			cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fill_rule()));
 			cairo_new_path(context);
-			cairo_append_path(context, props.clip().native_handle());
+			cairo_append_path(context, props.clip()._Native_handle());
 			cairo_clip(context);
 			// Restore saved state
 			cairo_set_fill_rule(context, fr);
@@ -223,18 +223,18 @@ void surface::paint(const brush& b, const optional<brush_props>& bp, const optio
 	cairo_paint(context);
 }
 
-void surface::fill(const brush& b, const path_group& pg, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
+void surface::fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
 	_Set_brush_props(context, bp, b);
 	cairo_set_source(context, b.native_handle());
 	cairo_new_path(context);
-	cairo_append_path(context, pg.native_handle());
+	cairo_append_path(context, pg._Native_handle());
 	cairo_fill(context);
 }
 
-void surface::stroke(const brush& b, const path_group& pg, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl) {
+void surface::stroke(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
@@ -242,11 +242,11 @@ void surface::stroke(const brush& b, const path_group& pg, const optional<brush_
 	_Set_stroke_props(context, sp, _Line_join_miter_miter_limit, d);
 	cairo_set_source(context, b.native_handle());
 	cairo_new_path(context);
-	cairo_append_path(context, pg.native_handle());
+	cairo_append_path(context, pg._Native_handle());
 	cairo_stroke(context);
 }
 
-void surface::mask(const brush& b, const brush& mb, const path_group& pg, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl) {
+void surface::mask(const brush& b, const brush& mb, const interpreted_path& pg, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
@@ -254,6 +254,6 @@ void surface::mask(const brush& b, const brush& mb, const path_group& pg, const 
 	_Set_mask_props(mp, mb);
 	cairo_set_source(context, b.native_handle());
 	cairo_new_path(context);
-	cairo_append_path(context, pg.native_handle());
+	cairo_append_path(context, pg._Native_handle());
 	cairo_mask(context, mb.native_handle());
 }
