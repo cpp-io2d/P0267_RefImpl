@@ -114,32 +114,59 @@ namespace std::experimental::io2d {
 
         inline constexpr rgba_color::rgba_color() noexcept { }
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a)
+        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a) noexcept
             : _R(static_cast<float>(::std::min<float>(::std::max<float>((r / 255.0F), 0.0F), 1.0F)))
             , _G(static_cast<float>(::std::min<float>(::std::max<float>((g / 255.0F), 0.0F), 1.0F)))
             , _B(static_cast<float>(::std::min<float>(::std::max<float>((b / 255.0F), 0.0F), 1.0F)))
             , _A(static_cast<float>(::std::min<float>(::std::max<float>((a / 255.0F), 0.0F), 1.0F))) { }
         template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
-        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a)
+        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a) noexcept
             : _R(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(r), 0.0F), 1.0F)))
             , _G(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(g), 0.0F), 1.0F)))
             , _B(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(b), 0.0F), 1.0F)))
             , _A(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(a), 0.0F), 1.0F))) {
         }
 
-        inline constexpr void rgba_color::r(float val) noexcept {
-            _R = val * _A;
-        }
-        inline constexpr void rgba_color::g(float val) noexcept {
-            _G = val * _A;
-        }
-        inline constexpr void rgba_color::b(float val) noexcept {
-            _B = val * _A;
-        }
-        inline constexpr void rgba_color::a(float val) noexcept {
-            _A = val;
-        }
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		inline constexpr void r(T val) noexcept {
+			_R = val * _A;
+		}
 
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		inline constexpr void r(U val) noexcept {
+			_R = val * _A;
+		}
+
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		inline constexpr void g(T val) noexcept {
+			_G = val * _A;
+		}
+
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		inline constexpr void g(U val) noexcept {
+			_G = val * _A;
+		}
+
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		inline constexpr void b(T val) noexcept {
+			_B = val * _A;
+		}
+
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		inline constexpr void b(U val) noexcept {
+			_B = val * _A;
+		}
+
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		inline constexpr void a(T val) noexcept {
+			_A = val;
+		}
+
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		inline constexpr void a(U val) noexcept {
+			_A = val;
+		}
+		
         inline constexpr float rgba_color::r() const noexcept {
             return _R;
         }
@@ -154,7 +181,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        inline constexpr rgba_color& rgba_color::operator*=(T rhs) {
+        inline constexpr rgba_color& rgba_color::operator*=(T rhs) noexcept {
             r(::std::min(r() * rhs / 255.0F, 1.0F));
             g(::std::min(g() * rhs / 255.0F, 1.0F));
             b(::std::min(b() * rhs / 255.0F, 1.0F));
@@ -162,7 +189,7 @@ namespace std::experimental::io2d {
             return *this;
         }
         template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating>>
-        inline constexpr rgba_color& rgba_color::operator*=(U rhs) {
+        inline constexpr rgba_color& rgba_color::operator*=(U rhs) noexcept {
             r(::std::min(r() * rhs, 1.0F));
             g(::std::min(g() * rhs, 1.0F));
             b(::std::min(b() * rhs, 1.0F));
@@ -178,7 +205,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
-        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
+        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) noexcept {
             rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
             return{
                 ::std::min(lhs.r() * rhs, 1.0F),
@@ -189,7 +216,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
+        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) noexcept {
             rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
             return{
                 ::std::min(lhs.r() * rhs / 255.0F, 1.0F),
@@ -200,7 +227,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
-        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
+        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) noexcept {
             lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
             return{
                 ::std::min(lhs * rhs.r(), 1.0F),
@@ -211,7 +238,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
+        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) noexcept {
             lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
             return{
                 ::std::min(lhs / 255.0F * rhs.r(), 1.0F),

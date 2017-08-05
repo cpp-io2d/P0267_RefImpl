@@ -13,17 +13,39 @@ namespace std::experimental::io2d {
 			float _G = 0.0F;
 			float _B = 0.0F;
 			float _A = 1.0F;
+
 		public:
             constexpr rgba_color() noexcept;
+			
 			template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
-            constexpr rgba_color(T r, T g, T b, T a = static_cast<T>(0xFF));
-			template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating> = _Color_is_floating_val>
-            constexpr rgba_color(T r, T g, T b, T a = 1.0F);
+            constexpr rgba_color(T r, T g, T b, T a = static_cast<T>(0xFF)) noexcept;
+			
+			template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+            constexpr rgba_color(U r, U g, U b, U a = 1.0F) noexcept;
 
-            constexpr void r(float val) noexcept;
-            constexpr void g(float val) noexcept;
-            constexpr void b(float val) noexcept;
-            constexpr void a(float val) noexcept;
+			template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+			constexpr void r(T val) noexcept;
+			
+			template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+			constexpr void r(U val) noexcept;
+			
+			template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+			constexpr void g(T val) noexcept;
+			
+			template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+			constexpr void g(U val) noexcept;
+			
+			template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+			constexpr void b(T val) noexcept;
+			
+			template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+			constexpr void b(U val) noexcept;
+			
+			template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+			constexpr void a(T val) noexcept;
+			
+			template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+			constexpr void a(U val) noexcept;
 
             constexpr float r() const noexcept;
             constexpr float g() const noexcept;
@@ -180,24 +202,26 @@ namespace std::experimental::io2d {
 			_IO2D_API static const rgba_color yellow_green;
 
 			template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
-            constexpr rgba_color& operator*=(T rhs);
+            constexpr rgba_color& operator*=(T rhs) noexcept;
 
             template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
-            constexpr rgba_color& operator*=(U rhs);
+            constexpr rgba_color& operator*=(U rhs) noexcept;
 		};
 
-		constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs)
-			noexcept;
-		constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs)
-			noexcept;
-		template <class T>
-		constexpr rgba_color operator*(const rgba_color& lhs, T rhs) noexcept;
-		template <class U>
-		constexpr rgba_color operator*(const rgba_color& lhs, U rhs) noexcept;
-		template <class T>
-		constexpr rgba_color operator*(T lhs, const rgba_color& rhs) noexcept;
-		template <class U>
-		constexpr rgba_color operator*(U lhs, const rgba_color& rhs) noexcept;
+		constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs) noexcept;
 
+		constexpr bool operator!=(const rgba_color& lhs, const rgba_color& rhs) noexcept;
+
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		constexpr rgba_color operator*(const rgba_color& lhs, T rhs) noexcept;
+
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		constexpr rgba_color operator*(const rgba_color& lhs, U rhs) noexcept;
+
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		constexpr rgba_color operator*(T lhs, const rgba_color& rhs) noexcept;
+
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		constexpr rgba_color operator*(U lhs, const rgba_color& rhs) noexcept;
 	}
 }
