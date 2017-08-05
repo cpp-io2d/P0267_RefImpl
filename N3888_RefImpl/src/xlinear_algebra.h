@@ -16,7 +16,7 @@ namespace std::experimental::io2d {
 			constexpr float dot(const point_2d& other) const noexcept;
 			float magnitude() const noexcept;
 			constexpr float magnitude_squared() const noexcept;
-			float angular_direction() const noexcept;
+			float angular_direction(const point_2d& to) const noexcept;
 			point_2d to_unit() const noexcept;
             constexpr static point_2d zero() noexcept;
 
@@ -28,18 +28,19 @@ namespace std::experimental::io2d {
 			constexpr point_2d& operator/=(float rhs) noexcept;
 			constexpr point_2d& operator/=(const point_2d& rhs) noexcept;
 		};
-		constexpr bool operator==(const point_2d& lhs, const point_2d& rhs)
-			noexcept;
-		constexpr bool operator!=(const point_2d& lhs, const point_2d& rhs)
-			noexcept;
-		constexpr point_2d operator+(const point_2d& lhs) noexcept;
-		constexpr point_2d operator+(const point_2d& lhs, const point_2d& rhs)
-			noexcept;
-		constexpr point_2d operator-(const point_2d& lhs) noexcept;
-		constexpr point_2d operator-(const point_2d& lhs, const point_2d& rhs)
-			noexcept;
+
+		constexpr bool operator==(const point_2d& lhs, const point_2d& rhs) noexcept;
+		constexpr bool operator!=(const point_2d& lhs, const point_2d& rhs) noexcept;
+		constexpr point_2d operator+(const point_2d& val) noexcept;
+		constexpr point_2d operator+(const point_2d& lhs, const point_2d& rhs) noexcept;
+		constexpr point_2d operator-(const point_2d& val) noexcept;
+		constexpr point_2d operator-(const point_2d& lhs, const point_2d& rhs) noexcept;
 		constexpr point_2d operator*(const point_2d& lhs, float rhs) noexcept;
 		constexpr point_2d operator*(float lhs, const point_2d& rhs) noexcept;
+		constexpr point_2d operator*(const point_2d& lhs, const point_2d& rhs) noexcept;
+		constexpr point_2d operator/(const point_2d& lhs, float rhs) noexcept;
+		constexpr point_2d operator/(float lhs, const point_2d& rhs) noexcept;
+		constexpr point_2d operator/(const point_2d& lhs, const point_2d& rhs) noexcept;
 
 		class matrix_2d {
 		public:
@@ -57,13 +58,14 @@ namespace std::experimental::io2d {
 			float m22;
 
 			// \ref{\iotwod.\matrixtwod.staticfactories}, static factory functions:
-            constexpr static matrix_2d init_translate(const point_2d& value) noexcept;
-            constexpr static matrix_2d init_scale(const point_2d& value) noexcept;
-            static matrix_2d init_rotate(float radians) noexcept;
-            static matrix_2d init_reflect(float radians) noexcept;
-            constexpr static matrix_2d init_shear_x(float factor) noexcept;
-            constexpr static matrix_2d init_shear_y(float factor) noexcept;
-
+			constexpr static matrix_2d init_translate(point_2d value) noexcept;
+			constexpr static matrix_2d init_scale(point_2d value) noexcept;
+			static matrix_2d init_rotate(float radians) noexcept;
+			static matrix_2d init_rotate(float radians, point_2d origin) noexcept;
+			static matrix_2d init_reflect(float radians) noexcept;
+			constexpr static matrix_2d init_shear_x(float factor) noexcept;
+			constexpr static matrix_2d init_shear_y(float factor) noexcept;
+            
 			// \ref{\iotwod.\matrixtwod.modifiers}, modifiers:
 			constexpr matrix_2d& translate(point_2d v) noexcept;
 			constexpr matrix_2d& scale(point_2d v) noexcept;
@@ -85,20 +87,12 @@ namespace std::experimental::io2d {
 		};
 
 		// \ref{\iotwod.\matrixtwod.ops}, matrix_2d non-member operators:
-		constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs)
-			noexcept;
-		constexpr bool operator==(const matrix_2d& lhs, const matrix_2d& rhs)
-			noexcept;
-		constexpr bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs)
-			noexcept;
-		constexpr point_2d operator*(point_2d v, const matrix_2d& m)
-			noexcept;
-		constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs)
-			noexcept;
-		constexpr bool operator==(const matrix_2d& lhs, const matrix_2d& rhs)
-			noexcept;
-		constexpr bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs)
-			noexcept;
+		constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
+		constexpr bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
+		constexpr bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
+		constexpr point_2d operator*(point_2d v, const matrix_2d& m) noexcept;
+
+//		constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept;
 
 	}
 }

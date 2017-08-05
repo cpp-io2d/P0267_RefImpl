@@ -70,6 +70,29 @@ namespace std::experimental::io2d {
 			hsl_luminosity
 		};
 
+		enum class format {
+			invalid,
+			argb32,
+			xrgb32,
+			a8,
+			rgb16_565,
+			rgb30
+		};
+
+		enum class scaling {
+			letterbox,      // Same as uniform except that the display_surface is cleared using the letterbox brush first
+			uniform,        // Maintain aspect ratio and center as needed, ignoring side areas that are not drawn to
+			fill_uniform,   // Maintain aspect ratio but fill entire display (some content may not be shown)
+			fill_exact,     // Ignore aspect ratio and use (possibly non-uniform) scale to fill exactly
+			none            // Do not scale.
+		};
+
+		enum class refresh_rate {
+			as_needed,
+			as_fast_as_possible,
+			fixed
+		};
+
 		enum class image_file_format {
 			unknown,
 			png,
@@ -82,32 +105,17 @@ namespace std::experimental::io2d {
 			matrix_2d _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
 			compositing_op _Compositing = compositing_op::over;
 		public:
-			constexpr render_props() noexcept {}
+			constexpr render_props() noexcept;
 			constexpr explicit render_props(antialias a, const matrix_2d& m = matrix_2d{},
-				compositing_op co = compositing_op::over) noexcept
-				: _Antialiasing(a)
-				, _Matrix(m)
-				, _Compositing(co) {}
+				compositing_op co = compositing_op::over) noexcept;
 
-			constexpr void antialiasing(antialias a) noexcept {
-				_Antialiasing = a;
-			}
-			constexpr void compositing(compositing_op co) noexcept {
-				_Compositing = co;
-			}
-			constexpr void surface_matrix(const matrix_2d& m) noexcept {
-				_Matrix = m;
-			}
+			constexpr void antialiasing(antialias a) noexcept;
+			constexpr void compositing(compositing_op co) noexcept;
+			constexpr void surface_matrix(const matrix_2d& m) noexcept;
 
-			constexpr antialias antialiasing() const noexcept {
-				return _Antialiasing;
-			}
-			constexpr compositing_op compositing() const noexcept {
-				return _Compositing;
-			}
-			constexpr matrix_2d surface_matrix() const noexcept {
-				return _Matrix;
-			}
+			constexpr antialias antialiasing() const noexcept;
+			constexpr compositing_op compositing() const noexcept;
+			constexpr matrix_2d surface_matrix() const noexcept;
 		};
 
 		class brush_props {
@@ -117,42 +125,21 @@ namespace std::experimental::io2d {
 			matrix_2d _Matrix;
 
 		public:
-			constexpr brush_props() noexcept {}
+			constexpr brush_props() noexcept;
 			constexpr brush_props(experimental::io2d::wrap_mode w,
 				experimental::io2d::filter fi = experimental::io2d::filter::bilinear,
 				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding,
-				matrix_2d m = matrix_2d{}) noexcept
-				: _Wrap_mode(w)
-				, _Filter(fi)
-				, _Fill_rule(fr)
-				, _Matrix(m) {
-			}
+				matrix_2d m = matrix_2d{}) noexcept;
 
-			constexpr void filter(experimental::io2d::filter fi) noexcept {
-				_Filter = fi;
-			}
-			constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept {
-				_Wrap_mode = w;
-			}
-			constexpr void fill_rule(experimental::io2d::fill_rule fr) noexcept {
-				_Fill_rule = fr;
-			}
-			constexpr void matrix(const matrix_2d& m) noexcept {
-				_Matrix = m;
-			}
+			constexpr void filter(experimental::io2d::filter fi) noexcept;
+			constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept;
+			constexpr void fill_rule(experimental::io2d::fill_rule fr) noexcept;
+			constexpr void matrix(const matrix_2d& m) noexcept;
 
-			constexpr experimental::io2d::filter filter() const noexcept {
-				return _Filter;
-			}
-			constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept {
-				return _Wrap_mode;
-			}
-			constexpr experimental::io2d::fill_rule fill_rule() const noexcept {
-				return _Fill_rule;
-			}
-			constexpr matrix_2d matrix() const noexcept {
-				return _Matrix;
-			}
+			constexpr experimental::io2d::filter filter() const noexcept;
+			constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept;
+			constexpr experimental::io2d::fill_rule fill_rule() const noexcept;
+			constexpr matrix_2d matrix() const noexcept;
 		};
 
 		class clip_props {
@@ -162,48 +149,24 @@ namespace std::experimental::io2d {
 			clip_props() noexcept = default;
 			template <class Allocator>
 			explicit clip_props(const path_builder<Allocator> &pf,
-				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding)
-				: _Clip(path_group(pf))
-				, _Fill_rule(fr) { }
+				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
 
 			explicit clip_props(const path_group& pg,
-				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept
-				: _Clip(pg)
-				, _Fill_rule(fr) { }
+				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept;
 
 			explicit clip_props(const bounding_box& r,
-				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding)
-				: _Clip()
-				, _Fill_rule(fr) {
-				path_builder<> clip;
-				clip.new_path(r.top_left());
-				clip.rel_line({ r.width(), 0.0F });
-				clip.rel_line({ 0.0F, r.height() });
-				clip.rel_line({ -r.width(), 0.0F });
-				clip.close_figure();
-				_Clip = path_group(clip);
-			}
+				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
 
 			template <class Allocator>
-			void clip(const path_builder<Allocator>& pf) {
-				_Clip = path_group(pf);
-			}
+			void clip(const path_builder<Allocator>& pf);
 
-			void clip(const path_group& pg) noexcept {
-				_Clip = pg;
-			}
+			void clip(const path_group& pg) noexcept;
 
-			void fill_rule(experimental::io2d::fill_rule fr) {
-				_Fill_rule = fr;
-			}
+			void fill_rule(experimental::io2d::fill_rule fr);
 
-			path_group clip() const noexcept {
-				return _Clip;
-			}
+			path_group clip() const noexcept;
 
-			experimental::io2d::fill_rule fill_rule() const noexcept {
-				return _Fill_rule;
-			}
+			experimental::io2d::fill_rule fill_rule() const noexcept;
 		};
 
 		class stroke_props {
@@ -213,41 +176,21 @@ namespace std::experimental::io2d {
 			experimental::io2d::line_join _Line_join = experimental::io2d::line_join::miter;
 			//optional<dashes> _Dashes;
 		public:
-			constexpr stroke_props() noexcept {}
+			constexpr stroke_props() noexcept;
 			constexpr explicit stroke_props(float w,
 				experimental::io2d::line_cap lc = experimental::io2d::line_cap::none,
 				experimental::io2d::line_join lj = experimental::io2d::line_join::miter,
-				float ml = 10.0F) noexcept
-				: _Line_width(w)
-				, _Miter_limit(ml)
-				, _Line_cap(lc)
-				, _Line_join(lj) {}
+				float ml = 10.0F) noexcept;
 
-			constexpr void line_width(float w) noexcept {
-				_Line_width = w;
-			}
-			constexpr void line_cap(experimental::io2d::line_cap lc) noexcept {
-				_Line_cap = lc;
-			}
-			constexpr void line_join(experimental::io2d::line_join lj) noexcept {
-				_Line_join = lj;
-			}
-			constexpr void miter_limit(float ml) noexcept {
-				_Miter_limit = ml;
-			}
+			constexpr void line_width(float w) noexcept;
+			constexpr void line_cap(experimental::io2d::line_cap lc) noexcept;
+			constexpr void line_join(experimental::io2d::line_join lj) noexcept;
+			constexpr void miter_limit(float ml) noexcept;
 
-			constexpr float line_width() const noexcept {
-				return _Line_width;
-			}
-			constexpr experimental::io2d::line_cap line_cap() const noexcept {
-				return _Line_cap;
-			}
-			constexpr experimental::io2d::line_join line_join() const noexcept {
-				return _Line_join;
-			}
-			constexpr float miter_limit() const noexcept {
-				return _Miter_limit;
-			}
+			constexpr float line_width() const noexcept;
+			constexpr experimental::io2d::line_cap line_cap() const noexcept;
+			constexpr experimental::io2d::line_join line_join() const noexcept;
+			constexpr float miter_limit() const noexcept;
 		};
 
 		class mask_props {
@@ -258,35 +201,19 @@ namespace std::experimental::io2d {
 		public:
 			constexpr mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat,
 				experimental::io2d::filter fi = experimental::io2d::filter::good,
-				matrix_2d m = matrix_2d{}) noexcept
-				: _Wrap_mode(w)
-				, _Filter(fi)
-				, _Matrix(m) {
-			}
+				matrix_2d m = matrix_2d{}) noexcept;
 			constexpr mask_props(const mask_props&) noexcept = default;
 			constexpr mask_props& operator=(const mask_props&) noexcept = default;
 			mask_props(mask_props&&) noexcept = default;
 			mask_props& operator=(mask_props&&) noexcept = default;
 
-			constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept {
-				_Wrap_mode = w;
-			}
-			constexpr void filter(experimental::io2d::filter fi) noexcept {
-				_Filter = fi;
-			}
-			constexpr void matrix(const matrix_2d& m) noexcept {
-				_Matrix = m;
-			}
+			constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept;
+			constexpr void filter(experimental::io2d::filter fi) noexcept;
+			constexpr void matrix(const matrix_2d& m) noexcept;
 
-			constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept {
-				return _Wrap_mode;
-			}
-			constexpr experimental::io2d::filter filter() const noexcept {
-				return _Filter;
-			}
-			constexpr matrix_2d matrix() const noexcept {
-				return _Matrix;
-			}
+			constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept;
+			constexpr experimental::io2d::filter filter() const noexcept;
+			constexpr matrix_2d matrix() const noexcept;
 		};
 
 		struct _Surface_native_handles {
@@ -338,22 +265,13 @@ namespace std::experimental::io2d {
 			_IO2D_API void clear();
 			_IO2D_API void paint(const brush& b, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
-			void fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt) {
-				path_group pg(pf);
-				fill(b, pg, bp, rp, cl);
-			}
+			void fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			_IO2D_API void fill(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
-			void stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt) {
-				path_group pg(pf);
-				stroke(b, pg, bp, sp, d, rp, cl);
-			}
+			void stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			_IO2D_API void stroke(const brush& b, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
-			void mask(const brush& b, const brush& mb, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>&rp = nullopt, const optional<clip_props>& cl = nullopt) {
-				path_group pg(pf);
-				mask(b, mb, pg, bp, mp, rp, cl);
-			}
+			void mask(const brush& b, const brush& mb, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>&rp = nullopt, const optional<clip_props>& cl = nullopt);
 			_IO2D_API void mask(const brush& b, const brush& mb, const path_group& pg, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 		};
 

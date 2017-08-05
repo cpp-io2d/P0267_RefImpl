@@ -114,32 +114,59 @@ namespace std::experimental::io2d {
 
         inline constexpr rgba_color::rgba_color() noexcept { }
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a)
+        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a) noexcept
             : _R(static_cast<float>(::std::min<float>(::std::max<float>((r / 255.0F), 0.0F), 1.0F)))
             , _G(static_cast<float>(::std::min<float>(::std::max<float>((g / 255.0F), 0.0F), 1.0F)))
             , _B(static_cast<float>(::std::min<float>(::std::max<float>((b / 255.0F), 0.0F), 1.0F)))
             , _A(static_cast<float>(::std::min<float>(::std::max<float>((a / 255.0F), 0.0F), 1.0F))) { }
         template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
-        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a)
+        inline constexpr rgba_color::rgba_color(T r, T g, T b, T a) noexcept
             : _R(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(r), 0.0F), 1.0F)))
             , _G(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(g), 0.0F), 1.0F)))
             , _B(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(b), 0.0F), 1.0F)))
             , _A(static_cast<float>(::std::min<T>(::std::max<T>(static_cast<float>(a), 0.0F), 1.0F))) {
         }
 
-        inline constexpr void rgba_color::r(float val) noexcept {
-            _R = val * _A;
-        }
-        inline constexpr void rgba_color::g(float val) noexcept {
-            _G = val * _A;
-        }
-        inline constexpr void rgba_color::b(float val) noexcept {
-            _B = val * _A;
-        }
-        inline constexpr void rgba_color::a(float val) noexcept {
-            _A = val;
-        }
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		inline constexpr void r(T val) noexcept {
+			_R = val * _A;
+		}
 
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		inline constexpr void r(U val) noexcept {
+			_R = val * _A;
+		}
+
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		inline constexpr void g(T val) noexcept {
+			_G = val * _A;
+		}
+
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		inline constexpr void g(U val) noexcept {
+			_G = val * _A;
+		}
+
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		inline constexpr void b(T val) noexcept {
+			_B = val * _A;
+		}
+
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		inline constexpr void b(U val) noexcept {
+			_B = val * _A;
+		}
+
+		template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral> = _Color_is_integral_val>
+		inline constexpr void a(T val) noexcept {
+			_A = val;
+		}
+
+		template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
+		inline constexpr void a(U val) noexcept {
+			_A = val;
+		}
+		
         inline constexpr float rgba_color::r() const noexcept {
             return _R;
         }
@@ -154,7 +181,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        inline constexpr rgba_color& rgba_color::operator*=(T rhs) {
+        inline constexpr rgba_color& rgba_color::operator*=(T rhs) noexcept {
             r(::std::min(r() * rhs / 255.0F, 1.0F));
             g(::std::min(g() * rhs / 255.0F, 1.0F));
             b(::std::min(b() * rhs / 255.0F, 1.0F));
@@ -162,7 +189,7 @@ namespace std::experimental::io2d {
             return *this;
         }
         template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating>>
-        inline constexpr rgba_color& rgba_color::operator*=(U rhs) {
+        inline constexpr rgba_color& rgba_color::operator*=(U rhs) noexcept {
             r(::std::min(r() * rhs, 1.0F));
             g(::std::min(g() * rhs, 1.0F));
             b(::std::min(b() * rhs, 1.0F));
@@ -178,7 +205,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
-        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
+        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) noexcept {
             rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
             return{
                 ::std::min(lhs.r() * rhs, 1.0F),
@@ -189,7 +216,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) {
+        inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) noexcept {
             rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
             return{
                 ::std::min(lhs.r() * rhs / 255.0F, 1.0F),
@@ -200,7 +227,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
-        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
+        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) noexcept {
             lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
             return{
                 ::std::min(lhs * rhs.r(), 1.0F),
@@ -211,7 +238,7 @@ namespace std::experimental::io2d {
         }
 
         template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
-        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) {
+        inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) noexcept {
             lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
             return{
                 ::std::min(lhs / 255.0F * rhs.r(), 1.0F),
@@ -240,13 +267,13 @@ namespace std::experimental::io2d {
 			return x * other.x + y * other.y;
 		}
 
-		inline float point_2d::angular_direction() const noexcept {
+/*		inline float point_2d::angular_direction() const noexcept {
 			auto v = atan2(y, x);
 			if (v < 0.0F) {
 				v += two_pi<float>;
 			}
 			return v;
-		}
+		}*/
 
         inline constexpr point_2d point_2d::zero() noexcept {
             return { 0.0f, 0.0f };
@@ -357,10 +384,10 @@ namespace std::experimental::io2d {
             , m22(1.0f) {
         }
         
-        inline constexpr matrix_2d matrix_2d::init_translate(const point_2d& value) noexcept {
+        inline constexpr matrix_2d matrix_2d::init_translate(point_2d value) noexcept {
             return{ 1.0F, 0.0F, 0.0F, 1.0F, value.x, value.y };
         }
-        inline constexpr matrix_2d matrix_2d::init_scale(const point_2d& value) noexcept {
+        inline constexpr matrix_2d matrix_2d::init_scale(point_2d value) noexcept {
             return{ value.x, 0.0F, 0.0F, value.y, 0.0F, 0.0F };
         }
         inline matrix_2d matrix_2d::init_rotate(float radians) noexcept {
@@ -507,7 +534,7 @@ namespace std::experimental::io2d {
             , _Width(width)
             , _Height(height) {
         }
-        inline constexpr bounding_box::bounding_box(const point_2d& tl, const point_2d& br) noexcept
+        inline constexpr bounding_box::bounding_box(point_2d tl, point_2d br) noexcept
             : _X(tl.x)
             , _Y(tl.y)
             , _Width(::std::max(0.0F, br.x - tl.x))
@@ -526,11 +553,11 @@ namespace std::experimental::io2d {
         inline constexpr void bounding_box::height(float value) noexcept {
             _Height = value;
         }
-        inline constexpr void bounding_box::top_left(const point_2d& value) noexcept {
+        inline constexpr void bounding_box::top_left(point_2d value) noexcept {
             _X = value.x;
             _Y = value.y;
         }
-        inline constexpr void bounding_box::bottom_right(const point_2d& value) noexcept {
+        inline constexpr void bounding_box::bottom_right(point_2d value) noexcept {
             _Width = max(0.0F, value.x - _X);
             _Height = max(0.0F, value.y - _Y);
         }
@@ -549,22 +576,6 @@ namespace std::experimental::io2d {
 
         inline constexpr float bounding_box::height() const noexcept {
             return _Height;
-        }
-
-        inline constexpr float bounding_box::left() const noexcept {
-            return _X;
-        }
-
-        inline constexpr float bounding_box::right() const noexcept {
-            return _X + _Width;
-        }
-
-        inline constexpr float bounding_box::top() const noexcept {
-            return _Y;
-        }
-
-        inline constexpr float bounding_box::bottom() const noexcept {
-            return _Y + _Height;
         }
 
         inline constexpr point_2d bounding_box::top_left() const noexcept {
@@ -587,11 +598,11 @@ namespace std::experimental::io2d {
         inline constexpr circle::circle() noexcept
             : _Center()
             , _Radius() {}
-        inline constexpr circle::circle(const point_2d& ctr, float r) noexcept
+        inline constexpr circle::circle(point_2d ctr, float r) noexcept
             : _Center(ctr)
             , _Radius(r) {}
 
-        inline constexpr void circle::center(const point_2d& ctr) noexcept {
+        inline constexpr void circle::center(point_2d ctr) noexcept {
             _Center = ctr;
         }
         inline constexpr void circle::radius(float r) noexcept {
@@ -617,10 +628,10 @@ namespace std::experimental::io2d {
         namespace figure_items {
             inline constexpr abs_new_figure::abs_new_figure() noexcept {}
 
-            inline constexpr abs_new_figure::abs_new_figure(const point_2d& pt) noexcept
+            inline constexpr abs_new_figure::abs_new_figure(point_2d pt) noexcept
                 : _Data(pt) {}
 
-            inline constexpr void abs_new_figure::at(const point_2d& pt) noexcept {
+            inline constexpr void abs_new_figure::at(point_2d pt) noexcept {
                 _Data = pt;
             }
 
@@ -634,10 +645,10 @@ namespace std::experimental::io2d {
 
             inline constexpr rel_new_figure::rel_new_figure() noexcept {}
 
-            inline constexpr rel_new_figure::rel_new_figure(const point_2d& pt) noexcept
+            inline constexpr rel_new_figure::rel_new_figure(point_2d pt) noexcept
                 : _Data(pt) {}
 
-            inline constexpr void rel_new_figure::at(const point_2d& pt) noexcept {
+            inline constexpr void rel_new_figure::at(point_2d pt) noexcept {
                 _Data = pt;
             }
 
@@ -693,12 +704,12 @@ namespace std::experimental::io2d {
                 return true;
             }
 
-            inline constexpr abs_line::abs_line(const point_2d& to) noexcept
+            inline constexpr abs_line::abs_line(point_2d to) noexcept
                 : _Data(to) {
             }
             inline constexpr abs_line::abs_line() noexcept {}
 
-            inline constexpr void abs_line::to(const point_2d& value) noexcept {
+            inline constexpr void abs_line::to(point_2d value) noexcept {
                 _Data = value;
             }
 
@@ -710,12 +721,12 @@ namespace std::experimental::io2d {
                 return lhs._Data == rhs._Data;
             }
 
-            inline constexpr rel_line::rel_line(const point_2d& to) noexcept
+            inline constexpr rel_line::rel_line(point_2d to) noexcept
                 : _Data(to) {
             }
             inline constexpr rel_line::rel_line() noexcept {}
 
-            inline constexpr void rel_line::to(const point_2d& value) noexcept {
+            inline constexpr void rel_line::to(point_2d value) noexcept {
                 _Data = value;
             }
 
@@ -727,23 +738,23 @@ namespace std::experimental::io2d {
                 return lhs._Data == rhs._Data;
             }
 
-            inline constexpr abs_quadratic_curve::abs_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept
+            inline constexpr abs_quadratic_curve::abs_quadratic_curve(point_2d cp, point_2d ep) noexcept
                 : _Control_pt(cp)
                 , _End_pt(ep) {
             }
             inline constexpr abs_quadratic_curve::abs_quadratic_curve() noexcept {}
 
-            inline constexpr void abs_quadratic_curve::control_point(const point_2d& value) noexcept {
+            inline constexpr void abs_quadratic_curve::control_pt(point_2d value) noexcept {
                 _Control_pt = value;
             }
-            inline constexpr void abs_quadratic_curve::end_point(const point_2d& value) noexcept {
+            inline constexpr void abs_quadratic_curve::end_pt(point_2d value) noexcept {
                 _End_pt = value;
             }
 
-            inline constexpr point_2d abs_quadratic_curve::control_point() const noexcept {
+            inline constexpr point_2d abs_quadratic_curve::control_pt() const noexcept {
                 return _Control_pt;
             }
-            inline constexpr point_2d abs_quadratic_curve::end_point() const noexcept {
+            inline constexpr point_2d abs_quadratic_curve::end_pt() const noexcept {
                 return _End_pt;
             }
 
@@ -752,23 +763,23 @@ namespace std::experimental::io2d {
                     (lhs._End_pt == rhs._End_pt);
             }
 
-            inline constexpr rel_quadratic_curve::rel_quadratic_curve(const point_2d& cp, const point_2d& ep) noexcept
+            inline constexpr rel_quadratic_curve::rel_quadratic_curve(point_2d cp, point_2d ep) noexcept
                 : _Control_pt(cp)
                 , _End_pt(ep) {
             }
             inline constexpr rel_quadratic_curve::rel_quadratic_curve() noexcept {}
 
-            inline constexpr void rel_quadratic_curve::control_point(const point_2d& value) noexcept {
+            inline constexpr void rel_quadratic_curve::control_pt(point_2d value) noexcept {
                 _Control_pt = value;
             }
-            inline constexpr void rel_quadratic_curve::end_point(const point_2d& value) noexcept {
+            inline constexpr void rel_quadratic_curve::end_pt(point_2d value) noexcept {
                 _End_pt = value;
             }
 
-            inline constexpr point_2d rel_quadratic_curve::control_point() const noexcept {
+            inline constexpr point_2d rel_quadratic_curve::control_pt() const noexcept {
                 return _Control_pt;
             }
-            inline constexpr point_2d rel_quadratic_curve::end_point() const noexcept {
+            inline constexpr point_2d rel_quadratic_curve::end_pt() const noexcept {
                 return _End_pt;
             }
 
@@ -777,30 +788,30 @@ namespace std::experimental::io2d {
                     (lhs._End_pt == rhs._End_pt);
             }
 
-            inline constexpr abs_cubic_curve::abs_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept
+            inline constexpr abs_cubic_curve::abs_cubic_curve(point_2d controlPoint1, point_2d controlPoint2, point_2d endPoint) noexcept
                 : _Control_pt1(controlPoint1)
                 , _Control_pt2(controlPoint2)
                 , _End_pt(endPoint) {
             }
             inline constexpr abs_cubic_curve::abs_cubic_curve() noexcept {}
 
-            inline constexpr void abs_cubic_curve::control_point_1(const point_2d& value) noexcept {
+            inline constexpr void abs_cubic_curve::control_pt1(point_2d value) noexcept {
                 _Control_pt1 = value;
             }
-            inline constexpr void abs_cubic_curve::control_point_2(const point_2d& value) noexcept {
+            inline constexpr void abs_cubic_curve::control_pt2(point_2d value) noexcept {
                 _Control_pt2 = value;
             }
-            inline constexpr void abs_cubic_curve::end_point(const point_2d& value) noexcept {
+            inline constexpr void abs_cubic_curve::end_pt(point_2d value) noexcept {
                 _End_pt = value;
             }
 
-            inline constexpr point_2d abs_cubic_curve::control_point_1() const noexcept {
+            inline constexpr point_2d abs_cubic_curve::control_pt1() const noexcept {
                 return _Control_pt1;
             }
-            inline constexpr point_2d abs_cubic_curve::control_point_2() const noexcept {
+            inline constexpr point_2d abs_cubic_curve::control_pt2() const noexcept {
                 return _Control_pt2;
             }
-            inline constexpr point_2d abs_cubic_curve::end_point() const noexcept {
+            inline constexpr point_2d abs_cubic_curve::end_pt() const noexcept {
                 return _End_pt;
             }
 
@@ -810,30 +821,30 @@ namespace std::experimental::io2d {
                     (lhs._End_pt == rhs._End_pt);
             }
 
-            inline constexpr rel_cubic_curve::rel_cubic_curve(const point_2d& controlPoint1, const point_2d& controlPoint2, const point_2d& endPoint) noexcept
+            inline constexpr rel_cubic_curve::rel_cubic_curve(point_2d controlPoint1, point_2d controlPoint2, point_2d endPoint) noexcept
                 : _Control_pt1(controlPoint1)
                 , _Control_pt2(controlPoint2)
                 , _End_pt(endPoint) {
             }
             inline constexpr rel_cubic_curve::rel_cubic_curve() noexcept {}
 
-            inline constexpr void rel_cubic_curve::control_point_1(const point_2d& value) noexcept {
+            inline constexpr void rel_cubic_curve::control_pt1(point_2d value) noexcept {
                 _Control_pt1 = value;
             }
-            inline constexpr void rel_cubic_curve::control_point_2(const point_2d& value) noexcept {
+            inline constexpr void rel_cubic_curve::control_pt2(point_2d value) noexcept {
                 _Control_pt2 = value;
             }
-            inline constexpr void rel_cubic_curve::end_point(const point_2d& value) noexcept {
+            inline constexpr void rel_cubic_curve::end_pt(point_2d value) noexcept {
                 _End_pt = value;
             }
 
-            inline constexpr point_2d rel_cubic_curve::control_point_1() const noexcept {
+            inline constexpr point_2d rel_cubic_curve::control_pt1() const noexcept {
                 return _Control_pt1;
             }
-            inline constexpr point_2d rel_cubic_curve::control_point_2() const noexcept {
+            inline constexpr point_2d rel_cubic_curve::control_pt2() const noexcept {
                 return _Control_pt2;
             }
-            inline constexpr point_2d rel_cubic_curve::end_point() const noexcept {
+            inline constexpr point_2d rel_cubic_curve::end_pt() const noexcept {
                 return _End_pt;
             }
 
@@ -845,13 +856,13 @@ namespace std::experimental::io2d {
 
             inline constexpr arc::arc() noexcept
                 : arc(point_2d{ 10.0F, 10.0F }, pi<float>, pi<float>) { }
-            inline constexpr arc::arc(const point_2d& rad, float rot, float sang) noexcept
+            inline constexpr arc::arc(point_2d rad, float rot, float sang) noexcept
                 : _Radius(rad)
                 , _Rotation(rot)
                 , _Start_angle(sang) {
             }
 
-            inline constexpr void arc::radius(const point_2d& rad) noexcept {
+            inline constexpr void arc::radius(point_2d rad) noexcept {
                 _Radius = rad;
             }
             inline constexpr void arc::rotation(float rot) noexcept {
@@ -955,9 +966,9 @@ namespace std::experimental::io2d {
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
 			constexpr static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::abs_cubic_curve& item, point_2d&) noexcept {
 				cairo_path_data_t cpdItem{};
-				auto pt1 = item.control_point_1();
-				auto pt2 = item.control_point_2();
-				auto pt3 = item.end_point();
+				auto pt1 = item.control_pt1();
+				auto pt2 = item.control_pt2();
+				auto pt3 = item.end_pt();
 				cpdItem.header.type = CAIRO_PATH_CURVE_TO;
 				cpdItem.header.length = 4;
 				vec.push_back(cpdItem);
@@ -1517,9 +1528,9 @@ namespace std::experimental::io2d {
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
 			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
-				const auto pt1 = m.transform_pt(item.control_point_1() - currentPoint) + currentPoint;
-				const auto pt2 = m.transform_pt(item.control_point_2() - currentPoint) + currentPoint;
-				const auto pt3 = m.transform_pt(item.end_point() - currentPoint) + currentPoint;
+				const auto pt1 = m.transform_pt(item.control_pt1() - currentPoint) + currentPoint;
+				const auto pt2 = m.transform_pt(item.control_pt2() - currentPoint) + currentPoint;
+				const auto pt3 = m.transform_pt(item.end_pt() - currentPoint) + currentPoint;
 				if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
 					return; // degenerate path segment
 				}
@@ -1540,8 +1551,8 @@ namespace std::experimental::io2d {
 			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				// Turn it into a cubic curve since cairo doesn't have quadratic curves.
 				//point_2d beginPt;
-				const auto controlPt = m.transform_pt(item.control_point() - currentPoint) + currentPoint;
-				const auto endPt = m.transform_pt(item.end_point() - currentPoint) + currentPoint;
+				const auto controlPt = m.transform_pt(item.control_pt() - currentPoint) + currentPoint;
+				const auto endPt = m.transform_pt(item.end_pt() - currentPoint) + currentPoint;
 				if (currentPoint == controlPt && controlPt == endPt) {
 					return; // degenerate path segment
 				}
@@ -1590,14 +1601,14 @@ namespace std::experimental::io2d {
 				pt1.y = -(((1.0F - cosPhi) * (3.0F - cosPhi)) / (3.0F * sinPhi));
 				pt2.x = pt1.x;
 				pt2.y = -pt1.y;
-				auto rotCntrCwFn = [](const point_2d& pt, float a) -> point_2d {
+				auto rotCntrCwFn = [](point_2d pt, float a) -> point_2d {
 					auto result = point_2d{ pt.x * cos(a) - pt.y * sin(a),
 						pt.x * sin(a) + pt.y * cos(a) };
 					result.x = _Round_floating_point_to_zero(result.x);
 					result.y = _Round_floating_point_to_zero(result.y);
 					return result;
 				};
-				auto rotCwFn = [](const point_2d& pt, float a) -> point_2d {
+				auto rotCwFn = [](point_2d pt, float a) -> point_2d {
 					auto result = point_2d{ pt.x * cos(a) - pt.y * sin(a),
 						-(pt.x * sin(a) + pt.y * cos(a)) };
 					result.x = _Round_floating_point_to_zero(result.x);
@@ -1667,9 +1678,9 @@ namespace std::experimental::io2d {
 			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
 				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
-				const auto pt1 = item.control_point_1() * amtx;
-				const auto pt2 = item.control_point_2() * amtx;
-				const auto pt3 = item.end_point()* amtx;
+				const auto pt1 = item.control_pt1() * amtx;
+				const auto pt2 = item.control_pt2() * amtx;
+				const auto pt3 = item.end_pt()* amtx;
 				if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
 					return; // degenerate path segment
 				}
@@ -1693,8 +1704,8 @@ namespace std::experimental::io2d {
 			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
 				auto amtx = m;
 				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
-				const auto controlPt = currentPoint + item.control_point() * amtx;
-				const auto endPt = currentPoint + item.control_point() * amtx + item.end_point() * amtx;
+				const auto controlPt = currentPoint + item.control_pt() * amtx;
+				const auto endPt = currentPoint + item.control_pt() * amtx + item.end_pt() * amtx;
 				const auto beginPt = currentPoint;
 				if (currentPoint == controlPt && controlPt == endPt) {
 					return; // degenerate path segment
@@ -1960,12 +1971,12 @@ namespace std::experimental::io2d {
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::new_path(const point_2d& v) noexcept {
+		inline void path_builder<Allocator>::new_figure(point_2d v) noexcept {
 			_Data.emplace_back(in_place_type<figure_items::abs_new_figure>, v);
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::rel_new_figure(const point_2d& v) noexcept {
+		inline void path_builder<Allocator>::rel_new_figure(point_2d v) noexcept {
 			_Data.emplace_back(in_place_type<figure_items::rel_new_figure>, v);
 		}
 
@@ -1990,37 +2001,37 @@ namespace std::experimental::io2d {
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::arc(const point_2d& rad, float rot, const float sang) noexcept {
+		inline void path_builder<Allocator>::arc(point_2d rad, float rot, const float sang) noexcept {
 			_Data.emplace_back(in_place_type<figure_items::arc>, rad, rot, sang);
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::cubic_curve(const point_2d& pt0, const point_2d& pt1, const point_2d& pt2) noexcept {
+		inline void path_builder<Allocator>::cubic_curve(point_2d pt0, point_2d pt1, point_2d pt2) noexcept {
 			_Data.emplace_back(in_place_type<figure_items::abs_cubic_curve>, pt0, pt1, pt2);
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::line(const point_2d& pt) noexcept {
+		inline void path_builder<Allocator>::line(point_2d pt) noexcept {
 			_Data.emplace_back(in_place_type<figure_items::abs_line>, pt);
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::quadratic_curve(const point_2d& pt0, const point_2d& pt1) noexcept {
+		inline void path_builder<Allocator>::quadratic_curve(point_2d pt0, point_2d pt1) noexcept {
 			_Data.emplace_back(in_place_type<figure_items::abs_quadratic_curve>, pt0, pt1);
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::rel_cubic_curve(const point_2d& dpt0, const point_2d& dpt1, const point_2d& dpt2) noexcept {
+		inline void path_builder<Allocator>::rel_cubic_curve(point_2d dpt0, point_2d dpt1, point_2d dpt2) noexcept {
 			_Data.emplace_back(in_place_type<figure_items::rel_cubic_curve>, dpt0, dpt1, dpt2);
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::rel_line(const point_2d& dpt) noexcept {
+		inline void path_builder<Allocator>::rel_line(point_2d dpt) noexcept {
 			_Data.emplace_back(in_place_type<figure_items::rel_line>, dpt);
 		}
 
 		template<class Allocator>
-		inline void path_builder<Allocator>::rel_quadratic_curve(const point_2d& dpt0, const point_2d& dpt1) noexcept {
+		inline void path_builder<Allocator>::rel_quadratic_curve(point_2d dpt0, point_2d dpt1) noexcept {
 			_Data.emplace_back(in_place_type<figure_items::rel_quadratic_curve>, dpt0, dpt1);
 		}
 
@@ -2079,7 +2090,7 @@ namespace std::experimental::io2d {
 			_Data.clear();
 		}
 
-        template<class Allocator>
+/*        template<class Allocator>
         inline bool path_builder<Allocator>::operator==(const path_builder& rhs) const noexcept {
             if (size() != rhs.size()) {
                 return false;
@@ -2104,9 +2115,38 @@ namespace std::experimental::io2d {
             //	}
             //}
             return true;
-        }
+        }*/
 
         //Brushes
+
+		inline constexpr gradient_stop::gradient_stop() noexcept
+			: _Offset(0.0F)
+			, _Color(rgba_color{}) {}
+		inline constexpr gradient_stop::gradient_stop(float offset, const rgba_color& color)
+			: _Offset(offset)
+			, _Color(color) {}
+
+		inline constexpr void gradient_stop::offset(float value) noexcept {
+			_Offset = value;
+		}
+		inline constexpr void gradient_stop::color(const rgba_color& value) noexcept {
+			_Color = value;
+		}
+
+		inline constexpr float gradient_stop::offset() const noexcept {
+			return _Offset;
+		}
+		inline constexpr rgba_color gradient_stop::color() const noexcept {
+			return _Color;
+		}
+
+		inline constexpr bool gradient_stop::operator==(const gradient_stop& rhs) {
+			return _Offset == rhs._Offset && _Color == rhs._Color;
+		}
+
+		inline constexpr bool gradient_stop::operator!=(const gradient_stop& rhs) {
+			return !((*this) == rhs);
+		}
 
 		template <class InputIterator>
 		inline brush::brush(const point_2d& begin, const point_2d& end,
@@ -2197,6 +2237,208 @@ namespace std::experimental::io2d {
 		}
 
 		// Surfaces
+
+		inline constexpr render_props::render_props() noexcept {}
+
+		inline constexpr render_props::render_props(antialias a, const matrix_2d& m,
+			compositing_op co) noexcept
+			: _Antialiasing(a)
+			, _Matrix(m)
+			, _Compositing(co) {}
+
+		inline constexpr void render_props::antialiasing(antialias a) noexcept {
+			_Antialiasing = a;
+		}
+
+		inline constexpr void render_props::compositing(compositing_op co) noexcept {
+			_Compositing = co;
+		}
+
+		inline constexpr void render_props::surface_matrix(const matrix_2d& m) noexcept {
+			_Matrix = m;
+		}
+
+		inline constexpr antialias render_props::antialiasing() const noexcept {
+			return _Antialiasing;
+		}
+
+		inline constexpr compositing_op render_props::compositing() const noexcept {
+			return _Compositing;
+		}
+
+		inline constexpr matrix_2d render_props::surface_matrix() const noexcept {
+			return _Matrix;
+		}
+
+		constexpr brush_props::brush_props() noexcept {}
+		constexpr brush_props::brush_props(experimental::io2d::wrap_mode w,
+			experimental::io2d::filter fi,
+			experimental::io2d::fill_rule fr,
+			matrix_2d m) noexcept
+			: _Wrap_mode(w)
+			, _Filter(fi)
+			, _Fill_rule(fr)
+			, _Matrix(m) {
+		}
+
+		inline constexpr void brush_props::filter(experimental::io2d::filter fi) noexcept {
+			_Filter = fi;
+		}
+
+		inline constexpr void brush_props::wrap_mode(experimental::io2d::wrap_mode w) noexcept {
+			_Wrap_mode = w;
+		}
+
+		inline constexpr void brush_props::fill_rule(experimental::io2d::fill_rule fr) noexcept {
+			_Fill_rule = fr;
+		}
+
+		inline constexpr void brush_props::matrix(const matrix_2d& m) noexcept {
+			_Matrix = m;
+		}
+
+		inline constexpr experimental::io2d::filter brush_props::filter() const noexcept {
+			return _Filter;
+		}
+
+		inline constexpr experimental::io2d::wrap_mode brush_props::wrap_mode() const noexcept {
+			return _Wrap_mode;
+		}
+
+		inline constexpr experimental::io2d::fill_rule brush_props::fill_rule() const noexcept {
+			return _Fill_rule;
+		}
+
+		inline constexpr matrix_2d brush_props::matrix() const noexcept {
+			return _Matrix;
+		}
+
+		template <class Allocator>
+		inline clip_props::clip_props(const path_builder<Allocator> &pf,
+			experimental::io2d::fill_rule fr)
+			: _Clip(path_group(pf))
+			, _Fill_rule(fr) { }
+
+		inline clip_props::clip_props(const path_group& pg,
+			experimental::io2d::fill_rule fr) noexcept
+			: _Clip(pg)
+			, _Fill_rule(fr) { }
+
+		inline clip_props::clip_props(const bounding_box& r,
+			experimental::io2d::fill_rule fr)
+			: _Clip()
+			, _Fill_rule(fr) {
+			path_builder<> clip;
+			clip.new_figure(r.top_left());
+			clip.rel_line({ r.width(), 0.0F });
+			clip.rel_line({ 0.0F, r.height() });
+			clip.rel_line({ -r.width(), 0.0F });
+			clip.close_figure();
+			_Clip = path_group(clip);
+		}
+
+		template <class Allocator>
+		inline void clip_props::clip(const path_builder<Allocator>& pf) {
+			_Clip = path_group(pf);
+		}
+
+		inline void clip_props::clip(const path_group& pg) noexcept {
+			_Clip = pg;
+		}
+
+		inline void clip_props::fill_rule(experimental::io2d::fill_rule fr) {
+			_Fill_rule = fr;
+		}
+
+		inline path_group clip_props::clip() const noexcept {
+			return _Clip;
+		}
+
+		inline experimental::io2d::fill_rule clip_props::fill_rule() const noexcept {
+			return _Fill_rule;
+		}
+
+		inline constexpr stroke_props::stroke_props() noexcept {}
+		inline constexpr stroke_props::stroke_props(float w,
+			experimental::io2d::line_cap lc,
+			experimental::io2d::line_join lj,
+			float ml) noexcept
+			: _Line_width(w)
+			, _Miter_limit(ml)
+			, _Line_cap(lc)
+			, _Line_join(lj) {}
+
+		inline constexpr void stroke_props::line_width(float w) noexcept {
+			_Line_width = w;
+		}
+		inline constexpr void stroke_props::line_cap(experimental::io2d::line_cap lc) noexcept {
+			_Line_cap = lc;
+		}
+		inline constexpr void stroke_props::line_join(experimental::io2d::line_join lj) noexcept {
+			_Line_join = lj;
+		}
+		inline constexpr void stroke_props::miter_limit(float ml) noexcept {
+			_Miter_limit = ml;
+		}
+
+		inline constexpr float stroke_props::line_width() const noexcept {
+			return _Line_width;
+		}
+		inline constexpr experimental::io2d::line_cap stroke_props::line_cap() const noexcept {
+			return _Line_cap;
+		}
+		inline constexpr experimental::io2d::line_join stroke_props::line_join() const noexcept {
+			return _Line_join;
+		}
+		inline constexpr float stroke_props::miter_limit() const noexcept {
+			return _Miter_limit;
+		}
+
+		inline constexpr mask_props::mask_props(experimental::io2d::wrap_mode w,
+			experimental::io2d::filter fi,
+			matrix_2d m) noexcept
+			: _Wrap_mode(w)
+			, _Filter(fi)
+			, _Matrix(m) {
+		}
+
+		inline constexpr void mask_props::wrap_mode(experimental::io2d::wrap_mode w) noexcept {
+			_Wrap_mode = w;
+		}
+		inline constexpr void mask_props::filter(experimental::io2d::filter fi) noexcept {
+			_Filter = fi;
+		}
+		inline constexpr void mask_props::matrix(const matrix_2d& m) noexcept {
+			_Matrix = m;
+		}
+
+		inline constexpr experimental::io2d::wrap_mode mask_props::wrap_mode() const noexcept {
+			return _Wrap_mode;
+		}
+		inline constexpr experimental::io2d::filter mask_props::filter() const noexcept {
+			return _Filter;
+		}
+		inline constexpr matrix_2d mask_props::matrix() const noexcept {
+			return _Matrix;
+		}
+
+		template <class Allocator>
+		inline void surface::fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
+			path_group pg(pf);
+			fill(b, pg, bp, rp, cl);
+		}
+
+		template <class Allocator>
+		inline void surface::stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl) {
+			path_group pg(pf);
+			stroke(b, pg, bp, sp, d, rp, cl);
+		}
+
+		template <class Allocator>
+		inline void surface::mask(const brush& b, const brush& mb, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>&rp, const optional<clip_props>& cl) {
+			path_group pg(pf);
+			mask(b, mb, pg, bp, mp, rp, cl);
+		}
 
 		inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of)
 			: _Mapped_surface(nh)
