@@ -267,13 +267,13 @@ namespace std::experimental::io2d {
 			return x * other.x + y * other.y;
 		}
 
-		inline float point_2d::angular_direction() const noexcept {
+/*		inline float point_2d::angular_direction() const noexcept {
 			auto v = atan2(y, x);
 			if (v < 0.0F) {
 				v += two_pi<float>;
 			}
 			return v;
-		}
+		}*/
 
         inline constexpr point_2d point_2d::zero() noexcept {
             return { 0.0f, 0.0f };
@@ -384,10 +384,10 @@ namespace std::experimental::io2d {
             , m22(1.0f) {
         }
         
-        inline constexpr matrix_2d matrix_2d::init_translate(const point_2d& value) noexcept {
+        inline constexpr matrix_2d matrix_2d::init_translate(point_2d value) noexcept {
             return{ 1.0F, 0.0F, 0.0F, 1.0F, value.x, value.y };
         }
-        inline constexpr matrix_2d matrix_2d::init_scale(const point_2d& value) noexcept {
+        inline constexpr matrix_2d matrix_2d::init_scale(point_2d value) noexcept {
             return{ value.x, 0.0F, 0.0F, value.y, 0.0F, 0.0F };
         }
         inline matrix_2d matrix_2d::init_rotate(float radians) noexcept {
