@@ -47,9 +47,20 @@ void surface::mark_dirty() {
 	cairo_surface_mark_dirty(_Surface.get());
 }
 
-void surface::mark_dirty(const bounding_box& rect) {
-	_Dirty_rect = rect;
-	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Double_to_int(rect.x()), _Double_to_int(rect.y()), _Double_to_int(rect.width()), _Double_to_int(rect.height()));
+void surface::mark_dirty(error_code& ec) noexcept {
+	cairo_surface_mark_dirty(_Surface.get());
+	ec.clear();
+}
+
+void surface::mark_dirty(const bounding_box& extents) {
+	_Dirty_rect = extents;
+	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+}
+
+void surface::mark_dirty(const bounding_box& extents, error_code& ec) noexcept {
+	_Dirty_rect = extents;
+	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+	ec.clear();
 }
 
 void surface::clear() {
@@ -198,7 +209,7 @@ void surface::stroke(const brush& b, const interpreted_path& pg, const optional<
 	cairo_stroke(context);
 }
 
-/*void surface::mask(const brush& b, const brush& mb, const interpreted_path& pg, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl) {
+void surface::mask(const brush& b, const brush& mb, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
@@ -206,6 +217,5 @@ void surface::stroke(const brush& b, const interpreted_path& pg, const optional<
 	_Set_mask_props(mp, mb);
 	cairo_set_source(context, b.native_handle());
 	cairo_new_path(context);
-	cairo_append_path(context, pg._Native_handle());
 	cairo_mask(context, mb.native_handle());
-}*/
+}

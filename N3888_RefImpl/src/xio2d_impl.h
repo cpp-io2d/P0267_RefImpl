@@ -39,7 +39,7 @@ namespace std::experimental::io2d {
 		}
 
 		// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'.
-		inline int _Double_to_int(float value, bool nearestNeighbor = true) {
+		inline int _Float_to_int(float value, bool nearestNeighbor = true) {
 			if (nearestNeighbor) {
 				// Round to the nearest neighbor.
 				return static_cast<int>(::std::round(value));
@@ -2483,25 +2483,18 @@ namespace std::experimental::io2d {
 			return _Matrix;
 		}
 
-		// divergent from paper
-/*		template <class Allocator>
+		// divergent from paper ?
+		template <class Allocator>
 		inline void surface::fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
 			interpreted_path pg(pf);
 			fill(b, pg, bp, rp, cl);
-		}*/
+		}
 
 		template <class Allocator>
 		inline void surface::stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl) {
 			interpreted_path pg(pf);
 			stroke(b, pg, bp, sp, d, rp, cl);
 		}
-
-		// divergent from paper
-/*		template <class Allocator>
-		inline void surface::mask(const brush& b, const brush& mb, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>&rp, const optional<clip_props>& cl) {
-			interpreted_path pg(pf);
-			mask(b, mb, pg, bp, mp, rp, cl);
-		}*/
 
 		inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of)
 			: _Mapped_surface(nh)

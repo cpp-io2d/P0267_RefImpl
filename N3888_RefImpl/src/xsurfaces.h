@@ -241,10 +241,13 @@ namespace std::experimental::io2d {
 			void stroke(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			_IO2D_API void stroke(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
-			void fill(const brush& b, const path_builder<Allocator>& pb, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			void fill(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			_IO2D_API void fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
-			template <class Allocator>
-			void mask(const brush& b, const brush& mb, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+
+			// Broken R6 - removed unused path from mask but forgot to eliminate this overload:
+			//template <class Allocator>
+			//void mask(const brush& b, const brush& mb, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+
 			_IO2D_API void mask(const brush& b, const brush& mb, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 		};
 
