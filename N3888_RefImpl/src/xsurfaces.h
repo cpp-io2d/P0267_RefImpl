@@ -438,7 +438,7 @@ namespace std::experimental::io2d {
 			surface::native_handle_type _Mapped_surface;
 			surface::native_handle_type _Map_of;
 
-			friend surface;
+			friend image_surface;
 			mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
 			mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, ::std::error_code& ec) noexcept;
 

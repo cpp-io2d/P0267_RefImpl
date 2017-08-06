@@ -703,8 +703,6 @@ void image_surface::save(string f, image_file_format idf) {
 	}
 }
 
-// make friendship decision
-/*
 void image_surface::map(const ::std::function<void(mapped_surface&)>& action) {
 	if (action != nullptr) {
 		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr });
@@ -727,35 +725,7 @@ void image_surface::map(const ::std::function<void(mapped_surface&, error_code&)
 	}
 	ec.clear();
 }
-*/
 
-// divergent from paper
-/*
-void image_surface::map(const ::std::function<void(mapped_surface&)>& action, const bounding_box& extents) {
-	if (action != nullptr) {
-		cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr });
-		action(m);
-	}
-	mark_dirty(extents);
-}
-
-void image_surface::map(const ::std::function<void(mapped_surface&, error_code&)>& action, const bounding_box& extents, error_code& ec) {
-	if (action != nullptr) {
-		cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr }, ec);
-		if (static_cast<bool>(ec)) {
-			return;
-		}
-		action(m, ec);
-		if (static_cast<bool>(ec)) {
-			return;
-		}
-		mark_dirty(extents);
-	}
-	ec.clear();
-}
-*/
 format image_surface::format() const noexcept {
 	return _Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get()));
 }
