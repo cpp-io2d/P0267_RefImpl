@@ -5,15 +5,16 @@
 bin_PROGRAMS = 		sample_app
 
 sample_app_SOURCES =	entrypoint.cpp \
-			sample_draw.cpp
+			sample_draw.cpp \
+			path_examples.cpp
 
 sample_app_CPPFLAGS =	@CPPFLAGS@
-sample_app_CPPFLAGS +=	-I../src
+sample_app_CPPFLAGS +=	-I../P0267_RefImpl
 sample_app_CPPFLAGS +=	@CAIRO_CFLAGS@
 sample_app_CXXFLAGS =	@CXXFLAGS@
 sample_app_CXXFLAGS +=	@X11_CFLAGS@
 sample_app_LDFLAGS =	-static
-sample_app_LDADD =	../src/libio2d.la
+sample_app_LDADD =	../P0267_RefImpl/libio2d.la
 sample_app_LDADD +=	@LIBS@
 sample_app_LDADD +=	@CAIRO_LIBS@
 if USE_XCB

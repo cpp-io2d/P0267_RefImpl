@@ -1,4 +1,4 @@
-AC_INIT([P0267_RefImpl], [1.5], [mikebmcl@gmail.com])
+AC_INIT([P0267_RefImpl], [1.6], [mikebmcl@gmail.com])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_CONFIG_MACRO_DIR([m4])
 AM_PROG_AR
@@ -11,7 +11,7 @@ AC_PROG_CXX_C_O
 
 AC_SUBST([LIBTOOL_DEPS])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile N3888_RefImpl/Makefile N3888_RefImpl/src/Makefile N3888_RefImpl/SampleApp/Makefile])
+AC_CONFIG_FILES([Makefile P0267_RefImpl/Makefile P0267_RefImpl/P0267_RefImpl/Makefile P0267_RefImpl/SampleApp/Makefile])
 
 AC_LANG([C++])
 
