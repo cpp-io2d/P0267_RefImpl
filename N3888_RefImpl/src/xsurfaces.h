@@ -34,8 +34,7 @@ namespace std::experimental::io2d {
 		enum class line_join {
 			miter,
 			round,
-			bevel,
-			miter_or_bevel
+			bevel
 		};
 
 		enum class compositing_op {
@@ -73,7 +72,7 @@ namespace std::experimental::io2d {
 		enum class format {
 			invalid,
 			argb32,
-			xrgb32,
+			rgb24,
 			a8,
 			rgb16_565,
 			rgb30
@@ -106,13 +105,10 @@ namespace std::experimental::io2d {
 			compositing_op _Compositing = compositing_op::over;
 		public:
 			constexpr render_props() noexcept;
-			constexpr explicit render_props(antialias a, const matrix_2d& m = matrix_2d{},
-				compositing_op co = compositing_op::over) noexcept;
-
+			constexpr explicit render_props(antialias a, const matrix_2d& m = matrix_2d{}, compositing_op co = compositing_op::over) noexcept;
 			constexpr void antialiasing(antialias a) noexcept;
 			constexpr void compositing(compositing_op co) noexcept;
 			constexpr void surface_matrix(const matrix_2d& m) noexcept;
-
 			constexpr antialias antialiasing() const noexcept;
 			constexpr compositing_op compositing() const noexcept;
 			constexpr matrix_2d surface_matrix() const noexcept;
@@ -125,47 +121,36 @@ namespace std::experimental::io2d {
 			matrix_2d _Matrix;
 
 		public:
+			// suprlus to paper
 			constexpr brush_props() noexcept;
-			constexpr brush_props(experimental::io2d::wrap_mode w,
-				experimental::io2d::filter fi = experimental::io2d::filter::bilinear,
-				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding,
-				matrix_2d m = matrix_2d{}) noexcept;
 
-			constexpr void filter(experimental::io2d::filter fi) noexcept;
-			constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept;
-			constexpr void fill_rule(experimental::io2d::fill_rule fr) noexcept;
-			constexpr void matrix(const matrix_2d& m) noexcept;
-
-			constexpr experimental::io2d::filter filter() const noexcept;
-			constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept;
-			constexpr experimental::io2d::fill_rule fill_rule() const noexcept;
-			constexpr matrix_2d matrix() const noexcept;
+			constexpr brush_props(io2d::wrap_mode w = io2d::wrap_mode::none, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, matrix_2d m = matrix_2d{}) noexcept;
+			constexpr void filter(io2d::filter fi) noexcept;
+			constexpr void wrap_mode(io2d::wrap_mode w) noexcept;
+			constexpr void fill_rule(io2d::fill_rule fr) noexcept;
+			constexpr void brush_matrix(const matrix_2d& m) noexcept;
+			constexpr io2d::filter filter() const noexcept;
+			constexpr io2d::wrap_mode wrap_mode() const noexcept;
+			constexpr io2d::fill_rule fill_rule() const noexcept;
+			constexpr matrix_2d brush_matrix() const noexcept;
 		};
 
 		class clip_props {
 			interpreted_path _Clip;
 			experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
 		public:
+			// suprlus to paper
+			explicit clip_props(const bounding_box& r, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
+
 			clip_props() noexcept = default;
 			template <class Allocator>
-			explicit clip_props(const path_builder<Allocator> &pf,
-				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
-
-			explicit clip_props(const interpreted_path& pg,
-				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept;
-
-			explicit clip_props(const bounding_box& r,
-				experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
-
+			explicit clip_props(const path_builder<Allocator>& pb, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
+			explicit clip_props(const interpreted_path& pg, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept;
 			template <class Allocator>
-			void clip(const path_builder<Allocator>& pf);
-
+			void clip(const path_builder<Allocator>& pb);
 			void clip(const interpreted_path& pg) noexcept;
-
-			void fill_rule(experimental::io2d::fill_rule fr);
-
+			void fill_rule(experimental::io2d::fill_rule fr) noexcept;
 			interpreted_path clip() const noexcept;
-
 			experimental::io2d::fill_rule fill_rule() const noexcept;
 		};
 
@@ -177,20 +162,16 @@ namespace std::experimental::io2d {
 			//optional<dashes> _Dashes;
 		public:
 			constexpr stroke_props() noexcept;
-			constexpr explicit stroke_props(float w,
-				experimental::io2d::line_cap lc = experimental::io2d::line_cap::none,
-				experimental::io2d::line_join lj = experimental::io2d::line_join::miter,
-				float ml = 10.0F) noexcept;
-
+			constexpr explicit stroke_props(float w, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
 			constexpr void line_width(float w) noexcept;
 			constexpr void line_cap(experimental::io2d::line_cap lc) noexcept;
 			constexpr void line_join(experimental::io2d::line_join lj) noexcept;
 			constexpr void miter_limit(float ml) noexcept;
-
 			constexpr float line_width() const noexcept;
 			constexpr experimental::io2d::line_cap line_cap() const noexcept;
 			constexpr experimental::io2d::line_join line_join() const noexcept;
 			constexpr float miter_limit() const noexcept;
+			constexpr float max_miter_limit() const noexcept;
 		};
 
 		class mask_props {
@@ -199,21 +180,19 @@ namespace std::experimental::io2d {
 			matrix_2d _Matrix = matrix_2d{};
 
 		public:
-			constexpr mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat,
-				experimental::io2d::filter fi = experimental::io2d::filter::good,
-				matrix_2d m = matrix_2d{}) noexcept;
+			// suprlus to paper
 			constexpr mask_props(const mask_props&) noexcept = default;
 			constexpr mask_props& operator=(const mask_props&) noexcept = default;
 			mask_props(mask_props&&) noexcept = default;
 			mask_props& operator=(mask_props&&) noexcept = default;
 
+			constexpr mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat, experimental::io2d::filter fi = experimental::io2d::filter::good, matrix_2d m = matrix_2d{}) noexcept;
 			constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept;
 			constexpr void filter(experimental::io2d::filter fi) noexcept;
-			constexpr void matrix(const matrix_2d& m) noexcept;
-
+			constexpr void mask_matrix(const matrix_2d& m) noexcept;
 			constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept;
 			constexpr experimental::io2d::filter filter() const noexcept;
-			constexpr matrix_2d matrix() const noexcept;
+			constexpr matrix_2d mask_matrix() const noexcept;
 		};
 
 		struct _Surface_native_handles {

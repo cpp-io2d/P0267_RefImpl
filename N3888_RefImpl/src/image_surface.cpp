@@ -235,7 +235,7 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_fil
 				memcpy(mapData + (i * mapStride), pixelData.get() + i * dataStride, mapStride);
 			}
 		} break;
-		case std::experimental::io2d::v1::format::xrgb32:
+		case std::experimental::io2d::v1::format::rgb24:
 		{
 			for (int i = 0; i < h; i++) {
 				memcpy(mapData + (i * mapStride), pixelData.get() + i * dataStride, mapStride);
@@ -326,7 +326,7 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_fil
 				memcpy(mapData + (i * mapStride), pixelData.get() + i * pitch, mapStride);
 			}
 		} break;
-		case std::experimental::io2d::v1::format::xrgb32:
+		case std::experimental::io2d::v1::format::rgb24:
 		{
 			for (int i = 0; i < h; i++) {
 				memcpy(mapData + (i * mapStride), pixelData.get() + i * pitch, mapStride);
@@ -416,7 +416,7 @@ void image_surface::save(string f, image_file_format idf) {
 				memcpy(sfcData.get() + (i * sfcStride), mapData + (i * sfcStride), sfcStride);
 			}
 		} break;
-		case std::experimental::io2d::v1::format::xrgb32:
+		case std::experimental::io2d::v1::format::rgb24:
 		{
 			pngImg.format = PNG_FORMAT_BGRA; // We'll write the alpha as-is in case someone was storing some data in them.
 			for (int i = 0; i < h; i++) {
@@ -570,7 +570,7 @@ void image_surface::save(string f, image_file_format idf) {
 				memcpy(sfcData.get() + (i * sfcStride), mapData + (i * sfcStride), sfcStride);
 			}
 		} break;
-		case std::experimental::io2d::v1::format::xrgb32:
+		case std::experimental::io2d::v1::format::rgb24:
 		{
 			for (int i = 0; i < h; i++) {
 				memcpy(sfcData.get() + (i * sfcStride), mapData + (i * sfcStride), sfcStride);

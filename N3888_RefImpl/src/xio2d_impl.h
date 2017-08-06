@@ -1222,8 +1222,6 @@ namespace std::experimental::io2d {
 				return CAIRO_LINE_JOIN_ROUND;
 			case ::std::experimental::io2d::line_join::bevel:
 				return CAIRO_LINE_JOIN_BEVEL;
-			case ::std::experimental::io2d::line_join::miter_or_bevel:
-				return CAIRO_LINE_JOIN_MITER;
 			default:
 				throw ::std::runtime_error("Unknown line_join value.");
 			}
@@ -1232,7 +1230,7 @@ namespace std::experimental::io2d {
 		inline ::std::experimental::io2d::line_join _Cairo_line_join_t_to_line_join(cairo_line_join_t clj) {
 			switch (clj) {
 			case CAIRO_LINE_JOIN_MITER:
-				return ::std::experimental::io2d::line_join::miter_or_bevel;
+				return ::std::experimental::io2d::line_join::miter;
 			case CAIRO_LINE_JOIN_ROUND:
 				return ::std::experimental::io2d::line_join::round;
 			case CAIRO_LINE_JOIN_BEVEL:
@@ -1380,7 +1378,7 @@ namespace std::experimental::io2d {
 				return CAIRO_FORMAT_INVALID;
 			case ::std::experimental::io2d::format::argb32:
 				return CAIRO_FORMAT_ARGB32;
-			case ::std::experimental::io2d::format::xrgb32:
+			case ::std::experimental::io2d::format::rgb24:
 				return CAIRO_FORMAT_RGB24;
 			case ::std::experimental::io2d::format::a8:
 				return CAIRO_FORMAT_A8;
@@ -1400,7 +1398,7 @@ namespace std::experimental::io2d {
 			case CAIRO_FORMAT_ARGB32:
 				return ::std::experimental::io2d::format::argb32;
 			case CAIRO_FORMAT_RGB24:
-				return ::std::experimental::io2d::format::xrgb32;
+				return ::std::experimental::io2d::format::rgb24;
 			case CAIRO_FORMAT_A8:
 				return ::std::experimental::io2d::format::a8;
 			case CAIRO_FORMAT_RGB16_565:
@@ -2356,7 +2354,7 @@ namespace std::experimental::io2d {
 			_Fill_rule = fr;
 		}
 
-		inline constexpr void brush_props::matrix(const matrix_2d& m) noexcept {
+		inline constexpr void brush_props::brush_matrix(const matrix_2d& m) noexcept {
 			_Matrix = m;
 		}
 
@@ -2372,7 +2370,7 @@ namespace std::experimental::io2d {
 			return _Fill_rule;
 		}
 
-		inline constexpr matrix_2d brush_props::matrix() const noexcept {
+		inline constexpr matrix_2d brush_props::brush_matrix() const noexcept {
 			return _Matrix;
 		}
 
@@ -2409,7 +2407,7 @@ namespace std::experimental::io2d {
 			_Clip = pg;
 		}
 
-		inline void clip_props::fill_rule(experimental::io2d::fill_rule fr) {
+		inline void clip_props::fill_rule(experimental::io2d::fill_rule fr) noexcept{
 			_Fill_rule = fr;
 		}
 
@@ -2471,7 +2469,7 @@ namespace std::experimental::io2d {
 		inline constexpr void mask_props::filter(experimental::io2d::filter fi) noexcept {
 			_Filter = fi;
 		}
-		inline constexpr void mask_props::matrix(const matrix_2d& m) noexcept {
+		inline constexpr void mask_props::mask_matrix(const matrix_2d& m) noexcept {
 			_Matrix = m;
 		}
 
@@ -2481,7 +2479,7 @@ namespace std::experimental::io2d {
 		inline constexpr experimental::io2d::filter mask_props::filter() const noexcept {
 			return _Filter;
 		}
-		inline constexpr matrix_2d mask_props::matrix() const noexcept {
+		inline constexpr matrix_2d mask_props::mask_matrix() const noexcept {
 			return _Matrix;
 		}
 
