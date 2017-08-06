@@ -86,11 +86,11 @@ void sample_draw::operator()(display_surface& ds) {
 
 void test_image_load_save(display_surface& ds) {
 #ifdef _Filesystem_support_test
-	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), format::argb32, image_file_format::jpeg);
-	//static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_file_format::png);
+	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::argb32);
+	//static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_file_format::png, format::a8);
 #else
-	static auto imgSfc = image_surface("2017_03_05.jpg"s, format::argb32, image_file_format::jpeg);
-	//static auto alphaSfc = image_surface("alpha8.png"s, format::a8, image_file_format::png);
+	static auto imgSfc = image_surface("2017_03_05.jpg"s, format::argb32, image_file_format::jpeg, format::argb32);
+	//static auto alphaSfc = image_surface("alpha8.png"s, format::a8, image_file_format::png, format::a8);
 #endif
 	static bool saveOnce = false;
 	if (!saveOnce) {
