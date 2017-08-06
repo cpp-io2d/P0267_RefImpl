@@ -304,23 +304,23 @@ void display_surface::size_change_callback(const ::std::function<void(display_su
 	_Size_change_fn = make_unique<::std::function<void(display_surface& sfc)>>(fn);
 }
 
-void display_surface::width(int w) noexcept {
+void display_surface::width(int w) {
 	dimensions(w, _Width);
 }
 
-void display_surface::height(int h) noexcept {
+void display_surface::height(int h) {
 	dimensions(_Width, h);
 }
 
-void display_surface::display_width(int w) noexcept {
+void display_surface::display_width(int w) {
 	display_dimensions(w, _Display_height);
 }
 
-void display_surface::display_height(int h) noexcept {
+void display_surface::display_height(int h) {
 	display_dimensions(_Display_width, h);
 }
 
-void display_surface::dimensions(int w, int h) noexcept {
+void display_surface::dimensions(int w, int h) {
 	bool recreate = false;
 
 	if (_Width != w) {
@@ -340,7 +340,7 @@ void display_surface::dimensions(int w, int h) noexcept {
 	}
 }
 
-void display_surface::display_dimensions(int dw, int dh) noexcept {
+void display_surface::display_dimensions(int dw, int dh) {
 	_Display_width = dw;
 	_Display_height = dh;
 	_Resize_window();
@@ -357,7 +357,7 @@ void display_surface::user_scaling_callback(const function<experimental::io2d::b
 	_User_scaling_fn = make_unique<function<experimental::io2d::bounding_box(const display_surface&, bool&)>>(fn);
 }
 
-void display_surface::letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp) noexcept {
+void display_surface::letterbox_brush(const optional<brush>& b, const optional<brush_props> bp) noexcept {
 	_Letterbox_brush = b;
 	_Letterbox_brush_props = bp;
 }
@@ -441,7 +441,7 @@ experimental::io2d::scaling display_surface::scaling() const noexcept {
 	}
 }
 
-const optional<brush>& display_surface::letterbox_brush() const noexcept {
+optional<brush> display_surface::letterbox_brush() const noexcept {
 	return _Letterbox_brush;
 }
 

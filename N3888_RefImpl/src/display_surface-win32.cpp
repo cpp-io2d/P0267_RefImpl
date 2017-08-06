@@ -549,6 +549,6 @@ int display_surface::begin_show() {
 	return static_cast<int>(msg.wParam);
 }
 
-void display_surface::end_show() noexcept {
+void display_surface::end_show() {
 	PostQuitMessage(0);
 }

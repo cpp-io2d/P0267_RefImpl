@@ -52,54 +52,6 @@ void surface::mark_dirty(const bounding_box& rect) {
 	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Double_to_int(rect.x()), _Double_to_int(rect.y()), _Double_to_int(rect.width()), _Double_to_int(rect.height()));
 }
 
-void surface::map(const ::std::function<void(mapped_surface&)>& action) {
-	if (action != nullptr) {
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr });
-		action(m);
-		mark_dirty();
-	}
-}
-
-void surface::map(const ::std::function<void(mapped_surface&, error_code&)>& action, error_code& ec) {
-	if (action != nullptr) {
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr }, ec);
-		if (static_cast<bool>(ec)) {
-			return;
-		}
-		action(m, ec);
-		if (static_cast<bool>(ec)) {
-			return;
-		}
-		mark_dirty();
-	}
-	ec.clear();
-}
-
-void surface::map(const ::std::function<void(mapped_surface&)>& action, const bounding_box& extents) {
-	if (action != nullptr) {
-		cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr });
-		action(m);
-	}
-	mark_dirty(extents);
-}
-
-void surface::map(const ::std::function<void(mapped_surface&, error_code&)>& action, const bounding_box& extents, error_code& ec) {
-	if (action != nullptr) {
-		cairo_rectangle_int_t cextents{ _Double_to_int(extents.x()), _Double_to_int(extents.y()), _Double_to_int(extents.width()), _Double_to_int(extents.height()) };
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), &cextents), nullptr }, { _Surface.get(), nullptr }, ec);
-		if (static_cast<bool>(ec)) {
-			return;
-		}
-		action(m, ec);
-		if (static_cast<bool>(ec)) {
-			return;
-		}
-		mark_dirty(extents);
-	}
-	ec.clear();
-}
-
 void surface::clear() {
 	cairo_save(_Context.get());
 	cairo_set_operator(_Context.get(), CAIRO_OPERATOR_CLEAR);
@@ -246,7 +198,7 @@ void surface::stroke(const brush& b, const interpreted_path& pg, const optional<
 	cairo_stroke(context);
 }
 
-void surface::mask(const brush& b, const brush& mb, const interpreted_path& pg, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl) {
+/*void surface::mask(const brush& b, const brush& mb, const interpreted_path& pg, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
@@ -256,4 +208,4 @@ void surface::mask(const brush& b, const brush& mb, const interpreted_path& pg, 
 	cairo_new_path(context);
 	cairo_append_path(context, pg._Native_handle());
 	cairo_mask(context, mb.native_handle());
-}
+}*/

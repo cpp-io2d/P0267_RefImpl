@@ -225,57 +225,59 @@ namespace std::experimental::io2d {
 			surface& operator=(surface&& other) noexcept = default;
 
 		public:
+			// surplus to paper
 			_IO2D_API native_handle_type native_handle() const;
-
-			// \ref{\iotwod.surface.cons}, constructors:
-			surface() = delete;
-
-			// \ref{\iotwod.surface.modifiers.state}, state modifiers:
-			_IO2D_API void flush();
-			_IO2D_API void flush(::std::error_code& ec) noexcept;
-			_IO2D_API void mark_dirty();
-			_IO2D_API void mark_dirty(const bounding_box& rect);
-			_IO2D_API void map(const ::std::function<void(mapped_surface&)>& action);
-			_IO2D_API void map(const ::std::function<void(mapped_surface&, error_code&)>& action, ::std::error_code& ec);
-			_IO2D_API void map(const ::std::function<void(mapped_surface&)>& action, const bounding_box& extents);
-			_IO2D_API void map(const ::std::function<void(mapped_surface&, error_code&)>& action, const bounding_box& extents, ::std::error_code& ec);
-
-			// \ref{\iotwod.surface.modifiers.render}, render modifiers:
 			_IO2D_API void clear();
+
+			surface() = delete;
+			_IO2D_API void flush();
+			_IO2D_API void flush(error_code& ec) noexcept;
+			_IO2D_API void mark_dirty();
+			void mark_dirty(error_code& ec) noexcept;
+			_IO2D_API void mark_dirty(const bounding_box& extents);
+			void mark_dirty(const bounding_box& extents, error_code& ec) noexcept;
 			_IO2D_API void paint(const brush& b, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
-			void fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
-			_IO2D_API void fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
-			template <class Allocator>
-			void stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			void stroke(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			_IO2D_API void stroke(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
-			void mask(const brush& b, const brush& mb, const path_builder<Allocator>& pf, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>&rp = nullopt, const optional<clip_props>& cl = nullopt);
-			_IO2D_API void mask(const brush& b, const brush& mb, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			void fill(const brush& b, const path_builder<Allocator>& pb, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			_IO2D_API void fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			template <class Allocator>
+			void mask(const brush& b, const brush& mb, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			_IO2D_API void mask(const brush& b, const brush& mb, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 		};
 
 		class image_surface : public surface {
 			friend surface;
 		public:
-			image_surface(image_surface&& other) /*noexcept*/ = default;
-			image_surface& operator=(image_surface&& other) /*noexcept*/ = default;
-			_IO2D_API image_surface(::std::experimental::io2d::format fmt, int width, int height);
+			// surplus to paper
+			_IO2D_API int stride() const noexcept;
+
+			_IO2D_API image_surface(io2d::format fmt, int width, int height);
 #ifdef _Filesystem_support_test
-			_IO2D_API image_surface(::std::experimental::filesystem::path f, experimental::io2d::format fmt, image_file_format idf);
+			_IO2D_API image_surface(filesystem::path f, image_file_format i, io2d::format fmt);
+			_IO2D_API image_surface(filesystem::path f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
 #else
 			image_surface(::std::string f, experimental::io2d::format fmt, image_file_format idf);
+			image_surface(::std::string f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
 #endif
-			// Modifiers
+			image_surface(image_surface&&) = default;
+			image_surface& operator=(image_surface&&) = default;
 #ifdef _Filesystem_support_test
-			_IO2D_API void save(::std::experimental::filesystem::path f, image_file_format idf);
+			void save(filesystem::path p, image_file_format i);
+			void save(filesystem::path p, image_file_format i, error_code& ec) noexcept;
 #else
-			void save(::std::string f, image_file_format idf);
+			void save(::std::string f, image_file_format i);
+			void save(::std::string f, image_file_format i, error_code& ec) noexcept;
 #endif
-			// Observers
-			_IO2D_API::std::experimental::io2d::format format() const noexcept;
+			void map(const function<void(mapped_surface&)>& action);
+			void map(const function<void(mapped_surface&, error_code&)>& action, error_code& ec);
+			static int max_width() noexcept;
+			static int max_height() noexcept;
+			_IO2D_API io2d::format format() const noexcept;
 			_IO2D_API int width() const noexcept;
 			_IO2D_API int height() const noexcept;
-			_IO2D_API int stride() const noexcept;
 		};
 
 #if defined(USE_XCB)
@@ -369,6 +371,7 @@ namespace std::experimental::io2d {
 			void _Render_for_scaling_uniform_or_letterbox(::std::error_code& ec) noexcept;
 
 		public:
+			// surplus to paper
 #ifdef _WIN32_WINNT
 			typedef _Win32_display_surface_native_handle native_handle_type;
 #elif defined(USE_XCB)
@@ -378,42 +381,41 @@ namespace std::experimental::io2d {
 #endif
 			_IO2D_API native_handle_type native_handle() const;
 
-			//display_surface() = delete;
-			//display_surface(const display_surface&) = delete;
-			//display_surface& operator=(const display_surface&) = delete;
-			display_surface(display_surface&& other) /*noexcept*/ = default;
-			display_surface& operator=(display_surface&& other) /*noexcept*/ = default;
-
-			_IO2D_API display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
-				::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, float fps = 30.0F);
-			//display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat, ::std::error_code& ec,
-			//	::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, float fps = 30.0F) noexcept;
-
-			_IO2D_API display_surface(int preferredWidth, int preferredHeight, ::std::experimental::io2d::format preferredFormat,
-				int preferredDisplayWidth, int preferredDisplayHeight,
-				::std::experimental::io2d::scaling scl = ::std::experimental::io2d::scaling::letterbox, ::std::experimental::io2d::refresh_rate rr = ::std::experimental::io2d::refresh_rate::as_fast_as_possible, float fps = 30.0F);
-
+			display_surface() = delete;
+			display_surface(const display_surface&) = delete;
+			display_surface& operator=(const display_surface&) = delete;
+			
+			// declarations from paper
+			display_surface(display_surface&& other) noexcept = default;
+			display_surface& operator=(display_surface&& other) noexcept = default;
+			_IO2D_API display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+			_IO2D_API display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 			_IO2D_API ~display_surface();
-
-			_IO2D_API void draw_callback(const ::std::function<void(display_surface& sfc)>& fn);
-			_IO2D_API void size_change_callback(const ::std::function<void(display_surface& sfc)>& fn);
-			_IO2D_API void width(int w) noexcept;
-			_IO2D_API void height(int h) noexcept;
-			_IO2D_API void display_width(int w) noexcept;
-			_IO2D_API void display_height(int h) noexcept;
-			_IO2D_API void dimensions(int w, int h) noexcept;
-			_IO2D_API void display_dimensions(int dw, int dh) noexcept;
+			_IO2D_API void draw_callback(const function<void(display_surface& sfc)>& fn);
+			_IO2D_API void size_change_callback(const function<void(display_surface& sfc)>& fn);
+			_IO2D_API void width(int w);
+			_IO2D_API void width(int w, error_code& ec) noexcept;
+			_IO2D_API void height(int h);
+			_IO2D_API void height(int h, error_code& ec) noexcept;
+			_IO2D_API void display_width(int w);
+			_IO2D_API void display_width(int w, error_code& ec) noexcept;
+			_IO2D_API void display_height(int h);
+			_IO2D_API void display_height(int h, error_code& ec) noexcept;
+			_IO2D_API void dimensions(int w, int h);
+			_IO2D_API void dimensions(int w, int h, error_code& ec) noexcept;
+			_IO2D_API void display_dimensions(int dw, int dh);
+			_IO2D_API void display_dimensions(int dw, int dh, error_code& ec) noexcept;
 			_IO2D_API void scaling(experimental::io2d::scaling scl) noexcept;
-			_IO2D_API void user_scaling_callback(const ::std::function<::std::experimental::io2d::bounding_box(const display_surface&, bool&)>& fn);
-			_IO2D_API void letterbox_brush(const optional<brush>& b, const optional<brush_props>& bp = nullopt) noexcept;
+			_IO2D_API void user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn);
+			_IO2D_API void letterbox_brush(const optional<brush>& b, const optional<brush_props> = nullopt) noexcept;
 			_IO2D_API void auto_clear(bool val) noexcept;
-			_IO2D_API void refresh_rate(::std::experimental::io2d::refresh_rate rr) noexcept;
+			_IO2D_API void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
 			_IO2D_API bool desired_frame_rate(float fps) noexcept;
 			_IO2D_API void redraw_required() noexcept;
-
 			_IO2D_API int begin_show();
-			_IO2D_API void end_show() noexcept;
-
+			void end_show();
 			_IO2D_API experimental::io2d::format format() const noexcept;
 			_IO2D_API int width() const noexcept;
 			_IO2D_API int height() const noexcept;
@@ -423,8 +425,8 @@ namespace std::experimental::io2d {
 			_IO2D_API point_2d display_dimensions() const noexcept;
 			_IO2D_API experimental::io2d::scaling scaling() const noexcept;
 			_IO2D_API function<experimental::io2d::bounding_box(const display_surface&, bool&)> user_scaling_callback() const;
-			_IO2D_API function<experimental::io2d::bounding_box(const display_surface&, bool&)> user_scaling_callback(::std::error_code& ec) const noexcept;
-			_IO2D_API const optional<brush>& letterbox_brush() const noexcept;
+			_IO2D_API function<experimental::io2d::bounding_box(const display_surface&, bool&)> user_scaling_callback(error_code& ec) const noexcept;
+			_IO2D_API optional<brush> letterbox_brush() const noexcept;
 			_IO2D_API optional<brush_props> letterbox_brush_props() const noexcept;
 			_IO2D_API bool auto_clear() const noexcept;
 			_IO2D_API experimental::io2d::refresh_rate refresh_rate() const noexcept;
@@ -441,27 +443,23 @@ namespace std::experimental::io2d {
 			mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, ::std::error_code& ec) noexcept;
 
 		public:
-			mapped_surface() = delete;
+			// surplus to paper
 			mapped_surface(const mapped_surface&) = delete;
 			mapped_surface& operator=(const mapped_surface&) = delete;
 			mapped_surface(mapped_surface&& other) = delete;
 			mapped_surface& operator=(mapped_surface&& other) = delete;
-			~mapped_surface();
-
-			// Modifiers
-			void commit_changes();
-			void commit_changes(::std::error_code& ec) noexcept;
 			void commit_changes(const bounding_box& area);
 			void commit_changes(const bounding_box& area, ::std::error_code& ec) noexcept;
-
+			
+			mapped_surface() = delete;
+			~mapped_surface();
+			void commit_changes();
+			void commit_changes(error_code& ec) noexcept;
 			unsigned char* data();
-			unsigned char* data(::std::error_code& ec) noexcept;
-
-			// Observers
+			unsigned char* data(error_code& ec) noexcept;
 			const unsigned char* data() const;
-			const unsigned char* data(::std::error_code& ec) const noexcept;
-
-			::std::experimental::io2d::format format() const noexcept;
+			const unsigned char* data(error_code& ec) const noexcept;
+			experimental::io2d::format format() const noexcept;
 			int width() const noexcept;
 			int height() const noexcept;
 			int stride() const noexcept;
