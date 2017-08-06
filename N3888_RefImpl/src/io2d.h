@@ -252,49 +252,34 @@ namespace std {
 
 				int format_stride_for_width(format format, int width) noexcept;
 
-				display_surface make_display_surface(int preferredWidth,
-					int preferredHeight, format preferredFormat,
-					scaling scl = scaling::letterbox,
-					refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 
-				display_surface make_display_surface(int preferredWidth,
-					int preferredHeight, format preferredFormat, error_code& ec,
-					scaling scl = scaling::letterbox,
-					refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 
-				display_surface make_display_surface(int preferredWidth,
-					int preferredHeight, format preferredFormat, int preferredDisplayWidth,
-					int preferredDisplayHeight, scaling scl = scaling::letterbox,
-					refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 
-				display_surface make_display_surface(int preferredWidth,
-					int preferredHeight, format preferredFormat, int preferredDisplayWidth,
-					int preferredDisplayHeight, error_code& ec,
-					scaling scl = scaling::letterbox,
-					refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 
 				image_surface make_image_surface(format format, int width, int height);
 
-				image_surface make_image_surface(format format, int width, int height,
-					error_code& ec) noexcept;
+				image_surface make_image_surface(format format, int width, int height, error_code& ec) noexcept;
 
 				image_surface copy_image_surface(image_surface& sfc) noexcept;
 
-				float angle_for_point(point_2d ctr, point_2d pt,
-					point_2d scl = point_2d{ 1.0f, 1.0f }) noexcept;
+				float angle_for_point(point_2d ctr, point_2d pt) noexcept;
 
 				point_2d point_for_angle(float ang, float rad = 1.0f) noexcept;
 
 				point_2d point_for_angle(float ang, point_2d rad) noexcept;
 
-				point_2d arc_start(point_2d ctr, float sang, point_2d rad,
-					const matrix_2d& m = matrix_2d{}) noexcept;
+				point_2d arc_start(point_2d ctr, float sang, point_2d rad, const matrix_2d& m = matrix_2d{}) noexcept;
 
-				point_2d arc_center(point_2d cpt, float sang, point_2d rad,
-					const matrix_2d& m = matrix_2d{}) noexcept;
+				point_2d arc_center(point_2d cpt, float sang, point_2d rad, const matrix_2d& m = matrix_2d{}) noexcept;
 
-				point_2d arc_end(point_2d cpt, float eang, point_2d rad,
-					const matrix_2d& m = matrix_2d{}) noexcept;
+				point_2d arc_end(point_2d cpt, float eang, point_2d rad, const matrix_2d& m = matrix_2d{}) noexcept;
+
+				// surplus to paper
+				float angle_for_point(point_2d ctr, point_2d pt, point_2d scl = point_2d{ 1.0f, 1.0f }) noexcept;
 			}
 		}
 	}
