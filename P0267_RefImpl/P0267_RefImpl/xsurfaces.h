@@ -451,8 +451,6 @@ namespace std::experimental::io2d {
 			mapped_surface& operator=(const mapped_surface&) = delete;
 			mapped_surface(mapped_surface&& other) = delete;
 			mapped_surface& operator=(mapped_surface&& other) = delete;
-			void commit_changes(const bounding_box& area);
-			void commit_changes(const bounding_box& area, ::std::error_code& ec) noexcept;
 			
 			mapped_surface() = delete;
 			~mapped_surface();

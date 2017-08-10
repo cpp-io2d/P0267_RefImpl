@@ -2547,17 +2547,6 @@ namespace std::experimental::io2d {
 			ec.clear();
 		}
 
-		inline void mapped_surface::commit_changes(const bounding_box& area) {
-			cairo_surface_mark_dirty_rectangle(_Mapped_surface.csfce, static_cast<int>(area.x()), static_cast<int>(area.y()),
-				static_cast<int>(area.width()), static_cast<int>(area.height()));
-		}
-
-		inline void mapped_surface::commit_changes(const bounding_box& area, error_code& ec) noexcept {
-			cairo_surface_mark_dirty_rectangle(_Mapped_surface.csfce, static_cast<int>(area.x()), static_cast<int>(area.y()),
-				static_cast<int>(area.width()), static_cast<int>(area.height()));
-			ec.clear();
-		}
-
 		inline unsigned char* mapped_surface::data() {
 			auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
 			if (result == nullptr) {
