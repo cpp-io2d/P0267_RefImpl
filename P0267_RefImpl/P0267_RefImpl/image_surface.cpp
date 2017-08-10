@@ -401,7 +401,7 @@ void image_surface::save(string f, image_file_format idf) {
 		const auto w = width();
 		const auto h = height();
 		const size_t sfcStride = w * 4;
-		const size_t mapStride = stride();
+		const size_t mapStride = cairo_image_surface_get_stride(_Surface.get());
 		auto sfcData = make_unique<unsigned char[]>(sfcStride * h);
 		switch (_Format)
 		{
@@ -555,7 +555,7 @@ void image_surface::save(string f, image_file_format idf) {
 		const auto w = width();
 		const auto h = height();
 		const size_t sfcStride = (_Format == format::a8 ? w : w * 4);
-		const size_t mapStride = stride();
+		const size_t mapStride = cairo_image_surface_get_stride(_Surface.get());
 		auto sfcData = make_unique<unsigned char[]>(sfcStride * h);
 
 		switch (_Format)
@@ -736,10 +736,6 @@ int image_surface::width() const noexcept {
 
 int image_surface::height() const noexcept {
 	return cairo_image_surface_get_height(_Surface.get());
-}
-
-int image_surface::stride() const noexcept {
-	return cairo_image_surface_get_stride(_Surface.get());
 }
 
 #ifdef __clang__

@@ -254,9 +254,6 @@ namespace std::experimental::io2d {
 		class image_surface : public surface {
 			friend surface;
 		public:
-			// surplus to paper
-			_IO2D_API int stride() const noexcept;
-
 			_IO2D_API image_surface(io2d::format fmt, int width, int height);
 #ifdef _Filesystem_support_test
 			_IO2D_API image_surface(filesystem::path f, image_file_format i, io2d::format fmt);
