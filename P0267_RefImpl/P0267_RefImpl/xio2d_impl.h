@@ -2331,7 +2331,6 @@ namespace std::experimental::io2d {
 			return _Matrix;
 		}
 
-		constexpr brush_props::brush_props() noexcept {}
 		constexpr brush_props::brush_props(experimental::io2d::wrap_mode w,
 			experimental::io2d::filter fi,
 			experimental::io2d::fill_rule fr,

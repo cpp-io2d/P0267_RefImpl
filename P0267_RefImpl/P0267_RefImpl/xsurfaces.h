@@ -116,14 +116,11 @@ namespace std::experimental::io2d {
 
 		class brush_props {
 			experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::none;
-			experimental::io2d::filter _Filter = experimental::io2d::filter::bilinear;
+			experimental::io2d::filter _Filter = experimental::io2d::filter::good;
 			experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
 			matrix_2d _Matrix;
 
 		public:
-			// suprlus to paper
-			constexpr brush_props() noexcept;
-
 			constexpr brush_props(io2d::wrap_mode w = io2d::wrap_mode::none, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, matrix_2d m = matrix_2d{}) noexcept;
 			constexpr void filter(io2d::filter fi) noexcept;
 			constexpr void wrap_mode(io2d::wrap_mode w) noexcept;
