@@ -65,7 +65,7 @@ namespace std::experimental::io2d {
 
 			constexpr bool operator==(const abs_matrix& lhs, const abs_matrix& rhs) noexcept;
 			constexpr bool operator!=(const abs_matrix& lhs, const abs_matrix& rhs) noexcept;
-			
+
 			class rel_matrix {
 				matrix_2d _Matrix;
 				friend constexpr bool operator==(const rel_matrix&, const rel_matrix&) noexcept;
@@ -78,7 +78,7 @@ namespace std::experimental::io2d {
 
 			constexpr bool operator==(const rel_matrix& lhs, const rel_matrix& rhs) noexcept;
 			constexpr bool operator!=(const rel_matrix& lhs, const rel_matrix& rhs) noexcept;
-			
+
 			class revert_matrix {
 				friend constexpr bool operator==(const revert_matrix&, const revert_matrix&) noexcept;
 			public:
@@ -87,7 +87,7 @@ namespace std::experimental::io2d {
 
 			constexpr bool operator==(const revert_matrix& lhs, const revert_matrix& rhs) noexcept;
 			constexpr bool operator!=(const revert_matrix& lhs, const revert_matrix& rhs) noexcept;
-			
+
 			class abs_line {
 				point_2d _Data = {};
 				friend constexpr bool operator==(const abs_line&, const abs_line&) noexcept;
@@ -183,7 +183,7 @@ namespace std::experimental::io2d {
 
 			constexpr bool operator==(const rel_cubic_curve& lhs, const rel_cubic_curve& rhs) noexcept;
 			constexpr bool operator!=(const rel_cubic_curve& lhs, const rel_cubic_curve& rhs) noexcept;
-			
+
 			class arc {
 				point_2d _Radius;
 				float _Rotation;
@@ -331,33 +331,56 @@ namespace std::experimental::io2d {
 		bool operator!=(const path_builder<Allocator>& lhs, const path_builder<Allocator>& rhs) noexcept;
 
 		// 8.17.8, specialized algorithms:
-/*		template <class Allocator>
+		/*		template <class Allocator>
 		void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
-			noexcept(noexcept(lhs.swap(rhs))) {
-			lhs.swap(rhs);
+		noexcept(noexcept(lhs.swap(rhs))) {
+		lhs.swap(rhs);
 		}*/ // compiler error prevents forward declaration
 
-		class interpreted_path {
+	}
+}
+
+namespace std::experimental::io2d {
+	inline namespace v1 {
+
+		class cairo_interpreted_path
+		{
 			shared_ptr<cairo_path_t> _Cairo_path;
 		public:
 			using _Native_handle_type = cairo_path*;
 			_Native_handle_type _Native_handle() const noexcept;
-			// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
-			constexpr interpreted_path() noexcept;
+
+			constexpr cairo_interpreted_path() noexcept;
 			template <class Allocator>
-			explicit interpreted_path(const path_builder<Allocator>& p);
-			//template <class Allocator>
-			//interpreted_path(const path_builder<Allocator>& p, std::error_code& ec) noexcept;
+			explicit cairo_interpreted_path(const path_builder<Allocator>& p);
 			template <class ForwardIterator>
-			interpreted_path(ForwardIterator first, ForwardIterator last);
-			//template <class ForwardIterator>
-			//interpreted_path(ForwardIterator first, ForwardIterator last, error_code& ec) noexcept;
-			interpreted_path(const interpreted_path& other) noexcept;
-			interpreted_path& operator=(const interpreted_path& other) noexcept;
-			interpreted_path(interpreted_path&& other) noexcept;
-			interpreted_path& operator=(interpreted_path&& other) noexcept;
-			~interpreted_path() noexcept;
+			cairo_interpreted_path(ForwardIterator first, ForwardIterator last);
+			cairo_interpreted_path(const cairo_interpreted_path& other) noexcept;
+			cairo_interpreted_path& operator=(const cairo_interpreted_path& other) noexcept;
+			cairo_interpreted_path(cairo_interpreted_path&& other) noexcept;
+			cairo_interpreted_path& operator=(cairo_interpreted_path&& other) noexcept;
+			~cairo_interpreted_path() noexcept;
 		};
 
+	}
+}
+
+namespace std::experimental::io2d {
+	inline namespace v1 {
+
+		class interpreted_path {
+			cairo_interpreted_path _Impl;
+		public:
+			auto _Impl_path() const { return _Impl._Native_handle(); }
+
+			// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
+			constexpr interpreted_path() noexcept;
+
+			template <class Allocator>
+			explicit interpreted_path(const path_builder<Allocator>& p);
+
+			template <class ForwardIterator>
+			interpreted_path(ForwardIterator first, ForwardIterator last);
+		};
 	}
 }

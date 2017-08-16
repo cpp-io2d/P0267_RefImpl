@@ -54,6 +54,12 @@
     <ClInclude Include="xinput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xcairo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xcairo_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="surface.cpp">

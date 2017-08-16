@@ -23,6 +23,7 @@
 #include <chrono>
 
 #include "xio2d.h"
+#include "xcairo.h"
 
 #ifdef _Filesystem_support_test
 #include <filesystem>
@@ -286,4 +287,5 @@ namespace std {
 }
 
 #include "xio2d_impl.h"
+#include "xcairo_impl.h"
 #endif

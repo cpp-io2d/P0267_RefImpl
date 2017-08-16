@@ -1038,118 +1038,18 @@ namespace std::experimental::io2d {
 		//template <class Allocator>
 		//::std::vector<figure_items::path_data_types> _Interpret_path_items(const path_builder<Allocator>&, ::std::error_code&) noexcept;
 
-		inline interpreted_path::_Native_handle_type interpreted_path::_Native_handle() const noexcept {
-			return _Cairo_path.get();
-		}
-
 		inline constexpr interpreted_path::interpreted_path() noexcept
-			: _Cairo_path() {}
+			: _Impl() {}
 
 		template <class Allocator>
 		inline interpreted_path::interpreted_path(const path_builder<Allocator>& pf)
-			: _Cairo_path(new cairo_path_t, [](cairo_path_t*) {
-			// This deleter intentionally left blank. The dtor will deal with this.
-		}) {
-			auto processedVec = _Interpret_path_items<Allocator>(pf);
-			::std::vector<cairo_path_data_t> vec;
-			point_2d lastMoveToPoint;
-			for (const auto& val : processedVec) {
-				::std::visit([&vec, &lastMoveToPoint](auto&& item) {
-					using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-					_Path_group_perform_visit<T>::template _Perform<T>(vec, item, lastMoveToPoint);
-				}, val);
-			}
-			_Cairo_path->num_data = static_cast<int>(vec.size());
-			const auto numDataST = vec.size();
-			_Cairo_path->data = new cairo_path_data_t[numDataST];
-			for (size_t currItemIndex = 0; currItemIndex < numDataST; currItemIndex++) {
-				_Cairo_path->data[currItemIndex] = vec[currItemIndex];
-			}
-			_Cairo_path->status = CAIRO_STATUS_SUCCESS;
-		}
-
-		//template<class Allocator>
-		//inline interpreted_path::interpreted_path(const path_builder<Allocator>& pf, ::std::error_code& ec) noexcept
-		//	: _Cairo_path(new cairo_path_t, [](cairo_path_t*) {
-		//	// This deleter intentionally left blank. The dtor will deal with this.
-		//}) {
-		//	auto processedVec = _Interpret_path_items<Allocator>(pf, ec);
-		//	if (static_cast<bool>(ec)) {
-		//		return;
-		//	}
-
-		//	::std::vector<cairo_path_data_t> vec;
-
-		//	for (const auto& val : processedVec) {
-		//		::std::visit([&vec](auto&& item) {
-		//			using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-		//			_Path_group_perform_visit<T>::template _Perform<T>(vec, item);
-		//		}, val);
-		//	}
-		//	_Cairo_path->num_data = static_cast<int>(vec.size());
-		//	const auto numDataST = vec.size();
-		//	_Cairo_path->data = new cairo_path_data_t[numDataST];
-		//	for (size_t currItemIndex = 0; currItemIndex < numDataST; currItemIndex++) {
-		//		_Cairo_path->data[currItemIndex] = vec[currItemIndex];
-		//	}
-		//	_Cairo_path->status = CAIRO_STATUS_SUCCESS;
-		//	ec.clear();
-		//}
+			: _Impl(pf)
+		{}
 
 		template <class ForwardIterator>
 		inline interpreted_path::interpreted_path(ForwardIterator first, ForwardIterator last)
-			: _Cairo_path(new cairo_path_t, [](cairo_path_t*) {
-			// This deleter intentionally left blank. The dtor will deal with this.
-		}) {
-			auto processedVec = _Interpret_path_items<ForwardIterator>(first, last);
-			::std::vector<cairo_path_data_t> vec;
-			point_2d lastMoveToPoint;
-			for (const auto& val : processedVec) {
-				::std::visit([&vec, &lastMoveToPoint](auto&& item) {
-					using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-					_Path_group_perform_visit<T>::template _Perform<T>(vec, item, lastMoveToPoint);
-				}, val);
-			}
-			_Cairo_path->num_data = static_cast<int>(vec.size());
-			const auto numDataST = vec.size();
-			_Cairo_path->data = new cairo_path_data_t[numDataST];
-			for (size_t currItemIndex = 0; currItemIndex < numDataST; currItemIndex++) {
-				_Cairo_path->data[currItemIndex] = vec[currItemIndex];
-			}
-			_Cairo_path->status = CAIRO_STATUS_SUCCESS;
-		}
-
-		inline interpreted_path::interpreted_path(const interpreted_path& other) noexcept
-			: _Cairo_path(other._Cairo_path) {}
-		inline interpreted_path& interpreted_path::operator=(const interpreted_path& other) noexcept {
-			_Cairo_path = other._Cairo_path;
-			return *this;
-		}
-		inline interpreted_path::interpreted_path(interpreted_path&& other) noexcept
-			: _Cairo_path(move(other._Cairo_path)) {
-			other._Cairo_path = nullptr;
-		}
-		inline interpreted_path& interpreted_path::operator=(interpreted_path&& other) noexcept {
-			if (this != &other) {
-				_Cairo_path = move(other._Cairo_path);
-				other._Cairo_path = nullptr;
-			}
-			return *this;
-		}
-
-		inline interpreted_path::~interpreted_path() noexcept {
-			auto path = _Cairo_path.get();
-			if (path != nullptr) {
-				if (path->data != nullptr) {
-					delete[] path->data;
-					path->data = nullptr;
-					path->status = CAIRO_STATUS_NULL_POINTER;
-				}
-				delete path;
-				path = nullptr;
-				_Cairo_path = nullptr;
-			}
-		}
+			: _Impl(first, last)
+		{}
 
 		inline cairo_antialias_t _Antialias_to_cairo_antialias_t(::std::experimental::io2d::antialias aa) {
 			switch (aa) {

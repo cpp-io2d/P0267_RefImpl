@@ -98,7 +98,7 @@ namespace {
 			const auto& props = c.value();
 			cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fill_rule()));
 			cairo_new_path(context);
-			cairo_append_path(context, props.clip()._Native_handle());
+			cairo_append_path(context, props.clip()._Impl_path());
 			cairo_clip(context);
 			// Restore saved state
 			cairo_set_fill_rule(context, fr);
@@ -193,7 +193,7 @@ void surface::fill(const brush& b, const interpreted_path& pg, const optional<br
 	_Set_brush_props(context, bp, b);
 	cairo_set_source(context, b.native_handle());
 	cairo_new_path(context);
-	cairo_append_path(context, pg._Native_handle());
+	cairo_append_path(context, pg._Impl_path());
 	cairo_fill(context);
 }
 
@@ -205,7 +205,7 @@ void surface::stroke(const brush& b, const interpreted_path& pg, const optional<
 	_Set_stroke_props(context, sp, _Line_join_miter_miter_limit, d);
 	cairo_set_source(context, b.native_handle());
 	cairo_new_path(context);
-	cairo_append_path(context, pg._Native_handle());
+	cairo_append_path(context, pg._Impl_path());
 	cairo_stroke(context);
 }
 
