@@ -140,7 +140,7 @@ namespace {
 
 	void _Set_brush_props(cairo_t* context, const optional<brush_props>& bp, const brush& b) {
 		if (bp == nullopt) {
-			auto p = b.native_handle();
+			auto p = b._Impl_brush();
 			cairo_pattern_set_extend(p, CAIRO_EXTEND_NONE);
 			cairo_pattern_set_filter(p, CAIRO_FILTER_BILINEAR);
 			cairo_pattern_set_matrix(p, &_Cairo_identity_matrix);
@@ -148,8 +148,8 @@ namespace {
 		}
 		else {
 			const auto& props = bp.value();
-			auto p = b.native_handle();
-			cairo_pattern_set_extend(b.native_handle(), _Extend_to_cairo_extend_t(props.wrap_mode()));
+			auto p = b._Impl_brush();
+			cairo_pattern_set_extend(b._Impl_brush(), _Extend_to_cairo_extend_t(props.wrap_mode()));
 			cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
 			const auto& m = props.brush_matrix();
 			cairo_matrix_t cm{ m.m00, m.m01, m.m10, m.m11, m.m20, m.m21 };
@@ -160,15 +160,15 @@ namespace {
 
 	void _Set_mask_props(const optional<mask_props>& mp, const brush& b) {
 		if (mp == nullopt) {
-			auto p = b.native_handle();
+			auto p = b._Impl_brush();
 			cairo_pattern_set_extend(p, CAIRO_EXTEND_NONE);
 			cairo_pattern_set_filter(p, CAIRO_FILTER_GOOD);
 			cairo_pattern_set_matrix(p, &_Cairo_identity_matrix);
 		}
 		else {
 			const auto& props = mp.value();
-			auto p = b.native_handle();
-			cairo_pattern_set_extend(b.native_handle(), _Extend_to_cairo_extend_t(props.wrap_mode()));
+			auto p = b._Impl_brush();
+			cairo_pattern_set_extend(b._Impl_brush(), _Extend_to_cairo_extend_t(props.wrap_mode()));
 			cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
 			const auto& m = props.mask_matrix();
 			cairo_matrix_t cm{ m.m00, m.m01, m.m10, m.m11, m.m20, m.m21 };
@@ -182,7 +182,7 @@ void surface::paint(const brush& b, const optional<brush_props>& bp, const optio
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
 	_Set_brush_props(context, bp, b);
-	cairo_set_source(context, b.native_handle());
+	cairo_set_source(context, b._Impl_brush());
 	cairo_paint(context);
 }
 
@@ -191,7 +191,7 @@ void surface::fill(const brush& b, const interpreted_path& pg, const optional<br
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
 	_Set_brush_props(context, bp, b);
-	cairo_set_source(context, b.native_handle());
+	cairo_set_source(context, b._Impl_brush());
 	cairo_new_path(context);
 	cairo_append_path(context, pg._Impl_path());
 	cairo_fill(context);
@@ -203,7 +203,7 @@ void surface::stroke(const brush& b, const interpreted_path& pg, const optional<
 	_Set_clip_props(context, cl);
 	_Set_brush_props(context, bp, b);
 	_Set_stroke_props(context, sp, _Line_join_miter_miter_limit, d);
-	cairo_set_source(context, b.native_handle());
+	cairo_set_source(context, b._Impl_brush());
 	cairo_new_path(context);
 	cairo_append_path(context, pg._Impl_path());
 	cairo_stroke(context);
@@ -215,7 +215,7 @@ void surface::mask(const brush& b, const brush& mb, const optional<brush_props>&
 	_Set_clip_props(context, cl);
 	_Set_brush_props(context, bp, b);
 	_Set_mask_props(mp, mb);
-	cairo_set_source(context, b.native_handle());
+	cairo_set_source(context, b._Impl_brush());
 	cairo_new_path(context);
-	cairo_mask(context, mb.native_handle());
+	cairo_mask(context, mb._Impl_brush());
 }

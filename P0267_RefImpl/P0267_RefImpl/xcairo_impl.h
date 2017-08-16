@@ -25,6 +25,8 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 
+		// cairo_interpreted_path
+
 		inline cairo_interpreted_path::_Native_handle_type cairo_interpreted_path::_Native_handle() const noexcept {
 			return _Cairo_path.get();
 		}
@@ -113,5 +115,89 @@ namespace std::experimental::io2d {
 				_Cairo_path = nullptr;
 			}
 		}
+
+		// cairo_brush
+
+		inline cairo_brush::native_handle_type cairo_brush::native_handle() const noexcept {
+			return _Brush.get();
+		}
+
+		inline cairo_brush::cairo_brush(const rgba_color& color)
+			: _Brush()
+			, _Image_surface()
+			, _Brush_type(brush_type::solid_color) {
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_rgba(color.r(), color.g(), color.b(), color.a()), &cairo_pattern_destroy);
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+		}
+
+		template <class InputIterator>
+		inline cairo_brush::cairo_brush(const point_2d& begin, const point_2d& end, InputIterator first, InputIterator last)
+			: _Brush()
+			, _Image_surface()
+			, _Brush_type(brush_type::linear) {
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x, begin.y, end.x, end.y), &cairo_pattern_destroy);
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+
+			for (auto it = first; it != last; ++it) {
+				auto stop = *it;
+				cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+			}
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+		}
+
+		inline cairo_brush::cairo_brush(const point_2d& begin, const point_2d& end, ::std::initializer_list<gradient_stop> il)
+			: _Brush()
+			, _Image_surface()
+			, _Brush_type(brush_type::linear) {
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x, begin.y, end.x, end.y), &cairo_pattern_destroy);
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+
+			for (const gradient_stop& stop : il) {
+				cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+			}
+
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+		}
+
+		template <class InputIterator>
+		inline cairo_brush::cairo_brush(const circle& start, const circle& end, InputIterator first, InputIterator last)
+			: _Brush()
+			, _Image_surface()
+			, _Brush_type(brush_type::radial) {
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x, start.center().y, start.radius(), end.center().x, end.center().y, end.radius()), &cairo_pattern_destroy);
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+			for (auto it = first; it != last; ++it) {
+				auto stop = *it;
+				cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+			}
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+		}
+
+		inline cairo_brush::cairo_brush(const circle& start, const circle& end, ::std::initializer_list<gradient_stop> il)
+			: _Brush()
+			, _Image_surface()
+			, _Brush_type(brush_type::radial) {
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x, start.center().y, start.radius(), end.center().x, end.center().y, end.radius()), &cairo_pattern_destroy);
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+
+			for (const gradient_stop& stop : il) {
+				cairo_pattern_add_color_stop_rgba(_Brush.get(), stop.offset(), stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a());
+			}
+
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+		}
+
+		inline cairo_brush::cairo_brush(image_surface&& img)
+			: _Brush()
+			, _Image_surface(make_shared<image_surface>(::std::move(img)))
+			, _Brush_type(brush_type::surface) {
+			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(_Image_surface.get()->native_handle().csfce), &cairo_pattern_destroy);
+			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
+		}
+
+		inline brush_type cairo_brush::type() const noexcept {
+			return _Brush_type;
+		}
+
 	}
 }

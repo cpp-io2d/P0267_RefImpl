@@ -61,11 +61,11 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 				//cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
 				//cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
 				if (_Letterbox_brush == nullopt) {
-					cairo_set_source(_Native_context.get(), _Default_brush.native_handle());
+					cairo_set_source(_Native_context.get(), _Default_brush._Impl_brush());
 					//cairo_paint(_Native_context.get());
 				}
 				else {
-					auto pttn = _Letterbox_brush.value().native_handle();
+					auto pttn = _Letterbox_brush.value()._Impl_brush();
 					if (_Letterbox_brush_props == nullopt) {
 						cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
 						cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
@@ -120,11 +120,11 @@ void display_surface::_Render_for_scaling_uniform_or_letterbox() {
 				//cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
 				//cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
 				if (_Letterbox_brush == nullopt) {
-					cairo_set_source(_Native_context.get(), _Default_brush.native_handle());
+					cairo_set_source(_Native_context.get(), _Default_brush._Impl_brush());
 					//cairo_paint(_Native_context.get());
 				}
 				else {
-					auto pttn = _Letterbox_brush.value().native_handle();
+					auto pttn = _Letterbox_brush.value()._Impl_brush();
 					if (_Letterbox_brush_props == nullopt) {
 						cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
 						cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
@@ -169,11 +169,11 @@ void display_surface::_Render_to_native_surface() {
 		auto userRect = (*_User_scaling_fn)(*this, letterbox);
 		if (letterbox) {
 			if (_Letterbox_brush == nullopt) {
-				cairo_set_source(_Native_context.get(), _Default_brush.native_handle());
+				cairo_set_source(_Native_context.get(), _Default_brush._Impl_brush());
 				cairo_paint(_Native_context.get());
 			}
 			else {
-				auto pttn = _Letterbox_brush.value().native_handle();
+				auto pttn = _Letterbox_brush.value()._Impl_brush();
 				if (_Letterbox_brush_props == nullopt) {
 					cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
 					cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
