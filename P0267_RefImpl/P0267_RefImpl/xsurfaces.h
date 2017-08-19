@@ -192,47 +192,51 @@ namespace std::experimental::io2d {
 			constexpr matrix_2d mask_matrix() const noexcept;
 		};
 
+		//tuple<dashes, offset>
+		using dashes = ::std::tuple<::std::vector<float>, float>;
+	}
+}
+
+namespace std::experimental::io2d {
+	inline namespace v1 {
+
 		struct _Surface_native_handles {
 			::cairo_surface_t* csfce;
 			::cairo_t* cctxt;
 		};
 
+		class display_surface;
 		class mapped_surface;
 
-		//tuple<dashes, offset>
-		typedef ::std::tuple<::std::vector<float>, float> dashes;
+		class cairo_surface
+		{
+			friend class cairo_image_surface;
+			friend class cairo_display_surface;
 
-		class surface {
 		public:
-			typedef _Surface_native_handles native_handle_type;
-		protected:
-			::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> _Surface;
-			::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Context;
+			using native_handle_type = _Surface_native_handles;
 
+		private:
 			const float _Line_join_miter_miter_limit = 10000.0F;
 
+			::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> _Surface;
+			::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> _Context;
 			bounding_box _Dirty_rect;
 			::std::experimental::io2d::format _Format;
-
-			_IO2D_API surface(::std::experimental::io2d::format fmt, int width, int height);
-
-			_IO2D_API surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
-		protected:
-			surface(surface&& other) noexcept = default;
-			surface& operator=(surface&& other) noexcept = default;
 
 		public:
 			// surplus to paper
 			_IO2D_API native_handle_type native_handle() const;
 			_IO2D_API void clear();
 
-			surface() = delete;
+			_IO2D_API cairo_surface(::std::experimental::io2d::format fmt, int width, int height);
+			_IO2D_API cairo_surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
 			_IO2D_API void flush();
 			_IO2D_API void flush(error_code& ec) noexcept;
 			_IO2D_API void mark_dirty();
-			void mark_dirty(error_code& ec) noexcept;
+			_IO2D_API void mark_dirty(error_code& ec) noexcept;
 			_IO2D_API void mark_dirty(const bounding_box& extents);
-			void mark_dirty(const bounding_box& extents, error_code& ec) noexcept;
+			_IO2D_API void mark_dirty(const bounding_box& extents, error_code& ec) noexcept;
 			_IO2D_API void paint(const brush& b, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			template <class Allocator>
 			void stroke(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
@@ -240,36 +244,32 @@ namespace std::experimental::io2d {
 			template <class Allocator>
 			void fill(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 			_IO2D_API void fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
-
-			// Broken R6 - removed unused path from mask but forgot to eliminate this overload:
-			//template <class Allocator>
-			//void mask(const brush& b, const brush& mb, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
-
 			_IO2D_API void mask(const brush& b, const brush& mb, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
 		};
 
-		class image_surface : public surface {
-			friend surface;
+		class cairo_image_surface
+		{
+			cairo_surface* _Cairo_Surface;
 		public:
-			_IO2D_API image_surface(io2d::format fmt, int width, int height);
+			_IO2D_API cairo_image_surface(cairo_surface* cs);
 #ifdef _Filesystem_support_test
-			_IO2D_API image_surface(filesystem::path f, image_file_format i, io2d::format fmt);
-			_IO2D_API image_surface(filesystem::path f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
+			_IO2D_API cairo_image_surface(cairo_surface* cs, filesystem::path f, image_file_format i, io2d::format fmt);
+			cairo_image_surface(cairo_surface* cs, filesystem::path f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
 #else
-			image_surface(::std::string f, experimental::io2d::format fmt, image_file_format idf);
-			image_surface(::std::string f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
+			_IO2D_API cairo_image_surface(::std::string f, experimental::io2d::format fmt, image_file_format idf);
+			cairo_image_surface(::std::string f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
 #endif
-			image_surface(image_surface&&) = default;
-			image_surface& operator=(image_surface&&) = default;
+			cairo_image_surface(cairo_image_surface&&) = default;
+			cairo_image_surface& operator=(cairo_image_surface&&) = default;
 #ifdef _Filesystem_support_test
-			void save(filesystem::path p, image_file_format i);
+			_IO2D_API void save(filesystem::path p, image_file_format i);
 			void save(filesystem::path p, image_file_format i, error_code& ec) noexcept;
 #else
-			void save(::std::string f, image_file_format i);
+			_IO2D_API void save(::std::string f, image_file_format i);
 			void save(::std::string f, image_file_format i, error_code& ec) noexcept;
 #endif
-			void map(const function<void(mapped_surface&)>& action);
-			void map(const function<void(mapped_surface&, error_code&)>& action, error_code& ec);
+			_IO2D_API void map(const function<void(mapped_surface&)>& action);
+			_IO2D_API void map(const function<void(mapped_surface&, error_code&)>& action, error_code& ec);
 			static int max_width() noexcept;
 			static int max_height() noexcept;
 			_IO2D_API io2d::format format() const noexcept;
@@ -307,9 +307,10 @@ namespace std::experimental::io2d {
 		_IO2D_API LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 
-		class display_surface : public surface {
-			friend surface;
-
+		class cairo_display_surface
+		{
+			cairo_surface* _Cairo_Surface;
+			display_surface* _Display_Surface;
 			int _Display_width;
 			int _Display_height;
 			::std::experimental::io2d::scaling _Scaling;
@@ -378,18 +379,18 @@ namespace std::experimental::io2d {
 #endif
 			_IO2D_API native_handle_type native_handle() const;
 
-			display_surface() = delete;
-			display_surface(const display_surface&) = delete;
-			display_surface& operator=(const display_surface&) = delete;
-			
+			cairo_display_surface() = delete;
+			cairo_display_surface(const cairo_display_surface&) = delete;
+			cairo_display_surface& operator=(const cairo_display_surface&) = delete;
+			cairo_display_surface(cairo_display_surface&& other) noexcept = default;
+			cairo_display_surface& operator=(cairo_display_surface&& other) noexcept = default;
+
 			// declarations from paper
-			display_surface(display_surface&& other) noexcept = default;
-			display_surface& operator=(display_surface&& other) noexcept = default;
-			_IO2D_API display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
-			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
-			_IO2D_API display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
-			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
-			_IO2D_API ~display_surface();
+			_IO2D_API cairo_display_surface(display_surface* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+			cairo_display_surface(display_surface* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+			_IO2D_API cairo_display_surface(display_surface* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+			cairo_display_surface(display_surface* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+			_IO2D_API ~cairo_display_surface();
 			_IO2D_API void draw_callback(const function<void(display_surface& sfc)>& fn);
 			_IO2D_API void size_change_callback(const function<void(display_surface& sfc)>& fn);
 			_IO2D_API void width(int w);
@@ -431,23 +432,163 @@ namespace std::experimental::io2d {
 			_IO2D_API float elapsed_draw_time() const noexcept;
 		};
 
-		class mapped_surface {
-			surface::native_handle_type _Mapped_surface;
-			surface::native_handle_type _Map_of;
+		class cairo_mapped_surface
+		{
+			friend mapped_surface;
 
-			friend image_surface;
+			_Surface_native_handles _Mapped_surface;
+			_Surface_native_handles _Map_of;
+
+			friend cairo_image_surface;
+			cairo_mapped_surface(_Surface_native_handles nh, _Surface_native_handles map_of);
+			cairo_mapped_surface(_Surface_native_handles nh, _Surface_native_handles map_of, ::std::error_code& ec) noexcept;
+
+		public:
+			// surplus to paper
+			cairo_mapped_surface(const cairo_mapped_surface&) = delete;
+			cairo_mapped_surface& operator=(const cairo_mapped_surface&) = delete;
+			cairo_mapped_surface(cairo_mapped_surface&& other) = delete;
+			cairo_mapped_surface& operator=(cairo_mapped_surface&& other) = delete;
+
+			cairo_mapped_surface() = delete;
+			~cairo_mapped_surface();
+			void commit_changes();
+			void commit_changes(error_code& ec) noexcept;
+			unsigned char* data();
+			unsigned char* data(error_code& ec) noexcept;
+			const unsigned char* data() const;
+			const unsigned char* data(error_code& ec) const noexcept;
+			experimental::io2d::format format() const noexcept;
+			int width() const noexcept;
+			int height() const noexcept;
+			int stride() const noexcept;
+		};
+	}
+}
+
+namespace std::experimental::io2d {
+	inline namespace v1 {
+
+		class mapped_surface;
+
+		class surface {
+
+		public:
+			using native_handle_type = _Surface_native_handles;
+
+		protected:
+			::std::unique_ptr<cairo_surface> _Surface_Impl;
+			surface(::std::experimental::io2d::format fmt, int width, int height);
+			surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
+
+		public:
+			void clear();
+			surface() = delete;
+
+			void flush();
+			void flush(error_code& ec) noexcept;
+			void mark_dirty();
+			void mark_dirty(error_code& ec) noexcept;
+			void mark_dirty(const bounding_box& extents);
+			void mark_dirty(const bounding_box& extents, error_code& ec) noexcept;
+			void paint(const brush& b, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			template <class Allocator>
+			void stroke(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			void stroke(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			template <class Allocator>
+			void fill(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			void fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+			void mask(const brush& b, const brush& mb, const optional<brush_props>& bp = nullopt, const optional<mask_props>& mp = nullopt, const optional<render_props>& rp = nullopt, const optional<clip_props>& cl = nullopt);
+		};
+
+		class image_surface : public surface {
+			cairo_image_surface _Image_Surface_Impl;
+		public:
+			image_surface(io2d::format fmt, int width, int height);
+#ifdef _Filesystem_support_test
+			image_surface(filesystem::path f, image_file_format i, io2d::format fmt);
+			image_surface(filesystem::path f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
+#else
+			image_surface(::std::string f, experimental::io2d::format fmt, image_file_format idf);
+			image_surface(::std::string f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
+#endif
+			image_surface(image_surface&&) = default;
+			image_surface& operator=(image_surface&&) = default;
+#ifdef _Filesystem_support_test
+			void save(filesystem::path p, image_file_format i);
+			void save(filesystem::path p, image_file_format i, error_code& ec) noexcept;
+#else
+			void save(::std::string f, image_file_format i);
+			void save(::std::string f, image_file_format i, error_code& ec) noexcept;
+#endif
+			void map(const function<void(mapped_surface&)>& action);
+			void map(const function<void(mapped_surface&, error_code&)>& action, error_code& ec);
+			static int max_width() noexcept;
+			static int max_height() noexcept;
+			io2d::format format() const noexcept;
+			int width() const noexcept;
+			int height() const noexcept;
+		};
+
+		class display_surface : public surface {
+			friend surface;
+			cairo_display_surface _Display_Surface_Impl;
+
+		public:
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+			void draw_callback(const function<void(display_surface& sfc)>& fn);
+			void size_change_callback(const function<void(display_surface& sfc)>& fn);
+			void width(int w);
+			void width(int w, error_code& ec) noexcept;
+			void height(int h);
+			void height(int h, error_code& ec) noexcept;
+			void display_width(int w);
+			void display_width(int w, error_code& ec) noexcept;
+			void display_height(int h);
+			void display_height(int h, error_code& ec) noexcept;
+			void dimensions(int w, int h);
+			void dimensions(int w, int h, error_code& ec) noexcept;
+			void display_dimensions(int dw, int dh);
+			void display_dimensions(int dw, int dh, error_code& ec) noexcept;
+			void scaling(experimental::io2d::scaling scl) noexcept;
+			void user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn);
+			void letterbox_brush(const optional<brush>& b, const optional<brush_props> = nullopt) noexcept;
+			void auto_clear(bool val) noexcept;
+			void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
+			bool desired_frame_rate(float fps) noexcept;
+			void redraw_required() noexcept;
+			int begin_show();
+			void end_show();
+			experimental::io2d::format format() const noexcept;
+			int width() const noexcept;
+			int height() const noexcept;
+			int display_width() const noexcept;
+			int display_height() const noexcept;
+			point_2d dimensions() const noexcept;
+			point_2d display_dimensions() const noexcept;
+			experimental::io2d::scaling scaling() const noexcept;
+			function<experimental::io2d::bounding_box(const display_surface&, bool&)> user_scaling_callback() const;
+			function<experimental::io2d::bounding_box(const display_surface&, bool&)> user_scaling_callback(error_code& ec) const noexcept;
+			optional<brush> letterbox_brush() const noexcept;
+			optional<brush_props> letterbox_brush_props() const noexcept;
+			bool auto_clear() const noexcept;
+			experimental::io2d::refresh_rate refresh_rate() const noexcept;
+			float desired_frame_rate() const noexcept;
+			float elapsed_draw_time() const noexcept;
+		};
+
+		class mapped_surface {
+			friend cairo_image_surface;
+
+			cairo_mapped_surface _Mapped_Surface_Impl;
+
 			mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of);
 			mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, ::std::error_code& ec) noexcept;
 
 		public:
-			// surplus to paper
-			mapped_surface(const mapped_surface&) = delete;
-			mapped_surface& operator=(const mapped_surface&) = delete;
-			mapped_surface(mapped_surface&& other) = delete;
-			mapped_surface& operator=(mapped_surface&& other) = delete;
-			
-			mapped_surface() = delete;
-			~mapped_surface();
 			void commit_changes();
 			void commit_changes(error_code& ec) noexcept;
 			unsigned char* data();

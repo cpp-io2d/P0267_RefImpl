@@ -54,10 +54,12 @@ namespace std::experimental::io2d {
 namespace std::experimental::io2d {
 	inline namespace v1 {
 
+		class cairo_image_surface;
+
 		class cairo_brush
 		{
 			shared_ptr<cairo_pattern_t> _Brush;
-			shared_ptr<image_surface> _Image_surface;
+			shared_ptr<cairo_image_surface> _Image_surface;
 			brush_type _Brush_type;
 		public:
 			using native_handle_type = cairo_pattern_t*;
@@ -75,7 +77,7 @@ namespace std::experimental::io2d {
 
 			cairo_brush(const circle& start, const circle& end, ::std::initializer_list<gradient_stop> il);
 
-			explicit cairo_brush(image_surface&& img);
+			explicit cairo_brush(cairo_image_surface&& img);	// Fix implementation once cairo_image_surface is done
 
 			brush_type type() const noexcept;
 		};
@@ -102,8 +104,6 @@ namespace std::experimental::io2d {
 			brush(const circle& start, const circle& end, InputIterator first, InputIterator last);
 
 			brush(const circle& start, const circle& end, ::std::initializer_list<gradient_stop> il);
-
-			explicit brush(image_surface&& img);
 
 			brush_type type() const noexcept;
 		};

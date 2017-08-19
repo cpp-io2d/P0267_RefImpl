@@ -1410,10 +1410,6 @@ namespace std::experimental::io2d {
 			: _Impl(start, end, il)
 		{}
 
-		inline brush::brush(image_surface&& img)
-			: _Impl(std::move(img))
-		{}
-
 		inline brush_type brush::type() const noexcept {
 			return _Impl.type();
 		}
@@ -1603,17 +1599,407 @@ namespace std::experimental::io2d {
 			return _Matrix;
 		}
 
-		// divergent from paper ?
-		template <class Allocator>
-		inline void surface::fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
-			interpreted_path pg(pf);
-			fill(b, pg, bp, rp, cl);
+		// surface
+
+		inline surface::surface(::std::experimental::io2d::format fmt, int width, int height)
+			: _Surface_Impl(make_unique<cairo_surface>(fmt, width, height)){}
+
+		inline surface::surface(native_handle_type nh, ::std::experimental::io2d::format fmt)
+			: _Surface_Impl(make_unique<cairo_surface>(nh, fmt)) {}
+
+		inline void surface::clear()
+		{
+			_Surface_Impl->clear();
+		}
+
+		inline void surface::flush()
+		{
+			_Surface_Impl->flush();
+		}
+
+		inline void surface::flush(error_code& ec) noexcept
+		{
+			_Surface_Impl->flush(ec);
+		}
+
+		inline void surface::mark_dirty()
+		{
+			_Surface_Impl->mark_dirty();
+		}
+
+		inline void surface::mark_dirty(error_code& ec) noexcept
+		{
+			_Surface_Impl->mark_dirty(ec);
+		}
+
+		inline void surface::mark_dirty(const bounding_box& extents)
+		{
+			_Surface_Impl->mark_dirty(extents);
+		}
+
+		inline void surface::mark_dirty(const bounding_box& extents, error_code& ec) noexcept
+		{
+			_Surface_Impl->mark_dirty(extents, ec);
+		}
+
+		inline void surface::paint(const brush& b, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl)
+		{
+			_Surface_Impl->paint(b, bp, rp, cl);
 		}
 
 		template <class Allocator>
-		inline void surface::stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl) {
-			interpreted_path pg(pf);
-			stroke(b, pg, bp, sp, d, rp, cl);
+		inline void surface::stroke(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl)
+		{
+			_Surface_Impl->stroke(b, pb, bp, sp, d, rp, cl);
+		}
+
+		inline void surface::stroke(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl)
+		{
+			_Surface_Impl->stroke(b, pg, bp, sp, d, rp, cl);
+		}
+
+		template <class Allocator>
+		inline void surface::fill(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl)
+		{
+			_Surface_Impl->fill(b, pb, bp, rp, cl);
+		}
+
+		inline void surface::fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl)
+		{
+			_Surface_Impl->fill(b, pg, bp, rp, cl);
+		}
+
+		inline void surface::mask(const brush& b, const brush& mb, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl)
+		{
+			_Surface_Impl->mask(b, mb, bp, mp, rp, cl);
+		}
+
+		// image_surface
+
+		inline image_surface::image_surface(io2d::format fmt, int width, int height)
+			: surface(fmt, width, height)
+			, _Image_Surface_Impl(_Surface_Impl.get())
+		{}
+
+#ifdef _Filesystem_support_test
+		inline image_surface::image_surface(filesystem::path f, image_file_format i, io2d::format fmt)
+			: surface({ nullptr, nullptr }, fmt)
+			, _Image_Surface_Impl(_Surface_Impl.get(), f, i, fmt)
+		{}
+#else
+		inline image_surface::image_surface(::std::string f, experimental::io2d::format fmt, image_file_format idf)
+			: surface({ nullptr, nullptr }, fmt)
+			, _Image_Surface_Impl(_Surface_Impl.get(), f, i, fmt)
+		{}
+#endif
+
+#ifdef _Filesystem_support_test
+		inline void image_surface::save(filesystem::path p, image_file_format i)
+		{
+			_Image_Surface_Impl.save(p, i);
+		}
+#else
+		inline void image_surface::save(::std::string f, image_file_format i);
+		{
+			_Image_Surface_Impl.save(f, i);
+		}
+#endif
+
+		inline void image_surface::map(const function<void(mapped_surface&)>& action)
+		{
+			_Image_Surface_Impl.map(action);
+		}
+
+		inline int image_surface::max_width() noexcept
+		{
+			return cairo_image_surface::max_width();
+		}
+
+		inline int image_surface::max_height() noexcept
+		{
+			return cairo_image_surface::max_height();
+		}
+
+		inline io2d::format image_surface::format() const noexcept
+		{
+			return _Image_Surface_Impl.format();
+		}
+
+		inline int image_surface::width() const noexcept
+		{
+			return _Image_Surface_Impl.width();
+		}
+
+		inline int image_surface::height() const noexcept
+		{
+			return _Image_Surface_Impl.height();
+		}
+
+		// display_surface
+
+		inline display_surface::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps)
+			: surface(preferredFormat, preferredWidth, preferredHeight)
+			, _Display_Surface_Impl(this, _Surface_Impl.get(), preferredWidth, preferredHeight, preferredFormat, scl, rr, fps)
+		{}
+
+		inline display_surface::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept
+			: surface(preferredFormat, preferredWidth, preferredHeight)
+			, _Display_Surface_Impl(this, _Surface_Impl.get(), preferredWidth, preferredHeight, preferredFormat, ec, scl, rr, fps)
+		{}
+
+		inline display_surface::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps)
+			: surface(preferredFormat, preferredWidth, preferredHeight)
+			, _Display_Surface_Impl(this, _Surface_Impl.get(), preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, scl, rr, fps)
+		{}
+
+		inline display_surface::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept
+			: surface(preferredFormat, preferredWidth, preferredHeight)
+			, _Display_Surface_Impl(this, _Surface_Impl.get(), preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, ec, scl, rr, fps)
+		{}
+
+		inline void display_surface::draw_callback(const function<void(display_surface& sfc)>& fn)
+		{
+			_Display_Surface_Impl.draw_callback(fn);
+		}
+
+		inline void display_surface::size_change_callback(const function<void(display_surface& sfc)>& fn)
+		{
+			_Display_Surface_Impl.size_change_callback(fn);
+		}
+
+		inline void display_surface::width(int w)
+		{
+			_Display_Surface_Impl.width(w);
+		}
+
+		inline void display_surface::width(int w, error_code& ec) noexcept
+		{
+			_Display_Surface_Impl.width(w, ec);
+		}
+
+		inline void display_surface::height(int h)
+		{
+			_Display_Surface_Impl.height(h);
+		}
+
+		inline void display_surface::height(int h, error_code& ec) noexcept
+		{
+			_Display_Surface_Impl.height(h, ec);
+		}
+
+		inline void display_surface::display_width(int w)
+		{
+			_Display_Surface_Impl.display_width(w);
+		}
+
+		inline void display_surface::display_width(int w, error_code& ec) noexcept
+		{
+			_Display_Surface_Impl.display_width(w, ec);
+		}
+
+		inline void display_surface::display_height(int h)
+		{
+			_Display_Surface_Impl.display_height(h);
+		}
+
+		inline void display_surface::display_height(int h, error_code& ec) noexcept
+		{
+			_Display_Surface_Impl.display_height(h, ec);
+		}
+
+		inline void display_surface::dimensions(int w, int h)
+		{
+			_Display_Surface_Impl.dimensions(w, h);
+		}
+
+		inline void display_surface::dimensions(int w, int h, error_code& ec) noexcept
+		{
+			_Display_Surface_Impl.dimensions(w, h, ec);
+		}
+
+		inline void display_surface::display_dimensions(int dw, int dh)
+		{
+			_Display_Surface_Impl.display_dimensions(dw, dh);
+		}
+
+		inline void display_surface::display_dimensions(int dw, int dh, error_code& ec) noexcept
+		{
+			_Display_Surface_Impl.display_dimensions(dw, dh, ec);
+		}
+
+		inline void display_surface::scaling(experimental::io2d::scaling scl) noexcept
+		{
+			_Display_Surface_Impl.scaling(scl);
+		}
+
+		inline void display_surface::user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn)
+		{
+			_Display_Surface_Impl.user_scaling_callback(fn);
+		}
+
+		inline void display_surface::letterbox_brush(const optional<brush>& b, const optional<brush_props> bp) noexcept
+		{
+			_Display_Surface_Impl.letterbox_brush(b, bp);
+		}
+
+		inline void display_surface::auto_clear(bool val) noexcept
+		{
+			_Display_Surface_Impl.auto_clear(val);
+		}
+
+		inline void display_surface::refresh_rate(experimental::io2d::refresh_rate rr) noexcept
+		{
+			_Display_Surface_Impl.refresh_rate(rr);
+		}
+
+		inline bool display_surface::desired_frame_rate(float fps) noexcept
+		{
+			return _Display_Surface_Impl.desired_frame_rate(fps);
+		}
+
+		inline void display_surface::redraw_required() noexcept
+		{
+			_Display_Surface_Impl.redraw_required();
+		}
+
+		inline int display_surface::begin_show()
+		{
+			return _Display_Surface_Impl.begin_show();
+		}
+
+		inline void display_surface::end_show()
+		{
+			_Display_Surface_Impl.end_show();
+		}
+
+		inline experimental::io2d::format display_surface::format() const noexcept
+		{
+			return _Display_Surface_Impl.format();
+		}
+
+		inline int display_surface::width() const noexcept
+		{
+			return _Display_Surface_Impl.width();
+		}
+
+		inline int display_surface::height() const noexcept
+		{
+			return _Display_Surface_Impl.height();
+		}
+
+		inline int display_surface::display_width() const noexcept
+		{
+			return _Display_Surface_Impl.display_width();
+		}
+
+		inline int display_surface::display_height() const noexcept
+		{
+			return _Display_Surface_Impl.display_height();
+		}
+
+		inline point_2d display_surface::dimensions() const noexcept
+		{
+			return _Display_Surface_Impl.dimensions();
+		}
+
+		inline point_2d display_surface::display_dimensions() const noexcept
+		{
+			return _Display_Surface_Impl.display_dimensions();
+		}
+
+		inline experimental::io2d::scaling display_surface::scaling() const noexcept
+		{
+			return _Display_Surface_Impl.scaling();
+		}
+
+		inline function<experimental::io2d::bounding_box(const display_surface&, bool&)> display_surface::user_scaling_callback() const
+		{
+			return _Display_Surface_Impl.user_scaling_callback();
+		}
+
+		inline function<experimental::io2d::bounding_box(const display_surface&, bool&)> display_surface::user_scaling_callback(error_code& ec) const noexcept
+		{
+			return _Display_Surface_Impl.user_scaling_callback(ec);
+		}
+
+		inline optional<brush> display_surface::letterbox_brush() const noexcept
+		{
+			return _Display_Surface_Impl.letterbox_brush();
+		}
+
+		inline optional<brush_props> display_surface::letterbox_brush_props() const noexcept
+		{
+			return _Display_Surface_Impl.letterbox_brush_props();
+		}
+
+		inline bool display_surface::auto_clear() const noexcept
+		{
+			return _Display_Surface_Impl.auto_clear();
+		}
+
+		inline experimental::io2d::refresh_rate display_surface::refresh_rate() const noexcept
+		{
+			return _Display_Surface_Impl.refresh_rate();
+		}
+
+		inline float display_surface::desired_frame_rate() const noexcept
+		{
+			return _Display_Surface_Impl.desired_frame_rate();
+		}
+
+		inline float display_surface::elapsed_draw_time() const noexcept
+		{
+			return _Display_Surface_Impl.elapsed_draw_time();
+		}
+
+		// mapped_surface
+
+		inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of)
+			: _Mapped_Surface_Impl(nh, map_of)
+		{}
+
+		inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, error_code& ec) noexcept
+			: _Mapped_Surface_Impl(nh, map_of, ec)
+		{}
+
+		inline void mapped_surface::commit_changes() {
+			_Mapped_Surface_Impl.commit_changes();
+		}
+
+		inline void mapped_surface::commit_changes(::std::error_code& ec) noexcept {
+			_Mapped_Surface_Impl.commit_changes(ec);
+		}
+
+		inline unsigned char* mapped_surface::data() {
+			return _Mapped_Surface_Impl.data();
+		}
+
+		inline unsigned char* mapped_surface::data(error_code& ec) noexcept {
+			return _Mapped_Surface_Impl.data(ec);
+		}
+
+		inline const unsigned char* mapped_surface::data() const {
+			return _Mapped_Surface_Impl.data();
+		}
+
+		inline const unsigned char* mapped_surface::data(error_code& ec) const noexcept {
+			return _Mapped_Surface_Impl.data(ec);
+		}
+
+		inline ::std::experimental::io2d::format mapped_surface::format() const noexcept {
+			return _Mapped_Surface_Impl.format();
+		}
+
+		inline int mapped_surface::width() const noexcept {
+			return _Mapped_Surface_Impl.width();
+		}
+
+		inline int mapped_surface::height() const noexcept {
+			return _Mapped_Surface_Impl.height();
+		}
+
+		inline int mapped_surface::stride() const noexcept {
+			return _Mapped_Surface_Impl.stride();
 		}
 	}
 }

@@ -908,11 +908,11 @@ namespace std::experimental::io2d {
 			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 		}
 
-		inline cairo_brush::cairo_brush(image_surface&& img)
+		inline cairo_brush::cairo_brush(cairo_image_surface&& img)
 			: _Brush()
-			, _Image_surface(make_shared<image_surface>(::std::move(img)))
+			, _Image_surface(make_shared<cairo_image_surface>(::std::move(img)))
 			, _Brush_type(brush_type::surface) {
-			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(_Image_surface.get()->native_handle().csfce), &cairo_pattern_destroy);
+//			_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(_Image_surface.get()->native_handle().csfce), &cairo_pattern_destroy);
 			_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 		}
 
@@ -920,9 +920,23 @@ namespace std::experimental::io2d {
 			return _Brush_type;
 		}
 
-		//mapped_surface
+		// cairo_surface
 
-		inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of)
+		template <class Allocator>
+		inline void cairo_surface::fill(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
+			interpreted_path pg(pf);
+			fill(b, pg, bp, rp, cl);
+		}
+
+		template <class Allocator>
+		inline void cairo_surface::stroke(const brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl) {
+			interpreted_path pg(pf);
+			stroke(b, pg, bp, sp, d, rp, cl);
+		}
+
+		// cairo_mapped_surface
+
+		inline cairo_mapped_surface::cairo_mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of)
 			: _Mapped_surface(nh)
 			, _Map_of(map_of) {
 			assert(_Mapped_surface.csfce != nullptr && _Map_of.csfce != nullptr);
@@ -937,7 +951,7 @@ namespace std::experimental::io2d {
 			cairo_surface_reference(_Map_of.csfce);
 		}
 
-		inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, error_code& ec) noexcept
+		inline cairo_mapped_surface::cairo_mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, error_code& ec) noexcept
 			: _Mapped_surface(nh)
 			, _Map_of(map_of) {
 			assert(_Mapped_surface.csfce != nullptr && _Map_of.csfce != nullptr);
@@ -954,7 +968,7 @@ namespace std::experimental::io2d {
 			ec.clear();
 		}
 
-		inline mapped_surface::~mapped_surface() {
+		inline cairo_mapped_surface::~cairo_mapped_surface() {
 			if (_Mapped_surface.csfce != nullptr) {
 				cairo_surface_unmap_image(_Map_of.csfce, _Mapped_surface.csfce);
 				// Remove the reference we added to the surface that was mapped.
@@ -964,16 +978,16 @@ namespace std::experimental::io2d {
 			}
 		}
 
-		inline void mapped_surface::commit_changes() {
+		inline void cairo_mapped_surface::commit_changes() {
 			cairo_surface_mark_dirty(_Mapped_surface.csfce);
 		}
 
-		inline void mapped_surface::commit_changes(::std::error_code& ec) noexcept {
+		inline void cairo_mapped_surface::commit_changes(::std::error_code& ec) noexcept {
 			cairo_surface_mark_dirty(_Mapped_surface.csfce);
 			ec.clear();
 		}
 
-		inline unsigned char* mapped_surface::data() {
+		inline unsigned char* cairo_mapped_surface::data() {
 			auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
 			if (result == nullptr) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
@@ -981,7 +995,7 @@ namespace std::experimental::io2d {
 			return result;
 		}
 
-		inline unsigned char* mapped_surface::data(error_code& ec) noexcept {
+		inline unsigned char* cairo_mapped_surface::data(error_code& ec) noexcept {
 			auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
 			if (result == nullptr) {
 				ec = make_error_code(errc::state_not_recoverable);
@@ -991,7 +1005,7 @@ namespace std::experimental::io2d {
 			return result;
 		}
 
-		inline const unsigned char* mapped_surface::data() const {
+		inline const unsigned char* cairo_mapped_surface::data() const {
 			auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
 			if (result == nullptr) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_NULL_POINTER);
@@ -999,7 +1013,7 @@ namespace std::experimental::io2d {
 			return result;
 		}
 
-		inline const unsigned char* mapped_surface::data(error_code& ec) const noexcept {
+		inline const unsigned char* cairo_mapped_surface::data(error_code& ec) const noexcept {
 			auto result = cairo_image_surface_get_data(_Mapped_surface.csfce);
 			if (result == nullptr) {
 				ec = make_error_code(errc::state_not_recoverable);
@@ -1009,28 +1023,28 @@ namespace std::experimental::io2d {
 			return result;
 		}
 
-		inline ::std::experimental::io2d::format mapped_surface::format() const noexcept {
+		inline ::std::experimental::io2d::format cairo_mapped_surface::format() const noexcept {
 			if (cairo_surface_status(_Mapped_surface.csfce) != CAIRO_STATUS_SUCCESS) {
 				return experimental::io2d::format::invalid;
 			}
 			return _Cairo_format_t_to_format(cairo_image_surface_get_format(_Mapped_surface.csfce));
 		}
 
-		inline int mapped_surface::width() const noexcept {
+		inline int cairo_mapped_surface::width() const noexcept {
 			if (format() == experimental::io2d::format::invalid) {
 				return 0;
 			}
 			return cairo_image_surface_get_width(_Mapped_surface.csfce);
 		}
 
-		inline int mapped_surface::height() const noexcept {
+		inline int cairo_mapped_surface::height() const noexcept {
 			if (format() == experimental::io2d::format::invalid) {
 				return 0;
 			}
 			return cairo_image_surface_get_height(_Mapped_surface.csfce);
 		}
 
-		inline int mapped_surface::stride() const noexcept {
+		inline int cairo_mapped_surface::stride() const noexcept {
 			if (format() == experimental::io2d::format::invalid) {
 				return 0;
 			}

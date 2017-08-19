@@ -10,7 +10,7 @@ using namespace std::experimental::io2d;
 //
 constexpr cairo_matrix_t _Cairo_identity_matrix{ 1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F };
 
-surface::surface(format fmt, int width, int height)
+cairo_surface::cairo_surface(format fmt, int width, int height)
 	: _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy))
 	, _Dirty_rect()
@@ -19,11 +19,11 @@ surface::surface(format fmt, int width, int height)
 	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 }
 
-surface::native_handle_type surface::native_handle() const {
+cairo_surface::native_handle_type cairo_surface::native_handle() const {
 	return{ _Surface.get(), _Context.get() };
 }
 
-surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::format fmt)
+cairo_surface::cairo_surface(cairo_surface::native_handle_type nh, ::std::experimental::io2d::format fmt)
 	: _Surface(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(nh.csfce, &cairo_surface_destroy))
 	, _Context(unique_ptr<cairo_t, decltype(&cairo_destroy)>(((nh.csfce == nullptr) ? nullptr : cairo_create(nh.csfce)), &cairo_destroy))
 	, _Dirty_rect()
@@ -34,36 +34,36 @@ surface::surface(surface::native_handle_type nh, ::std::experimental::io2d::form
 	}
 }
 
-void surface::flush() {
+void cairo_surface::flush() {
 	cairo_surface_flush(_Surface.get());
 }
 
-void surface::flush(::std::error_code & ec) noexcept {
+void cairo_surface::flush(::std::error_code & ec) noexcept {
 	cairo_surface_flush(_Surface.get());
 	ec.clear();
 }
 
-void surface::mark_dirty() {
+void cairo_surface::mark_dirty() {
 	cairo_surface_mark_dirty(_Surface.get());
 }
 
-void surface::mark_dirty(error_code& ec) noexcept {
+void cairo_surface::mark_dirty(error_code& ec) noexcept {
 	cairo_surface_mark_dirty(_Surface.get());
 	ec.clear();
 }
 
-void surface::mark_dirty(const bounding_box& extents) {
+void cairo_surface::mark_dirty(const bounding_box& extents) {
 	_Dirty_rect = extents;
 	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
 }
 
-void surface::mark_dirty(const bounding_box& extents, error_code& ec) noexcept {
+void cairo_surface::mark_dirty(const bounding_box& extents, error_code& ec) noexcept {
 	_Dirty_rect = extents;
 	cairo_surface_mark_dirty_rectangle(_Surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
 	ec.clear();
 }
 
-void surface::clear() {
+void cairo_surface::clear() {
 	cairo_save(_Context.get());
 	cairo_set_operator(_Context.get(), CAIRO_OPERATOR_CLEAR);
 	cairo_set_source_rgba(_Context.get(), 1.0, 1.0, 1.0, 1.0);
@@ -177,7 +177,7 @@ namespace {
 	}
 }
 
-void surface::paint(const brush& b, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
+void cairo_surface::paint(const brush& b, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
@@ -186,7 +186,7 @@ void surface::paint(const brush& b, const optional<brush_props>& bp, const optio
 	cairo_paint(context);
 }
 
-void surface::fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
+void cairo_surface::fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
@@ -197,7 +197,7 @@ void surface::fill(const brush& b, const interpreted_path& pg, const optional<br
 	cairo_fill(context);
 }
 
-void surface::stroke(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl) {
+void cairo_surface::stroke(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
@@ -209,7 +209,7 @@ void surface::stroke(const brush& b, const interpreted_path& pg, const optional<
 	cairo_stroke(context);
 }
 
-void surface::mask(const brush& b, const brush& mb, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl) {
+void cairo_surface::mask(const brush& b, const brush& mb, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl) {
 	auto context = _Context.get();
 	_Set_render_props(context, rp);
 	_Set_clip_props(context, cl);
