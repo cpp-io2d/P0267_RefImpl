@@ -469,6 +469,8 @@
   <ItemGroup>
     <ClInclude Include="io2d.h" />
     <ClInclude Include="xbrushes.h" />
+    <ClInclude Include="xcairo.h" />
+    <ClInclude Include="xcairo_impl.h" />
     <ClInclude Include="xcolor.h" />
     <ClInclude Include="xdiagnostics.h" />
     <ClInclude Include="xgeometry.h" />

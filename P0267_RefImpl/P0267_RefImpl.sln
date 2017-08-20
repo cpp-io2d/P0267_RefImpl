@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.26720.2
 MinimumVisualStudioVersion = 12.0.21005.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "P0267_RefImpl", "P0267_RefImpl\P0267_RefImpl.vcxproj", "{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}"
 EndProject
@@ -86,5 +86,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8A3CF636-532B-44E0-A5CE-EA6417386559}
 	EndGlobalSection
 EndGlobal

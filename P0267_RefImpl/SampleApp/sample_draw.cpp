@@ -15,10 +15,10 @@ using namespace std::experimental;
 using namespace std::experimental::io2d;
 
 //// Declarations
-void test_image_load_save(display_surface& ds);
-void test_stroke_rules(display_surface& ds);
-void test_path_functionality(display_surface& ds);
-void draw_radial_circles(display_surface& ds);
+template <class T> void test_image_load_save(display_surface<T>& ds);
+template <class T> void test_stroke_rules(display_surface<T>& ds);
+template <class T> void test_path_functionality(display_surface<T>& ds);
+template <class T> void draw_radial_circles(display_surface<T>& ds);
 //void test_draw_radial_circles(display_surface& ds);
 //wostream& operator<<(wostream& os, const point_2d& pt);
 //vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL);
@@ -37,7 +37,8 @@ void draw_radial_circles(display_surface& ds);
 //
 // Drawing entry point.
 //
-void sample_draw::operator()(display_surface& ds) {
+template <class T>
+void sample_draw::operator()(display_surface<T>& ds) {
 	//test_image_load_save(ds);
 	//test_path_functionality(ds);
 	draw_radial_circles(ds);
@@ -84,7 +85,8 @@ void sample_draw::operator()(display_surface& ds) {
 	////test_fill_rules(ds);
 }
 
-void test_image_load_save(display_surface& ds) {
+template <class T>
+void test_image_load_save(display_surface<T>& ds) {
 #ifdef _Filesystem_support_test
 	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::argb32);
 	//static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_file_format::png, format::a8);
@@ -248,7 +250,8 @@ void test_image_load_save(display_surface& ds) {
 //	ds.restore();
 //}
 //
-void test_stroke_rules(display_surface& ds) {
+template <class T>
+void test_stroke_rules(display_surface<T>& ds) {
 	ds.clear();
 	vector<gradient_stop> csg;
 	csg.emplace_back(0.0F, rgba_color::orange);
@@ -302,7 +305,8 @@ void test_stroke_rules(display_surface& ds) {
 	//ds.restore();
 }
 
-void test_path_functionality(display_surface& ds) {
+template <class T>
+void test_path_functionality(display_surface<T>& ds) {
 	// Clear to background color.
 	ds.paint(brush{ rgba_color::cornflower_blue });
 	path_builder<> pf{};
@@ -373,7 +377,8 @@ void test_path_functionality(display_surface& ds) {
 	//pf.line({ 200.0F, 800.0F });
 }
 
-void draw_radial_circles(display_surface& ds) {
+template <class T>
+void draw_radial_circles(display_surface<T>& ds) {
 	// Clear to background color.
 	ds.paint(brush{ rgba_color::magenta });
 	ds.paint(brush{ rgba_color::cornflower_blue }, nullopt, nullopt, clip_props{ bounding_box(40.0F, 40.0F, 1200.0F, 640.0F) });

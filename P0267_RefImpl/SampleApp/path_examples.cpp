@@ -1,7 +1,10 @@
 #include "path_examples.h"
 
+#include "xcairo.h"
+
 using namespace std;
 using namespace std::experimental::io2d;
+using namespace std::experimental::io2d::v1::cairo;
 
 //void path_test() {
 //	auto imgSfc = make_image_surface(format::argb32, 300, 200);
@@ -22,9 +25,9 @@ using namespace std::experimental::io2d;
 
 namespace path_test {
 	void path_test_1() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -46,9 +49,9 @@ namespace path_test {
 	}
 
 	void path_test_2() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -77,9 +80,9 @@ namespace path_test {
 	}
 
 	void path_test_3() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -106,9 +109,9 @@ namespace path_test {
 	}
 
 	void path_test_4() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -155,9 +158,9 @@ namespace path_test {
 	}
 
 	void path_test_5() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -204,9 +207,9 @@ namespace path_test {
 	}
 
 	void path_test_6() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -238,15 +241,15 @@ namespace path_test {
 	}
 
 	void path_test_7() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
 
 		// Example code goes here.
-		brush blueBrush{ rgba_color::blue };
+		brush<cairo_renderer> blueBrush{ rgba_color::blue };
 		stroke_props ten{ 10.0F };
 		pb.new_figure({ 30.0F, 30.0F });
 		pb.rel_line({ 105.0F, 0.0F });
@@ -268,9 +271,9 @@ namespace path_test {
 	}
 
 	void path_test_8() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -303,9 +306,9 @@ namespace path_test {
 	}
 
 	void path_test_9() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
@@ -338,9 +341,9 @@ namespace path_test {
 	}
 
 	void path_test_10() {
-		auto imgSfc = make_image_surface(format::argb32, 300, 200);
-		brush backBrush{ rgba_color::black };
-		brush foreBrush{ rgba_color::white };
+		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
+		brush<cairo_renderer> backBrush{ rgba_color::black };
+		brush<cairo_renderer> foreBrush{ rgba_color::white };
 		render_props aliased{ antialias::none };
 		path_builder<> pb{};
 		imgSfc.paint(backBrush);
