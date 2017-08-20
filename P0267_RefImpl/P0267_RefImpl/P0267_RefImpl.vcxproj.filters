@@ -9,9 +9,8 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="cairo renderer">
+      <UniqueIdentifier>{dfda8558-356c-4ab5-bd73-deaaf2f1b458}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,30 +54,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xcairo.h">
-      <Filter>Header Files</Filter>
+      <Filter>cairo renderer</Filter>
     </ClInclude>
     <ClInclude Include="xcairo_impl.h">
-      <Filter>Header Files</Filter>
+      <Filter>cairo renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="surface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="image_surface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="standalone_functions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="rgba_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="display_surface-win32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="display_surface-common.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>cairo renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="display_surface-win32.cpp">
+      <Filter>cairo renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="image_surface.cpp">
+      <Filter>cairo renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="standalone_functions.cpp">
+      <Filter>cairo renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="surface.cpp">
+      <Filter>cairo renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

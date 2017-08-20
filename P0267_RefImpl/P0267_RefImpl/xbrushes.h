@@ -3,8 +3,6 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 
-		class image_surface;
-
 		enum class wrap_mode {
 			none,
 			repeat,
@@ -48,50 +46,12 @@ namespace std::experimental::io2d {
 		constexpr bool operator!=(const gradient_stop& lhs, const gradient_stop& rhs)
 			noexcept;
 
-	}
-}
-
-namespace std::experimental::io2d {
-	inline namespace v1 {
-
-		class cairo_image_surface;
-
-		class cairo_brush
-		{
-			shared_ptr<cairo_pattern_t> _Brush;
-			shared_ptr<cairo_image_surface> _Image_surface;
-			brush_type _Brush_type;
-		public:
-			using native_handle_type = cairo_pattern_t*;
-			native_handle_type native_handle() const noexcept;
-
-			explicit cairo_brush(const rgba_color& c);
-
-			template <class InputIterator>
-			cairo_brush(const point_2d& begin, const point_2d& end, InputIterator first, InputIterator last);
-
-			cairo_brush(const point_2d& begin, const point_2d& end, ::std::initializer_list<gradient_stop> il);
-
-			template <class InputIterator>
-			cairo_brush(const circle& start, const circle& end, InputIterator first, InputIterator last);
-
-			cairo_brush(const circle& start, const circle& end, ::std::initializer_list<gradient_stop> il);
-
-			explicit cairo_brush(cairo_image_surface&& img);	// Fix implementation once cairo_image_surface is done
-
-			brush_type type() const noexcept;
-		};
-
-	}
-}
-
-namespace std::experimental::io2d {
-	inline namespace v1 {
-
+		template <class T>
 		class brush {
-			cairo_brush _Impl;
+			typename T::renderer_brush _Brush_impl;
+
 		public:
-			auto _Impl_brush() const { return _Impl.native_handle(); }
+			const auto& native_handle() const { return _Brush_impl; }
 
 			explicit brush(const rgba_color& c);
 

@@ -924,40 +924,274 @@ namespace std::experimental::io2d {
 
 		template <class Allocator>
 		::std::vector<figure_items::figure_item> _Interpret_path_items(const path_builder<Allocator>&);
-		//template <class Allocator>
-		//::std::vector<figure_items::path_data_types> _Interpret_path_items(const path_builder<Allocator>&, ::std::error_code&) noexcept;
 
-		inline constexpr interpreted_path::interpreted_path() noexcept
+		template <class T>
+		inline constexpr interpreted_path<T>::interpreted_path() noexcept
 			: _Impl() {}
 
+		template <class T>
 		template <class Allocator>
-		inline interpreted_path::interpreted_path(const path_builder<Allocator>& pf)
+		inline interpreted_path<T>::interpreted_path(const path_builder<Allocator>& pf)
 			: _Impl(pf)
 		{}
 
+		template <class T>
 		template <class ForwardIterator>
-		inline interpreted_path::interpreted_path(ForwardIterator first, ForwardIterator last)
+		inline interpreted_path<T>::interpreted_path(ForwardIterator first, ForwardIterator last)
 			: _Impl(first, last)
 		{}
+
+		template <class _TItem>
+		struct _Path_item_interpret_visitor {
+			constexpr static float twoThirds = 2.0F / 3.0F;
+
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_new_figure>, _Path_data_abs_new_figure> = _Path_data_abs_new_figure_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
+				const auto pt = m.transform_pt({ 0.0F, 0.0F }) + item.at();
+				v.emplace_back(::std::in_place_type<figure_items::abs_new_figure>, pt);
+				currentPoint = pt;
+				closePoint = pt;
+			}
+
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_new_figure>, _Path_data_rel_new_figure> = _Path_data_rel_new_figure_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
+				auto amtx = m;
+				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
+				const auto pt = currentPoint + item.at() * amtx;
+				v.emplace_back(::std::in_place_type<figure_items::abs_new_figure>, pt);
+				currentPoint = pt;
+				closePoint = pt;
+			}
+
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::close_figure>, _Path_data_close_path> = _Path_data_close_path_val>
+			static void _Interpret(const T&, ::std::vector<figure_items::figure_item>& v, matrix_2d&, point_2d& currentPoint, point_2d& closePoint, stack<matrix_2d>&) noexcept {
+				const auto& item = v.rbegin();
+				auto idx = item->index();
+				if (idx == 0 || idx == 1) {
+					return; // degenerate path
+				}
+				v.emplace_back(::std::in_place_type<figure_items::close_figure>);
+				v.emplace_back(::std::in_place_type<figure_items::abs_new_figure>,
+					closePoint);
+				currentPoint = closePoint;
+			}
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>&, matrix_2d& m, point_2d&, point_2d&, stack<matrix_2d>& matrices) noexcept {
+				matrices.push(m);
+				m = item.matrix();
+			}
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>&, matrix_2d& m, point_2d&, point_2d&, stack<matrix_2d>& matrices) noexcept {
+				const auto updateM = m * item.matrix();
+				matrices.push(m);
+				m = updateM;
+			}
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
+			static void _Interpret(const T&, ::std::vector<figure_items::figure_item>&, matrix_2d& m, point_2d&, point_2d&, stack<matrix_2d>& matrices) noexcept {
+				if (matrices.empty()) {
+					m = matrix_2d{};
+				}
+				else {
+					m = matrices.top();
+					matrices.pop();
+				}
+			}
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+				const auto pt1 = m.transform_pt(item.control_pt1() - currentPoint) + currentPoint;
+				const auto pt2 = m.transform_pt(item.control_pt2() - currentPoint) + currentPoint;
+				const auto pt3 = m.transform_pt(item.end_pt() - currentPoint) + currentPoint;
+				if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
+					return; // degenerate path segment
+				}
+				v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, pt1,
+					pt2, pt3);
+				currentPoint = pt3;
+			}
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+				const auto pt = m.transform_pt(item.to() - currentPoint) + currentPoint;
+				if (currentPoint == pt) {
+					return; // degenerate path segment
+				}
+				v.emplace_back(::std::in_place_type<figure_items::abs_line>, pt);
+				currentPoint = pt;
+			}
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+				// Turn it into a cubic curve since cairo doesn't have quadratic curves.
+				//point_2d beginPt;
+				const auto controlPt = m.transform_pt(item.control_pt() - currentPoint) + currentPoint;
+				const auto endPt = m.transform_pt(item.end_pt() - currentPoint) + currentPoint;
+				if (currentPoint == controlPt && controlPt == endPt) {
+					return; // degenerate path segment
+				}
+				const auto beginPt = currentPoint;
+				point_2d cpt1 = { ((controlPt.x - beginPt.x) * twoThirds) + beginPt.x, ((controlPt.y - beginPt.y) * twoThirds) + beginPt.y };
+				point_2d cpt2 = { ((controlPt.x - endPt.x) * twoThirds) + endPt.x, ((controlPt.y - endPt.y) * twoThirds) + endPt.y };
+				v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, cpt1, cpt2, endPt);
+				currentPoint = endPt;
+			}
+
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::arc>, _Path_data_arc> = _Path_data_arc_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+				const float rot = item.rotation();
+				const float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
+				if (abs(rot) < oneThousandthOfADegreeInRads) {
+					// Return if the rotation is less than one thousandth of one degree; it's a degenerate path segment.
+					return;
+				}
+				const auto clockwise = (rot < 0.0F) ? true : false;
+				const point_2d rad = item.radius();
+				auto startAng = item.start_angle();
+				const auto origM = m;
+				m = matrix_2d::init_scale(rad);
+				auto centerOffset = (point_for_angle(two_pi<float> -startAng) * rad);
+				centerOffset.y = -centerOffset.y;
+				auto ctr = currentPoint - centerOffset;
+
+				point_2d pt0, pt1, pt2, pt3;
+				int bezCount = 1;
+				float theta = rot;
+
+				while (abs(theta) > half_pi<float>) {
+					theta /= 2.0F;
+					bezCount += bezCount;
+				}
+
+				float phi = (theta / 2.0F);
+				const auto cosPhi = cos(-phi);
+				const auto sinPhi = sin(-phi);
+
+				pt0.x = cosPhi;
+				pt0.y = -sinPhi;
+				pt3.x = pt0.x;
+				pt3.y = -pt0.y;
+				pt1.x = (4.0F - cosPhi) / 3.0F;
+				pt1.y = -(((1.0F - cosPhi) * (3.0F - cosPhi)) / (3.0F * sinPhi));
+				pt2.x = pt1.x;
+				pt2.y = -pt1.y;
+				auto rotCntrCwFn = [](point_2d pt, float a) -> point_2d {
+					auto result = point_2d{ pt.x * cos(a) - pt.y * sin(a),
+						pt.x * sin(a) + pt.y * cos(a) };
+					result.x = _Round_floating_point_to_zero(result.x);
+					result.y = _Round_floating_point_to_zero(result.y);
+					return result;
+				};
+				auto rotCwFn = [](point_2d pt, float a) -> point_2d {
+					auto result = point_2d{ pt.x * cos(a) - pt.y * sin(a),
+						-(pt.x * sin(a) + pt.y * cos(a)) };
+					result.x = _Round_floating_point_to_zero(result.x);
+					result.y = _Round_floating_point_to_zero(result.y);
+					return result;
+				};
+
+				startAng = two_pi<float> -startAng;
+
+				if (clockwise) {
+					pt0 = rotCwFn(pt0, phi);
+					pt1 = rotCwFn(pt1, phi);
+					pt2 = rotCwFn(pt2, phi);
+					pt3 = rotCwFn(pt3, phi);
+					auto shflPt = pt3;
+					pt3 = pt0;
+					pt0 = shflPt;
+					shflPt = pt2;
+					pt2 = pt1;
+					pt1 = shflPt;
+				}
+				else {
+					pt0 = rotCntrCwFn(pt0, phi);
+					pt1 = rotCntrCwFn(pt1, phi);
+					pt2 = rotCntrCwFn(pt2, phi);
+					pt3 = rotCntrCwFn(pt3, phi);
+					pt0.y = -pt0.y;
+					pt1.y = -pt1.y;
+					pt2.y = -pt2.y;
+					pt3.y = -pt3.y;
+					auto shflPt = pt3;
+					pt3 = pt0;
+					pt0 = shflPt;
+					shflPt = pt2;
+					pt2 = pt1;
+					pt1 = shflPt;
+				}
+				auto currTheta = startAng;
+				const auto calcAdjustedCurrPt = ((ctr + (rotCntrCwFn(pt0, currTheta) * m)) * origM);
+				auto adjustVal = calcAdjustedCurrPt - currentPoint;
+				point_2d tempCurrPt;
+				for (; bezCount > 0; bezCount--) {
+					const auto rapt0 = m.transform_pt(rotCntrCwFn(pt0, currTheta));
+					const auto rapt1 = m.transform_pt(rotCntrCwFn(pt1, currTheta));
+					const auto rapt2 = m.transform_pt(rotCntrCwFn(pt2, currTheta));
+					const auto rapt3 = m.transform_pt(rotCntrCwFn(pt3, currTheta));
+					auto cpt0 = ctr + rapt0;
+					auto cpt1 = ctr + rapt1;
+					auto cpt2 = ctr + rapt2;
+					auto cpt3 = ctr + rapt3;
+					cpt0 = origM.transform_pt(cpt0);
+					cpt1 = origM.transform_pt(cpt1);
+					cpt2 = origM.transform_pt(cpt2);
+					cpt3 = origM.transform_pt(cpt3);
+					cpt0 -= adjustVal;
+					cpt1 -= adjustVal;
+					cpt2 -= adjustVal;
+					cpt3 -= adjustVal;
+					currentPoint = cpt3;
+					v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, cpt1, cpt2, cpt3);
+					currTheta -= theta;
+				}
+				m = origM;
+			}
+
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+				auto amtx = m;
+				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
+				const auto pt1 = item.control_pt1() * amtx;
+				const auto pt2 = item.control_pt2() * amtx;
+				const auto pt3 = item.end_pt()* amtx;
+				if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
+					return; // degenerate path segment
+				}
+				v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, currentPoint + pt1, currentPoint + pt1 + pt2, currentPoint + pt1 + pt2 + pt3);
+				currentPoint = currentPoint + pt1 + pt2 + pt3;
+			}
+
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+				auto amtx = m;
+				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
+				const auto pt = currentPoint + item.to() * amtx;
+				if (currentPoint == pt) {
+					return; // degenerate path segment
+				}
+				v.emplace_back(::std::in_place_type<figure_items::abs_line>, pt);
+				currentPoint = pt;
+			}
+
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
+			static void _Interpret(const T& item, ::std::vector<figure_items::figure_item>& v, matrix_2d& m, point_2d& currentPoint, point_2d&, stack<matrix_2d>&) noexcept {
+				auto amtx = m;
+				amtx.m20 = 0.0F; amtx.m21 = 0.0F; // obliterate translation since this is relative.
+				const auto controlPt = currentPoint + item.control_pt() * amtx;
+				const auto endPt = currentPoint + item.control_pt() * amtx + item.end_pt() * amtx;
+				const auto beginPt = currentPoint;
+				if (currentPoint == controlPt && controlPt == endPt) {
+					return; // degenerate path segment
+				}
+				point_2d cpt1 = { ((controlPt.x - beginPt.x) * twoThirds) + beginPt.x, ((controlPt.y - beginPt.y) * twoThirds) + beginPt.y };
+				point_2d cpt2 = { ((controlPt.x - endPt.x) * twoThirds) + endPt.x, ((controlPt.y - endPt.y) * twoThirds) + endPt.y };
+				v.emplace_back(::std::in_place_type<figure_items::abs_cubic_curve>, cpt1, cpt2, endPt);
+				currentPoint = endPt;
+			}
+		};
 
 		template <class ForwardIterator>
 		inline ::std::vector<figure_items::figure_item> _Interpret_path_items(ForwardIterator first, ForwardIterator last);
 
 		template <class Allocator>
 		inline ::std::vector<figure_items::figure_item> _Interpret_path_items(const path_builder<Allocator>& pf) {
-			//matrix_2d m;
-			//point_2d currentPoint; // Tracks the untransformed current point.
-			//point_2d closePoint;   // Tracks the transformed close point.
-			//::std::stack<matrix_2d> matrices;
-			//::std::vector<figure_items::figure_item> v;
-
-			//for (const figure_items::figure_item& val : pf) {
-			//	::std::visit([&m, &currentPoint, &closePoint, &matrices, &v](auto&& item) {
-			//		using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-			//		_Path_item_interpret_visitor<T>::template _Interpret<T>(item, v, m, currentPoint, closePoint, matrices);
-			//	}, val);
-			//}
-			//return v;
 			return _Interpret_path_items(begin(pf), end(pf));
 		}
 
@@ -1388,30 +1622,36 @@ namespace std::experimental::io2d {
 			return lhs._Offset == rhs._Offset && lhs._Color == rhs._Color;
 		}
 
+		template <class T>
 		template <class InputIterator>
-		inline brush::brush(const point_2d& begin, const point_2d& end, InputIterator first, InputIterator last)
-			: _Impl(begin, end, first, last)
+		inline brush<T>::brush(const point_2d& begin, const point_2d& end, InputIterator first, InputIterator last)
+			: _Brush_impl(begin, end, first, last)
 		{}
 
+		template <class T>
 		template <class InputIterator>
-		inline brush::brush(const circle& start, const circle& end, InputIterator first, InputIterator last)
-			: _Impl(start, end, first, last)
+		inline brush<T>::brush(const circle& start, const circle& end, InputIterator first, InputIterator last)
+			: _Brush_impl(start, end, first, last)
 		{}
 
-		inline brush::brush(const rgba_color& color)
-			: _Impl(color)
+		template <class T>
+		inline brush<T>::brush(const rgba_color& color)
+			: _Brush_impl(color)
 		{}
 
-		inline brush::brush(const point_2d& begin, const point_2d& end, ::std::initializer_list<gradient_stop> il)
-			: _Impl(begin, end, il)
+		template <class T>
+		inline brush<T>::brush(const point_2d& begin, const point_2d& end, ::std::initializer_list<gradient_stop> il)
+			: _Brush_impl(begin, end, il)
 		{}
 
-		inline brush::brush(const circle& start, const circle& end, ::std::initializer_list<gradient_stop> il)
-			: _Impl(start, end, il)
+		template <class T>
+		inline brush<T>::brush(const circle& start, const circle& end, ::std::initializer_list<gradient_stop> il)
+			: _Brush_impl(start, end, il)
 		{}
 
-		inline brush_type brush::type() const noexcept {
-			return _Impl.type();
+		template <class T>
+		inline brush_type brush<T>::type() const noexcept {
+			return _Brush_impl.type();
 		}
 
 		// Surfaces
@@ -1490,18 +1730,21 @@ namespace std::experimental::io2d {
 			return _Matrix;
 		}
 
+		template <class T>
 		template <class Allocator>
-		inline clip_props::clip_props(const path_builder<Allocator> &pf,
+		inline clip_props<T>::clip_props(const path_builder<Allocator> &pf,
 			experimental::io2d::fill_rule fr)
 			: _Clip(interpreted_path(pf))
 			, _Fill_rule(fr) { }
 
-		inline clip_props::clip_props(const interpreted_path& pg,
+		template <class T>
+		inline clip_props<T>::clip_props(const interpreted_path<T>& pg,
 			experimental::io2d::fill_rule fr) noexcept
 			: _Clip(pg)
 			, _Fill_rule(fr) { }
 
-		inline clip_props::clip_props(const bounding_box& r,
+		template <class T>
+		inline clip_props<T>::clip_props(const bounding_box& r,
 			experimental::io2d::fill_rule fr)
 			: _Clip()
 			, _Fill_rule(fr) {
@@ -1514,24 +1757,29 @@ namespace std::experimental::io2d {
 			_Clip = interpreted_path(clip);
 		}
 
+		template <class T>
 		template <class Allocator>
-		inline void clip_props::clip(const path_builder<Allocator>& pf) {
+		inline void clip_props<T>::clip(const path_builder<Allocator>& pf) {
 			_Clip = interpreted_path(pf);
 		}
 
-		inline void clip_props::clip(const interpreted_path& pg) noexcept {
+		template <class T>
+		inline void clip_props<T>::clip(const interpreted_path<T>& pg) noexcept {
 			_Clip = pg;
 		}
 
-		inline void clip_props::fill_rule(experimental::io2d::fill_rule fr) noexcept{
+		template <class T>
+		inline void clip_props<T>::fill_rule(experimental::io2d::fill_rule fr) noexcept{
 			_Fill_rule = fr;
 		}
 
-		inline interpreted_path clip_props::clip() const noexcept {
+		template <class T>
+		inline interpreted_path<T> clip_props<T>::clip() const noexcept {
 			return _Clip;
 		}
 
-		inline experimental::io2d::fill_rule clip_props::fill_rule() const noexcept {
+		template <class T>
+		inline experimental::io2d::fill_rule clip_props<T>::fill_rule() const noexcept {
 			return _Fill_rule;
 		}
 
@@ -1601,405 +1849,515 @@ namespace std::experimental::io2d {
 
 		// surface
 
-		inline surface::surface(::std::experimental::io2d::format fmt, int width, int height)
-			: _Surface_Impl(make_unique<cairo_surface>(fmt, width, height)){}
+		template <class T>
+		inline surface<T>::surface(::std::experimental::io2d::format fmt, int width, int height)
+			: _Surface_impl(make_unique<T::renderer_surface>(fmt, width, height)){}
 
-		inline surface::surface(native_handle_type nh, ::std::experimental::io2d::format fmt)
-			: _Surface_Impl(make_unique<cairo_surface>(nh, fmt)) {}
+		template <class T>
+		inline surface<T>::surface(native_handle_type nh, ::std::experimental::io2d::format fmt)
+			: _Surface_impl(make_unique<T::renderer_surface>(nh, fmt)) {}
 
-		inline void surface::clear()
+		template <class T>
+		inline void surface<T>::clear()
 		{
-			_Surface_Impl->clear();
+			_Surface_impl->clear();
 		}
 
-		inline void surface::flush()
+		template <class T>
+		inline void surface<T>::flush()
 		{
-			_Surface_Impl->flush();
+			_Surface_impl->flush();
 		}
 
-		inline void surface::flush(error_code& ec) noexcept
+		template <class T>
+		inline void surface<T>::flush(error_code& ec) noexcept
 		{
-			_Surface_Impl->flush(ec);
+			_Surface_impl->flush(ec);
 		}
 
-		inline void surface::mark_dirty()
+		template <class T>
+		inline void surface<T>::mark_dirty()
 		{
-			_Surface_Impl->mark_dirty();
+			_Surface_impl->mark_dirty();
 		}
 
-		inline void surface::mark_dirty(error_code& ec) noexcept
+		template <class T>
+		inline void surface<T>::mark_dirty(error_code& ec) noexcept
 		{
-			_Surface_Impl->mark_dirty(ec);
+			_Surface_impl->mark_dirty(ec);
 		}
 
-		inline void surface::mark_dirty(const bounding_box& extents)
+		template <class T>
+		inline void surface<T>::mark_dirty(const bounding_box& extents)
 		{
-			_Surface_Impl->mark_dirty(extents);
+			_Surface_impl->mark_dirty(extents);
 		}
 
-		inline void surface::mark_dirty(const bounding_box& extents, error_code& ec) noexcept
+		template <class T>
+		inline void surface<T>::mark_dirty(const bounding_box& extents, error_code& ec) noexcept
 		{
-			_Surface_Impl->mark_dirty(extents, ec);
+			_Surface_impl->mark_dirty(extents, ec);
 		}
 
-		inline void surface::paint(const brush& b, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl)
+		template <class T>
+		inline void surface<T>::paint(const brush<T>& b, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props<T>>& cl)
 		{
-			_Surface_Impl->paint(b, bp, rp, cl);
+			_Surface_impl->paint(b.native_handle(), bp, rp, cl);
 		}
 
+		template <class T>
 		template <class Allocator>
-		inline void surface::stroke(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl)
+		inline void surface<T>::stroke(const brush<T>& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props<T>>& cl)
 		{
-			_Surface_Impl->stroke(b, pb, bp, sp, d, rp, cl);
+			_Surface_impl->stroke(b.native_handle(), pb, bp, sp, d, rp, cl);
 		}
 
-		inline void surface::stroke(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props>& cl)
+		template <class T>
+		inline void surface<T>::stroke(const brush<T>& b, const interpreted_path<T>& pg, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props<T>>& cl)
 		{
-			_Surface_Impl->stroke(b, pg, bp, sp, d, rp, cl);
+			_Surface_impl->stroke(b.native_handle(), pg, bp, sp, d, rp, cl);
 		}
 
+		template <class T>
 		template <class Allocator>
-		inline void surface::fill(const brush& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl)
+		inline void surface<T>::fill(const brush<T>& b, const path_builder<Allocator>& pb, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props<T>>& cl)
 		{
-			_Surface_Impl->fill(b, pb, bp, rp, cl);
+			_Surface_impl->fill(b.native_handle(), pb, bp, rp, cl);
 		}
 
-		inline void surface::fill(const brush& b, const interpreted_path& pg, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props>& cl)
+		template <class T>
+		inline void surface<T>::fill(const brush<T>& b, const interpreted_path<T>& pg, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props<T>>& cl)
 		{
-			_Surface_Impl->fill(b, pg, bp, rp, cl);
+			_Surface_impl->fill(b.native_handle(), pg, bp, rp, cl);
 		}
 
-		inline void surface::mask(const brush& b, const brush& mb, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props>& cl)
+		template <class T>
+		inline void surface<T>::mask(const brush<T>& b, const brush<T>& mb, const optional<brush_props>& bp, const optional<mask_props>& mp, const optional<render_props>& rp, const optional<clip_props<T>>& cl)
 		{
-			_Surface_Impl->mask(b, mb, bp, mp, rp, cl);
+			_Surface_impl->mask(b.native_handle(), mb.native_handle(), bp, mp, rp, cl);
 		}
 
 		// image_surface
 
-		inline image_surface::image_surface(io2d::format fmt, int width, int height)
-			: surface(fmt, width, height)
-			, _Image_Surface_Impl(_Surface_Impl.get())
+		template <class T>
+		inline image_surface<T>::image_surface(io2d::format fmt, int width, int height)
+			: surface<T>(fmt, width, height)
+			, _Image_surface_impl(surface<T>::_Surface_impl.get())
 		{}
 
 #ifdef _Filesystem_support_test
-		inline image_surface::image_surface(filesystem::path f, image_file_format i, io2d::format fmt)
-			: surface({ nullptr, nullptr }, fmt)
-			, _Image_Surface_Impl(_Surface_Impl.get(), f, i, fmt)
+		template <class T>
+		inline image_surface<T>::image_surface(filesystem::path f, image_file_format i, io2d::format fmt)
+			: surface<T>({ nullptr, nullptr }, fmt)
+			, _Image_surface_impl(surface<T>::_Surface_impl.get(), f, i, fmt)
 		{}
 #else
-		inline image_surface::image_surface(::std::string f, experimental::io2d::format fmt, image_file_format idf)
-			: surface({ nullptr, nullptr }, fmt)
-			, _Image_Surface_Impl(_Surface_Impl.get(), f, i, fmt)
+		template <class T>
+		inline image_surface<T>::image_surface(::std::string f, experimental::io2d::format fmt, image_file_format idf)
+			: surface<T>({ nullptr, nullptr }, fmt)
+			, _Image_surface_impl(surface<T>::_Surface_impl.get(), f, i, fmt)
 		{}
 #endif
 
 #ifdef _Filesystem_support_test
-		inline void image_surface::save(filesystem::path p, image_file_format i)
+		template <class T>
+		inline void image_surface<T>::save(filesystem::path p, image_file_format i)
 		{
-			_Image_Surface_Impl.save(p, i);
+			_Image_surface_impl.save(p, i);
 		}
 #else
-		inline void image_surface::save(::std::string f, image_file_format i);
+		template <class T>
+		inline void image_surface<T>::save(::std::string f, image_file_format i);
 		{
-			_Image_Surface_Impl.save(f, i);
+			_Image_surface_impl.save(f, i);
 		}
 #endif
 
-		inline void image_surface::map(const function<void(mapped_surface&)>& action)
+		template <class T>
+		inline void image_surface<T>::map(const function<void(mapped_surface<T>&)>& action)
 		{
-			_Image_Surface_Impl.map(action);
+			_Image_surface_impl.map(action);
 		}
 
-		inline int image_surface::max_width() noexcept
+		template <class T>
+		inline int image_surface<T>::max_width() noexcept
 		{
-			return cairo_image_surface::max_width();
+			return T::renderer_image_surface::max_width();
 		}
 
-		inline int image_surface::max_height() noexcept
+		template <class T>
+		inline int image_surface<T>::max_height() noexcept
 		{
-			return cairo_image_surface::max_height();
+			return T::renderer_image_surface::max_height();
 		}
 
-		inline io2d::format image_surface::format() const noexcept
+		template <class T>
+		inline io2d::format image_surface<T>::format() const noexcept
 		{
-			return _Image_Surface_Impl.format();
+			return _Image_surface_impl.format();
 		}
 
-		inline int image_surface::width() const noexcept
+		template <class T>
+		inline int image_surface<T>::width() const noexcept
 		{
-			return _Image_Surface_Impl.width();
+			return _Image_surface_impl.width();
 		}
 
-		inline int image_surface::height() const noexcept
+		template <class T>
+		inline int image_surface<T>::height() const noexcept
 		{
-			return _Image_Surface_Impl.height();
+			return _Image_surface_impl.height();
 		}
 
 		// display_surface
 
-		inline display_surface::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps)
+		template <class T>
+		inline display_surface<T>::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps)
 			: surface(preferredFormat, preferredWidth, preferredHeight)
-			, _Display_Surface_Impl(this, _Surface_Impl.get(), preferredWidth, preferredHeight, preferredFormat, scl, rr, fps)
+			, _Display_surface_impl(this, _Surface_impl.get(), preferredWidth, preferredHeight, preferredFormat, scl, rr, fps)
 		{}
 
-		inline display_surface::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept
+		template <class T>
+		inline display_surface<T>::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept
 			: surface(preferredFormat, preferredWidth, preferredHeight)
-			, _Display_Surface_Impl(this, _Surface_Impl.get(), preferredWidth, preferredHeight, preferredFormat, ec, scl, rr, fps)
+			, _Display_surface_impl(this, _Surface_impl.get(), preferredWidth, preferredHeight, preferredFormat, ec, scl, rr, fps)
 		{}
 
-		inline display_surface::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps)
+		template <class T>
+		inline display_surface<T>::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps)
 			: surface(preferredFormat, preferredWidth, preferredHeight)
-			, _Display_Surface_Impl(this, _Surface_Impl.get(), preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, scl, rr, fps)
+			, _Display_surface_impl(this, _Surface_impl.get(), preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, scl, rr, fps)
 		{}
 
-		inline display_surface::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept
+		template <class T>
+		inline display_surface<T>::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept
 			: surface(preferredFormat, preferredWidth, preferredHeight)
-			, _Display_Surface_Impl(this, _Surface_Impl.get(), preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, ec, scl, rr, fps)
+			, _Display_surface_impl(this, _Surface_impl.get(), preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, ec, scl, rr, fps)
 		{}
 
-		inline void display_surface::draw_callback(const function<void(display_surface& sfc)>& fn)
+		template <class T>
+		inline void display_surface<T>::draw_callback(const function<void(display_surface<T>& sfc)>& fn)
 		{
-			_Display_Surface_Impl.draw_callback(fn);
+			_Display_surface_impl.draw_callback(fn);
 		}
 
-		inline void display_surface::size_change_callback(const function<void(display_surface& sfc)>& fn)
+		template <class T>
+		inline void display_surface<T>::size_change_callback(const function<void(display_surface<T>& sfc)>& fn)
 		{
-			_Display_Surface_Impl.size_change_callback(fn);
+			_Display_surface_impl.size_change_callback(fn);
 		}
 
-		inline void display_surface::width(int w)
+		template <class T>
+		inline void display_surface<T>::width(int w)
 		{
-			_Display_Surface_Impl.width(w);
+			_Display_surface_impl.width(w);
 		}
 
-		inline void display_surface::width(int w, error_code& ec) noexcept
+		template <class T>
+		inline void display_surface<T>::width(int w, error_code& ec) noexcept
 		{
-			_Display_Surface_Impl.width(w, ec);
+			_Display_surface_impl.width(w, ec);
 		}
 
-		inline void display_surface::height(int h)
+		template <class T>
+		inline void display_surface<T>::height(int h)
 		{
-			_Display_Surface_Impl.height(h);
+			_Display_surface_impl.height(h);
 		}
 
-		inline void display_surface::height(int h, error_code& ec) noexcept
+		template <class T>
+		inline void display_surface<T>::height(int h, error_code& ec) noexcept
 		{
-			_Display_Surface_Impl.height(h, ec);
+			_Display_surface_impl.height(h, ec);
 		}
 
-		inline void display_surface::display_width(int w)
+		template <class T>
+		inline void display_surface<T>::display_width(int w)
 		{
-			_Display_Surface_Impl.display_width(w);
+			_Display_surface_impl.display_width(w);
 		}
 
-		inline void display_surface::display_width(int w, error_code& ec) noexcept
+		template <class T>
+		inline void display_surface<T>::display_width(int w, error_code& ec) noexcept
 		{
-			_Display_Surface_Impl.display_width(w, ec);
+			_Display_surface_impl.display_width(w, ec);
 		}
 
-		inline void display_surface::display_height(int h)
+		template <class T>
+		inline void display_surface<T>::display_height(int h)
 		{
-			_Display_Surface_Impl.display_height(h);
+			_Display_surface_impl.display_height(h);
 		}
 
-		inline void display_surface::display_height(int h, error_code& ec) noexcept
+		template <class T>
+		inline void display_surface<T>::display_height(int h, error_code& ec) noexcept
 		{
-			_Display_Surface_Impl.display_height(h, ec);
+			_Display_surface_impl.display_height(h, ec);
 		}
 
-		inline void display_surface::dimensions(int w, int h)
+		template <class T>
+		inline void display_surface<T>::dimensions(int w, int h)
 		{
-			_Display_Surface_Impl.dimensions(w, h);
+			_Display_surface_impl.dimensions(w, h);
 		}
 
-		inline void display_surface::dimensions(int w, int h, error_code& ec) noexcept
+		template <class T>
+		inline void display_surface<T>::dimensions(int w, int h, error_code& ec) noexcept
 		{
-			_Display_Surface_Impl.dimensions(w, h, ec);
+			_Display_surface_impl.dimensions(w, h, ec);
 		}
 
-		inline void display_surface::display_dimensions(int dw, int dh)
+		template <class T>
+		inline void display_surface<T>::display_dimensions(int dw, int dh)
 		{
-			_Display_Surface_Impl.display_dimensions(dw, dh);
+			_Display_surface_impl.display_dimensions(dw, dh);
 		}
 
-		inline void display_surface::display_dimensions(int dw, int dh, error_code& ec) noexcept
+		template <class T>
+		inline void display_surface<T>::display_dimensions(int dw, int dh, error_code& ec) noexcept
 		{
-			_Display_Surface_Impl.display_dimensions(dw, dh, ec);
+			_Display_surface_impl.display_dimensions(dw, dh, ec);
 		}
 
-		inline void display_surface::scaling(experimental::io2d::scaling scl) noexcept
+		template <class T>
+		inline void display_surface<T>::scaling(experimental::io2d::scaling scl) noexcept
 		{
-			_Display_Surface_Impl.scaling(scl);
+			_Display_surface_impl.scaling(scl);
 		}
 
-		inline void display_surface::user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn)
+		template <class T>
+		inline void display_surface<T>::user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn)
 		{
-			_Display_Surface_Impl.user_scaling_callback(fn);
+			_Display_surface_impl.user_scaling_callback(fn);
 		}
 
-		inline void display_surface::letterbox_brush(const optional<brush>& b, const optional<brush_props> bp) noexcept
+		template <class T>
+		inline void display_surface<T>::letterbox_brush(const optional<brush<T>>& b, const optional<brush_props> bp) noexcept
 		{
-			_Display_Surface_Impl.letterbox_brush(b, bp);
+			_Display_surface_impl.letterbox_brush(b, bp);
 		}
 
-		inline void display_surface::auto_clear(bool val) noexcept
+		template <class T>
+		inline void display_surface<T>::auto_clear(bool val) noexcept
 		{
-			_Display_Surface_Impl.auto_clear(val);
+			_Display_surface_impl.auto_clear(val);
 		}
 
-		inline void display_surface::refresh_rate(experimental::io2d::refresh_rate rr) noexcept
+		template <class T>
+		inline void display_surface<T>::refresh_rate(experimental::io2d::refresh_rate rr) noexcept
 		{
-			_Display_Surface_Impl.refresh_rate(rr);
+			_Display_surface_impl.refresh_rate(rr);
 		}
 
-		inline bool display_surface::desired_frame_rate(float fps) noexcept
+		template <class T>
+		inline bool display_surface<T>::desired_frame_rate(float fps) noexcept
 		{
-			return _Display_Surface_Impl.desired_frame_rate(fps);
+			return _Display_surface_impl.desired_frame_rate(fps);
 		}
 
-		inline void display_surface::redraw_required() noexcept
+		template <class T>
+		inline void display_surface<T>::redraw_required() noexcept
 		{
-			_Display_Surface_Impl.redraw_required();
+			_Display_surface_impl.redraw_required();
 		}
 
-		inline int display_surface::begin_show()
+		template <class T>
+		inline int display_surface<T>::begin_show()
 		{
-			return _Display_Surface_Impl.begin_show();
+			return _Display_surface_impl.begin_show();
 		}
 
-		inline void display_surface::end_show()
+		template <class T>
+		inline void display_surface<T>::end_show()
 		{
-			_Display_Surface_Impl.end_show();
+			_Display_surface_impl.end_show();
 		}
 
-		inline experimental::io2d::format display_surface::format() const noexcept
+		template <class T>
+		inline experimental::io2d::format display_surface<T>::format() const noexcept
 		{
-			return _Display_Surface_Impl.format();
+			return _Display_surface_impl.format();
 		}
 
-		inline int display_surface::width() const noexcept
+		template <class T>
+		inline int display_surface<T>::width() const noexcept
 		{
-			return _Display_Surface_Impl.width();
+			return _Display_surface_impl.width();
 		}
 
-		inline int display_surface::height() const noexcept
+		template <class T>
+		inline int display_surface<T>::height() const noexcept
 		{
-			return _Display_Surface_Impl.height();
+			return _Display_surface_impl.height();
 		}
 
-		inline int display_surface::display_width() const noexcept
+		template <class T>
+		inline int display_surface<T>::display_width() const noexcept
 		{
-			return _Display_Surface_Impl.display_width();
+			return _Display_surface_impl.display_width();
 		}
 
-		inline int display_surface::display_height() const noexcept
+		template <class T>
+		inline int display_surface<T>::display_height() const noexcept
 		{
-			return _Display_Surface_Impl.display_height();
+			return _Display_surface_impl.display_height();
 		}
 
-		inline point_2d display_surface::dimensions() const noexcept
+		template <class T>
+		inline point_2d display_surface<T>::dimensions() const noexcept
 		{
-			return _Display_Surface_Impl.dimensions();
+			return _Display_surface_impl.dimensions();
 		}
 
-		inline point_2d display_surface::display_dimensions() const noexcept
+		template <class T>
+		inline point_2d display_surface<T>::display_dimensions() const noexcept
 		{
-			return _Display_Surface_Impl.display_dimensions();
+			return _Display_surface_impl.display_dimensions();
 		}
 
-		inline experimental::io2d::scaling display_surface::scaling() const noexcept
+		template <class T>
+		inline experimental::io2d::scaling display_surface<T>::scaling() const noexcept
 		{
-			return _Display_Surface_Impl.scaling();
+			return _Display_surface_impl.scaling();
 		}
 
-		inline function<experimental::io2d::bounding_box(const display_surface&, bool&)> display_surface::user_scaling_callback() const
+		template <class T>
+		inline function<experimental::io2d::bounding_box(const display_surface<T>&, bool&)> display_surface<T>::user_scaling_callback() const
 		{
-			return _Display_Surface_Impl.user_scaling_callback();
+			return _Display_surface_impl.user_scaling_callback();
 		}
 
-		inline function<experimental::io2d::bounding_box(const display_surface&, bool&)> display_surface::user_scaling_callback(error_code& ec) const noexcept
+		template <class T>
+		inline function<experimental::io2d::bounding_box(const display_surface<T>&, bool&)> display_surface<T>::user_scaling_callback(error_code& ec) const noexcept
 		{
-			return _Display_Surface_Impl.user_scaling_callback(ec);
+			return _Display_surface_impl.user_scaling_callback(ec);
 		}
 
-		inline optional<brush> display_surface::letterbox_brush() const noexcept
+		template <class T>
+		inline optional<brush<T>> display_surface<T>::letterbox_brush() const noexcept
 		{
-			return _Display_Surface_Impl.letterbox_brush();
+			return _Display_surface_impl.letterbox_brush();
 		}
 
-		inline optional<brush_props> display_surface::letterbox_brush_props() const noexcept
+		template <class T>
+		inline optional<brush_props> display_surface<T>::letterbox_brush_props() const noexcept
 		{
-			return _Display_Surface_Impl.letterbox_brush_props();
+			return _Display_surface_impl.letterbox_brush_props();
 		}
 
-		inline bool display_surface::auto_clear() const noexcept
+		template <class T>
+		inline bool display_surface<T>::auto_clear() const noexcept
 		{
-			return _Display_Surface_Impl.auto_clear();
+			return _Display_surface_impl.auto_clear();
 		}
 
-		inline experimental::io2d::refresh_rate display_surface::refresh_rate() const noexcept
+		template <class T>
+		inline experimental::io2d::refresh_rate display_surface<T>::refresh_rate() const noexcept
 		{
-			return _Display_Surface_Impl.refresh_rate();
+			return _Display_surface_impl.refresh_rate();
 		}
 
-		inline float display_surface::desired_frame_rate() const noexcept
+		template <class T>
+		inline float display_surface<T>::desired_frame_rate() const noexcept
 		{
-			return _Display_Surface_Impl.desired_frame_rate();
+			return _Display_surface_impl.desired_frame_rate();
 		}
 
-		inline float display_surface::elapsed_draw_time() const noexcept
+		template <class T>
+		inline float display_surface<T>::elapsed_draw_time() const noexcept
 		{
-			return _Display_Surface_Impl.elapsed_draw_time();
+			return _Display_surface_impl.elapsed_draw_time();
 		}
 
 		// mapped_surface
 
-		inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of)
-			: _Mapped_Surface_Impl(nh, map_of)
+		template <class T>
+		inline mapped_surface<T>::mapped_surface(typename surface<T>::native_handle_type nh, typename surface<T>::native_handle_type map_of)
+			: _Mapped_surface_impl(nh, map_of)
 		{}
 
-		inline mapped_surface::mapped_surface(surface::native_handle_type nh, surface::native_handle_type map_of, error_code& ec) noexcept
-			: _Mapped_Surface_Impl(nh, map_of, ec)
+		template <class T>
+		inline mapped_surface<T>::mapped_surface(typename surface<T>::native_handle_type nh, typename surface<T>::native_handle_type map_of, error_code& ec) noexcept
+			: _Mapped_surface_impl(nh, map_of, ec)
 		{}
 
-		inline void mapped_surface::commit_changes() {
-			_Mapped_Surface_Impl.commit_changes();
+		template <class T>
+		inline void mapped_surface<T>::commit_changes() {
+			_Mapped_surface_impl.commit_changes();
 		}
 
-		inline void mapped_surface::commit_changes(::std::error_code& ec) noexcept {
-			_Mapped_Surface_Impl.commit_changes(ec);
+		template <class T>
+		inline void mapped_surface<T>::commit_changes(::std::error_code& ec) noexcept {
+			_Mapped_surface_impl.commit_changes(ec);
 		}
 
-		inline unsigned char* mapped_surface::data() {
-			return _Mapped_Surface_Impl.data();
+		template <class T>
+		inline unsigned char* mapped_surface<T>::data() {
+			return _Mapped_surface_impl.data();
 		}
 
-		inline unsigned char* mapped_surface::data(error_code& ec) noexcept {
-			return _Mapped_Surface_Impl.data(ec);
+		template <class T>
+		inline unsigned char* mapped_surface<T>::data(error_code& ec) noexcept {
+			return _Mapped_surface_impl.data(ec);
 		}
 
-		inline const unsigned char* mapped_surface::data() const {
-			return _Mapped_Surface_Impl.data();
+		template <class T>
+		inline const unsigned char* mapped_surface<T>::data() const {
+			return _Mapped_surface_impl.data();
 		}
 
-		inline const unsigned char* mapped_surface::data(error_code& ec) const noexcept {
-			return _Mapped_Surface_Impl.data(ec);
+		template <class T>
+		inline const unsigned char* mapped_surface<T>::data(error_code& ec) const noexcept {
+			return _Mapped_surface_impl.data(ec);
 		}
 
-		inline ::std::experimental::io2d::format mapped_surface::format() const noexcept {
-			return _Mapped_Surface_Impl.format();
+		template <class T>
+		inline ::std::experimental::io2d::format mapped_surface<T>::format() const noexcept {
+			return _Mapped_surface_impl.format();
 		}
 
-		inline int mapped_surface::width() const noexcept {
-			return _Mapped_Surface_Impl.width();
+		template <class T>
+		inline int mapped_surface<T>::width() const noexcept {
+			return _Mapped_surface_impl.width();
 		}
 
-		inline int mapped_surface::height() const noexcept {
-			return _Mapped_Surface_Impl.height();
+		template <class T>
+		inline int mapped_surface<T>::height() const noexcept {
+			return _Mapped_surface_impl.height();
 		}
 
-		inline int mapped_surface::stride() const noexcept {
-			return _Mapped_Surface_Impl.stride();
+		template <class T>
+		inline int mapped_surface<T>::stride() const noexcept {
+			return _Mapped_surface_impl.stride();
+		}
+
+		// Standalone functions
+
+		template <class T>
+		inline display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, float desiredFramerate) {
+			return { preferredWidth, preferredHeight, preferredFormat, scl, rr, desiredFramerate };
+		}
+
+		template <class T>
+		inline display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, float desiredFramerate) {
+			return { preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight,scl, rr, desiredFramerate };
+		}
+
+		template <class T>
+		inline image_surface<T> make_image_surface(format fmt, int width, int height) {
+			return image_surface<T>(fmt, width, height);
+		}
+
+		template <class T>
+		inline image_surface<T> copy_image_surface(image_surface<T>& sfc) noexcept {
+			image_surface<T> retval(sfc.format(), sfc.width(), sfc.height());
+			retval.map([&sfc](mapped_surface<T>& rvms) {
+				sfc.map([&rvms](mapped_surface<T>& sfcms) {
+					memcpy(rvms.data(), sfcms.data(), static_cast<size_t>(rvms.height() * rvms.stride()));
+				});
+			});
+			retval.mark_dirty();
+			return retval;
 		}
 	}
 }

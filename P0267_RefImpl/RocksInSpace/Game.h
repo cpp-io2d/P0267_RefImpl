@@ -1,27 +1,30 @@
 #pragma once
 
 #include "io2d.h"
+#include "xcairo.h"
+
 #include "Asteroid.h"
 #include "Ship.h"
 
 namespace rocks_in_space
 {
-	using display_surface = std::experimental::io2d::display_surface;
+	using my_display_surface = std::experimental::io2d::display_surface<std::experimental::io2d::v1::cairo::cairo_renderer>;
+	using my_brush = std::experimental::io2d::brush<std::experimental::io2d::v1::cairo::cairo_renderer>;
 
 	class game
 	{
 	public:
 				game();
-		void	update(display_surface&);
+		void	update(my_display_surface&);
 
 	private:
 		void	update_asteroids();
 		void	update_ship();
 		void	update_missiles();
 
-		void	draw_asteroids(display_surface& ds);
-		void	draw_ship(display_surface& ds);
-		void	draw_missiles(display_surface& ds);
+		void	draw_asteroids(my_display_surface& ds);
+		void	draw_ship(my_display_surface& ds);
+		void	draw_missiles(my_display_surface& ds);
 
 		void	generate_level();
 

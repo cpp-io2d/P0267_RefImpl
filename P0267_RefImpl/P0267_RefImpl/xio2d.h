@@ -3,7 +3,6 @@
 #ifndef _XIO2D_
 #define _XIO2D_
 
-#include <cairo.h>
 #include <map>
 #include <cassert>
 #include <cstdint>

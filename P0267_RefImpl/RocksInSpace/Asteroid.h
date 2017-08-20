@@ -1,10 +1,14 @@
 #pragma once
 
+#include "io2d.h"
+#include "xcairo.h"
+
 #include "Physics.h"
 
 namespace rocks_in_space
 {
-	using display_surface = std::experimental::io2d::display_surface;
+	using my_display_surface = std::experimental::io2d::display_surface<std::experimental::io2d::v1::cairo::cairo_renderer>;
+	using my_brush = std::experimental::io2d::brush<std::experimental::io2d::v1::cairo::cairo_renderer>;
 
 	struct asteroid_destruction
 	{
@@ -20,7 +24,7 @@ namespace rocks_in_space
 		void						update();
 		asteroid_destruction		destroy();
 
-		void						draw(display_surface& ds) const;
+		void						draw(my_display_surface& ds) const;
 		bool						active() const;
 		const collision&			collision_data() const;
 

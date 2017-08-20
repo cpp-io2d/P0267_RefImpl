@@ -7,6 +7,7 @@ namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
+				template <class T>
 				class display_surface;
 			}
 		}
@@ -15,7 +16,8 @@ namespace std {
 
 class sample_draw {
 public:
-	void operator()(::std::experimental::io2d::display_surface& rs);
+	template <class T>
+	void operator()(::std::experimental::io2d::display_surface<T>& rs);
 };
 
 #endif

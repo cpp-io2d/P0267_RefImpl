@@ -337,41 +337,12 @@ namespace std::experimental::io2d {
 		lhs.swap(rhs);
 		}*/ // compiler error prevents forward declaration
 
-	}
-}
-
-namespace std::experimental::io2d {
-	inline namespace v1 {
-
-		class cairo_interpreted_path
-		{
-			shared_ptr<cairo_path_t> _Cairo_path;
-		public:
-			using _Native_handle_type = cairo_path*;
-			_Native_handle_type _Native_handle() const noexcept;
-
-			constexpr cairo_interpreted_path() noexcept;
-			template <class Allocator>
-			explicit cairo_interpreted_path(const path_builder<Allocator>& p);
-			template <class ForwardIterator>
-			cairo_interpreted_path(ForwardIterator first, ForwardIterator last);
-			cairo_interpreted_path(const cairo_interpreted_path& other) noexcept;
-			cairo_interpreted_path& operator=(const cairo_interpreted_path& other) noexcept;
-			cairo_interpreted_path(cairo_interpreted_path&& other) noexcept;
-			cairo_interpreted_path& operator=(cairo_interpreted_path&& other) noexcept;
-			~cairo_interpreted_path() noexcept;
-		};
-
-	}
-}
-
-namespace std::experimental::io2d {
-	inline namespace v1 {
-
+		template <class T>
 		class interpreted_path {
-			cairo_interpreted_path _Impl;
+			typename T::renderer_interpreted_path _Path_impl;
+
 		public:
-			auto _Impl_path() const { return _Impl._Native_handle(); }
+			const auto& native_handle() const { return _Path_impl; }
 
 			// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
 			constexpr interpreted_path() noexcept;
