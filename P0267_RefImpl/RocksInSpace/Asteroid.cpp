@@ -32,7 +32,7 @@ rocks_in_space::asteroid_destruction rocks_in_space::asteroid::destroy()
 	return{ small_asteroid_score, 0.0, nullptr };
 }
 
-void rocks_in_space::asteroid::draw(std::experimental::io2d::display_surface& ds) const
+void rocks_in_space::asteroid::draw(my_display_surface& ds) const
 {
 	using namespace std::experimental::io2d;
 
@@ -49,6 +49,6 @@ void rocks_in_space::asteroid::draw(std::experimental::io2d::display_surface& ds
 	});
 	path.close_figure();
 
-	ds.stroke(brush{ rgba_color::gray }, path);
+	ds.stroke(my_brush{ rgba_color::gray }, path);
 }
 

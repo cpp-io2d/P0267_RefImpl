@@ -217,6 +217,7 @@ namespace std {
 						revert_matrix>;
 				}
 
+				template <class T>
 				class interpreted_path;
 				template <class Allocator = allocator<figure_items::figure_items_types>>
 
@@ -239,32 +240,45 @@ namespace std {
 				constexpr bool operator!=(const gradient_stop& lhs, const gradient_stop& rhs)
 					noexcept;
 
+				template <class T>
 				class brush;
 				class render_props;
 				class brush_props;
+				template <class T>
 				class clip_props;
 				class stroke_props;
 				class mask_props;
+				template <class T>
 				class surface;
+				template <class T>
 				class image_surface;
+				template <class T>
 				class display_surface;
+				template <class T>
 				class mapped_surface;
 
 				int format_stride_for_width(format format, int width) noexcept;
 
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				template <class T>
+				display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+				template <class T>
+				display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				template <class T>
+				display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 
-				display_surface make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+				template <class T>
+				display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 
-				image_surface make_image_surface(format format, int width, int height);
+				template <class T>
+				image_surface<T> make_image_surface(format format, int width, int height);
 
-				image_surface make_image_surface(format format, int width, int height, error_code& ec) noexcept;
+				template <class T>
+				image_surface<T> make_image_surface(format format, int width, int height, error_code& ec) noexcept;
 
-				image_surface copy_image_surface(image_surface& sfc) noexcept;
+				template <class T>
+				image_surface<T> copy_image_surface(image_surface<T>& sfc) noexcept;
 
 				float angle_for_point(point_2d ctr, point_2d pt) noexcept;
 

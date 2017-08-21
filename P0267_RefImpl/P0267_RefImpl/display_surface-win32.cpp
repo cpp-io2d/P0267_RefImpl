@@ -1,16 +1,20 @@
 #include "io2d.h"
+#include "xcairo.h"
+#include "xdiagnostics.h"
+
 #include <cairo-win32.h>
+
 #include <chrono>
 #include <sstream>
 #include <string>
 #include <iomanip>
 #include <deque>
 #include <numeric>
-#include "xdiagnostics.h"
 
 using namespace std;
 using namespace std::chrono;
 using namespace std::experimental::io2d;
+using namespace std::experimental::io2d::v1::cairo;
 
 [[noreturn]]
 inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const char* message) {
@@ -34,7 +38,7 @@ namespace std {
 						return DefWindowProcW(hwnd, msg, wparam, lparam);
 					}
 					else {
-						return reinterpret_cast<display_surface*>(objPtr)->_Window_proc(hwnd, msg, wparam, lparam);
+						return reinterpret_cast<cairo_display_surface*>(objPtr)->_Window_proc(hwnd, msg, wparam, lparam);
 					}
 				}
 			}
@@ -56,7 +60,7 @@ ATOM _MyRegisterClass(HINSTANCE hInstance) {
 	wcex.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = ::std::experimental::io2d::_RefImplWindowProc;
 	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = sizeof(display_surface*);
+	wcex.cbWndExtra = sizeof(cairo_display_surface*);
 	wcex.hInstance = hInstance;
 	wcex.hIcon = static_cast<HICON>(nullptr);
 	wcex.hCursor = LoadCursorW(nullptr, IDC_ARROW);
@@ -68,7 +72,7 @@ ATOM _MyRegisterClass(HINSTANCE hInstance) {
 	return RegisterClassEx(&wcex);
 }
 
-void display_surface::_Make_native_surface_and_context() {
+void cairo_display_surface::_Make_native_surface_and_context() {
 	auto hdc = GetDC(_Hwnd);
 	try {
 		_Native_surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_win32_surface_create(hdc), &cairo_surface_destroy);
@@ -86,7 +90,7 @@ void display_surface::_Make_native_surface_and_context() {
 }
 
 
-void display_surface::_Resize_window() {
+void cairo_display_surface::_Resize_window() {
 	RECT clientRect;
 	RECT windowRect;
 	GetWindowRect(_Hwnd, &windowRect);
@@ -110,7 +114,7 @@ void display_surface::_Resize_window() {
 	}
 }
 
-LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT cairo_display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	const static auto lrZero = static_cast<LRESULT>(0);
 	switch (msg) {
 #ifdef __clang__
@@ -161,7 +165,7 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 			// Call user size change function.
 			if (_Size_change_fn != nullptr) {
-				(*_Size_change_fn)(*this);
+				(*_Size_change_fn)(*_Display_surface);
 			}
 		}
 	} break;
@@ -187,9 +191,9 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		// Run user draw function:
 		if (_Draw_fn != nullptr) {
 			if (_Auto_clear) {
-				clear();
+				_Cairo_surface->clear();
 			}
-			(*_Draw_fn)(*this);
+			(*_Draw_fn)(*_Display_surface);
 		}
 
 		_Render_to_native_surface();
@@ -200,20 +204,21 @@ LRESULT display_surface::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-display_surface::native_handle_type display_surface::native_handle() const {
-	return{ { _Surface.get(), _Context.get() }, _Hwnd, { _Native_surface.get(), _Native_context.get() } };
+cairo_display_surface::native_handle_type cairo_display_surface::_Native_handle() const {
+	return{ { _Cairo_surface->_Surface.get(), _Cairo_surface->_Context.get() }, _Hwnd, { _Native_surface.get(), _Native_context.get() } };
 }
 
 namespace {
 	once_flag _Window_class_registered_flag;
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float desiredFramerate)
-	: display_surface(preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, desiredFramerate) {
+cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float desiredFramerate)
+	: cairo_display_surface(ds, cs, preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, desiredFramerate) {
 }
 
-display_surface::display_surface(int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float fps)
-	: surface({ nullptr, nullptr }, preferredFormat)
+cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float fps)
+	: _Cairo_surface(cs)
+	, _Display_surface(ds)
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
 	, _Scaling(scl)
@@ -248,7 +253,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 //
 //	// Adjust the window size for correct device size
 //	if (!AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE)) {
-//		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to AdjustWindowRect in display_surface::display_surface(int, int, format, int, int, scaling).");
+//		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to AdjustWindowRect in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling).");
 //	}
 //
 //	long lwidth = rc.right - rc.left;
@@ -273,7 +278,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 //		static_cast<LPVOID>(nullptr));		// extra creation parms
 //
 //	if (_Hwnd == nullptr) {
-//		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to CreateWindowEx in display_surface::display_surface(int, int, format, int, int, scaling)");
+//		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to CreateWindowEx in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling)");
 //	}
 //
 //	SetLastError(ERROR_SUCCESS);
@@ -296,7 +301,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 //#endif
 //		DWORD lastError = GetLastError();
 //		if (lastError != ERROR_SUCCESS) {
-//			_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in display_surface::display_surface(int, int, format, int, int, scaling)");
+//			_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling)");
 //		}
 //	}
 //
@@ -314,7 +319,7 @@ display_surface::display_surface(int preferredWidth, int preferredHeight, experi
 //	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
 }
 
-display_surface::~display_surface() {
+cairo_display_surface::~cairo_display_surface() {
 	if (_Hwnd != nullptr) {
 		assert(_Hwnd == nullptr);
 		DestroyWindow(_Hwnd);
@@ -322,7 +327,7 @@ display_surface::~display_surface() {
 	}
 }
 
-int display_surface::begin_show() {
+int cairo_display_surface::begin_show() {
 	RECT rc;
 	rc.top = rc.left = 0;
 	rc.right = _Display_width;
@@ -330,7 +335,7 @@ int display_surface::begin_show() {
 
 	// Adjust the window size for correct device size
 	if (!AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE)) {
-		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to AdjustWindowRect in display_surface::display_surface(int, int, format, int, int, scaling).");
+		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to AdjustWindowRect in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling).");
 	}
 
 	long lwidth = rc.right - rc.left;
@@ -355,7 +360,7 @@ int display_surface::begin_show() {
 		static_cast<LPVOID>(nullptr));		// extra creation parms
 
 	if (_Hwnd == nullptr) {
-		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to CreateWindowEx in display_surface::display_surface(int, int, format, int, int, scaling)");
+		_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to CreateWindowEx in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling)");
 	}
 
 	SetLastError(ERROR_SUCCESS);
@@ -378,7 +383,7 @@ int display_surface::begin_show() {
 #endif
 		DWORD lastError = GetLastError();
 		if (lastError != ERROR_SUCCESS) {
-			_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in display_surface::display_surface(int, int, format, int, int, scaling)");
+			_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling)");
 		}
 	}
 
@@ -390,10 +395,10 @@ int display_surface::begin_show() {
 	_Make_native_surface_and_context();
 
 	// We render to the fixed size surface.
-	_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Format), _Width, _Height), &cairo_surface_destroy);
-	_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
+	_Cairo_surface->_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Cairo_surface->_Format), _Width, _Height), &cairo_surface_destroy);
+	_Cairo_surface->_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Cairo_surface->_Surface.get()), &cairo_destroy);
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Cairo_surface->_Surface.get()));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Cairo_surface->_Context.get()));
 
 	MSG msg{ };
 	msg.message = WM_NULL;
@@ -427,7 +432,7 @@ int display_surface::begin_show() {
 					_Make_native_surface_and_context();
 					if (dw != _Display_width || dh != _Display_height) {
 						if (_Size_change_fn != nullptr) {
-							(*_Size_change_fn)(*this);
+							(*_Size_change_fn)(*_Display_surface);
 						}
 					}
 					continue;
@@ -451,9 +456,9 @@ int display_surface::begin_show() {
 						// Run user draw function:
 						if (_Draw_fn != nullptr) {
 							if (_Auto_clear) {
-								clear();
+								_Cairo_surface->clear();
 							}
-							(*_Draw_fn)(*this);
+							(*_Draw_fn)(*_Display_surface);
 						}
 						else {
 							throw system_error(make_error_code(errc::operation_would_block));
@@ -549,6 +554,6 @@ int display_surface::begin_show() {
 	return static_cast<int>(msg.wParam);
 }
 
-void display_surface::end_show() {
+void cairo_display_surface::end_show() {
 	PostQuitMessage(0);
 }

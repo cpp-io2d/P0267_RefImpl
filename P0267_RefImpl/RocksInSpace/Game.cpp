@@ -25,7 +25,7 @@ rocks_in_space::game::game()
 	generate_level();
 }
 
-void rocks_in_space::game::update(display_surface& ds)
+void rocks_in_space::game::update(my_display_surface& ds)
 {
 	using namespace std::experimental::io2d;
 
@@ -34,7 +34,7 @@ void rocks_in_space::game::update(display_surface& ds)
 	update_ship();
 	update_missiles();
 
-	ds.paint(brush{ rgba_color::black });
+	ds.paint(my_brush{ rgba_color::black });
 	draw_asteroids(ds);
 	draw_ship(ds);
 	draw_missiles(ds);
@@ -68,7 +68,7 @@ void rocks_in_space::game::update_asteroids()
 	for (auto& a : m_asteroids) { a.update(); }
 }
 
-void rocks_in_space::game::draw_asteroids(display_surface& ds)
+void rocks_in_space::game::draw_asteroids(my_display_surface& ds)
 {
 	for (auto& a : m_asteroids) { a.draw(ds); }
 }
@@ -124,12 +124,12 @@ void rocks_in_space::game::update_missiles()
 	}
 }
 
-void rocks_in_space::game::draw_ship(display_surface& ds)
+void rocks_in_space::game::draw_ship(my_display_surface& ds)
 {
 	m_ship.draw(ds);
 }
 
-void rocks_in_space::game::draw_missiles(display_surface& ds)
+void rocks_in_space::game::draw_missiles(my_display_surface& ds)
 {
 	for (auto& m : m_ship_missiles) { m.draw(ds); }
 }
@@ -139,7 +139,7 @@ int rocks_in_space::main()
 	using namespace std::experimental::io2d;
 
 	rocks_in_space::game sd;
-	auto ds = make_display_surface(640, 480, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0f);
-	ds.draw_callback([&](display_surface& ds) {sd.update(ds); });
+	auto ds = make_display_surface<std::experimental::io2d::v1::cairo::cairo_renderer>(640, 480, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0f);
+	ds.draw_callback([&](my_display_surface& ds) {sd.update(ds); });
 	return ds.begin_show();
 }

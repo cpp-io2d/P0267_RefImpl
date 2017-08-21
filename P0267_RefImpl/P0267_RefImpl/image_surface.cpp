@@ -1,12 +1,16 @@
 #include "io2d.h"
-#include <cstring>
-#include <fstream>
+#include "xcairo.h"
+
 #include <png.h>
 #include <turbojpeg.h>
+
+#include <cstring>
+#include <fstream>
 #include <cstdio>
 
 using namespace std;
 using namespace std::experimental::io2d;
+using namespace std::experimental::io2d::v1::cairo;
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -116,18 +120,15 @@ using namespace std::experimental::io2d;
 
 using unsignedCharTraits = ::std::char_traits<char>;
 
-image_surface::image_surface(experimental::io2d::format fmt, int width, int height)
-	: surface({ cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), nullptr }, fmt) {
-	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-	_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
-}
+cairo_image_surface::cairo_image_surface(cairo_surface* cs)
+	: _Cairo_surface(cs) {}
 
 #ifdef _Filesystem_support_test
-image_surface::image_surface(experimental::filesystem::path f, image_file_format idf, experimental::io2d::format fmt)
+cairo_image_surface::cairo_image_surface(cairo_surface* cs, experimental::filesystem::path f, image_file_format idf, experimental::io2d::format fmt)
 #else
-image_surface::image_surface(string f, experimental::io2d::format fmt, image_file_format idf)
+cairo_image_surface::cairo_image_surface(cairo_surface* cs, string f, experimental::io2d::format fmt, image_file_format idf)
 #endif
-	: surface({ nullptr, nullptr }, fmt) {
+	: _Cairo_surface(cs) {
 //	basic_ifstream<unsigned char, unsignedCharTraits> fileStream;
 //#ifdef _Filesystem_support_test
 //	fileStream.open(f.string(), ios_base::in | ios_base::binary | ios_base::ate);
@@ -216,17 +217,17 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_fil
 		w = static_cast<int>(img.width);
 		h = static_cast<int>(img.height);
 		png_image_free(&img);
-		_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), w, h), &cairo_surface_destroy);
-		_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-		_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
-		auto mapSfc = cairo_surface_map_to_image(_Surface.get(), nullptr);
+		_Cairo_surface->_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), w, h), &cairo_surface_destroy);
+		_Cairo_surface->_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Cairo_surface->_Surface.get()), &cairo_destroy);
+		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Cairo_surface->_Surface.get()));
+		_Throw_if_failed_cairo_status_t(cairo_status(_Cairo_surface->_Context.get()));
+		auto mapSfc = cairo_surface_map_to_image(_Cairo_surface->_Surface.get(), nullptr);
 		auto mapStride = cairo_image_surface_get_stride(mapSfc);
 		auto mapData = cairo_image_surface_get_data(mapSfc);
 		switch (fmt) {
 		case std::experimental::io2d::v1::format::invalid:
 		{
-			cairo_surface_unmap_image(_Surface.get(), mapSfc);
+			cairo_surface_unmap_image(_Cairo_surface->_Surface.get(), mapSfc);
 			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
 		} break;
 		case std::experimental::io2d::v1::format::argb32:
@@ -274,8 +275,8 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_fil
 		{
 		} break;
 	}
-		cairo_surface_unmap_image(_Surface.get(), mapSfc);
-		cairo_surface_mark_dirty(_Surface.get());
+		cairo_surface_unmap_image(_Cairo_surface->_Surface.get(), mapSfc);
+		cairo_surface_mark_dirty(_Cairo_surface->_Surface.get());
 #endif
 	}
 	else if (idf == image_file_format::jpeg) {
@@ -307,17 +308,17 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_fil
 		}
 		decompHandle = nullptr;
 		upDecompHandle.reset();
-		_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), w, h), &cairo_surface_destroy);
-		_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Surface.get()), &cairo_destroy);
-		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Surface.get()));
-		_Throw_if_failed_cairo_status_t(cairo_status(_Context.get()));
-		auto mapSfc = cairo_surface_map_to_image(_Surface.get(), nullptr);
+		_Cairo_surface->_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), w, h), &cairo_surface_destroy);
+		_Cairo_surface->_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Cairo_surface->_Surface.get()), &cairo_destroy);
+		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Cairo_surface->_Surface.get()));
+		_Throw_if_failed_cairo_status_t(cairo_status(_Cairo_surface->_Context.get()));
+		auto mapSfc = cairo_surface_map_to_image(_Cairo_surface->_Surface.get(), nullptr);
 		auto mapStride = cairo_image_surface_get_stride(mapSfc);
 		auto mapData = cairo_image_surface_get_data(mapSfc);
 		switch (fmt) {
 		case std::experimental::io2d::v1::format::invalid:
 		{
-			cairo_surface_unmap_image(_Surface.get(), mapSfc);
+			cairo_surface_unmap_image(_Cairo_surface->_Surface.get(), mapSfc);
 			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
 		} break;
 		case std::experimental::io2d::v1::format::argb32:
@@ -334,7 +335,7 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_fil
 		} break;
 		case std::experimental::io2d::v1::format::a8:
 		{
-			cairo_surface_unmap_image(_Surface.get(), mapSfc);
+			cairo_surface_unmap_image(_Cairo_surface->_Surface.get(), mapSfc);
 			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
 		} break;
 		case std::experimental::io2d::v1::format::rgb16_565:
@@ -368,12 +369,12 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_fil
 		} break;
 		default:
 		{
-			cairo_surface_unmap_image(_Surface.get(), mapSfc);
+			cairo_surface_unmap_image(_Cairo_surface->_Surface.get(), mapSfc);
 			_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
 		} break;
 		}
-		cairo_surface_unmap_image(_Surface.get(), mapSfc);
-		cairo_surface_mark_dirty(_Surface.get());
+		cairo_surface_unmap_image(_Cairo_surface->_Surface.get(), mapSfc);
+		cairo_surface_mark_dirty(_Cairo_surface->_Surface.get());
 	}
 	else {
 		throw system_error(make_error_code(errc::operation_not_supported));
@@ -381,9 +382,9 @@ image_surface::image_surface(string f, experimental::io2d::format fmt, image_fil
 }
 
 #ifdef _Filesystem_support_test
-void image_surface::save(experimental::filesystem::path f, image_file_format idf) {
+void cairo_image_surface::save(experimental::filesystem::path f, image_file_format idf) {
 #else
-void image_surface::save(string f, image_file_format idf) {
+void cairo_image_surface::save(string f, image_file_format idf) {
 #endif
 	switch (idf) {
 	case image_file_format::png:
@@ -396,14 +397,14 @@ void image_surface::save(string f, image_file_format idf) {
 		pngImg.version = PNG_IMAGE_VERSION;
 		pngImg.width = width();
 		pngImg.height = height();
-		auto map = cairo_surface_map_to_image(_Surface.get(), nullptr);
+		auto map = cairo_surface_map_to_image(_Cairo_surface->_Surface.get(), nullptr);
 		auto mapData = cairo_image_surface_get_data(map);
 		const auto w = width();
 		const auto h = height();
 		const size_t sfcStride = w * 4;
-		const size_t mapStride = cairo_image_surface_get_stride(_Surface.get());
+		const size_t mapStride = cairo_image_surface_get_stride(_Cairo_surface->_Surface.get());
 		auto sfcData = make_unique<unsigned char[]>(sfcStride * h);
-		switch (_Format)
+		switch (_Cairo_surface->_Format)
 		{
 		case std::experimental::io2d::v1::format::invalid:
 		{
@@ -550,15 +551,15 @@ void image_surface::save(string f, image_file_format idf) {
 	} break;
 	case image_file_format::jpeg:
 	{
-		auto map = cairo_surface_map_to_image(_Surface.get(), nullptr);
+		auto map = cairo_surface_map_to_image(_Cairo_surface->_Surface.get(), nullptr);
 		auto mapData = cairo_image_surface_get_data(map);
 		const auto w = width();
 		const auto h = height();
-		const size_t sfcStride = (_Format == format::a8 ? w : w * 4);
-		const size_t mapStride = cairo_image_surface_get_stride(_Surface.get());
+		const size_t sfcStride = (_Cairo_surface->_Format == format::a8 ? w : w * 4);
+		const size_t mapStride = cairo_image_surface_get_stride(_Cairo_surface->_Surface.get());
 		auto sfcData = make_unique<unsigned char[]>(sfcStride * h);
 
-		switch (_Format)
+		switch (_Cairo_surface->_Format)
 		{
 		case std::experimental::io2d::v1::format::invalid:
 		{
@@ -703,17 +704,17 @@ void image_surface::save(string f, image_file_format idf) {
 	}
 }
 
-void image_surface::map(const ::std::function<void(mapped_surface&)>& action) {
+void cairo_image_surface::map(const ::std::function<void(mapped_surface<cairo_renderer>&)>& action) {
 	if (action != nullptr) {
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr });
+		mapped_surface<cairo_renderer> m({ cairo_surface_map_to_image(_Cairo_surface->_Native_handle().csfce, nullptr), nullptr }, { _Cairo_surface->_Native_handle().csfce, nullptr });
 		action(m);
-		mark_dirty();
+		_Cairo_surface->mark_dirty();
 	}
 }
 
-void image_surface::map(const ::std::function<void(mapped_surface&, error_code&)>& action, error_code& ec) {
+void cairo_image_surface::map(const ::std::function<void(mapped_surface<cairo_renderer>&, error_code&)>& action, error_code& ec) {
 	if (action != nullptr) {
-		mapped_surface m({ cairo_surface_map_to_image(_Surface.get(), nullptr), nullptr }, { _Surface.get(), nullptr }, ec);
+		mapped_surface<cairo_renderer> m({ cairo_surface_map_to_image(_Cairo_surface->_Native_handle().csfce, nullptr), nullptr }, { _Cairo_surface->_Native_handle().csfce, nullptr }, ec);
 		if (static_cast<bool>(ec)) {
 			return;
 		}
@@ -721,21 +722,21 @@ void image_surface::map(const ::std::function<void(mapped_surface&, error_code&)
 		if (static_cast<bool>(ec)) {
 			return;
 		}
-		mark_dirty();
+		_Cairo_surface->mark_dirty();
 	}
 	ec.clear();
 }
 
-format image_surface::format() const noexcept {
-	return _Cairo_format_t_to_format(cairo_image_surface_get_format(_Surface.get()));
+format cairo_image_surface::format() const noexcept {
+	return _Cairo_format_t_to_format(cairo_image_surface_get_format(_Cairo_surface->_Surface.get()));
 }
 
-int image_surface::width() const noexcept {
-	return cairo_image_surface_get_width(_Surface.get());
+int cairo_image_surface::width() const noexcept {
+	return cairo_image_surface_get_width(_Cairo_surface->_Surface.get());
 }
 
-int image_surface::height() const noexcept {
-	return cairo_image_surface_get_height(_Surface.get());
+int cairo_image_surface::height() const noexcept {
+	return cairo_image_surface_get_height(_Cairo_surface->_Surface.get());
 }
 
 #ifdef __clang__

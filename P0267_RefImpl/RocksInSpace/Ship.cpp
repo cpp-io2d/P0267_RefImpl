@@ -42,7 +42,7 @@ rocks_in_space::ship_update rocks_in_space::ship::update()
 	return{ fire(), m_physics.position(), m_physics.orientation() };
 }
 
-void rocks_in_space::ship::draw(display_surface& ds)
+void rocks_in_space::ship::draw(my_display_surface& ds)
 {
 	using namespace std::experimental::io2d;
 
@@ -56,7 +56,7 @@ void rocks_in_space::ship::draw(display_surface& ds)
 		path.line(screen_space(v));
 	});
 
-	ds.stroke(brush{ rgba_color::white }, path);
+	ds.stroke(my_brush{ rgba_color::white }, path);
 }
 
 rocks_in_space::missile::missile(const point_2d& position, float orientation, bool active)
@@ -83,7 +83,7 @@ bool rocks_in_space::missile::active() const
 	return (m_age < max_missile_age);
 }
 
-void rocks_in_space::missile::draw(display_surface& ds)
+void rocks_in_space::missile::draw(my_display_surface& ds)
 {
 	using namespace std::experimental::io2d;
 
@@ -93,5 +93,5 @@ void rocks_in_space::missile::draw(display_surface& ds)
 	path.new_figure(screen_space(m_physics.position()));
 	path.line(screen_space(m_physics.position() - m_physics.velocity()));
 
-	ds.stroke(brush{ rgba_color::white }, path);
+	ds.stroke(my_brush{ rgba_color::white }, path);
 }
