@@ -1,15 +1,5 @@
 #pragma once
 
-#if defined(USE_XCB)
-#include <xcb/xcb.h>
-#elif defined(USE_XLIB)
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#elif defined(_WIN32) || defined(_WIN64)
-#include "xinclwindows_h.h"
-#endif
-
 namespace std::experimental::io2d {
 	inline namespace v1 {
 

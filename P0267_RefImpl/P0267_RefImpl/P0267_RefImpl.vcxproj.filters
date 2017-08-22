@@ -12,6 +12,9 @@
     <Filter Include="cairo renderer">
       <UniqueIdentifier>{dfda8558-356c-4ab5-bd73-deaaf2f1b458}</UniqueIdentifier>
     </Filter>
+    <Filter Include="windows handler">
+      <UniqueIdentifier>{bf514137-f122-41e4-8297-d4920033028d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="io2d.h">
@@ -21,9 +24,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xdiagnostics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="xinclwindows_h.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xio2d_impl.h">
@@ -58,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="xcairo_impl.h">
       <Filter>cairo renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="xinclwindows_h.h">
+      <Filter>windows handler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

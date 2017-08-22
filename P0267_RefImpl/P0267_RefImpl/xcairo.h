@@ -5,6 +5,18 @@
 
 #include <cairo.h>
 
+#if defined(USE_XCB)
+#include <xcb/xcb.h>
+#elif defined(USE_XLIB)
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+#elif defined(_WIN32) || defined(_WIN64)
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
+
 #include "io2d.h"
 
 namespace std::experimental::io2d {
@@ -170,19 +182,43 @@ namespace std::experimental::io2d {
 				int& display_ref_count;
 			};
 #elif defined(_WIN32) || defined(_WIN64)
-			struct _Win32_display_surface_native_handle {
-				_Surface_native_handles sfc_nh;
-				HWND hwnd;
-				_Surface_native_handles win32_sfc_nh;
+			struct windows_handler
+			{
+				struct _Display_surface_native_handle {
+					_Surface_native_handles sfc_nh;
+					HWND hwnd;
+					_Surface_native_handles win32_sfc_nh;
+				};
+
+				struct context
+				{
+					context(HWND _Hwnd) : _Hdc(GetDC(_Hwnd)) {}
+					~context() { ReleaseDC(_Hwnd, _Hdc); }
+					operator HDC() { return _Hdc; }
+					HWND _Hwnd;
+					HDC _Hdc;
+				};
+
+				_IO2D_API static LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
+				windows_handler();
+				~windows_handler();
+				LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+				void resize_window(LONG width, LONG height);
+				int begin_show(cairo_display_surface*);
+				void end_show();
+
+				static const int _Display_surface_ptr_window_data_byte_offset = 0;
+
+				cairo_display_surface* _Surface;
+				DWORD _Window_style;
+				HWND _Hwnd;
 			};
-
-			const int _Display_surface_ptr_window_data_byte_offset = 0;
-
-			_IO2D_API LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 
 			class cairo_display_surface
 			{
+				friend windows_handler;
 				cairo_surface* _Cairo_surface;
 				display_surface<cairo_renderer>* _Display_surface;
 				int _Display_width;
@@ -214,13 +250,8 @@ namespace std::experimental::io2d {
 
 				static Bool _X11_if_event_pred(Display* display, XEvent* event, XPointer arg);
 #elif  defined(_WIN32) || (_WIN64)
-				friend _IO2D_API LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-				DWORD _Window_style;
-				HWND _Hwnd;
-
-			public:	// WHY???
-				LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-			private:
+				friend _IO2D_API LRESULT CALLBACK windows_handler::_RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+				windows_handler _Handler_impl;
 #endif
 				::std::experimental::io2d::refresh_rate _Refresh_rate;
 				float _Desired_frame_rate;
@@ -233,8 +264,9 @@ namespace std::experimental::io2d {
 				optional<cairo_brush> _Letterbox_brush;
 				cairo_brush _Default_brush;
 
-				void _Make_native_surface_and_context();
-				void _Make_native_surface_and_context(::std::error_code& ec) noexcept;
+				void _Make_native_surface_and_context(windows_handler::context&&);
+				void _Make_native_surface_and_context(windows_handler::context&&, ::std::error_code& ec) noexcept;
+				void _Make_impl_surface_and_context();
 				void _All_dimensions(int w, int h, int dw, int dh);
 				void _All_dimensions(int w, int h, int dw, int dh, ::std::error_code& ec) noexcept;
 				void _Render_to_native_surface();
@@ -245,15 +277,7 @@ namespace std::experimental::io2d {
 				void _Render_for_scaling_uniform_or_letterbox(::std::error_code& ec) noexcept;
 
 			public:
-				// surplus to paper
-#ifdef _WIN32_WINNT
-				typedef _Win32_display_surface_native_handle native_handle_type;
-#elif defined(USE_XCB)
-				typedef _Xcb_display_surface_native_handle native_handle_type;
-#elif defined(USE_XLIB)
-				typedef _Xlib_display_surface_native_handle native_handle_type;
-#endif
-				_IO2D_API native_handle_type _Native_handle() const;
+				const auto& _Native_handle() const { return _Handler_impl; }
 
 				cairo_display_surface() = delete;
 				cairo_display_surface(const cairo_display_surface&) = delete;
@@ -266,7 +290,7 @@ namespace std::experimental::io2d {
 				cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 				_IO2D_API cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
 				cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
-				_IO2D_API ~cairo_display_surface();
+				~cairo_display_surface() {}
 				_IO2D_API void draw_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
 				_IO2D_API void size_change_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
 				_IO2D_API void width(int w);

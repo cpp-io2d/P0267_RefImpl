@@ -298,6 +298,52 @@ void cairo_display_surface::_Render_to_native_surface() {
 	cairo_surface_flush(_Native_surface.get());
 }
 
+void cairo_display_surface::_Make_impl_surface_and_context() {
+	// We render to the fixed size surface.
+	_Cairo_surface->_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Cairo_surface->_Format), _Width, _Height), &cairo_surface_destroy);
+	_Cairo_surface->_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Cairo_surface->_Surface.get()), &cairo_destroy);
+	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Cairo_surface->_Surface.get()));
+	_Throw_if_failed_cairo_status_t(cairo_status(_Cairo_surface->_Context.get()));
+}
+
+void cairo_display_surface::_Resize_window()
+{
+	_Handler_impl.resize_window(_Display_width, _Display_height);
+}
+
+cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float desiredFramerate)
+	: cairo_display_surface(ds, cs, preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, desiredFramerate) {
+}
+
+cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float fps)
+	: _Cairo_surface(cs)
+	, _Display_surface(ds)
+	, _Display_width(preferredDisplayWidth)
+	, _Display_height(preferredDisplayHeight)
+	, _Scaling(scl)
+	, _Width(preferredWidth)
+	, _Height(preferredHeight)
+	, _Draw_fn()
+	, _Size_change_fn()
+	, _User_scaling_fn()
+	, _Auto_clear(false)
+	, _Refresh_rate(rr)
+	, _Desired_frame_rate(fps)
+	, _Redraw_requested(true)
+	, _Native_surface(nullptr, &cairo_surface_destroy)
+	, _Native_context(nullptr, &cairo_destroy)
+	, _Letterbox_brush()
+	, _Default_brush(rgba_color::transparent_black) {
+
+	// Record the desired client window size
+	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
+		throw invalid_argument("Invalid parameter.");
+	}
+	if (fps <= _Minimum_frame_rate || !isfinite(fps)) {
+		throw system_error(make_error_code(errc::argument_out_of_domain));
+	}
+}
+
 void cairo_display_surface::draw_callback(const ::std::function<void(display_surface<cairo_renderer>& sfc)>& fn) {
 	_Draw_fn = make_unique<::std::function<void(display_surface<cairo_renderer>& sfc)>>(fn);
 }
@@ -348,7 +394,7 @@ void cairo_display_surface::display_dimensions(int dw, int dh) {
 	_Resize_window();
 
 	// Ensure that the native surface and context resize correctly.
-	_Make_native_surface_and_context();
+	_Make_native_surface_and_context(windows_handler::context(_Handler_impl._Hwnd));
 }
 
 void cairo_display_surface::scaling(experimental::io2d::scaling scl) noexcept {
@@ -466,3 +512,28 @@ float cairo_display_surface::desired_frame_rate() const noexcept {
 float cairo_display_surface::elapsed_draw_time() const noexcept {
 	return _Elapsed_draw_time / 1'000'000.0F;
 }
+
+int cairo_display_surface::begin_show() {
+	return _Handler_impl.begin_show(this);
+}
+
+void cairo_display_surface::end_show() {
+	_Handler_impl.end_show();
+}
+
+#if defined (_WIN32) || (_WIN64)
+#include <cairo-win32.h>
+void cairo_display_surface::_Make_native_surface_and_context(windows_handler::context&& dc) {
+	try {
+		_Native_surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_win32_surface_create(dc), &cairo_surface_destroy);
+		_Native_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Native_surface.get()), &cairo_destroy);
+		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Native_surface.get()));
+		_Throw_if_failed_cairo_status_t(cairo_status(_Native_context.get()));
+	}
+	catch (...) {
+		// Release the DC to avoid a handle leak.
+		throw;
+	}
+	// Release the DC to avoid a handle leak.
+}
+#endif
