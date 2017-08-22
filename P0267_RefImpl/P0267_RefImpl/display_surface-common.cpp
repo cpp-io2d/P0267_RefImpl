@@ -311,11 +311,11 @@ void cairo_display_surface::_Resize_window()
 	_Handler_impl.resize_window(_Display_width, _Display_height);
 }
 
-cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float desiredFramerate)
-	: cairo_display_surface(ds, cs, preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, desiredFramerate) {
+cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, io2d::refresh_rate rr, float fps)
+	: cairo_display_surface(ds, cs, preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, fps) {
 }
 
-cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, experimental::io2d::refresh_rate rr, float fps)
+cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, io2d::refresh_rate rr, float fps)
 	: _Cairo_surface(cs)
 	, _Display_surface(ds)
 	, _Display_width(preferredDisplayWidth)
@@ -327,8 +327,7 @@ cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds
 	, _Size_change_fn()
 	, _User_scaling_fn()
 	, _Auto_clear(false)
-	, _Refresh_rate(rr)
-	, _Desired_frame_rate(fps)
+	, _Handler_impl(rr, fps)
 	, _Redraw_requested(true)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
 	, _Native_context(nullptr, &cairo_destroy)
@@ -338,9 +337,6 @@ cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds
 	// Record the desired client window size
 	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0 || preferredWidth <= 0 || preferredHeight <= 0 || preferredFormat == experimental::io2d::format::invalid) {
 		throw invalid_argument("Invalid parameter.");
-	}
-	if (fps <= _Minimum_frame_rate || !isfinite(fps)) {
-		throw system_error(make_error_code(errc::argument_out_of_domain));
 	}
 }
 
@@ -414,30 +410,6 @@ void cairo_display_surface::auto_clear(bool val) noexcept {
 	_Auto_clear = val;
 }
 
-void cairo_display_surface::refresh_rate(experimental::io2d::refresh_rate rr) noexcept {
-	if (rr == experimental::io2d::refresh_rate::fixed && _Refresh_rate != rr) {
-		_Elapsed_draw_time = 0.0F;
-	}
-	_Refresh_rate = rr;
-}
-
-bool cairo_display_surface::desired_frame_rate(float fps) noexcept {
-	if (!isfinite(fps)) {
-		return true;
-	}
-	if (fps < _Minimum_frame_rate) {
-		_Desired_frame_rate = _Minimum_frame_rate;
-		return true;
-	}
-	if (fps > _Maximum_frame_rate) {
-		_Desired_frame_rate = _Maximum_frame_rate;
-		return true;
-	}
-	_Desired_frame_rate = fps;
-
-	return false;
-}
-
 void cairo_display_surface::redraw_required() noexcept {
 	_Redraw_requested = true;
 }
@@ -499,18 +471,6 @@ optional<brush_props> cairo_display_surface::letterbox_brush_props() const noexc
 
 bool cairo_display_surface::auto_clear() const noexcept {
 	return _Auto_clear;
-}
-
-experimental::io2d::refresh_rate cairo_display_surface::refresh_rate() const noexcept {
-	return _Refresh_rate;
-}
-
-float cairo_display_surface::desired_frame_rate() const noexcept {
-	return _Desired_frame_rate;
-}
-
-float cairo_display_surface::elapsed_draw_time() const noexcept {
-	return _Elapsed_draw_time / 1'000'000.0F;
 }
 
 int cairo_display_surface::begin_show() {

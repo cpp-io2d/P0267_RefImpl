@@ -201,16 +201,26 @@ namespace std::experimental::io2d {
 
 				_IO2D_API static LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-				windows_handler();
+				windows_handler(experimental::io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
 				~windows_handler();
 				LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 				void resize_window(LONG width, LONG height);
 				int begin_show(cairo_display_surface*);
 				void end_show();
+				_IO2D_API float elapsed_draw_time() const noexcept;
+				_IO2D_API void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
+				_IO2D_API experimental::io2d::refresh_rate refresh_rate() const noexcept;
+				_IO2D_API bool desired_frame_rate(float fps) noexcept;
+				_IO2D_API float desired_frame_rate() const noexcept;
 
 				static const int _Display_surface_ptr_window_data_byte_offset = 0;
 
 				cairo_display_surface* _Surface;
+				::std::experimental::io2d::refresh_rate _Refresh_rate;
+				float _Elapsed_draw_time;
+				const float _Minimum_frame_rate = 0.01F;
+				const float _Maximum_frame_rate = 120.0F;
+				float _Desired_frame_rate;
 				DWORD _Window_style;
 				HWND _Hwnd;
 			};
@@ -253,12 +263,7 @@ namespace std::experimental::io2d {
 				friend _IO2D_API LRESULT CALLBACK windows_handler::_RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 				windows_handler _Handler_impl;
 #endif
-				::std::experimental::io2d::refresh_rate _Refresh_rate;
-				float _Desired_frame_rate;
 				bool _Redraw_requested;
-				float _Elapsed_draw_time;
-				const float _Minimum_frame_rate = 0.01F;
-				const float _Maximum_frame_rate = 120.0F;
 				::std::unique_ptr<cairo_surface_t, ::std::function<void(cairo_surface_t*)>> _Native_surface;
 				::std::unique_ptr<cairo_t, ::std::function<void(cairo_t*)>> _Native_context;
 				optional<cairo_brush> _Letterbox_brush;
@@ -309,8 +314,6 @@ namespace std::experimental::io2d {
 				_IO2D_API void user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface<cairo_renderer>&, bool&)>& fn);
 				_IO2D_API void letterbox_brush(const optional<cairo_brush>& b, const optional<brush_props> = nullopt) noexcept;
 				_IO2D_API void auto_clear(bool val) noexcept;
-				_IO2D_API void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
-				_IO2D_API bool desired_frame_rate(float fps) noexcept;
 				_IO2D_API void redraw_required() noexcept;
 				_IO2D_API int begin_show();
 				void end_show();
@@ -327,9 +330,6 @@ namespace std::experimental::io2d {
 				_IO2D_API optional<cairo_brush> letterbox_brush() const noexcept;
 				_IO2D_API optional<brush_props> letterbox_brush_props() const noexcept;
 				_IO2D_API bool auto_clear() const noexcept;
-				_IO2D_API experimental::io2d::refresh_rate refresh_rate() const noexcept;
-				_IO2D_API float desired_frame_rate() const noexcept;
-				_IO2D_API float elapsed_draw_time() const noexcept;
 			};
 
 			class cairo_mapped_surface

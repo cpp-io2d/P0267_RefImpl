@@ -30,11 +30,16 @@ namespace {
 	const wchar_t* _Refimpl_window_class_name = L"_RefImplWndwCls";
 }
 
-windows_handler::windows_handler()
+windows_handler::windows_handler(experimental::io2d::refresh_rate rr, float fps)
 	: _Surface(nullptr)
+	, _Refresh_rate(rr)
+	, _Desired_frame_rate(fps)
 	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
 {
+	if (fps <= _Minimum_frame_rate || !isfinite(fps)) {
+		throw system_error(make_error_code(errc::argument_out_of_domain));
+	}
 	call_once(_Window_class_registered_flag, [](){
 		WNDCLASSEX wcex{};
 
@@ -65,13 +70,49 @@ windows_handler::~windows_handler() {
 	}
 }
 
+float windows_handler::elapsed_draw_time() const noexcept {
+	return _Elapsed_draw_time / 1'000'000.0F;
+}
+
+void windows_handler::refresh_rate(experimental::io2d::refresh_rate rr) noexcept {
+	if (rr == experimental::io2d::refresh_rate::fixed && _Refresh_rate != rr) {
+		_Elapsed_draw_time = 0.0F;
+	}
+	_Refresh_rate = rr;
+}
+
+experimental::io2d::refresh_rate windows_handler::refresh_rate() const noexcept {
+	return _Refresh_rate;
+}
+
+bool windows_handler::desired_frame_rate(float fps) noexcept {
+	if (!isfinite(fps)) {
+		return true;
+	}
+	if (fps < _Minimum_frame_rate) {
+		_Desired_frame_rate = _Minimum_frame_rate;
+		return true;
+	}
+	if (fps > _Maximum_frame_rate) {
+		_Desired_frame_rate = _Maximum_frame_rate;
+		return true;
+	}
+	_Desired_frame_rate = fps;
+
+	return false;
+}
+
+float windows_handler::desired_frame_rate() const noexcept {
+	return _Desired_frame_rate;
+}
+
 int windows_handler::begin_show(cairo_display_surface* cs) {
 	_Surface = cs;
 
 	RECT rc;
 	rc.top = rc.left = 0;
-	rc.right = _Surface->_Display_width;
-	rc.bottom = _Surface->_Display_height;
+	rc.right = _Surface->display_width();
+	rc.bottom = _Surface->display_height();
 
 	// Adjust the window size for correct device size
 	if (!AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE)) {
@@ -140,7 +181,7 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 	if (_Surface->_Draw_fn == nullptr) {
 		throw system_error(make_error_code(errc::operation_would_block));
 	}
-	_Surface->_Elapsed_draw_time = 0.0F;
+	_Elapsed_draw_time = 0.0F;
 #ifdef _IO2D_WIN32FRAMERATE
 	auto previousTime = steady_clock::now();
 	long long int elapsedDrawNanoseconds = 0LL;
@@ -151,7 +192,7 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 #ifdef _IO2D_WIN32FRAMERATE
 		auto currentTime = steady_clock::now();
 		auto elapsedTimeIncrement = static_cast<float>(duration_cast<nanoseconds>(currentTime - previousTime).count());
-		_Surface->_Elapsed_draw_time += elapsedTimeIncrement;
+		_Elapsed_draw_time += elapsedTimeIncrement;
 		elapsedDrawNanoseconds += duration_cast<nanoseconds>(currentTime - previousTime).count();
 		previousTime = currentTime;
 #endif
@@ -159,13 +200,13 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 			if (_Surface->_Native_surface.get() != nullptr) {
 				RECT clientRect;
 				GetClientRect(_Hwnd, &clientRect);
-				if (clientRect.right - clientRect.left != _Surface->_Display_width || clientRect.bottom - clientRect.top != _Surface->_Display_height) {
+				if (clientRect.right - clientRect.left != _Surface->display_width() || clientRect.bottom - clientRect.top != _Surface->display_height()) {
 					// If there is a size mismatch we skip painting and resize the window instead.
-					auto dw = _Surface->_Display_width;
-					auto dh = _Surface->_Display_height;
+					auto dw = _Surface->display_width();
+					auto dh = _Surface->display_height();
 					_Surface->_Resize_window();
 					_Surface->_Make_native_surface_and_context(context(_Hwnd));
-					if (dw != _Surface->_Display_width || dh != _Surface->_Display_height) {
+					if (dw != _Surface->display_width() || dh != _Surface->display_height()) {
 						if (_Surface->_Size_change_fn != nullptr) {
 							(*_Surface->_Size_change_fn)(*_Surface->_Display_surface);
 						}
@@ -174,18 +215,18 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 				}
 				else {
 					bool redraw = true;
-					if (_Surface->_Refresh_rate == experimental::io2d::refresh_rate::as_needed) {
+					if (_Refresh_rate == experimental::io2d::refresh_rate::as_needed) {
 						redraw = _Surface->_Redraw_requested;
 						_Surface->_Redraw_requested = false;
 					}
 
-					const auto desiredElapsed = 1'000'000'000.0F / _Surface->_Desired_frame_rate;
+					const auto desiredElapsed = 1'000'000'000.0F / _Desired_frame_rate;
 #ifdef _IO2D_WIN32FRAMERATE
-					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00F / _Surface->_Desired_frame_rate);
+					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00F / _Desired_frame_rate);
 #endif
-					if (_Surface->_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+					if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
 						// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
-						redraw = _Surface->_Elapsed_draw_time >= desiredElapsed;
+						redraw = _Elapsed_draw_time >= desiredElapsed;
 					}
 					if (redraw) {
 						// Run user draw function:
@@ -204,9 +245,9 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 						elapsedNanoseconds.pop_front();
 						elapsedNanoseconds.push_back(chrono::nanoseconds(elapsedDrawNanoseconds));
 #endif
-						if (_Surface->_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
-							while (_Surface->_Elapsed_draw_time >= desiredElapsed) {
-								_Surface->_Elapsed_draw_time -= desiredElapsed;
+						if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+							while (_Elapsed_draw_time >= desiredElapsed) {
+								_Elapsed_draw_time -= desiredElapsed;
 							}
 #ifdef _IO2D_WIN32FRAMERATE
 							while (elapsedDrawNanoseconds >= desiredElapsedNanoseconds) {
@@ -215,7 +256,7 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 #endif
 						}
 						else {
-							_Surface->_Elapsed_draw_time = 0.0F;
+							_Elapsed_draw_time = 0.0F;
 #ifdef _IO2D_WIN32FRAMERATE
 							elapsedDrawNanoseconds = 0LL;
 #endif
@@ -230,16 +271,16 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 				DispatchMessage(&msg);
 
 				if (msg.message == WM_PAINT) {
-					const auto desiredElapsed = 1'000'000'000.0F / _Surface->_Desired_frame_rate;
+					const auto desiredElapsed = 1'000'000'000.0F / _Desired_frame_rate;
 #ifdef _IO2D_WIN32FRAMERATE
 					elapsedNanoseconds.pop_front();
 					elapsedNanoseconds.push_back(chrono::nanoseconds(elapsedDrawNanoseconds));
 
-					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00F / _Surface->_Desired_frame_rate);
+					const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00F / _Desired_frame_rate);
 #endif
-					if (_Surface->_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
-						while (_Surface->_Elapsed_draw_time >= desiredElapsed) {
-							_Surface->_Elapsed_draw_time -= desiredElapsed;
+					if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+						while (_Elapsed_draw_time >= desiredElapsed) {
+							_Elapsed_draw_time -= desiredElapsed;
 						}
 #ifdef _IO2D_WIN32FRAMERATE
 						while (elapsedDrawNanoseconds >= desiredElapsedNanoseconds) {
@@ -248,7 +289,7 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 #endif
 					}
 					else {
-						_Surface->_Elapsed_draw_time = 0.0F;
+						_Elapsed_draw_time = 0.0F;
 #ifdef _IO2D_WIN32FRAMERATE
 						elapsedDrawNanoseconds = 0LL;
 #endif
@@ -285,20 +326,20 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 		}
 #endif
 	}
-	_Surface->_Elapsed_draw_time = 0.0F;
+	_Elapsed_draw_time = 0.0F;
 	return static_cast<int>(msg.wParam);
 }
 
 LRESULT CALLBACK windows_handler::_RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-					LONG_PTR objPtr = GetWindowLongPtrW(hwnd, _Display_surface_ptr_window_data_byte_offset);
+	LONG_PTR objPtr = GetWindowLongPtrW(hwnd, _Display_surface_ptr_window_data_byte_offset);
 
-					if (objPtr == 0) {
-						return DefWindowProcW(hwnd, msg, wparam, lparam);
-					}
-					else {
-						return reinterpret_cast<windows_handler*>(objPtr)->_Window_proc(hwnd, msg, wparam, lparam);
-					}
-				}
+	if (objPtr == 0) {
+		return DefWindowProcW(hwnd, msg, wparam, lparam);
+	}
+	else {
+		return reinterpret_cast<windows_handler*>(objPtr)->_Window_proc(hwnd, msg, wparam, lparam);
+	}
+}
 
 LRESULT windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	const static auto lrZero = static_cast<LRESULT>(0);
@@ -363,7 +404,7 @@ LRESULT windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		hdc = BeginPaint(hwnd, &ps);
 		RECT clientRect;
 		GetClientRect(hwnd, &clientRect);
-		if (clientRect.right - clientRect.left != _Surface->_Display_width || clientRect.bottom - clientRect.top != _Surface->_Display_height) {
+		if (clientRect.right - clientRect.left != _Surface->display_width() || clientRect.bottom - clientRect.top != _Surface->display_height()) {
 			// If there is a size mismatch we skip painting and resize the window instead.
 			EndPaint(hwnd, &ps);
 			_Surface->_Resize_window();
