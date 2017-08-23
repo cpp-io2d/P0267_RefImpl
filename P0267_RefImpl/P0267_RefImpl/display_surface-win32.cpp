@@ -106,8 +106,9 @@ float windows_handler::desired_frame_rate() const noexcept {
 	return _Desired_frame_rate;
 }
 
-int windows_handler::begin_show(cairo_display_surface* cs) {
-	_Surface = cs;
+int windows_handler::begin_show(display_surface<cairo_renderer>& ds) {
+	_Display_surface = &ds;
+	_Surface = &ds.native_handle();
 
 	RECT rc;
 	rc.top = rc.left = 0;
@@ -204,11 +205,11 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 					// If there is a size mismatch we skip painting and resize the window instead.
 					auto dw = _Surface->display_width();
 					auto dh = _Surface->display_height();
-					_Surface->_Resize_window();
+					resize_window(dw, dh);
 					_Surface->_Make_native_surface_and_context(context(_Hwnd));
 					if (dw != _Surface->display_width() || dh != _Surface->display_height()) {
 						if (_Surface->_Size_change_fn != nullptr) {
-							(*_Surface->_Size_change_fn)(*_Surface->_Display_surface);
+							(*_Surface->_Size_change_fn)(*_Display_surface);
 						}
 					}
 					continue;
@@ -234,12 +235,12 @@ int windows_handler::begin_show(cairo_display_surface* cs) {
 							if (_Surface->_Auto_clear) {
 								_Surface->_Cairo_surface->clear();
 							}
-							(*_Surface->_Draw_fn)(*_Surface->_Display_surface);
+							(*_Surface->_Draw_fn)(*_Display_surface);
 						}
 						else {
 							throw system_error(make_error_code(errc::operation_would_block));
 						}
-						_Surface->_Render_to_native_surface();
+						_Surface->_Render_to_native_surface(*_Display_surface);
 
 #ifdef _IO2D_WIN32FRAMERATE
 						elapsedNanoseconds.pop_front();
@@ -350,7 +351,7 @@ LRESULT windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 #endif
 	case WM_CREATE:
 	{
-		_Surface->_Resize_window();
+		resize_window(_Surface->display_width(), _Surface->display_height());
 		// Return 0 to allow the window to proceed in the creation process.
 		return lrZero;
 	} break;
@@ -388,11 +389,11 @@ LRESULT windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		int height = HIWORD(lparam);
 
 		if (_Surface->width() != width || _Surface->height() != height) {
-			_Surface->display_dimensions(width, height);
+			_Surface->display_dimensions(*this, width, height);
 
 			// Call user size change function.
 			if (_Surface->_Size_change_fn != nullptr) {
-				(*(_Surface->_Size_change_fn))(*(_Surface->_Display_surface));
+				(*(_Surface->_Size_change_fn))(*(_Display_surface));
 			}
 		}
 	} break;
@@ -407,7 +408,7 @@ LRESULT windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		if (clientRect.right - clientRect.left != _Surface->display_width() || clientRect.bottom - clientRect.top != _Surface->display_height()) {
 			// If there is a size mismatch we skip painting and resize the window instead.
 			EndPaint(hwnd, &ps);
-			_Surface->_Resize_window();
+			resize_window(_Surface->display_width(), _Surface->display_height());
 			break;
 		}
 
@@ -420,10 +421,10 @@ LRESULT windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 			if (_Surface->_Auto_clear) {
 				_Surface->_Cairo_surface->clear();
 			}
-			(*_Surface->_Draw_fn)(*_Surface->_Display_surface);
+			(*_Surface->_Draw_fn)(*_Display_surface);
 		}
 
-		_Surface->_Render_to_native_surface();
+		_Surface->_Render_to_native_surface(*_Display_surface);
 
 		EndPaint(hwnd, &ps);
 	} break;
@@ -431,7 +432,7 @@ LRESULT windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-void windows_handler::resize_window(LONG width, LONG height) {
+void windows_handler::resize_window(LONG width, LONG height) const {
 	RECT clientRect;
 	RECT windowRect;
 	GetWindowRect(_Hwnd, &windowRect);
@@ -457,4 +458,9 @@ void windows_handler::resize_window(LONG width, LONG height) {
 
 void windows_handler::end_show() {
 	PostQuitMessage(0);
+}
+
+windows_handler::context windows_handler::make_context() const
+{
+	return context(_Hwnd);
 }

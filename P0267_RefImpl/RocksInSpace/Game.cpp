@@ -139,7 +139,7 @@ int rocks_in_space::main()
 	using namespace std::experimental::io2d;
 
 	rocks_in_space::game sd;
-	auto ds = make_display_surface<std::experimental::io2d::v1::cairo::cairo_renderer>(640, 480, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0f);
-	ds.draw_callback([&](my_display_surface& ds) {sd.update(ds); });
-	return ds.begin_show();
+	auto [renderer, handler] = make_display_surface<std::experimental::io2d::v1::cairo::cairo_renderer, std::experimental::io2d::v1::cairo::windows_handler>(640, 480, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0f);
+	renderer.draw_callback([&](my_display_surface& ds) {sd.update(ds); });
+	return handler.begin_show(renderer);
 }

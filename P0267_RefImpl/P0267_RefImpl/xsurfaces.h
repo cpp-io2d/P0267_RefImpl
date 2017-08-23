@@ -183,6 +183,21 @@ namespace std::experimental::io2d {
 			constexpr matrix_2d mask_matrix() const noexcept;
 		};
 
+		template <class T>
+		class display_surface;
+
+		template <class T>
+		class handler
+		{
+			typename T _Handler_impl;
+
+		public:
+			handler(refresh_rate rr, float desiredFramerate);
+			template <class U>
+			int begin_show(display_surface<U>&);
+			void end_show();
+		};
+
 		//tuple<dashes, offset>
 		using dashes = ::std::tuple<::std::vector<float>, float>;
 
@@ -258,25 +273,31 @@ namespace std::experimental::io2d {
 			typename T::renderer_display_surface _Display_surface_impl;
 
 		public:
-			const auto& native_handle() const { return _Display_surface_impl; }
-			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
-			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
-			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
-			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox, io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+			auto& native_handle() { return _Display_surface_impl; }
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox);
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl = io2d::scaling::letterbox);
+			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
 			void draw_callback(const function<void(display_surface& sfc)>& fn);
 			void size_change_callback(const function<void(display_surface& sfc)>& fn);
 			void width(int w);
 			void width(int w, error_code& ec) noexcept;
 			void height(int h);
 			void height(int h, error_code& ec) noexcept;
-			void display_width(int w);
-			void display_width(int w, error_code& ec) noexcept;
-			void display_height(int h);
-			void display_height(int h, error_code& ec) noexcept;
+			template <class U>
+			void display_width(const U& handler, int w);
+			template <class U>
+			void display_width(const U& handler, int w, error_code& ec) noexcept;
+			template <class U>
+			void display_height(const U& handler, int h);
+			template <class U>
+			void display_height(const U& handler, int h, error_code& ec) noexcept;
 			void dimensions(int w, int h);
 			void dimensions(int w, int h, error_code& ec) noexcept;
-			void display_dimensions(int dw, int dh);
-			void display_dimensions(int dw, int dh, error_code& ec) noexcept;
+			template <class U>
+			void display_dimensions(const U& handler, int dw, int dh);
+			template <class U>
+			void display_dimensions(const U& handler, int dw, int dh, error_code& ec) noexcept;
 			void scaling(experimental::io2d::scaling scl) noexcept;
 			void user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn);
 			void letterbox_brush(const optional<brush<T>>& b, const optional<brush_props> = nullopt) noexcept;
@@ -284,8 +305,10 @@ namespace std::experimental::io2d {
 			void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
 			bool desired_frame_rate(float fps) noexcept;
 			void redraw_required() noexcept;
-			int begin_show();
-			void end_show();
+			template <class U>
+			int begin_show(const U&);
+			template <class U>
+			void end_show(const U&);
 			experimental::io2d::format format() const noexcept;
 			int width() const noexcept;
 			int height() const noexcept;

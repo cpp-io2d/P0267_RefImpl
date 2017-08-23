@@ -691,6 +691,59 @@ namespace std::experimental::io2d {
 				stroke(b, pg, bp, sp, d, rp, cl);
 			}
 
+			// cairo_display_surface
+
+
+#if defined (_WIN32) || (_WIN64)
+#include <cairo-win32.h>
+			template <class T>
+			void cairo_display_surface::_Make_native_surface_and_context(T&& dc) {
+				try {
+					_Native_surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_win32_surface_create(dc), &cairo_surface_destroy);
+					_Native_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Native_surface.get()), &cairo_destroy);
+					_Throw_if_failed_cairo_status_t(cairo_surface_status(_Native_surface.get()));
+					_Throw_if_failed_cairo_status_t(cairo_status(_Native_context.get()));
+				}
+				catch (...) {
+					// Release the DC to avoid a handle leak.
+					throw;
+				}
+				// Release the DC to avoid a handle leak.
+			}
+#endif
+
+			template <class T>
+			int cairo_display_surface::begin_show(const T& handler)
+			{
+				return handler.begin_show(*this);
+			}
+
+			template <class T>
+			void cairo_display_surface::end_show(const T& handler)
+			{
+				handler.end_show();
+			}
+	
+			template <class T>
+			void cairo_display_surface::display_width(const T& handler, int w) {
+				display_dimensions(handler, w, _Display_height);
+			}
+
+			template <class T>
+			void cairo_display_surface::display_height(const T& handler, int h) {
+				display_dimensions(handler, _Display_width, h);
+			}
+
+			template <class T>
+			void cairo_display_surface::display_dimensions(const T& handler, int dw, int dh) {
+				_Display_width = dw;
+				_Display_height = dh;
+				handler.resize_window(_Display_width, _Display_height);
+
+				// Ensure that the native surface and context resize correctly.
+				_Make_native_surface_and_context(handler.make_context());
+			}
+
 			// cairo_mapped_surface
 
 			inline cairo_mapped_surface::cairo_mapped_surface(_Surface_native_handles nh, _Surface_native_handles map_of)

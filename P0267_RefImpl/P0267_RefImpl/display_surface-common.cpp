@@ -11,11 +11,6 @@ using namespace std::experimental::io2d;
 using namespace std::experimental::io2d::v1::cairo;
 using namespace std::chrono;
 
-void cairo_display_surface::_All_dimensions(int w, int h, int dw, int dh) {
-	dimensions(w, h);
-	display_dimensions(dw, dh);
-}
-
 // Note: cairo_surface_flush(_Native_surface.get()); must be called after calling this function.
 void cairo_display_surface::_Render_for_scaling_uniform_or_letterbox() {
 	const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
@@ -161,14 +156,14 @@ void cairo_display_surface::_Render_for_scaling_uniform_or_letterbox() {
 // 	cerr << timingStr.str().c_str();
 }
 
-void cairo_display_surface::_Render_to_native_surface() {
+void cairo_display_surface::_Render_to_native_surface(display_surface<cairo_renderer>& _Display_surface) {
 	const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
 	cairo_surface_flush(_Cairo_surface->_Surface.get());
 // 	cairo_save(_Native_context.get());
 	cairo_set_operator(_Native_context.get(), CAIRO_OPERATOR_SOURCE);
 	if (_User_scaling_fn != nullptr && _User_scaling_fn != nullptr) {
 		bool letterbox = false;
-		auto userRect = (*_User_scaling_fn)(*_Display_surface, letterbox);
+		auto userRect = (*_User_scaling_fn)(_Display_surface, letterbox);
 		if (letterbox) {
 			if (_Letterbox_brush == nullopt) {
 				cairo_set_source(_Native_context.get(), _Default_brush._Native_handle());
@@ -306,18 +301,12 @@ void cairo_display_surface::_Make_impl_surface_and_context() {
 	_Throw_if_failed_cairo_status_t(cairo_status(_Cairo_surface->_Context.get()));
 }
 
-void cairo_display_surface::_Resize_window()
-{
-	_Handler_impl.resize_window(_Display_width, _Display_height);
+cairo_display_surface::cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl)
+	: cairo_display_surface(cs, preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl) {
 }
 
-cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, experimental::io2d::scaling scl, io2d::refresh_rate rr, float fps)
-	: cairo_display_surface(ds, cs, preferredWidth, preferredHeight, preferredFormat, preferredWidth, preferredHeight, scl, rr, fps) {
-}
-
-cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds, cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl, io2d::refresh_rate rr, float fps)
+cairo_display_surface::cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl)
 	: _Cairo_surface(cs)
-	, _Display_surface(ds)
 	, _Display_width(preferredDisplayWidth)
 	, _Display_height(preferredDisplayHeight)
 	, _Scaling(scl)
@@ -327,7 +316,6 @@ cairo_display_surface::cairo_display_surface(display_surface<cairo_renderer>* ds
 	, _Size_change_fn()
 	, _User_scaling_fn()
 	, _Auto_clear(false)
-	, _Handler_impl(rr, fps)
 	, _Redraw_requested(true)
 	, _Native_surface(nullptr, &cairo_surface_destroy)
 	, _Native_context(nullptr, &cairo_destroy)
@@ -356,14 +344,6 @@ void cairo_display_surface::height(int h) {
 	dimensions(_Width, h);
 }
 
-void cairo_display_surface::display_width(int w) {
-	display_dimensions(w, _Display_height);
-}
-
-void cairo_display_surface::display_height(int h) {
-	display_dimensions(_Display_width, h);
-}
-
 void cairo_display_surface::dimensions(int w, int h) {
 	bool recreate = false;
 
@@ -382,15 +362,6 @@ void cairo_display_surface::dimensions(int w, int h) {
 		_Cairo_surface->_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Cairo_surface->_Surface.get()), &cairo_destroy);
 		//_Ensure_state();
 	}
-}
-
-void cairo_display_surface::display_dimensions(int dw, int dh) {
-	_Display_width = dw;
-	_Display_height = dh;
-	_Resize_window();
-
-	// Ensure that the native surface and context resize correctly.
-	_Make_native_surface_and_context(windows_handler::context(_Handler_impl._Hwnd));
 }
 
 void cairo_display_surface::scaling(experimental::io2d::scaling scl) noexcept {
@@ -472,28 +443,3 @@ optional<brush_props> cairo_display_surface::letterbox_brush_props() const noexc
 bool cairo_display_surface::auto_clear() const noexcept {
 	return _Auto_clear;
 }
-
-int cairo_display_surface::begin_show() {
-	return _Handler_impl.begin_show(this);
-}
-
-void cairo_display_surface::end_show() {
-	_Handler_impl.end_show();
-}
-
-#if defined (_WIN32) || (_WIN64)
-#include <cairo-win32.h>
-void cairo_display_surface::_Make_native_surface_and_context(windows_handler::context&& dc) {
-	try {
-		_Native_surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_win32_surface_create(dc), &cairo_surface_destroy);
-		_Native_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Native_surface.get()), &cairo_destroy);
-		_Throw_if_failed_cairo_status_t(cairo_surface_status(_Native_surface.get()));
-		_Throw_if_failed_cairo_status_t(cairo_status(_Native_context.get()));
-	}
-	catch (...) {
-		// Release the DC to avoid a handle leak.
-		throw;
-	}
-	// Release the DC to avoid a handle leak.
-}
-#endif
