@@ -1,6 +1,6 @@
 #include "io2d.h"
-#include "xcairo.h"
 #include "xdiagnostics.h"
+#include "xinclwindows_h.h"
 
 #include <chrono>
 #include <sstream>
@@ -30,7 +30,7 @@ namespace {
 	const wchar_t* _Refimpl_window_class_name = L"_RefImplWndwCls";
 }
 
-windows_handler::windows_handler(experimental::io2d::refresh_rate rr, float fps)
+windows::windows_handler::windows_handler(experimental::io2d::refresh_rate rr, float fps)
 	: _Surface(nullptr)
 	, _Refresh_rate(rr)
 	, _Desired_frame_rate(fps)
@@ -62,7 +62,7 @@ windows_handler::windows_handler(experimental::io2d::refresh_rate rr, float fps)
 	});
 }
 
-windows_handler::~windows_handler() {
+windows::windows_handler::~windows_handler() {
 	if (_Hwnd != nullptr) {
 		assert(_Hwnd == nullptr);
 		DestroyWindow(_Hwnd);
@@ -70,22 +70,22 @@ windows_handler::~windows_handler() {
 	}
 }
 
-float windows_handler::elapsed_draw_time() const noexcept {
+float windows::windows_handler::elapsed_draw_time() const noexcept {
 	return _Elapsed_draw_time / 1'000'000.0F;
 }
 
-void windows_handler::refresh_rate(experimental::io2d::refresh_rate rr) noexcept {
+void windows::windows_handler::refresh_rate(experimental::io2d::refresh_rate rr) noexcept {
 	if (rr == experimental::io2d::refresh_rate::fixed && _Refresh_rate != rr) {
 		_Elapsed_draw_time = 0.0F;
 	}
 	_Refresh_rate = rr;
 }
 
-experimental::io2d::refresh_rate windows_handler::refresh_rate() const noexcept {
+experimental::io2d::refresh_rate windows::windows_handler::refresh_rate() const noexcept {
 	return _Refresh_rate;
 }
 
-bool windows_handler::desired_frame_rate(float fps) noexcept {
+bool windows::windows_handler::desired_frame_rate(float fps) noexcept {
 	if (!isfinite(fps)) {
 		return true;
 	}
@@ -102,11 +102,11 @@ bool windows_handler::desired_frame_rate(float fps) noexcept {
 	return false;
 }
 
-float windows_handler::desired_frame_rate() const noexcept {
+float windows::windows_handler::desired_frame_rate() const noexcept {
 	return _Desired_frame_rate;
 }
 
-int windows_handler::begin_show(display_surface<cairo_renderer>& ds) {
+int windows::windows_handler::begin_show(display_surface<cairo_renderer>& ds) {
 	_Display_surface = &ds;
 	_Surface = &ds.native_handle();
 
@@ -331,18 +331,18 @@ int windows_handler::begin_show(display_surface<cairo_renderer>& ds) {
 	return static_cast<int>(msg.wParam);
 }
 
-LRESULT CALLBACK windows_handler::_RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT CALLBACK windows::windows_handler::_RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	LONG_PTR objPtr = GetWindowLongPtrW(hwnd, _Display_surface_ptr_window_data_byte_offset);
 
 	if (objPtr == 0) {
 		return DefWindowProcW(hwnd, msg, wparam, lparam);
 	}
 	else {
-		return reinterpret_cast<windows_handler*>(objPtr)->_Window_proc(hwnd, msg, wparam, lparam);
+		return reinterpret_cast<windows::windows_handler*>(objPtr)->_Window_proc(hwnd, msg, wparam, lparam);
 	}
 }
 
-LRESULT windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT windows::windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	const static auto lrZero = static_cast<LRESULT>(0);
 	switch (msg) {
 #ifdef __clang__
@@ -432,7 +432,7 @@ LRESULT windows_handler::_Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-void windows_handler::resize_window(LONG width, LONG height) const {
+void windows::windows_handler::resize_window(LONG width, LONG height) const {
 	RECT clientRect;
 	RECT windowRect;
 	GetWindowRect(_Hwnd, &windowRect);
@@ -456,11 +456,11 @@ void windows_handler::resize_window(LONG width, LONG height) const {
 	}
 }
 
-void windows_handler::end_show() {
+void windows::windows_handler::end_show() {
 	PostQuitMessage(0);
 }
 
-windows_handler::context windows_handler::make_context() const
+windows::windows_handler::context windows::windows_handler::make_context() const
 {
 	return context(_Hwnd);
 }

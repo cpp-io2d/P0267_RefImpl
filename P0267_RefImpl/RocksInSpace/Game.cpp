@@ -2,6 +2,8 @@
 #include "Input.h"
 #include "Constants.h"
 
+#include "xinclwindows_h.h"
+
 namespace
 {
 	static const rocks_in_space::path_buffer* asteroid_vbs[] = { &rocks_in_space::asteroid::a1, &rocks_in_space::asteroid::a2, &rocks_in_space::asteroid::a3, &rocks_in_space::asteroid::a4 };
@@ -139,7 +141,7 @@ int rocks_in_space::main()
 	using namespace std::experimental::io2d;
 
 	rocks_in_space::game sd;
-	auto [renderer, handler] = make_display_surface<std::experimental::io2d::v1::cairo::cairo_renderer, std::experimental::io2d::v1::cairo::windows_handler>(640, 480, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0f);
+	auto [renderer, handler] = make_display_surface<std::experimental::io2d::v1::cairo::cairo_renderer, std::experimental::io2d::v1::windows::windows_handler>(640, 480, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0f);
 	renderer.draw_callback([&](my_display_surface& ds) {sd.update(ds); });
 	return handler.begin_show(renderer);
 }

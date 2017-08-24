@@ -1,25 +1,11 @@
 #pragma once
 
-#include "xio2d.h"
+#include "xcairo.h"
 
-#include <memory>
-#include <functional>
-#include <exception>
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <system_error>
-#include <cstdint>
-#include <atomic>
-#include <variant>
-#include <optional>
-#include <cmath>
-#include <type_traits>
-#include <initializer_list>
-#include <cmath>
-
-#ifdef _Filesystem_support_test
-#include <filesystem>
+#if defined (_WIN32) || (_WIN64)
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <cairo-win32.h>
 #endif
 
 namespace std::experimental::io2d {
@@ -695,7 +681,6 @@ namespace std::experimental::io2d {
 
 
 #if defined (_WIN32) || (_WIN64)
-#include <cairo-win32.h>
 			template <class T>
 			void cairo_display_surface::_Make_native_surface_and_context(T&& dc) {
 				try {
