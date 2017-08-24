@@ -45,7 +45,7 @@ namespace std::experimental::io2d {
 			{
 				struct context
 				{
-					context(HWND _Hwnd) : _Hdc(GetDC(_Hwnd)) {}
+					context(HWND hwnd) : _Hwnd(hwnd), _Hdc(GetDC(hwnd)) {}
 					~context() { ReleaseDC(_Hwnd, _Hdc); }
 					operator HDC() { return _Hdc; }
 					HWND _Hwnd;
@@ -81,7 +81,7 @@ namespace std::experimental::io2d {
 			};
 #endif
 
-			/*
+			/* Prior implementation from display_surface
 			#if defined(USE_XCB)
 			static ::std::mutex _Connection_mutex;
 			static ::std::unique_ptr<xcb_connection_t, decltype(&xcb_disconnect)> _Connection;
