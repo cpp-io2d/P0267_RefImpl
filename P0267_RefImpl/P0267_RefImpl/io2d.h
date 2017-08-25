@@ -261,17 +261,23 @@ namespace std {
 
 				int format_stride_for_width(format format, int width) noexcept;
 
-				template <class T, class U>
-				std::pair<display_surface<T>, handler<U>> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				template <class T>
+				display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox);
+
+				template <class T>
+				display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl = scaling::letterbox) noexcept;
+
+				template <class T>
+				display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox);
+
+				template <class T>
+				display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, scaling scl = scaling::letterbox) noexcept;
 
 				template <class T, class U>
-				std::pair<display_surface<T>, handler<U>> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+				handler<T> make_handler(display_surface<U>&, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 
 				template <class T, class U>
-				std::pair<display_surface<T>, handler<U>> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
-
-				template <class T, class U>
-				std::pair<display_surface<T>, handler<U>> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+				handler<T> make_handler(display_surface<U>&, error_code& ec, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 
 				template <class T>
 				image_surface<T> make_image_surface(format format, int width, int height);

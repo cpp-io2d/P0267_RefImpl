@@ -482,6 +482,7 @@
     <ClInclude Include="xpath.h" />
     <ClInclude Include="xsurfaces.h" />
     <ClInclude Include="xtext.h" />
+    <ClInclude Include="xwindows_handler_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="display_surface-common.cpp" />

@@ -1850,15 +1850,15 @@ namespace std::experimental::io2d {
 		// handler
 
 		template <class T>
-		handler<T>::handler(refresh_rate rr, float desiredFramerate)
-			: _Handler_impl(rr, desiredFramerate)
+		template <class U>
+		handler<T>::handler(display_surface<U>& ds, refresh_rate rr, float desiredFramerate)
+			: _Handler_impl(ds, rr, desiredFramerate)
 		{}
 
 		template <class T>
-		template <class U>
-		int handler<T>::begin_show(display_surface<U>& ds)
+		int handler<T>::begin_show()
 		{
-			return _Handler_impl.begin_show(ds);
+			return _Handler_impl.begin_show();
 		}
 
 		template <class T>
@@ -2188,17 +2188,15 @@ namespace std::experimental::io2d {
 		}
 
 		template <class T>
-		template <class U>
-		inline int display_surface<T>::begin_show(const U& handler)
+		inline int display_surface<T>::begin_show()
 		{
-			return _Display_surface_impl.begin_show(handler);
+			return _Display_surface_impl.begin_show();
 		}
 
 		template <class T>
-		template <class U>
-		inline void display_surface<T>::end_show(const U& handler)
+		inline void display_surface<T>::end_show()
 		{
-			_Display_surface_impl.end_show(handler);
+			_Display_surface_impl.end_show();
 		}
 
 		template <class T>
@@ -2361,14 +2359,19 @@ namespace std::experimental::io2d {
 
 		// Standalone functions
 
-		template <class T, class U>
-		inline std::pair<display_surface<T>, handler<U>> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, float desiredFramerate) {
-			return { display_surface<T>{ preferredWidth, preferredHeight, preferredFormat, scl}, handler<U>{rr, desiredFramerate} };
+		template <class T>
+		inline display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl) {
+			return { preferredWidth, preferredHeight, preferredFormat, scl };
+		}
+
+		template <class T>
+		inline display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl) {
+			return { preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, scl };
 		}
 
 		template <class T, class U>
-		inline std::pair<display_surface<T>, handler<U>> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, float desiredFramerate) {
-			return { display_surface<T>{ preferredWidth, preferredHeight, preferredFormat, scl}, handler<U>{rr, desiredFramerate} };
+		inline handler<T> make_handler(display_surface<U>& ds, refresh_rate rr, float desiredFramerate) {
+			return { ds, rr, desiredFramerate };
 		}
 
 		template <class T>

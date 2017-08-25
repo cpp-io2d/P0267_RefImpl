@@ -12,7 +12,8 @@ namespace std::experimental::io2d {
 
 		namespace windows
 		{
-			struct windows_handler;
+			template <class T>
+			class windows_handler;
 		}
 
 		namespace cairo
@@ -158,7 +159,7 @@ namespace std::experimental::io2d {
 
 			class cairo_display_surface
 			{
-				friend windows::windows_handler;
+				friend windows::windows_handler<cairo_renderer>;
 				cairo_surface* _Cairo_surface;
 				int _Display_width;
 				int _Display_height;

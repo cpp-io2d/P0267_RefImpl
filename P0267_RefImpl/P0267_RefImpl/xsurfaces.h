@@ -192,9 +192,9 @@ namespace std::experimental::io2d {
 			typename T _Handler_impl;
 
 		public:
-			handler(refresh_rate rr, float desiredFramerate);
 			template <class U>
-			int begin_show(display_surface<U>&);
+			handler(display_surface<U>& ds, refresh_rate rr, float desiredFramerate);
+			int begin_show();
 			void end_show();
 		};
 
@@ -305,10 +305,8 @@ namespace std::experimental::io2d {
 			void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
 			bool desired_frame_rate(float fps) noexcept;
 			void redraw_required() noexcept;
-			template <class U>
-			int begin_show(const U&);
-			template <class U>
-			void end_show(const U&);
+			int begin_show();
+			void end_show();
 			experimental::io2d::format format() const noexcept;
 			int width() const noexcept;
 			int height() const noexcept;

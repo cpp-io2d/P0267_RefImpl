@@ -62,15 +62,15 @@
     <ClInclude Include="xinclwindows_h.h">
       <Filter>windows handler</Filter>
     </ClInclude>
+    <ClInclude Include="xwindows_handler_impl.h">
+      <Filter>windows handler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rgba_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="display_surface-common.cpp">
-      <Filter>cairo renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="display_surface-win32.cpp">
       <Filter>cairo renderer</Filter>
     </ClCompile>
     <ClCompile Include="image_surface.cpp">
@@ -81,6 +81,9 @@
     </ClCompile>
     <ClCompile Include="surface.cpp">
       <Filter>cairo renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="display_surface-win32.cpp">
+      <Filter>windows handler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
