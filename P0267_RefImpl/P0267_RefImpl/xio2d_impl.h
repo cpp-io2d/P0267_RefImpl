@@ -2090,34 +2090,6 @@ namespace std::experimental::io2d {
 		}
 
 		template <class T>
-		template <class U>
-		inline void display_surface<T>::display_width(const U& handler, int w)
-		{
-			_Display_surface_impl.display_width(handler, w);
-		}
-
-		template <class T>
-		template <class U>
-		inline void display_surface<T>::display_width(const U& handler, int w, error_code& ec) noexcept
-		{
-			_Display_surface_impl.display_width(handler, w, ec);
-		}
-
-		template <class T>
-		template <class U>
-		inline void display_surface<T>::display_height(const U& handler, int h)
-		{
-			_Display_surface_impl.display_height(handler, h);
-		}
-
-		template <class T>
-		template <class U>
-		inline void display_surface<T>::display_height(const U& handler, int h, error_code& ec) noexcept
-		{
-			_Display_surface_impl.display_height(handler, h, ec);
-		}
-
-		template <class T>
 		inline void display_surface<T>::dimensions(display_point dp)
 		{
 			_Display_surface_impl.dimensions(dp);
@@ -2201,18 +2173,6 @@ namespace std::experimental::io2d {
 		inline experimental::io2d::format display_surface<T>::format() const noexcept
 		{
 			return _Display_surface_impl.format();
-		}
-
-		template <class T>
-		inline int display_surface<T>::display_width() const noexcept
-		{
-			return _Display_surface_impl.display_width();
-		}
-
-		template <class T>
-		inline int display_surface<T>::display_height() const noexcept
-		{
-			return _Display_surface_impl.display_height();
 		}
 
 		template <class T>

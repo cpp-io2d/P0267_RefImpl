@@ -375,22 +375,6 @@ format cairo_display_surface::format() const noexcept {
 	return _Cairo_surface->_Format;
 }
 
-int cairo_display_surface::width() const noexcept {
-	return _Dimensions.x;
-}
-
-int cairo_display_surface::height() const noexcept {
-	return _Dimensions.y;
-}
-
-int cairo_display_surface::display_width() const noexcept {
-	return _Display_dimensions.x;
-}
-
-int cairo_display_surface::display_height() const noexcept {
-	return _Display_dimensions.y;
-}
-
 display_point cairo_display_surface::dimensions() const noexcept {
 	return _Dimensions;
 }

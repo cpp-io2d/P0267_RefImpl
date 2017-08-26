@@ -710,16 +710,6 @@ namespace std::experimental::io2d {
 			}
 	
 			template <class T>
-			void cairo_display_surface::display_width(const T& handler, int w) {
-				display_dimensions(handler, w, _Display_height);
-			}
-
-			template <class T>
-			void cairo_display_surface::display_height(const T& handler, int h) {
-				display_dimensions(handler, _Display_width, h);
-			}
-
-			template <class T>
 			void cairo_display_surface::display_dimensions(const T& handler, display_point dp) {
 				_Display_dimensions = dp;
 				handler.resize_window(dp);

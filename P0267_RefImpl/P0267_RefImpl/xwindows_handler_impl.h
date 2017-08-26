@@ -121,7 +121,7 @@ namespace std::experimental::io2d {
 				hdc = BeginPaint(hwnd, &ps);
 				RECT clientRect;
 				GetClientRect(hwnd, &clientRect);
-				if (clientRect.right - clientRect.left != _Display_surface.display_width() || clientRect.bottom - clientRect.top != _Display_surface.display_height()) {
+				if (clientRect.right - clientRect.left != _Display_surface.display_dimensions().x || clientRect.bottom - clientRect.top != _Display_surface.display_dimensions().y) {
 					// If there is a size mismatch we skip painting and resize the window instead.
 					EndPaint(hwnd, &ps);
 					_Impl.resize_window(_Display_surface.display_dimensions());
@@ -164,8 +164,8 @@ namespace std::experimental::io2d {
 		inline int windows::windows_handler<T>::begin_show() {
 			RECT rc;
 			rc.top = rc.left = 0;
-			rc.right = _Display_surface.display_width();
-			rc.bottom = _Display_surface.display_height();
+			rc.right = _Display_surface.dimensions().x;
+			rc.bottom = _Display_surface.dimensions().y;
 
 			// Adjust the window size for correct device size
 			if (!AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE)) {
@@ -252,7 +252,7 @@ namespace std::experimental::io2d {
 				if (!PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
 					RECT clientRect;
 					GetClientRect(_Impl._Hwnd, &clientRect);
-					if (clientRect.right - clientRect.left != _Display_surface.display_width() || clientRect.bottom - clientRect.top != _Display_surface.display_height()) {
+					if (clientRect.right - clientRect.left != _Display_surface.display_dimensions().x || clientRect.bottom - clientRect.top != _Display_surface.display_dimensions().y) {
 						// If there is a size mismatch we skip painting and resize the window instead.
 						_Impl.resize_window(_Display_surface.display_dimensions());
 						_Display_surface.native_handle()._Make_native_surface_and_context(windows_handler_impl::context(_Impl._Hwnd));

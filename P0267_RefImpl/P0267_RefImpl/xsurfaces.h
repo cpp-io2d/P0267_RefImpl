@@ -292,14 +292,6 @@ namespace std::experimental::io2d {
 			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
 			void draw_callback(const function<void(display_surface& sfc)>& fn);
 			void size_change_callback(const function<void(display_surface& sfc)>& fn);
-			template <class U>
-			void display_width(const U& handler, int w);
-			template <class U>
-			void display_width(const U& handler, int w, error_code& ec) noexcept;
-			template <class U>
-			void display_height(const U& handler, int h);
-			template <class U>
-			void display_height(const U& handler, int h, error_code& ec) noexcept;
 			void dimensions(display_point dp);
 			void dimensions(display_point dp, error_code& ec) noexcept;
 			template <class U>
@@ -316,8 +308,6 @@ namespace std::experimental::io2d {
 			int begin_show();
 			void end_show();
 			experimental::io2d::format format() const noexcept;
-			int display_width() const noexcept;
-			int display_height() const noexcept;
 			display_point dimensions() const noexcept;
 			display_point display_dimensions() const noexcept;
 			experimental::io2d::scaling scaling() const noexcept;

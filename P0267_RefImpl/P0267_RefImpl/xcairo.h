@@ -203,14 +203,6 @@ namespace std::experimental::io2d {
 				~cairo_display_surface() {}
 				_IO2D_API void draw_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
 				_IO2D_API void size_change_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
-				template <class T>
-				void display_width(const T& handler, int w);
-				template <class T>
-				void display_width(const T& handler, int w, error_code& ec) noexcept;
-				template <class T>
-				void display_height(const T& handler, int h);
-				template <class T>
-				void display_height(const T& handler, int h, error_code& ec) noexcept;
 				_IO2D_API void dimensions(display_point dp);
 				_IO2D_API void dimensions(display_point dp, error_code& ec) noexcept;
 				template <class T>
@@ -227,10 +219,6 @@ namespace std::experimental::io2d {
 				template <class T>
 				void end_show(const T&);
 				_IO2D_API experimental::io2d::format format() const noexcept;
-				_IO2D_API int width() const noexcept;
-				_IO2D_API int height() const noexcept;
-				_IO2D_API int display_width() const noexcept;
-				_IO2D_API int display_height() const noexcept;
 				_IO2D_API display_point dimensions() const noexcept;
 				_IO2D_API display_point display_dimensions() const noexcept;
 				_IO2D_API experimental::io2d::scaling scaling() const noexcept;
