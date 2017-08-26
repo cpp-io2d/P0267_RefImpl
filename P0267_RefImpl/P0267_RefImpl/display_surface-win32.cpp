@@ -13,14 +13,19 @@ using namespace std;
 using namespace std::chrono;
 using namespace std::experimental::io2d;
 
-windows::windows_handler_impl::windows_handler_impl(experimental::io2d::refresh_rate rr, float fps)
-	: _Refresh_rate(rr)
+windows::windows_handler_impl::windows_handler_impl(int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::refresh_rate rr, float fps)
+	: _Display_dimensions(preferredDisplayWidth, preferredDisplayHeight)
+	, _Refresh_rate(rr)
 	, _Desired_frame_rate(fps)
 	, _Window_style(WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 	, _Hwnd(nullptr)
 {
 	if (fps <= _Minimum_frame_rate || !isfinite(fps)) {
 		throw system_error(make_error_code(errc::argument_out_of_domain));
+	}
+	// Record the desired client window size
+	if (preferredDisplayWidth <= 0 || preferredDisplayHeight <= 0) {
+		throw invalid_argument("Invalid parameter.");
 	}
 }
 

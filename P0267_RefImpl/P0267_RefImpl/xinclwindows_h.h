@@ -50,18 +50,22 @@ namespace std::experimental::io2d {
 					HDC _Hdc;
 				};
 
-				windows_handler_impl(experimental::io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				windows_handler_impl(int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
 				~windows_handler_impl();
 				void resize_window(display_point dp) const;
 				context make_context() const;
+				void display_dimensions(display_point dp);
+				void display_dimensions(display_point dp, error_code& ec) noexcept;
 				void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
 				bool desired_frame_rate(float fps) noexcept;
+				display_point display_dimensions() const noexcept;
 				experimental::io2d::refresh_rate refresh_rate() const noexcept;
 				float desired_frame_rate() const noexcept;
 				float elapsed_draw_time() const noexcept;
 
 				static const int _Display_surface_ptr_window_data_byte_offset = 0;
 
+				display_point _Display_dimensions;
 				::std::experimental::io2d::refresh_rate _Refresh_rate;
 				float _Elapsed_draw_time;
 				const float _Minimum_frame_rate = 0.01F;
@@ -81,16 +85,20 @@ namespace std::experimental::io2d {
 
 				display_surface<T>& _Display_surface;
 				windows_handler_impl _Impl;
+
 			public:
 				static LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-				windows_handler(display_surface<T>& ds, experimental::io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				windows_handler(display_surface<T>& ds, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
 				void resize_window(display_point dp) const;
 				windows_handler_impl::context make_context() const;
 				int begin_show();
 				void end_show();
+				void display_dimensions(display_point dp);
+				void display_dimensions(display_point dp, error_code& ec) noexcept;
 				void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
 				bool desired_frame_rate(float fps) noexcept;
+				display_point display_dimensions() const noexcept;
 				experimental::io2d::refresh_rate refresh_rate() const noexcept;
 				float desired_frame_rate() const noexcept;
 				float elapsed_draw_time() const noexcept;

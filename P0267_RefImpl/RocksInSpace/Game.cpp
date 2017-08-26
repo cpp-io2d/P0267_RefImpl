@@ -146,7 +146,7 @@ int rocks_in_space::main()
 
 	rocks_in_space::game sd;
 	auto renderer = make_display_surface<std::experimental::io2d::v1::cairo::cairo_renderer>(640, 480, format::argb32, scaling::letterbox);
-	auto handler = make_handler<std::experimental::io2d::v1::windows::windows_handler<std::experimental::io2d::v1::cairo::cairo_renderer>>(renderer, refresh_rate::as_fast_as_possible, 30.0f);
+	auto handler = make_handler<std::experimental::io2d::v1::windows::windows_handler<std::experimental::io2d::v1::cairo::cairo_renderer>>(renderer, 640, 480, refresh_rate::as_fast_as_possible, 30.0f);
 	renderer.draw_callback([&](my_display_surface& ds) {sd.update(ds); });
 	return handler.begin_show();
 }

@@ -1851,8 +1851,8 @@ namespace std::experimental::io2d {
 
 		template <class T>
 		template <class U>
-		handler<T>::handler(display_surface<U>& ds, experimental::io2d::refresh_rate rr, float desiredFramerate)
-			: _Handler_impl(ds, rr, desiredFramerate)
+		handler<T>::handler(display_surface<U>& ds, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::refresh_rate rr, float desiredFramerate)
+			: _Handler_impl(ds, preferredDisplayWidth, preferredDisplayHeight, rr, desiredFramerate)
 		{}
 
 		template <class T>
@@ -1868,6 +1868,18 @@ namespace std::experimental::io2d {
 		}
 
 		template <class T>
+		inline void handler<T>::display_dimensions(display_point dp)
+		{
+			_Handler_impl.display_dimensions(dp);
+		}
+
+		template <class T>
+		inline void handler<T>::display_dimensions(display_point dp, error_code& ec) noexcept
+		{
+			_Handler_impl.display_dimensions(dp, ec);
+		}
+
+		template <class T>
 		inline void handler<T>::refresh_rate(experimental::io2d::refresh_rate rr) noexcept
 		{
 			_Handler_impl.refresh_rate(rr);
@@ -1877,6 +1889,12 @@ namespace std::experimental::io2d {
 		inline bool handler<T>::desired_frame_rate(float fps) noexcept
 		{
 			return _Handler_impl.desired_frame_rate(fps);
+		}
+
+		template <class T>
+		inline display_point handler<T>::display_dimensions() const noexcept
+		{
+			return _Handler_impl.display_dimensions();
 		}
 
 		template <class T>
@@ -2096,18 +2114,6 @@ namespace std::experimental::io2d {
 		{}
 
 		template <class T>
-		inline display_surface<T>::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl)
-			: surface(preferredFormat, preferredWidth, preferredHeight)
-			, _Display_surface_impl(_Surface_impl.get(), preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, scl)
-		{}
-
-		template <class T>
-		inline display_surface<T>::display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl) noexcept
-			: surface(preferredFormat, preferredWidth, preferredHeight)
-			, _Display_surface_impl(_Surface_impl.get(), preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, ec, scl)
-		{}
-
-		template <class T>
 		inline void display_surface<T>::draw_callback(const function<void(display_surface<T>& sfc)>& fn)
 		{
 			_Display_surface_impl.draw_callback(fn);
@@ -2129,20 +2135,6 @@ namespace std::experimental::io2d {
 		inline void display_surface<T>::dimensions(display_point dp, error_code& ec) noexcept
 		{
 			_Display_surface_impl.dimensions(dp, ec);
-		}
-
-		template <class T>
-		template <class U>
-		inline void display_surface<T>::display_dimensions(const U& handler, display_point dp)
-		{
-			_Display_surface_impl.display_dimensions(handler, dp);
-		}
-
-		template <class T>
-		template <class U>
-		inline void display_surface<T>::display_dimensions(const U& handler, display_point dp, error_code& ec) noexcept
-		{
-			_Display_surface_impl.display_dimensions(handler, dp, ec);
 		}
 
 		template <class T>
@@ -2185,12 +2177,6 @@ namespace std::experimental::io2d {
 		inline display_point display_surface<T>::dimensions() const noexcept
 		{
 			return _Display_surface_impl.dimensions();
-		}
-
-		template <class T>
-		inline display_point display_surface<T>::display_dimensions() const noexcept
-		{
-			return _Display_surface_impl.display_dimensions();
 		}
 
 		template <class T>
@@ -2298,14 +2284,9 @@ namespace std::experimental::io2d {
 			return { preferredWidth, preferredHeight, preferredFormat, scl };
 		}
 
-		template <class T>
-		inline display_surface<T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl) {
-			return { preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, scl };
-		}
-
 		template <class T, class U>
-		inline handler<T> make_handler(display_surface<U>& ds, refresh_rate rr, float desiredFramerate) {
-			return { ds, rr, desiredFramerate };
+		inline handler<T> make_handler(display_surface<U>& ds, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr, float desiredFramerate) {
+			return { ds, preferredDisplayWidth, preferredDisplayHeight, rr, desiredFramerate };
 		}
 
 		template <class T>

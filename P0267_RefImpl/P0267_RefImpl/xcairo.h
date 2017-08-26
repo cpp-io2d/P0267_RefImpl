@@ -161,7 +161,6 @@ namespace std::experimental::io2d {
 			{
 				friend windows::windows_handler<cairo_renderer>;
 				cairo_surface* _Cairo_surface;
-				display_point _Display_dimensions;
 				::std::experimental::io2d::scaling _Scaling;
 				display_point _Dimensions;
 				::std::unique_ptr<::std::function<void(display_surface<cairo_renderer>& sfc)>> _Draw_fn;
@@ -181,10 +180,10 @@ namespace std::experimental::io2d {
 				template <class T>
 				void _Make_native_surface_and_context(T&&, ::std::error_code& ec) noexcept;
 				void _Make_impl_surface_and_context();
-				void _Render_to_native_surface(display_surface<cairo_renderer>&);
-				void _Render_to_native_surface(display_surface<cairo_renderer>&, ::std::error_code& ec) noexcept;
-				void _Render_for_scaling_uniform_or_letterbox();
-				void _Render_for_scaling_uniform_or_letterbox(::std::error_code& ec) noexcept;
+				void _Render_to_native_surface(display_point dd, display_surface<cairo_renderer>&);
+				void _Render_to_native_surface(display_point dd, display_surface<cairo_renderer>&, ::std::error_code& ec) noexcept;
+				void _Render_for_scaling_uniform_or_letterbox(display_point dd);
+				void _Render_for_scaling_uniform_or_letterbox(display_point dd, ::std::error_code& ec) noexcept;
 
 			public:
 				const auto& _Native_handle() const { return _Cairo_surface->_Native_handle(); }
@@ -198,17 +197,11 @@ namespace std::experimental::io2d {
 				// declarations from paper
 				_IO2D_API cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox);
 				cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
-				_IO2D_API cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl = io2d::scaling::letterbox);
-				cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
 				~cairo_display_surface() {}
 				_IO2D_API void draw_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
 				_IO2D_API void size_change_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
 				_IO2D_API void dimensions(display_point dp);
 				_IO2D_API void dimensions(display_point dp, error_code& ec) noexcept;
-				template <class T>
-				void display_dimensions(const T& handler, display_point dp);
-				template <class T>
-				void display_dimensions(const T& handler, display_point dp, error_code& ec) noexcept;
 				_IO2D_API void scaling(experimental::io2d::scaling scl) noexcept;
 				_IO2D_API void user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface<cairo_renderer>&, bool&)>& fn);
 				_IO2D_API void letterbox_brush(const optional<cairo_brush>& b, const optional<brush_props> = nullopt) noexcept;
@@ -216,7 +209,6 @@ namespace std::experimental::io2d {
 				_IO2D_API void redraw_required() noexcept;
 				_IO2D_API experimental::io2d::format format() const noexcept;
 				_IO2D_API display_point dimensions() const noexcept;
-				_IO2D_API display_point display_dimensions() const noexcept;
 				_IO2D_API experimental::io2d::scaling scaling() const noexcept;
 				_IO2D_API function<experimental::io2d::bounding_box(const display_surface<cairo_renderer>&, bool&)> user_scaling_callback() const;
 				_IO2D_API function<experimental::io2d::bounding_box(const display_surface<cairo_renderer>&, bool&)> user_scaling_callback(error_code& ec) const noexcept;
