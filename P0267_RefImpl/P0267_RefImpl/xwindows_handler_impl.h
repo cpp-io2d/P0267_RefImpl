@@ -68,7 +68,7 @@ namespace std::experimental::io2d {
 #endif
 			case WM_CREATE:
 			{
-				_Impl.resize_window(_Impl._Display_dimensions);
+				resize_window(display_dimensions());
 				// Return 0 to allow the window to proceed in the creation process.
 				return lrZero;
 			} break;
@@ -108,9 +108,7 @@ namespace std::experimental::io2d {
 					display_dimensions(dimensions);
 
 					// Call user size change function.
-					if (_Display_surface.native_handle()._Size_change_fn != nullptr) {
-						(*(_Display_surface.native_handle()._Size_change_fn))(_Display_surface);
-					}
+					_Display_surface.invoke_size_change_callback();
 				}
 			} break;
 
@@ -121,10 +119,10 @@ namespace std::experimental::io2d {
 				hdc = BeginPaint(hwnd, &ps);
 				RECT clientRect;
 				GetClientRect(hwnd, &clientRect);
-				if (clientRect.right - clientRect.left != _Impl._Display_dimensions.x || clientRect.bottom - clientRect.top != _Impl._Display_dimensions.y) {
+				if (clientRect.right - clientRect.left != display_dimensions().x || clientRect.bottom - clientRect.top != display_dimensions().y) {
 					// If there is a size mismatch we skip painting and resize the window instead.
 					EndPaint(hwnd, &ps);
-					_Impl.resize_window(_Impl._Display_dimensions);
+					resize_window(display_dimensions());
 					break;
 				}
 
@@ -133,14 +131,7 @@ namespace std::experimental::io2d {
 //					break;
 //				}
 				// Run user draw function:
-				if (_Display_surface.native_handle()._Draw_fn != nullptr) {
-					if (_Display_surface.native_handle()._Auto_clear) {
-						_Display_surface.native_handle()._Cairo_surface->clear();
-					}
-					(*_Display_surface.native_handle()._Draw_fn)(_Display_surface);
-				}
-
-				_Display_surface.native_handle()._Render_to_native_surface(_Impl._Display_dimensions, _Display_surface);
+				_Display_surface.invoke_draw_callback(display_dimensions());
 
 				EndPaint(hwnd, &ps);
 			} break;
@@ -252,14 +243,12 @@ namespace std::experimental::io2d {
 				if (!PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
 					RECT clientRect;
 					GetClientRect(_Impl._Hwnd, &clientRect);
-					if (clientRect.right - clientRect.left != _Impl._Display_dimensions.x || clientRect.bottom - clientRect.top != _Impl._Display_dimensions.y) {
+					if (clientRect.right - clientRect.left != display_dimensions().x || clientRect.bottom - clientRect.top != display_dimensions().y) {
 						// If there is a size mismatch we skip painting and resize the window instead.
-						_Impl.resize_window(_Impl._Display_dimensions);
+						resize_window(display_dimensions());
 						_Display_surface.native_handle()._Make_native_surface_and_context(windows_handler_impl::context(_Impl._Hwnd));
-						if (_Impl._Display_dimensions != _Display_surface.native_handle().dimensions()) {
-							if (_Display_surface.native_handle()._Size_change_fn != nullptr) {
-								(*_Display_surface.native_handle()._Size_change_fn)(_Display_surface);
-							}
+						if (display_dimensions() != _Display_surface.native_handle().dimensions()) {
+							_Display_surface.invoke_size_change_callback();
 						}
 						continue;
 					}
@@ -280,16 +269,7 @@ namespace std::experimental::io2d {
 						}
 						if (redraw) {
 							// Run user draw function:
-							if (_Display_surface.native_handle()._Draw_fn != nullptr) {
-								if (_Display_surface.native_handle().auto_clear()) {
-									_Display_surface.native_handle()._Cairo_surface->clear();
-								}
-								(*_Display_surface.native_handle()._Draw_fn)(_Display_surface);
-							}
-							else {
-								throw system_error(make_error_code(errc::operation_would_block));
-							}
-							_Display_surface.native_handle()._Render_to_native_surface(_Impl._Display_dimensions, _Display_surface);
+							_Display_surface.invoke_draw_callback(display_dimensions());
 
 #ifdef _IO2D_WIN32FRAMERATE
 							elapsedNanoseconds.pop_front();
@@ -386,7 +366,7 @@ namespace std::experimental::io2d {
 
 		template <class T>
 		void windows::windows_handler<T>::display_dimensions(display_point dp) {
-			_Impl._Display_dimensions = dp;
+			_Impl.display_dimensions(dp);
 			resize_window(dp);
 
 			// Ensure that the native surface and context resize correctly.
@@ -403,6 +383,11 @@ namespace std::experimental::io2d {
 		inline bool windows::windows_handler<T>::desired_frame_rate(float fps) noexcept
 		{
 			return _Impl.desired_frame_rate(fps);
+		}
+
+		template <class T>
+		display_point windows::windows_handler<T>::display_dimensions() const noexcept {
+			return _Impl.display_dimensions();
 		}
 
 		template <class T>

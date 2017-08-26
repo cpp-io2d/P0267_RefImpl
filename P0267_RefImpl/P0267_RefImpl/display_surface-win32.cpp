@@ -66,6 +66,11 @@ windows::windows_handler_impl::context windows::windows_handler_impl::make_conte
 	return context(_Hwnd);
 }
 
+void experimental::io2d::windows::windows_handler_impl::display_dimensions(display_point dp)
+{
+	_Display_dimensions = dp;
+}
+
 void windows::windows_handler_impl::refresh_rate(experimental::io2d::refresh_rate rr) noexcept {
 	if (rr == experimental::io2d::refresh_rate::fixed && _Refresh_rate != rr) {
 		_Elapsed_draw_time = 0.0F;
@@ -88,6 +93,11 @@ bool windows::windows_handler_impl::desired_frame_rate(float fps) noexcept {
 	_Desired_frame_rate = fps;
 
 	return false;
+}
+
+experimental::io2d::display_point windows::windows_handler_impl::display_dimensions() const noexcept
+{
+	return _Display_dimensions;
 }
 
 experimental::io2d::refresh_rate windows::windows_handler_impl::refresh_rate() const noexcept {

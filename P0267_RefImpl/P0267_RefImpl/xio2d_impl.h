@@ -2120,9 +2120,21 @@ namespace std::experimental::io2d {
 		}
 
 		template <class T>
+		inline void display_surface<T>::invoke_draw_callback(display_point dp)
+		{
+			_Display_surface_impl.invoke_draw_callback(dp, *this);
+		}
+
+		template <class T>
 		inline void display_surface<T>::size_change_callback(const function<void(display_surface<T>& sfc)>& fn)
 		{
 			_Display_surface_impl.size_change_callback(fn);
+		}
+
+		template <class T>
+		inline void display_surface<T>::invoke_size_change_callback()
+		{
+			_Display_surface_impl.invoke_size_change_callback(*this);
 		}
 
 		template <class T>

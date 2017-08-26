@@ -199,7 +199,9 @@ namespace std::experimental::io2d {
 				cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
 				~cairo_display_surface() {}
 				_IO2D_API void draw_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
+				_IO2D_API void invoke_draw_callback(display_point dp, display_surface<cairo_renderer>& ds);
 				_IO2D_API void size_change_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
+				_IO2D_API void invoke_size_change_callback(display_surface<cairo_renderer>& ds);
 				_IO2D_API void dimensions(display_point dp);
 				_IO2D_API void dimensions(display_point dp, error_code& ec) noexcept;
 				_IO2D_API void scaling(experimental::io2d::scaling scl) noexcept;

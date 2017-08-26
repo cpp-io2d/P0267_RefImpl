@@ -325,8 +325,29 @@ void cairo_display_surface::draw_callback(const ::std::function<void(display_sur
 	_Draw_fn = make_unique<::std::function<void(display_surface<cairo_renderer>& sfc)>>(fn);
 }
 
+void cairo_display_surface::invoke_draw_callback(display_point dp, display_surface<cairo_renderer>& ds) {
+	// Run user draw function:
+	if (_Draw_fn != nullptr) {
+		if (auto_clear()) {
+			_Cairo_surface->clear();
+		}
+		(*_Draw_fn)(ds);
+	}
+	else {
+		throw system_error(make_error_code(errc::operation_would_block));
+	}
+	_Render_to_native_surface(dp, ds);
+}
+
 void cairo_display_surface::size_change_callback(const ::std::function<void(display_surface<cairo_renderer>& sfc)>& fn) {
 	_Size_change_fn = make_unique<::std::function<void(display_surface<cairo_renderer>& sfc)>>(fn);
+}
+
+void cairo_display_surface::invoke_size_change_callback(display_surface<cairo_renderer>& ds) {
+	// Run user draw function:
+	if (_Size_change_fn != nullptr) {
+		(*_Size_change_fn)(ds);
+	}
 }
 
 void cairo_display_surface::dimensions(display_point dp) {

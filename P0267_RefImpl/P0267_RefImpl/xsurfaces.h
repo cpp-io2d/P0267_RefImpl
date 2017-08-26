@@ -299,11 +299,14 @@ namespace std::experimental::io2d {
 			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox);
 			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
 			void draw_callback(const function<void(display_surface& sfc)>& fn);
+			void invoke_draw_callback(display_point dp);
 			void size_change_callback(const function<void(display_surface& sfc)>& fn);
+			void invoke_size_change_callback();
 			void dimensions(display_point dp);
 			void dimensions(display_point dp, error_code& ec) noexcept;
 			void scaling(experimental::io2d::scaling scl) noexcept;
 			void user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn);
+			void invoke_user_scaling_callback();
 			void letterbox_brush(const optional<brush<T>>& b, const optional<brush_props> = nullopt) noexcept;
 			void auto_clear(bool val) noexcept;
 			void redraw_required() noexcept;
