@@ -10,12 +10,6 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 
-		namespace windows
-		{
-			template <class T>
-			class windows_handler;
-		}
-
 		namespace cairo
 		{
 			struct _Surface_native_handles;
@@ -159,7 +153,6 @@ namespace std::experimental::io2d {
 
 			class cairo_display_surface
 			{
-				friend windows::windows_handler<cairo_renderer>;
 				cairo_surface* _Cairo_surface;
 				::std::experimental::io2d::scaling _Scaling;
 				display_point _Dimensions;
@@ -175,11 +168,6 @@ namespace std::experimental::io2d {
 				optional<cairo_brush> _Letterbox_brush;
 				cairo_brush _Default_brush;
 
-				template <class T>
-				void _Make_native_surface_and_context(T&&);
-				template <class T>
-				void _Make_native_surface_and_context(T&&, ::std::error_code& ec) noexcept;
-				void _Make_impl_surface_and_context();
 				void _Render_to_native_surface(display_point dd, display_surface<cairo_renderer>&);
 				void _Render_to_native_surface(display_point dd, display_surface<cairo_renderer>&, ::std::error_code& ec) noexcept;
 				void _Render_for_scaling_uniform_or_letterbox(display_point dd);
@@ -198,6 +186,9 @@ namespace std::experimental::io2d {
 				_IO2D_API cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox);
 				cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
 				~cairo_display_surface() {}
+				template <class T>
+				void make_native_surface(T&& context);
+				_IO2D_API void make_impl_surface();
 				_IO2D_API void draw_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
 				_IO2D_API void invoke_draw_callback(display_point dp, display_surface<cairo_renderer>& ds);
 				_IO2D_API void size_change_callback(const function<void(display_surface<cairo_renderer>& sfc)>& fn);
@@ -209,6 +200,7 @@ namespace std::experimental::io2d {
 				_IO2D_API void letterbox_brush(const optional<cairo_brush>& b, const optional<brush_props> = nullopt) noexcept;
 				_IO2D_API void auto_clear(bool val) noexcept;
 				_IO2D_API void redraw_required() noexcept;
+				_IO2D_API bool reset_redraw_request() noexcept;
 				_IO2D_API experimental::io2d::format format() const noexcept;
 				_IO2D_API display_point dimensions() const noexcept;
 				_IO2D_API experimental::io2d::scaling scaling() const noexcept;

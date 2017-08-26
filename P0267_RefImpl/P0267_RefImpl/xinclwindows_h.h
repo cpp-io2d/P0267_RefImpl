@@ -91,7 +91,6 @@ namespace std::experimental::io2d {
 
 				windows_handler(display_surface<T>& ds, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
 				void resize_window(display_point dp) const;
-				windows_handler_impl::context make_context() const;
 				int begin_show();
 				void end_show();
 				void display_dimensions(display_point dp);

@@ -2114,6 +2114,19 @@ namespace std::experimental::io2d {
 		{}
 
 		template <class T>
+		template <class U>
+		inline void display_surface<T>::make_native_surface(U&& context)
+		{
+			_Display_surface_impl.make_native_surface(context);
+		}
+
+		template <class T>
+		inline void display_surface<T>::make_impl_surface()
+		{
+			_Display_surface_impl.make_impl_surface();
+		}
+
+		template <class T>
 		inline void display_surface<T>::draw_callback(const function<void(display_surface<T>& sfc)>& fn)
 		{
 			_Display_surface_impl.draw_callback(fn);
@@ -2177,6 +2190,12 @@ namespace std::experimental::io2d {
 		inline void display_surface<T>::redraw_required() noexcept
 		{
 			_Display_surface_impl.redraw_required();
+		}
+
+		template <class T>
+		inline bool display_surface<T>::reset_redraw_request() noexcept
+		{
+			return _Display_surface_impl.reset_redraw_request();
 		}
 
 		template <class T>

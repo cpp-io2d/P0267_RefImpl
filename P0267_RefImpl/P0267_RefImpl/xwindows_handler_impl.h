@@ -146,12 +146,6 @@ namespace std::experimental::io2d {
 		}
 
 		template <class T>
-		windows::windows_handler_impl::context windows::windows_handler<T>::make_context() const
-		{
-			return _Impl.make_context();
-		}
-
-		template <class T>
 		inline int windows::windows_handler<T>::begin_show() {
 			RECT rc;
 			rc.top = rc.left = 0;
@@ -213,8 +207,8 @@ namespace std::experimental::io2d {
 			}
 
 			// We are using CS_OWNDC to keep a steady HDC for the Win32 window.
-			_Display_surface.native_handle()._Make_native_surface_and_context(windows_handler_impl::context(_Impl._Hwnd));
-			_Display_surface.native_handle()._Make_impl_surface_and_context();
+			_Display_surface.make_native_surface(_Impl.make_context());
+			_Display_surface.make_impl_surface();
 
 			// Initially display the window
 			ShowWindow(_Impl._Hwnd, SW_SHOWNORMAL);
@@ -222,9 +216,9 @@ namespace std::experimental::io2d {
 
 			MSG msg{};
 			msg.message = WM_NULL;
-			if (_Display_surface.native_handle()._Draw_fn == nullptr) {
-				throw system_error(make_error_code(errc::operation_would_block));
-			}
+//			if (_Display_surface.native_handle()._Draw_fn == nullptr) {
+//				throw system_error(make_error_code(errc::operation_would_block));
+//			}
 			_Impl._Elapsed_draw_time = 0.0F;
 #ifdef _IO2D_WIN32FRAMERATE
 			auto previousTime = steady_clock::now();
@@ -246,8 +240,8 @@ namespace std::experimental::io2d {
 					if (clientRect.right - clientRect.left != display_dimensions().x || clientRect.bottom - clientRect.top != display_dimensions().y) {
 						// If there is a size mismatch we skip painting and resize the window instead.
 						resize_window(display_dimensions());
-						_Display_surface.native_handle()._Make_native_surface_and_context(windows_handler_impl::context(_Impl._Hwnd));
-						if (display_dimensions() != _Display_surface.native_handle().dimensions()) {
+						_Display_surface.make_native_surface(_Impl.make_context());
+						if (display_dimensions() != _Display_surface.dimensions()) {
 							_Display_surface.invoke_size_change_callback();
 						}
 						continue;
@@ -255,8 +249,7 @@ namespace std::experimental::io2d {
 					else {
 						bool redraw = true;
 						if (_Impl._Refresh_rate == experimental::io2d::refresh_rate::as_needed) {
-							redraw = _Display_surface.native_handle()._Redraw_requested;
-							_Display_surface.native_handle()._Redraw_requested = false;
+							redraw = _Display_surface.reset_redraw_request();
 						}
 
 						const auto desiredElapsed = 1'000'000'000.0F / _Impl._Desired_frame_rate;
@@ -370,7 +363,7 @@ namespace std::experimental::io2d {
 			resize_window(dp);
 
 			// Ensure that the native surface and context resize correctly.
-			_Display_surface.native_handle()._Make_native_surface_and_context(make_context());
+			_Display_surface.make_native_surface(_Impl.make_context());
 		}
 
 		template <class T>

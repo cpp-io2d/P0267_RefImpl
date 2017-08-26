@@ -679,10 +679,9 @@ namespace std::experimental::io2d {
 
 			// cairo_display_surface
 
-
 #if defined (_WIN32) || (_WIN64)
 			template <class T>
-			void cairo_display_surface::_Make_native_surface_and_context(T&& dc) {
+			void cairo_display_surface::make_native_surface(T&& dc) {
 				try {
 					_Native_surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_win32_surface_create(dc), &cairo_surface_destroy);
 					_Native_context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Native_surface.get()), &cairo_destroy);

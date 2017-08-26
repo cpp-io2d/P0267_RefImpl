@@ -293,7 +293,7 @@ void cairo_display_surface::_Render_to_native_surface(display_point dd, display_
 	cairo_surface_flush(_Native_surface.get());
 }
 
-void cairo_display_surface::_Make_impl_surface_and_context() {
+void cairo_display_surface::make_impl_surface() {
 	// We render to the fixed size surface.
 	_Cairo_surface->_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Cairo_surface->_Format), _Dimensions.x, _Dimensions.y), &cairo_surface_destroy);
 	_Cairo_surface->_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Cairo_surface->_Surface.get()), &cairo_destroy);
@@ -385,6 +385,12 @@ void cairo_display_surface::auto_clear(bool val) noexcept {
 
 void cairo_display_surface::redraw_required() noexcept {
 	_Redraw_requested = true;
+}
+
+bool cairo_display_surface::reset_redraw_request() noexcept {
+	bool val = _Redraw_requested;
+	_Redraw_requested = false;
+	return val;
 }
 
 format cairo_display_surface::format() const noexcept {
