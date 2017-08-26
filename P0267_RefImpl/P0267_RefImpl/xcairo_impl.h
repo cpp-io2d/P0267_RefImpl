@@ -698,18 +698,6 @@ namespace std::experimental::io2d {
 #endif
 
 			template <class T>
-			int cairo_display_surface::begin_show(const T& handler)
-			{
-				return handler.begin_show(*this);
-			}
-
-			template <class T>
-			void cairo_display_surface::end_show(const T& handler)
-			{
-				handler.end_show();
-			}
-	
-			template <class T>
 			void cairo_display_surface::display_dimensions(const T& handler, display_point dp) {
 				_Display_dimensions = dp;
 				handler.resize_window(dp);

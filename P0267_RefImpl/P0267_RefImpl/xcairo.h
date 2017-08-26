@@ -214,10 +214,6 @@ namespace std::experimental::io2d {
 				_IO2D_API void letterbox_brush(const optional<cairo_brush>& b, const optional<brush_props> = nullopt) noexcept;
 				_IO2D_API void auto_clear(bool val) noexcept;
 				_IO2D_API void redraw_required() noexcept;
-				template <class T>
-				int begin_show(const T&);
-				template <class T>
-				void end_show(const T&);
 				_IO2D_API experimental::io2d::format format() const noexcept;
 				_IO2D_API display_point dimensions() const noexcept;
 				_IO2D_API display_point display_dimensions() const noexcept;

@@ -308,8 +308,6 @@ namespace std::experimental::io2d {
 			void letterbox_brush(const optional<brush<T>>& b, const optional<brush_props> = nullopt) noexcept;
 			void auto_clear(bool val) noexcept;
 			void redraw_required() noexcept;
-			int begin_show();
-			void end_show();
 			experimental::io2d::format format() const noexcept;
 			display_point dimensions() const noexcept;
 			display_point display_dimensions() const noexcept;

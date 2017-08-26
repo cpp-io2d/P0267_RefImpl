@@ -2176,18 +2176,6 @@ namespace std::experimental::io2d {
 		}
 
 		template <class T>
-		inline int display_surface<T>::begin_show()
-		{
-			return _Display_surface_impl.begin_show();
-		}
-
-		template <class T>
-		inline void display_surface<T>::end_show()
-		{
-			_Display_surface_impl.end_show();
-		}
-
-		template <class T>
 		inline experimental::io2d::format display_surface<T>::format() const noexcept
 		{
 			return _Display_surface_impl.format();
