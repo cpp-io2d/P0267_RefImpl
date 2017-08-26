@@ -54,11 +54,11 @@ namespace std::experimental::io2d {
 				~windows_handler_impl();
 				void resize_window(display_point dp) const;
 				context make_context() const;
-				float elapsed_draw_time() const noexcept;
 				void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
-				experimental::io2d::refresh_rate refresh_rate() const noexcept;
 				bool desired_frame_rate(float fps) noexcept;
+				experimental::io2d::refresh_rate refresh_rate() const noexcept;
 				float desired_frame_rate() const noexcept;
+				float elapsed_draw_time() const noexcept;
 
 				static const int _Display_surface_ptr_window_data_byte_offset = 0;
 
@@ -89,6 +89,11 @@ namespace std::experimental::io2d {
 				windows_handler_impl::context make_context() const;
 				int begin_show();
 				void end_show();
+				void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
+				bool desired_frame_rate(float fps) noexcept;
+				experimental::io2d::refresh_rate refresh_rate() const noexcept;
+				float desired_frame_rate() const noexcept;
+				float elapsed_draw_time() const noexcept;
 			};
 #endif
 

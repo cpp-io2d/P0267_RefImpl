@@ -196,6 +196,11 @@ namespace std::experimental::io2d {
 			handler(display_surface<U>& ds, refresh_rate rr, float desiredFramerate);
 			int begin_show();
 			void end_show();
+			void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
+			bool desired_frame_rate(float fps) noexcept;
+			experimental::io2d::refresh_rate refresh_rate() const noexcept;
+			float desired_frame_rate() const noexcept;
+			float elapsed_draw_time() const noexcept;
 		};
 
 		//tuple<dashes, offset>
@@ -302,8 +307,6 @@ namespace std::experimental::io2d {
 			void user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn);
 			void letterbox_brush(const optional<brush<T>>& b, const optional<brush_props> = nullopt) noexcept;
 			void auto_clear(bool val) noexcept;
-			void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
-			bool desired_frame_rate(float fps) noexcept;
 			void redraw_required() noexcept;
 			int begin_show();
 			void end_show();
@@ -316,9 +319,6 @@ namespace std::experimental::io2d {
 			optional<brush<T>> letterbox_brush() const noexcept;
 			optional<brush_props> letterbox_brush_props() const noexcept;
 			bool auto_clear() const noexcept;
-			experimental::io2d::refresh_rate refresh_rate() const noexcept;
-			float desired_frame_rate() const noexcept;
-			float elapsed_draw_time() const noexcept;
 		};
 
 		template <class T>

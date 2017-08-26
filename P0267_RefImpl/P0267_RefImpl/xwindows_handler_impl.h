@@ -384,5 +384,34 @@ namespace std::experimental::io2d {
 			PostQuitMessage(0);
 		}
 
+		template <class T>
+		inline void windows::windows_handler<T>::refresh_rate(experimental::io2d::refresh_rate rr) noexcept
+		{
+			_Impl.refresh_rate(rr);
+		}
+
+		template <class T>
+		inline bool windows::windows_handler<T>::desired_frame_rate(float fps) noexcept
+		{
+			return _Impl.desired_frame_rate(fps);
+		}
+
+		template <class T>
+		inline experimental::io2d::refresh_rate windows::windows_handler<T>::refresh_rate() const noexcept
+		{
+			return _Impl.refresh_rate();
+		}
+
+		template <class T>
+		inline float windows::windows_handler<T>::desired_frame_rate() const noexcept
+		{
+			return _Impl.desired_frame_rate();
+		}
+
+		template <class T>
+		inline float windows::windows_handler<T>::elapsed_draw_time() const noexcept
+		{
+			return _Impl.elapsed_draw_time();
+		}
 	}
 }

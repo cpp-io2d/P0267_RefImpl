@@ -32,42 +32,6 @@ windows::windows_handler_impl::~windows_handler_impl() {
 	}
 }
 
-float windows::windows_handler_impl::elapsed_draw_time() const noexcept {
-	return _Elapsed_draw_time / 1'000'000.0F;
-}
-
-void windows::windows_handler_impl::refresh_rate(experimental::io2d::refresh_rate rr) noexcept {
-	if (rr == experimental::io2d::refresh_rate::fixed && _Refresh_rate != rr) {
-		_Elapsed_draw_time = 0.0F;
-	}
-	_Refresh_rate = rr;
-}
-
-experimental::io2d::refresh_rate windows::windows_handler_impl::refresh_rate() const noexcept {
-	return _Refresh_rate;
-}
-
-bool windows::windows_handler_impl::desired_frame_rate(float fps) noexcept {
-	if (!isfinite(fps)) {
-		return true;
-	}
-	if (fps < _Minimum_frame_rate) {
-		_Desired_frame_rate = _Minimum_frame_rate;
-		return true;
-	}
-	if (fps > _Maximum_frame_rate) {
-		_Desired_frame_rate = _Maximum_frame_rate;
-		return true;
-	}
-	_Desired_frame_rate = fps;
-
-	return false;
-}
-
-float windows::windows_handler_impl::desired_frame_rate() const noexcept {
-	return _Desired_frame_rate;
-}
-
 void windows::windows_handler_impl::resize_window(display_point dp) const {
 	RECT clientRect;
 	RECT windowRect;
@@ -95,4 +59,40 @@ void windows::windows_handler_impl::resize_window(display_point dp) const {
 windows::windows_handler_impl::context windows::windows_handler_impl::make_context() const
 {
 	return context(_Hwnd);
+}
+
+void windows::windows_handler_impl::refresh_rate(experimental::io2d::refresh_rate rr) noexcept {
+	if (rr == experimental::io2d::refresh_rate::fixed && _Refresh_rate != rr) {
+		_Elapsed_draw_time = 0.0F;
+	}
+	_Refresh_rate = rr;
+}
+
+bool windows::windows_handler_impl::desired_frame_rate(float fps) noexcept {
+	if (!isfinite(fps)) {
+		return true;
+	}
+	if (fps < _Minimum_frame_rate) {
+		_Desired_frame_rate = _Minimum_frame_rate;
+		return true;
+	}
+	if (fps > _Maximum_frame_rate) {
+		_Desired_frame_rate = _Maximum_frame_rate;
+		return true;
+	}
+	_Desired_frame_rate = fps;
+
+	return false;
+}
+
+experimental::io2d::refresh_rate windows::windows_handler_impl::refresh_rate() const noexcept {
+	return _Refresh_rate;
+}
+
+float windows::windows_handler_impl::desired_frame_rate() const noexcept {
+	return _Desired_frame_rate;
+}
+
+float windows::windows_handler_impl::elapsed_draw_time() const noexcept {
+	return _Elapsed_draw_time / 1'000'000.0F;
 }

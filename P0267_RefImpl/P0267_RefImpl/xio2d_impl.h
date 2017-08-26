@@ -1851,7 +1851,7 @@ namespace std::experimental::io2d {
 
 		template <class T>
 		template <class U>
-		handler<T>::handler(display_surface<U>& ds, refresh_rate rr, float desiredFramerate)
+		handler<T>::handler(display_surface<U>& ds, experimental::io2d::refresh_rate rr, float desiredFramerate)
 			: _Handler_impl(ds, rr, desiredFramerate)
 		{}
 
@@ -1865,6 +1865,36 @@ namespace std::experimental::io2d {
 		void handler<T>::end_show()
 		{
 			_Handler_impl.end_show();
+		}
+
+		template <class T>
+		inline void handler<T>::refresh_rate(experimental::io2d::refresh_rate rr) noexcept
+		{
+			_Handler_impl.refresh_rate(rr);
+		}
+
+		template <class T>
+		inline bool handler<T>::desired_frame_rate(float fps) noexcept
+		{
+			return _Handler_impl.desired_frame_rate(fps);
+		}
+
+		template <class T>
+		inline experimental::io2d::refresh_rate handler<T>::refresh_rate() const noexcept
+		{
+			return _Handler_impl.refresh_rate();
+		}
+
+		template <class T>
+		inline float handler<T>::desired_frame_rate() const noexcept
+		{
+			return _Handler_impl.desired_frame_rate();
+		}
+
+		template <class T>
+		inline float handler<T>::elapsed_draw_time() const noexcept
+		{
+			return _Handler_impl.elapsed_draw_time();
 		}
 
 		// surface
@@ -2140,18 +2170,6 @@ namespace std::experimental::io2d {
 		}
 
 		template <class T>
-		inline void display_surface<T>::refresh_rate(experimental::io2d::refresh_rate rr) noexcept
-		{
-			_Display_surface_impl.refresh_rate(rr);
-		}
-
-		template <class T>
-		inline bool display_surface<T>::desired_frame_rate(float fps) noexcept
-		{
-			return _Display_surface_impl.desired_frame_rate(fps);
-		}
-
-		template <class T>
 		inline void display_surface<T>::redraw_required() noexcept
 		{
 			_Display_surface_impl.redraw_required();
@@ -2221,24 +2239,6 @@ namespace std::experimental::io2d {
 		inline bool display_surface<T>::auto_clear() const noexcept
 		{
 			return _Display_surface_impl.auto_clear();
-		}
-
-		template <class T>
-		inline experimental::io2d::refresh_rate display_surface<T>::refresh_rate() const noexcept
-		{
-			return _Display_surface_impl.refresh_rate();
-		}
-
-		template <class T>
-		inline float display_surface<T>::desired_frame_rate() const noexcept
-		{
-			return _Display_surface_impl.desired_frame_rate();
-		}
-
-		template <class T>
-		inline float display_surface<T>::elapsed_draw_time() const noexcept
-		{
-			return _Display_surface_impl.elapsed_draw_time();
 		}
 
 		// mapped_surface
