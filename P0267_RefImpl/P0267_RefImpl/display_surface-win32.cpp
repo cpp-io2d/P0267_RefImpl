@@ -68,7 +68,7 @@ float windows::windows_handler_impl::desired_frame_rate() const noexcept {
 	return _Desired_frame_rate;
 }
 
-void windows::windows_handler_impl::resize_window(LONG width, LONG height) const {
+void windows::windows_handler_impl::resize_window(display_point dp) const {
 	RECT clientRect;
 	RECT windowRect;
 	GetWindowRect(_Hwnd, &windowRect);
@@ -78,9 +78,9 @@ void windows::windows_handler_impl::resize_window(LONG width, LONG height) const
 	auto wrWidth = windowRect.right - windowRect.left;
 	auto wrHeight = windowRect.bottom - windowRect.top;
 
-	if (crWidth != width || crHeight != height) {
-		auto new_width = std::max((wrWidth - crWidth) + 1L, (width - crWidth) + wrWidth);
-		auto new_height = std::max((wrHeight - crHeight) + 1L, (height - crHeight) + wrHeight);
+	if (crWidth != dp.x || crHeight != dp.y) {
+		auto new_width = std::max((wrWidth - crWidth) + 1L, (dp.x - crWidth) + wrWidth);
+		auto new_height = std::max((wrHeight - crHeight) + 1L, (dp.y - crHeight) + wrHeight);
 		// Resize the window.
 		if (!SetWindowPos(_Hwnd, 0, 0, 0, new_width, new_height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS)) {
 			_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to SetWindowPos.");

@@ -720,10 +720,9 @@ namespace std::experimental::io2d {
 			}
 
 			template <class T>
-			void cairo_display_surface::display_dimensions(const T& handler, int dw, int dh) {
-				_Display_width = dw;
-				_Display_height = dh;
-				handler.resize_window(_Display_width, _Display_height);
+			void cairo_display_surface::display_dimensions(const T& handler, display_point dp) {
+				_Display_dimensions = dp;
+				handler.resize_window(dp);
 
 				// Ensure that the native surface and context resize correctly.
 				_Make_native_surface_and_context(handler.make_context());

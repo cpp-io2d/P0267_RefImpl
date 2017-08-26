@@ -268,6 +268,18 @@ namespace std::experimental::io2d {
 			int height() const noexcept;
 		};
 
+		struct display_point
+		{
+			constexpr display_point() noexcept;
+			constexpr display_point(int x, int y) noexcept;
+
+			int x;
+			int y;
+		};
+
+		constexpr bool operator==(const display_point& lhs, const display_point& rhs) noexcept;
+		constexpr bool operator!=(const display_point& lhs, const display_point& rhs) noexcept;
+
 		template <class T>
 		class display_surface : public surface<T> {
 			typename T::renderer_display_surface _Display_surface_impl;
@@ -280,10 +292,6 @@ namespace std::experimental::io2d {
 			display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
 			void draw_callback(const function<void(display_surface& sfc)>& fn);
 			void size_change_callback(const function<void(display_surface& sfc)>& fn);
-			void width(int w);
-			void width(int w, error_code& ec) noexcept;
-			void height(int h);
-			void height(int h, error_code& ec) noexcept;
 			template <class U>
 			void display_width(const U& handler, int w);
 			template <class U>
@@ -292,12 +300,12 @@ namespace std::experimental::io2d {
 			void display_height(const U& handler, int h);
 			template <class U>
 			void display_height(const U& handler, int h, error_code& ec) noexcept;
-			void dimensions(int w, int h);
-			void dimensions(int w, int h, error_code& ec) noexcept;
+			void dimensions(display_point dp);
+			void dimensions(display_point dp, error_code& ec) noexcept;
 			template <class U>
-			void display_dimensions(const U& handler, int dw, int dh);
+			void display_dimensions(const U& handler, display_point dp);
 			template <class U>
-			void display_dimensions(const U& handler, int dw, int dh, error_code& ec) noexcept;
+			void display_dimensions(const U& handler, display_point dp, error_code& ec) noexcept;
 			void scaling(experimental::io2d::scaling scl) noexcept;
 			void user_scaling_callback(const function<experimental::io2d::bounding_box(const display_surface&, bool&)>& fn);
 			void letterbox_brush(const optional<brush<T>>& b, const optional<brush_props> = nullopt) noexcept;
@@ -308,12 +316,10 @@ namespace std::experimental::io2d {
 			int begin_show();
 			void end_show();
 			experimental::io2d::format format() const noexcept;
-			int width() const noexcept;
-			int height() const noexcept;
 			int display_width() const noexcept;
 			int display_height() const noexcept;
-			point_2d dimensions() const noexcept;
-			point_2d display_dimensions() const noexcept;
+			display_point dimensions() const noexcept;
+			display_point display_dimensions() const noexcept;
 			experimental::io2d::scaling scaling() const noexcept;
 			function<experimental::io2d::bounding_box(const display_surface&, bool&)> user_scaling_callback() const;
 			function<experimental::io2d::bounding_box(const display_surface&, bool&)> user_scaling_callback(error_code& ec) const noexcept;

@@ -17,27 +17,27 @@ void cairo_display_surface::_Render_for_scaling_uniform_or_letterbox() {
 	
 // 	static auto previousTime = steady_clock::now();
 
-	if (_Width == _Display_width && _Height == _Display_height) {
+	if (_Dimensions == _Display_dimensions) {
 		cairo_set_source_surface(_Native_context.get(), _Cairo_surface->_Surface.get(), 0.0F, 0.0F);
 		cairo_paint(_Native_context.get());
 	}
 	else {
-		const auto whRatio = static_cast<float>(_Width) / static_cast<float>(_Height);
-		const auto displayWHRatio = static_cast<float>(_Display_width) / static_cast<float>(_Display_height);
+		const auto whRatio = static_cast<float>(_Dimensions.x) / static_cast<float>(_Dimensions.y);
+		const auto displayWHRatio = static_cast<float>(_Display_dimensions.x) / static_cast<float>(_Display_dimensions.y);
 		cairo_matrix_t ctm;
 		auto nativeContext = _Native_context.get();
 		//cairo_save(nativeContext);
 		float rectX, rectY, rectWidth, rectHeight;
 		if (whRatio < displayWHRatio) {
 			cairo_new_path(nativeContext);
-			const auto displayHeightAsDouble = static_cast<float>(_Display_height);
+			const auto displayHeightAsDouble = static_cast<float>(_Display_dimensions.y);
 			rectWidth = trunc(displayHeightAsDouble * whRatio);
 			rectHeight = displayHeightAsDouble;
-			rectX = trunc(abs(rectWidth - static_cast<float>(_Display_width)) / 2.0F);
+			rectX = trunc(abs(rectWidth - static_cast<float>(_Display_dimensions.x)) / 2.0F);
 			rectY = 0.0F;
 			cairo_rectangle(nativeContext, rectX, rectY, rectWidth, rectHeight);
 
-			const auto heightRatio = static_cast<float>(_Height) / static_cast<float>(_Display_height);
+			const auto heightRatio = static_cast<float>(_Dimensions.y) / static_cast<float>(_Display_dimensions.y);
 			cairo_matrix_init_scale(&ctm, heightRatio, heightRatio);
 			cairo_matrix_translate(&ctm, -rectX, 0.0F);
 			unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Cairo_surface->_Surface.get()), &cairo_pattern_destroy);
@@ -48,7 +48,7 @@ void cairo_display_surface::_Render_for_scaling_uniform_or_letterbox() {
 			cairo_fill(_Native_context.get());
 			//cairo_restore(nativeContext);
 			if (_Scaling == std::experimental::io2d::scaling::letterbox) {
-				const auto lboxWidth = trunc((static_cast<float>(_Display_width) - rectWidth) / 2.0F);
+				const auto lboxWidth = trunc((static_cast<float>(_Display_dimensions.x) - rectWidth) / 2.0F);
 				cairo_rectangle(nativeContext, 0.0F, 0.0F, lboxWidth, rectHeight);
 				cairo_rectangle(nativeContext, rectWidth + lboxWidth, 0.0F, lboxWidth, rectHeight);
 				//cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.wrap_mode()));
@@ -89,14 +89,14 @@ void cairo_display_surface::_Render_for_scaling_uniform_or_letterbox() {
 		}
 		else {
 			cairo_new_path(nativeContext);
-			const auto displayWidthAsDouble = static_cast<float>(_Display_width);
+			const auto displayWidthAsDouble = static_cast<float>(_Display_dimensions.x);
 			rectWidth = displayWidthAsDouble;
 			rectHeight = trunc(displayWidthAsDouble / whRatio);
 			rectX = 0.0F;
-			rectY = trunc(abs(rectHeight - static_cast<float>(_Display_height)) / 2.0F);
+			rectY = trunc(abs(rectHeight - static_cast<float>(_Display_dimensions.y)) / 2.0F);
 			cairo_rectangle(nativeContext, rectX, rectY, rectWidth, rectHeight);
 
-			const auto widthRatio = static_cast<float>(_Width) / static_cast<float>(_Display_width);
+			const auto widthRatio = static_cast<float>(_Dimensions.x) / static_cast<float>(_Display_dimensions.x);
 			cairo_matrix_init_scale(&ctm, widthRatio, widthRatio);
 			cairo_matrix_translate(&ctm, 0.0F, -rectY);
 			unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Cairo_surface->_Surface.get()), &cairo_pattern_destroy);
@@ -107,7 +107,7 @@ void cairo_display_surface::_Render_for_scaling_uniform_or_letterbox() {
 			cairo_fill(_Native_context.get());
 			//cairo_restore(nativeContext);
 			if (_Scaling == std::experimental::io2d::scaling::letterbox) {
-				const auto lboxHeight = trunc((static_cast<float>(_Display_height) - rectHeight) / 2.0F);
+				const auto lboxHeight = trunc((static_cast<float>(_Display_dimensions.y) - rectHeight) / 2.0F);
 				cairo_rectangle(nativeContext, 0.0F, 0.0F, rectWidth, lboxHeight);
 				cairo_rectangle(nativeContext, 0.0F, rectHeight + lboxHeight, rectWidth, lboxHeight);
 				//cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.wrap_mode()));
@@ -194,7 +194,7 @@ void cairo_display_surface::_Render_to_native_surface(display_surface<cairo_rend
 			}
 		}
 		cairo_matrix_t ctm;
-		cairo_matrix_init_scale(&ctm, 1.0F / (static_cast<float>(_Display_width) / userRect.width()), 1.0F / (static_cast<float>(_Display_height) / userRect.height()));
+		cairo_matrix_init_scale(&ctm, 1.0F / (static_cast<float>(_Display_dimensions.x) / userRect.width()), 1.0F / (static_cast<float>(_Display_dimensions.y) / userRect.height()));
 		cairo_matrix_translate(&ctm, -userRect.x(), -userRect.y());
 		unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Cairo_surface->_Surface.get()), &cairo_pattern_destroy);
 		cairo_pattern_set_matrix(pat.get(), &ctm);
@@ -221,19 +221,19 @@ void cairo_display_surface::_Render_to_native_surface(display_surface<cairo_rend
 		case std::experimental::io2d::scaling::fill_uniform:
 		{
 			// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
-			if (_Width == _Display_width && _Height == _Display_height) {
+			if (_Dimensions.x == _Display_dimensions.x && _Dimensions.y == _Display_dimensions.y) {
 				cairo_set_source_surface(_Native_context.get(), _Cairo_surface->_Surface.get(), 0.0F, 0.0F);
 				cairo_paint(_Native_context.get());
 			}
 			else {
-				auto widthRatio = static_cast<float>(_Display_width) / static_cast<float>(_Width);
-				auto heightRatio = static_cast<float>(_Display_height) / static_cast<float>(_Height);
+				auto widthRatio = static_cast<float>(_Display_dimensions.x) / static_cast<float>(_Dimensions.x);
+				auto heightRatio = static_cast<float>(_Display_dimensions.y) / static_cast<float>(_Dimensions.y);
 				if (widthRatio < heightRatio) {
 					cairo_set_source_rgb(_Native_context.get(), 0.0F, 0.0F, 0.0F);
 					cairo_paint(_Native_context.get());
 					cairo_matrix_t ctm;
 					cairo_matrix_init_scale(&ctm, 1.0F / heightRatio, 1.0F / heightRatio);
-					cairo_matrix_translate(&ctm, trunc(abs(static_cast<float>(_Display_width - (_Width * heightRatio)) / 2.0F)), 0.0F);
+					cairo_matrix_translate(&ctm, trunc(abs(static_cast<float>(_Display_dimensions.x - (_Dimensions.x * heightRatio)) / 2.0F)), 0.0F);
 					unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Cairo_surface->_Surface.get()), &cairo_pattern_destroy);
 					cairo_pattern_set_matrix(pat.get(), &ctm);
 					cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
@@ -246,7 +246,7 @@ void cairo_display_surface::_Render_to_native_surface(display_surface<cairo_rend
 					cairo_paint(_Native_context.get());
 					cairo_matrix_t ctm;
 					cairo_matrix_init_scale(&ctm, 1.0F / widthRatio, 1.0F / widthRatio);
-					cairo_matrix_translate(&ctm, 0.0F, trunc(abs(static_cast<float>(_Display_height - (_Height * widthRatio)) / 2.0F)));
+					cairo_matrix_translate(&ctm, 0.0F, trunc(abs(static_cast<float>(_Display_dimensions.y - (_Dimensions.y * widthRatio)) / 2.0F)));
 					unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Cairo_surface->_Surface.get()), &cairo_pattern_destroy);
 					cairo_pattern_set_matrix(pat.get(), &ctm);
 					cairo_pattern_set_extend(pat.get(), CAIRO_EXTEND_NONE);
@@ -259,13 +259,13 @@ void cairo_display_surface::_Render_to_native_surface(display_surface<cairo_rend
 		case std::experimental::io2d::scaling::fill_exact:
 		{
 			// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
-			if (_Width == _Display_width && _Height == _Display_height) {
+			if (_Dimensions.x == _Display_dimensions.x && _Dimensions.y == _Display_dimensions.y) {
 				cairo_set_source_surface(_Native_context.get(), _Cairo_surface->_Surface.get(), 0.0F, 0.0F);
 				cairo_paint(_Native_context.get());
 			}
 			else {
-				auto widthRatio = static_cast<float>(_Display_width) / static_cast<float>(_Width);
-				auto heightRatio = static_cast<float>(_Display_height) / static_cast<float>(_Height);
+				auto widthRatio = static_cast<float>(_Display_dimensions.x) / static_cast<float>(_Dimensions.x);
+				auto heightRatio = static_cast<float>(_Display_dimensions.y) / static_cast<float>(_Dimensions.y);
 				cairo_matrix_t ctm;
 				cairo_matrix_init_scale(&ctm, 1.0F / widthRatio, 1.0F / heightRatio);
 				unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(_Cairo_surface->_Surface.get()), &cairo_pattern_destroy);
@@ -295,7 +295,7 @@ void cairo_display_surface::_Render_to_native_surface(display_surface<cairo_rend
 
 void cairo_display_surface::_Make_impl_surface_and_context() {
 	// We render to the fixed size surface.
-	_Cairo_surface->_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Cairo_surface->_Format), _Width, _Height), &cairo_surface_destroy);
+	_Cairo_surface->_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Cairo_surface->_Format), _Dimensions.x, _Dimensions.y), &cairo_surface_destroy);
 	_Cairo_surface->_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Cairo_surface->_Surface.get()), &cairo_destroy);
 	_Throw_if_failed_cairo_status_t(cairo_surface_status(_Cairo_surface->_Surface.get()));
 	_Throw_if_failed_cairo_status_t(cairo_status(_Cairo_surface->_Context.get()));
@@ -307,11 +307,9 @@ cairo_display_surface::cairo_display_surface(cairo_surface* cs, int preferredWid
 
 cairo_display_surface::cairo_display_surface(cairo_surface* cs, int preferredWidth, int preferredHeight, experimental::io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, experimental::io2d::scaling scl)
 	: _Cairo_surface(cs)
-	, _Display_width(preferredDisplayWidth)
-	, _Display_height(preferredDisplayHeight)
+	, _Display_dimensions(preferredDisplayWidth, preferredDisplayHeight)
 	, _Scaling(scl)
-	, _Width(preferredWidth)
-	, _Height(preferredHeight)
+	, _Dimensions(preferredWidth, preferredHeight)
 	, _Draw_fn()
 	, _Size_change_fn()
 	, _User_scaling_fn()
@@ -336,29 +334,17 @@ void cairo_display_surface::size_change_callback(const ::std::function<void(disp
 	_Size_change_fn = make_unique<::std::function<void(display_surface<cairo_renderer>& sfc)>>(fn);
 }
 
-void cairo_display_surface::width(int w) {
-	dimensions(w, _Width);
-}
-
-void cairo_display_surface::height(int h) {
-	dimensions(_Width, h);
-}
-
-void cairo_display_surface::dimensions(int w, int h) {
+void cairo_display_surface::dimensions(display_point dp) {
 	bool recreate = false;
 
-	if (_Width != w) {
-		_Width = w;
-		recreate = true;
-	}
-	if (_Height != h) {
-		_Height = h;
+	if (_Dimensions != dp) {
+		_Dimensions = dp;
 		recreate = true;
 	}
 
 	if (recreate) {
 		// Recreate the render target that is drawn to the displayed surface
-		_Cairo_surface->_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Cairo_surface->_Format), _Width, _Height), &cairo_surface_destroy);
+		_Cairo_surface->_Surface = unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(_Cairo_surface->_Format), _Dimensions.x, _Dimensions.y), &cairo_surface_destroy);
 		_Cairo_surface->_Context = unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(_Cairo_surface->_Surface.get()), &cairo_destroy);
 		//_Ensure_state();
 	}
@@ -390,27 +376,27 @@ format cairo_display_surface::format() const noexcept {
 }
 
 int cairo_display_surface::width() const noexcept {
-	return _Width;
+	return _Dimensions.x;
 }
 
 int cairo_display_surface::height() const noexcept {
-	return _Height;
+	return _Dimensions.y;
 }
 
 int cairo_display_surface::display_width() const noexcept {
-	return _Display_width;
+	return _Display_dimensions.x;
 }
 
 int cairo_display_surface::display_height() const noexcept {
-	return _Display_height;
+	return _Display_dimensions.y;
 }
 
-point_2d cairo_display_surface::dimensions() const noexcept {
-	return { static_cast<float>(_Width), static_cast<float>(_Height) };
+display_point cairo_display_surface::dimensions() const noexcept {
+	return _Dimensions;
 }
 
-point_2d cairo_display_surface::display_dimensions() const noexcept {
-	return { static_cast<float>(_Display_width), static_cast<float>(_Display_height) };
+display_point cairo_display_surface::display_dimensions() const noexcept {
+	return _Display_dimensions;
 }
 
 experimental::io2d::scaling cairo_display_surface::scaling() const noexcept {

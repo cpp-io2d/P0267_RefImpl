@@ -52,7 +52,7 @@ namespace std::experimental::io2d {
 
 				windows_handler_impl(experimental::io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
 				~windows_handler_impl();
-				void resize_window(LONG width, LONG height) const;
+				void resize_window(display_point dp) const;
 				context make_context() const;
 				float elapsed_draw_time() const noexcept;
 				void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
@@ -85,7 +85,7 @@ namespace std::experimental::io2d {
 				static LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 				windows_handler(display_surface<T>& ds, experimental::io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
-				void resize_window(LONG width, LONG height) const;
+				void resize_window(display_point dp) const;
 				windows_handler_impl::context make_context() const;
 				int begin_show();
 				void end_show();

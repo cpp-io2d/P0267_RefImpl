@@ -68,7 +68,7 @@ namespace std::experimental::io2d {
 #endif
 			case WM_CREATE:
 			{
-				_Impl.resize_window(_Display_surface.display_width(), _Display_surface.display_height());
+				_Impl.resize_window(_Display_surface.display_dimensions());
 				// Return 0 to allow the window to proceed in the creation process.
 				return lrZero;
 			} break;
@@ -102,11 +102,10 @@ namespace std::experimental::io2d {
 
 			case WM_SIZE:
 			{
-				int width = LOWORD(lparam);
-				int height = HIWORD(lparam);
+				auto dimensions = display_point(LOWORD(lparam), HIWORD(lparam));
 
-				if (_Display_surface.width() != width || _Display_surface.height() != height) {
-					_Display_surface.display_dimensions(*this, width, height);
+				if (_Display_surface.dimensions() != dimensions) {
+					_Display_surface.display_dimensions(*this, dimensions);
 
 					// Call user size change function.
 					if (_Display_surface.native_handle()._Size_change_fn != nullptr) {
@@ -125,7 +124,7 @@ namespace std::experimental::io2d {
 				if (clientRect.right - clientRect.left != _Display_surface.display_width() || clientRect.bottom - clientRect.top != _Display_surface.display_height()) {
 					// If there is a size mismatch we skip painting and resize the window instead.
 					EndPaint(hwnd, &ps);
-					_Impl.resize_window(_Display_surface.display_width(), _Display_surface.display_height());
+					_Impl.resize_window(_Display_surface.display_dimensions());
 					break;
 				}
 
@@ -150,9 +149,9 @@ namespace std::experimental::io2d {
 		}
 
 		template <class T>
-		void windows::windows_handler<T>::resize_window(LONG width, LONG height) const
+		void windows::windows_handler<T>::resize_window(display_point dp) const
 		{
-			_Impl.resize_window(width, height);
+			_Impl.resize_window(dp);
 		}
 
 		template <class T>
@@ -255,11 +254,9 @@ namespace std::experimental::io2d {
 					GetClientRect(_Impl._Hwnd, &clientRect);
 					if (clientRect.right - clientRect.left != _Display_surface.display_width() || clientRect.bottom - clientRect.top != _Display_surface.display_height()) {
 						// If there is a size mismatch we skip painting and resize the window instead.
-						auto dw = _Display_surface.display_width();
-						auto dh = _Display_surface.display_height();
-						_Impl.resize_window(dw, dh);
+						_Impl.resize_window(_Display_surface.display_dimensions());
 						_Display_surface.native_handle()._Make_native_surface_and_context(windows_handler_impl::context(_Impl._Hwnd));
-						if (dw != _Display_surface.native_handle().display_width() || dh != _Display_surface.display_height()) {
+						if (_Display_surface.display_dimensions() != _Display_surface.native_handle().display_dimensions()) {
 							if (_Display_surface.native_handle()._Size_change_fn != nullptr) {
 								(*_Display_surface.native_handle()._Size_change_fn)(_Display_surface);
 							}
