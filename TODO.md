@@ -26,7 +26,7 @@ Text cannot be overlooked. An earlier version did include text rendering, but th
 Sample programs
 -------------
 
-There are two sample programs currently: a version of Asteroids and a test program which writes images to files. More sample programs will be needed to demonstrate the API.
+There are two sample programs currently: an incomplete version of Asteroids and a test program which writes images to files. More sample programs will be needed to demonstrate the API.
 
 Additional renderers
 -------------
