@@ -1,5 +1,6 @@
-#include "physics.h"
+#include "Physics.h"
 #include "Constants.h"
+
 #include <algorithm>
 
 void rocks_in_space::physics::update()

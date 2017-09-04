@@ -294,6 +294,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Maths.h" />
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Ship.h" />
   </ItemGroup>
   <ItemGroup>

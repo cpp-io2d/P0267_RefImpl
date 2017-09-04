@@ -2,9 +2,6 @@
 #include "Input.h"
 #include "Constants.h"
 
-#include "xcairo.h"
-#include "xinclwindows_h.h"
-
 namespace
 {
 	static const rocks_in_space::path_buffer* asteroid_vbs[] = { &rocks_in_space::asteroid::a1, &rocks_in_space::asteroid::a2, &rocks_in_space::asteroid::a3, &rocks_in_space::asteroid::a4 };
@@ -137,16 +134,16 @@ void rocks_in_space::game::draw_missiles(my_display_surface& ds)
 	for (auto& m : m_ship_missiles) { m.draw(ds); }
 }
 
-std::once_flag std::experimental::io2d::windows::windows_handler<std::experimental::io2d::cairo::cairo_renderer>::_Window_class_registered_flag;
-const wchar_t* std::experimental::io2d::windows::windows_handler<std::experimental::io2d::cairo::cairo_renderer>::_Refimpl_window_class_name = L"_RefImplWndwCls";
+std::once_flag rocks_in_space::my_handler::_Window_class_registered_flag;
+const wchar_t* rocks_in_space::my_handler::_Refimpl_window_class_name = L"_RefImplWndwCls";
 
 int rocks_in_space::main()
 {
 	using namespace std::experimental::io2d;
 
 	rocks_in_space::game sd;
-	auto renderer = make_display_surface<std::experimental::io2d::v1::cairo::cairo_renderer>(640, 480, format::argb32, scaling::letterbox);
-	auto handler = make_handler<std::experimental::io2d::v1::windows::windows_handler<std::experimental::io2d::v1::cairo::cairo_renderer>>(renderer, 640, 480, refresh_rate::as_fast_as_possible, 30.0f);
+	auto renderer = make_display_surface<my_renderer>(640, 480, format::argb32, scaling::letterbox);
+	auto handler = make_handler<my_handler>(renderer, 640, 480, refresh_rate::as_fast_as_possible, 30.0f);
 	renderer.draw_callback([&](my_display_surface& ds) {sd.update(ds); });
 	return handler.begin_show();
 }

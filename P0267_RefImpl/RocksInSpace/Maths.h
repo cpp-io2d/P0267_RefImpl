@@ -1,11 +1,11 @@
 #pragma once
 
-#include "io2d.h"
+#include "Renderer.h"
 
 namespace rocks_in_space
 {
-	using point_2d = std::experimental::io2d::point_2d;
-	using bounding_box = std::experimental::io2d::bounding_box;
+	using point_2d = point_2d;
+	using bounding_box = bounding_box;
 
 	class polar_2d
 	{

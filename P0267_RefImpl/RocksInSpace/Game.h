@@ -1,16 +1,11 @@
 #pragma once
 
-#include "io2d.h"
-#include "xcairo.h"
-
+#include "Renderer.h"
 #include "Asteroid.h"
 #include "Ship.h"
 
 namespace rocks_in_space
 {
-	using my_display_surface = std::experimental::io2d::display_surface<std::experimental::io2d::v1::cairo::cairo_renderer>;
-	using my_brush = std::experimental::io2d::brush<std::experimental::io2d::v1::cairo::cairo_renderer>;
-
 	class game
 	{
 	public:
