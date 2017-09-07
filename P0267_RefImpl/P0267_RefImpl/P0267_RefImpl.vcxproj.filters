@@ -70,20 +70,20 @@
     <ClCompile Include="rgba_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="display_surface-common.cpp">
-      <Filter>cairo renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="image_surface.cpp">
-      <Filter>cairo renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="standalone_functions.cpp">
-      <Filter>cairo renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="surface.cpp">
-      <Filter>cairo renderer</Filter>
-    </ClCompile>
     <ClCompile Include="display_surface-win32.cpp">
       <Filter>windows handler</Filter>
+    </ClCompile>
+    <ClCompile Include="cairo_renderer_display_surface-common.cpp">
+      <Filter>cairo renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="cairo_renderer_image_surface.cpp">
+      <Filter>cairo renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="cairo_renderer_standalone_functions.cpp">
+      <Filter>cairo renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="cairo_renderer_surface.cpp">
+      <Filter>cairo renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

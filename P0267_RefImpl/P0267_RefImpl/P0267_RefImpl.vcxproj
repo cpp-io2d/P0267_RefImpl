@@ -485,12 +485,12 @@
     <ClInclude Include="xwindows_handler_impl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="display_surface-common.cpp" />
+    <ClCompile Include="cairo_renderer_display_surface-common.cpp" />
     <ClCompile Include="display_surface-win32.cpp" />
-    <ClCompile Include="image_surface.cpp" />
+    <ClCompile Include="cairo_renderer_image_surface.cpp" />
     <ClCompile Include="rgba_color.cpp" />
-    <ClCompile Include="standalone_functions.cpp" />
-    <ClCompile Include="surface.cpp" />
+    <ClCompile Include="cairo_renderer_standalone_functions.cpp" />
+    <ClCompile Include="cairo_renderer_surface.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
