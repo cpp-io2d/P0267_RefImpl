@@ -80,18 +80,13 @@ namespace std::experimental::io2d {
 
 		// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0F } 'angle' radians around { 0.0F, 0.0F } in a clockwise ('clockwise' == true) or
 		// counterclockwise ('clockwise' == false) direction.
-		inline ::std::experimental::io2d::point_2d _Rotate_point_absolute_angle(const ::std::experimental::io2d::point_2d& center, float radius, float angle, bool clockwise = true) {
+		template <class T>
+		inline basic_point_2d<T> _Rotate_point_absolute_angle(const basic_point_2d<T>& center, float radius, float angle, bool clockwise = true) {
 			if (clockwise) {
-				::std::experimental::io2d::point_2d pt{ radius * ::std::cos(angle), -(radius * -::std::sin(angle)) };
-				pt.x = pt.x + center.x;
-				pt.y = pt.y + center.y;
-				return pt;
+				return basic_point_2d<T> pt{ (radius * ::std::cos(angle)) + center.x(), (-(radius * -::std::sin(angle))) + center.y() };
 			}
 			else {
-				::std::experimental::io2d::point_2d pt{ radius * ::std::cos(angle), radius * -::std::sin(angle) };
-				pt.x = pt.x + center.x;
-				pt.y = pt.y + center.y;
-				return pt;
+				return basic_point_2d<T> pt{ (radius * ::std::cos(angle)) + center.x(), (radius * -::std::sin(angle)) + center.y() };
 			}
 		}
 
@@ -235,265 +230,640 @@ namespace std::experimental::io2d {
 
 		// linear algebra
 
-		inline constexpr point_2d::point_2d() noexcept
-			: point_2d(0.0f, 0.0f) {}
-		inline constexpr point_2d::point_2d(float xval, float yval) noexcept
-			: x(xval)
-			, y(yval) {
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::create() noexcept {
+			return create(0.0f, 0.0f);
 		}
 
-		inline float point_2d::magnitude() const noexcept {
-			return sqrt(x * x + y * y);
-		}
-		inline constexpr float point_2d::magnitude_squared() const noexcept {
-			return x * x + y * y;
-		}
-		inline constexpr float point_2d::dot(const point_2d& other) const noexcept {
-			return x * other.x + y * other.y;
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::create(float x, float y) noexcept {
+			auto result = _Point_2d_float_impl::data_type();
+			result._X = x;
+			result._Y = y;
+			return result;
 		}
 
-/*		inline float point_2d::angular_direction() const noexcept {
-			auto v = atan2(y, x);
+		void _Point_2d_float_impl::x(typename _Point_2d_float_impl::data_type& val, float x) noexcept {
+			val._X = x;
+		}
+
+		void _Point_2d_float_impl::y(typename _Point_2d_float_impl::data_type& val, float y) noexcept {
+			val._Y = y;
+		}
+
+		float _Point_2d_float_impl::x(const typename _Point_2d_float_impl::data_type& val) noexcept {
+			return val._X;
+		}
+
+		float _Point_2d_float_impl::y(const typename _Point_2d_float_impl::data_type& val) noexcept {
+			return val._Y;
+		}
+
+		float _Point_2d_float_impl::dot(const typename _Point_2d_float_impl::data_type& a, const typename _Point_2d_float_impl::data_type& b) noexcept {
+			return a._X * b._X + a._Y * b._Y;
+		}
+
+		float _Point_2d_float_impl::magnitude(const typename _Point_2d_float_impl::data_type& val) noexcept {
+			return ::std::sqrt(val._X * val._X + val._Y * val._Y);
+		}
+
+		float _Point_2d_float_impl::magnitude_squared(const typename _Point_2d_float_impl::data_type& val) noexcept {
+			return val._X * val._X + val._Y * val._Y;
+		}
+
+		float _Point_2d_float_impl::angular_direction(const typename _Point_2d_float_impl::data_type& val) noexcept {
+			auto v = ::std::atan2(val._Y, val._X);
 			if (v < 0.0F) {
 				v += two_pi<float>;
 			}
 			return v;
-		}*/
-
-        inline constexpr point_2d point_2d::zero() noexcept {
-            return { 0.0f, 0.0f };
-        }
-
-		inline point_2d point_2d::to_unit() const noexcept {
-			auto leng = magnitude();
-
-			return point_2d{ x / leng, y / leng };
 		}
 
-		inline constexpr bool operator==(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return lhs.x == rhs.x && lhs.y == rhs.y;
-		}
-
-		inline constexpr bool operator!=(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return !(lhs == rhs);
-		}
-
-		inline constexpr point_2d operator+(const point_2d& lhs) noexcept {
-			return lhs;
-		}
-
-		inline constexpr point_2d operator+(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs.x + rhs.x, lhs.y + rhs.y };
-		}
-
-		inline constexpr point_2d& point_2d::operator+=(const point_2d& rhs) noexcept {
-			x = x + rhs.x;
-			y = y + rhs.y;
-			return *this;
-		}
-
-		inline constexpr point_2d operator-(const point_2d& lhs) noexcept {
-			return point_2d{ -lhs.x, -lhs.y };
-		}
-
-		inline constexpr point_2d operator-(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs.x - rhs.x, lhs.y - rhs.y };
-		}
-
-		inline constexpr point_2d& point_2d::operator-=(const point_2d& rhs) noexcept {
-			x = x - rhs.x;
-			y = y - rhs.y;
-			return *this;
-		}
-
-		inline constexpr point_2d& point_2d::operator*=(float rhs) noexcept {
-			x *= rhs;
-			y *= rhs;
-			return *this;
-		}
-
-		inline constexpr point_2d& point_2d::operator*=(const point_2d& rhs) noexcept {
-			x *= rhs.x;
-			y *= rhs.y;
-			return *this;
-		}
-
-		inline constexpr point_2d operator*(const point_2d& lhs, float rhs) noexcept {
-			return point_2d{ lhs.x * rhs, lhs.y * rhs };
-		}
-
-		inline constexpr point_2d operator*(float lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs * rhs.x, lhs * rhs.y };
-		}
-
-		inline constexpr point_2d operator*(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs.x * rhs.x, lhs.y * rhs.y };
-		}
-
-		inline constexpr point_2d& point_2d::operator/=(float rhs) noexcept {
-			x /= rhs;
-			y /= rhs;
-			return *this;
-		}
-
-		inline constexpr point_2d& point_2d::operator/=(const point_2d& rhs) noexcept {
-			x /= rhs.x;
-			y /= rhs.y;
-			return *this;
-		}
-
-		inline constexpr point_2d operator/(const point_2d& lhs, float rhs) noexcept {
-			return point_2d{ lhs.x / rhs, lhs.y / rhs };
-		}
-
-		inline constexpr point_2d operator/(float lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs / rhs.x, lhs / rhs.y };
-		}
-
-		inline constexpr point_2d operator/(const point_2d& lhs, const point_2d& rhs) noexcept {
-			return point_2d{ lhs.x / rhs.x, lhs.y / rhs.y };
-		}
-
-        inline constexpr matrix_2d::matrix_2d() noexcept
-            : matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f) {}
-        
-        inline constexpr matrix_2d::matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept
-            : m00(v00)
-            , m01(v01)
-            , m02(0.0f)
-            , m10(v10)
-            , m11(v11)
-            , m12(0.0f)
-            , m20(v20)
-            , m21(v21)
-            , m22(1.0f) {
-        }
-        
-        inline constexpr matrix_2d matrix_2d::init_translate(point_2d value) noexcept {
-            return{ 1.0F, 0.0F, 0.0F, 1.0F, value.x, value.y };
-        }
-        inline constexpr matrix_2d matrix_2d::init_scale(point_2d value) noexcept {
-            return{ value.x, 0.0F, 0.0F, value.y, 0.0F, 0.0F };
-        }
-        inline matrix_2d matrix_2d::init_rotate(float radians) noexcept {
-            auto sine = sin(radians);
-            auto cosine = cos(radians);
-            sine = _Round_floating_point_to_zero(sine);
-            cosine = _Round_floating_point_to_zero(cosine);
-            return{ cosine, -sine, sine, cosine, 0.0F, 0.0F };
-        }
-        inline matrix_2d matrix_2d::init_reflect(float radians) noexcept {
-            auto sine = sin(radians * 2.0F);
-            auto cosine = cos(radians * 2.0F);
-            sine = _Round_floating_point_to_zero(sine);
-            cosine = _Round_floating_point_to_zero(cosine);
-            return{ cosine, sine, sine, -cosine, 0.0F, 0.0F };
-        }
-        inline constexpr matrix_2d matrix_2d::init_shear_x(float factor) noexcept {
-            return{ 1.0F, 0.0F, factor, 1.0F, 0.0F, 0.0F };
-        }
-        inline constexpr matrix_2d matrix_2d::init_shear_y(float factor) noexcept {
-            return{ 1.0F, factor, 0.0F, 1.0F, 0.0F, 0.0F };
-        }
-
-        inline constexpr matrix_2d& matrix_2d::translate(point_2d value) noexcept {
-			*this = *this * init_translate(value);
-			return *this;
-		}
-		inline constexpr matrix_2d& matrix_2d::scale(point_2d value) noexcept {
-			*this = *this * init_scale(value);
-			return *this;
-		}
-		inline matrix_2d& matrix_2d::rotate(float radians) noexcept {
-			*this = *this * init_rotate(radians);
-			return *this;
-		}
-		inline matrix_2d& matrix_2d::reflect(float radians) noexcept {
-			*this = *this * init_reflect(radians);
-			return *this;
-		}
-		inline constexpr matrix_2d& matrix_2d::shear_x(float factor) noexcept {
-			*this = *this * init_shear_x(factor);
-			return *this;
-		}
-		inline constexpr matrix_2d& matrix_2d::shear_y(float factor) noexcept {
-			*this = *this * init_shear_y(factor);
-			return *this;
-		}
-
-		inline constexpr bool matrix_2d::is_invertible() const noexcept {
-			return (m00 * m11 - m01 * m10) != 0.0F;
-		}
-		inline constexpr matrix_2d matrix_2d::inverse() const noexcept {
-			const auto inverseDeterminant = 1.0F / determinant();
-			return matrix_2d{
-				(m11 * 1.0F - 0.0F * m21) * inverseDeterminant,
-				-(m01 * 1.0F - 0.0F * m21) * inverseDeterminant,
-				-(m10 * 1.0F - 0.0F * m20) * inverseDeterminant,
-				(m00 * 1.0F - 0.0F * m20) * inverseDeterminant,
-				(m10 * m21 - m11 * m20) * inverseDeterminant,
-				-(m00 * m21 - m01 * m20) * inverseDeterminant
-			};
-		}
-		inline constexpr bool _Is_finite_check(float val) noexcept {
-			return val != numeric_limits<float>::infinity() &&
-				val != -numeric_limits<float>::infinity() &&
-				!(val != val); // This checks for both types of NaN. Compilers should not optimize this away but the only way to be sure is to check the documentation and any compiler switches you may be using.
-		}
-		inline constexpr bool matrix_2d::is_finite() const noexcept {
-			static_assert(numeric_limits<float>::is_iec559 == true, "This implementation relies on IEEE 754 floating point behavior.");
-			return numeric_limits<float>::is_iec559 &&
-				_Is_finite_check(m00) &&
-				_Is_finite_check(m01) &&
-				_Is_finite_check(m10) &&
-				_Is_finite_check(m11);
-		}
-		inline constexpr float matrix_2d::determinant() const noexcept {
-			return m00 * m11 - m01 * m10;
-		}
-		inline constexpr point_2d matrix_2d::transform_pt(point_2d pt) const noexcept {
-			auto result = point_2d{ m00 * pt.x + m10 * pt.y + m20, m01 * pt.x + m11 * pt.y + m21 };
-			result.x = _Round_floating_point_to_zero(result.x);
-			result.y = _Round_floating_point_to_zero(result.y);
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::to_unit(const typename _Point_2d_float_impl::data_type& val) noexcept {
+			auto leng = magnitude(val);
+			auto result = val;
+			result._X = val._X / leng;
+			result._Y = val._Y / leng;
 			return result;
 		}
 
-		inline constexpr matrix_2d& matrix_2d::operator*=(const matrix_2d& rhs) noexcept {
-			*this = (*this) * rhs;
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::add(const typename _Point_2d_float_impl::data_type& lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs._X + rhs._X;
+			result._Y = lhs._Y + rhs._Y;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::add(const typename _Point_2d_float_impl::data_type& lhs, float rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs._X + rhs;
+			result._Y = lhs._Y + rhs;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::add(float lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs + rhs._X;
+			result._Y = lhs + rhs._Y;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::subtract(const typename _Point_2d_float_impl::data_type& lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs._X - rhs._X;
+			result._Y = lhs._Y - rhs._Y;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::subtract(const typename _Point_2d_float_impl::data_type& lhs, float rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs._X - rhs;
+			result._Y = lhs._Y - rhs;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::subtract(float lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs - rhs._X;
+			result._Y = lhs - rhs._Y;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::multiply(const typename _Point_2d_float_impl::data_type& lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs._X * rhs._X;
+			result._Y = lhs._Y * rhs._Y;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::multiply(const typename _Point_2d_float_impl::data_type& lhs, float rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs._X * rhs;
+			result._Y = lhs._Y * rhs;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::multiply(float lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs * rhs._X;
+			result._Y = lhs * rhs._Y;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::divide(const typename _Point_2d_float_impl::data_type& lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs._X / rhs._X;
+			result._Y = lhs._Y / rhs._Y;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::divide(const typename _Point_2d_float_impl::data_type& lhs, float rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs._X / rhs;
+			result._Y = lhs._Y / rhs;
+			return result;
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::divide(float lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			_Point_2d_float_impl::data_type result;
+			result._X = lhs / rhs._X;
+			result._Y = lhs / rhs._Y;
+			return result;
+		}
+
+		bool _Point_2d_float_impl::equal(const typename _Point_2d_float_impl::data_type& lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			return lhs._X == rhs._X&& lhs._Y == rhs._Y;
+		}
+
+		bool _Point_2d_float_impl::not_equal(const typename _Point_2d_float_impl::data_type& lhs, const typename _Point_2d_float_impl::data_type& rhs) noexcept {
+			return !equal(lhs, rhs);
+		}
+
+		typename _Point_2d_float_impl::data_type _Point_2d_float_impl::negate(const typename _Point_2d_float_impl::data_type& val) noexcept {
+			return create(-val._X, -val._Y);
+		}
+
+		template <class T>
+		inline constexpr const typename T::data& basic_point_2d<T>::_Get_data() const noexcept {
+			return _Data;
+		}
+		template <class T>
+		inline constexpr basic_point_2d<T>::basic_point_2d(const typename T::data& val)
+			: _Data(val) {}
+
+		template <class T>
+		inline constexpr basic_point_2d<T>::basic_point_2d() noexcept
+			: basic_point_2d(0.0f, 0.0f) {}
+		template <class T>
+		inline constexpr basic_point_2d<T>::basic_point_2d(float xval, float yval) noexcept
+			: _Data(T::create(xval, yval)) {
+		}
+
+		template <class T>
+		inline constexpr void basic_point_2d<T>::x(float xval) noexcept {
+			T::x(_Data, xval);
+		}
+
+		template <class T>
+		inline constexpr void basic_point_2d<T>::y(float yval) noexcept {
+			T::y(_Data, yval);
+		}
+
+		template <class T>
+		inline constexpr float basic_point_2d<T>::x() const noexcept {
+			return T::y(_Data);
+		}
+
+		template <class T>
+		inline constexpr float basic_point_2d<T>::y() const noexcept {
+			return T::y(_Data);
+		}
+
+		template <class T>
+		inline float basic_point_2d<T>::magnitude() const noexcept {
+			return T::magnitude(_Data);
+		}
+		template <class T>
+		inline constexpr float basic_point_2d<T>::magnitude_squared() const noexcept {
+			return T::magniture_square(_Data);
+		}
+		template <class T>
+		inline constexpr float basic_point_2d<T>::dot(const basic_point_2d<T>& other) const noexcept {
+			return T::dot(_Data, other._Data);
+		}
+
+		template <class T>
+		inline float basic_point_2d<T>::angular_direction() const noexcept {
+			return T::angular_direction(_Data);
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> basic_point_2d<T>::zero() noexcept {
+            return basic_point_2d(T::create());
+        }
+
+		template <class T>
+		inline basic_point_2d<T> basic_point_2d<T>::to_unit() const noexcept {
+			return basic_point_2d(T::to_unit(_Data));
+		}
+
+		template <class T>
+		inline constexpr bool operator==(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept {
+			return T::equal(lhs._Get_data(), rhs._Get_data();
+		}
+
+		template <class T>
+		inline constexpr bool operator!=(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept {
+			return T::not_equal(lhs._Get_data(), rhs._Get_data();
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator+(const basic_point_2d<T>& lhs) noexcept {
+			return lhs;
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator+(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept {
+			return basic_point_2d<T>(T::add(lhs._Get_data(), rhs._Get_data()));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator+(const basic_point_2d<T>& lhs, float rhs) noexcept {
+			return basic_point_2d<T>(T::add(lhs._Get_data(), rhs));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator+(float lhs, const basic_point_2d<T>& rhs) noexcept {
+			return basic_point_2d<T>(T::add(lhs, rhs._Get_data()));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T>& basic_point_2d<T>::operator+=(const basic_point_2d<T>& rhs) noexcept {
+			_Data = T::add(_Data, rhs._Data);
 			return *this;
 		}
 
-		inline constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
-			return matrix_2d{
+		template <class T>
+		inline constexpr basic_point_2d<T>& basic_point_2d<T>::operator+=(float rhs) noexcept {
+			_Data = T::add(_Data, rhs);
+			return *this;
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator-(const basic_point_2d<T>& lhs) noexcept {
+			return basic_point_2d<T>(T::negate(lhs._Get_data()));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator-(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept {
+			return basic_point_2d<T>(T::subtract(lhs._Get_data(), rhs._Get_data()));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator-(const basic_point_2d<T>& lhs, float rhs) noexcept {
+			return basic_point_2d<T>(T::subtract(lhs._Get_data(), rhs));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator-(float lhs, const basic_point_2d<T>& rhs) noexcept {
+			return basic_point_2d<T>(T::subtract(lhs, rhs._Get_data()));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T>& basic_point_2d<T>::operator-=(const basic_point_2d<T>& rhs) noexcept {
+			_Data = T::subtract(_Data, rhs._Get_data());
+			return *this;
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T>& basic_point_2d<T>::operator-=(float rhs) noexcept {
+			_Data = T::subtract(_Data, rhs);
+			return *this;
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T>& basic_point_2d<T>::operator*=(float rhs) noexcept {
+			_Data = T::multiply(_Data, rhs);
+			return *this;
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T>& basic_point_2d<T>::operator*=(const basic_point_2d<T>& rhs) noexcept {
+			_Data = T::multiply(_Data, rhs._Get_data());
+			return *this;
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator*(const basic_point_2d<T>& lhs, float rhs) noexcept {
+			return basic_point_2d<T>(T::multiply(lhs._Get_data(), rhs));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator*(float lhs, const basic_point_2d<T>& rhs) noexcept {
+			return basic_point_2d<T>(T::multiply(lhs, rhs._Get_data()));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator*(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept {
+			return basic_point_2d<T>(T::multiply(lhs._Get_data(), rhs._Get_data()));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T>& basic_point_2d<T>::operator/=(float rhs) noexcept {
+			_Data = T::divide(_Data, rhs)
+			return *this;
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T>& basic_point_2d<T>::operator/=(const basic_point_2d<T>& rhs) noexcept {
+			_Data = T::divide(_Data, rhs._Get_data());
+			return *this;
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator/(const basic_point_2d<T>& lhs, float rhs) noexcept {
+			return basic_point_2d<T>(T::divide(lhs._Get_data(), rhs));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator/(float lhs, const basic_point_2d<T>& rhs) noexcept {
+			return basic_point_2d<T>(T::divide(lhs, rhs._Get_data()));
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> operator/(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept {
+			return basic_point_2d<T>(T::divide(lhs._Get_data(), rhs._Get_data()));
+		}
+
+
+		inline constexpr typename _Matrix_2d_float_impl::data_type _Matrix_2d_float_impl::init_elements(float v00, float v01, float v10, float v11, float v20, float v21) noexcept {
+			auto result = _Matrix_2d_float_impl::data_type();
+			result.m00 = v00;
+			result.m01 = v01;
+			result.m02 = 0.0f;
+			result.m10 = v10;
+			result.m11 = v11;
+			result.m12 = 0.0f;
+			result.m20 = v20;
+			result.m21 = v21;
+			result.m22 = 1.0f;
+		}
+
+		inline constexpr typename _Matrix_2d_float_impl::data_type _Matrix_2d_float_impl::init_identity() noexcept {
+			return init_elements(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+		}
+
+		template<class T>
+		inline constexpr _Matrix_2d_float_impl::data_type std::experimental::io2d::v1::_Matrix_2d_float_impl::init_translate(const basic_point_2d<T>& val) noexcept {
+			return init_elements(1.0f, 0.0f, 0.0f, 1.0f, val.x(), val.y());
+		}
+
+		template<class T>
+		inline constexpr _Matrix_2d_float_impl::data_type std::experimental::io2d::v1::_Matrix_2d_float_impl::init_scale(const basic_point_2d<T>& val) noexcept {
+			return init_elements(1.0f, 0.0f, 0.0f, 1.0f, val.x(), val.y());
+		}
+
+		inline typename _Matrix_2d_float_impl::data_type _Matrix_2d_float_impl::init_rotate(float radians) noexcept {
+			auto sine = sin(radians);
+			auto cosine = cos(radians);
+			sine = _Round_floating_point_to_zero(sine);
+			cosine = _Round_floating_point_to_zero(cosine);
+			return init_elements(cosine, -sine, sine, cosine, 0.0f, 0.0f);
+		}
+
+		template <class T>
+		inline typename _Matrix_2d_float_impl::data_type _Matrix_2d_float_impl::init_rotate(float radians, const basic_point_2d<T>& origin) noexcept {
+			return multiply(multiply(init_translate(origin), init_rotate(radians)), init_translate(-origin));
+		}
+
+		inline typename _Matrix_2d_float_impl::data_type _Matrix_2d_float_impl::init_reflect(float radians) noexcept {
+			auto sine = sin(radians * 2.0f);
+			auto cosine = cos(radians * 2.0f);
+			sine = _Round_floating_point_to_zero(sine);
+			cosine = _Round_floating_point_to_zero(cosine);
+			return init_elements(cosine, sine, sine, -cosine, 0.0f, 0.0f);
+		}
+
+		inline constexpr typename _Matrix_2d_float_impl::data_type _Matrix_2d_float_impl::init_shear_x(float factor) noexcept {
+			return init_elements(1.0f, 0.0f, factor, 1.0f, 0.0f, 0.0f);
+		}
+
+		inline constexpr typename _Matrix_2d_float_impl::data_type _Matrix_2d_float_impl::init_shear_y(float factor) noexcept {
+			return init_elements(1.0f, factor, 0.0f, 1.0f, 0.0f, 0.0f);
+		}
+
+		template <class T>
+		inline void _Matrix_2d_float_impl::translate(_Matrix_2d_float_impl::data_type& mtx, const basic_point_2d<T>& v) noexcept {
+			mtx = multiply(mtx, init_translate(v));
+		}
+
+		template <class T>
+		inline void _Matrix_2d_float_impl::scale(_Matrix_2d_float_impl::data_type& mtx, const basic_point_2d<T>& scl) noexcept {
+			mtx = multiply(mtx, init_scale(scl));
+		}
+
+		inline void _Matrix_2d_float_impl::rotate(_Matrix_2d_float_impl::data_type& mtx, float radians) noexcept {
+			mtx = multiply(mtx, init_rotate(radians));
+		}
+
+		template <class T>
+		inline void _Matrix_2d_float_impl::rotate(_Matrix_2d_float_impl::data_type& mtx, float radians, const basic_point_2d<T>& origin) noexcept {
+			mtx = multiply(mtx, init_rotate(radians, origin));
+		}
+
+		inline void _Matrix_2d_float_impl::reflect(typename _Matrix_2d_float_impl::data_type& mtx, float radians) noexcept {
+			mtx = multiply(mtx, init_reflect(radians));
+		}
+
+		inline constexpr void _Matrix_2d_float_impl::shear_x(typename _Matrix_2d_float_impl::data_type& mtx, float factor) noexcept {
+			mtx = multiply(mtx, init_shear_x(factor));
+		}
+
+		inline constexpr void _Matrix_2d_float_impl::shear_y(typename _Matrix_2d_float_impl::data_type& mtx, float factor) noexcept {
+			mtx = multiply(mtx, init_shear_y(factor));
+		}
+
+		inline constexpr bool _Is_finite_check(float val) noexcept {
+			return val != ::std::numeric_limits<float>::infinity() &&
+				val != -::std::numeric_limits<float>::infinity() &&
+				!(val != val); // This checks for both types of NaN. Compilers are not supposed to optimize this away but there were some in the past that incorrectly did. The only way to be sure is to check the documentation and any compiler switches you may be using.
+		}
+
+		inline constexpr bool _Matrix_2d_float_impl::is_finite(const typename _Matrix_2d_float_impl::data_type& mtx) noexcept {
+			static_assert(::std::numeric_limits<float>::is_iec559 == true, "This implementation relies on IEEE 754 floating point behavior.");
+			return ::std::numeric_limits<float>::is_iec559 &&
+				_Is_finite_check(mtx.m00) &&
+				_Is_finite_check(mtx.m01) &&
+				_Is_finite_check(mtx.m10) &&
+				_Is_finite_check(mtx.m11) &&
+				_Is_finite_check(mtx.m20) &&
+				_Is_finite_check(mtx.m21);
+		}
+
+		inline constexpr bool _Matrix_2d_float_impl::is_invertible(const typename _Matrix_2d_float_impl::data_type& mtx) noexcept {
+			return (mtx.m00 * mtx.m11 - mtx.m01 * mtx.m10) != 0.0f;
+		}
+
+		inline constexpr float _Matrix_2d_float_impl::determinant(const typename _Matrix_2d_float_impl::data_type& mtx) noexcept {
+			return mtx.m00 * mtx.m11 - mtx.m01 * mtx.m10;
+		}
+
+		inline constexpr typename _Matrix_2d_float_impl::data_type _Matrix_2d_float_impl::inverse(const typename _Matrix_2d_float_impl::data_type& mtx) noexcept {
+			const auto inverseDeterminant = 1.0F / determinant(mtx);
+			return init_elements(
+				(mtx.m11 * 1.0F - 0.0F * mtx.m21) * inverseDeterminant,
+				-(mtx.m01 * 1.0F - 0.0F * mtx.m21) * inverseDeterminant,
+				-(mtx.m10 * 1.0F - 0.0F * mtx.m20) * inverseDeterminant,
+				(mtx.m00 * 1.0F - 0.0F * mtx.m20) * inverseDeterminant,
+				(mtx.m10 * mtx.m21 - mtx.m11 * mtx.m20) * inverseDeterminant,
+				-(mtx.m00 * mtx.m21 - mtx.m01 * mtx.m20) * inverseDeterminant
+			);
+		}
+
+		template <class T>
+		inline constexpr basic_point_2d<T> _Matrix_2d_float_impl::transform_pt(const _Matrix_2d_float_impl::data_type& mtx, const basic_point_2d<T>& pt) noexcept {
+			const auto x = pt.x();
+			const auto y = pt.y();
+			basic_point_2d<T> result(_Round_floating_point_to_zero(mtx.m00 * x + mtx.m10 * y + mtx.m20), _Round_floating_point_to_zero(mtx.m01 * x + mtx.m11 * y + mtx.m21));
+			return result;
+		}
+
+		inline _Matrix_2d_float_impl::data_type _Matrix_2d_float_impl::multiply(const _Matrix_2d_float_impl::data_type& lhs, const _Matrix_2d_float_impl::data_type& rhs) noexcept {
+			return init_elements(
 				(lhs.m00 * rhs.m00) + (lhs.m01 * rhs.m10),
 				(lhs.m00 * rhs.m01) + (lhs.m01 * rhs.m11),
 				(lhs.m10 * rhs.m00) + (lhs.m11 * rhs.m10),
 				(lhs.m10 * rhs.m01) + (lhs.m11 * rhs.m11),
 				(lhs.m20 * rhs.m00) + (lhs.m21 * rhs.m10) + rhs.m20,
 				(lhs.m20 * rhs.m01) + (lhs.m21 * rhs.m11) + rhs.m21
-			};
+			);
 		}
-		inline constexpr bool operator==(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
+
+		inline bool _Matrix_2d_float_impl::equal(const typename _Matrix_2d_float_impl::data_type& lhs, const typename _Matrix_2d_float_impl::data_type& rhs) noexcept {
 			return lhs.m00 == rhs.m00 && lhs.m01 == rhs.m01 &&
 				lhs.m10 == rhs.m10 && lhs.m11 == rhs.m11 &&
 				lhs.m20 == rhs.m20 && lhs.m21 == rhs.m21;
 		}
-		inline constexpr bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs) noexcept {
-			return !(lhs == rhs);
+
+		inline bool _Matrix_2d_float_impl::not_equal(const typename _Matrix_2d_float_impl::data_type& lhs, const typename _Matrix_2d_float_impl::data_type& rhs) noexcept {
+			return !equal(lhs, rhs);
 		}
 
-		inline constexpr point_2d operator*(point_2d pt, const matrix_2d& m) noexcept {
-			return m.transform_pt(pt);
+
+		template <class T>
+		inline constexpr const typename T::data_type& basic_matrix_2d<T>::_Get_data() const noexcept {
+			return _Data;
+		}
+		template <class T>
+		inline constexpr basic_matrix_2d<T>::basic_matrix_2d(const typename T::data_type& val) noexcept
+			: _Data(val) {
+		}
+		template <class T>
+		inline constexpr basic_matrix_2d<T>::basic_matrix_2d() noexcept
+            : _Data(T::init_identity()) {}
+        
+		template <class T>
+		inline constexpr basic_matrix_2d<T>::basic_matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept
+            : _Data(T::init_values(v00, v01, v10, v11, v20, v21)) {
+        }
+        
+		template <class T, class U>
+		inline constexpr basic_matrix_2d<T> basic_matrix_2d<T>::init_translate(const basic_point_2d<U>& value) noexcept {
+			return basic_matrix_2d<T>(T::init_translate(value));
+        }
+		template <class T, class U>
+		inline constexpr basic_matrix_2d<T> basic_matrix_2d<T>::init_scale(const basic_point_2d<U>& value) noexcept {
+			return basic_matrix_2d<T>(T::init_scale(value));
+        }
+		template <class T>
+		inline basic_matrix_2d<T> basic_matrix_2d<T>::init_rotate(float radians) noexcept {
+			return basic_matrix_2d<T>(T::init_rotate(radians));
+        }
+		template <class T, class U>
+		inline basic_matrix_2d<T> basic_matrix_2d<T>::init_rotate(float radians, const basic_point_2d<U>& origin) noexcept {
+			return basic_matrix_2d<T>(T::init_rotate(radians, origin));
+		}
+		template <class T>
+		inline basic_matrix_2d<T> basic_matrix_2d<T>::init_reflect(float radians) noexcept {
+			return basic_matrix_2d<T>(T::init_reflect(radians));
+        }
+		template <class T>
+		inline constexpr basic_matrix_2d<T> basic_matrix_2d<T>::init_shear_x(float factor) noexcept {
+			return basic_matrix_2d<T>(T::init_shear_x(factor));
+        }
+		template <class T>
+		inline constexpr basic_matrix_2d<T> basic_matrix_2d<T>::init_shear_y(float factor) noexcept {
+			return basic_matrix_2d<T>(T::init_shear_y(factor));
+        }
+
+		template <class T, class U>
+		inline constexpr basic_matrix_2d<T>& basic_matrix_2d<T>::translate(const basic_point_2d<U>& value) noexcept {
+			T::translate(*this._Data, value);
+			return *this;
+		}
+		template <class T, class U>
+		inline constexpr basic_matrix_2d<T>& basic_matrix_2d<T>::scale(const basic_point_2d& value) noexcept {
+			T::scale(*this._Data, value);
+			return *this;
+		}
+		template <class T>
+		inline basic_matrix_2d<T>& basic_matrix_2d<T>::rotate(float radians) noexcept {
+			T::rotate(*this._Data, radians);
+			return *this;
+		}
+		template <class T, class U>
+		inline basic_matrix_2d<T>& basic_matrix_2d<T>::rotate(float radians, const basic_point_2d<U>& origin) noexcept {
+			T::rotate(*this._Data, radians, origin);
+			return *this;
+		}
+		template <class T>
+		inline basic_matrix_2d<T>& basic_matrix_2d<T>::reflect(float radians) noexcept {
+			T::reflect(*this._Data, radians);
+			return *this;
+		}
+		template <class T>
+		inline constexpr basic_matrix_2d<T>& basic_matrix_2d<T>::shear_x(float factor) noexcept {
+			T::shear_x(*this._Data, factor);
+			return *this;
+		}
+		template <class T>
+		inline constexpr basic_matrix_2d<T>& basic_matrix_2d<T>::shear_y(float factor) noexcept {
+			T::shear_y(*this._Data, factor);
+			return *this;
+		}
+		template <class T>
+		inline constexpr bool basic_matrix_2d<T>::is_invertible() const noexcept {
+			return T::is_invertible(*this._Data);
+		}
+		template <class T>
+		inline constexpr basic_matrix_2d<T> basic_matrix_2d<T>::inverse() const noexcept {
+			return T::inverse(*this._Data);
+		}
+		template <class T>
+		inline constexpr bool basic_matrix_2d<T>::is_finite() const noexcept {
+			static_assert(numeric_limits<float>::is_iec559 == true, "This implementation relies on IEEE 754 floating point behavior.");
+			return T::is_finite(*this._Data);
+		}
+		template <class T>
+		inline constexpr float basic_matrix_2d<T>::determinant() const noexcept {
+			return T::determinant(*this._Data);
+		}
+		template <class T, class U>
+		inline constexpr basic_point_2d<U> basic_matrix_2d<T>::transform_pt(const basic_point_2d<U>& pt) const noexcept {
+			return T::transform_pt(*this._Data, pt);
+		}
+		template <class T>
+		inline constexpr basic_matrix_2d<T>& basic_matrix_2d<T>::operator*=(const basic_matrix_2d<T>& rhs) noexcept {
+			*this._Data = T::multiply(*this._Data, rhs._Data);
+			return *this;
 		}
 
-		inline point_2d arc_start(point_2d ctr, float sang, point_2d rad, const matrix_2d& m) noexcept {
+		template <class T>
+		inline constexpr basic_matrix_2d<T> operator*(const basic_matrix_2d<T>& lhs, const basic_matrix_2d<T>& rhs) noexcept {
+			return basic_matrix_2d<T>(T::multiply(lhs._Get_data(), rhs._Get_data()));
+		}
+		template <class T>
+		inline constexpr bool operator==(const basic_matrix_2d<T>& lhs, const basic_matrix_2d<T>& rhs) noexcept {
+			return T::equal(lhs._Get_data(), rhs._Get_data());
+		}
+		template <class T>
+		inline constexpr bool operator!=(const basic_matrix_2d<T>& lhs, const basic_matrix_2d<T>& rhs) noexcept {
+			return T::not_equal(lhs._Get_data(), rhs._Get_data());
+		}
+
+		template <class T, class U>
+		inline constexpr basic_point_2d<U> operator*(const basic_point_2d<U>& pt, const basic_matrix_2d<T>& m) noexcept {
+			return T::transform_pt(m, pt);
+		}
+
+		template <class T, class U>
+		inline basic_point_2d<U> arc_start(const basic_point_2d<U>& ctr, float sang, const basic_point_2d<U>& rad, const basic_matrix_2d<T>& m) noexcept {
 			auto lmtx = m;
 			lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
 			auto pt = point_for_angle(sang, rad);
 			return ctr + pt * lmtx;
 		}
 
-		inline point_2d arc_center(point_2d cpt, float sang, point_2d rad, const matrix_2d& m) noexcept {
+		template <class T, class U>
+		inline basic_point_2d<U> arc_center(const basic_point_2d<U>& cpt, float sang, const basic_point_2d<U>& rad, const basic_matrix_2d<T>& m) noexcept {
 			auto lmtx = m;
 			lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
 			auto centerOffset = point_for_angle(two_pi<float> -sang, rad);
@@ -501,7 +871,8 @@ namespace std::experimental::io2d {
 			return cpt - centerOffset * lmtx;
 		}
 
-		inline point_2d arc_end(point_2d cpt, float eang, point_2d rad, const matrix_2d& m) noexcept {
+		template <class T, class U>
+		inline basic_point_2d<U> arc_end(const basic_point_2d<U>& cpt, float eang, const basic_point_2d<U>& rad, const basic_matrix_2d<T>& m) noexcept {
 			auto lmtx = m;
 			auto tfrm = matrix_2d::init_rotate(eang);
 			lmtx.m20 = 0.0F; lmtx.m21 = 0.0F; // Eliminate translation.
@@ -519,11 +890,12 @@ namespace std::experimental::io2d {
             , _Width(width)
             , _Height(height) {
         }
-        inline constexpr bounding_box::bounding_box(point_2d tl, point_2d br) noexcept
-            : _X(tl.x)
-            , _Y(tl.y)
-            , _Width(::std::max(0.0F, br.x - tl.x))
-            , _Height(::std::max(0.0F, br.y - tl.y)) {
+		template <class T>
+		inline constexpr bounding_box::bounding_box(const basic_point_2d<T>& tl, const basic_point_2d<T>& br) noexcept
+            : _X(tl.x())
+            , _Y(tl.y())
+            , _Width(::std::max(0.0F, br.x() - tl.x()))
+            , _Height(::std::max(0.0F, br.y() - tl.y())) {
         }
 
         inline constexpr void bounding_box::x(float value) noexcept {
@@ -538,13 +910,15 @@ namespace std::experimental::io2d {
         inline constexpr void bounding_box::height(float value) noexcept {
             _Height = value;
         }
-        inline constexpr void bounding_box::top_left(point_2d value) noexcept {
-            _X = value.x;
-            _Y = value.y;
+		template <class T>
+		inline constexpr void bounding_box::top_left(const basic_point_2d<T>& value) noexcept {
+            _X = value.x();
+            _Y = value.y();
         }
-        inline constexpr void bounding_box::bottom_right(point_2d value) noexcept {
-            _Width = max(0.0F, value.x - _X);
-            _Height = max(0.0F, value.y - _Y);
+		template <class T>
+		inline constexpr void bounding_box::bottom_right(const basic_point_2d<T>& value) noexcept {
+            _Width = max(0.0F, value.x() - _X);
+            _Height = max(0.0F, value.y() - _Y);
         }
 
         inline constexpr float bounding_box::x() const noexcept {
@@ -563,12 +937,14 @@ namespace std::experimental::io2d {
             return _Height;
         }
 
-        inline constexpr point_2d bounding_box::top_left() const noexcept {
-            return{ _X, _Y };
+		template <class T>
+		inline constexpr basic_point_2d<T> bounding_box::top_left() const noexcept {
+            return basic_point_2d<T>{ _X, _Y };
         }
 
-        inline constexpr point_2d bounding_box::bottom_right() const noexcept {
-            return{ _X + _Width, _Y + _Height };
+		template <class T>
+		inline constexpr basic_point_2d<T> bounding_box::bottom_right() const noexcept {
+            return basic_point_2d<T>{ _X + _Width, _Y + _Height };
         }
 
         inline constexpr bool operator==(const bounding_box& lhs, const bounding_box& rhs)
@@ -580,28 +956,33 @@ namespace std::experimental::io2d {
             return !(lhs == rhs);
         }
 
-        inline constexpr circle::circle() noexcept
+		template <class T>
+		inline constexpr circle::circle() noexcept
             : _Center()
             , _Radius() {}
-        inline constexpr circle::circle(point_2d ctr, float r) noexcept
+		template <class T>
+		inline constexpr circle::circle(const basic_point_2d<T>& ctr, float r) noexcept
             : _Center(ctr)
             , _Radius(r) {}
 
-        inline constexpr void circle::center(point_2d ctr) noexcept {
+		template <class T>
+		inline constexpr void circle::center(const basic_point_2d<T>& ctr) noexcept {
             _Center = ctr;
         }
         inline constexpr void circle::radius(float r) noexcept {
             _Radius = r;
         }
 
-        inline constexpr point_2d circle::center() const noexcept {
+		template <class T>
+		inline constexpr const basic_point_2d<T>& circle::center() const noexcept {
             return _Center;
         }
         inline constexpr float circle::radius() const noexcept {
             return _Radius;
         }
 
-        inline constexpr bool circle::operator==(const circle& rhs) noexcept {
+		template <class T>
+		inline constexpr bool circle::operator==(const circle& rhs) noexcept {
             return _Center == rhs._Center && _Radius == rhs._Radius;
         }
         inline constexpr bool circle::operator!=(const circle& rhs) noexcept {

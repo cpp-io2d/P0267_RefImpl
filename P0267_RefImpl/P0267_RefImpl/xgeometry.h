@@ -11,21 +11,26 @@ namespace std::experimental::io2d {
 		public:
 			constexpr bounding_box() noexcept;
 			constexpr bounding_box(float x, float y, float width, float height) noexcept;
-			constexpr bounding_box(point_2d tl, point_2d br) noexcept;
+			template <class T>
+			constexpr bounding_box(basic_point_2d<T> tl, basic_point_2d<T> br) noexcept;
 
 			constexpr void x(float val) noexcept;
 			constexpr void y(float val) noexcept;
 			constexpr void width(float val) noexcept;
 			constexpr void height(float val) noexcept;
-			constexpr void top_left(point_2d val) noexcept;
-			constexpr void bottom_right(point_2d val) noexcept;
+			template <class T>
+			constexpr void top_left(basic_point_2d<T> val) noexcept;
+			template <class T>
+			constexpr void bottom_right(basic_point_2d<T> val) noexcept;
 
 			constexpr float x() const noexcept;
 			constexpr float y() const noexcept;
 			constexpr float width() const noexcept;
 			constexpr float height() const noexcept;
-			constexpr point_2d top_left() const noexcept;
-			constexpr point_2d bottom_right() const noexcept;
+			template <class T>
+			constexpr basic_point_2d<T> top_left() const noexcept;
+			template <class T>
+			constexpr basic_point_2d<T> bottom_right() const noexcept;
 
 			friend constexpr bool operator==(const bounding_box& lhs, const bounding_box& rhs) noexcept;
 		};
@@ -34,16 +39,20 @@ namespace std::experimental::io2d {
 		constexpr bool operator!=(const bounding_box& lhs, const bounding_box& rhs) noexcept;
 
 		class circle {
-			point_2d _Center;
+			template <class T>
+			basic_point_2d<T> _Center;
 			float _Radius;
 		public:
 			constexpr circle() noexcept;
-			constexpr circle(point_2d ctr, float rad) noexcept;
+			template <class T>
+			constexpr circle(const basic_point_2d<T>& ctr, float rad) noexcept;
 
-			constexpr void center(point_2d ctr) noexcept;
+			template <class T>
+			constexpr void center(const basic_point_2d<T>& ctr) noexcept;
 			constexpr void radius(float r) noexcept;
 
-			constexpr point_2d center() const noexcept;
+			template <class T>
+			constexpr basic_point_2d<T> center() const noexcept;
 			constexpr float radius() const noexcept;
 
 			constexpr bool operator==(const circle& rhs) noexcept;
@@ -52,6 +61,5 @@ namespace std::experimental::io2d {
 
 		constexpr bool operator==(const circle& lhs, const circle& rhs) noexcept;
 		constexpr bool operator!=(const circle& lhs, const circle& rhs) noexcept;
-
 	}
 }

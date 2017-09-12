@@ -122,26 +122,69 @@ namespace std {
 				template <class U>
 				constexpr rgba_color operator*(U lhs, const rgba_color& rhs) noexcept;
 
-				class point_2d;
-				constexpr bool operator==(const point_2d& lhs, const point_2d& rhs)
-					noexcept;
-				constexpr bool operator!=(const point_2d& lhs, const point_2d& rhs)
-					noexcept;
-				constexpr point_2d operator+(const point_2d& lhs) noexcept;
-				constexpr point_2d operator+(const point_2d& lhs, const point_2d& rhs)
-					noexcept;
-				constexpr point_2d operator-(const point_2d& lhs) noexcept;
-				constexpr point_2d operator-(const point_2d& lhs, const point_2d& rhs)
-					noexcept;
-				constexpr point_2d operator*(const point_2d& lhs, float rhs) noexcept;
-				constexpr point_2d operator*(float lhs, const point_2d& rhs) noexcept;
+				template <class T>
+				struct basic_point_2d {
+					// \ref{\iotwod.\pointtwod.cons}, constructors:
+					constexpr basic_point_2d() noexcept;
+					constexpr basic_point_2d(float x, float y) noexcept;
 
-				class matrix_2d;
-				constexpr matrix_2d operator*(const matrix_2d& lhs, const matrix_2d& rhs)
+					constexpr void x(float x) noexcept;
+					constexpr void y(float y) noexcept;
+					constexpr float x() const noexcept;
+					constexpr float y() const noexcept;
+
+					// \ref{\iotwod.\pointtwod.observers}, observers:
+					constexpr float dot(const point_2d& other) const noexcept;
+					float magnitude() const noexcept;
+					constexpr float magnitude_squared() const noexcept;
+					float angular_direction(const point_2d& to) const noexcept;
+					point_2d to_unit() const noexcept;
+					constexpr static point_2d zero() noexcept;
+
+					// \ref{\iotwod.\pointtwod.member.ops}, member operators:
+					constexpr basic_point_2d& operator+=(const basic_point_2d& rhs) noexcept;
+					constexpr basic_point_2d& operator-=(const basic_point_2d& rhs) noexcept;
+					constexpr basic_point_2d& operator*=(float rhs) noexcept;
+					constexpr basic_point_2d& operator*=(const basic_point_2d& rhs) noexcept;
+					constexpr basic_point_2d& operator/=(float rhs) noexcept;
+					constexpr basic_point_2d& operator/=(const basic_point_2d& rhs) noexcept;
+				};
+
+				template <class T>
+				constexpr bool operator==(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept;
+				template <class T>
+				constexpr bool operator!=(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator+(const basic_point_2d<T>& val) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator+(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator-(const basic_point_2d<T>& val) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator-(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator*(const basic_point_2d<T>& lhs, float rhs) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator*(float lhs, const basic_point_2d<T>& rhs) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator*(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator/(const basic_point_2d<T>& lhs, float rhs) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator/(float lhs, const basic_point_2d<T>& rhs) noexcept;
+				template <class T>
+				constexpr basic_point_2d operator/(const basic_point_2d<T>& lhs, const basic_point_2d<T>& rhs) noexcept;
+
+				template <class T>
+				class basic_matrix_2d;
+				template <class T>
+				constexpr basic_matrix_2d<T> operator*(const basic_matrix_2d<T>& lhs, const basic_matrix_2d<T>& rhs)
 					noexcept;
-				constexpr bool operator==(const matrix_2d& lhs, const matrix_2d& rhs)
+				template <class T>
+				constexpr bool operator==(const basic_matrix_2d<T>& lhs, const basic_matrix_2d<T>& rhs)
 					noexcept;
-				constexpr bool operator!=(const matrix_2d& lhs, const matrix_2d& rhs)
+				template <class T>
+				constexpr bool operator!=(const basic_matrix_2d<T>& lhs, const basic_matrix_2d<T>& rhs)
 					noexcept;
 
 				namespace figure_items {
@@ -282,20 +325,20 @@ namespace std {
 				template <class T>
 				image_surface<T> copy_image_surface(image_surface<T>& sfc) noexcept;
 
-				float angle_for_point(point_2d ctr, point_2d pt) noexcept;
+				//float angle_for_point(point_2d ctr, point_2d pt) noexcept;
 
-				point_2d point_for_angle(float ang, float rad = 1.0f) noexcept;
+				//point_2d point_for_angle(float ang, float rad = 1.0f) noexcept;
 
-				point_2d point_for_angle(float ang, point_2d rad) noexcept;
+				//point_2d point_for_angle(float ang, point_2d rad) noexcept;
 
-				point_2d arc_start(point_2d ctr, float sang, point_2d rad, const matrix_2d& m = matrix_2d{}) noexcept;
+				//point_2d arc_start(point_2d ctr, float sang, point_2d rad, const matrix_2d& m = matrix_2d{}) noexcept;
 
-				point_2d arc_center(point_2d cpt, float sang, point_2d rad, const matrix_2d& m = matrix_2d{}) noexcept;
+				//point_2d arc_center(point_2d cpt, float sang, point_2d rad, const matrix_2d& m = matrix_2d{}) noexcept;
 
-				point_2d arc_end(point_2d cpt, float eang, point_2d rad, const matrix_2d& m = matrix_2d{}) noexcept;
+				//point_2d arc_end(point_2d cpt, float eang, point_2d rad, const matrix_2d& m = matrix_2d{}) noexcept;
 
-				// surplus to paper
-				float angle_for_point(point_2d ctr, point_2d pt, point_2d scl = point_2d{ 1.0f, 1.0f }) noexcept;
+				//// surplus to paper
+				//float angle_for_point(point_2d ctr, point_2d pt, point_2d scl = point_2d{ 1.0f, 1.0f }) noexcept;
 			}
 		}
 	}
