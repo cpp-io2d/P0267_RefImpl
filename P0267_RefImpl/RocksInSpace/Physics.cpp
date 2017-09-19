@@ -77,3 +77,13 @@ bool rocks_in_space::collides(const collision& a, const std::array<point_2d, 2>&
 		return false;
 	});
 }
+
+bool rocks_in_space::collides(const collision& a, const collision& ship)
+{
+	auto delta = a.m_position - ship.m_position;
+	if (delta.magnitude() > a.m_radius)
+	{
+		return false;
+	}
+	return true;
+}

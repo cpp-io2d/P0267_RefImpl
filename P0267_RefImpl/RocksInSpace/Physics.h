@@ -26,13 +26,6 @@ namespace rocks_in_space
 		path_buffer&	m_path;
 	};
 
-	struct rotating_collision
-	{
-		pos&			m_position;
-		float			m_radius;
-		path_buffer		m_path;
-	};
-
 	class physics
 	{
 	public:
@@ -74,6 +67,7 @@ namespace rocks_in_space
 	void							constrain_ori(double&);
 	point_2d						screen_space(const point_2d& v);
 	bool							collides(const collision& a, const std::array<point_2d, 2>& missile_path);
+	bool							collides(const collision& a, const collision& ship);
 }
 
 inline rocks_in_space::physics::physics(const pos& position, const vel& velocity)

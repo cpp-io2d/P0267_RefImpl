@@ -13,9 +13,9 @@ namespace rocks_in_space
 		void	update(my_display_surface&);
 
 	private:
-		void	update_asteroids();
-		void	update_ship();
-		void	update_missiles();
+		void	update_ship(std::vector<asteroid_destruction>&);
+		void	update_missiles(std::vector<asteroid_destruction>&);
+		void	update_asteroids(std::vector<asteroid_destruction>&);
 
 		void	draw_asteroids(my_display_surface& ds);
 		void	draw_ship(my_display_surface& ds);

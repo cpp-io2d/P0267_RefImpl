@@ -11,6 +11,7 @@ namespace
 	using rocks_in_space::point_2d;
 
 	path_vertices ship_vb{ point_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } };
+	float ship_path_radius = 8.0f;
 	const rocks_in_space::path_buffer ship_shape{ 6, ship_vb };
 }
 
@@ -39,7 +40,7 @@ rocks_in_space::ship_update rocks_in_space::ship::update()
 	{
 		return rotate(v_in, m_physics.orientation(), { 0.0, 0.0 });
 	});
-	return{ fire(), m_physics.position(), m_physics.orientation() };
+	return{ fire(), m_physics.position(), m_physics.orientation(), m_path };
 }
 
 void rocks_in_space::ship::draw(my_display_surface& ds)
@@ -94,4 +95,9 @@ void rocks_in_space::missile::draw(my_display_surface& ds)
 	path.line(screen_space(m_physics.position() - m_physics.velocity()));
 
 	ds.stroke(my_brush{ rgba_color::white }, path);
+}
+
+float rocks_in_space::ship_radius()
+{
+	return ship_path_radius;
 }

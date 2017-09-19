@@ -30,9 +30,13 @@ void rocks_in_space::game::update(my_display_surface& ds)
 	using namespace std::experimental::io2d;
 
 	get_key_states();
-	update_asteroids();
-	update_ship();
-	update_missiles();
+
+	auto ad = std::vector<asteroid_destruction>{};
+	ad.reserve(max_missiles);
+
+	update_ship(ad);
+	update_missiles(ad);
+	update_asteroids(ad);
 
 	ds.paint(my_brush{ rgba_color::black });
 	draw_asteroids(ds);
@@ -63,35 +67,30 @@ void rocks_in_space::game::generate_level()
 	}
 }
 
-void rocks_in_space::game::update_asteroids()
+void rocks_in_space::game::update_ship(std::vector<asteroid_destruction>& ad)
 {
-	for (auto& a : m_asteroids) { a.update(); }
-}
-
-void rocks_in_space::game::draw_asteroids(my_display_surface& ds)
-{
-	for (auto& a : m_asteroids) { a.draw(ds); }
-}
-
-void rocks_in_space::game::update_ship()
-{
-	auto missile = m_ship.update();
-	if (missile.m_launch && m_ship_missile_count < max_missiles)
+	auto ship_update = m_ship.update();
+	if (ship_update.m_launch && m_ship_missile_count < max_missiles)
 	{
 		// launch a missile
-		m_ship_missiles[m_next_ship_missile] = { missile.m_direction, missile.m_orientation, true };
+		m_ship_missiles[m_next_ship_missile] = { ship_update.m_position, ship_update.m_orientation, true };
 		if (++m_next_ship_missile == max_missiles)
 		{
 			m_next_ship_missile = 0;
 		}
 		++m_ship_missile_count;
 	}
+	for (auto& a : m_asteroids)
+	{
+		if (a.active() && collides(a.collision_data(), { ship_update.m_position, 5.0f, ship_update.m_path }))
+		{
+			ad.push_back(a.destroy());
+		}
+	}
 }
 
-void rocks_in_space::game::update_missiles()
+void rocks_in_space::game::update_missiles(std::vector<asteroid_destruction>& ad)
 {
-	auto ad = std::vector<asteroid_destruction>{};
-	ad.reserve(max_missiles);
 	for (auto& m : m_ship_missiles)
 	{
 		if (!m.active()) continue;
@@ -110,7 +109,10 @@ void rocks_in_space::game::update_missiles()
 			}
 		}
 	}
+}
 
+void rocks_in_space::game::update_asteroids(std::vector<asteroid_destruction>& ad)
+{
 	for (auto& next_asteroids : ad)
 	{
 		m_score += next_asteroids.m_score;
@@ -122,6 +124,8 @@ void rocks_in_space::game::update_missiles()
 		auto path2 = path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], next_asteroids.m_size);
 		m_asteroids.emplace_back(std::move(new_physics[1]), path2, next_asteroids.m_size);
 	}
+
+	for (auto& a : m_asteroids) { a.update(); }
 }
 
 void rocks_in_space::game::draw_ship(my_display_surface& ds)
@@ -132,6 +136,11 @@ void rocks_in_space::game::draw_ship(my_display_surface& ds)
 void rocks_in_space::game::draw_missiles(my_display_surface& ds)
 {
 	for (auto& m : m_ship_missiles) { m.draw(ds); }
+}
+
+void rocks_in_space::game::draw_asteroids(my_display_surface& ds)
+{
+	for (auto& a : m_asteroids) { a.draw(ds); }
 }
 
 std::once_flag rocks_in_space::my_handler::_Window_class_registered_flag;
