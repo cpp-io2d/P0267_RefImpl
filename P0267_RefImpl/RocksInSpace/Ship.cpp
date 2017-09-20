@@ -11,7 +11,7 @@ namespace
 	using rocks_in_space::point_2d;
 
 	path_vertices ship_vb{ point_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } };
-	float ship_path_radius = 8.0f;
+	float ship_path_radius = 9.7f;
 	const rocks_in_space::path_buffer ship_shape{ 6, ship_vb };
 }
 

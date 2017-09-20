@@ -58,18 +58,18 @@ void rocks_in_space::constrain_vel(vel& v)
 	}
 }
 
-bool rocks_in_space::collides(const collision& a, const std::array<point_2d, 2>& missile_path)
+bool rocks_in_space::collides(const collision& col, const std::array<point_2d, 2>& line)
 {
-	auto delta = a.m_position - missile_path[0];
-	if (delta.magnitude() > a.m_radius)
+	auto delta = col.m_position - line[0];
+	if (delta.magnitude() > col.m_radius)
 	{
 		return false;
 	}
 
-	auto segment_start = a.m_path.m_vertices[a.m_path.m_count - 1];
-	return &a.m_path.m_vertices[a.m_path.m_count] != std::find_if(&a.m_path.m_vertices[0], &a.m_path.m_vertices[a.m_path.m_count], [&](const auto& v)
+	auto segment_start = col.m_path.m_vertices[col.m_path.m_count - 1];
+	return &col.m_path.m_vertices[col.m_path.m_count] != std::find_if(&col.m_path.m_vertices[0], &col.m_path.m_vertices[col.m_path.m_count], [&](const auto& v)
 	{
-		if (intersects(segment_start + a.m_position, v + a.m_position, missile_path[0], missile_path[1]))
+		if (intersects(segment_start + col.m_position, v + col.m_position, line[0], line[1]))
 		{
 			return true;
 		}
@@ -78,12 +78,22 @@ bool rocks_in_space::collides(const collision& a, const std::array<point_2d, 2>&
 	});
 }
 
-bool rocks_in_space::collides(const collision& a, const collision& ship)
+bool rocks_in_space::collides(const collision& col_a, const collision& col_b)
 {
-	auto delta = a.m_position - ship.m_position;
-	if (delta.magnitude() > a.m_radius)
+	auto delta = col_a.m_position - col_b.m_position;
+	if (delta.magnitude() > (col_a.m_radius + col_b.m_radius))
 	{
 		return false;
 	}
-	return true;
+
+	auto segment_start = col_a.m_path.m_vertices[col_a.m_path.m_count - 1];
+	return &col_a.m_path.m_vertices[col_a.m_path.m_count] != std::find_if(&col_a.m_path.m_vertices[0], &col_a.m_path.m_vertices[col_a.m_path.m_count], [&](const auto& v)
+	{
+		if (collides(col_b, { segment_start + col_a.m_position, v + col_a.m_position }))
+		{
+			return true;
+		}
+		segment_start += v;
+		return false;
+	});
 }

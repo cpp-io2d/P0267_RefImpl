@@ -82,7 +82,7 @@ void rocks_in_space::game::update_ship(std::vector<asteroid_destruction>& ad)
 	}
 	for (auto& a : m_asteroids)
 	{
-		if (a.active() && collides(a.collision_data(), { ship_update.m_position, 5.0f, ship_update.m_path }))
+		if (a.active() && collides(a.collision_data(), { ship_update.m_position, ship_radius(), ship_update.m_path }))
 		{
 			ad.push_back(a.destroy());
 		}
