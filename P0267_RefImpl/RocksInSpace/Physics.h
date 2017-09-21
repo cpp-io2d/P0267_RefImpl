@@ -4,6 +4,7 @@
 #include "Maths.h"
 
 #include <random>
+#include <chrono>
 
 namespace rocks_in_space
 {
@@ -46,6 +47,7 @@ namespace rocks_in_space
 	{
 	public:
 					controllable_physics(const physics& phy, const acc& acc, float ori);
+		void		reset(const physics& phy, const acc& acc, float ori);
 		void		update();
 		void		thrust(float t);
 		void		spin(float spin);
@@ -90,6 +92,13 @@ inline rocks_in_space::controllable_physics::controllable_physics(const physics&
 	, m_acceleration(acc)
 	, m_orientation(ori)
 {}
+
+inline void rocks_in_space::controllable_physics::reset(const physics& phy, const acc& acc, float ori)
+{
+	m_physics = phy;
+	m_acceleration = acc;
+	m_orientation = ori;
+}
 
 inline void	rocks_in_space::controllable_physics::thrust(float t)
 {

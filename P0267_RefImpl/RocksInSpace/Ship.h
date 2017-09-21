@@ -18,11 +18,20 @@ namespace rocks_in_space
 	public:
 						ship(const controllable_physics&);
 		ship_update		update();
+		void			destroy();
 		void			draw(my_display_surface& ds);
 
 	private:
-		controllable_physics	m_physics;
-		path_buffer				m_path;
+		enum class ship_state
+		{
+			waiting,
+			active,
+			destructing
+		};
+		controllable_physics					m_physics;
+		path_buffer								m_path;
+		ship_state								m_state;
+		std::chrono::steady_clock::time_point	m_state_change;
 	};
 
 	class missile

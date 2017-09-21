@@ -12,8 +12,8 @@ rocks_in_space::game::game()
 	, m_score {	0 }
 	, m_ship(controllable_physics{
 	physics{ point_2d{ playing_field_width / 2, playing_field_height / 2 },{ point_2d{ 0, 0 } } },
-	point_2d{ 0, 0 },
-	0.0 })
+	point_2d{ 0.0f, 0.0f },
+	0.0f })
 	, m_ship_missile_count(0)
 	, m_next_ship_missile(0)
 	, m_ship_missiles(max_missiles)
@@ -84,6 +84,7 @@ void rocks_in_space::game::update_ship(std::vector<asteroid_destruction>& ad)
 	{
 		if (a.active() && collides(a.collision_data(), { ship_update.m_position, ship_radius(), ship_update.m_path }))
 		{
+			m_ship.destroy();
 			ad.push_back(a.destroy());
 		}
 	}

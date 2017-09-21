@@ -22,15 +22,15 @@ namespace rocks_in_space
 	template <class T> constexpr T	tau			= T(std::experimental::io2d::two_pi<T>);
 	template <class T> constexpr T	eighth_tau	= T(tau<T> / T(8.0L));
 
-	bool		intersects(point_2d, point_2d, point_2d, point_2d);
-	bool		intersects(const bounding_box&, const bounding_box&);
-	bool		contains(const bounding_box&, const point_2d&);
+	bool			intersects(point_2d, point_2d, point_2d, point_2d);
+	bool			intersects(const bounding_box&, const bounding_box&);
+	bool			contains(const bounding_box&, const point_2d&);
 
-	point_2d	pol_to_car(const polar_2d& p);
-	polar_2d	car_to_pol(const point_2d& v);
-	float		radius(const bounding_box&);
+	point_2d		pol_to_car(const polar_2d& p);
+	polar_2d		car_to_pol(const point_2d& v);
+	float			radius(const bounding_box&);
 
-	point_2d	rotate(const point_2d& point, float theta, const point_2d& origin);
+	point_2d		rotate(const point_2d& point, float theta, const point_2d& origin);
 	bounding_box	translate(const bounding_box&, const point_2d&);
 }
 
