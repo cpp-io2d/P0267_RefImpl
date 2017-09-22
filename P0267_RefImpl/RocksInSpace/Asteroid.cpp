@@ -19,9 +19,14 @@ const rocks_in_space::path_buffer rocks_in_space::asteroid::a4 = { 12, a4_vb };
 
 
 
-void rocks_in_space::asteroid::update()
+bool rocks_in_space::asteroid::update()
 {
-	if (m_active) m_physics.update();
+	if (!m_active)
+	{
+		return false;
+	}
+	m_physics.update();
+	return true;
 }
 
 rocks_in_space::asteroid_destruction rocks_in_space::asteroid::destroy()

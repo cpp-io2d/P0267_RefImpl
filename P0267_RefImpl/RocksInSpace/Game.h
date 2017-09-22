@@ -13,9 +13,14 @@ namespace rocks_in_space
 		void	update(my_display_surface&);
 
 	private:
+		enum class game_state
+		{
+			active,
+			new_level
+		};
 		void	update_ship(std::vector<asteroid_destruction>&);
 		void	update_missiles(std::vector<asteroid_destruction>&);
-		void	update_asteroids(std::vector<asteroid_destruction>&);
+		bool	update_asteroids(std::vector<asteroid_destruction>&);
 
 		void	draw_asteroids(my_display_surface& ds);
 		void	draw_ship(my_display_surface& ds);
@@ -35,6 +40,8 @@ namespace rocks_in_space
 		std::mt19937							m_gen;
 		std::uniform_int_distribution<>			m_0_to_3;
 		std::uniform_real_distribution<float>	m_0_to_1;
+		game_state								m_state;
+		std::chrono::steady_clock::time_point	m_state_change;
 	};
 
 	int main();
