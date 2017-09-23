@@ -2,6 +2,8 @@
 #include "Input.h"
 #include "Constants.h"
 
+#include <algorithm>
+
 namespace
 {
 	const rocks_in_space::path_buffer* asteroid_vbs[] = { &rocks_in_space::asteroid::a1, &rocks_in_space::asteroid::a2, &rocks_in_space::asteroid::a3, &rocks_in_space::asteroid::a4 };
@@ -15,7 +17,6 @@ rocks_in_space::game::game()
 	physics{ point_2d{ playing_field_width / 2, playing_field_height / 2 },{ point_2d{ 0, 0 } } },
 	point_2d{ 0.0f, 0.0f },
 	0.0f })
-	, m_ship_missile_count(0)
 	, m_next_ship_missile(0)
 	, m_ship_missiles(max_missiles)
 	, m_rd()
@@ -88,15 +89,10 @@ void rocks_in_space::game::generate_level()
 void rocks_in_space::game::update_ship(std::vector<asteroid_destruction>& ad)
 {
 	auto ship_update = m_ship.update();
-	if (ship_update.m_launch && m_ship_missile_count < max_missiles)
+	if (ship_update.m_launch && std::count_if(std::begin(m_ship_missiles), std::end(m_ship_missiles), [](const auto& m) { return m.active(); }) < max_missiles)
 	{
-		// launch a missile
 		m_ship_missiles[m_next_ship_missile] = { ship_update.m_position, ship_update.m_orientation, true };
-		if (++m_next_ship_missile == max_missiles)
-		{
-			m_next_ship_missile = 0;
-		}
-		++m_ship_missile_count;
+		m_next_ship_missile = ++m_next_ship_missile % max_missiles;
 	}
 	for (auto& a : m_asteroids)
 	{
@@ -116,7 +112,6 @@ void rocks_in_space::game::update_missiles(std::vector<asteroid_destruction>& ad
 		if (!m.update())
 		{
 			m.destroy();
-			--m_ship_missile_count;
 		}
 		for (auto& a : m_asteroids)
 		{
@@ -124,7 +119,6 @@ void rocks_in_space::game::update_missiles(std::vector<asteroid_destruction>& ad
 			{
 				ad.push_back(a.destroy());
 				m.destroy();
-				--m_ship_missile_count;
 			}
 		}
 	}

@@ -33,7 +33,6 @@ namespace rocks_in_space
 		int										m_lives;
 		ship									m_ship;
 		std::vector<asteroid>					m_asteroids;
-		int										m_ship_missile_count;
 		size_t									m_next_ship_missile;
 		std::vector<missile>					m_ship_missiles;
 		std::random_device						m_rd;
