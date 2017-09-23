@@ -26,7 +26,7 @@ namespace rocks_in_space
 		{
 			waiting,
 			active,
-			destructing
+			exploding
 		};
 		controllable_physics					m_physics;
 		path_buffer								m_path;

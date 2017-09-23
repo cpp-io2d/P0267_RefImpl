@@ -7,7 +7,7 @@
 namespace
 {
 	const rocks_in_space::path_buffer* asteroid_vbs[] = { &rocks_in_space::asteroid::a1, &rocks_in_space::asteroid::a2, &rocks_in_space::asteroid::a3, &rocks_in_space::asteroid::a4 };
-	const auto level_transition_period = 1;
+	constexpr auto level_transition_period = 1;
 }
 
 rocks_in_space::game::game()
@@ -66,10 +66,10 @@ void rocks_in_space::game::update(my_display_surface& ds)
 void rocks_in_space::game::generate_level()
 {
 	auto count = m_level * 2 + 2;
-	std::uniform_int_distribution<> edge(1, 4);
-	std::uniform_real_distribution<float> x(0.0F, playing_field_width);
-	std::uniform_real_distribution<float> y(0.0F, playing_field_height);
-	std::uniform_real_distribution<float> theta(0.0F, tau<float>);
+	auto edge = std::uniform_int_distribution<>{ 1, 4 };
+	auto x = std::uniform_real_distribution<float>{ 0.0F, playing_field_width };
+	auto y = std::uniform_real_distribution<float>{ 0.0F, playing_field_height };
+	auto theta = std::uniform_real_distribution<float>{ 0.0F, tau<float> };
 
 	m_asteroids.clear();
 	m_asteroids.reserve(count * 7);
@@ -141,10 +141,7 @@ bool rocks_in_space::game::update_asteroids(std::vector<asteroid_destruction>& a
 		auto path2 = path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], next_asteroids.m_size);
 		m_asteroids.emplace_back(std::move(new_physics[1]), path2, next_asteroids.m_size);
 	}
-
-	bool active_asteroids = false;
-	for (auto& a : m_asteroids) { active_asteroids |= a.update(); }
-	return active_asteroids;
+	return std::count_if(std::begin(m_asteroids), std::end(m_asteroids), [](auto& a) { return a.update(); }) > 0;
 }
 
 void rocks_in_space::game::draw_ship(my_display_surface& ds)

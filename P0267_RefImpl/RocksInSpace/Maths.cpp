@@ -11,8 +11,6 @@ rocks_in_space::point_2d rocks_in_space::rotate(const point_2d& point, float the
 
 bool rocks_in_space::intersects(point_2d a1, point_2d a2, point_2d b1, point_2d b2)
 {
-//	assert(!(a1 == a2 || b1 == b2));
-
 	// First test: do they share an end point?
 	if ((a1 == b1) ||
 		(a2 == b1) ||

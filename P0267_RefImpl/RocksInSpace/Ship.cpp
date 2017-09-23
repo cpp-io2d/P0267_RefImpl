@@ -10,11 +10,11 @@ namespace
 	using rocks_in_space::path_buffer;
 	using rocks_in_space::point_2d;
 
-	const path_vertices ship_vb{ point_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } };
-	const float ship_path_radius = 9.7f;
-	const rocks_in_space::path_buffer ship_shape{ 6, ship_vb };
-	const auto wait_period = 1;
-	const auto destruct_period = 1;
+	constexpr path_vertices ship_vb{ point_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } };
+	constexpr auto ship_path_radius{ 9.7f };
+	constexpr auto ship_shape = path_buffer{ 6, ship_vb };
+	constexpr auto wait_period{ 1 };
+	constexpr auto destruct_period{ 1 };
 }
 
 rocks_in_space::ship::ship(const controllable_physics& cp)
@@ -60,7 +60,7 @@ rocks_in_space::ship_update rocks_in_space::ship::update()
 		});
 		return{ fire(), m_physics.position(), m_physics.orientation(), m_path };
 	}
-	case ship_state::destructing:
+	case ship_state::exploding:
 	{
 		auto now = std::chrono::steady_clock::now();
 		if (std::chrono::duration_cast<std::chrono::seconds>(now - m_state_change).count() > destruct_period)
@@ -76,7 +76,7 @@ rocks_in_space::ship_update rocks_in_space::ship::update()
 
 void rocks_in_space::ship::destroy()
 {
-	m_state = ship_state::destructing;
+	m_state = ship_state::exploding;
 }
 
 void rocks_in_space::ship::draw(my_display_surface& ds)
@@ -104,7 +104,7 @@ void rocks_in_space::ship::draw(my_display_surface& ds)
 		ds.stroke(my_brush{ rgba_color::white }, path);
 		break;
 	}
-	case ship_state::destructing:
+	case ship_state::exploding:
 	{
 		break;
 	}
