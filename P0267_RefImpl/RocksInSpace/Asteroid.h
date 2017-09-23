@@ -16,7 +16,7 @@ namespace rocks_in_space
 	{
 	public:
 									asteroid(physics&& phys, std::pair<const path_buffer&, float> path, float s);
-		bool						update();
+		bool						update(float seconds);
 		asteroid_destruction		destroy();
 
 		void						draw(my_display_surface& ds) const;

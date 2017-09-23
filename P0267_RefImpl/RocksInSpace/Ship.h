@@ -17,7 +17,7 @@ namespace rocks_in_space
 	{
 	public:
 						ship(const controllable_physics&);
-		ship_update		update();
+		ship_update		update(float seconds);
 		void			destroy();
 		void			draw(my_display_surface& ds);
 
@@ -38,7 +38,7 @@ namespace rocks_in_space
 	{
 	public:
 								missile(const point_2d& = { 0.0, 0.0 }, float = 0.0, bool = false);
-		bool					update();
+		bool					update(float seconds);
 		void					destroy();
 		bool					active() const;
 		void					draw(my_display_surface& ds);

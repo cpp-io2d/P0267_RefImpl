@@ -18,9 +18,9 @@ namespace rocks_in_space
 			active,
 			new_level
 		};
-		void	update_ship(std::vector<asteroid_destruction>&);
-		void	update_missiles(std::vector<asteroid_destruction>&);
-		bool	update_asteroids(std::vector<asteroid_destruction>&);
+		void	update_ship(float seconds, std::vector<asteroid_destruction>&);
+		void	update_missiles(float seconds, std::vector<asteroid_destruction>&);
+		bool	update_asteroids(float seconds, std::vector<asteroid_destruction>&);
 
 		void	draw_asteroids(my_display_surface& ds);
 		void	draw_ship(my_display_surface& ds);

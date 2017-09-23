@@ -12,11 +12,11 @@ namespace rocks_in_space
 	};
 
 	void get_key_states();
-	bool anti_clockwise();
-	bool clockwise();
-	bool thrust();
-	bool fire();
-	bool hyperspace();
+	bool do_anti_clockwise();
+	bool do_clockwise();
+	bool do_thrust();
+	bool do_fire();
+	bool do_hyperspace();
 
 	keypress& press();
 }

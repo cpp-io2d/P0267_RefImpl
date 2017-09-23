@@ -3,17 +3,17 @@
 
 #include <algorithm>
 
-void rocks_in_space::physics::update()
+void rocks_in_space::physics::update(float seconds)
 {
-	m_position += m_velocity;
+	m_position += m_velocity * seconds;
 	constrain_pos(m_position);
 }
 
-void rocks_in_space::physics::update(const acc& a)
+void rocks_in_space::physics::update(float seconds, const acc& a)
 {
-	m_velocity += a;
+	m_velocity += a * seconds;
 	constrain_vel(m_velocity);
-	update();
+	update(seconds);
 }
 
 std::array<rocks_in_space::physics, 2> rocks_in_space::physics::divide(std::mt19937& gen, std::uniform_real_distribution<float>& zero_to_one) const
@@ -27,9 +27,9 @@ std::array<rocks_in_space::physics, 2> rocks_in_space::physics::divide(std::mt19
 	return{ physics(m_position, pol_to_car({r1, theta1})), physics(m_position, pol_to_car({r2, theta2})) };
 }
 
-void rocks_in_space::controllable_physics::update()
+void rocks_in_space::controllable_physics::update(float seconds)
 {
-	m_physics.update(m_acceleration);
+	m_physics.update(seconds, m_acceleration);
 	m_acceleration = { 0,0 };
 }
 

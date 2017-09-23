@@ -24,7 +24,7 @@ rocks_in_space::ship::ship(const controllable_physics& cp)
 	, m_state_change(std::chrono::steady_clock::now())
 {}
 
-rocks_in_space::ship_update rocks_in_space::ship::update()
+rocks_in_space::ship_update rocks_in_space::ship::update(float seconds)
 {
 	switch (m_state)
 	{
@@ -40,25 +40,25 @@ rocks_in_space::ship_update rocks_in_space::ship::update()
 	}
 	case ship_state::active:
 	{
-		if (anti_clockwise())
+		if (do_anti_clockwise())
 		{
-			m_physics.spin(spin_left);
+			m_physics.apply_spin(spin_left * seconds);
 		}
-		if (clockwise())
+		if (do_clockwise())
 		{
-			m_physics.spin(spin_right);
+			m_physics.apply_spin(spin_right * seconds);
 		}
-		if (thrust())
+		if (do_thrust())
 		{
-			m_physics.thrust(thrust_force);
+			m_physics.apply_thrust(thrust * seconds);
 		}
-		m_physics.update();
+		m_physics.update(seconds);
 
 		std::transform(&ship_vb[0], &ship_vb[ship_shape.m_count], &m_path.m_vertices[0], [&](const auto & v_in)
 		{
 			return rotate(v_in, m_physics.orientation(), { 0.0, 0.0 });
 		});
-		return{ fire(), m_physics.position(), m_physics.orientation(), m_path };
+		return{ do_fire(), m_physics.position(), m_physics.orientation(), m_path };
 	}
 	case ship_state::exploding:
 	{
@@ -112,27 +112,27 @@ void rocks_in_space::ship::draw(my_display_surface& ds)
 }
 
 rocks_in_space::missile::missile(const point_2d& position, float orientation, bool active)
-	: m_physics(position, pol_to_car({ missile_travel_distance_per_tick, orientation }))
-	, m_age(active ? 0.0F : max_missile_age)
+	: m_physics(position, pol_to_car({ missile_speed, orientation }))
+	, m_age(active ? 0.0F : missile_lifespan)
 {}
 
-bool rocks_in_space::missile::update()
+bool rocks_in_space::missile::update(float seconds)
 {
 	if (!active()) return true;
 
-	m_physics.update();
-	m_age += 0.1F;
+	m_physics.update(seconds);
+	m_age += seconds;
 	return active();
 }
 
 void rocks_in_space::missile::destroy()
 {
-	m_age = max_missile_age;
+	m_age = missile_lifespan;
 }
 
 bool rocks_in_space::missile::active() const
 {
-	return (m_age < max_missile_age);
+	return (m_age < missile_lifespan);
 }
 
 void rocks_in_space::missile::draw(my_display_surface& ds)
@@ -143,7 +143,7 @@ void rocks_in_space::missile::draw(my_display_surface& ds)
 
 	auto path = path_builder<>{};
 	path.new_figure(screen_space(m_physics.position()));
-	path.line(screen_space(m_physics.position() - m_physics.velocity()));
+	path.line(screen_space(m_physics.position() - (m_physics.velocity() / missile_speed) ));
 
 	ds.stroke(my_brush{ rgba_color::white }, path);
 }

@@ -31,8 +31,8 @@ namespace rocks_in_space
 	{
 	public:
 								physics(const pos& position, const vel& velocity);
-		void					update();
-		void					update(const acc&);
+		void					update(float seconds);
+		void					update(float seconds, const acc&);
 
 		std::array<physics, 2>	divide(std::mt19937&, std::uniform_real_distribution<float>&) const;
 		const pos&				position() const;
@@ -48,9 +48,9 @@ namespace rocks_in_space
 	public:
 					controllable_physics(const physics& phy, const acc& acc, float ori);
 		void		reset(const physics& phy, const acc& acc, float ori);
-		void		update();
-		void		thrust(float t);
-		void		spin(float spin);
+		void		update(float seconds);
+		void		apply_thrust(float t);
+		void		apply_spin(float spin);
 
 		const pos&	position() const;
 		const vel&	velocity() const;
@@ -100,12 +100,12 @@ inline void rocks_in_space::controllable_physics::reset(const physics& phy, cons
 	m_orientation = ori;
 }
 
-inline void	rocks_in_space::controllable_physics::thrust(float t)
+inline void	rocks_in_space::controllable_physics::apply_thrust(float t)
 {
 	m_acceleration = pol_to_car(polar_2d{ t, m_orientation });
 }
 
-inline void	rocks_in_space::controllable_physics::spin(float spin)
+inline void	rocks_in_space::controllable_physics::apply_spin(float spin)
 {
 	m_orientation += spin;
 }

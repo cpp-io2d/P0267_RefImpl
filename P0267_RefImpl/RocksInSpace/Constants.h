@@ -1,5 +1,7 @@
 #pragma once
 
+#include <io2d.h>
+
 namespace rocks_in_space
 {
 	constexpr auto playing_field_width{ 640.0F };
@@ -14,13 +16,13 @@ namespace rocks_in_space
 	constexpr auto medium_asteroid_size{ 2.5F };
 	constexpr auto small_asteroid_size{ 1.25F };
 
-	constexpr auto initial_speed{ 0.1F };
+	constexpr auto initial_speed{ 25.0F };
 
-	constexpr auto spin_left{ 0.01F };
-	constexpr auto spin_right{ -0.01F };
-	constexpr auto thrust_force{ 0.001F };
-	constexpr auto max_ship_speed{ 0.9F };
+	constexpr auto spin_left{ std::experimental::io2d::tau<float> };
+	constexpr auto spin_right{ -std::experimental::io2d::tau<float> };
+	constexpr auto thrust{ 90000.0F };
+	constexpr auto max_ship_speed{ 300.0F };
 
-	constexpr auto missile_travel_distance_per_tick{ 1.0F };
-	constexpr auto max_missile_age{ 30.0F };
+	constexpr auto missile_speed{ 250.0F };
+	constexpr auto missile_lifespan{ 1.5F };
 }

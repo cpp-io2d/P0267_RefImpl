@@ -17,13 +17,13 @@ constexpr rocks_in_space::path_buffer rocks_in_space::asteroid::a2 = { 13, a2_vb
 constexpr rocks_in_space::path_buffer rocks_in_space::asteroid::a3 = { 12, a3_vb };
 constexpr rocks_in_space::path_buffer rocks_in_space::asteroid::a4 = { 12, a4_vb };
 
-bool rocks_in_space::asteroid::update()
+bool rocks_in_space::asteroid::update(float seconds)
 {
 	if (!m_active)
 	{
 		return false;
 	}
-	m_physics.update();
+	m_physics.update(seconds);
 	return true;
 }
 
