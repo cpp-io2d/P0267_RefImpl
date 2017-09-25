@@ -15,8 +15,9 @@ namespace rocks_in_space
 	private:
 		enum class game_state
 		{
+			new_level,
+			new_ship,
 			active,
-			new_level
 		};
 		void	update_ship(float seconds, std::vector<asteroid_destruction>&);
 		void	update_missiles(float seconds, std::vector<asteroid_destruction>&);

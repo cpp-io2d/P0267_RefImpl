@@ -1,12 +1,20 @@
 #include "Maths.h"
 
-rocks_in_space::point_2d rocks_in_space::rotate(const point_2d& point, float theta, const point_2d& origin)
+bool rocks_in_space::stadium::intersects(circle c) const
 {
-	const auto translation = point - origin;
-	const auto s = sin(theta);
-	const auto c = cos(theta);
+	return minimum_distance_from_line_segment(m_c1, m_c2, c.center()) < (m_radius + c.radius());
+}
 
-	return point_2d{ translation.x * c - translation.y * s, translation.x * s + translation.y * c } +origin;
+float rocks_in_space::minimum_distance_from_line_segment(point_2d e1, point_2d e2, point_2d p)
+{
+	const auto d_sq = (e1 - e2).magnitude_squared();
+	if (d_sq == 0.0f)
+	{
+		return (e1 - p).magnitude();
+	}
+	const auto t = std::max(0.0f, std::min(1.0f, (p - e1).dot(e2 - e1) / d_sq));
+	const auto projection = e1 + t * (e2 - e1);
+	return (p - projection).magnitude();
 }
 
 bool rocks_in_space::intersects(point_2d a1, point_2d a2, point_2d b1, point_2d b2)
@@ -69,6 +77,15 @@ bool rocks_in_space::contains(const bounding_box& r, const point_2d& p)
 float rocks_in_space::radius(const bounding_box& r)
 {
 	return (r.top_left() - r.bottom_right()).magnitude() / 2.0f;
+}
+
+rocks_in_space::point_2d rocks_in_space::rotate(const point_2d& point, float theta, const point_2d& origin)
+{
+	const auto translation = point - origin;
+	const auto s = sin(theta);
+	const auto c = cos(theta);
+
+	return point_2d{ translation.x * c - translation.y * s, translation.x * s + translation.y * c } +origin;
 }
 
 rocks_in_space::bounding_box rocks_in_space::translate(const bounding_box& r, const point_2d& v)

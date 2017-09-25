@@ -8,6 +8,7 @@ namespace
 {
 	const rocks_in_space::path_buffer* asteroid_vbs[] = { &rocks_in_space::asteroid::a1, &rocks_in_space::asteroid::a2, &rocks_in_space::asteroid::a3, &rocks_in_space::asteroid::a4 };
 	constexpr auto level_transition_period = 1;
+	constexpr auto new_ship_transition_period = 2;
 }
 
 rocks_in_space::game::game()
@@ -39,10 +40,26 @@ void rocks_in_space::game::update(my_display_surface& ds)
 	{
 		if (std::chrono::duration_cast<std::chrono::seconds>(now - m_state_change).count() > level_transition_period)
 		{
-			m_state = game_state::active;
-			m_state_change = now;
 			++m_level;
 			generate_level();
+			m_state = game_state::active;
+			m_state_change = now;
+		}
+	}
+
+	if (m_state == game_state::new_ship)
+	{
+		if (std::chrono::duration_cast<std::chrono::seconds>(now - m_state_change).count() > new_ship_transition_period &&
+			std::find_if(std::begin(m_asteroids), std::end(m_asteroids), [&](const auto& a)
+		{
+			// Will the asteroid collide with the ship in the next two seconds?
+			// Does the stadium described by the path of the asteroid's bounding circle
+			// over the next two seconds intersect the ship's bounding circle?
+			return a.sweep(asteroid_sweep_lookahead).intersects(m_ship.sweep());
+		}) == std::end(m_asteroids))
+		{
+			m_state = game_state::active;
+			m_state_change = now;
 		}
 	}
 
@@ -101,12 +118,15 @@ void rocks_in_space::game::update_ship(float seconds, std::vector<asteroid_destr
 		m_ship_missiles[m_next_ship_missile] = { ship_update.m_position, ship_update.m_orientation, true };
 		m_next_ship_missile = ++m_next_ship_missile % max_missiles;
 	}
-	for (auto& a : m_asteroids)
+	if (m_ship.active())
 	{
-		if (a.active() && collides(a.collision_data(), { ship_update.m_position, ship_radius(), ship_update.m_path }))
+		for (auto& a : m_asteroids)
 		{
-			m_ship.destroy();
-			ad.push_back(a.destroy());
+			if (a.active() && collides(a.collision_data(), { ship_update.m_position, ship_radius(), ship_update.m_path }))
+			{
+				m_ship.destroy();
+				ad.push_back(a.destroy());
+			}
 		}
 	}
 }

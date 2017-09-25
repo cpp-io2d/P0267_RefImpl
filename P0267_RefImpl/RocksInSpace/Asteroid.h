@@ -22,6 +22,7 @@ namespace rocks_in_space
 		void						draw(my_display_surface& ds) const;
 		bool						active() const;
 		const collision&			collision_data() const;
+		stadium						sweep(float duration) const;
 
 		static const path_buffer	a1;
 		static const path_buffer	a2;
@@ -53,4 +54,9 @@ inline bool rocks_in_space::asteroid::active() const
 inline const rocks_in_space::collision&	rocks_in_space::asteroid::collision_data() const
 {
 	return m_collision;
+}
+
+inline rocks_in_space::stadium rocks_in_space::asteroid::sweep(float duration) const
+{
+	return { m_physics.position(), m_physics.position() + m_physics.velocity() * duration, m_collision.m_radius };
 }

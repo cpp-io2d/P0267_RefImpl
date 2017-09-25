@@ -20,6 +20,8 @@ namespace rocks_in_space
 		ship_update		update(float seconds);
 		void			destroy();
 		void			draw(my_display_surface& ds);
+		circle			sweep() const;
+		bool			active() const;
 
 	private:
 		enum class ship_state
@@ -55,4 +57,14 @@ namespace rocks_in_space
 inline std::array<rocks_in_space::point_2d, 2>	rocks_in_space::missile::collision_data() const
 {
 	return{ m_physics.position(), m_physics.position() - m_physics.velocity() };
+}
+
+inline std::experimental::io2d::circle rocks_in_space::ship::sweep() const
+{
+	return circle(m_physics.position(), ship_radius());
+}
+
+inline bool rocks_in_space::ship::active() const
+{
+	return m_state == ship_state::active;
 }

@@ -25,4 +25,6 @@ namespace rocks_in_space
 
 	constexpr auto missile_speed{ 250.0F };
 	constexpr auto missile_lifespan{ 1.5F };
+
+	constexpr auto asteroid_sweep_lookahead{ 2.0f };
 }
