@@ -41,7 +41,7 @@ namespace std::experimental::io2d {
 					cpdItem.header.length = 2;
 					vec.push_back(cpdItem);
 					cpdItem = {};
-					cpdItem.point = { pt.x, pt.y };
+					cpdItem.point = { pt.x(), pt.y() };
 					lastMoveToPoint = pt;
 					vec.push_back(cpdItem);
 				}
@@ -54,7 +54,7 @@ namespace std::experimental::io2d {
 					cpdItem.header.length = 2;
 					vec.push_back(cpdItem);
 					cpdItem = {};
-					cpdItem.point = { pt.x, pt.y };
+					cpdItem.point = { pt.x(), pt.y() };
 					vec.push_back(cpdItem);
 				}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
@@ -67,13 +67,13 @@ namespace std::experimental::io2d {
 					cpdItem.header.length = 4;
 					vec.push_back(cpdItem);
 					cpdItem = {};
-					cpdItem.point = { pt1.x, pt1.y };
+					cpdItem.point = { pt1.x(), pt1.y() };
 					vec.push_back(cpdItem);
 					cpdItem = {};
-					cpdItem.point = { pt2.x, pt2.y };
+					cpdItem.point = { pt2.x(), pt2.y() };
 					vec.push_back(cpdItem);
 					cpdItem = {};
-					cpdItem.point = { pt3.x, pt3.y };
+					cpdItem.point = { pt3.x(), pt3.y() };
 					vec.push_back(cpdItem);
 				}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
@@ -94,7 +94,7 @@ namespace std::experimental::io2d {
 					cpdItem.header.length = 2;
 					vec.push_back(cpdItem);
 					cpdItem = {};
-					cpdItem.point = { lastMoveToPoint.x, lastMoveToPoint.y };
+					cpdItem.point = { lastMoveToPoint.x(), lastMoveToPoint.y() };
 					vec.push_back(cpdItem);
 				}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
@@ -135,8 +135,8 @@ namespace std::experimental::io2d {
 				: _Cairo_path(nullptr)
 			{}
 
-			template <class Allocator>
-			inline cairo_interpreted_path::cairo_interpreted_path(const path_builder<Allocator>& pf)
+			template <class LinearAlgebra, class Allocator>
+			inline cairo_interpreted_path::cairo_interpreted_path(const path_builder<LinearAlgebra, Allocator>& pf)
 				: _Cairo_path(new cairo_path_t, [](cairo_path_t*) {
 				// This deleter intentionally left blank. The dtor will deal with this.
 			}) {
@@ -599,7 +599,7 @@ namespace std::experimental::io2d {
 				: _Brush()
 				, _Image_surface()
 				, _Brush_type(brush_type::linear) {
-				_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x, begin.y, end.x, end.y), &cairo_pattern_destroy);
+				_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
 				_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
 				for (auto it = first; it != last; ++it) {
@@ -613,7 +613,7 @@ namespace std::experimental::io2d {
 				: _Brush()
 				, _Image_surface()
 				, _Brush_type(brush_type::linear) {
-				_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x, begin.y, end.x, end.y), &cairo_pattern_destroy);
+				_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_linear(begin.x(), begin.y(), end.x(), end.y()), &cairo_pattern_destroy);
 				_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
 				for (const gradient_stop& stop : il) {
@@ -623,12 +623,12 @@ namespace std::experimental::io2d {
 				_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 			}
 
-			template <class InputIterator>
-			inline cairo_brush::cairo_brush(const circle& start, const circle& end, InputIterator first, InputIterator last)
+			template <class LinearAlgebra, class InputIterator>
+			inline cairo_brush::cairo_brush(const circle<LinearAlgebra>& start, const circle<LinearAlgebra>& end, InputIterator first, InputIterator last)
 				: _Brush()
 				, _Image_surface()
 				, _Brush_type(brush_type::radial) {
-				_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x, start.center().y, start.radius(), end.center().x, end.center().y, end.radius()), &cairo_pattern_destroy);
+				_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x, start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
 				_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 				for (auto it = first; it != last; ++it) {
 					auto stop = *it;
@@ -637,11 +637,12 @@ namespace std::experimental::io2d {
 				_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 			}
 
-			inline cairo_brush::cairo_brush(const circle& start, const circle& end, ::std::initializer_list<gradient_stop> il)
+			template <class LinearAlgebra>
+			inline cairo_brush::cairo_brush(const circle<LinearAlgebra>& start, const circle<LinearAlgebra>& end, ::std::initializer_list<gradient_stop> il)
 				: _Brush()
 				, _Image_surface()
 				, _Brush_type(brush_type::radial) {
-				_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x, start.center().y, start.radius(), end.center().x, end.center().y, end.radius()), &cairo_pattern_destroy);
+				_Brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
 				_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 
 				for (const gradient_stop& stop : il) {
@@ -665,14 +666,14 @@ namespace std::experimental::io2d {
 
 			// cairo_surface
 
-			template <class Allocator>
-			inline void cairo_surface::fill(const cairo_brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<render_props>& rp, const optional<clip_props<cairo_renderer>>& cl) {
+			template <class LinearAlgebra, class Allocator>
+			inline void cairo_surface::fill(const cairo_brush& b, const path_builder<LinearAlgebra, Allocator>& pf, const optional<brush_props<LinearAlgebra>>& bp, const optional<render_props<LinearAlgebra>>& rp, const optional<clip_props<cairo_renderer>>& cl) {
 				cairo_interpreted_path pg(pf);
 				fill(b, pg, bp, rp, cl);
 			}
 
-			template <class Allocator>
-			inline void cairo_surface::stroke(const cairo_brush& b, const path_builder<Allocator>& pf, const optional<brush_props>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props>& rp, const optional<clip_props<cairo_renderer>>& cl) {
+			template <class LinearAlgebra, class Allocator>
+			inline void cairo_surface::stroke(const cairo_brush& b, const path_builder<LinearAlgebra, Allocator>& pf, const optional<brush_props<LinearAlgebra>>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props<LinearAlgebra>>& rp, const optional<clip_props<cairo_renderer>>& cl) {
 				cairo_interpreted_path pg(pf);
 				stroke(b, pg, bp, sp, d, rp, cl);
 			}

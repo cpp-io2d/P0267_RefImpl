@@ -84,7 +84,7 @@ namespace std::experimental::io2d {
 				LRESULT _Window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 				display_surface<T>& _Display_surface;
-				windows_handler_impl _Impl;
+				~windows_handler_impl _Impl;
 
 			public:
 				static LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
