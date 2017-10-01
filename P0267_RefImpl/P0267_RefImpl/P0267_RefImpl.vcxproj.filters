@@ -65,6 +65,9 @@
     <ClInclude Include="xwindows_handler_impl.h">
       <Filter>windows handler</Filter>
     </ClInclude>
+    <ClInclude Include="xsurfaces_enums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rgba_color.cpp">

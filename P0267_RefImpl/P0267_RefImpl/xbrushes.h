@@ -47,9 +47,9 @@ namespace std {
 				constexpr bool operator!=(const gradient_stop& lhs, const gradient_stop& rhs)
 					noexcept;
 
-				template <class T>
+				template <class SurfaceHandler>
 				class brush {
-					typename T::renderer_brush _Brush_impl;
+					typename SurfaceHandler::renderer_brush _Brush_impl;
 
 				public:
 					const auto& native_handle() const { return _Brush_impl; }

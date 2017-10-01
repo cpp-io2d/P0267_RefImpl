@@ -4,11 +4,10 @@ namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
-				template <class Geometry> // Geometry is a templated static traits class.
-				class basic_geometry {
-					class bounding_box {
+				template <class GraphicsMath>
+					class basic_bounding_box {
 					public:
-						using data_type = typename Geometry::bounding_box_data_type;
+						using data_type = typename GraphicsMath::bounding_box_data_type;
 					private:
 						data_type _Data;
 						//float _X = 0.0F;
@@ -16,16 +15,17 @@ namespace std {
 						//float _Width = 0.0F;
 						//float _Height = 0.0F;
 					public:
-						constexpr bounding_box() noexcept;
-						constexpr bounding_box(float x, float y, float width, float height) noexcept;
-						constexpr bounding_box(const typename Geometry::point_2d& tl, const typename Geometry::point_2d& br) noexcept;
-
+						constexpr basic_bounding_box() noexcept;
+						constexpr basic_bounding_box(float x, float y, float width, float height) noexcept;
+\
 						constexpr void x(float val) noexcept;
 						constexpr void y(float val) noexcept;
 						constexpr void width(float val) noexcept;
 						constexpr void height(float val) noexcept;
-						constexpr void top_left(const typename Geometry::point_2d& val) noexcept;
-						constexpr void bottom_right(const typename Geometry::point_2d& val) noexcept;
+						template <class LinearAlgebra>
+						constexpr void top_left(float top, float left) noexcept;
+						template <class LinearAlgebra>
+						constexpr void bottom_right(const typename LinearAlgebra::point_2d_type& val) noexcept;
 
 						constexpr float x() const noexcept;
 						constexpr float y() const noexcept;
@@ -55,8 +55,6 @@ namespace std {
 						constexpr typename Geometry::point_2d center() const noexcept;
 						constexpr float radius() const noexcept;
 					};
-				};
-
 				template <class Geometry>
 				constexpr bool operator==(const typename basic_geometry<Geometry>::bounding_box& lhs, const typename basic_geometry<Geometry>::bounding_box& rhs) noexcept;
 				template <class Geometry>
