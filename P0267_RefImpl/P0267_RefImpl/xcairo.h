@@ -41,8 +41,8 @@ namespace std {
 						cairo_path* _Native_handle() const noexcept;
 
 						constexpr cairo_interpreted_path() noexcept;
-						template <class LinearAlgebra, class Allocator>
-						explicit cairo_interpreted_path(const path_builder<LinearAlgebra, Allocator>& p);
+						template <class GraphicsMath, class Allocator>
+						explicit cairo_interpreted_path(const path_builder<GraphicsMath, Allocator>& p);
 						template <class ForwardIterator>
 						cairo_interpreted_path(ForwardIterator first, ForwardIterator last);
 						cairo_interpreted_path(const cairo_interpreted_path& other) noexcept;
@@ -68,11 +68,11 @@ namespace std {
 
 						cairo_brush(const point_2d& begin, const point_2d& end, ::std::initializer_list<gradient_stop> il);
 
-						template <class LinearAlgebra, class InputIterator>
-						cairo_brush(const circle<LinearAlgebra>& start, const circle<LinearAlgebra>& end, InputIterator first, InputIterator last);
+						template <class GraphicsMath, class InputIterator>
+						cairo_brush(const circle<GraphicsMath>& start, const circle<GraphicsMath>& end, InputIterator first, InputIterator last);
 
-						template <class LinearAlgebra>
-						cairo_brush(const circle<LinearAlgebra>& start, const circle<LinearAlgebra>& end, ::std::initializer_list<gradient_stop> il);
+						template <class GraphicsMath>
+						cairo_brush(const circle<GraphicsMath>& start, const circle<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
 
 						explicit cairo_brush(cairo_image_surface&& img);	// Fix implementation once cairo_image_surface is done
 

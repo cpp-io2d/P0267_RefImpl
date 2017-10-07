@@ -135,8 +135,8 @@ namespace std::experimental::io2d {
 				: _Cairo_path(nullptr)
 			{}
 
-			template <class LinearAlgebra, class Allocator>
-			inline cairo_interpreted_path::cairo_interpreted_path(const path_builder<LinearAlgebra, Allocator>& pf)
+			template <class GraphicsMath, class Allocator>
+			inline cairo_interpreted_path::cairo_interpreted_path(const path_builder<GraphicsMath, Allocator>& pf)
 				: _Cairo_path(new cairo_path_t, [](cairo_path_t*) {
 				// This deleter intentionally left blank. The dtor will deal with this.
 			}) {
@@ -623,8 +623,8 @@ namespace std::experimental::io2d {
 				_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 			}
 
-			template <class LinearAlgebra, class InputIterator>
-			inline cairo_brush::cairo_brush(const circle<LinearAlgebra>& start, const circle<LinearAlgebra>& end, InputIterator first, InputIterator last)
+			template <class GraphicsMath, class InputIterator>
+			inline cairo_brush::cairo_brush(const circle<GraphicsMath>& start, const circle<GraphicsMath>& end, InputIterator first, InputIterator last)
 				: _Brush()
 				, _Image_surface()
 				, _Brush_type(brush_type::radial) {
@@ -637,8 +637,8 @@ namespace std::experimental::io2d {
 				_Throw_if_failed_cairo_status_t(cairo_pattern_status(_Brush.get()));
 			}
 
-			template <class LinearAlgebra>
-			inline cairo_brush::cairo_brush(const circle<LinearAlgebra>& start, const circle<LinearAlgebra>& end, ::std::initializer_list<gradient_stop> il)
+			template <class GraphicsMath>
+			inline cairo_brush::cairo_brush(const circle<GraphicsMath>& start, const circle<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il)
 				: _Brush()
 				, _Image_surface()
 				, _Brush_type(brush_type::radial) {
@@ -666,14 +666,14 @@ namespace std::experimental::io2d {
 
 			// cairo_surface
 
-			template <class LinearAlgebra, class Allocator>
-			inline void cairo_surface::fill(const cairo_brush& b, const path_builder<LinearAlgebra, Allocator>& pf, const optional<brush_props<LinearAlgebra>>& bp, const optional<render_props<LinearAlgebra>>& rp, const optional<clip_props<cairo_renderer>>& cl) {
+			template <class GraphicsMath, class Allocator>
+			inline void cairo_surface::fill(const cairo_brush& b, const path_builder<GraphicsMath, Allocator>& pf, const optional<brush_props<GraphicsMath>>& bp, const optional<render_props<GraphicsMath>>& rp, const optional<clip_props<cairo_renderer>>& cl) {
 				cairo_interpreted_path pg(pf);
 				fill(b, pg, bp, rp, cl);
 			}
 
-			template <class LinearAlgebra, class Allocator>
-			inline void cairo_surface::stroke(const cairo_brush& b, const path_builder<LinearAlgebra, Allocator>& pf, const optional<brush_props<LinearAlgebra>>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props<LinearAlgebra>>& rp, const optional<clip_props<cairo_renderer>>& cl) {
+			template <class GraphicsMath, class Allocator>
+			inline void cairo_surface::stroke(const cairo_brush& b, const path_builder<GraphicsMath, Allocator>& pf, const optional<brush_props<GraphicsMath>>& bp, const optional<stroke_props>& sp, const optional<dashes>& d, const optional<render_props<GraphicsMath>>& rp, const optional<clip_props<cairo_renderer>>& cl) {
 				cairo_interpreted_path pg(pf);
 				stroke(b, pg, bp, sp, d, rp, cl);
 			}

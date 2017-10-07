@@ -83,7 +83,7 @@ namespace std {
 		namespace io2d {
 			inline namespace v1 {
 
-				using dashes = tuple<vector<float>, float>;
+				//using dashes = tuple<vector<float>, float>;
 
 				//enum class wrap_mode;
 				//enum class filter;
@@ -219,59 +219,57 @@ namespace std {
 				//	};
 				//};
 
-				template <class T, class U>
-				constexpr bool operator==(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
-				template <class T, class U>
-				constexpr bool operator!=(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator+(const typename basic_linear_algebra<T, U>::point_2d& val) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator+(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator-(const typename basic_linear_algebra<T, U>::point_2d& val) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator-(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator*(const typename basic_linear_algebra<T, U>::point_2d& lhs, float rhs) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator*(float lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator*(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator/(const typename basic_linear_algebra<T, U>::point_2d& lhs, float rhs) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator/(float lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator/(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr bool operator==(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr bool operator!=(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator+(const typename basic_linear_algebra<T, U>::point_2d& val) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator+(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator-(const typename basic_linear_algebra<T, U>::point_2d& val) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator-(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator*(const typename basic_linear_algebra<T, U>::point_2d& lhs, float rhs) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator*(float lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator*(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator/(const typename basic_linear_algebra<T, U>::point_2d& lhs, float rhs) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator/(float lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator/(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::point_2d& rhs) noexcept;
 
-				//using point_2d = typename basic_linear_algebra<_Point_2d_float_impl, _Matrix_2d_float_impl>::point_2d;
-
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::matrix_2d operator*(const typename basic_linear_algebra<T, U>::matrix_2d& lhs, const typename basic_linear_algebra<T, U>::matrix_2d& rhs) noexcept;
-				template <class T, class U>
-				constexpr typename basic_linear_algebra<T, U>::point_2d operator*(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::matrix_2d& rhs) noexcept;
-
-				template <class T, class U>
-				constexpr bool operator==(const typename basic_linear_algebra<T, U>::matrix_2d& lhs, const typename basic_linear_algebra<T, U>::matrix_2d& rhs) noexcept;
-				template <class T, class U>
-				constexpr bool operator!=(const typename basic_linear_algebra<T, U>::matrix_2d& lhs, const typename basic_linear_algebra<T, U>::matrix_2d& rhs) noexcept;
-
-				using linear_algebra = basic_linear_algebra<_Point_2d_float_impl, _Matrix_2d_float_impl>;
-				using point_2d = typename linear_algebra::point_2d;
-				using matrix_2d = typename linear_algebra::matrix_2d;
-				using figure_items = basic_figure_items<linear_algebra>;
+				////using point_2d = typename basic_linear_algebra<_Point_2d_float_impl, _Matrix_2d_float_impl>::point_2d;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::matrix_2d operator*(const typename basic_linear_algebra<T, U>::matrix_2d& lhs, const typename basic_linear_algebra<T, U>::matrix_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr typename basic_linear_algebra<T, U>::point_2d operator*(const typename basic_linear_algebra<T, U>::point_2d& lhs, const typename basic_linear_algebra<T, U>::matrix_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr bool operator==(const typename basic_linear_algebra<T, U>::matrix_2d& lhs, const typename basic_linear_algebra<T, U>::matrix_2d& rhs) noexcept;
+				//template <class T, class U>
+				//constexpr bool operator!=(const typename basic_linear_algebra<T, U>::matrix_2d& lhs, const typename basic_linear_algebra<T, U>::matrix_2d& rhs) noexcept;
+				//using linear_algebra = basic_linear_algebra<_Point_2d_float_impl, _Matrix_2d_float_impl>;
+				//using point_2d = typename linear_algebra::point_2d;
+				//using matrix_2d = typename linear_algebra::matrix_2d;
+				//using figure_items = basic_figure_items<linear_algebra>;
 				//template <class T>
 				//class interpreted_path;
-				//template <class LinearAlgebra, class Allocator>
+				//template <class GraphicsMath, class Allocator>
 				//class path_builder;
-				template <class LinearAlgebra, class Allocator>
-				bool operator==(const path_builder<LinearAlgebra, Allocator>& lhs,
-					const path_builder<LinearAlgebra, Allocator>& rhs) noexcept;
-				template <class LinearAlgebra, class Allocator>
-				bool operator!=(const path_builder<LinearAlgebra, Allocator>& lhs,
-					const path_builder<LinearAlgebra, Allocator>& rhs) noexcept;
-				template <class LinearAlgebra, class Allocator>
-				void swap(path_builder<LinearAlgebra, Allocator>& lhs, path_builder<LinearAlgebra, Allocator>& rhs)
+
+				template <class GraphicsMath, class Allocator>
+				bool operator==(const path_builder<GraphicsMath, Allocator>& lhs,
+					const path_builder<GraphicsMath, Allocator>& rhs) noexcept;
+				template <class GraphicsMath, class Allocator>
+				bool operator!=(const path_builder<GraphicsMath, Allocator>& lhs,
+					const path_builder<GraphicsMath, Allocator>& rhs) noexcept;
+				template <class GraphicsMath, class Allocator>
+				void swap(path_builder<GraphicsMath, Allocator>& lhs, path_builder<GraphicsMath, Allocator>& rhs)
 					noexcept(noexcept(lhs.swap(rhs))) {		// Compiler error prevents forwrad declaration
 					lhs.swap(rhs);
 				}
@@ -282,77 +280,77 @@ namespace std {
 				constexpr bool operator!=(const gradient_stop& lhs, const gradient_stop& rhs)
 					noexcept;
 
-				//template <class LinearAlgebra, class T>
+				//template <class GraphicsMath, class T>
 				//class brush;
-				//template <class LinearAlgebra>
+				//template <class GraphicsMath>
 				//class render_props;
-				//template <class LinearAlgebra>
+				//template <class GraphicsMath>
 				//class brush_props;
 				//template <class T>
 				//class clip_props;
 				//class stroke_props;
-				//template <class LinearAlgebra>
+				//template <class GraphicsMath>
 				//class mask_props;
 				//template <class T>
 				//class handler;
-				//template <class LinearAlgebra, class T>
+				//template <class GraphicsMath, class T>
 				//class surface;
-				//template <class LinearAlgebra, class T>
+				//template <class GraphicsMath, class T>
 				//class image_surface;
-				//template <class LinearAlgebra, class T>
+				//template <class GraphicsMath, class T>
 				//class display_surface;
-				//template <class LinearAlgebra, class T>
+				//template <class GraphicsMath, class T>
 				//class mapped_surface;
 
 				int format_stride_for_width(format fmt, int width) noexcept;
 
-				template <class LinearAlgebra, class T>
-				display_surface<LinearAlgebra, T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox);
+				template <class GraphicsMath, class T>
+				display_surface<GraphicsMath, T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox);
 
-				template <class LinearAlgebra, class T>
-				display_surface<LinearAlgebra, T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl = scaling::letterbox) noexcept;
+				template <class GraphicsMath, class T>
+				display_surface<GraphicsMath, T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl = scaling::letterbox) noexcept;
 
-				template <class LinearAlgebra, class T, class U>
-				handler<T> make_handler(display_surface<LinearAlgebra, U>&, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				template <class GraphicsMath, class T, class U>
+				handler<T> make_handler(display_surface<GraphicsMath, U>&, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
 
-				template <class LinearAlgebra, class T, class U>
-				handler<T> make_handler(display_surface<LinearAlgebra, U>&, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+				template <class GraphicsMath, class T, class U>
+				handler<T> make_handler(display_surface<GraphicsMath, U>&, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
 
-				template <class LinearAlgebra, class T>
-				image_surface<LinearAlgebra, T> make_image_surface(format format, int width, int height);
+				template <class GraphicsMath, class T>
+				image_surface<GraphicsMath, T> make_image_surface(format format, int width, int height);
 
-				template <class LinearAlgebra, class T>
-				image_surface<LinearAlgebra, T> make_image_surface(format format, int width, int height, error_code& ec) noexcept;
+				template <class GraphicsMath, class T>
+				image_surface<GraphicsMath, T> make_image_surface(format format, int width, int height, error_code& ec) noexcept;
 
-				template <class LinearAlgebra, class T>
-				image_surface<LinearAlgebra, T> copy_image_surface(image_surface<LinearAlgebra, T>& sfc) noexcept;
+				template <class GraphicsMath, class T>
+				image_surface<GraphicsMath, T> copy_image_surface(image_surface<GraphicsMath, T>& sfc) noexcept;
 
-				template <class LinearAlgebra>
-				float angle_for_point(const typename LinearAlgebra::point_2d& ctr, const typename LinearAlgebra::point_2d& pt) noexcept;
+				template <class GraphicsMath>
+				float angle_for_point(const basic_point_2d<GraphicsMath>& ctr, const basic_point_2d<GraphicsMath>& pt) noexcept;
 
-				template <class LinearAlgebra>
-				typename LinearAlgebra::point_2d point_for_angle(float ang, float rad = 1.0f) noexcept;
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> point_for_angle(float ang, float rad = 1.0f) noexcept;
 
-				template <class LinearAlgebra>
-				typename LinearAlgebra::point_2d point_for_angle(float ang, const typename LinearAlgebra::point_2d& rad) noexcept;
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> point_for_angle(float ang, const basic_point_2d<GraphicsMath>& rad) noexcept;
 
-				template <class LinearAlgebra>
-				typename LinearAlgebra::point_2d arc_start(const typename LinearAlgebra::point_2d& ctr, float sang, const typename LinearAlgebra::point_2d& rad) noexcept;
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_start(const basic_point_2d<GraphicsMath>& ctr, float sang, const basic_point_2d<GraphicsMath>& rad) noexcept;
 
-				template <class LinearAlgebra>
-				typename LinearAlgebra::point_2d arc_start(const typename LinearAlgebra::point_2d& ctr, float sang, const typename LinearAlgebra::point_2d& rad, const typename LinearAlgebra::matrix_2d& m) noexcept;
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_start(const basic_point_2d<GraphicsMath>& ctr, float sang, const basic_point_2d<GraphicsMath>& rad, const basic_matrix_2d<GraphicsMath>& m) noexcept;
 
-				template <class LinearAlgebra>
-				typename LinearAlgebra::point_2d arc_center(const typename LinearAlgebra::point_2d& cpt, float sang, const typename LinearAlgebra::point_2d& rad) noexcept;
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_center(const basic_point_2d<GraphicsMath>& cpt, float sang, const basic_point_2d<GraphicsMath>& rad) noexcept;
 
-				template <class LinearAlgebra>
-				typename LinearAlgebra::point_2d arc_center(const typename LinearAlgebra::point_2d& cpt, float sang, const typename LinearAlgebra::point_2d& rad, const typename LinearAlgebra::matrix_2d& m) noexcept;
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_center(const basic_point_2d<GraphicsMath>& cpt, float sang, const basic_point_2d<GraphicsMath>& rad, const basic_matrix_2d<GraphicsMath>& m) noexcept;
 
-				template <class LinearAlgebra>
-				typename LinearAlgebra::point_2d arc_end(const typename LinearAlgebra::point_2d& cpt, float eang, const typename LinearAlgebra::point_2d& rad) noexcept;
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_end(const basic_point_2d<GraphicsMath>& cpt, float eang, const basic_point_2d<GraphicsMath>& rad) noexcept;
 
-				template <class LinearAlgebra>
-				typename LinearAlgebra::point_2d arc_end(const typename LinearAlgebra::point_2d& cpt, float eang, const typename LinearAlgebra::point_2d& rad, const typename LinearAlgebra::matrix_2d& m) noexcept;
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_end(const basic_point_2d<GraphicsMath>& cpt, float eang, const basic_point_2d<GraphicsMath>& rad, const basic_matrix_2d<GraphicsMath>& m) noexcept;
 			}
 		}
 	}

@@ -56,17 +56,17 @@ namespace std {
 
 					explicit brush(const rgba_color& c);
 
-					template <class LinearAlgebra, class InputIterator>
-					brush(const typename LinearAlgebra::point_2d& begin, const typename LinearAlgebra::point_2d& end, InputIterator first, InputIterator last);
+					template <class GraphicsMath, class InputIterator>
+					brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last);
 
-					template <class LinearAlgebra>
-					brush(const typename basic_linear_algebra<LinearAlgebra>::point_2d& begin, const typename basic_linear_algebra<LinearAlgebra>::point_2d& end, ::std::initializer_list<gradient_stop> il);
+					template <class GraphicsMath>
+					brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
 
-					template <class Geometry, class InputIterator>
-					brush(const typename basic_geometry<Geometry>::circle& start, const typename basic_geometry<Geometry>::circle& end, InputIterator first, InputIterator last);
+					template <class GraphicsMath, class InputIterator>
+					brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last);
 
-					template <class Geometry>
-					brush(const typename basic_geometry<Geometry>::circle& start, const typename basic_geometry<Geometry>::circle& end, ::std::initializer_list<gradient_stop> il);
+					template <class GraphicsMath>
+					brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
 
 					brush_type type() const noexcept;
 				};

@@ -6,61 +6,62 @@ namespace std {
 		namespace io2d {
 			inline namespace v1 {
 
-				template <class LinearAlgebra>
+				template <class GraphicsMath>
 				class basic_render_props {
-				public:
-					using matrix_2d_type = typename LinearAlgebra::matrix_2d;
-				private:
+				//public:
+				//	using matrix_2d_type = typename GraphicsMath::matrix_2d;
+				//private:
 					antialias _Antialiasing = antialias::good;
-					matrix_2d_type _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
+					basic_matrix_2d<GraphicsMath> _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
 					compositing_op _Compositing = compositing_op::over;
 				public:
-					constexpr render_props() noexcept;
-					constexpr explicit render_props(antialias a, const matrix_2d_type& m = matrix_2d_type{}, compositing_op co = compositing_op::over) noexcept;
+					constexpr basic_render_props() noexcept;
+					constexpr explicit basic_render_props(antialias a, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}, compositing_op co = compositing_op::over) noexcept;
 					constexpr void antialiasing(antialias a) noexcept;
 					constexpr void compositing(compositing_op co) noexcept;
-					constexpr void surface_matrix(const matrix_2d_type& m) noexcept;
+					constexpr void surface_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
 					constexpr antialias antialiasing() const noexcept;
 					constexpr compositing_op compositing() const noexcept;
-					constexpr matrix_2d_type surface_matrix() const noexcept;
+					constexpr basic_matrix_2d<GraphicsMath> surface_matrix() const noexcept;
 				};
 
-				template <class LinearAlgebra>
+				template <class GraphicsMath>
 				class basic_brush_props {
-				public:
-					using matrix_2d_type = typename LinearAlgebra::matrix_2d;
-				private:
+				//public:
+				//	using matrix_2d_type = typename GraphicsMath::matrix_2d;
+				//private:
 					experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::none;
 					experimental::io2d::filter _Filter = experimental::io2d::filter::good;
 					experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
-					matrix_2d_type _Matrix;
+					basic_matrix_2d<GraphicsMath> _Matrix;
 
 				public:
-					constexpr brush_props(io2d::wrap_mode w = io2d::wrap_mode::none, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, const matrix_2d_type& m = matrix_2d_type{}) noexcept;
+					constexpr basic_brush_props(io2d::wrap_mode w = io2d::wrap_mode::none, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
 					constexpr void filter(io2d::filter fi) noexcept;
 					constexpr void wrap_mode(io2d::wrap_mode w) noexcept;
 					constexpr void fill_rule(io2d::fill_rule fr) noexcept;
-					constexpr void brush_matrix(const matrix_2d_type& m) noexcept;
+					constexpr void brush_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
 					constexpr io2d::filter filter() const noexcept;
 					constexpr io2d::wrap_mode wrap_mode() const noexcept;
 					constexpr io2d::fill_rule fill_rule() const noexcept;
-					constexpr matrix_2d_type brush_matrix() const noexcept;
+					constexpr basic_matrix_2d<GraphicsMath> brush_matrix() const noexcept;
 				};
 
-				template <class LinearAlgebra, class SurfaceHandler>
+				template <class SurfaceHandler>
 				class basic_clip_props {
 					interpreted_path<SurfaceHandler> _Clip;
 					experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
 				public:
 					// surplus to paper
-					explicit clip_props(const basic_bounding_box<LinearAlgebra>& r, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
+					template <class GraphicsMath>
+					explicit basic_clip_props(const basic_bounding_box<GraphicsMath>& r, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
 
 					basic_clip_props() noexcept = default;
-					template <class Allocator>
-					explicit basic_clip_props(const path_builder<LinearAlgebra, Allocator>& pb, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
+					template <class GraphicsMath, class Allocator>
+					explicit basic_clip_props(const path_builder<GraphicsMath, Allocator>& pb, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
 					explicit basic_clip_props(const interpreted_path<SurfaceHandler>& pg, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept;
-					template <class LinearAlgebra, class Allocator>
-					void clip(const path_builder<LinearAlgebra, Allocator>& pb);
+					template <class GraphicsMath, class Allocator>
+					void clip(const path_builder<GraphicsMath, Allocator>& pb);
 					void clip(const interpreted_path<SurfaceHandler>& pg) noexcept;
 					void fill_rule(experimental::io2d::fill_rule fr) noexcept;
 					interpreted_path<SurfaceHandler> clip() const noexcept;
@@ -87,14 +88,11 @@ namespace std {
 					constexpr float max_miter_limit() const noexcept;
 				};
 
-				template <class LinearAlgebra>
+				template <class GraphicsMath>
 				class mask_props {
-				public:
-					using matrix_2d_type = typename LinearAlgebra::matrix_2d;
-				private:
 					experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::repeat;
 					experimental::io2d::filter _Filter = experimental::io2d::filter::good;
-					matrix_2d_type _Matrix = matrix_2d_type{};
+					basic_matrix_2d<GraphicsMath> _Matrix = basic_matrix_2d<GraphicsMath>{};
 
 				public:
 					// surplus to paper
@@ -103,16 +101,16 @@ namespace std {
 					mask_props(mask_props&&) noexcept = default;
 					mask_props& operator=(mask_props&&) noexcept = default;
 
-					constexpr mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat, experimental::io2d::filter fi = experimental::io2d::filter::good, const matrix_2d_type& m = matrix_2d_type{}) noexcept;
+					constexpr mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat, experimental::io2d::filter fi = experimental::io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
 					constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept;
 					constexpr void filter(experimental::io2d::filter fi) noexcept;
-					constexpr void mask_matrix(const matrix_2d_type& m) noexcept;
+					constexpr void mask_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
 					constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept;
 					constexpr experimental::io2d::filter filter() const noexcept;
-					constexpr matrix_2d_type mask_matrix() const noexcept;
+					constexpr basic_matrix_2d<GraphicsMath> mask_matrix() const noexcept;
 				};
 
-				template <class LinearAlgebra, class T>
+				template <class GraphicsMath, class T>
 				class display_surface;
 
 				struct display_point
@@ -129,10 +127,10 @@ namespace std {
 					T _Handler_impl;
 
 				public:
-					template <class LinearAlgebra, class U>
-					handler(display_surface<LinearAlgebra, U>& ds, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr, float desiredFramerate);
-					template <class LinearAlgebra, class U>
-					handler(display_surface<LinearAlgebra, U>& ds, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr, float desiredFramerate, error_code& ec);
+					template <class GraphicsMath, class U>
+					handler(display_surface<GraphicsMath, U>& ds, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr, float desiredFramerate);
+					template <class GraphicsMath, class U>
+					handler(display_surface<GraphicsMath, U>& ds, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr, float desiredFramerate, error_code& ec);
 					int begin_show();
 					void end_show();
 					void display_dimensions(display_point dp);
@@ -172,22 +170,22 @@ namespace std {
 					void flush(error_code& ec) noexcept;
 					void mark_dirty();
 					void mark_dirty(error_code& ec) noexcept;
-					template <class Geometry>
-					void mark_dirty(const typename basic_geometry<Geometry>::bounding_box& extents);
-					template <class Geometry>
-					void mark_dirty(const typename basic_geometry<Geometry>::bounding_box& extents, error_code& ec) noexcept;
-					template <class LinearAlgebra, class T>
-					void paint(const brush<T>& b, const optional<brush_props<LinearAlgebra>>& bp = nullopt, const optional<render_props<LinearAlgebra>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+					template <class GraphicsMath>
+					void mark_dirty(const typename basic_geometry<GraphicsMath>::bounding_box& extents);
+					template <class GraphicsMath>
+					void mark_dirty(const typename basic_geometry<GraphicsMath>::bounding_box& extents, error_code& ec) noexcept;
+					template <class GraphicsMath, class T>
+					void paint(const brush<T>& b, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
 					template <class Allocator>
-					void stroke(const brush<LinearAlgebra, T>& b, const path_builder<LinearAlgebra, Allocator>& pb, const optional<brush_props<LinearAlgebra>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<LinearAlgebra>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-					void stroke(const brush<LinearAlgebra, T>& b, const interpreted_path<T>& pg, const optional<brush_props<LinearAlgebra>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<LinearAlgebra>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+					void stroke(const brush<GraphicsMath, T>& b, const path_builder<GraphicsMath, Allocator>& pb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+					void stroke(const brush<GraphicsMath, T>& b, const interpreted_path<T>& pg, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
 					template <class Allocator>
-					void fill(const brush<LinearAlgebra, T>& b, const path_builder<LinearAlgebra, Allocator>& pb, const optional<brush_props<LinearAlgebra>>& bp = nullopt, const optional<render_props<LinearAlgebra>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-					void fill(const brush<LinearAlgebra, T>& b, const interpreted_path<T>& pg, const optional<brush_props<LinearAlgebra>>& bp = nullopt, const optional<render_props<LinearAlgebra>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-					void mask(const brush<LinearAlgebra, T>& b, const brush<LinearAlgebra, T>& mb, const optional<brush_props<LinearAlgebra>>& bp = nullopt, const optional<mask_props<LinearAlgebra>>& mp = nullopt, const optional<render_props<LinearAlgebra>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+					void fill(const brush<GraphicsMath, T>& b, const path_builder<GraphicsMath, Allocator>& pb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+					void fill(const brush<GraphicsMath, T>& b, const interpreted_path<T>& pg, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+					void mask(const brush<GraphicsMath, T>& b, const brush<GraphicsMath, T>& mb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<mask_props<GraphicsMath>>& mp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
 				};
 
-				class image_surface : public surface<LinearAlgebra, T> {
+				class image_surface : public surface<GraphicsMath, T> {
 					typename T::renderer_image_surface _Image_surface_impl;
 
 				public:
@@ -209,8 +207,8 @@ namespace std {
 					void save(::std::string f, image_file_format i);
 					void save(::std::string f, image_file_format i, error_code& ec) noexcept;
 #endif
-					void map(const function<void(mapped_surface<LinearAlgebra, T>&)>& action);
-					void map(const function<void(mapped_surface<LinearAlgebra, T>&, error_code&)>& action, error_code& ec);
+					void map(const function<void(mapped_surface<GraphicsMath, T>&)>& action);
+					void map(const function<void(mapped_surface<GraphicsMath, T>&, error_code&)>& action, error_code& ec);
 					static int max_width() noexcept;
 					static int max_height() noexcept;
 					io2d::format format() const noexcept;
@@ -221,7 +219,7 @@ namespace std {
 				constexpr bool operator==(const display_point& lhs, const display_point& rhs) noexcept;
 				constexpr bool operator!=(const display_point& lhs, const display_point& rhs) noexcept;
 
-				class display_surface : public surface<LinearAlgebra, T> {
+				class display_surface : public surface<GraphicsMath, T> {
 					typename T::renderer_display_surface _Display_surface_impl;
 
 				public:
@@ -238,18 +236,18 @@ namespace std {
 					void dimensions(display_point dp);
 					void dimensions(display_point dp, error_code& ec) noexcept;
 					void scaling(experimental::io2d::scaling scl) noexcept;
-					void user_scaling_callback(const function<experimental::io2d::bounding_box<LinearAlgebra>(const display_surface&, bool&)>& fn);
-					void letterbox_brush(const optional<brush<LinearAlgebra, T>>& b, const optional<brush_props<LinearAlgebra>> = nullopt) noexcept;
+					void user_scaling_callback(const function<experimental::io2d::bounding_box<GraphicsMath>(const display_surface&, bool&)>& fn);
+					void letterbox_brush(const optional<brush<GraphicsMath, T>>& b, const optional<brush_props<GraphicsMath>> = nullopt) noexcept;
 					void auto_clear(bool val) noexcept;
 					void redraw_required() noexcept;
 					bool reset_redraw_request() noexcept;				// Should only be invoked by the handler
 					experimental::io2d::format format() const noexcept;
 					display_point dimensions() const noexcept;
 					experimental::io2d::scaling scaling() const noexcept;
-					function<experimental::io2d::bounding_box<LinearAlgebra>(const display_surface&, bool&)> user_scaling_callback() const;
-					function<experimental::io2d::bounding_box<LinearAlgebra>(const display_surface&, bool&)> user_scaling_callback(error_code& ec) const noexcept;
-					optional<brush<LinearAlgebra, T>> letterbox_brush() const noexcept;
-					optional<brush_props<LinearAlgebra>> letterbox_brush_props() const noexcept;
+					function<experimental::io2d::bounding_box<GraphicsMath>(const display_surface&, bool&)> user_scaling_callback() const;
+					function<experimental::io2d::bounding_box<GraphicsMath>(const display_surface&, bool&)> user_scaling_callback(error_code& ec) const noexcept;
+					optional<brush<GraphicsMath, T>> letterbox_brush() const noexcept;
+					optional<brush_props<GraphicsMath>> letterbox_brush_props() const noexcept;
 					bool auto_clear() const noexcept;
 				};
 
@@ -257,8 +255,8 @@ namespace std {
 					friend typename T::renderer_image_surface;
 					typename T::renderer_mapped_surface _Mapped_surface_impl;
 
-					mapped_surface(typename surface<LinearAlgebra, T>::native_handle_type nh, typename surface<LinearAlgebra, T>::native_handle_type map_of);
-					mapped_surface(typename surface<LinearAlgebra, T>::native_handle_type nh, typename surface<LinearAlgebra, T>::native_handle_type map_of, ::std::error_code& ec) noexcept;
+					mapped_surface(typename surface<GraphicsMath, T>::native_handle_type nh, typename surface<GraphicsMath, T>::native_handle_type map_of);
+					mapped_surface(typename surface<GraphicsMath, T>::native_handle_type nh, typename surface<GraphicsMath, T>::native_handle_type map_of, ::std::error_code& ec) noexcept;
 
 				public:
 					const auto& native_handle() const { return _Mapped_surface_impl; }
