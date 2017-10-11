@@ -6,7 +6,7 @@ namespace std {
 		namespace io2d {
 			inline namespace v1 {
 
-				template <class GraphicsMath>
+				template <class GraphicsMath, class GraphicsSurfaces>
 				class basic_render_props {
 				//public:
 				//	using matrix_2d_type = typename GraphicsMath::matrix_2d;
@@ -25,7 +25,7 @@ namespace std {
 					constexpr basic_matrix_2d<GraphicsMath> surface_matrix() const noexcept;
 				};
 
-				template <class GraphicsMath>
+				template <class GraphicsMath, class GraphicsSurfaces>
 				class basic_brush_props {
 				//public:
 				//	using matrix_2d_type = typename GraphicsMath::matrix_2d;
@@ -47,9 +47,9 @@ namespace std {
 					constexpr basic_matrix_2d<GraphicsMath> brush_matrix() const noexcept;
 				};
 
-				template <class SurfaceHandler>
+				template <class GraphicsSurfaces>
 				class basic_clip_props {
-					interpreted_path<SurfaceHandler> _Clip;
+					interpreted_path<GraphicsSurfaces> _Clip;
 					experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
 				public:
 					// surplus to paper
@@ -58,25 +58,26 @@ namespace std {
 
 					basic_clip_props() noexcept = default;
 					template <class GraphicsMath, class Allocator>
-					explicit basic_clip_props(const path_builder<GraphicsMath, Allocator>& pb, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
-					explicit basic_clip_props(const interpreted_path<SurfaceHandler>& pg, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept;
+					explicit basic_clip_props(const basic_path_builder<GraphicsMath, Allocator>& pb, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
+					explicit basic_clip_props(const interpreted_path<GraphicsSurfaces>& pg, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept;
 					template <class GraphicsMath, class Allocator>
-					void clip(const path_builder<GraphicsMath, Allocator>& pb);
-					void clip(const interpreted_path<SurfaceHandler>& pg) noexcept;
+					void clip(const basic_path_builder<GraphicsMath, Allocator>& pb);
+					void clip(const interpreted_path<GraphicsSurfaces>& pg) noexcept;
 					void fill_rule(experimental::io2d::fill_rule fr) noexcept;
-					interpreted_path<SurfaceHandler> clip() const noexcept;
+					interpreted_path<GraphicsSurfaces> clip() const noexcept;
 					experimental::io2d::fill_rule fill_rule() const noexcept;
 				};
 
-				class stroke_props {
+				template <class GraphicsSurfaces>
+				class basic_stroke_props {
 					float _Line_width = 2.0F;
 					float _Miter_limit = 10.0F;
 					experimental::io2d::line_cap _Line_cap = experimental::io2d::line_cap::none;
 					experimental::io2d::line_join _Line_join = experimental::io2d::line_join::miter;
 					//optional<dashes> _Dashes;
 				public:
-					constexpr stroke_props() noexcept;
-					constexpr explicit stroke_props(float w, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
+					constexpr basic_stroke_props() noexcept;
+					constexpr explicit basic_stroke_props(float w, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
 					constexpr void line_width(float w) noexcept;
 					constexpr void line_cap(experimental::io2d::line_cap lc) noexcept;
 					constexpr void line_join(experimental::io2d::line_join lj) noexcept;
@@ -88,20 +89,20 @@ namespace std {
 					constexpr float max_miter_limit() const noexcept;
 				};
 
-				template <class GraphicsMath>
-				class mask_props {
+				template <class GraphicsMath, class GraphicsSurfaces>
+				class basic_mask_props {
 					experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::repeat;
 					experimental::io2d::filter _Filter = experimental::io2d::filter::good;
 					basic_matrix_2d<GraphicsMath> _Matrix = basic_matrix_2d<GraphicsMath>{};
 
 				public:
 					// surplus to paper
-					constexpr mask_props(const mask_props&) noexcept = default;
-					constexpr mask_props& operator=(const mask_props&) noexcept = default;
-					mask_props(mask_props&&) noexcept = default;
-					mask_props& operator=(mask_props&&) noexcept = default;
+					constexpr basic_mask_props(const basic_mask_props&) noexcept = default;
+					constexpr basic_mask_props& operator=(const basic_mask_props&) noexcept = default;
+					basic_mask_props(basic_mask_props&&) noexcept = default;
+					basic_mask_props& operator=(basic_mask_props&&) noexcept = default;
 
-					constexpr mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat, experimental::io2d::filter fi = experimental::io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
+					constexpr basic_mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat, experimental::io2d::filter fi = experimental::io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
 					constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept;
 					constexpr void filter(experimental::io2d::filter fi) noexcept;
 					constexpr void mask_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
@@ -112,16 +113,8 @@ namespace std {
 
 				template <class GraphicsMath, class T>
 				class display_surface;
-
-				struct display_point
-				{
-					constexpr display_point() noexcept;
-					constexpr display_point(int x, int y) noexcept;
-
-					int x;
-					int y;
-				};
-
+				
+				
 				template <class T>
 				class handler {
 					T _Handler_impl;
@@ -144,46 +137,47 @@ namespace std {
 				};
 
 				class dashes {
-
+					float _Offset = 0.0;
+					::std::vector<float>
 				};
 				//tuple<dashes, offset>
 				//using dashes = ::std::tuple<::std::vector<float>, float>;
 
+				template <class GraphicsSurfaces>
 				class mapped_surface;
 
-				class surface_base {
-				public:
-					using native_handle_type = typename T::renderer_surface_native_handles;
+				//template <class GraphicsSurfaces>
+				//class base_surface {
+				//protected:
+				//	using native_handle_type = typename GraphicsSurfaces::renderer_surface_native_handles;
+				//	base_surface(::std::experimental::io2d::format fmt, int width, int height);
+				//	base_surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
+				//	const auto& native_handle() const { return _Surface_impl; }
 
-				protected:
-					surface(::std::experimental::io2d::format fmt, int width, int height);
-					surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
+				//	::std::unique_ptr<typename T::renderer_surface> _Surface_impl;
 
-					::std::unique_ptr<typename T::renderer_surface> _Surface_impl;
+				//public:
+				//	void clear();
+				//	base_surface() = delete;
 
-				public:
-					const auto& native_handle() const { return _Surface_impl; }
-					void clear();
-					surface() = delete;
-
-					void flush();
-					void flush(error_code& ec) noexcept;
-					void mark_dirty();
-					void mark_dirty(error_code& ec) noexcept;
-					template <class GraphicsMath>
-					void mark_dirty(const typename basic_geometry<GraphicsMath>::bounding_box& extents);
-					template <class GraphicsMath>
-					void mark_dirty(const typename basic_geometry<GraphicsMath>::bounding_box& extents, error_code& ec) noexcept;
-					template <class GraphicsMath, class T>
-					void paint(const brush<T>& b, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-					template <class Allocator>
-					void stroke(const brush<GraphicsMath, T>& b, const path_builder<GraphicsMath, Allocator>& pb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-					void stroke(const brush<GraphicsMath, T>& b, const interpreted_path<T>& pg, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-					template <class Allocator>
-					void fill(const brush<GraphicsMath, T>& b, const path_builder<GraphicsMath, Allocator>& pb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-					void fill(const brush<GraphicsMath, T>& b, const interpreted_path<T>& pg, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-					void mask(const brush<GraphicsMath, T>& b, const brush<GraphicsMath, T>& mb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<mask_props<GraphicsMath>>& mp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-				};
+				//	void flush();
+				//	void flush(error_code& ec) noexcept;
+				//	void mark_dirty();
+				//	void mark_dirty(error_code& ec) noexcept;
+				//	template <class GraphicsMath>
+				//	void mark_dirty(const typename basic_geometry<GraphicsMath>::bounding_box& extents);
+				//	template <class GraphicsMath>
+				//	void mark_dirty(const typename basic_geometry<GraphicsMath>::bounding_box& extents, error_code& ec) noexcept;
+				//	template <class GraphicsMath, class T>
+				//	void paint(const brush<T>& b, const optional<brush_props_data_type>& bp, const optional<render_props_data_type>& rp, const optional<clip_props_data_type>& cl);
+				//	template <class Allocator>
+				//	void stroke(const brush<GraphicsMath, T>& b, const path_builder<GraphicsMath, Allocator>& pb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+				//	void stroke(const brush<GraphicsMath, T>& b, const interpreted_path<T>& pg, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+				//	template <class Allocator>
+				//	void fill(const brush<GraphicsMath, T>& b, const path_builder<GraphicsMath, Allocator>& pb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+				//	void fill(const brush<GraphicsMath, T>& b, const interpreted_path<T>& pg, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+				//	void mask(const brush<GraphicsMath, T>& b, const brush<GraphicsMath, T>& mb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<mask_props<GraphicsMath>>& mp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
+				//};
 
 				class image_surface : public surface<GraphicsMath, T> {
 					typename T::renderer_image_surface _Image_surface_impl;

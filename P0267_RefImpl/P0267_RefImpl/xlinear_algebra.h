@@ -7,12 +7,12 @@ namespace std {
 				template <class GraphicsMath>
 				class basic_point_2d {
 				public:
-					using data_type = typename GraphicsMath::point_2d_data_type;
+					using _Data_type = typename GraphicsMath::point_2d_data_type;
 				private:
-					data_type _Data;
+					_Data_type _Data;
 				public:
-					constexpr const data_type& _Get_data() const noexcept;
-					constexpr basic_point_2d(const data_type& val) noexcept;
+					constexpr const _Data_type& _Get_data() const noexcept;
+					constexpr basic_point_2d(const _Data_type& val) noexcept;
 
 					// \ref{\iotwod.\pointtwod.cons}, constructors:
 					constexpr basic_point_2d() noexcept;
@@ -45,12 +45,12 @@ namespace std {
 				template <class GraphicsMath>
 				class basic_matrix_2d {
 				public:
-					using data_type = typename GraphicsMath::matrix_2d_data_type;
+					using _Data_type = typename GraphicsMath::matrix_2d_data_type;
 				private:
-					data_type _Data;
+					_Data_type _Data;
 				public:
-					constexpr const data_type& _Get_data() const noexcept;
-					constexpr basic_matrix_2d(const data_type& val) noexcept;
+					constexpr const _Data_type& _Get_data() const noexcept;
+					constexpr basic_matrix_2d(const _Data_type& val) noexcept;
 
 					constexpr basic_matrix_2d() noexcept;
 					constexpr basic_matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept;
@@ -100,12 +100,12 @@ namespace std {
 				template <class GraphicsMath>
 				class basic_display_point {
 				public:
-					using data_type = typename GraphicsMath::display_point_data_type;
+					using _Data_type = typename GraphicsMath::display_point_data_type;
 				private:
-					data_type _Data;
+					_Data_type _Data;
 				public:
-					constexpr const data_type& _Get_data() const noexcept;
-					constexpr basic_display_point(const data_type& val) noexcept;
+					constexpr const _Data_type& _Get_data() const noexcept;
+					constexpr basic_display_point(const _Data_type& val) noexcept;
 
 					// \ref{\iotwod.\pointtwod.cons}, constructors:
 					constexpr basic_display_point() noexcept;

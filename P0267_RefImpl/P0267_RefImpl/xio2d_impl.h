@@ -281,7 +281,7 @@ namespace std {
 				// linear algebra
 
 				template <class GraphicsMath>
-				inline constexpr basic_point_2d<GraphicsMath>::basic_point_2d(const typename GraphicsMath::point_2d_data_type& val) noexcept
+				inline constexpr basic_point_2d<GraphicsMath>::basic_point_2d(const _Data_type& val) noexcept
 					: _Data(val) {}
 
 				template <class GraphicsMath>
@@ -445,7 +445,7 @@ namespace std {
 					return _Data;
 				}
 				template <class GraphicsMath>
-				inline constexpr basic_matrix_2d<GraphicsMath>::basic_matrix_2d(const data_type& val) noexcept
+				inline constexpr basic_matrix_2d<GraphicsMath>::basic_matrix_2d(const _Data_type& val) noexcept
 					: _Data(val) {
 				}
 				template <class GraphicsMath>
@@ -609,6 +609,14 @@ namespace std {
 				}
 
 				// basic_display_point
+				template <class GraphicsMath>
+				inline constexpr const typename basic_display_point<GraphicsMath>::_Data_type basic_display_point<GraphicsMath>::_Get_data() const noexcept {
+					return _Data;
+				}
+				template <class GraphicsMatch>
+				inline constexpr basic_display_point<GraphicsMath>::basic_display_point(const _Data_type& val) noexcept
+					: _Data(val) {
+				}
 				template <class GraphicsMath>
 				inline constexpr basic_display_point<GraphicsMath>::basic_display_point() noexcept
 					: _Data(0, 0) {
@@ -1059,11 +1067,11 @@ namespace std {
 					data.x = ctr._X;
 					data.y = ctr._Y;
 				}
-				constexpr static void _Linear_algebra_float_impl::radius(typename _Linear_algebra_float_impl::circle_data_type& data, float r) noexcept {
+				inline constexpr void _Linear_algebra_float_impl::radius(typename _Linear_algebra_float_impl::circle_data_type& data, float r) noexcept {
 					data.radius = r;
 				}
 				inline constexpr typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::center(const typename _Linear_algebra_float_impl::circle_data_type& data) noexcept {
-					return point_2d_data_type{ data.x, data.y, data.radius };
+					return point_2d_data_type{ data.x, data.y };
 				}
 				inline constexpr float _Linear_algebra_float_impl::radius(const typename _Linear_algebra_float_impl::circle_data_type& data) noexcept {
 					return data.radius;

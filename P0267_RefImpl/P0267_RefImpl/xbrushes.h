@@ -47,26 +47,28 @@ namespace std {
 				constexpr bool operator!=(const gradient_stop& lhs, const gradient_stop& rhs)
 					noexcept;
 
-				template <class SurfaceHandler>
-				class brush {
-					typename SurfaceHandler::renderer_brush _Brush_impl;
-
+				template <class GraphicsSurfaces>
+				class basic_brush {
 				public:
-					const auto& native_handle() const { return _Brush_impl; }
+					using _Data_type = GraphicsSurfaces::brush_data_type;
+				private:
+					_Data_type _Data;
+				public:
+					const _Data_type& _Get_data() const noexcept;
 
-					explicit brush(const rgba_color& c);
-
-					template <class GraphicsMath, class InputIterator>
-					brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last);
-
-					template <class GraphicsMath>
-					brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
+					explicit basic_brush(const rgba_color& c);
 
 					template <class GraphicsMath, class InputIterator>
-					brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last);
+					basic_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last);
 
 					template <class GraphicsMath>
-					brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
+					basic_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
+
+					template <class GraphicsMath, class InputIterator>
+					basic_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last);
+
+					template <class GraphicsMath>
+					basic_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
 
 					brush_type type() const noexcept;
 				};

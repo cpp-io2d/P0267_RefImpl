@@ -241,7 +241,7 @@ namespace std {
 				constexpr bool operator!=(const typename basic_figure_items<GraphicsMath>::arc&, const typename basic_figure_items<GraphicsMath>::arc&) noexcept;
 
 				template <class GraphicsMath, class Allocator = ::std::allocator<typename basic_figure_items<GraphicsMath>::figure_item>>
-				class path_builder {
+				class basic_path_builder {
 					::std::vector<typename basic_figure_items<GraphicsMath>::figure_item, Allocator> _Data;
 				public:
 					using value_type = typename basic_figure_items<GraphicsMath>::figure_item;
@@ -255,27 +255,27 @@ namespace std {
 					using reverse_iterator = std::reverse_iterator<iterator>;
 					using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-					path_builder() noexcept(noexcept(Allocator()));
-					explicit path_builder(const Allocator&) noexcept;
-					explicit path_builder(size_type n, const Allocator& = Allocator());
-					path_builder(size_type n, const value_type& value,
+					basic_path_builder() noexcept(noexcept(Allocator()));
+					explicit basic_path_builder(const Allocator&) noexcept;
+					explicit basic_path_builder(size_type n, const Allocator& = Allocator());
+					basic_path_builder(size_type n, const value_type& value,
 						const Allocator& = Allocator());
 					template <class InputIterator>
-					path_builder(InputIterator first, InputIterator last,
+					basic_path_builder(InputIterator first, InputIterator last,
 						const Allocator& = Allocator());
-					path_builder(const path_builder& x);
-					path_builder(path_builder&&) noexcept;
-					path_builder(const path_builder&, const Allocator&);
-					path_builder(path_builder&&, const Allocator&);
-					path_builder(initializer_list<value_type>, const Allocator& = Allocator());
-					~path_builder();
-					path_builder& operator=(const path_builder& x);
-					path_builder& operator=(path_builder&& x)
+					basic_path_builder(const basic_path_builder& x);
+					basic_path_builder(basic_path_builder&&) noexcept;
+					basic_path_builder(const basic_path_builder&, const Allocator&);
+					basic_path_builder(basic_path_builder&&, const Allocator&);
+					basic_path_builder(initializer_list<value_type>, const Allocator& = Allocator());
+					~basic_path_builder();
+					basic_path_builder& operator=(const basic_path_builder& x);
+					basic_path_builder& operator=(basic_path_builder&& x)
 						noexcept(
 							allocator_traits<Allocator>::propagate_on_container_move_assignment::value
 							||
 							allocator_traits<Allocator>::is_always_equal::value);
-					path_builder& operator=(initializer_list<value_type>);
+					basic_path_builder& operator=(initializer_list<value_type>);
 					template <class InputIterator>
 					void assign(InputIterator first, InputIterator last);
 					void assign(size_type n, const value_type& u);
