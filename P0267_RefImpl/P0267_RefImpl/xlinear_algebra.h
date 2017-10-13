@@ -161,6 +161,61 @@ namespace std {
 
 				//using matrix_2d = typename basic_linear_algebra<_Point_2d_float_impl, _Matrix_2d_float_impl>::matrix_2d;
 
+				template <class GraphicsMath>
+				class basic_bounding_box {
+				public:
+					using _Data_type = typename GraphicsMath::bounding_box_data_type;
+					//using point_2d_data_type = typename GraphicsMath::point_2d_data_type;
+				private:
+					_Data_type _Data;
+				public:
+					constexpr basic_bounding_box() noexcept;
+					constexpr basic_bounding_box(float x, float y, float width, float height) noexcept;
+
+					constexpr void x(float val) noexcept;
+					constexpr void y(float val) noexcept;
+					constexpr void width(float val) noexcept;
+					constexpr void height(float val) noexcept;
+					constexpr void top_left(const basic_point_2d<GraphicsMath>& val) noexcept;
+					constexpr void bottom_right(const basic_point_2d<GraphicsMath>& val) noexcept;
+
+					constexpr float x() const noexcept;
+					constexpr float y() const noexcept;
+					constexpr float width() const noexcept;
+					constexpr float height() const noexcept;
+					constexpr basic_point_2d<GraphicsMath> top_left() const noexcept;
+					constexpr basic_point_2d<GraphicsMath> bottom_right() const noexcept;
+
+					friend constexpr bool operator==(const basic_bounding_box& lhs, const basic_bounding_box& rhs) noexcept;
+				};
+
+				template <class GraphicsMath>
+				constexpr bool operator==(const basic_bounding_box<GraphicsMath>& lhs, const basic_bounding_box<GraphicsMath>& rhs) noexcept;
+				template <class GraphicsMath>
+				constexpr bool operator!=(const basic_bounding_box<GraphicsMath>& lhs, const basic_bounding_box<GraphicsMath>& rhs) noexcept;
+
+				template <class GraphicsMath>
+				class basic_circle {
+					using data_type = typename GraphicsMath::circle_data_type;
+				private:
+					data_type _Data;
+					friend constexpr bool operator==(const basic_circle&, const basic_circle&) noexcept;
+				public:
+					constexpr basic_circle() noexcept;
+					constexpr basic_circle(const basic_point_2d<GraphicsMath>& ctr, float rad) noexcept;
+
+					constexpr void center(const basic_point_2d<GraphicsMath>& ctr) noexcept;
+					constexpr void radius(float r) noexcept;
+
+					constexpr basic_point_2d<GraphicsMath> center() const noexcept;
+					constexpr float radius() const noexcept;
+				};
+
+				template <class GraphicsMath>
+				constexpr bool operator==(const basic_circle<GraphicsMath>& lhs, const basic_circle<GraphicsMath>& rhs) noexcept;
+				template <class GraphicsMath>
+				constexpr bool operator!=(const basic_circle<GraphicsMath>& lhs, const basic_circle<GraphicsMath>& rhs) noexcept;
+
 				struct _Linear_algebra_float_impl {
 					// point_2d 
 					struct _Point_2d_data {
@@ -344,6 +399,33 @@ namespace std {
 					constexpr static bool equal(const circle_data_type& lhs, const circle_data_type& rhs) noexcept;
 					constexpr static bool not_equal(const circle_data_type& lhs, const circle_data_type& rhs) noexcept;
 				};
+
+				template <class GraphicsMath>
+				float angle_for_point(const basic_point_2d<GraphicsMath>& ctr, const basic_point_2d<GraphicsMath>& pt) noexcept;
+
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> point_for_angle(float ang, float rad = 1.0f) noexcept;
+
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> point_for_angle(float ang, const basic_point_2d<GraphicsMath>& rad) noexcept;
+
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_start(const basic_point_2d<GraphicsMath>& ctr, float sang, const basic_point_2d<GraphicsMath>& rad) noexcept;
+
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_start(const basic_point_2d<GraphicsMath>& ctr, float sang, const basic_point_2d<GraphicsMath>& rad, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_center(const basic_point_2d<GraphicsMath>& cpt, float sang, const basic_point_2d<GraphicsMath>& rad) noexcept;
+
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_center(const basic_point_2d<GraphicsMath>& cpt, float sang, const basic_point_2d<GraphicsMath>& rad, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_end(const basic_point_2d<GraphicsMath>& cpt, float eang, const basic_point_2d<GraphicsMath>& rad) noexcept;
+
+				template <class GraphicsMath>
+				basic_point_2d<GraphicsMath> arc_end(const basic_point_2d<GraphicsMath>& cpt, float eang, const basic_point_2d<GraphicsMath>& rad, const basic_matrix_2d<GraphicsMath>& m) noexcept;
 			}
 		}
 	}

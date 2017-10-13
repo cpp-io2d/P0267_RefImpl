@@ -35,9 +35,6 @@
     <ClInclude Include="xlinear_algebra.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="xgeometry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="xpath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -66,6 +63,12 @@
       <Filter>windows handler</Filter>
     </ClInclude>
     <ClInclude Include="xsurfaces_enums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xsurfacesprops_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xsurfaces_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

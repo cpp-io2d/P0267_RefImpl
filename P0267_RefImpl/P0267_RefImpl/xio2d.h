@@ -1,7 +1,7 @@
-//#pragma once
-//
-//#ifndef _XIO2D_
-//#define _XIO2D_
+#pragma once
+
+#ifndef _XIO2D_
+#define _XIO2D_
 //
 //#include <map>
 //#include <cassert>
@@ -17,9 +17,51 @@
 //#include <type_traits>
 //#include <limits>
 //
-//#if ((defined(_MSC_VER) && ((_MSC_VER >= 1910) || (defined(__clang__) && (_MSC_VER >= 1900)))) || defined(HAVE_FILESYSTEM))
-//#define _Filesystem_support_test
-//#endif
+#if ((defined(_MSC_VER) && ((_MSC_VER >= 1910) || (defined(__clang__) && (_MSC_VER >= 1900)))) || defined(HAVE_FILESYSTEM))
+#define _Filesystem_support_test
+#endif
+
+#if defined BUILD_IO2D_API_DLL 
+#define _IO2D_API __declspec(dllexport)
+#elif defined USE_IO2D_API_DLL
+#define _IO2D_API __declspec(dllimport)
+#else
+#define _IO2D_API
+#endif
+
+namespace std {
+	namespace experimental {
+		namespace io2d {
+			inline namespace v1 {
+
+				template <class T>
+				constexpr T pi = T(3.14159265358979323846264338327950288L);
+
+				template <class T>
+				constexpr T two_pi = T(6.28318530717958647692528676655900577L);
+
+				template <class T>
+				constexpr T half_pi = T(1.57079632679489661923132169163975144L);
+
+				template <class T>
+				constexpr T three_pi_over_two = T(4.71238898038468985769396507491925432L);
+
+				template <class T>
+				constexpr T tau = T(6.28318530717958647692528676655900577L);
+
+				template <class T>
+				constexpr T three_quarters_tau = T(4.71238898038468985769396507491925432L);
+
+				template <class T>
+				constexpr T half_tau = T(3.14159265358979323846264338327950288L);
+
+				template <class T>
+				constexpr T quarter_tau = T(1.57079632679489661923132169163975144L);
+			}
+		}
+	}
+}
+
 //// Designed to be used to conditionally define compiler support for inline namespaces using a #if
 ////define _Inline_namespace_conditional_support_test ((__cplusplus >= 201103L) || (_MSC_FULL_VER >= 190022609))
 //
@@ -53,3 +95,4 @@
 //		}
 //	}
 //}
+#endif

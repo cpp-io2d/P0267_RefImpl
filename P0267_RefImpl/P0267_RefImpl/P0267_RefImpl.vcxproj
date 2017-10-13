@@ -473,7 +473,6 @@
     <ClInclude Include="xcairo_impl.h" />
     <ClInclude Include="xcolor.h" />
     <ClInclude Include="xdiagnostics.h" />
-    <ClInclude Include="xgeometry.h" />
     <ClInclude Include="xinclwindows_h.h" />
     <ClInclude Include="xinput.h" />
     <ClInclude Include="xio2d.h" />
@@ -481,7 +480,9 @@
     <ClInclude Include="xlinear_algebra.h" />
     <ClInclude Include="xpath.h" />
     <ClInclude Include="xsurfaces.h" />
+    <ClInclude Include="xsurfacesprops_impl.h" />
     <ClInclude Include="xsurfaces_enums.h" />
+    <ClInclude Include="xsurfaces_impl.h" />
     <ClInclude Include="xtext.h" />
     <ClInclude Include="xwindows_handler_impl.h" />
   </ItemGroup>

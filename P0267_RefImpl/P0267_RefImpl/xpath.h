@@ -347,16 +347,16 @@ namespace std {
 						initializer_list<value_type> il);
 					iterator erase(const_iterator position);
 					iterator erase(const_iterator first, const_iterator last);
-					void swap(path_builder&)
+					void swap(basic_path_builder&)
 						noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value
 							|| allocator_traits<Allocator>::is_always_equal::value);
 					void clear() noexcept;
 				};
 
-				template <class Allocator>
-				bool operator==(const path_builder<Allocator>& lhs, const path_builder<Allocator>& rhs) noexcept;
-				template <class Allocator>
-				bool operator!=(const path_builder<Allocator>& lhs, const path_builder<Allocator>& rhs) noexcept;
+				template <class GraphicsMath, class Allocator>
+				bool operator==(const basic_path_builder<GraphicsMath, Allocator>& lhs, const basic_path_builder<GraphicsMath, Allocator>& rhs) noexcept;
+				template <class GraphicsMath, class Allocator>
+				bool operator!=(const basic_path_builder<GraphicsMath, Allocator>& lhs, const basic_path_builder<GraphicsMatch, Allocator>& rhs) noexcept;
 
 				// 8.17.8, specialized algorithms:
 				/*		template <class Allocator>
@@ -365,21 +365,20 @@ namespace std {
 				lhs.swap(rhs);
 				}*/ // compiler error prevents forward declaration
 
-				template <class T>
-				class interpreted_path {
-					typename T::renderer_interpreted_path _Path_impl;
+				template <class GraphicsSurfaces>
+				class basic_interpreted_path {
+					using _Data_type = typename GraphicsSurfaces::interpreted_path_data_type;
+					_Data_type _Data;
 
 				public:
-					const auto& native_handle() const { return _Path_impl; }
-
 					// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
-					constexpr interpreted_path() noexcept;
+					constexpr basic_interpreted_path() noexcept;
 
 					template <class GraphicsMath, class Allocator>
-					explicit interpreted_path(const path_builder<GraphicsMath, Allocator>& p);
+					explicit basic_interpreted_path(const basic_path_builder<GraphicsMath, Allocator>& p);
 
 					template <class ForwardIterator>
-					interpreted_path(ForwardIterator first, ForwardIterator last);
+					basic_interpreted_path(ForwardIterator first, ForwardIterator last);
 				};
 			}
 		}

@@ -13,16 +13,17 @@ namespace std {
 			inline namespace v1 {
 				template <class GraphicsMath>
 				struct _Cairo_graphics_surfaces {
-
+					using graphics_math_type = GraphicsMath;
 					// interpreted_path
 
 					struct _Interpreted_path_data {
 						::std::shared_ptr<cairo_path_t> _Cairo_path;
 					};
 					using interpreted_path_data_type = _Interpreted_path_data;
+
 					constexpr static interpreted_path_data_type create_interpreted_path() noexcept;
 					template <class Allocator>
-					explicit static interpreted_path_data_type create_interpreted_path(const path_builder<GraphicsMath, Allocator>& p);
+					explicit static interpreted_path_data_type create_interpreted_path(const basic_path_builder<GraphicsMath, Allocator>& p);
 					template <class ForwardIterator>
 					static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
 
@@ -59,12 +60,12 @@ namespace std {
 					using render_props_data_type = _Render_props_data;
 
 					constexpr static render_props_data_type create_render_props(antialias aa = antialias::good, basic_matrix_2d<GraphicsMath> m = basic_matrix_2d<GraphicsMath>{}, compositing_op co = compositing_op::over) noexcept;
-					constexpr static void set_antialias(render_props_data_type& data, antialias aa) noexcept;
-					constexpr static void set_surface_matrix(render_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
-					constexpr static void set_compositing_op(render_props_data_type& data, compositing_op co) noexcept;
-					constexpr static antialias get_antialias(const render_props_data_type& data) noexcept;
-					constexpr static basic_matrix_2d<GraphicsMath> get_surface_matrix(const render_props_data_type& data) noexcept;
-					constexpr static compositing_op get_compositing_op(const render_props_data_type& data) noexcept;
+					constexpr static void antialiasing(render_props_data_type& data, antialias aa) noexcept;
+					constexpr static void surface_matrix(render_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+					constexpr static void compositing(render_props_data_type& data, io2d::compositing_op co) noexcept;
+					constexpr static antialias antialiasing(const render_props_data_type& data) noexcept;
+					constexpr static basic_matrix_2d<GraphicsMath> surface_matrix(const render_props_data_type& data) noexcept;
+					constexpr static compositing_op compositing(const render_props_data_type& data) noexcept;
 
 					// brush_props
 
@@ -78,36 +79,36 @@ namespace std {
 					using brush_props_data_type = _Brush_props_data;
 
 					constexpr static brush_props_data_type create_brush_props(wrap_mode wm = wrap_mode::none, filter f = filter::good, fill_rule = fill_rule::winding, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
-					constexpr static void set_wrap_mode(brush_props_data_type& data, wrap_mode wm) noexcept;
-					constexpr static void set_filter(brush_props_data_type& data, filter f) noexcept;
-					constexpr static void set_fill_rule(brush_props_data_type& data, fill_rule fr) noexcept;
-					constexpr static void set_brush_matrix(brush_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
-					constexpr static wrap_mode get_wrap_mode(const brush_props_data_type& data, wrap_mode wm) noexcept;
-					constexpr static filter get_filter(const brush_props_data_type& data) noexcept;
-					constexpr static fill_rule get_fill_rule(const brush_props_data_type& data) noexcept;
-					constexpr static basic_matrix_2d<GraphicsMath> get_brush_matrix(const brush_props_data_type& data) noexcept;
+					constexpr static void wrap_mode(brush_props_data_type& data, io2d::wrap_mode wm) noexcept;
+					constexpr static void filter(brush_props_data_type& data, io2d::filter f) noexcept;
+					constexpr static void fill_rule(brush_props_data_type& data, io2d::fill_rule fr) noexcept;
+					constexpr static void brush_matrix(brush_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+					constexpr static io2d::wrap_mode wrap_mode(const brush_props_data_type& data) noexcept;
+					constexpr static io2d::filter filter(const brush_props_data_type& data) noexcept;
+					constexpr static io2d::fill_rule fill_rule(const brush_props_data_type& data) noexcept;
+					constexpr static basic_matrix_2d<GraphicsMath> brush_matrix(const brush_props_data_type& data) noexcept;
 
 					// clip_props
 					struct _Clip_props_data {
 						interpreted_path_data_type clip;
-						fill_rule fr;
+						io2d::fill_rule fr;
 					};
 
 					using clip_props_data_type = _Clip_props_data;
 
 					static clip_props_data_type create_clip_props() noexcept;
-					static clip_props_data_type create_clip_props(const basic_bounding_box<GraphicsMath>& bbox, fill_rule fr) noexcept;
+					static clip_props_data_type create_clip_props(const basic_bounding_box<GraphicsMath>& bbox, io2d::fill_rule fr) noexcept;
 					template <class Allocator>
-					static clip_props_data_type create_clip_props(const basic_path_builder<GraphicsMath, Allocator>& pb, fill_rule fr);
-					static clip_props_data_type create_clip_props(const interpreted_path_data_type& ip, fill_rule fr) noexcept;
+					static clip_props_data_type create_clip_props(const basic_path_builder<GraphicsMath, Allocator>& pb, io2d::fill_rule fr);
+					static clip_props_data_type create_clip_props(const basic_interpreted_path_data_type& ip, io2d::fill_rule fr) noexcept;
 
-					static void set_clip(clip_props_data_type& data, const basic_bounding_box<GraphicsMath>& bbox) noexcept;
+					static void clip(clip_props_data_type& data, const basic_bounding_box<GraphicsMath>& bbox) noexcept;
 					template <class Allocator>
-					static void set_clip(clip_props_data_type& data, const basic_path_builder<GraphicsMath, Allocator>& pb);
-					static void set_clip(clip_props_data_type& data, const interpreted_path_data_type& ip) noexcept;
-					static void set_fill_rule(clip_props_data_type& data, fill_rule fr) noexcept;
-					static interpreted_path_data_type get_clip(const clip_props_data_type& data) noexcept;
-					static fill_rule get_fill_rule(const clip_props_data_type& data) noexcept;
+					static void clip(clip_props_data_type& data, const basic_path_builder<GraphicsMath, Allocator>& pb);
+					static void clip(clip_props_data_type& data, const basic_interpreted_path<_Cairo_graphics_surfaces>& ip) noexcept;
+					static void fill_rule(clip_props_data_type& data, io2d::fill_rule fr) noexcept;
+					static interpreted_path_data_type clip(const clip_props_data_type& data) noexcept;
+					static io2d::fill_rule fill_rule(const clip_props_data_type& data) noexcept;
 
 					// stroke_props
 
@@ -120,16 +121,17 @@ namespace std {
 
 					using stroke_props_data_type = _Stroke_props_data;
 
-					constexpr static stroke_props_data_type create_stroke_props(float lw = 2.0f, float ml = 10.0f, line_cap lc = line_cap::none, line_join lj = line_join::miter) noexcept;
+					constexpr static stroke_props_data_type create_stroke_props(float lw = 2.0f, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
 
-					constexpr static void set_line_width(stroke_props_data_type& data, float lw) noexcept;
-					constexpr static void set_miter_limit(stroke_props_data_type& data, float ml) noexcept;
-					constexpr static void set_line_cap(stroke_props_data_type& data, line_cap lc) noexcept;
-					constexpr static void set_line_join(stroke_props_data_type& data, line_join lj) noexcept;
-					constexpr static float get_line_width(const stroke_props_data_type& data) noexcept;
-					constexpr static float get_miter_limit(const stroke_props_data_type& data) noexcept;
-					constexpr static line_cap get_line_cap(const stroke_props_data_type& data) noexcept;
-					constexpr static line_join get_line_join(const stroke_props_data_type& data) noexcept;
+					constexpr static void line_width(stroke_props_data_type& data, float lw) noexcept;
+					constexpr static void line_cap(stroke_props_data_type& data, io2d::line_cap lc) noexcept;
+					constexpr static void line_join(stroke_props_data_type& data, io2d::line_join lj) noexcept;
+					constexpr static void miter_limit(stroke_props_data_type& data, float ml) noexcept;
+					constexpr static float line_width(const stroke_props_data_type& data) noexcept;
+					constexpr static io2d::line_cap line_cap(const stroke_props_data_type& data) noexcept;
+					constexpr static io2d::line_join line_join(const stroke_props_data_type& data) noexcept;
+					constexpr static float miter_limit(const stroke_props_data_type& data) noexcept;
+					constexpr static float max_miter_limit(const stroke_props_data_type& data) noexcept;
 
 					// mask_props
 
@@ -141,13 +143,25 @@ namespace std {
 
 					using mask_props_data_type = _Mask_props_data;
 
-					constexpr static mask_props_data_type create_brush_props(wrap_mode wm = wrap_mode::none, filter f = filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
-					constexpr static void set_wrap_mode(mask_props_data_type& data, wrap_mode wm) noexcept;
-					constexpr static void set_filter(mask_props_data_type& data, filter f) noexcept;
-					constexpr static void set_mask_matrix(mask_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
-					constexpr static wrap_mode get_wrap_mode(const mask_props_data_type& data, wrap_mode wm) noexcept;
-					constexpr static filter get_filter(const mask_props_data_type& data) noexcept;
+					constexpr static mask_props_data_type create_brush_props(io2d::wrap_mode wm = io2d::wrap_mode::none, io2d::filter f = io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
+					constexpr static void wrap_mode(mask_props_data_type& data, io2d::wrap_mode wm) noexcept;
+					constexpr static void filter(mask_props_data_type& data, io2d::filter f) noexcept;
+					constexpr static void mask_matrix(mask_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+					constexpr static io2d::wrap_mode wrap_mode(const mask_props_data_type& data, io2d::wrap_mode wm) noexcept;
+					constexpr static io2d::filter filter(const mask_props_data_type& data) noexcept;
 					constexpr static basic_matrix_2d<GraphicsMath> get_mask_matrix(const mask_props_data_type& data) noexcept;
+
+					// dashes
+					struct _Dashes_data {
+						float offset;
+						::std::vector<float> pattern;
+					};
+
+					using dashes_data_type = _Dashes_data;
+					static dashes_data_type create_dashes() noexcept;
+					template <class ForwardIterator>
+					static dashes_data_type create_dashes(float offset, ForwardIterator first, ForwardIterator last);
+					static dashes_data_type create_dashes(float offset, ::std::initializer_list<float> il);
 
 					// image_surface
 					const float _Line_join_miter_miter_limit = 10000.0F;
@@ -175,8 +189,8 @@ namespace std {
 					static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
 					static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 					static void paint(image_surface_data_type& data, const brush_data_type& b, const brush_props_data_type& bp, const render_props_data_type& rp, const clip_props_data_type& cl);
-					static void stroke(image_surface_data_type& data, const brush_data_type& b, const interpreted_path_data_type& pg, const brush_props_data_type& bp, const stroke_props_data_type& sp, const dashes& d, const render_props_data_type& rp, const clip_props_data_type& cl);
-					static void fill(image_surface_data_type& data, const brush_data_type& b, const interpreted_path_data_type& pg, const brush_props_data_type& bp, const render_props_data_type& rp, const clip_props_data_type& cl);
+					static void stroke(image_surface_data_type& data, const basic_brush<_Cairo_graphics_surfaces>& b, const basic_interpreted_path<_Cairo_graphics_surfaces>& ip, const basic_brush<_Cairo_graphics_surfaces>& bp, const basic_stroke_props<_Cairo_graphics_surfaces>& sp, const dashes& d, const basic_render_props<_Cairo_graphics_surfaces>& rp, const basic_clip_props<_Cairo_graphics_surfaces>& cl);
+					static void fill(image_surface_data_type& data, const brush_data_type& b, const basic_interpreted_path_data_type& pg, const brush_props_data_type& bp, const render_props_data_type& rp, const clip_props_data_type& cl);
 					static void mask(image_surface_data_type& data, const brush_data_type& b, const brush_data_type& mb, const brush_props_data_type& bp, const mask_props_data_type& mp, const render_props_data_type& rp, const clip_props_data_type& cl);
 
 					// display_surface
@@ -217,17 +231,16 @@ namespace std {
 					static display_surface_data_type create(HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, format preferredFormat);
 
 					// Specified create functions
-					static display_surface_data_type create(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
-					static display_surface_data_type create(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr =
-						refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
-					static display_surface_data_type create(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
-					static display_surface_data_type create(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, scaling scl = scaling::letterbox, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
+					static display_surface_data_type create(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl, refresh_rate rr, float fps);
+					static display_surface_data_type create(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl, refresh_rate rr, float fps) noexcept;
+					static display_surface_data_type create(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, scaling scl, refresh_rate rr, float fps);
+					static display_surface_data_type create(int preferredWidth, int preferredHeight, format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, scaling scl, refresh_rate rr, float fps) noexcept;
 					static void destroy(display_surface_data_type& data) noexcept;
 
 					// rendering functions
 					static void paint(display_surface_data_type& data, const brush_data_type& b, const brush_props_data_type& bp, const render_props_data_type& rp, const clip_props_data_type& cl);
-					static void stroke(display_surface_data_type& data, const brush_data_type& b, const interpreted_path_data_type& pg, const brush_props_data_type& bp, const stroke_props_data_type& sp, const dashes& d, const render_props_data_type& rp, const clip_props_data_type& cl);
-					static void fill(display_surface_data_type& data, const brush_data_type& b, const interpreted_path_data_type& pg, const brush_props_data_type& bp, const render_props_data_type& rp, const clip_props_data_type& cl);
+					static void stroke(display_surface_data_type& data, const brush_data_type& b, const basic_interpreted_path_data_type& pg, const brush_props_data_type& bp, const stroke_props_data_type& sp, const dashes& d, const render_props_data_type& rp, const clip_props_data_type& cl);
+					static void fill(display_surface_data_type& data, const brush_data_type& b, const basic_interpreted_path_data_type& pg, const brush_props_data_type& bp, const render_props_data_type& rp, const clip_props_data_type& cl);
 					static void mask(display_surface_data_type& data, const brush_data_type& b, const brush_data_type& mb, const brush_props_data_type& bp, const mask_props_data_type& mp, const render_props_data_type& rp, const clip_props_data_type& cl);
 
 					// display_surface common functions
@@ -241,7 +254,7 @@ namespace std {
 					static void dimensions(display_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
 					static void display_dimensions(display_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
 					static void scaling(display_surface_data_type& data, io2d::scaling val);
-					static void letterbox_brush(display_surface_data_type& data, const optional<brush<_Cairo_graphics_surfaces>>& val) noexcept;
+					static void letterbox_brush(display_surface_data_type& data, const optional<basic_brush<_Cairo_graphics_surfaces>>& val, const optional<basic_brush_props<_Cairo_graphics_surfaces>& bp) noexcept;
 					static void letterbox_brush_props(display_surface_data_type& data, const basic_brush_props<_Cairo_graphics_surfaces>& val);
 					static void auto_clear(display_surface_data_type& data, bool val);
 					static void refresh_rate(display_surface_data_type& data, io2d::refresh_rate val);

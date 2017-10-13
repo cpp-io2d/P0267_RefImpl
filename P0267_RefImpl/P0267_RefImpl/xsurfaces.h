@@ -1,80 +1,88 @@
 #pragma once
+#include "xio2d.h"
 #include "xsurfaces_enums.h"
+#include "xpath.h"
+#include "xlinear_algebra.h"
+
+#if defined(_Filesystem_support_test)
+#include <filesystem>
+#endif
+#include <initializer_list>
 
 namespace std {
 	namespace experimental {
 		namespace io2d {
-			inline namespace v1 {
-
-				template <class GraphicsMath, class GraphicsSurfaces>
+			namespace v1 {
+				template <class GraphicsSurfaces>
 				class basic_render_props {
-				//public:
-				//	using matrix_2d_type = typename GraphicsMath::matrix_2d;
-				//private:
-					antialias _Antialiasing = antialias::good;
-					basic_matrix_2d<GraphicsMath> _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
-					compositing_op _Compositing = compositing_op::over;
 				public:
+					using _Data_type = typename GraphicsSurfaces::render_props_data_type;
+					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
+				private:
+					_Data_type _Data;
+				public:
+					constexpr const _Data_type _Get_data() const noexcept;
 					constexpr basic_render_props() noexcept;
-					constexpr explicit basic_render_props(antialias a, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}, compositing_op co = compositing_op::over) noexcept;
+					constexpr explicit basic_render_props(antialias a, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}, compositing_op co = compositing_op::over) noexcept;
 					constexpr void antialiasing(antialias a) noexcept;
 					constexpr void compositing(compositing_op co) noexcept;
-					constexpr void surface_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
+					constexpr void surface_matrix(const basic_matrix_2d<graphics_math_type>& m) noexcept;
 					constexpr antialias antialiasing() const noexcept;
 					constexpr compositing_op compositing() const noexcept;
-					constexpr basic_matrix_2d<GraphicsMath> surface_matrix() const noexcept;
+					constexpr basic_matrix_2d<graphics_math_type> surface_matrix() const noexcept;
 				};
 
-				template <class GraphicsMath, class GraphicsSurfaces>
+				template <class GraphicsSurfaces>
 				class basic_brush_props {
-				//public:
-				//	using matrix_2d_type = typename GraphicsMath::matrix_2d;
-				//private:
-					experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::none;
-					experimental::io2d::filter _Filter = experimental::io2d::filter::good;
-					experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
-					basic_matrix_2d<GraphicsMath> _Matrix;
+				public:
+					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
+					using _Data_type = typename GraphicsSurfaces::brush_props_data_type;
+
+				private:
+					_Data_type _Data;
 
 				public:
-					constexpr basic_brush_props(io2d::wrap_mode w = io2d::wrap_mode::none, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
+					constexpr basic_brush_props(io2d::wrap_mode w = io2d::wrap_mode::none, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
 					constexpr void filter(io2d::filter fi) noexcept;
 					constexpr void wrap_mode(io2d::wrap_mode w) noexcept;
 					constexpr void fill_rule(io2d::fill_rule fr) noexcept;
-					constexpr void brush_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
+					constexpr void brush_matrix(const basic_matrix_2d<graphics_math_type>& m) noexcept;
 					constexpr io2d::filter filter() const noexcept;
 					constexpr io2d::wrap_mode wrap_mode() const noexcept;
 					constexpr io2d::fill_rule fill_rule() const noexcept;
-					constexpr basic_matrix_2d<GraphicsMath> brush_matrix() const noexcept;
+					constexpr basic_matrix_2d<graphics_math_type> brush_matrix() const noexcept;
 				};
 
 				template <class GraphicsSurfaces>
 				class basic_clip_props {
-					interpreted_path<GraphicsSurfaces> _Clip;
-					experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
+				public:
+					using graphics_math_type = typename GraphicsSurfaces::graphics_math_types;
+					using _Data_type = typename GraphicsSurfaces::clip_props_data_type;
+				private:
+					_Data_type _Data;
 				public:
 					// surplus to paper
-					template <class GraphicsMath>
-					explicit basic_clip_props(const basic_bounding_box<GraphicsMath>& r, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
+					explicit basic_clip_props(const basic_bounding_box<graphics_math_type>& r, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
 
 					basic_clip_props() noexcept = default;
-					template <class GraphicsMath, class Allocator>
-					explicit basic_clip_props(const basic_path_builder<GraphicsMath, Allocator>& pb, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
-					explicit basic_clip_props(const interpreted_path<GraphicsSurfaces>& pg, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding) noexcept;
-					template <class GraphicsMath, class Allocator>
-					void clip(const basic_path_builder<GraphicsMath, Allocator>& pb);
-					void clip(const interpreted_path<GraphicsSurfaces>& pg) noexcept;
+					template <class Allocator>
+					explicit basic_clip_props(const basic_path_builder<graphics_math_type, Allocator>& pb, io2d::fill_rule fr = io2d::fill_rule::winding);
+					explicit basic_clip_props(const basic_interpreted_path<GraphicsSurfaces>& ip, io2d::fill_rule fr = io2d::fill_rule::winding) noexcept;
+					template <class Allocator>
+					void clip(const basic_path_builder<graphics_math_type, Allocator>& pb);
+					void clip(const basic_interpreted_path<GraphicsSurfaces>& ip) noexcept;
 					void fill_rule(experimental::io2d::fill_rule fr) noexcept;
-					interpreted_path<GraphicsSurfaces> clip() const noexcept;
-					experimental::io2d::fill_rule fill_rule() const noexcept;
+					basic_interpreted_path<GraphicsSurfaces> clip() const noexcept;
+					io2d::fill_rule fill_rule() const noexcept;
 				};
 
 				template <class GraphicsSurfaces>
 				class basic_stroke_props {
-					float _Line_width = 2.0F;
-					float _Miter_limit = 10.0F;
-					experimental::io2d::line_cap _Line_cap = experimental::io2d::line_cap::none;
-					experimental::io2d::line_join _Line_join = experimental::io2d::line_join::miter;
-					//optional<dashes> _Dashes;
+				public:
+					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
+					using _Data_type = typename GraphicsSurfaces::stroke_props_data_type;
+				private:
+					_Data_type _Data;
 				public:
 					constexpr basic_stroke_props() noexcept;
 					constexpr explicit basic_stroke_props(float w, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
@@ -89,111 +97,62 @@ namespace std {
 					constexpr float max_miter_limit() const noexcept;
 				};
 
-				template <class GraphicsMath, class GraphicsSurfaces>
+				template <class GraphicsSurfaces>
 				class basic_mask_props {
-					experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::repeat;
-					experimental::io2d::filter _Filter = experimental::io2d::filter::good;
-					basic_matrix_2d<GraphicsMath> _Matrix = basic_matrix_2d<GraphicsMath>{};
-
 				public:
-					// surplus to paper
-					constexpr basic_mask_props(const basic_mask_props&) noexcept = default;
-					constexpr basic_mask_props& operator=(const basic_mask_props&) noexcept = default;
-					basic_mask_props(basic_mask_props&&) noexcept = default;
-					basic_mask_props& operator=(basic_mask_props&&) noexcept = default;
+					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
+					using _Data_type = typename GraphicsSurfaces::mask_props_data_type;
+				private:
+					_Data_type _Data;
+				public:
+					//// surplus to paper
+					//constexpr basic_mask_props(const basic_mask_props&) noexcept = default;
+					//constexpr basic_mask_props& operator=(const basic_mask_props&) noexcept = default;
+					//basic_mask_props(basic_mask_props&&) noexcept = default;
+					//basic_mask_props& operator=(basic_mask_props&&) noexcept = default;
 
-					constexpr basic_mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat, experimental::io2d::filter fi = experimental::io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
+					constexpr const _Data_type& basic_mask_props::_Get_data() const noexcept;
+					constexpr basic_mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat, experimental::io2d::filter fi = experimental::io2d::filter::good, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
 					constexpr void wrap_mode(experimental::io2d::wrap_mode w) noexcept;
 					constexpr void filter(experimental::io2d::filter fi) noexcept;
-					constexpr void mask_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
+					constexpr void mask_matrix(const basic_matrix_2d<graphics_math_type>& m) noexcept;
 					constexpr experimental::io2d::wrap_mode wrap_mode() const noexcept;
 					constexpr experimental::io2d::filter filter() const noexcept;
-					constexpr basic_matrix_2d<GraphicsMath> mask_matrix() const noexcept;
+					constexpr basic_matrix_2d<graphics_math_type> mask_matrix() const noexcept;
 				};
-
-				template <class GraphicsMath, class T>
-				class display_surface;
-				
-				
-				template <class T>
-				class handler {
-					T _Handler_impl;
-
-				public:
-					template <class GraphicsMath, class U>
-					handler(display_surface<GraphicsMath, U>& ds, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr, float desiredFramerate);
-					template <class GraphicsMath, class U>
-					handler(display_surface<GraphicsMath, U>& ds, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr, float desiredFramerate, error_code& ec);
-					int begin_show();
-					void end_show();
-					void display_dimensions(display_point dp);
-					void display_dimensions(display_point dp, error_code& ec) noexcept;
-					void refresh_rate(experimental::io2d::refresh_rate rr) noexcept;
-					bool desired_frame_rate(float fps) noexcept;
-					display_point display_dimensions() const noexcept;
-					experimental::io2d::refresh_rate refresh_rate() const noexcept;
-					float desired_frame_rate() const noexcept;
-					float elapsed_draw_time() const noexcept;
-				};
-
-				class dashes {
-					float _Offset = 0.0;
-					::std::vector<float>
-				};
-				//tuple<dashes, offset>
-				//using dashes = ::std::tuple<::std::vector<float>, float>;
 
 				template <class GraphicsSurfaces>
-				class mapped_surface;
+				class base_dashes {
+					using _Data_type = typename GraphicsSurfaces::dashes_data_type;
+					_Data_type _Data;
+				public:
+					base_dashes() noexcept;
+					template <class ForwardIterator>
+					base_dashes(float offset, ForwardIterator first, ForwardIterator last);
+					base_dashes(float offset, ::std::initializer_list<float> il);
+				};
 
-				//template <class GraphicsSurfaces>
-				//class base_surface {
-				//protected:
-				//	using native_handle_type = typename GraphicsSurfaces::renderer_surface_native_handles;
-				//	base_surface(::std::experimental::io2d::format fmt, int width, int height);
-				//	base_surface(native_handle_type nh, ::std::experimental::io2d::format fmt);
-				//	const auto& native_handle() const { return _Surface_impl; }
+				template <class GraphicsSurfaces>
+				class base_image_surface {
+				public:
+					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
+					using _Data_type = typename GraphicsSurfaces::image_surface_data_type;
 
-				//	::std::unique_ptr<typename T::renderer_surface> _Surface_impl;
-
-				//public:
-				//	void clear();
-				//	base_surface() = delete;
-
-				//	void flush();
-				//	void flush(error_code& ec) noexcept;
-				//	void mark_dirty();
-				//	void mark_dirty(error_code& ec) noexcept;
-				//	template <class GraphicsMath>
-				//	void mark_dirty(const typename basic_geometry<GraphicsMath>::bounding_box& extents);
-				//	template <class GraphicsMath>
-				//	void mark_dirty(const typename basic_geometry<GraphicsMath>::bounding_box& extents, error_code& ec) noexcept;
-				//	template <class GraphicsMath, class T>
-				//	void paint(const brush<T>& b, const optional<brush_props_data_type>& bp, const optional<render_props_data_type>& rp, const optional<clip_props_data_type>& cl);
-				//	template <class Allocator>
-				//	void stroke(const brush<GraphicsMath, T>& b, const path_builder<GraphicsMath, Allocator>& pb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-				//	void stroke(const brush<GraphicsMath, T>& b, const interpreted_path<T>& pg, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<stroke_props>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-				//	template <class Allocator>
-				//	void fill(const brush<GraphicsMath, T>& b, const path_builder<GraphicsMath, Allocator>& pb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-				//	void fill(const brush<GraphicsMath, T>& b, const interpreted_path<T>& pg, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-				//	void mask(const brush<GraphicsMath, T>& b, const brush<GraphicsMath, T>& mb, const optional<brush_props<GraphicsMath>>& bp = nullopt, const optional<mask_props<GraphicsMath>>& mp = nullopt, const optional<render_props<GraphicsMath>>& rp = nullopt, const optional<clip_props<T>>& cl = nullopt);
-				//};
-
-				class image_surface : public surface<GraphicsMath, T> {
-					typename T::renderer_image_surface _Image_surface_impl;
+				private:
+					_Data_type _Data;
 
 				public:
-					const auto& native_handle() const { return _Image_surface_impl; }
-					image_surface(io2d::format fmt, int width, int height);
+					const _Data_type& _Get_data() const noexcept;
+					base_image_surface(io2d::format fmt, int width, int height);
 #ifdef _Filesystem_support_test
-					image_surface(filesystem::path f, image_file_format i, io2d::format fmt);
-					image_surface(filesystem::path f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
+					base_image_surface(filesystem::path f, image_file_format iff, io2d::format fmt);
+					base_image_surface(filesystem::path f, image_file_format iff, io2d::format fmt, error_code& ec) noexcept;
 #else
-					image_surface(::std::string f, experimental::io2d::format fmt, image_file_format idf);
-					image_surface(::std::string f, image_file_format i, io2d::format fmt, error_code& ec) noexcept;
+					base_image_surface(::std::string f, image_file_format iff, format fmt);
+					base_image_surface(::std::string f, image_file_format iff, io2d::format fmt, error_code& ec) noexcept;
 #endif
-					image_surface(image_surface&&) = default;
-					image_surface& operator=(image_surface&&) = default;
+					base_image_surface(image_surface&&) = default;
+					base_image_surface& operator=(image_surface&&) = default;
 #ifdef _Filesystem_support_test
 					void save(filesystem::path p, image_file_format i);
 					void save(filesystem::path p, image_file_format i, error_code& ec) noexcept;
@@ -201,69 +160,130 @@ namespace std {
 					void save(::std::string f, image_file_format i);
 					void save(::std::string f, image_file_format i, error_code& ec) noexcept;
 #endif
-					void map(const function<void(mapped_surface<GraphicsMath, T>&)>& action);
-					void map(const function<void(mapped_surface<GraphicsMath, T>&, error_code&)>& action, error_code& ec);
 					static int max_width() noexcept;
 					static int max_height() noexcept;
 					io2d::format format() const noexcept;
 					int width() const noexcept;
 					int height() const noexcept;
+
+					void clear();
+					void flush();
+					void flush(error_code& ec) noexcept;
+					void mark_dirty();
+					void mark_dirty(error_code& ec) noexcept;
+					void mark_dirty(const basic_bounding_box<graphics_math_type>& extents);
+					template <class GraphicsMath>
+					void mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept;
+					void paint(const basic_brush<GraphicsSurfaces>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					template <class Allocator>
+					void stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					void stroke(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					template <class Allocator>
+					void fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					void fill(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					void mask(const basic_brush<GraphicsSurfaces>& b, const basic_brush<GraphicsSurfaces>& mb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_mask_props<GraphicsSurfaces>>& mp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
 				};
 
-				constexpr bool operator==(const display_point& lhs, const display_point& rhs) noexcept;
-				constexpr bool operator!=(const display_point& lhs, const display_point& rhs) noexcept;
-
-				class display_surface : public surface<GraphicsMath, T> {
-					typename T::renderer_display_surface _Display_surface_impl;
-
+				template <class GraphicsSurfaces>
+				class base_display_surface {
 				public:
-					auto& native_handle() { return _Display_surface_impl; }
-					display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox);
-					display_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl = io2d::scaling::letterbox) noexcept;
-					template <class U>
-					void make_native_surface(U&&);						// Should only be invoked by the handler
-					void make_impl_surface();							// Should only be invoked by the handler
+					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
+					using _Data_type = typename GraphicsSurfaces::display_surface_data_type;
+
+				protected:
+					_Data_type _Data;
+					
+					base_display_surface(_Data_type&& data);
+					base_display_surface(base_display_surface&&) noexcept = default;
+					base_display_surface& operator=(base_display_surface&&) noexcept = default;
+
+				private:
+					~base_display_surface() noexcept;
+				public:
+					const _Data_type& _Get_data() const noexcept;
+
+					// rendering functions
+					void clear();
+					void flush();
+					void flush(error_code& ec) noexcept;
+					void mark_dirty();
+					void mark_dirty(error_code& ec) noexcept;
+					void mark_dirty(const basic_bounding_box<graphics_math_type>& extents);
+					template <class GraphicsMath>
+					void mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept;
+					void paint(const basic_brush<GraphicsSurfaces>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					template <class Allocator>
+					void stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					void stroke(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<dashes>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					template <class Allocator>
+					void fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					void fill(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+					void mask(const basic_brush<GraphicsSurfaces>& b, const basic_brush<GraphicsSurfaces>& mb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_mask_props<GraphicsSurfaces>>& mp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
+
+					// display functions
 					void draw_callback(const function<void(display_surface& sfc)>& fn);
-					void invoke_draw_callback(display_point dp);		// Should only be invoked by the handler
 					void size_change_callback(const function<void(display_surface& sfc)>& fn);
-					void invoke_size_change_callback();					// Should only be invoked by the handler
-					void dimensions(display_point dp);
-					void dimensions(display_point dp, error_code& ec) noexcept;
+					void dimensions(basic_display_point<graphics_math_type> dp);
+					void dimensions(basic_display_point<graphics_math_type> dp, error_code& ec) noexcept;
 					void scaling(experimental::io2d::scaling scl) noexcept;
-					void user_scaling_callback(const function<experimental::io2d::bounding_box<GraphicsMath>(const display_surface&, bool&)>& fn);
-					void letterbox_brush(const optional<brush<GraphicsMath, T>>& b, const optional<brush_props<GraphicsMath>> = nullopt) noexcept;
+					void user_scaling_callback(const function<basic_bounding_box<graphics_math_type>(const display_surface&, bool&)>& fn);
+					void letterbox_brush(const optional<basic_brush<GraphicsSurfaces>>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt) noexcept;
+					void letterbox_brush_props(const optional<basic_brush_props<GraphicsSurfaces>>& bp) noexcept;
 					void auto_clear(bool val) noexcept;
-					void redraw_required() noexcept;
-					bool reset_redraw_request() noexcept;				// Should only be invoked by the handler
 					experimental::io2d::format format() const noexcept;
-					display_point dimensions() const noexcept;
+					basic_display_point<graphics_math_type> dimensions() const noexcept;
 					experimental::io2d::scaling scaling() const noexcept;
-					function<experimental::io2d::bounding_box<GraphicsMath>(const display_surface&, bool&)> user_scaling_callback() const;
-					function<experimental::io2d::bounding_box<GraphicsMath>(const display_surface&, bool&)> user_scaling_callback(error_code& ec) const noexcept;
-					optional<brush<GraphicsMath, T>> letterbox_brush() const noexcept;
-					optional<brush_props<GraphicsMath>> letterbox_brush_props() const noexcept;
+					optional<basic_brush<GraphicsSurfaces>> letterbox_brush() const noexcept;
+					optional<basic_brush_props<GraphicsSurfaces>> letterbox_brush_props() const noexcept;
 					bool auto_clear() const noexcept;
 				};
 
-				class mapped_surface {
-					friend typename T::renderer_image_surface;
-					typename T::renderer_mapped_surface _Mapped_surface_impl;
-
-					mapped_surface(typename surface<GraphicsMath, T>::native_handle_type nh, typename surface<GraphicsMath, T>::native_handle_type map_of);
-					mapped_surface(typename surface<GraphicsMath, T>::native_handle_type nh, typename surface<GraphicsMath, T>::native_handle_type map_of, ::std::error_code& ec) noexcept;
-
+				template <class GraphicsSurfaces>
+				class base_output_surface : public base_display_surface<GraphicsSurfaces> {
 				public:
-					const auto& native_handle() const { return _Mapped_surface_impl; }
-					void commit_changes();
-					void commit_changes(error_code& ec) noexcept;
-					unsigned char* data();
-					unsigned char* data(error_code& ec) noexcept;
-					const unsigned char* data() const;
-					const unsigned char* data(error_code& ec) const noexcept;
-					experimental::io2d::format format() const noexcept;
-					int width() const noexcept;
-					int height() const noexcept;
-					int stride() const noexcept;
+					// System manages event loop
+					base_output_surface(int preferredWidth, int preferredHeight,
+						io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox,
+						io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+					base_output_surface(int preferredWidth, int preferredHeight,
+						io2d::format preferredFormat, error_code& ec,
+						io2d::scaling scl = io2d::scaling::letterbox,
+						io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f)
+						noexcept;
+					base_output_surface(int preferredWidth, int preferredHeight,
+						io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight,
+						io2d::scaling scl = io2d::scaling::letterbox,
+						io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+					base_output_surface(int preferredWidth, int preferredHeight,
+						experimental::io2d::format preferredFormat,
+						int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec,
+						io2d::scaling scl = io2d::scaling::letterbox,
+						io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f)
+						noexcept;
+
+					~base_output_surface() noexcept;
+					base_output_surface(base_output_surface&&) noexcept = default;
+					base_output_surface& operator=(base_output_surface&&) noexcept = default;
+
+					void redraw_required() noexcept;
+					typename GraphicsSurfaces::show_return_data_type begin_show();
+					void end_show();
+				};
+
+				template <class GraphicsSurfaces>
+				class base_unmanaged_output_surface : public base_display_surface<GraphicsSurfaces> {
+				public:
+					// User manages event loop
+					base_unmanaged_output_surface(HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, format preferredFormat);
+					~base_unmanaged_output_surface() noexcept;
+					base_unmanaged_output_surface(base_unmanaged_output_surface&&) noexcept = default;
+					base_unmanaged_output_surface& operator=(base_unmanaged_output_surface&&) noexcept = default;
+
+					typename GraphicsSurfaces::display_surface_data_type& get_data() const noexcept;
+
+					void invoke_draw_callback(const optional<basic_clip_props<GraphicsSurfaces>>& clip);
+					void invoke_size_change_callback();
+					bool reset_redraw_request() noexcept;
 				};
 			}
 		}
