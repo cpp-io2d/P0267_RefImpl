@@ -1,4 +1,5 @@
 #pragma once
+#include <utility>
 
 namespace std {
 	namespace experimental {
@@ -351,13 +352,16 @@ namespace std {
 						noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value
 							|| allocator_traits<Allocator>::is_always_equal::value);
 					void clear() noexcept;
+				private:
+					friend bool operator==(const basic_path_builder&, const basic_path_builder&) noexcept;
 				};
 
 				template <class GraphicsMath, class Allocator>
 				bool operator==(const basic_path_builder<GraphicsMath, Allocator>& lhs, const basic_path_builder<GraphicsMath, Allocator>& rhs) noexcept;
 				template <class GraphicsMath, class Allocator>
-				bool operator!=(const basic_path_builder<GraphicsMath, Allocator>& lhs, const basic_path_builder<GraphicsMatch, Allocator>& rhs) noexcept;
-
+				bool operator!=(const basic_path_builder<GraphicsMath, Allocator>& lhs, const basic_path_builder<GraphicsMath, Allocator>& rhs) noexcept;
+				template <class GraphicsMath, class Allocator>
+				void swap(basic_path_builder<GraphicsMath, Allocator>& lhs, basic_path_builder<GraphicsMath, Allocator>& rhs) noexcept(noexcept(lhs.swap(rhs)));
 				// 8.17.8, specialized algorithms:
 				/*		template <class Allocator>
 				void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
@@ -367,18 +371,29 @@ namespace std {
 
 				template <class GraphicsSurfaces>
 				class basic_interpreted_path {
+				public:
 					using _Data_type = typename GraphicsSurfaces::interpreted_path_data_type;
+
+				private:
 					_Data_type _Data;
 
 				public:
+					const _Data_type& _Get_data() const noexcept;
 					// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
-					constexpr basic_interpreted_path() noexcept;
+					basic_interpreted_path() noexcept;
 
 					template <class GraphicsMath, class Allocator>
-					explicit basic_interpreted_path(const basic_path_builder<GraphicsMath, Allocator>& p);
+					explicit basic_interpreted_path(const basic_path_builder<GraphicsMath, Allocator>& pb);
 
 					template <class ForwardIterator>
 					basic_interpreted_path(ForwardIterator first, ForwardIterator last);
+
+					basic_interpreted_path(const basic_interpreted_path&);
+					basic_interpreted_path& operator=(const basic_interpreted_path&);
+					basic_interpreted_path(basic_interpreted_path&&) noexcept;
+					basic_interpreted_path& operator=(basic_interpreted_path&&) noexcept;
+
+					~basic_interpreted_path() noexcept;
 				};
 			}
 		}

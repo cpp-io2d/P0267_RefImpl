@@ -32,13 +32,13 @@ namespace std {
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_render_props<GraphicsSurfaces>::basic_render_props(antialias a, const basic_matrix_2d<graphics_math_type>& m,
+				inline constexpr basic_render_props<GraphicsSurfaces>::basic_render_props(io2d::antialias a, const basic_matrix_2d<graphics_math_type>& m,
 					compositing_op co) noexcept
 					: _Data(GraphicsSurfaces::create_render_props(a, m, co)) {
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_render_props<GraphicsSurfaces>::antialiasing(antialias a) noexcept {
+				inline constexpr basic_render_props<GraphicsSurfaces>::antialiasing(io2d::antialias a) noexcept {
 					GraphicsSurfaces::antialiasing(_Data, a);
 				}
 
@@ -48,12 +48,12 @@ namespace std {
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_render_props<GraphicsSurfaces>::surface_matrix(const basic_matrix_2d<graphics_math_type>& m) noexcept {
+				inline constexpr basic_render_props<GraphicsSurfaces>::surface_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept {
 					GraphicsSurfaces::surface_matrix(_Data, m);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr antialias basic_render_props<GraphicsSurfaces>::antialiasing() const noexcept {
+				inline constexpr io2d::antialias basic_render_props<GraphicsSurfaces>::antialiasing() const noexcept {
 					return GraphicsSurfaces::antialiasing(_Data);
 				}
 

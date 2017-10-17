@@ -12,9 +12,6 @@
     <Filter Include="cairo renderer">
       <UniqueIdentifier>{dfda8558-356c-4ab5-bd73-deaaf2f1b458}</UniqueIdentifier>
     </Filter>
-    <Filter Include="windows handler">
-      <UniqueIdentifier>{bf514137-f122-41e4-8297-d4920033028d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="io2d.h">
@@ -56,12 +53,6 @@
     <ClInclude Include="xcairo_impl.h">
       <Filter>cairo renderer</Filter>
     </ClInclude>
-    <ClInclude Include="xinclwindows_h.h">
-      <Filter>windows handler</Filter>
-    </ClInclude>
-    <ClInclude Include="xwindows_handler_impl.h">
-      <Filter>windows handler</Filter>
-    </ClInclude>
     <ClInclude Include="xsurfaces_enums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -71,24 +62,21 @@
     <ClInclude Include="xsurfaces_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xcairo_helpers.h">
+      <Filter>cairo renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="xbrushes_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xinclwindows_h.h">
+      <Filter>cairo renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rgba_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="display_surface-win32.cpp">
-      <Filter>windows handler</Filter>
-    </ClCompile>
-    <ClCompile Include="cairo_renderer_display_surface-common.cpp">
-      <Filter>cairo renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="cairo_renderer_image_surface.cpp">
-      <Filter>cairo renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="cairo_renderer_standalone_functions.cpp">
-      <Filter>cairo renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="cairo_renderer_surface.cpp">
+    <ClCompile Include="cairo_renderer_win32.cpp">
       <Filter>cairo renderer</Filter>
     </ClCompile>
   </ItemGroup>

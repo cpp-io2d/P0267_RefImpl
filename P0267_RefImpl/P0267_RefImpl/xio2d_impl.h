@@ -16,25 +16,23 @@
 #include <type_traits>
 #include <initializer_list>
 #include <cmath>
+#include <utility>
 
 #ifdef _Filesystem_support_test
 #include <filesystem>
 #endif
 
 #include "xsurfaces.h"
+#include "xpath.h"
 
 namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
-				enum class _Round_floating_point_to_zero_sfinae {};
-				constexpr _Round_floating_point_to_zero_sfinae _Round_floating_point_to_zero_sfinae_val{};
-
-				template <class T, enable_if_t<::std::is_floating_point_v<T>, _Round_floating_point_to_zero_sfinae> = _Round_floating_point_to_zero_sfinae_val>
-				constexpr T _Round_floating_point_to_zero(T v) noexcept {
-					if ((v > static_cast<T>(0.0F) && v < ::std::numeric_limits<T>::epsilon() * 1000.0F) ||
-						(v < static_cast<T>(0.0F) && -v < ::std::numeric_limits<T>::epsilon() * 1000.0F)) {
-						return (v > static_cast<T>(0.0F)) ? static_cast<T>(0.0F) : static_cast<T>(-0.0F);
+				constexpr float _Round_floating_point_to_zero(float v) noexcept {
+					if ((v > 0.0f && v < ::std::numeric_limits<float>::epsilon() * 1000.0F) ||
+						(v < 0.0f && -v < ::std::numeric_limits<float>::epsilon() * 1000.0F)) {
+						return (v > 0.0f) ? 0.0f : -0.0f;
 					}
 					return v;
 				}
@@ -652,46 +650,46 @@ namespace std {
 					return GraphicsMath::not_equal(lhs._Get_data(), rhs._Get_data());
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::create_point_2d() noexcept {
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::create_point_2d() noexcept {
 					return create_point_2d(0.0f, 0.0f);
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::create_point_2d(float x, float y) noexcept {
-					auto result = _Linear_algebra_float_impl::point_2d_data_type();
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::create_point_2d(float x, float y) noexcept {
+					auto result = _Graphics_math_float_impl::point_2d_data_type();
 					result._X = x;
 					result._Y = y;
 					return result;
 				}
 
-				inline void _Linear_algebra_float_impl::x(typename _Linear_algebra_float_impl::point_2d_data_type& val, float x) noexcept {
+				inline void _Graphics_math_float_impl::x(typename _Graphics_math_float_impl::point_2d_data_type& val, float x) noexcept {
 					val._X = x;
 				}
 
-				inline void _Linear_algebra_float_impl::y(typename _Linear_algebra_float_impl::point_2d_data_type& val, float y) noexcept {
+				inline void _Graphics_math_float_impl::y(typename _Graphics_math_float_impl::point_2d_data_type& val, float y) noexcept {
 					val._Y = y;
 				}
 
-				inline float _Linear_algebra_float_impl::x(const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline float _Graphics_math_float_impl::x(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					return val._X;
 				}
 
-				inline float _Linear_algebra_float_impl::y(const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline float _Graphics_math_float_impl::y(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					return val._Y;
 				}
 
-				inline float _Linear_algebra_float_impl::dot(const typename _Linear_algebra_float_impl::point_2d_data_type& a, const typename _Linear_algebra_float_impl::point_2d_data_type& b) noexcept {
+				inline float _Graphics_math_float_impl::dot(const typename _Graphics_math_float_impl::point_2d_data_type& a, const typename _Graphics_math_float_impl::point_2d_data_type& b) noexcept {
 					return a._X * b._X + a._Y * b._Y;
 				}
 
-				inline float _Linear_algebra_float_impl::magnitude(const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline float _Graphics_math_float_impl::magnitude(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					return ::std::sqrt(val._X * val._X + val._Y * val._Y);
 				}
 
-				inline float _Linear_algebra_float_impl::magnitude_squared(const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline float _Graphics_math_float_impl::magnitude_squared(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					return val._X * val._X + val._Y * val._Y;
 				}
 
-				inline float _Linear_algebra_float_impl::angular_direction(const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline float _Graphics_math_float_impl::angular_direction(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					auto v = ::std::atan2(val._Y, val._X);
 					if (v < 0.0F) {
 						v += two_pi<float>;
@@ -699,7 +697,7 @@ namespace std {
 					return v;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::to_unit(const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::to_unit(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					auto leng = magnitude(val);
 					auto result = val;
 					result._X = val._X / leng;
@@ -707,103 +705,103 @@ namespace std {
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::add(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::add(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs._X + rhs._X;
 					result._Y = lhs._Y + rhs._Y;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::add(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, float rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::add(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, float rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs._X + rhs;
 					result._Y = lhs._Y + rhs;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::add(float lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::add(float lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs + rhs._X;
 					result._Y = lhs + rhs._Y;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::subtract(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::subtract(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs._X - rhs._X;
 					result._Y = lhs._Y - rhs._Y;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::subtract(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, float rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::subtract(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, float rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs._X - rhs;
 					result._Y = lhs._Y - rhs;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::subtract(float lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::subtract(float lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs - rhs._X;
 					result._Y = lhs - rhs._Y;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::multiply(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::multiply(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs._X * rhs._X;
 					result._Y = lhs._Y * rhs._Y;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::multiply(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, float rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::multiply(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, float rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs._X * rhs;
 					result._Y = lhs._Y * rhs;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::multiply(float lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::multiply(float lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs * rhs._X;
 					result._Y = lhs * rhs._Y;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::divide(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::divide(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs._X / rhs._X;
 					result._Y = lhs._Y / rhs._Y;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::divide(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, float rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::divide(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, float rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs._X / rhs;
 					result._Y = lhs._Y / rhs;
 					return result;
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::divide(float lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
-					_Linear_algebra_float_impl::point_2d_data_type result;
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::divide(float lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
+					_Graphics_math_float_impl::point_2d_data_type result;
 					result._X = lhs / rhs._X;
 					result._Y = lhs / rhs._Y;
 					return result;
 				}
 
-				inline bool _Linear_algebra_float_impl::equal(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
+				inline bool _Graphics_math_float_impl::equal(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
 					return lhs._X == rhs._X&& lhs._Y == rhs._Y;
 				}
 
-				inline bool _Linear_algebra_float_impl::not_equal(const typename _Linear_algebra_float_impl::point_2d_data_type& lhs, const typename _Linear_algebra_float_impl::point_2d_data_type& rhs) noexcept {
+				inline bool _Graphics_math_float_impl::not_equal(const typename _Graphics_math_float_impl::point_2d_data_type& lhs, const typename _Graphics_math_float_impl::point_2d_data_type& rhs) noexcept {
 					return !equal(lhs, rhs);
 				}
 
-				inline typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::negate(const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::negate(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					return create_point_2d(-val._X, -val._Y);
 				}
 
-				inline constexpr typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::create_matrix_2d() noexcept {
+				inline constexpr typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::create_matrix_2d() noexcept {
 					auto result = matrix_2d_data_type();
 					result.m00 = 1.0f;
 					result.m01 = 0.0f;
@@ -816,7 +814,7 @@ namespace std {
 					result.m22 = 1.0f;
 					return result;
 				}
-				inline constexpr typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::create_matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::create_matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept {
 					auto result = matrix_2d_data_type();
 					result.m00 = v00;
 					result.m01 = v01;
@@ -829,93 +827,93 @@ namespace std {
 					result.m22 = 1.0f;
 					return result;
 				}
-				inline constexpr void _Linear_algebra_float_impl::m00(matrix_2d_data_type& mtx, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::m00(matrix_2d_data_type& mtx, float val) noexcept {
 					mtx.m00 = val;
 				}
-				inline constexpr void _Linear_algebra_float_impl::m01(matrix_2d_data_type& mtx, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::m01(matrix_2d_data_type& mtx, float val) noexcept {
 					mtx.m01 = val;
 				}
-				inline constexpr void _Linear_algebra_float_impl::m10(matrix_2d_data_type& mtx, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::m10(matrix_2d_data_type& mtx, float val) noexcept {
 					mtx.m10 = val;
 				}
-				inline constexpr void _Linear_algebra_float_impl::m11(matrix_2d_data_type& mtx, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::m11(matrix_2d_data_type& mtx, float val) noexcept {
 					mtx.m11 = val;
 				}
-				inline constexpr void _Linear_algebra_float_impl::m20(matrix_2d_data_type& mtx, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::m20(matrix_2d_data_type& mtx, float val) noexcept {
 					mtx.m20 = val;
 				}
-				inline constexpr void _Linear_algebra_float_impl::m21(matrix_2d_data_type& mtx, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::m21(matrix_2d_data_type& mtx, float val) noexcept {
 					mtx.m21 = val;
 				}
-				inline constexpr float _Linear_algebra_float_impl::m00(const matrix_2d_data_type& mtx) noexcept {
+				inline constexpr float _Graphics_math_float_impl::m00(const matrix_2d_data_type& mtx) noexcept {
 					return mtx.m00;
 				}
-				inline constexpr float _Linear_algebra_float_impl::m01(const matrix_2d_data_type& mtx) noexcept {
+				inline constexpr float _Graphics_math_float_impl::m01(const matrix_2d_data_type& mtx) noexcept {
 					return mtx.m01;
 				}
-				inline constexpr float _Linear_algebra_float_impl::m10(const matrix_2d_data_type& mtx) noexcept {
+				inline constexpr float _Graphics_math_float_impl::m10(const matrix_2d_data_type& mtx) noexcept {
 					return mtx.m10;
 				}
-				inline constexpr float _Linear_algebra_float_impl::m11(const matrix_2d_data_type& mtx) noexcept {
+				inline constexpr float _Graphics_math_float_impl::m11(const matrix_2d_data_type& mtx) noexcept {
 					return mtx.m11;
 				}
-				inline constexpr float _Linear_algebra_float_impl::m20(const matrix_2d_data_type& mtx) noexcept {
+				inline constexpr float _Graphics_math_float_impl::m20(const matrix_2d_data_type& mtx) noexcept {
 					return mtx.m20;
 				}
-				inline constexpr float _Linear_algebra_float_impl::m21(const matrix_2d_data_type& mtx) noexcept {
+				inline constexpr float _Graphics_math_float_impl::m21(const matrix_2d_data_type& mtx) noexcept {
 					return mtx.m21;
 				}
-				inline constexpr typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::init_identity() noexcept {
+				inline constexpr typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_identity() noexcept {
 					return create_matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
 				}
-				inline constexpr typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::init_translate(const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_translate(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					return create_matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, val._X, val._Y);
 				}
-				inline constexpr typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::init_scale(const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_scale(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					return create_matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, val._X, val._Y);
 				}
-				inline typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::init_rotate(float radians) noexcept {
+				inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_rotate(float radians) noexcept {
 					float sine = sin(radians);
 					float cosine = cos(radians);
 					sine = _Round_floating_point_to_zero(sine);
 					cosine = _Round_floating_point_to_zero(cosine);
 					return create_matrix_2d(cosine, -sine, sine, cosine, 0.0f, 0.0f);
 				}
-				inline typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::init_rotate(float radians, const typename _Linear_algebra_float_impl::point_2d_data_type& origin) noexcept {
-					return multiply(multiply(init_translate(origin), init_rotate(radians)), init_translate(-origin));
+				inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_rotate(float radians, const typename _Graphics_math_float_impl::point_2d_data_type& origin) noexcept {
+					return multiply(multiply(init_translate(origin), init_rotate(radians)), init_translate(negate(origin)));
 				}
-				inline typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::init_reflect(float radians) noexcept {
+				inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_reflect(float radians) noexcept {
 					auto sine = sin(radians * 2.0f);
 					auto cosine = cos(radians * 2.0f);
 					sine = _Round_floating_point_to_zero(sine);
 					cosine = _Round_floating_point_to_zero(cosine);
 					return create_matrix_2d(cosine, sine, sine, -cosine, 0.0f, 0.0f);
 				}
-				inline constexpr typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::init_shear_x(float factor) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_shear_x(float factor) noexcept {
 					return create_matrix_2d(1.0f, 0.0f, factor, 1.0f, 0.0f, 0.0f);
 				}
-				inline constexpr typename _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::init_shear_y(float factor) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_shear_y(float factor) noexcept {
 					return create_matrix_2d(1.0f, factor, 0.0f, 1.0f, 0.0f, 0.0f);
 				}
-				inline constexpr void _Linear_algebra_float_impl::translate(matrix_2d_data_type& mtx, const _Linear_algebra_float_impl::point_2d_data_type& v) noexcept {
+				inline constexpr void _Graphics_math_float_impl::translate(matrix_2d_data_type& mtx, const _Graphics_math_float_impl::point_2d_data_type& v) noexcept {
 					mtx = multiply(mtx, init_translate(v));
 				}
-				inline constexpr void _Linear_algebra_float_impl::scale(matrix_2d_data_type& mtx, const point_2d_data_type& scl) noexcept {
+				inline constexpr void _Graphics_math_float_impl::scale(matrix_2d_data_type& mtx, const point_2d_data_type& scl) noexcept {
 					mtx = multiply(mtx, init_scale(scl));
 				}
-				inline void _Linear_algebra_float_impl::rotate(matrix_2d_data_type& mtx, float radians) noexcept {
+				inline void _Graphics_math_float_impl::rotate(matrix_2d_data_type& mtx, float radians) noexcept {
 					mtx = multiply(mtx, init_rotate(radians));
 				}
-				inline void _Linear_algebra_float_impl::rotate(matrix_2d_data_type& mtx, float radians, const point_2d_data_type& origin) noexcept {
+				inline void _Graphics_math_float_impl::rotate(matrix_2d_data_type& mtx, float radians, const point_2d_data_type& origin) noexcept {
 					mtx = multiply(mtx, init_rotate(radians, origin));
 				}
-				inline void _Linear_algebra_float_impl::reflect(matrix_2d_data_type& mtx, float radians) noexcept {
+				inline void _Graphics_math_float_impl::reflect(matrix_2d_data_type& mtx, float radians) noexcept {
 					mtx = multiply(mtx, init_reflect(radians));
 				}
-				inline constexpr void _Linear_algebra_float_impl::shear_x(matrix_2d_data_type& mtx, float factor) noexcept {
+				inline constexpr void _Graphics_math_float_impl::shear_x(matrix_2d_data_type& mtx, float factor) noexcept {
 					mtx = multiply(mtx, init_shear_x(factor));
 				}
-				inline constexpr void _Linear_algebra_float_impl::shear_y(matrix_2d_data_type& mtx, float factor) noexcept {
+				inline constexpr void _Graphics_math_float_impl::shear_y(matrix_2d_data_type& mtx, float factor) noexcept {
 					mtx = multiply(mtx, init_shear_y(factor));
 				}
 				constexpr bool _Is_finite_check(float) noexcept;
@@ -926,7 +924,7 @@ namespace std {
 						!(val != val);
 					// This checks for both types of NaN. Compilers are not supposed to optimize this away but there were some in the past that incorrectly did. The only way to be sure is to check the documentation and any compiler switches you may be using.
 				}
-				inline constexpr bool _Linear_algebra_float_impl::is_finite(const matrix_2d_data_type& mtx) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::is_finite(const matrix_2d_data_type& mtx) noexcept {
 					static_assert(::std::numeric_limits<float>::is_iec559 == true, "This implementation relies on IEEE 754 floating point behavior.");
 					return ::std::numeric_limits<float>::is_iec559 &&
 						_Is_finite_check(mtx.m00) &&
@@ -937,15 +935,15 @@ namespace std {
 						_Is_finite_check(mtx.m21);
 				}
 
-				inline constexpr bool _Linear_algebra_float_impl::is_invertible(const typename matrix_2d_data_type& mtx) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::is_invertible(const typename matrix_2d_data_type& mtx) noexcept {
 					return (mtx.m00 * mtx.m11 - mtx.m01 * mtx.m10) != 0.0f;
 				}
 
-				inline constexpr float _Linear_algebra_float_impl::determinant(const typename matrix_2d_data_type& mtx) noexcept {
+				inline constexpr float _Graphics_math_float_impl::determinant(const typename matrix_2d_data_type& mtx) noexcept {
 					return mtx.m00 * mtx.m11 - mtx.m01 * mtx.m10;
 				}
 
-				inline constexpr _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::inverse(const matrix_2d_data_type& mtx) noexcept {
+				inline constexpr _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::inverse(const matrix_2d_data_type& mtx) noexcept {
 					auto inverseDeterminant = 1.0F / determinant(mtx);
 					return create_matrix_2d(
 						(mtx.m11 * 1.0F - 0.0F * mtx.m21) * inverseDeterminant,
@@ -957,11 +955,13 @@ namespace std {
 					);
 				}
 
-				inline constexpr _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::transform_pt(const matrix_2d_data_type& mtx, const _Linear_algebra_float_impl::point_2d_data_type& pt) noexcept {
-					return point_2d_data_type(_Round_floating_point_to_zero(mtx.m00 * pt._X + mtx.m10 * pt._Y + mtx.m20), _Round_floating_point_to_zero(mtx.m01 * pt._X + mtx.m11 * pt._Y + mtx.m21));
+				inline constexpr _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::transform_pt(const matrix_2d_data_type& mtx, const _Graphics_math_float_impl::point_2d_data_type& pt) noexcept {
+					auto x = _Round_floating_point_to_zero(mtx.m00 * pt._X + mtx.m10 * pt._Y + mtx.m20);
+					auto y = _Round_floating_point_to_zero(mtx.m01 * pt._X + mtx.m11 * pt._Y + mtx.m21);
+					return create_point_2d(x, y);
 				}
 
-				inline constexpr _Linear_algebra_float_impl::matrix_2d_data_type _Linear_algebra_float_impl::multiply(const matrix_2d_data_type& lhs, const matrix_2d_data_type& rhs) noexcept {
+				inline constexpr _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::multiply(const matrix_2d_data_type& lhs, const matrix_2d_data_type& rhs) noexcept {
 					return create_matrix_2d(
 						(lhs.m00 * rhs.m00) + (lhs.m01 * rhs.m10),
 						(lhs.m00 * rhs.m01) + (lhs.m01 * rhs.m11),
@@ -972,116 +972,116 @@ namespace std {
 					);
 				}
 
-				inline constexpr bool _Linear_algebra_float_impl::equal(const matrix_2d_data_type& lhs, const matrix_2d_data_type& rhs) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::equal(const matrix_2d_data_type& lhs, const matrix_2d_data_type& rhs) noexcept {
 					return lhs.m00 == rhs.m00 && lhs.m01 == rhs.m01 &&
 						lhs.m10 == rhs.m10 && lhs.m11 == rhs.m11 &&
 						lhs.m20 == rhs.m20 && lhs.m21 == rhs.m21;
 				}
 
-				inline constexpr bool _Linear_algebra_float_impl::not_equal(const matrix_2d_data_type& lhs, const matrix_2d_data_type& rhs) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::not_equal(const matrix_2d_data_type& lhs, const matrix_2d_data_type& rhs) noexcept {
 					return !equal(lhs, rhs);
 				}
 
-				inline constexpr typename _Linear_algebra_float_impl::display_point_data_type _Linear_algebra_float_impl::create_display_point() noexcept {
+				inline constexpr typename _Graphics_math_float_impl::display_point_data_type _Graphics_math_float_impl::create_display_point() noexcept {
 					return display_point_data_type{ 0, 0 };
 				}
-				inline constexpr typename _Linear_algebra_float_impl::display_point_data_type _Linear_algebra_float_impl::create_display_point(int x, int y) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::display_point_data_type _Graphics_math_float_impl::create_display_point(int x, int y) noexcept {
 					return display_point_data_type{ x, y };
 				}
-				inline constexpr void _Linear_algebra_float_impl::x(typename _Linear_algebra_float_impl::display_point_data_type& data, int x) noexcept {
+				inline constexpr void _Graphics_math_float_impl::x(typename _Graphics_math_float_impl::display_point_data_type& data, int x) noexcept {
 					data.x = x;
 				}
-				inline constexpr void _Linear_algebra_float_impl::y(typename _Linear_algebra_float_impl::display_point_data_type& data, int y) noexcept {
+				inline constexpr void _Graphics_math_float_impl::y(typename _Graphics_math_float_impl::display_point_data_type& data, int y) noexcept {
 					data.y = y;
 				}
-				inline constexpr int _Linear_algebra_float_impl::x(const typename _Linear_algebra_float_impl::display_point_data_type& data) noexcept {
+				inline constexpr int _Graphics_math_float_impl::x(const typename _Graphics_math_float_impl::display_point_data_type& data) noexcept {
 					return data.x;
 				}
-				inline constexpr int _Linear_algebra_float_impl::y(const typename _Linear_algebra_float_impl::display_point_data_type& data) noexcept {
+				inline constexpr int _Graphics_math_float_impl::y(const typename _Graphics_math_float_impl::display_point_data_type& data) noexcept {
 					return data.y;
 				}
-				inline constexpr bool _Linear_algebra_float_impl::equal(const typename _Linear_algebra_float_impl::display_point_data_type& lhs, const typename _Linear_algebra_float_impl::display_point_data_type& rhs) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::equal(const typename _Graphics_math_float_impl::display_point_data_type& lhs, const typename _Graphics_math_float_impl::display_point_data_type& rhs) noexcept {
 					return lhs.x == rhs.x && lhs.y == rhs.y;
 				}
-				inline constexpr bool _Linear_algebra_float_impl::not_equal(const typename _Linear_algebra_float_impl::display_point_data_type& lhs, const typename _Linear_algebra_float_impl::display_point_data_type& rhs) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::not_equal(const typename _Graphics_math_float_impl::display_point_data_type& lhs, const typename _Graphics_math_float_impl::display_point_data_type& rhs) noexcept {
 					return !(equal(lhs, rhs));
 				}
 
-				inline constexpr typename _Linear_algebra_float_impl::bounding_box_data_type _Linear_algebra_float_impl::create_bounding_box() noexcept {
+				inline constexpr typename _Graphics_math_float_impl::bounding_box_data_type _Graphics_math_float_impl::create_bounding_box() noexcept {
 					return bounding_box_data_type{ 0.0f, 0.0f, 0.0f, 0.0f };
 				}
-				inline constexpr typename _Linear_algebra_float_impl::bounding_box_data_type _Linear_algebra_float_impl::create_bounding_box(float x, float y, float width, float height) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::bounding_box_data_type _Graphics_math_float_impl::create_bounding_box(float x, float y, float width, float height) noexcept {
 					return bounding_box_data_type{ x, y, width, height };
 				}
-				inline constexpr void _Linear_algebra_float_impl::x(typename _Linear_algebra_float_impl::bounding_box_data_type& bbox, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::x(typename _Graphics_math_float_impl::bounding_box_data_type& bbox, float val) noexcept {
 					bbox.x = val;
 				}
-				inline constexpr void _Linear_algebra_float_impl::y(typename _Linear_algebra_float_impl::bounding_box_data_type& bbox, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::y(typename _Graphics_math_float_impl::bounding_box_data_type& bbox, float val) noexcept {
 					bbox.y = val;
 				}
-				inline constexpr void _Linear_algebra_float_impl::width(typename _Linear_algebra_float_impl::bounding_box_data_type& bbox, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::width(typename _Graphics_math_float_impl::bounding_box_data_type& bbox, float val) noexcept {
 					bbox.width = val;
 				}
-				inline constexpr void _Linear_algebra_float_impl::height(typename _Linear_algebra_float_impl::bounding_box_data_type& bbox, float val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::height(typename _Graphics_math_float_impl::bounding_box_data_type& bbox, float val) noexcept {
 					bbox.height = val;
 				}
-				inline constexpr void _Linear_algebra_float_impl::top_left(typename _Linear_algebra_float_impl::bounding_box_data_type& bbox, const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::top_left(typename _Graphics_math_float_impl::bounding_box_data_type& bbox, const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					bbox.x = ::std::min(val._X, bbox.x + bbox.width);
 					bbox.y = ::std::min(val._Y, bbox.y + bbox.height);
 				}
-				inline constexpr void _Linear_algebra_float_impl::bottom_right(typename _Linear_algebra_float_impl::bounding_box_data_type& bbox, const typename _Linear_algebra_float_impl::point_2d_data_type& val) noexcept {
+				inline constexpr void _Graphics_math_float_impl::bottom_right(typename _Graphics_math_float_impl::bounding_box_data_type& bbox, const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 					bbox.width = ::std::min(val._X - bbox.x, 0.0f);
 					bbox.height = ::std::min(val._Y - bbox.y, 0.0f);
 				}
-				inline constexpr float _Linear_algebra_float_impl::x(const typename _Linear_algebra_float_impl::bounding_box_data_type& bbox) noexcept {
+				inline constexpr float _Graphics_math_float_impl::x(const typename _Graphics_math_float_impl::bounding_box_data_type& bbox) noexcept {
 					return bbox.x;
 				}
-				inline constexpr float _Linear_algebra_float_impl::y(const typename _Linear_algebra_float_impl::bounding_box_data_type& bbox) noexcept {
+				inline constexpr float _Graphics_math_float_impl::y(const typename _Graphics_math_float_impl::bounding_box_data_type& bbox) noexcept {
 					return bbox.y;
 				}
-				inline constexpr float _Linear_algebra_float_impl::width(const typename _Linear_algebra_float_impl::bounding_box_data_type& bbox) noexcept {
+				inline constexpr float _Graphics_math_float_impl::width(const typename _Graphics_math_float_impl::bounding_box_data_type& bbox) noexcept {
 					return bbox.width;
 				}
-				inline constexpr float _Linear_algebra_float_impl::height(const typename _Linear_algebra_float_impl::bounding_box_data_type& bbox) noexcept {
+				inline constexpr float _Graphics_math_float_impl::height(const typename _Graphics_math_float_impl::bounding_box_data_type& bbox) noexcept {
 					return bbox.height;
 				}
-				inline constexpr typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::top_left(const typename _Linear_algebra_float_impl::bounding_box_data_type& bbox) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::top_left(const typename _Graphics_math_float_impl::bounding_box_data_type& bbox) noexcept {
 					return point_2d_data_type{ bbox.x, bbox.y };
 				}
-				inline constexpr typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::bottom_right(const typename _Linear_algebra_float_impl::bounding_box_data_type& bbox) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::bottom_right(const typename _Graphics_math_float_impl::bounding_box_data_type& bbox) noexcept {
 					return point_2d_data_type{ bbox.x + bbox.width, bbox.y + bbox.height };
 				}
 
-				inline constexpr bool _Linear_algebra_float_impl::equal(const typename _Linear_algebra_float_impl::bounding_box_data_type& lhs, const typename _Linear_algebra_float_impl::bounding_box_data_type& rhs) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::equal(const typename _Graphics_math_float_impl::bounding_box_data_type& lhs, const typename _Graphics_math_float_impl::bounding_box_data_type& rhs) noexcept {
 					return lhs.x == rhs.x && lhs.y == rhs.y && lhs.width == rhs.width && lhs.height == rhs.height;
 				}
-				inline constexpr bool _Linear_algebra_float_impl::not_equal(const typename _Linear_algebra_float_impl::bounding_box_data_type& lhs, const typename _Linear_algebra_float_impl::bounding_box_data_type& rhs) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::not_equal(const typename _Graphics_math_float_impl::bounding_box_data_type& lhs, const typename _Graphics_math_float_impl::bounding_box_data_type& rhs) noexcept {
 					return !(equal(lhs, rhs));
 				}
 
-				inline constexpr typename _Linear_algebra_float_impl::circle_data_type _Linear_algebra_float_impl::create_circle() noexcept {
+				inline constexpr typename _Graphics_math_float_impl::circle_data_type _Graphics_math_float_impl::create_circle() noexcept {
 					return circle_data_type{ 0.0f, 0.0f, 0.0f };
 				}
-				inline constexpr typename _Linear_algebra_float_impl::circle_data_type _Linear_algebra_float_impl::create_circle(const typename _Linear_algebra_float_impl::point_2d_data_type& ctr, float rad) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::circle_data_type _Graphics_math_float_impl::create_circle(const typename _Graphics_math_float_impl::point_2d_data_type& ctr, float rad) noexcept {
 					return circle_data_type{ ctr._X, ctr._Y, rad };
 				}
-				inline constexpr void _Linear_algebra_float_impl::center(typename _Linear_algebra_float_impl::circle_data_type& data, const point_2d_data_type& ctr) noexcept {
+				inline constexpr void _Graphics_math_float_impl::center(typename _Graphics_math_float_impl::circle_data_type& data, const point_2d_data_type& ctr) noexcept {
 					data.x = ctr._X;
 					data.y = ctr._Y;
 				}
-				inline constexpr void _Linear_algebra_float_impl::radius(typename _Linear_algebra_float_impl::circle_data_type& data, float r) noexcept {
+				inline constexpr void _Graphics_math_float_impl::radius(typename _Graphics_math_float_impl::circle_data_type& data, float r) noexcept {
 					data.radius = r;
 				}
-				inline constexpr typename _Linear_algebra_float_impl::point_2d_data_type _Linear_algebra_float_impl::center(const typename _Linear_algebra_float_impl::circle_data_type& data) noexcept {
+				inline constexpr typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::center(const typename _Graphics_math_float_impl::circle_data_type& data) noexcept {
 					return point_2d_data_type{ data.x, data.y };
 				}
-				inline constexpr float _Linear_algebra_float_impl::radius(const typename _Linear_algebra_float_impl::circle_data_type& data) noexcept {
+				inline constexpr float _Graphics_math_float_impl::radius(const typename _Graphics_math_float_impl::circle_data_type& data) noexcept {
 					return data.radius;
 				}
-				inline constexpr bool _Linear_algebra_float_impl::equal(const typename _Linear_algebra_float_impl::circle_data_type& lhs, const typename _Linear_algebra_float_impl::circle_data_type& rhs) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::equal(const typename _Graphics_math_float_impl::circle_data_type& lhs, const typename _Graphics_math_float_impl::circle_data_type& rhs) noexcept {
 					return lhs.radius == rhs.radius && lhs.x == rhs.x && lhs.y == rhs.y;
 				}
-				inline constexpr bool _Linear_algebra_float_impl::not_equal(const typename _Linear_algebra_float_impl::circle_data_type& lhs, const typename _Linear_algebra_float_impl::circle_data_type& rhs) noexcept {
+				inline constexpr bool _Graphics_math_float_impl::not_equal(const typename _Graphics_math_float_impl::circle_data_type& lhs, const typename _Graphics_math_float_impl::circle_data_type& rhs) noexcept {
 					return !(equal(lhs, rhs));
 				}
 
@@ -1663,20 +1663,56 @@ namespace std {
 				constexpr static _Path_data_rel_quadratic_curve _Path_data_rel_quadratic_curve_val = {};
 
 				template <class GraphicsMath, class Allocator>
-				::std::vector<typename basic_figure_items<GraphicsMath>::figure_item> _Interpret_path_items(const path_builder<GraphicsMath, Allocator>&);
+				::std::vector<typename basic_figure_items<GraphicsMath>::figure_item> _Interpret_path_items(const basic_path_builder<GraphicsMath, Allocator>&);
+
+				template<class GraphicsSurfaces>
+				inline const typename basic_interpreted_path<GraphicsSurfaces>::_Data_type& basic_interpreted_path<GraphicsSurfaces>::_Get_data() const noexcept {
+					return _Data;
+				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path() noexcept
+				inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path() noexcept
 					: _Data(GraphicsSurfaces::create_interpreted_path()) { }
+
+				template<class GraphicsSurfaces>
+				inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const basic_interpreted_path& val) {
+					_Data = GraphicsSurfaces::copy_interpreted_path(val._Data);
+				}
+
+				template<class GraphicsSurfaces>
+				inline basic_interpreted_path& basic_interpreted_path<GraphicsSurfaces>::operator=(const basic_interpreted_path& val) {
+					_Data = GraphicsSurfaces::copy_interpreted_path(val._Data);
+					return *this;
+				}
+
+				template<class GraphicsSurfaces>
+				inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(basic_interpreted_path&& val) noexcept {
+					if (this != &val) {
+						_Data = GraphicsSurfaces::move_interpreted_path(val._Data);
+					}
+				}
+
+				template<class GraphicsSurfaces>
+				inline basic_interpreted_path& basic_interpreted_path<GraphicsSurfaces>::operator=(basic_interpreted_path&& val) noexcept {
+					if (this != &val) {
+						_Data = GraphicsSurfaces::move_interpreted_path(val._Data);
+					}
+					return *this;
+				}
+
+				template<class GraphicsSurfaces>
+				inline basic_interpreted_path<GraphicsSurfaces>::~basic_interpreted_path() noexcept {
+					GraphicsSurfaces::destroy(_Data);
+				}
 
 				template <class GraphicsSurfaces>
 				template <class GraphicsMath, class Allocator>
-				inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const path_builder<GraphicsMath, Allocator>& pb)
+				inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const basic_path_builder<GraphicsMath, Allocator>& pb)
 					: _Data(GraphicsSurfaces::create_interpreted_path(pb)) { }
 
 				template <class GraphicsSurfaces>
 				template <class ForwardIterator>
-				inline interpreted_path<T>::interpreted_path(ForwardIterator first, ForwardIterator last)
+				inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(ForwardIterator first, ForwardIterator last)
 					: _Data(GraphicsSurfaces::create_interpreted_path(first, last)) { }
 
 				template <class _TItem>
@@ -1928,7 +1964,7 @@ namespace std {
 				inline ::std::vector<typename basic_figure_items<GraphicsMath>::figure_item> _Interpret_path_items(ForwardIterator first, ForwardIterator last);
 
 				template <class GraphicsMath, class Allocator>
-				inline ::std::vector<typename basic_figure_items<GraphicsMath>::figure_item> _Interpret_path_items(const path_builder<GraphicsMath, Allocator>& pf) {
+				inline ::std::vector<typename basic_figure_items<GraphicsMath>::figure_item> _Interpret_path_items(const basic_path_builder<GraphicsMath, Allocator>& pf) {
 					return _Interpret_path_items<GraphicsMath>(begin(pf), end(pf));
 				}
 
@@ -1950,94 +1986,94 @@ namespace std {
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder() noexcept(noexcept(Allocator())) :
-					path_builder(Allocator()) { }
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder() noexcept(noexcept(Allocator())) :
+					basic_path_builder(Allocator()) { }
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder(const Allocator &a) noexcept
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder(const Allocator &a) noexcept
 					: _Data(a) {
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder(size_type n, const Allocator & a)
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder(size_type n, const Allocator & a)
 					: _Data(n, a) {
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder(size_type n, const value_type & value, const Allocator& a)
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder(size_type n, const value_type & value, const Allocator& a)
 					: _Data(n, value, a) {
 				}
 
 				template <class GraphicsMath, class Allocator>
 				template<class InputIterator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder(InputIterator first, InputIterator last, const Allocator& a)
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder(InputIterator first, InputIterator last, const Allocator& a)
 					: _Data(first, last, a) {
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::~path_builder() { }
+				inline basic_path_builder<GraphicsMath, Allocator>::~basic_path_builder() { }
 
 				template <class GraphicsMath, class Allocator>
 				template<class InputIterator>
-				inline void path_builder<GraphicsMath, Allocator>::assign(InputIterator first, InputIterator last) {
+				inline void basic_path_builder<GraphicsMath, Allocator>::assign(InputIterator first, InputIterator last) {
 					_Data.assign(first, last);
 				}
 
 				template <class GraphicsMath, class Allocator>
 				template<class ...Args>
-				inline typename path_builder<GraphicsMath, Allocator>::reference path_builder<GraphicsMath, Allocator>::emplace_back(Args && ...args) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::reference basic_path_builder<GraphicsMath, Allocator>::emplace_back(Args && ...args) {
 					return _Data.emplace_back(forward<Args>(args)...);
 				}
 
 				template <class GraphicsMath, class Allocator>
 				template<class ...Args>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::emplace(const_iterator position, Args&& ...args) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::emplace(const_iterator position, Args&& ...args) {
 					return _Data.emplace(position, forward<Args>(args)...);
 				}
 
 				template <class GraphicsMath, class Allocator>
 				template<class InputIterator>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::insert(const_iterator position, InputIterator first, InputIterator last) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::insert(const_iterator position, InputIterator first, InputIterator last) {
 					return _Data.template insert<InputIterator>(position, first, last);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder(const path_builder& pf)
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder(const basic_path_builder& pf)
 					: _Data(pf._Data) {
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder(path_builder&& pf) noexcept
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder(basic_path_builder&& pf) noexcept
 					: _Data(move(pf._Data)) {
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder(const path_builder& pf, const Allocator & a)
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder(const basic_path_builder& pf, const Allocator & a)
 					: _Data(pf._Data, a) {
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder(path_builder&& pf, const Allocator & a)
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder(basic_path_builder&& pf, const Allocator & a)
 					: _Data(move(pf._Data), a) {
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>::path_builder(initializer_list<value_type> il, const Allocator & a)
+				inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder(initializer_list<value_type> il, const Allocator & a)
 					: _Data(il, a) {
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>& path_builder<GraphicsMath, Allocator>::operator=(const path_builder& x) {
+				inline basic_path_builder<GraphicsMath, Allocator>& basic_path_builder<GraphicsMath, Allocator>::operator=(const basic_path_builder& x) {
 					_Data = x._Data;
 					return *this;
 				}
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>& path_builder<GraphicsMath, Allocator>::operator=(path_builder&& x) noexcept(allocator_traits<Allocator>::propagate_on_container_move_assignment::value || allocator_traits<Allocator>::is_always_equal::value) {
+				inline basic_path_builder<GraphicsMath, Allocator>& basic_path_builder<GraphicsMath, Allocator>::operator=(basic_path_builder&& x) noexcept(allocator_traits<Allocator>::propagate_on_container_move_assignment::value || allocator_traits<Allocator>::is_always_equal::value) {
 					::std::swap(_Data, x._Data);
 					return *this;
 				}
 				template <class GraphicsMath, class Allocator>
-				inline path_builder<GraphicsMath, Allocator>& path_builder<GraphicsMath, Allocator>::operator=(initializer_list<value_type> il) {
+				inline basic_path_builder<GraphicsMath, Allocator>& basic_path_builder<GraphicsMath, Allocator>::operator=(initializer_list<value_type> il) {
 					_Data.clear();
 					for (const auto& item : il) {
 						_Data.push_back(item);
@@ -2045,280 +2081,281 @@ namespace std {
 					return *this;
 				}
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::assign(size_type n, const value_type& u) {
+				inline void basic_path_builder<GraphicsMath, Allocator>::assign(size_type n, const value_type& u) {
 					_Data.assign(n, u);
 				}
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::assign(initializer_list<value_type> il) {
+				inline void basic_path_builder<GraphicsMath, Allocator>::assign(initializer_list<value_type> il) {
 					_Data.assign(il);
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::allocator_type path_builder<GraphicsMath, Allocator>::get_allocator() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::allocator_type basic_path_builder<GraphicsMath, Allocator>::get_allocator() const noexcept {
 					return _Data.allocator_type();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::begin() noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::begin() noexcept {
 					return _Data.begin();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_iterator path_builder<GraphicsMath, Allocator>::begin() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_iterator basic_path_builder<GraphicsMath, Allocator>::begin() const noexcept {
 					return _Data.begin();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_iterator path_builder<GraphicsMath, Allocator>::cbegin() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_iterator basic_path_builder<GraphicsMath, Allocator>::cbegin() const noexcept {
 					return _Data.cbegin();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::end() noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::end() noexcept {
 					return _Data.end();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_iterator path_builder<GraphicsMath, Allocator>::end() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_iterator basic_path_builder<GraphicsMath, Allocator>::end() const noexcept {
 					return _Data.end();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_iterator path_builder<GraphicsMath, Allocator>::cend() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_iterator basic_path_builder<GraphicsMath, Allocator>::cend() const noexcept {
 					return _Data.cend();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::reverse_iterator path_builder<GraphicsMath, Allocator>::rbegin() noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::reverse_iterator basic_path_builder<GraphicsMath, Allocator>::rbegin() noexcept {
 					return _Data.rbegin();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_reverse_iterator path_builder<GraphicsMath, Allocator>::rbegin() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_reverse_iterator basic_path_builder<GraphicsMath, Allocator>::rbegin() const noexcept {
 					return _Data.rbegin();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_reverse_iterator path_builder<GraphicsMath, Allocator>::crbegin() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_reverse_iterator basic_path_builder<GraphicsMath, Allocator>::crbegin() const noexcept {
 					return _Data.crbegin();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::reverse_iterator path_builder<GraphicsMath, Allocator>::rend() noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::reverse_iterator basic_path_builder<GraphicsMath, Allocator>::rend() noexcept {
 					return _Data.rend();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_reverse_iterator path_builder<GraphicsMath, Allocator>::rend() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_reverse_iterator basic_path_builder<GraphicsMath, Allocator>::rend() const noexcept {
 					return _Data.rend();
 				}
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_reverse_iterator path_builder<GraphicsMath, Allocator>::crend() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_reverse_iterator basic_path_builder<GraphicsMath, Allocator>::crend() const noexcept {
 					return _Data.crend();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline bool path_builder<GraphicsMath, Allocator>::empty() const noexcept {
+				inline bool basic_path_builder<GraphicsMath, Allocator>::empty() const noexcept {
 					return _Data.empty();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::size_type path_builder<GraphicsMath, Allocator>::size() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::size_type basic_path_builder<GraphicsMath, Allocator>::size() const noexcept {
 					return _Data.size();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::size_type path_builder<GraphicsMath, Allocator>::max_size() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::size_type basic_path_builder<GraphicsMath, Allocator>::max_size() const noexcept {
 					return _Data.max_size();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::size_type path_builder<GraphicsMath, Allocator>::capacity() const noexcept {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::size_type basic_path_builder<GraphicsMath, Allocator>::capacity() const noexcept {
 					return _Data.capacity();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::resize(size_type sz) {
+				inline void basic_path_builder<GraphicsMath, Allocator>::resize(size_type sz) {
 					_Data.resize(sz);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::resize(size_type sz, const value_type& c) {
+				inline void basic_path_builder<GraphicsMath, Allocator>::resize(size_type sz, const value_type& c) {
 					_Data.resize(sz, c);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::reserve(size_type n) {
+				inline void basic_path_builder<GraphicsMath, Allocator>::reserve(size_type n) {
 					_Data.reserve(n);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::shrink_to_fit() {
+				inline void basic_path_builder<GraphicsMath, Allocator>::shrink_to_fit() {
 					_Data.shrink_to_fit();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::reference path_builder<GraphicsMath, Allocator>::operator[](size_type n) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::reference basic_path_builder<GraphicsMath, Allocator>::operator[](size_type n) {
 					return _Data[n];
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_reference path_builder<GraphicsMath, Allocator>::operator[](size_type n) const {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_reference basic_path_builder<GraphicsMath, Allocator>::operator[](size_type n) const {
 					return _Data[n];
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_reference path_builder<GraphicsMath, Allocator>::at(size_type n) const {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_reference basic_path_builder<GraphicsMath, Allocator>::at(size_type n) const {
 					return _Data.at(n);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::reference path_builder<GraphicsMath, Allocator>::at(size_type n) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::reference basic_path_builder<GraphicsMath, Allocator>::at(size_type n) {
 					return _Data.at(n);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::reference path_builder<GraphicsMath, Allocator>::front() {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::reference basic_path_builder<GraphicsMath, Allocator>::front() {
 					return _Data.front();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_reference path_builder<GraphicsMath, Allocator>::front() const {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_reference basic_path_builder<GraphicsMath, Allocator>::front() const {
 					return _Data.front();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::reference path_builder<GraphicsMath, Allocator>::back() {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::reference basic_path_builder<GraphicsMath, Allocator>::back() {
 					return _Data.back();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::const_reference path_builder<GraphicsMath, Allocator>::back() const {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::const_reference basic_path_builder<GraphicsMath, Allocator>::back() const {
 					return _Data.back();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::new_figure(const typename GraphicsMath::point_2d& v) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::new_figure(const typename GraphicsMath::point_2d& v) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_new_figure>, v);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::rel_new_figure(const typename GraphicsMath::point_2d& v) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::rel_new_figure(const typename GraphicsMath::point_2d& v) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_new_figure>, v);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::close_figure() noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::close_figure() noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::close_figure>);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::matrix(const typename GraphicsMath::matrix_2d& m) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::matrix(const typename GraphicsMath::matrix_2d& m) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_matrix>, m);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::rel_matrix(const typename GraphicsMath::matrix_2d& m) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::rel_matrix(const typename GraphicsMath::matrix_2d& m) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_matrix>, m);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::revert_matrix() noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::revert_matrix() noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::revert_matrix>);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::arc(const typename GraphicsMath::point_2d& rad, float rot, const float sang) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::arc(const typename GraphicsMath::point_2d& rad, float rot, const float sang) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::arc>, rad, rot, sang);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::cubic_curve(const typename GraphicsMath::point_2d& pt0, const typename GraphicsMath::point_2d& pt1, const typename GraphicsMath::point_2d& pt2) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::cubic_curve(const typename GraphicsMath::point_2d& pt0, const typename GraphicsMath::point_2d& pt1, const typename GraphicsMath::point_2d& pt2) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_cubic_curve>, pt0, pt1, pt2);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::line(const typename GraphicsMath::point_2d& pt) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::line(const typename GraphicsMath::point_2d& pt) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_line>, pt);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::quadratic_curve(const typename GraphicsMath::point_2d& pt0, const typename GraphicsMath::point_2d& pt1) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::quadratic_curve(const typename GraphicsMath::point_2d& pt0, const typename GraphicsMath::point_2d& pt1) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_quadratic_curve>, pt0, pt1);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::rel_cubic_curve(const typename GraphicsMath::point_2d& dpt0, const typename GraphicsMath::point_2d& dpt1, const typename GraphicsMath::point_2d& dpt2) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::rel_cubic_curve(const typename GraphicsMath::point_2d& dpt0, const typename GraphicsMath::point_2d& dpt1, const typename GraphicsMath::point_2d& dpt2) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_cubic_curve>, dpt0, dpt1, dpt2);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::rel_line(const typename GraphicsMath::point_2d& dpt) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::rel_line(const typename GraphicsMath::point_2d& dpt) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_line>, dpt);
 				}
 
 				template<class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::rel_quadratic_curve(const typename GraphicsMath::point_2d& dpt0, const typename GraphicsMath::point_2d& dpt1) noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::rel_quadratic_curve(const typename GraphicsMath::point_2d& dpt0, const typename GraphicsMath::point_2d& dpt1) noexcept {
 					_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_quadratic_curve>, dpt0, dpt1);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::push_back(const value_type& x) {
+				inline void basic_path_builder<GraphicsMath, Allocator>::push_back(const value_type& x) {
 					_Data.push_back(x);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::push_back(value_type&& x) {
+				inline void basic_path_builder<GraphicsMath, Allocator>::push_back(value_type&& x) {
 					_Data.push_back(move(x));
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::pop_back() {
+				inline void basic_path_builder<GraphicsMath, Allocator>::pop_back() {
 					_Data.pop_back();
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::insert(const_iterator position, const value_type& x) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::insert(const_iterator position, const value_type& x) {
 					return _Data.insert(position, x);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::insert(const_iterator position, value_type&& x) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::insert(const_iterator position, value_type&& x) {
 					return _Data.insert(position, x);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::insert(const_iterator position, size_type n, const value_type& x) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::insert(const_iterator position, size_type n, const value_type& x) {
 					return _Data.insert(position, n, x);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::insert(const_iterator position, initializer_list<value_type> il) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::insert(const_iterator position, initializer_list<value_type> il) {
 					return _Data.insert(position, il);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::erase(const_iterator position) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::erase(const_iterator position) {
 					return _Data.erase(position);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline typename path_builder<GraphicsMath, Allocator>::iterator path_builder<GraphicsMath, Allocator>::erase(const_iterator first, const_iterator last) {
+				inline typename basic_path_builder<GraphicsMath, Allocator>::iterator basic_path_builder<GraphicsMath, Allocator>::erase(const_iterator first, const_iterator last) {
 					return _Data.erase(first, last);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::swap(path_builder &pf) noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value || allocator_traits<Allocator>::is_always_equal::value) {
+				inline void basic_path_builder<GraphicsMath, Allocator>::swap(basic_path_builder &pf) noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value || allocator_traits<Allocator>::is_always_equal::value) {
 					::std::swap(_Data, pf._Data);
 				}
 
 				template <class GraphicsMath, class Allocator>
-				inline void path_builder<GraphicsMath, Allocator>::clear() noexcept {
+				inline void basic_path_builder<GraphicsMath, Allocator>::clear() noexcept {
 					_Data.clear();
 				}
 
-				/*        template <class GraphicsMath, class Allocator>
-						inline bool path_builder<GraphicsMath, Allocator>::operator==(const path_builder& rhs) const noexcept {
-							if (size() != rhs.size()) {
+
+				        template <class GraphicsMath, class Allocator>
+						inline bool operator==(const basic_path_builder<GraphicsMath, Allocator>& lhs, const basic_path_builder<GraphicsMath, Allocator>& rhs) noexcept {
+							if (lhs.size() != rhs.size()) {
 								return false;
 							}
 							//return equal(_Data.cbegin(), _Data.cend(), rhs._Data.cbegin(), rhs._Data.cend());
-							auto lhsEnd = _Data.end();
+							auto lhsEnd = lhs._Data.end();
 							auto rhsEnd = rhs._Data.end();
-							auto lhsIter = _Data.begin();
+							auto lhsIter = lhs._Data.begin();
 							auto rhsIter = rhs._Data.begin();
 							for (; lhsIter != lhsEnd &&
 								rhsIter != rhsEnd; ++lhsIter, ++rhsIter) {
-								assert(lhsIter != lhsEnd && "Unexpected path_builder op== size mismatch. rhs greater than lhs.");
-								assert(rhsIter != rhsEnd && "Unexpected path_builder op== size mismatch. lhs greater than rhs.");
+								assert(lhsIter != lhsEnd && "Unexpected basic_path_builder op== size mismatch. rhs greater than lhs.");
+								assert(rhsIter != rhsEnd && "Unexpected basic_path_builder op== size mismatch. lhs greater than rhs.");
 								if (*lhsIter != *rhsIter) {
 									return false;
 								}
@@ -2330,179 +2367,28 @@ namespace std {
 							//	}
 							//}
 							return true;
-						}*/
+						}
+
+						template<class GraphicsMath, class Allocator>
+						inline void swap(basic_path_builder<GraphicsMath, Allocator>& lhs, basic_path_builder<GraphicsMath, Allocator>& rhs) noexcept(noexcept(lhs.swap(rhs))) {
+							lhs.swap(rhs);
+						}
 
 						//Brushes
 
-				inline constexpr gradient_stop::gradient_stop() noexcept
-					: _Offset(0.0F)
-					, _Color(rgba_color{}) {}
-				inline constexpr gradient_stop::gradient_stop(float offset, const rgba_color& color)
-					: _Offset(offset)
-					, _Color(color) {}
+				//// Standalone functions
 
-				inline constexpr void gradient_stop::offset(float value) noexcept {
-					_Offset = value;
-				}
-				inline constexpr void gradient_stop::color(const rgba_color& value) noexcept {
-					_Color = value;
-				}
-
-				inline constexpr float gradient_stop::offset() const noexcept {
-					return _Offset;
-				}
-				inline constexpr rgba_color gradient_stop::color() const noexcept {
-					return _Color;
-				}
-
-				inline constexpr bool operator==(const gradient_stop& lhs, const gradient_stop& rhs) noexcept {
-					return lhs._Offset == rhs._Offset && lhs._Color == rhs._Color;
-				}
-
-				template <class GraphicsMath, class T>
-				template <class InputIterator>
-				inline brush<GraphicsMath, T>::brush(const circle<GraphicsMath>& start, const circle<GraphicsMath>& end, InputIterator first, InputIterator last)
-					: _Brush_impl(start, end, first, last)
-				{}
-
-				template <class GraphicsMath, class T>
-				inline brush<GraphicsMath, T>::brush(const rgba_color& color)
-					: _Brush_impl(color)
-				{}
-
-				template<class GraphicsMath, class T>
-				template<class InputIterator>
-				inline brush<GraphicsMath, T>::brush(const typename GraphicsMath::point_2d& begin, const typename GraphicsMath::point_2d& end, InputIterator first, InputIterator last)
-					: _Brush_impl(begin, end, first, last) {
-				}
-				template<class GraphicsMath, class T>
-				inline brush<GraphicsMath, T>::brush(const typename GraphicsMath::point_2d& begin, const typename GraphicsMath::point_2d& end, ::std::initializer_list<gradient_stop> il)
-					: _Brush_impl(begin, end, il)
-				{}
-
-				template <class GraphicsMath, class T>
-				inline brush<GraphicsMath, T>::brush(const circle<GraphicsMath>& start, const circle<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il)
-					: _Brush_impl(start, end, il)
-				{}
-
-				template <class GraphicsMath, class T>
-				inline brush_type brush<GraphicsMath, T>::type() const noexcept {
-					return _Brush_impl.type();
-				}
-
-				// display_point
-
-				inline constexpr display_point::display_point() noexcept
-					: x(0)
-					, y(0)
-				{}
-
-				inline constexpr display_point::display_point(int _X, int _Y) noexcept
-					: x(_X)
-					, y(_Y)
-				{}
-
-				constexpr inline bool operator==(const display_point& lhs, const display_point& rhs) noexcept
-				{
-					return (lhs.x == rhs.x) && (lhs.y == rhs.y);
-				}
-
-				constexpr inline bool operator!=(const display_point& lhs, const display_point& rhs) noexcept
-				{
-					return !(lhs == rhs);
-				}
-
-
-				// mapped_surface
-
-				template <class GraphicsMath, class T>
-				inline mapped_surface<GraphicsMath, T>::mapped_surface(typename surface<GraphicsMath, T>::native_handle_type nh, typename surface<GraphicsMath, T>::native_handle_type map_of)
-					: _Mapped_surface_impl(nh, map_of)
-				{}
-
-				template <class GraphicsMath, class T>
-				inline mapped_surface<GraphicsMath, T>::mapped_surface(typename surface<GraphicsMath, T>::native_handle_type nh, typename surface<GraphicsMath, T>::native_handle_type map_of, error_code& ec) noexcept
-					: _Mapped_surface_impl(nh, map_of, ec)
-				{}
-
-				template <class GraphicsMath, class T>
-				inline void mapped_surface<GraphicsMath, T>::commit_changes() {
-					_Mapped_surface_impl.commit_changes();
-				}
-
-				template <class GraphicsMath, class T>
-				inline void mapped_surface<GraphicsMath, T>::commit_changes(::std::error_code& ec) noexcept {
-					_Mapped_surface_impl.commit_changes(ec);
-				}
-
-				template <class GraphicsMath, class T>
-				inline unsigned char* mapped_surface<GraphicsMath, T>::data() {
-					return _Mapped_surface_impl.data();
-				}
-
-				template <class GraphicsMath, class T>
-				inline unsigned char* mapped_surface<GraphicsMath, T>::data(error_code& ec) noexcept {
-					return _Mapped_surface_impl.data(ec);
-				}
-
-				template <class GraphicsMath, class T>
-				inline const unsigned char* mapped_surface<GraphicsMath, T>::data() const {
-					return _Mapped_surface_impl.data();
-				}
-
-				template <class GraphicsMath, class T>
-				inline const unsigned char* mapped_surface<GraphicsMath, T>::data(error_code& ec) const noexcept {
-					return _Mapped_surface_impl.data(ec);
-				}
-
-				template <class GraphicsMath, class T>
-				inline ::std::experimental::io2d::format mapped_surface<GraphicsMath, T>::format() const noexcept {
-					return _Mapped_surface_impl.format();
-				}
-
-				template <class GraphicsMath, class T>
-				inline int mapped_surface<GraphicsMath, T>::width() const noexcept {
-					return _Mapped_surface_impl.width();
-				}
-
-				template <class GraphicsMath, class T>
-				inline int mapped_surface<GraphicsMath, T>::height() const noexcept {
-					return _Mapped_surface_impl.height();
-				}
-
-				template <class GraphicsMath, class T>
-				inline int mapped_surface<GraphicsMath, T>::stride() const noexcept {
-					return _Mapped_surface_impl.stride();
-				}
-
-				// Standalone functions
-
-				template <class GraphicsMath, class T>
-				inline display_surface<GraphicsMath, T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl) {
-					return { preferredWidth, preferredHeight, preferredFormat, scl };
-				}
-
-				template <class GraphicsMath, class T, class U>
-				inline handler<T> make_handler(display_surface<GraphicsMath, U>& ds, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr, float desiredFramerate) {
-					return { ds, preferredDisplayWidth, preferredDisplayHeight, rr, desiredFramerate };
-				}
-
-				template <class GraphicsMath, class T>
-				inline image_surface<GraphicsMath, T> make_image_surface(format fmt, int width, int height) {
-					return image_surface<T>(fmt, width, height);
-				}
-
-				template <class GraphicsMath, class T>
-				inline image_surface<GraphicsMath, T> copy_image_surface(image_surface<GraphicsMath, T>& sfc) noexcept {
-					image_surface<GraphicsMath, T> retval(sfc.format(), sfc.width(), sfc.height());
-					retval.map([&sfc](mapped_surface<GraphicsMath, T>& rvms) {
-						sfc.map([&rvms](mapped_surface<GraphicsMath, T>& sfcms) {
-							memcpy(rvms.data(), sfcms.data(), static_cast<size_t>(rvms.height() * rvms.stride()));
-						});
-					});
-					retval.mark_dirty();
-					return retval;
-				}
+				//template <class GraphicsMath, class T>
+				//inline image_surface<GraphicsMath, T> copy_image_surface(image_surface<GraphicsMath, T>& sfc) noexcept {
+				//	image_surface<GraphicsMath, T> retval(sfc.format(), sfc.width(), sfc.height());
+				//	retval.map([&sfc](mapped_surface<GraphicsMath, T>& rvms) {
+				//		sfc.map([&rvms](mapped_surface<GraphicsMath, T>& sfcms) {
+				//			memcpy(rvms.data(), sfcms.data(), static_cast<size_t>(rvms.height() * rvms.stride()));
+				//		});
+				//	});
+				//	retval.mark_dirty();
+				//	return retval;
+				//}
 			}
 		}
 	}

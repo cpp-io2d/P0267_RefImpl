@@ -50,6 +50,7 @@ namespace std {
 				template <class GraphicsSurfaces>
 				class basic_brush {
 				public:
+					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 					using _Data_type = GraphicsSurfaces::brush_data_type;
 				private:
 					_Data_type _Data;
@@ -58,17 +59,17 @@ namespace std {
 
 					explicit basic_brush(const rgba_color& c);
 
-					template <class GraphicsMath, class InputIterator>
-					basic_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last);
+					template <class InputIterator>
+					basic_brush(const basic_point_2d<graphics_math_type>& begin, const basic_point_2d<graphics_math_type>& end, InputIterator first, InputIterator last);
 
-					template <class GraphicsMath>
-					basic_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
+					basic_brush(const basic_point_2d<graphics_math_type>& begin, const basic_point_2d<graphics_math_type>& end, ::std::initializer_list<gradient_stop> il);
 
-					template <class GraphicsMath, class InputIterator>
-					basic_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last);
+					template <class InputIterator>
+					basic_brush(const basic_circle<graphics_math_type>& start, const basic_circle<graphics_math_type>& end, InputIterator first, InputIterator last);
 
-					template <class GraphicsMath>
-					basic_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
+					basic_brush(const basic_circle<graphics_math_type>& start, const basic_circle<graphics_math_type>& end, ::std::initializer_list<gradient_stop> il);
+
+					basic_brush(basic_image_surface<GraphicsSurfaces>&& img);
 
 					brush_type type() const noexcept;
 				};

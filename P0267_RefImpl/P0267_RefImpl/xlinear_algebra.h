@@ -216,7 +216,7 @@ namespace std {
 				template <class GraphicsMath>
 				constexpr bool operator!=(const basic_circle<GraphicsMath>& lhs, const basic_circle<GraphicsMath>& rhs) noexcept;
 
-				struct _Linear_algebra_float_impl {
+				struct _Graphics_math_float_impl {
 					// point_2d 
 					struct _Point_2d_data {
 						float _X;

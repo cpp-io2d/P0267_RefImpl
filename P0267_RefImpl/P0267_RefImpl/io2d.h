@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <functional>
+#include <utility>
 #include <exception>
 #include <vector>
 #include <string>
@@ -36,39 +37,9 @@
 #include "xsurfaces.h"
 #include "xinput.h"
 
-//namespace std {
-//	namespace experimental {
-//		namespace io2d {
-//			inline namespace v1 {
-//				//int format_stride_for_width(format fmt, int width) noexcept;
-//
-//				//template <class GraphicsMath, class T>
-//				//display_surface<GraphicsMath, T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, scaling scl = scaling::letterbox);
-//
-//				//template <class GraphicsMath, class T>
-//				//display_surface<GraphicsMath, T> make_display_surface(int preferredWidth, int preferredHeight, format preferredFormat, error_code& ec, scaling scl = scaling::letterbox) noexcept;
-//
-//				//template <class GraphicsMath, class T, class U>
-//				//handler<T> make_handler(display_surface<GraphicsMath, U>&, int preferredDisplayWidth, int preferredDisplayHeight, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f);
-//
-//				//template <class GraphicsMath, class T, class U>
-//				//handler<T> make_handler(display_surface<GraphicsMath, U>&, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, refresh_rate rr = refresh_rate::as_fast_as_possible, float fps = 30.0f) noexcept;
-//
-//				//template <class GraphicsMath, class T>
-//				//image_surface<GraphicsMath, T> make_image_surface(format format, int width, int height);
-//
-//				//template <class GraphicsMath, class T>
-//				//image_surface<GraphicsMath, T> make_image_surface(format format, int width, int height, error_code& ec) noexcept;
-//
-//				//template <class GraphicsMath, class T>
-//				//image_surface<GraphicsMath, T> copy_image_surface(image_surface<GraphicsMath, T>& sfc) noexcept;
-//
-//			}
-//		}
-//	}
-//}
 
 #include "xio2d_impl.h"
+#include "xbrushes_impl.h"
 #include "xsurfaces_impl.h"
 #include "xsurfacesprops_impl.h"
 #endif
