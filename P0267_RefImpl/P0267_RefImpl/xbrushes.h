@@ -4,6 +4,9 @@ namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
+				template <class GraphicsSurfaces>
+				class basic_image_surface;
+
 				enum class wrap_mode {
 					none,
 					repeat,
@@ -51,7 +54,7 @@ namespace std {
 				class basic_brush {
 				public:
 					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-					using _Data_type = GraphicsSurfaces::brush_data_type;
+					using _Data_type = typename GraphicsSurfaces::brush_data_type;
 				private:
 					_Data_type _Data;
 				public:

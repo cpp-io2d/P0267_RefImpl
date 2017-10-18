@@ -1,10 +1,36 @@
 #pragma once
 #include <utility>
-
+#include "xlinear_algebra.h"
 namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
+				enum class _Path_data_abs_new_figure {};
+				constexpr static _Path_data_abs_new_figure _Path_data_abs_new_figure_val = {};
+				enum class _Path_data_rel_new_figure {};
+				constexpr static _Path_data_rel_new_figure _Path_data_rel_new_figure_val = {};
+				enum class _Path_data_close_path {};
+				constexpr static _Path_data_close_path _Path_data_close_path_val = {};
+				enum class _Path_data_abs_matrix {};
+				constexpr static _Path_data_abs_matrix _Path_data_abs_matrix_val = {};
+				enum class _Path_data_rel_matrix {};
+				constexpr static _Path_data_rel_matrix _Path_data_rel_matrix_val = {};
+				enum class _Path_data_revert_matrix {};
+				constexpr static _Path_data_revert_matrix _Path_data_revert_matrix_val = {};
+				enum class _Path_data_abs_cubic_curve {};
+				constexpr static _Path_data_abs_cubic_curve _Path_data_abs_cubic_curve_val = {};
+				enum class _Path_data_abs_line {};
+				constexpr static _Path_data_abs_line _Path_data_abs_line_val = {};
+				enum class _Path_data_abs_quadratic_curve {};
+				constexpr static _Path_data_abs_quadratic_curve _Path_data_abs_quadratic_curve_val = {};
+				enum class _Path_data_arc {};
+				constexpr static _Path_data_arc _Path_data_arc_val = {};
+				enum class _Path_data_rel_cubic_curve {};
+				constexpr static _Path_data_rel_cubic_curve _Path_data_rel_cubic_curve_val = {};
+				enum class _Path_data_rel_line {};
+				constexpr static _Path_data_rel_line _Path_data_rel_line_val = {};
+				enum class _Path_data_rel_quadratic_curve {};
+				constexpr static _Path_data_rel_quadratic_curve _Path_data_rel_quadratic_curve_val = {};
 
 				template <class GraphicsMath>
 				struct basic_figure_items {
@@ -23,23 +49,23 @@ namespace std {
 					class rel_quadratic_curve;
 
 					class abs_new_figure {
-						typename GraphicsMath::point_2d _Data = {};
+						basic_point_2d<GraphicsMath> _Data = {};
 						friend constexpr bool operator==(const abs_new_figure&, const abs_new_figure&) noexcept;
 					public:
 						constexpr abs_new_figure() noexcept;
-						constexpr explicit abs_new_figure(const typename GraphicsMath::point_2d& pt) noexcept;
-						constexpr void at(const typename GraphicsMath::point_2d& pt) noexcept;
-						constexpr typename GraphicsMath::point_2d at() const noexcept;
+						constexpr explicit abs_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
+						constexpr void at(const basic_point_2d<GraphicsMath>& pt) noexcept;
+						constexpr basic_point_2d<GraphicsMath> at() const noexcept;
 					};
 
 					class rel_new_figure {
-						typename GraphicsMath::point_2d _Data = {};
+						basic_point_2d<GraphicsMath> _Data = {};
 						friend constexpr bool operator==(const rel_new_figure&, const rel_new_figure&) noexcept;
 					public:
 						constexpr rel_new_figure() noexcept;
-						constexpr explicit rel_new_figure(const typename GraphicsMath::point_2d& pt) noexcept;
-						constexpr void at(const typename GraphicsMath::point_2d& pt) noexcept;
-						constexpr typename GraphicsMath::point_2d at() const noexcept;
+						constexpr explicit rel_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
+						constexpr void at(const basic_point_2d<GraphicsMath>& pt) noexcept;
+						constexpr basic_point_2d<GraphicsMath> at() const noexcept;
 					};
 
 					class close_figure {
@@ -49,23 +75,23 @@ namespace std {
 					};
 
 					class abs_matrix {
-						typename GraphicsMath::matrix_2d _Matrix;
+						basic_matrix_2d<GraphicsMath> _Matrix;
 						friend constexpr bool operator==(const abs_matrix&, const abs_matrix&) noexcept;
 					public:
 						constexpr abs_matrix() noexcept;
-						constexpr explicit abs_matrix(const typename GraphicsMath::matrix_2d& m) noexcept;
-						constexpr void matrix(const typename GraphicsMath::matrix_2d& m) noexcept;
-						constexpr typename GraphicsMath::matrix_2d matrix() const noexcept;
+						constexpr explicit abs_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
+						constexpr void matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
+						constexpr basic_matrix_2d<GraphicsMath> matrix() const noexcept;
 					};
 
 					class rel_matrix {
-						typename GraphicsMath::matrix_2d _Matrix;
+						basic_matrix_2d<GraphicsMath> _Matrix;
 						friend constexpr bool operator==(const rel_matrix&, const rel_matrix&) noexcept;
 					public:
 						constexpr rel_matrix() noexcept;
-						constexpr explicit rel_matrix(const typename GraphicsMath::matrix_2d& m) noexcept;
-						constexpr void matrix(const typename GraphicsMath::matrix_2d& m) noexcept;
-						constexpr typename GraphicsMath::matrix_2d matrix() const noexcept;
+						constexpr explicit rel_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
+						constexpr void matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
+						constexpr basic_matrix_2d<GraphicsMath> matrix() const noexcept;
 					};
 
 					class revert_matrix {
@@ -75,100 +101,100 @@ namespace std {
 					};
 
 					class abs_line {
-						typename GraphicsMath::point_2d _Data = {};
+						basic_point_2d<GraphicsMath> _Data = {};
 						friend constexpr bool operator==(const abs_line&, const abs_line&) noexcept;
 					public:
 						constexpr abs_line() noexcept;
-						constexpr explicit abs_line(const typename GraphicsMath::point_2d& pt) noexcept;
-						constexpr void to(const typename GraphicsMath::point_2d& pt) noexcept;
-						constexpr typename GraphicsMath::point_2d to() const noexcept;
+						constexpr explicit abs_line(const basic_point_2d<GraphicsMath>& pt) noexcept;
+						constexpr void to(const basic_point_2d<GraphicsMath>& pt) noexcept;
+						constexpr basic_point_2d<GraphicsMath> to() const noexcept;
 					};
 
 					class rel_line {
-						typename GraphicsMath::point_2d _Data = {};
+						basic_point_2d<GraphicsMath> _Data = {};
 						friend constexpr bool operator==(const rel_line&, const rel_line&) noexcept;
 					public:
 						constexpr rel_line() noexcept;
-						constexpr explicit rel_line(const typename GraphicsMath::point_2d& pt) noexcept;
-						constexpr void to(const typename GraphicsMath::point_2d& pt) noexcept;
-						constexpr typename GraphicsMath::point_2d to() const noexcept;
+						constexpr explicit rel_line(const basic_point_2d<GraphicsMath>& pt) noexcept;
+						constexpr void to(const basic_point_2d<GraphicsMath>& pt) noexcept;
+						constexpr basic_point_2d<GraphicsMath> to() const noexcept;
 					};
 
 					class abs_quadratic_curve {
-						typename GraphicsMath::point_2d _Control_pt = {};
-						typename GraphicsMath::point_2d _End_pt = {};
+						basic_point_2d<GraphicsMath> _Control_pt = {};
+						basic_point_2d<GraphicsMath> _End_pt = {};
 						friend constexpr bool operator==(const abs_quadratic_curve&, const abs_quadratic_curve&) noexcept;
 					public:
 						constexpr abs_quadratic_curve() noexcept;
-						constexpr abs_quadratic_curve(const typename GraphicsMath::point_2d& cpt, const typename GraphicsMath::point_2d& ept) noexcept;
-						constexpr void control_pt(const typename GraphicsMath::point_2d& cpt) noexcept;
-						constexpr void end_pt(const typename GraphicsMath::point_2d& ept) noexcept;
-						constexpr typename GraphicsMath::point_2d control_pt() const noexcept;
-						constexpr typename GraphicsMath::point_2d end_pt() const noexcept;
+						constexpr abs_quadratic_curve(const basic_point_2d<GraphicsMath>& cpt, const basic_point_2d<GraphicsMath>& ept) noexcept;
+						constexpr void control_pt(const basic_point_2d<GraphicsMath>& cpt) noexcept;
+						constexpr void end_pt(const basic_point_2d<GraphicsMath>& ept) noexcept;
+						constexpr basic_point_2d<GraphicsMath> control_pt() const noexcept;
+						constexpr basic_point_2d<GraphicsMath> end_pt() const noexcept;
 					};
 
 					class rel_quadratic_curve {
-						typename GraphicsMath::point_2d _Control_pt = {};
-						typename GraphicsMath::point_2d _End_pt = {};
+						basic_point_2d<GraphicsMath> _Control_pt = {};
+						basic_point_2d<GraphicsMath> _End_pt = {};
 						friend constexpr bool operator==(const rel_quadratic_curve&, const rel_quadratic_curve&) noexcept;
 					public:
 						constexpr rel_quadratic_curve() noexcept;
-						constexpr rel_quadratic_curve(const typename GraphicsMath::point_2d& cpt, const typename GraphicsMath::point_2d& ept) noexcept;
-						constexpr void control_pt(const typename GraphicsMath::point_2d& cpt) noexcept;
-						constexpr void end_pt(const typename GraphicsMath::point_2d& ept) noexcept;
-						constexpr typename GraphicsMath::point_2d control_pt() const noexcept;
-						constexpr typename GraphicsMath::point_2d end_pt() const noexcept;
+						constexpr rel_quadratic_curve(const basic_point_2d<GraphicsMath>& cpt, const basic_point_2d<GraphicsMath>& ept) noexcept;
+						constexpr void control_pt(const basic_point_2d<GraphicsMath>& cpt) noexcept;
+						constexpr void end_pt(const basic_point_2d<GraphicsMath>& ept) noexcept;
+						constexpr basic_point_2d<GraphicsMath> control_pt() const noexcept;
+						constexpr basic_point_2d<GraphicsMath> end_pt() const noexcept;
 					};
 
 					class abs_cubic_curve {
-						typename GraphicsMath::point_2d _Control_pt1 = {};
-						typename GraphicsMath::point_2d _Control_pt2 = {};
-						typename GraphicsMath::point_2d _End_pt = {};
+						basic_point_2d<GraphicsMath> _Control_pt1 = {};
+						basic_point_2d<GraphicsMath> _Control_pt2 = {};
+						basic_point_2d<GraphicsMath> _End_pt = {};
 						friend constexpr bool operator==(const abs_cubic_curve&, const abs_cubic_curve&) noexcept;
 					public:
 						constexpr abs_cubic_curve() noexcept;
-						constexpr abs_cubic_curve(const typename GraphicsMath::point_2d& cpt1, const typename GraphicsMath::point_2d& cpt2, const typename GraphicsMath::point_2d& ept) noexcept;
-						constexpr void control_pt1(const typename GraphicsMath::point_2d& cpt) noexcept;
-						constexpr void control_pt2(const typename GraphicsMath::point_2d& cpt) noexcept;
-						constexpr void end_pt(const typename GraphicsMath::point_2d& ept) noexcept;
-						constexpr typename GraphicsMath::point_2d control_pt1() const noexcept;
-						constexpr typename GraphicsMath::point_2d control_pt2() const noexcept;
-						constexpr typename GraphicsMath::point_2d end_pt() const noexcept;
+						constexpr abs_cubic_curve(const basic_point_2d<GraphicsMath>& cpt1, const basic_point_2d<GraphicsMath>& cpt2, const basic_point_2d<GraphicsMath>& ept) noexcept;
+						constexpr void control_pt1(const basic_point_2d<GraphicsMath>& cpt) noexcept;
+						constexpr void control_pt2(const basic_point_2d<GraphicsMath>& cpt) noexcept;
+						constexpr void end_pt(const basic_point_2d<GraphicsMath>& ept) noexcept;
+						constexpr basic_point_2d<GraphicsMath> control_pt1() const noexcept;
+						constexpr basic_point_2d<GraphicsMath> control_pt2() const noexcept;
+						constexpr basic_point_2d<GraphicsMath> end_pt() const noexcept;
 					};
 
 					class rel_cubic_curve {
-						typename GraphicsMath::point_2d _Control_pt1 = {};
-						typename GraphicsMath::point_2d _Control_pt2 = {};
-						typename GraphicsMath::point_2d _End_pt = {};
+						basic_point_2d<GraphicsMath> _Control_pt1 = {};
+						basic_point_2d<GraphicsMath> _Control_pt2 = {};
+						basic_point_2d<GraphicsMath> _End_pt = {};
 						friend constexpr bool operator==(const rel_cubic_curve&, const rel_cubic_curve&) noexcept;
 					public:
 						constexpr rel_cubic_curve() noexcept;
-						constexpr rel_cubic_curve(const typename GraphicsMath::point_2d& cpt1, const typename GraphicsMath::point_2d& cpt2, const typename GraphicsMath::point_2d& ept) noexcept;
-						constexpr void control_pt1(const typename GraphicsMath::point_2d& cpt) noexcept;
-						constexpr void control_pt2(const typename GraphicsMath::point_2d& cpt) noexcept;
-						constexpr void end_pt(const typename GraphicsMath::point_2d& ept) noexcept;
-						constexpr typename GraphicsMath::point_2d control_pt1() const noexcept;
-						constexpr typename GraphicsMath::point_2d control_pt2() const noexcept;
-						constexpr typename GraphicsMath::point_2d end_pt() const noexcept;
+						constexpr rel_cubic_curve(const basic_point_2d<GraphicsMath>& cpt1, const basic_point_2d<GraphicsMath>& cpt2, const basic_point_2d<GraphicsMath>& ept) noexcept;
+						constexpr void control_pt1(const basic_point_2d<GraphicsMath>& cpt) noexcept;
+						constexpr void control_pt2(const basic_point_2d<GraphicsMath>& cpt) noexcept;
+						constexpr void end_pt(const basic_point_2d<GraphicsMath>& ept) noexcept;
+						constexpr basic_point_2d<GraphicsMath> control_pt1() const noexcept;
+						constexpr basic_point_2d<GraphicsMath> control_pt2() const noexcept;
+						constexpr basic_point_2d<GraphicsMath> end_pt() const noexcept;
 					};
 
 					class arc {
-						typename GraphicsMath::point_2d _Radius;
+						basic_point_2d<GraphicsMath> _Radius;
 						float _Rotation;
 						float _Start_angle;
 
 						friend constexpr bool operator==(const arc&, const arc&) noexcept;
 					public:
 						constexpr arc() noexcept;
-						constexpr arc(const typename GraphicsMath::point_2d& rad, float rot, float sang) noexcept;
-						constexpr void radius(const typename GraphicsMath::point_2d& rad) noexcept;
+						constexpr arc(const basic_point_2d<GraphicsMath>& rad, float rot, float sang) noexcept;
+						constexpr void radius(const basic_point_2d<GraphicsMath>& rad) noexcept;
 						constexpr void rotation(float rot) noexcept;
 						constexpr void start_angle(float radians) noexcept;
-						constexpr typename GraphicsMath::point_2d radius() const noexcept;
+						constexpr basic_point_2d<GraphicsMath> radius() const noexcept;
 						constexpr float rotation() const noexcept;
 						constexpr float start_angle() const noexcept;
-						typename GraphicsMath::point_2d center(const typename GraphicsMath::point_2d& cpt, const typename GraphicsMath::matrix_2d& m = typename GraphicsMath::matrix_2d{}) const noexcept;
-						typename GraphicsMath::point_2d end_pt(const typename GraphicsMath::point_2d& cpt, const typename GraphicsMath::matrix_2d& m = typename GraphicsMath::matrix_2d{}) const noexcept;
+						basic_point_2d<GraphicsMath> center(const basic_point_2d<GraphicsMath>& cpt, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) const noexcept;
+						basic_point_2d<GraphicsMath> end_pt(const basic_point_2d<GraphicsMath>& cpt, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) const noexcept;
 					};
 
 					using figure_item = variant<abs_cubic_curve, abs_line, abs_matrix,
@@ -314,23 +340,23 @@ namespace std {
 					reference back();
 					const_reference back() const;
 					// 10.5.5, modifiers:
-					void new_figure(const typename GraphicsMath::point_2d& pt) noexcept;
-					void rel_new_figure(const typename GraphicsMath::point_2d& pt) noexcept;
+					void new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
+					void rel_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
 					void close_figure() noexcept;
-					void matrix(const typename GraphicsMath::matrix_2d& m) noexcept;
-					void rel_matrix(const typename GraphicsMath::matrix_2d& m) noexcept;
+					void matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
+					void rel_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
 					void revert_matrix() noexcept;
-					void line(const typename GraphicsMath::point_2d& pt) noexcept;
-					void rel_line(const typename GraphicsMath::point_2d& dpt) noexcept;
-					void quadratic_curve(const typename GraphicsMath::point_2d& pt0, const typename GraphicsMath::point_2d& pt2)
+					void line(const basic_point_2d<GraphicsMath>& pt) noexcept;
+					void rel_line(const basic_point_2d<GraphicsMath>& dpt) noexcept;
+					void quadratic_curve(const basic_point_2d<GraphicsMath>& pt0, const basic_point_2d<GraphicsMath>& pt2)
 						noexcept;
-					void rel_quadratic_curve(const typename GraphicsMath::point_2d& pt0, const typename GraphicsMath::point_2d& pt2)
+					void rel_quadratic_curve(const basic_point_2d<GraphicsMath>& pt0, const basic_point_2d<GraphicsMath>& pt2)
 						noexcept;
-					void cubic_curve(const typename GraphicsMath::point_2d& pt0, const typename GraphicsMath::point_2d& pt1,
-						const typename GraphicsMath::point_2d& pt2) noexcept;
-					void rel_cubic_curve(const typename GraphicsMath::point_2d& dpt0, const typename GraphicsMath::point_2d& dpt1,
-						const typename GraphicsMath::point_2d& dpt2) noexcept;
-					void arc(const typename GraphicsMath::point_2d& rad, float rot, float sang = pi<float>)
+					void cubic_curve(const basic_point_2d<GraphicsMath>& pt0, const basic_point_2d<GraphicsMath>& pt1,
+						const basic_point_2d<GraphicsMath>& pt2) noexcept;
+					void rel_cubic_curve(const basic_point_2d<GraphicsMath>& dpt0, const basic_point_2d<GraphicsMath>& dpt1,
+						const basic_point_2d<GraphicsMath>& dpt2) noexcept;
+					void arc(const basic_point_2d<GraphicsMath>& rad, float rot, float sang = pi<float>)
 						noexcept;
 					template <class... Args>
 					reference emplace_back(Args&&... args);

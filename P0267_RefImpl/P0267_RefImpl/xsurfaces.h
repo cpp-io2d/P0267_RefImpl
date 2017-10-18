@@ -24,7 +24,7 @@ namespace std {
 				private:
 					_Data_type _Data;
 				public:
-					const _Data_type _Get_data() const noexcept;
+					const _Data_type& _Get_data() const noexcept;
 					basic_render_props() noexcept;
 					explicit basic_render_props(antialias a, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}, compositing_op co = compositing_op::over) noexcept;
 					void antialiasing(antialias a) noexcept;

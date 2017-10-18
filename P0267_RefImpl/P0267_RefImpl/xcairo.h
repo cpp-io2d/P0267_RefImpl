@@ -7,6 +7,9 @@
 
 #include "io2d.h"
 #include "xinclwindows_h.h"
+#if defined(_Filesystem_support_test)
+#include <filesystem>
+#endif
 
 namespace std {
 	namespace experimental {
@@ -215,8 +218,8 @@ namespace std {
 
 						static image_surface_data_type create_image_surface(io2d::format fmt, int width, int height);
 #if defined(_Filesystem_support_test)
-						static image_surface_data_type create_image_surface(::std::filesystem::path p, image_file_format iff);
-						static image_surface_data_type create_image_surface(::std::filesystem::path p, image_file_format iff, ::std::error_code& ec) noexcept;
+						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff);
+						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, ::std::error_code& ec) noexcept;
 #else
 						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff);
 						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, ::std::error_code& ec) noexcept;
@@ -224,8 +227,8 @@ namespace std {
 						static image_surface_data_type move_image_surface(image_surface_data_type&& data) noexcept;
 						static void destroy(image_surface_data_type& data) noexcept;
 #if defined(_Filesystem_support_test)
-						static void save(image_surface_data_type& data, ::std::filesystem::path p, image_file_format iff);
-						static void save(image_surface_data_type& data, ::std::filesystem::path p, image_file_format iff, error_code& ec) noexcept;
+						static void save(image_surface_data_type& data, filesystem::path p, image_file_format iff);
+						static void save(image_surface_data_type& data, filesystem::path p, image_file_format iff, error_code& ec) noexcept;
 #else
 						static void save(image_surface_data_type& data, ::std::string p, image_file_format iff);
 						static void save(image_surface_data_type& data, ::std::string p, image_file_format iff, error_code& ec) noexcept;
@@ -248,10 +251,10 @@ namespace std {
 
 #if defined(WIN32) || defined(WIN64)
 						struct _Display_surface_win32_data {
-							HINSTANCE hInstance;
-							HWND hwnd;
-							HDC hdc;
-							bool hasOwnDC;
+							HINSTANCE hInstance = nullptr;
+							HWND hwnd = nullptr;
+							HDC hdc = nullptr;
+							bool hasOwnDC = true;
 							bool unmanaged = false;
 							bool letterbox_brush_is_default = true;
 							basic_brush<_Graphics_surfaces_type> _Letterbox_brush;
@@ -345,7 +348,7 @@ namespace std {
 						};
 						using show_return_data_type = _Show_return_data_win32;
 #endif
-						static show_return_data_type begin_show(output_surface_data_type& data, basic_output_surface<_Graphics_surfaces_type>* instance, basic_display_surface<_Graphics_surfaces_type>& sfc);
+						static show_return_data_type begin_show(output_surface_data_type& data, basic_output_surface<_Graphics_surfaces_type>* instance, basic_output_surface<_Graphics_surfaces_type>& sfc);
 						static void end_show(output_surface_data_type& data);
 						static void refresh_rate(output_surface_data_type& data, io2d::refresh_rate val);
 						static void desired_frame_rate(output_surface_data_type& data, float val);

@@ -4,15 +4,19 @@
 #include "xcairo_helpers.h"
 #include "xinclwindows_h.h"
 #include <cassert>
+#if defined(_WIN32) || defined(_WIN64)
+#include <cairo-win32.h>
+#endif
+#include "xpath.h"
 
 namespace std::experimental::io2d::v1 {
 	namespace _Cairo {
 		// cairo_interpreted_path
 
-		template <class _TItem>
+		template <class _TItem, class GraphicsMath>
 		struct _Path_group_perform_visit {
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_new_figure>, _Path_data_abs_new_figure> = _Path_data_abs_new_figure_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::abs_new_figure& item, point_2d& lastMoveToPoint) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_new_figure>, _Path_data_abs_new_figure> = _Path_data_abs_new_figure_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::abs_new_figure& item, basic_point_2d<GraphicsMath>& lastMoveToPoint) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt = item.at();
 				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
@@ -24,8 +28,8 @@ namespace std::experimental::io2d::v1 {
 				vec.push_back(cpdItem);
 			}
 
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::abs_line& item, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::abs_line& item, basic_point_2d<GraphicsMath>&) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt = item.to();
 				cpdItem.header.type = CAIRO_PATH_LINE_TO;
@@ -35,8 +39,8 @@ namespace std::experimental::io2d::v1 {
 				cpdItem.point = { pt.x(), pt.y() };
 				vec.push_back(cpdItem);
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::abs_cubic_curve& item, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& item, basic_point_2d<GraphicsMath>&) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt1 = item.control_pt1();
 				auto pt2 = item.control_pt2();
@@ -54,16 +58,16 @@ namespace std::experimental::io2d::v1 {
 				cpdItem.point = { pt3.x(), pt3.y() };
 				vec.push_back(cpdItem);
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::abs_quadratic_curve&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Abs quadratic curves should have been transformed into cubic curves already.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_new_figure>, _Path_data_rel_new_figure> = _Path_data_rel_new_figure_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_new_figure&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_new_figure>, _Path_data_rel_new_figure> = _Path_data_rel_new_figure_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_new_figure&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel new path instructions should have been eliminated.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::close_figure>, _Path_data_close_path> = _Path_data_close_path_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const figure_items::close_figure&, point_2d& lastMoveToPoint) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::close_figure>, _Path_data_close_path> = _Path_data_close_path_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::close_figure&, basic_point_2d<GraphicsMath>& lastMoveToPoint) noexcept {
 				cairo_path_data_t cpdItem{};
 				cpdItem.header.type = CAIRO_PATH_CLOSE_PATH;
 				cpdItem.header.length = 1;
@@ -75,32 +79,32 @@ namespace std::experimental::io2d::v1 {
 				cpdItem.point = { lastMoveToPoint.x(), lastMoveToPoint.y() };
 				vec.push_back(cpdItem);
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_line&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_line&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel line should have been transformed into non-relative.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_cubic_curve&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_cubic_curve&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel curve should have been transformed into non-relative.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_quadratic_curve&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel quadratic curves should have been transformed into cubic curves.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::arc>, _Path_data_arc> = _Path_data_arc_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::arc&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::arc>, _Path_data_arc> = _Path_data_arc_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::arc&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Arcs should have been transformed into cubic curves.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::abs_matrix&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::abs_matrix&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Abs matrix should have been eliminated.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::rel_matrix&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_matrix&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel matrix should have been eliminated.");
 			}
-			template <class T, ::std::enable_if_t<::std::is_same_v<T, figure_items::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const figure_items::revert_matrix&, point_2d&) noexcept {
+			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
+			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::revert_matrix&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Revert matrix should have been eliminated.");
 			}
 		};
@@ -141,7 +145,7 @@ namespace std::experimental::io2d::v1 {
 			for (const auto& val : processedVec) {
 				::std::visit([&vec, &lastMoveToPoint](auto&& item) {
 					using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-					_Path_group_perform_visit<T>::template _Perform<T>(vec, item, lastMoveToPoint);
+					_Path_group_perform_visit<T, GraphicsMath>::template _Perform<T>(vec, item, lastMoveToPoint);
 				}, val);
 			}
 			result.path->num_data = static_cast<int>(vec.size());
@@ -168,11 +172,11 @@ namespace std::experimental::io2d::v1 {
 		}
 
 		template<class GraphicsMath>
-		inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_brush(const rgba_color & c) {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_brush(const rgba_color& c) {
 			brush_data_type data;
 			data.imageSurface = nullptr;
 			data.brushType = brush_type::solid_color;
-			data.brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_rgba(c.r(), c.g()), c.b(), c.a()), &cairo_pattern_destroy);
+			data.brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_rgba(c.r(), c.g(), c.b(), c.a()), &cairo_pattern_destroy);
 			return data;
 		}
 		template<class GraphicsMath>
@@ -493,7 +497,7 @@ namespace std::experimental::io2d::v1 {
 			return data;
 		}
 		template<class GraphicsMath>
-		inline mask_props_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_mask_props(mask_props_data_type&& data) noexcept {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::mask_props_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_mask_props(mask_props_data_type&& data) noexcept {
 			return data;
 		}
 		template<class GraphicsMath>
@@ -550,7 +554,7 @@ namespace std::experimental::io2d::v1 {
 			return data;
 		}
 		template<class GraphicsMath>
-		inline dashes_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_dashes(dashes_data_type&& data) noexcept {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::dashes_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_dashes(dashes_data_type&& data) noexcept {
 			return data;
 		}
 		template<class GraphicsMath>
@@ -689,11 +693,11 @@ namespace std::experimental::io2d::v1 {
 
 #if defined(_Filesystem_support_test)
 		template<class GraphicsMath>
-		inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::filesystem::path p, image_file_format iff) {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff) {
 			throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
 		}
 		template<class GraphicsMath>
-		inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::filesystem::path p, image_file_format iff, ::std::error_code & ec) noexcept {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, ::std::error_code & ec) noexcept {
 			ec = ::std::make_error_code(::std::errc::not_supported);
 			return image_surface_data_type();
 		}
@@ -718,12 +722,12 @@ namespace std::experimental::io2d::v1 {
 		}
 #if defined(_Filesystem_support_test)
 		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, ::std::filesystem::path p, image_file_format iff) {
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, filesystem::path p, image_file_format iff) {
 			throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
 		}
 		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, ::std::filesystem::path p, image_file_format iff, error_code& ec) noexcept {
-			ec = ::std::make_error_code(::std::errc::not_supported));
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, filesystem::path p, image_file_format iff, error_code& ec) noexcept {
+			ec = ::std::make_error_code(::std::errc::not_supported);
 			return;
 		}
 #else
@@ -833,9 +837,9 @@ namespace std::experimental::io2d::v1 {
 			if (data.hwnd != 0) {
 				data.display_surface = ::std::move(::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_win32_surface_create(data.hdc), &cairo_surface_destroy));
 				auto sfc = data.display_surface.get();
-				_Throw_if_failed_cairo_status(cairo_surface_status(sfc));
-				data.display_context = ::std::move(::std::unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(sfc, &cairo_destroy)));
-				_Throw_if_failed_cairo_status(cairo_status(data.display_context.get()));
+				_Throw_if_failed_cairo_status_t(cairo_surface_status(sfc));
+				data.display_context = ::std::move(::std::unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(sfc), &cairo_destroy));
+				_Throw_if_failed_cairo_status_t(cairo_status(data.display_context.get()));
 			}
 		}
 
@@ -844,7 +848,7 @@ namespace std::experimental::io2d::v1 {
 			GraphicsSurfaces::clear(data.back_buffer);
 		}
 		template <class GraphicsSurfaces>
-		inline void _Ds_paint(typename GraphicsSurfaces::_Display_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<GraphicsSurfaces>& bp, const basic_render_props<GraphicsSurfaces>& rp, const basic_clip_props<GraphicsSurfaces>& cl) {
+		inline void _Ds_paint(typename GraphicsSurfaces::_Display_surface_data_type& data, const basic_brush<GraphicsSurfaces>& b, const basic_brush_props<GraphicsSurfaces>& bp, const basic_render_props<GraphicsSurfaces>& rp, const basic_clip_props<GraphicsSurfaces>& cl) {
 			GraphicsSurfaces::paint(data.back_buffer, b, bp, rp, cl);
 		}
 		template <class GraphicsSurfaces>
@@ -1095,19 +1099,61 @@ namespace std::experimental::io2d::v1 {
 
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps) {
-			output_surface_data_type data;
+			output_surface_data_type result;
+			_Display_surface_win32_data& data = result.data;
+			data.display_dimensions.x(preferredWidth);
+			data.display_dimensions.y(preferredHeight);
+			data.rr = rr;
+			data.refresh_rate = fps;
+			data.scl = scl;
+			data.back_buffer.format = preferredFormat;
+			data.back_buffer.dimensions.x(preferredWidth);
+			data.back_buffer.dimensions.y(preferredHeight);
+			return result;
 		}
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept {
-			output_surface_data_type data;
+			output_surface_data_type result;
+			_Display_surface_win32_data& data = result.data;
+			data.display_dimensions.x(preferredWidth);
+			data.display_dimensions.y(preferredHeight);
+			data.rr = rr;
+			data.refresh_rate = fps;
+			data.scl = scl;
+			data.back_buffer.format = preferredFormat;
+			data.back_buffer.dimensions.x(preferredWidth);
+			data.back_buffer.dimensions.y(preferredHeight);
+			ec.clear()
+			return result;
 		}
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps) {
-			output_surface_data_type data;
+			output_surface_data_type result;
+			_Display_surface_win32_data& data = result.data;
+			data.display_dimensions.x(preferredDisplayWidth);
+			data.display_dimensions.y(preferredDisplayHeight);
+			data.rr = rr;
+			data.refresh_rate = fps;
+			data.scl = scl;
+			data.back_buffer.format = preferredFormat;
+			data.back_buffer.dimensions.x(preferredWidth);
+			data.back_buffer.dimensions.y(preferredHeight);
+			return result;
 		}
 		template <class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept {
-			output_surface_data_type data;
+			output_surface_data_type result;
+			_Display_surface_win32_data& data = result.data;
+			data.display_dimensions.x(preferredDisplayWidth);
+			data.display_dimensions.y(preferredDisplayHeight);
+			data.rr = rr;
+			data.refresh_rate = fps;
+			data.scl = scl;
+			data.back_buffer.format = preferredFormat;
+			data.back_buffer.dimensions.x(preferredWidth);
+			data.back_buffer.dimensions.y(preferredHeight);
+			ec.clear();
+			return result;
 		}
 		template <class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_output_surface(output_surface_data_type&& data) noexcept {
@@ -1119,7 +1165,7 @@ namespace std::experimental::io2d::v1 {
 			destroy(data.data.back_buffer);
 		}
 		template<class GraphicsMath>
-		inline typename _Cairo_graphics_surfaces<GraphicsMath>::show_return_data_type _Cairo_graphics_surfaces<GraphicsMath>::begin_show(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>* instance, basic_display_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::show_return_data_type _Cairo_graphics_surfaces<GraphicsMath>::begin_show(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>* instance, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
 			_Display_surface_data_type& data = osd.data;
 			RECT rc;
 			rc.top = 0;
@@ -1173,10 +1219,7 @@ namespace std::experimental::io2d::v1 {
 			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
 			data._Letterbox_brush = data._Default_letterbox_brush;
 
-			data.buffer_surface = ::std::move(::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(preferredFormat), preferredWidth, preferredHeight), &cairo_surface_destroy));
-			_Throw_if_failed_cairo_status(cairo_surface_status(data.buffer_surface.get()));
-			data.buffer_context = ::std::move(::std::unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(data.buffer_surface.get()), &cairo_destroy));
-			_Throw_if_failed_cairo_status(cairo_status(data.buffer_context.get()));
+			data.back_buffer = ::std::move(create_image_surface(data.back_buffer.format, data.back_buffer.dimensions.x(), data.back_buffer.dimensions.y()));
 
 			// Initially display the window
 			ShowWindow(data.hwnd, SW_SHOWNORMAL);
@@ -1324,6 +1367,7 @@ namespace std::experimental::io2d::v1 {
 
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::end_show(output_surface_data_type& data) {
+			PostQuitMessage(0);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::refresh_rate(output_surface_data_type& data, io2d::refresh_rate val) {
@@ -1342,8 +1386,8 @@ namespace std::experimental::io2d::v1 {
 				// Change window size then call _Ds_display_dimensions, I think.
 				RECT clientRect;
 				RECT windowRect;
-				GetWindowRect(hwnd, &windowRect);
-				GetClientRect(hwnd, &clientRect);
+				GetWindowRect(data.data.hwnd, &windowRect);
+				GetClientRect(data.data.hwnd, &clientRect);
 				auto crWidth = clientRect.right - clientRect.left;
 				auto crHeight = clientRect.bottom - clientRect.top;
 				auto wrWidth = windowRect.right - windowRect.left;
@@ -1364,31 +1408,36 @@ namespace std::experimental::io2d::v1 {
 				}
 			}
 			//_Ds_display_dimensions<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, val);
-			_Create_display_surface_and_context(data.data);
+			_Create_display_surface_and_context<GraphicsMath>(data.data);
 			data.data.redraw_required = true;
 		}
 		template<class GraphicsMath>
 		inline io2d::refresh_rate _Cairo_graphics_surfaces<GraphicsMath>::refresh_rate(const output_surface_data_type& data) noexcept {
-			return io2d::refresh_rate();
+			return data.data.rr;
 		}
 		template<class GraphicsMath>
 		inline float _Cairo_graphics_surfaces<GraphicsMath>::desired_frame_rate(const output_surface_data_type& data) noexcept {
-			return 0.0f;
+			return data.data.refresh_fps;
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::clear(output_surface_data_type& data) {
+			_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
 		template <class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::paint(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
+			_Ds_paint<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, b, bp, rp, cl);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::stroke(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
+			_Ds_stroke<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, b, ip, bp, sp, d, rp, cl);
 		}
 		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::fill(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& pg, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::fill(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
+			_Ds_fill<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, b, ip, bp, rp, cl);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::mask(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
+			_Ds_mask<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, b, mb, bp, mp, rp, cl);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_Graphics_surfaces_type>&)> fn) {
@@ -1404,58 +1453,59 @@ namespace std::experimental::io2d::v1 {
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val) {
+			_Ds_dimensions<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, val);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::scaling(output_surface_data_type& data, io2d::scaling val) {
+			_Ds_scaling<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, val);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::letterbox_brush(output_surface_data_type& data, const optional<basic_brush<_Graphics_surfaces_type>>& val, const optional<basic_brush_props<_Graphics_surfaces_type>>& bp) noexcept {
+			_Ds_letterbox_brush<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, val, bp);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::letterbox_brush_props(output_surface_data_type& data, const basic_brush_props<_Graphics_surfaces_type>& val) {
+			_Ds_letterbox_brush_props<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, val);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::auto_clear(output_surface_data_type& data, bool val) {
+			_Ds_auto_clear<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, val);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::redraw_required(output_surface_data_type& data, bool val) {
+			_Ds_redraw_required<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, val);
 		}
 		template<class GraphicsMath>
 		inline io2d::format _Cairo_graphics_surfaces<GraphicsMath>::format(const output_surface_data_type& data) noexcept {
-			return io2d::format();
+			return _Ds_format<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
 		template<class GraphicsMath>
 		inline basic_display_point<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::dimensions(const output_surface_data_type& data) noexcept {
-			return basic_display_point<GraphicsMath>();
-		}
-		template<class GraphicsMath>
-		inline basic_display_point<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::max_dimensions(const output_surface_data_type& data) noexcept {
-			return basic_display_point<GraphicsMath>();
+			return _Ds_dimensions<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
 		template<class GraphicsMath>
 		inline basic_display_point<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::display_dimensions(const output_surface_data_type& data) noexcept {
-			return basic_display_point<GraphicsMath>();
+			return _Ds_display_dimensions<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
 		template<class GraphicsMath>
 		inline io2d::scaling _Cairo_graphics_surfaces<GraphicsMath>::scaling(output_surface_data_type& data) noexcept {
-			return io2d::scaling();
+			return _Ds_scaling<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
 		template<class GraphicsMath>
-		inline optional<basic_brush<_Graphics_surfaces_type>> _Cairo_graphics_surfaces<GraphicsMath>::letterbox_brush(const output_surface_data_type& data) noexcept {
-			return optional<basic_brush<_Graphics_surfaces_type>>();
+		inline optional<basic_brush<_Cairo_graphics_surfaces<GraphicsMath>>> _Cairo_graphics_surfaces<GraphicsMath>::letterbox_brush(const output_surface_data_type& data) noexcept {
+			return _Ds_letterbox_brush<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
 		template<class GraphicsMath>
-		inline basic_brush_props<_Graphics_surfaces_type> _Cairo_graphics_surfaces<GraphicsMath>::letterbox_brush_props(const output_surface_data_type& data) noexcept {
-			return basic_brush_props<_Graphics_surfaces_type>();
+		inline basic_brush_props<_Cairo_graphics_surfaces<GraphicsMath>> _Cairo_graphics_surfaces<GraphicsMath>::letterbox_brush_props(const output_surface_data_type& data) noexcept {
+			return _Ds_letterbox_brush_props<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
 		template<class GraphicsMath>
 		inline bool _Cairo_graphics_surfaces<GraphicsMath>::auto_clear(const output_surface_data_type& data) noexcept {
-			return false;
+			return _Ds_auto_clear<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
 		template<class GraphicsMath>
 		inline bool _Cairo_graphics_surfaces<GraphicsMath>::redraw_required(const output_surface_data_type& data) noexcept {
-			return false;
+			return _Ds_redraw_required<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
-
 	}
 }

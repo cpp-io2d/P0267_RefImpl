@@ -71,6 +71,21 @@
     <ClInclude Include="xinclwindows_h.h">
       <Filter>cairo renderer</Filter>
     </ClInclude>
+    <ClInclude Include="xgraphicsmath_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgraphicsmathfloat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgraphicsmathfloat_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xpath_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xpathbuilder_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rgba_color.cpp">

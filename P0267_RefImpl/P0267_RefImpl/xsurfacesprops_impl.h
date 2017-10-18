@@ -22,55 +22,55 @@ namespace std {
 		namespace io2d {
 			inline namespace v1 {
 				template <class GraphicsSurfaces>
-				inline constexpr const typename basic_render_props<GraphicsSurfaces>::_Data_type& basic_render_props<GraphicsSurfaces>::_Get_data() const noexcept {
+				inline const typename basic_render_props<GraphicsSurfaces>::_Data_type& basic_render_props<GraphicsSurfaces>::_Get_data() const noexcept {
 					return _Data;
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_render_props<GraphicsSurfaces>::basic_render_props() noexcept
+				inline basic_render_props<GraphicsSurfaces>::basic_render_props() noexcept
 					: _Data(GraphicsSurfaces::create_render_props()) {
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_render_props<GraphicsSurfaces>::basic_render_props(io2d::antialias a, const basic_matrix_2d<graphics_math_type>& m,
+				inline basic_render_props<GraphicsSurfaces>::basic_render_props(io2d::antialias a, const basic_matrix_2d<graphics_math_type>& m,
 					compositing_op co) noexcept
 					: _Data(GraphicsSurfaces::create_render_props(a, m, co)) {
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_render_props<GraphicsSurfaces>::antialiasing(io2d::antialias a) noexcept {
+				inline void basic_render_props<GraphicsSurfaces>::antialiasing(io2d::antialias a) noexcept {
 					GraphicsSurfaces::antialiasing(_Data, a);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_render_props<GraphicsSurfaces>::compositing(compositing_op co) noexcept {
+				inline void basic_render_props<GraphicsSurfaces>::compositing(compositing_op co) noexcept {
 					GraphicsSurfaces::compositing(_Data, co);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_render_props<GraphicsSurfaces>::surface_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept {
+				inline void basic_render_props<GraphicsSurfaces>::surface_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept {
 					GraphicsSurfaces::surface_matrix(_Data, m);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr io2d::antialias basic_render_props<GraphicsSurfaces>::antialiasing() const noexcept {
+				inline io2d::antialias basic_render_props<GraphicsSurfaces>::antialiasing() const noexcept {
 					return GraphicsSurfaces::antialiasing(_Data);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr compositing_op basic_render_props<GraphicsSurfaces>::compositing() const noexcept {
+				inline compositing_op basic_render_props<GraphicsSurfaces>::compositing() const noexcept {
 					return GraphicsSurfaces::compositing(_Data);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type> basic_render_props<GraphicsSurfaces>::surface_matrix() const noexcept {
+				inline basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type> basic_render_props<GraphicsSurfaces>::surface_matrix() const noexcept {
 					return GraphicsSurfaces::surface_matrix(_Data);
 				}
 
 				// brush props
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_brush_props<GraphicsSurfaces>::basic_brush_props(experimental::io2d::wrap_mode w,
+				inline basic_brush_props<GraphicsSurfaces>::basic_brush_props(experimental::io2d::wrap_mode w,
 					experimental::io2d::filter fi,
 					experimental::io2d::fill_rule fr,
 					const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept
@@ -78,42 +78,42 @@ namespace std {
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_brush_props<GraphicsSurfaces>::filter(experimental::io2d::filter fi) noexcept {
+				inline void basic_brush_props<GraphicsSurfaces>::filter(experimental::io2d::filter fi) noexcept {
 					GraphicsSurfaces::filter(_Data, fi);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_brush_props<GraphicsSurfaces>::wrap_mode(experimental::io2d::wrap_mode w) noexcept {
+				inline void basic_brush_props<GraphicsSurfaces>::wrap_mode(experimental::io2d::wrap_mode w) noexcept {
 					GraphicsSurfaces::wrap_mode(_Data, w);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_brush_props<GraphicsSurfaces>::fill_rule(experimental::io2d::fill_rule fr) noexcept {
+				inline void basic_brush_props<GraphicsSurfaces>::fill_rule(experimental::io2d::fill_rule fr) noexcept {
 					GraphicsSurfaces::fill_rule(_Data, fr);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_brush_props<GraphicsSurfaces>::brush_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept {
+				inline void basic_brush_props<GraphicsSurfaces>::brush_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept {
 					GraphicsSurfaces::brush_matrix(_Data, m);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr experimental::io2d::filter basic_brush_props<GraphicsSurfaces>::filter() const noexcept {
+				inline experimental::io2d::filter basic_brush_props<GraphicsSurfaces>::filter() const noexcept {
 					return GraphicsSurfaces::filter(_Data);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr experimental::io2d::wrap_mode basic_brush_props<GraphicsSurfaces>::wrap_mode() const noexcept {
+				inline experimental::io2d::wrap_mode basic_brush_props<GraphicsSurfaces>::wrap_mode() const noexcept {
 					return GraphicsSurfaces::wrap_mode(_Data);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr experimental::io2d::fill_rule basic_brush_props<GraphicsSurfaces>::fill_rule() const noexcept {
+				inline experimental::io2d::fill_rule basic_brush_props<GraphicsSurfaces>::fill_rule() const noexcept {
 					return GraphicsSurfaces::fill_rule(_Data);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr basic_matrix_2d<typename basic_brush_props<GraphicsSurfaces>::graphics_math_type> basic_brush_props<GraphicsSurfaces>::brush_matrix() const noexcept {
+				inline basic_matrix_2d<typename basic_brush_props<GraphicsSurfaces>::graphics_math_type> basic_brush_props<GraphicsSurfaces>::brush_matrix() const noexcept {
 					return GraphicsSurfaces::brush_matrix(_Data);
 				}
 
@@ -170,11 +170,11 @@ namespace std {
 
 				// stroke props
 				template <class GraphicsSurfaces>
-				inline constexpr basic_stroke_props<GraphicsSurfaces>::basic_stroke_props() noexcept
+				inline basic_stroke_props<GraphicsSurfaces>::basic_stroke_props() noexcept
 					: _Data(GraphicsSurfaces::create_stroke_props()) {
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr basic_stroke_props<GraphicsSurfaces>::basic_stroke_props(float w,
+				inline basic_stroke_props<GraphicsSurfaces>::basic_stroke_props(float w,
 					io2d::line_cap lc,
 					io2d::line_join lj,
 					float ml) noexcept
@@ -182,74 +182,74 @@ namespace std {
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_stroke_props<GraphicsSurfaces>::line_width(float w) noexcept {
+				inline void basic_stroke_props<GraphicsSurfaces>::line_width(float w) noexcept {
 					GraphicsSurfaces::line_width(_Data, w);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_stroke_props<GraphicsSurfaces>::line_cap(io2d::line_cap lc) noexcept {
+				inline void basic_stroke_props<GraphicsSurfaces>::line_cap(io2d::line_cap lc) noexcept {
 					GraphicsSurfaces::line_cap(_Data, lc);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_stroke_props<GraphicsSurfaces>::line_join(experimental::io2d::line_join lj) noexcept {
+				inline void basic_stroke_props<GraphicsSurfaces>::line_join(experimental::io2d::line_join lj) noexcept {
 					GraphicsSurfaces::line_join(_Data, lj);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_stroke_props<GraphicsSurfaces>::miter_limit(float ml) noexcept {
+				inline void basic_stroke_props<GraphicsSurfaces>::miter_limit(float ml) noexcept {
 					GraphicsSurfaces::miter_limit(_Data, ml);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr float basic_stroke_props<GraphicsSurfaces>::line_width() const noexcept {
+				inline float basic_stroke_props<GraphicsSurfaces>::line_width() const noexcept {
 					return GraphicsSurfaces::line_width(_Data);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr experimental::io2d::line_cap basic_stroke_props<GraphicsSurfaces>::line_cap() const noexcept {
+				inline experimental::io2d::line_cap basic_stroke_props<GraphicsSurfaces>::line_cap() const noexcept {
 					return GraphicsSurfaces::line_cap(_Data);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr experimental::io2d::line_join basic_stroke_props<GraphicsSurfaces>::line_join() const noexcept {
+				inline experimental::io2d::line_join basic_stroke_props<GraphicsSurfaces>::line_join() const noexcept {
 					return GraphicsSurfaces::line_join(_Data);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr float basic_stroke_props<GraphicsSurfaces>::miter_limit() const noexcept {
+				inline float basic_stroke_props<GraphicsSurfaces>::miter_limit() const noexcept {
 					return GraphicsSurfaces::miter_limit(_Data);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr float basic_stroke_props<GraphicsSurfaces>::max_miter_limit() const noexcept {
+				inline float basic_stroke_props<GraphicsSurfaces>::max_miter_limit() const noexcept {
 					return GraphicsSurfaces::max_miter_limit(_Data);
 				}
 
 				// mask props
 				template <class GraphicsSurfaces>
-				inline constexpr basic_mask_props<GraphicsSurfaces>::basic_mask_props(experimental::io2d::wrap_mode w,
+				inline basic_mask_props<GraphicsSurfaces>::basic_mask_props(experimental::io2d::wrap_mode w,
 					experimental::io2d::filter fi,
 					const basic_matrix_2d<graphics_math_type>& m) noexcept
 					: _Data(GraphicsSurfaces::create_mask_props(w, fi, m)) {
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_mask_props<GraphicsSurfaces>::wrap_mode(experimental::io2d::wrap_mode w) noexcept {
+				inline void basic_mask_props<GraphicsSurfaces>::wrap_mode(experimental::io2d::wrap_mode w) noexcept {
 					GraphicsSurfaces::wrap_mode(_Data, w);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_mask_props<GraphicsSurfaces>::filter(experimental::io2d::filter fi) noexcept {
+				inline void basic_mask_props<GraphicsSurfaces>::filter(experimental::io2d::filter fi) noexcept {
 					GraphicsSurfaces::filter(_Data, fi);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr void basic_mask_props<GraphicsSurfaces>::mask_matrix(const basic_matrix_2d<graphics_math_type>& m) noexcept {
+				inline void basic_mask_props<GraphicsSurfaces>::mask_matrix(const basic_matrix_2d<graphics_math_type>& m) noexcept {
 					GraphicsSurfaces::mask_matrix(_Data, m);
 				}
 
 				template <class GraphicsSurfaces>
-				inline constexpr experimental::io2d::wrap_mode basic_mask_props<GraphicsSurfaces>::wrap_mode() const noexcept {
+				inline experimental::io2d::wrap_mode basic_mask_props<GraphicsSurfaces>::wrap_mode() const noexcept {
 					return GraphicsSurfaces::wrap_mode(_Data);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr experimental::io2d::filter basic_mask_props<GraphicsSurfaces>::filter() const noexcept {
+				inline experimental::io2d::filter basic_mask_props<GraphicsSurfaces>::filter() const noexcept {
 					return GraphicsSurfaces::filter(_Data);
 				}
 				template <class GraphicsSurfaces>
-				inline constexpr basic_matrix_2d<typename basic_mask_props<GraphicsSurfaces>::graphics_math_type> basic_mask_props<GraphicsSurfaces>::mask_matrix() const noexcept {
+				inline basic_matrix_2d<typename basic_mask_props<GraphicsSurfaces>::graphics_math_type> basic_mask_props<GraphicsSurfaces>::mask_matrix() const noexcept {
 					return GraphicsSurfaces::mask_matrix(_Data);
 				}
 			}

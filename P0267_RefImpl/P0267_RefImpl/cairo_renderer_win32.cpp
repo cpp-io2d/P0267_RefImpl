@@ -85,7 +85,7 @@ namespace std::experimental::io2d::v1::_Cairo {
 					outputSfc->display_dimensions(dimensions);
 
 					// Call user size change function.
-					outputSfc->_Get_data().data.size_change_callback(*outputSfc);
+					outputSfc->_Get_data().size_change_callback(*outputSfc);
 					//_Display_surface.invoke_size_change_callback();
 				}
 			} break;
@@ -110,7 +110,7 @@ namespace std::experimental::io2d::v1::_Cairo {
 				//					break;
 				//				}
 				// Run user draw function:
-				outputSfc->_Get_data().data.draw_callback(*outputSfc);
+				outputSfc->_Get_data().draw_callback(*outputSfc);
 
 				EndPaint(hwnd, &ps);
 			} break;

@@ -36,10 +36,13 @@
 #include "xbrushes.h"
 #include "xsurfaces.h"
 #include "xinput.h"
-
+#include "xgraphicsmathfloat.h"
 
 #include "xio2d_impl.h"
 #include "xbrushes_impl.h"
 #include "xsurfaces_impl.h"
 #include "xsurfacesprops_impl.h"
+#include "xgraphicsmath_impl.h"
+#include "xgraphicsmathfloat_impl.h"
+
 #endif
