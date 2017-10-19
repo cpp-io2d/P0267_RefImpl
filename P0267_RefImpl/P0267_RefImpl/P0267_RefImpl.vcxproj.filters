@@ -29,9 +29,6 @@
     <ClInclude Include="xcolor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="xlinear_algebra.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="xpath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -84,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xpathbuilder_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgraphicsmath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

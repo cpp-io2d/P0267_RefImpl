@@ -30,7 +30,7 @@
 #endif
 
 #include "xcolor.h"
-#include "xlinear_algebra.h"
+#include "xgraphicsmath.h"
 #include "xtext.h"
 #include "xpath.h"
 #include "xbrushes.h"

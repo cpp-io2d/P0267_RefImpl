@@ -2,7 +2,7 @@
 #include "xio2d.h"
 #include "xsurfaces_enums.h"
 #include "xpath.h"
-#include "xlinear_algebra.h"
+#include "xgraphicsmath.h"
 
 #if defined(_Filesystem_support_test)
 #include <filesystem>

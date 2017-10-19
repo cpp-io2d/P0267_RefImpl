@@ -475,6 +475,7 @@
     <ClInclude Include="xcairo_impl.h" />
     <ClInclude Include="xcolor.h" />
     <ClInclude Include="xdiagnostics.h" />
+    <ClInclude Include="xgraphicsmath.h" />
     <ClInclude Include="xgraphicsmathfloat.h" />
     <ClInclude Include="xgraphicsmathfloat_impl.h" />
     <ClInclude Include="xgraphicsmath_impl.h" />
@@ -482,7 +483,6 @@
     <ClInclude Include="xinput.h" />
     <ClInclude Include="xio2d.h" />
     <ClInclude Include="xio2d_impl.h" />
-    <ClInclude Include="xlinear_algebra.h" />
     <ClInclude Include="xpath.h" />
     <ClInclude Include="xpathbuilder_impl.h" />
     <ClInclude Include="xpath_impl.h" />

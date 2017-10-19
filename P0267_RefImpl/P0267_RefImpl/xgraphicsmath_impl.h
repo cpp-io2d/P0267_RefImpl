@@ -1,5 +1,5 @@
 #pragma once
-#include "xlinear_algebra.h"
+#include "xgraphicsmath.h"
 
 namespace std::experimental::io2d::v1 {
 	template<class GraphicsMath>
