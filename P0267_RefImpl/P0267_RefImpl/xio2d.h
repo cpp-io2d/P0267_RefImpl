@@ -15,7 +15,10 @@
 //#include <sstream>
 //#include <ios>
 //#include <type_traits>
-//#include <limits>
+#include <limits>
+#include <cmath>
+#include <cassert>
+
 //
 #if ((defined(_MSC_VER) && ((_MSC_VER >= 1910) || (defined(__clang__) && (_MSC_VER >= 1900)))) || defined(HAVE_FILESYSTEM))
 #define _Filesystem_support_test
@@ -56,6 +59,55 @@ namespace std {
 
 				template <class T>
 				constexpr T quarter_tau = T(1.57079632679489661923132169163975144L);
+
+				constexpr float _Round_floating_point_to_zero(float v) noexcept {
+					if ((v > 0.0f && v < ::std::numeric_limits<float>::epsilon() * 1000.0F) ||
+						(v < 0.0f && -v < ::std::numeric_limits<float>::epsilon() * 1000.0F)) {
+						return (v > 0.0f) ? 0.0f : -0.0f;
+					}
+					return v;
+				}
+
+				// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'.
+				inline int _Float_to_int(float value, bool nearestNeighbor = true) {
+					if (nearestNeighbor) {
+						// Round to the nearest neighbor.
+						return static_cast<int>(::std::round(value));
+					}
+					// Otherwise truncate.
+					return static_cast<int>(::std::trunc(value));
+				}
+
+				template <typename T>
+				inline int _Container_size_to_int(const T& container) noexcept {
+					assert(container.size() <= static_cast<unsigned int>(::std::numeric_limits<int>::max()));
+					return static_cast<int>(container.size());
+				}
+
+				enum class _To_radians_sfinae {};
+				constexpr static _To_radians_sfinae _To_radians_sfinae_val = {};
+				enum class _To_degrees_sfinae {};
+				constexpr static _To_degrees_sfinae _To_degrees_sfinae_val = {};
+
+				template <class T, ::std::enable_if_t<::std::is_arithmetic_v<T>, _To_radians_sfinae> = _To_radians_sfinae_val>
+				constexpr float to_radians(T deg) noexcept {
+					auto angle = static_cast<float>(deg) / 360.0F * two_pi<float>;
+					float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
+					if (((angle > 0.0F) && (angle < oneThousandthOfADegreeInRads)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegreeInRads))) {
+						return (angle < 0.0F) ? -0.0F : 0.0F;
+					}
+					return angle;
+				}
+
+				template <class T, ::std::enable_if_t<::std::is_arithmetic_v<T>, _To_degrees_sfinae> = _To_degrees_sfinae_val>
+				constexpr float to_degrees(T rad) noexcept {
+					auto angle = static_cast<float>(rad) / two_pi<float> * 360.0F;
+					float oneThousandthOfADegree = 0.001F;
+					if (((angle > 0.0F) && (angle < oneThousandthOfADegree)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegree))) {
+						return (angle < 0.0F) ? -0.0F : 0.0F;
+					}
+					return angle;
+				}
 			}
 		}
 	}

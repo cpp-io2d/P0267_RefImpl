@@ -2,7 +2,7 @@
 
 #include "xsurfaces.h"
 
-#if defined(WIN32) || defined(WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 #include "xinclwindows_h.h"
 #endif
 
@@ -139,34 +139,43 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_image_surface<GraphicsSurfaces>::paint(const basic_brush<GraphicsSurfaces>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
-					GraphicsSurfaces::paint(_Data, b, bp, rp, cl);
+					GraphicsSurfaces::paint(_Data, b, (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 				template <class GraphicsSurfaces>
 				template <class Allocator>
-				inline void basic_image_surface<GraphicsSurfaces>::stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
-					GraphicsSurfaces::stroke(_Data, b, pb, bp, sp, d, rp, cl);
+				inline void basic_image_surface<GraphicsSurfaces>::stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<typename GraphicsSurfaces::graphics_math_type, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
+					GraphicsSurfaces::stroke(_Data, b, basic_interpreted_path<GraphicsSurfaces>(pb), (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (sp == nullopt ? basic_stroke_props<GraphicsSurfaces>() : sp.value()), (d == nullopt ? basic_dashes<GraphicsSurfaces>() : d.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_image_surface<GraphicsSurfaces>::stroke(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
-					GraphicsSurfaces::stroke(_Data, b, ip, bp, sp, d, rp, cl);
+					GraphicsSurfaces::stroke(_Data, b, ip, (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (sp == nullopt ? basic_stroke_props<GraphicsSurfaces>() : sp.value()), (d == nullopt ? basic_dashes<GraphicsSurfaces>() : d.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 				template <class GraphicsSurfaces>
 				template <class Allocator>
-				inline void basic_image_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
-					GraphicsSurfaces::fill(_Data, b, pb, bp, rp, cl);
+				inline void basic_image_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<typename GraphicsSurfaces::graphics_math_type, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
+					GraphicsSurfaces::fill(_Data, b, basic_interpreted_path<GraphicsSurfaces>(pb), (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_image_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
-					GraphicsSurfaces::fill(_Data, b, ip, bp, rp, cl);
+					GraphicsSurfaces::fill(_Data, b, ip, (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_image_surface<GraphicsSurfaces>::mask(const basic_brush<GraphicsSurfaces>& b, const basic_brush<GraphicsSurfaces>& mb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_mask_props<GraphicsSurfaces>>& mp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
-					GraphicsSurfaces::mask(_Data, b, mb, bp, mp, rp, cl);
+					GraphicsSurfaces::mask(_Data, b, mb, (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (mp == nullopt ? basic_brush_props<GraphicsSurfaces>() : mp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 
 				template<class GraphicsSurfaces>
 				inline basic_image_surface<GraphicsSurfaces> copy_image_surface(basic_image_surface<GraphicsSurfaces>& sfc) noexcept {
-					return basic_image_surface<GraphicsSurfaces>();
+					basic_image_surface<GraphicsSurfaces> retSfc(sfc.format(), sfc.dimensions().x(), sfc.dimensions().y());
+					auto srcSfc = cairo_surface_map_to_image(sfc._Get_data().surface.get(), nullptr);
+					auto destSfc = cairo_surface_map_to_image(retSfc._Get_data().surface.get(), nullptr);
+					auto srcSize = cairo_image_surface_get_height(srcSfc) * cairo_image_surface_get_stride(srcSfc);
+					auto srcData = cairo_image_surface_get_data(srcSfc);
+					auto destData = cairo_image_surface_get_data(destSfc);
+					memcpy(destData, srcData, srcSize);
+					cairo_surface_unmap_image(retSfc._Get_data().surface.get(), destSfc);
+					cairo_surface_unmap_image(sfc._Get_data().surface.get(), srcSfc);
+					return retSfc;
 				}
 
 				// output surface
@@ -204,7 +213,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				inline typename GraphicsSurfaces::show_return_data_type basic_output_surface<GraphicsSurfaces>::begin_show() {
-					return GraphicsSurfaces::begin_show(_Data);
+					return GraphicsSurfaces::begin_show(_Data, this, *this);
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_output_surface<GraphicsSurfaces>::end_show() {
@@ -222,7 +231,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_output_surface<GraphicsSurfaces>::flush() {
-					GraphicsSurfaces::flush(_Data)
+					GraphicsSurfaces::flush(_Data);
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_output_surface<GraphicsSurfaces>::flush(error_code& ec) noexcept {
@@ -250,7 +259,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				template <class Allocator>
-				inline void basic_output_surface<GraphicsSurfaces>::stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
+				inline void basic_output_surface<GraphicsSurfaces>::stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<typename GraphicsSurfaces::graphics_math_type, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
 					GraphicsSurfaces::stroke(_Data, b, basic_interpreted_path<GraphicsSurfaces>(pb), (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (sp == nullopt ? basic_stroke_props<GraphicsSurfaces>() : sp.value()), (d == nullopt ? basic_dashes<GraphicsSurfaces>() : d.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 				template <class GraphicsSurfaces>
@@ -259,7 +268,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				template <class Allocator>
-				inline void basic_output_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
+				inline void basic_output_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<typename GraphicsSurfaces::graphics_math_type, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
 					GraphicsSurfaces::fill(_Data, b, basic_interpreted_path<GraphicsSurfaces>(pb), (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 				template <class GraphicsSurfaces>
@@ -431,7 +440,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				template <class Allocator>
-				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
+				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<typename GraphicsSurfaces::graphics_math_type, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
 					GraphicsSurfaces::stroke(_Data, b, basic_interpreted_path<GraphicsSurfaces>(pb), (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (sp == nullopt ? basic_stroke_props<GraphicsSurfaces>() : sp.value()), (d == nullopt ? basic_dashes<GraphicsSurfaces>() : d.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 				template <class GraphicsSurfaces>
@@ -440,7 +449,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				template <class Allocator>
-				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
+				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<typename GraphicsSurfaces::graphics_math_type, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
 					GraphicsSurfaces::fill(_Data, b, basic_interpreted_path<GraphicsSurfaces>(pb), (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
 				template <class GraphicsSurfaces>

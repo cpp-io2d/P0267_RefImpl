@@ -111,6 +111,8 @@ namespace std::experimental::io2d::v1::_Cairo {
 				//				}
 				// Run user draw function:
 				outputSfc->_Get_data().draw_callback(*outputSfc);
+				auto& osfc = *outputSfc;
+				_Cairo_graphics_surfaces<_Graphics_math_float_impl>::_Render_to_native_surface(outputSfc->_Get_data(), osfc);
 
 				EndPaint(hwnd, &ps);
 			} break;

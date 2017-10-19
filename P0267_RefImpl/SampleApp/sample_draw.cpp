@@ -15,10 +15,10 @@ using namespace std::experimental;
 using namespace std::experimental::io2d;
 
 //// Declarations
-template <class T> void test_image_load_save(display_surface<T>& ds);
-template <class T> void test_stroke_rules(display_surface<T>& ds);
-template <class T> void test_path_functionality(display_surface<T>& ds);
-template <class T> void draw_radial_circles(display_surface<T>& ds);
+void test_image_load_save(output_surface& ds);
+void test_stroke_rules(output_surface& ds);
+void test_path_functionality(output_surface& ds);
+void draw_radial_circles(output_surface& ds);
 //void test_draw_radial_circles(display_surface& ds);
 //wostream& operator<<(wostream& os, const point_2d& pt);
 //vector<vector<int>> init_sort_steps(int count, unsigned long mtSeed = 1009UL);
@@ -37,13 +37,12 @@ template <class T> void draw_radial_circles(display_surface<T>& ds);
 //
 // Drawing entry point.
 //
-template <class T>
-void sample_draw::operator()(display_surface<T>& ds) {
+void sample_draw::operator()(output_surface& ds) {
 	//test_image_load_save(ds);
 	//test_path_functionality(ds);
 	draw_radial_circles(ds);
 	//ds.paint(rgba_color::cornflower_blue());
-	//path_builder<> pf;
+	//path_builder pf;
 	//pf.new_figure();
 	////static auto previousTime = steady_clock::now();
 	////auto currentTime = steady_clock::now();
@@ -56,7 +55,7 @@ void sample_draw::operator()(display_surface<T>& ds) {
 	//static_assert(flColor.r() == 1.0F, "Huh floating?");
 	//static_assert(intColor.r() == 1.0F, "Huh integral?");
 
-	//path_builder<> pb;
+	//path_builder pb;
 	//pb.new_figure();
 	//pb.bounding_box({ 30.0F, 30.0F, 800.0F, 600.0F });
 	//ds.paint(brush{ rgba_color::cornflower_blue() });
@@ -85,8 +84,7 @@ void sample_draw::operator()(display_surface<T>& ds) {
 	////test_fill_rules(ds);
 }
 
-template <class T>
-void test_image_load_save(display_surface<T>& ds) {
+void test_image_load_save(output_surface& ds) {
 #ifdef _Filesystem_support_test
 	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::argb32);
 	//static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_file_format::png, format::a8);
@@ -112,7 +110,7 @@ void test_image_load_save(display_surface<T>& ds) {
 
 	ds.paint(brush{ rgba_color::cornflower_blue });
 	ds.paint(imgBrush);
-	//ds.mask(imgBrush, alphaBrush, path_builder<>{});
+	//ds.mask(imgBrush, alphaBrush, path_builder{});
 	ds.flush();
 }
 
@@ -250,8 +248,8 @@ void test_image_load_save(display_surface<T>& ds) {
 //	ds.restore();
 //}
 //
-template <class T>
-void test_stroke_rules(display_surface<T>& ds) {
+
+void test_stroke_rules(output_surface& ds) {
 	ds.clear();
 	vector<gradient_stop> csg;
 	csg.emplace_back(0.0F, rgba_color::orange);
@@ -263,7 +261,7 @@ void test_stroke_rules(display_surface<T>& ds) {
 	//linearGrad.wrap_mode(wrap_mode::reflect);
 	ds.paint(linearGrad);
 
-	path_builder<> pb;
+	path_builder pb;
 	//ds.line_width(40.0F);
 	//ds.line_cap(line_cap::none);
 	//ds.line_join(line_join::miter_or_bevel);
@@ -305,11 +303,10 @@ void test_stroke_rules(display_surface<T>& ds) {
 	//ds.restore();
 }
 
-template <class T>
-void test_path_functionality(display_surface<T>& ds) {
+void test_path_functionality(output_surface& ds) {
 	// Clear to background color.
 	ds.paint(brush{ rgba_color::cornflower_blue });
-	path_builder<> pf{};
+	path_builder pf{};
 	//void new_figure(const point_2d& pt) noexcept;
 	point_2d v, cpt1, cpt2, ept;
 	v = { 10.0F, 10.0F };
@@ -377,18 +374,20 @@ void test_path_functionality(display_surface<T>& ds) {
 	//pf.line({ 200.0F, 800.0F });
 }
 
-template <class T>
-void draw_radial_circles(display_surface<T>& ds) {
+void draw_radial_circles(output_surface& ds) {
 	// Clear to background color.
 	ds.paint(brush{ rgba_color::magenta });
 	ds.paint(brush{ rgba_color::cornflower_blue }, nullopt, nullopt, clip_props{ bounding_box(40.0F, 40.0F, 1200.0F, 640.0F) });
+	auto sfc = ds._Get_data().data.back_buffer.surface.get();
+	auto data = cairo_image_surface_get_data(sfc);
+
 	vector<gradient_stop> csv;
 	csv.emplace_back(0.0F, rgba_color::white);
 	brush radialBrush{ {{ 200.5F, 300.0F }, 0.0F}, {{ 300.0F, 300.0F }, 100.0F }, {
 		{ 0.0F, rgba_color::white }, { 0.25F, rgba_color::red },
 		{ 0.5F, rgba_color::green }, { 0.75F, rgba_color::blue }, { 1.0F, rgba_color::black } } };
 
-	path_builder<> pf;
+	path_builder pf;
 	//pf.bounding_box({ { 100.0F, 100.0F }, { 500.0F, 500.0F } });
 	pf.new_figure({ 100.0F, 100.0F });
 	pf.line({ 500.0F, 100.0F });
@@ -405,8 +404,6 @@ void draw_radial_circles(display_surface<T>& ds) {
 	pf.new_figure({ 520.0F, 10.0F });
 	pf.cubic_curve({ 480.0F, 60.0F }, { 560.0F, 60.0F }, { 520.0F, 10.0F });
 	interpreted_path p(pf);
-	//ds.path_group(p);
-	//ds.brush(radialBrush);
 
 	//// For debug inspection testing only; uncomment if needed.
 	//auto fe = ds.fill_extents();
@@ -606,7 +603,7 @@ void draw_radial_circles(display_surface<T>& ds) {
 //	auto firstBrush = brush(firstColor);
 //	auto secondBrush = brush(secondColor);
 //
-//	auto pb = path_builder<>();
+//	auto pb = path_builder();
 //
 //	pb.bounding_box({ 10.0F, 10.0F, 120.0F, 90.0F });
 //	auto firstRectPath = path_group(pb);
@@ -942,7 +939,7 @@ void draw_radial_circles(display_surface<T>& ds) {
 //	//ds.font_resource("Segoe UI", 40.0F);
 //	//ds.render_text(string("Phase ").append(to_string(x + 1)).c_str(), { beginX, 50.0F });
 //
-//	path_builder<> pf;
+//	path_builder pf;
 //
 //	for (size_t i = 0; i < elementCount; ++i) {
 //		pf.clear();

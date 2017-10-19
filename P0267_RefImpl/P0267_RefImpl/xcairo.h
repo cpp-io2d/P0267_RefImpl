@@ -16,7 +16,7 @@ namespace std {
 		namespace io2d {
 			inline namespace v1 {
 				namespace _Cairo {
-#if defined(WIN32) || defined(WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 					[[noreturn]]
 					inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const char* message) {
 						if (message != nullptr) {
@@ -29,6 +29,7 @@ namespace std {
 					}
 					LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 					void _RegisterWindowClass();
+
 #endif
 					constexpr const wchar_t* _Refimpl_window_class_name = L"_P0267RefImplCairoRenderer_FF2B4C8D-0AB8-4343-AA02-6D0857E9FA21";
 
@@ -50,7 +51,7 @@ namespace std {
 						static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
 						static interpreted_path_data_type copy_interpreted_path(const interpreted_path_data_type&);
 						static interpreted_path_data_type move_interpreted_path(interpreted_path_data_type&&) noexcept;
-						static void destroy_interpreted_path(interpreted_path_data_type&) noexcept;
+						static void destroy(interpreted_path_data_type&) noexcept;
 
 						// brush
 
@@ -120,7 +121,7 @@ namespace std {
 
 						// clip_props
 						struct _Clip_props_data {
-							basic_interpreted_path<_Graphics_surfaces_type> clip;
+							optional<basic_interpreted_path<_Graphics_surfaces_type>> clip;
 							io2d::fill_rule fr;
 						};
 
@@ -208,8 +209,8 @@ namespace std {
 						static basic_display_point<GraphicsMath> max_dimensions() noexcept;
 
 						struct _Image_surface_data {
-							::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> surface;
-							::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> context;
+							::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> surface{ nullptr, &cairo_surface_destroy };
+							::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> context{ nullptr, &cairo_destroy };
 							basic_display_point<GraphicsMath> dimensions;
 							io2d::format format;
 						};
@@ -218,8 +219,8 @@ namespace std {
 
 						static image_surface_data_type create_image_surface(io2d::format fmt, int width, int height);
 #if defined(_Filesystem_support_test)
-						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff);
-						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, ::std::error_code& ec) noexcept;
+						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt);
+						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
 #else
 						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff);
 						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, ::std::error_code& ec) noexcept;
@@ -243,13 +244,13 @@ namespace std {
 						static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
 						static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 						static void paint(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void stroke(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+						static void stroke(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 						static void fill(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 						static void mask(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 
 						// display surfaces
 
-#if defined(WIN32) || defined(WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 						struct _Display_surface_win32_data {
 							HINSTANCE hInstance = nullptr;
 							HWND hwnd = nullptr;
@@ -257,14 +258,14 @@ namespace std {
 							bool hasOwnDC = true;
 							bool unmanaged = false;
 							bool letterbox_brush_is_default = true;
-							basic_brush<_Graphics_surfaces_type> _Letterbox_brush;
-							basic_brush_props<_Graphics_surfaces_type> _Letterbox_brush_props;
+							optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
+							optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
 
-							basic_brush<_Graphics_surfaces_type> _Default_letterbox_brush;
+							optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
 
 							basic_display_point<GraphicsMath> display_dimensions;
-							::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface;
-							::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context;
+							::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
+							::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
 
 							image_surface_data_type back_buffer;
 
@@ -292,12 +293,14 @@ namespace std {
 						using output_surface_data_type = _Output_surface_win32_data;
 						using unmanaged_output_surface_data_type = _Unmanaged_output_surface_win32_data;
 #endif
+						static void _Render_to_native_surface(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc);
 
 						static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
-
+						static void render(output_surface_data_type& data);
+						static void render(unmanaged_output_surface_data_type& data);
 						// unmanaged_output_surface functions
 
-#if defined(WIN32) || defined(WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 						static unmanaged_output_surface_data_type create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat);
 
 						static unmanaged_output_surface_data_type move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept;
@@ -308,9 +311,15 @@ namespace std {
 						static basic_bounding_box<GraphicsMath> invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush);
 						static void display_dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
 
+						static void flush(unmanaged_output_surface_data_type& data);
+						static void flush(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
+						static void mark_dirty(unmanaged_output_surface_data_type& data);
+						static void mark_dirty(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
+						static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
+						static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 						static void clear(unmanaged_output_surface_data_type& data);
 						static void paint(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void stroke(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+						static void stroke(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 						static void fill(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& pg, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 						static void mask(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 						static void draw_callback(unmanaged_output_surface_data_type& data, function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)>);
@@ -334,7 +343,7 @@ namespace std {
 
 						// output_surface functions
 
-#if defined(WIN32) || defined(WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps);
 						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept;
 						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps);
@@ -357,9 +366,15 @@ namespace std {
 						static float desired_frame_rate(const output_surface_data_type& data) noexcept;
 
 						// rendering functions
+						static void flush(output_surface_data_type& data);
+						static void flush(output_surface_data_type& data, error_code& ec) noexcept;
+						static void mark_dirty(output_surface_data_type& data);
+						static void mark_dirty(output_surface_data_type& data, error_code& ec) noexcept;
+						static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
+						static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 						static void clear(output_surface_data_type& data);
 						static void paint(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void stroke(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+						static void stroke(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 						static void fill(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& pg, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 						static void mask(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 

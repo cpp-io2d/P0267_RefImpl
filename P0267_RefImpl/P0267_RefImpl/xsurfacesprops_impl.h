@@ -119,20 +119,27 @@ namespace std {
 
 				// clip_props
 				template <class GraphicsSurfaces>
+				inline const typename basic_clip_props<GraphicsSurfaces>::_Data_type& basic_clip_props<GraphicsSurfaces>::_Get_data() const noexcept {
+					return _Data;
+				}
+				template <class GraphicsSurfaces>
+				inline basic_clip_props<GraphicsSurfaces>::basic_clip_props() noexcept
+					: _Data(GraphicsSurfaces::create_clip_props()) {}
+				template <class GraphicsSurfaces>
 				template <class Allocator>
 				inline basic_clip_props<GraphicsSurfaces>::basic_clip_props(const basic_path_builder<graphics_math_type, Allocator> &pb,
 					io2d::fill_rule fr)
-					: _Data(GraphicsSurfaces::create_clip_props(_Data, pb, fr)) { }
+					: _Data(GraphicsSurfaces::create_clip_props(pb, fr)) { }
 
 				template <class GraphicsSurfaces>
 				inline basic_clip_props<GraphicsSurfaces>::basic_clip_props(const basic_interpreted_path<GraphicsSurfaces>& ip,
 					io2d::fill_rule fr) noexcept
-					: _Data(GraphicsSurfaces::create_clip_props(_Data, ip, fr)) { }
+					: _Data(GraphicsSurfaces::create_clip_props(ip, fr)) { }
 
 				template <class GraphicsSurfaces>
 				inline basic_clip_props<GraphicsSurfaces>::basic_clip_props(const basic_bounding_box<typename basic_clip_props<GraphicsSurfaces>::graphics_math_type>& bbox,
 					experimental::io2d::fill_rule fr)
-					: _Data(GraphicsSurfaces::create_clip_props(_Data, bbox, fr)) {
+					: _Data(GraphicsSurfaces::create_clip_props(bbox, fr)) {
 					//path_builder<> clip;
 					//clip.new_figure(r.top_left());
 					//clip.rel_line({ r.width(), 0.0F });
@@ -169,6 +176,10 @@ namespace std {
 				}
 
 				// stroke props
+				template <class GraphicsSurfaces>
+				inline const typename basic_stroke_props<GraphicsSurfaces>::_Data_type& basic_stroke_props<GraphicsSurfaces>::_Get_data() const noexcept {
+					return _Data;
+				}
 				template <class GraphicsSurfaces>
 				inline basic_stroke_props<GraphicsSurfaces>::basic_stroke_props() noexcept
 					: _Data(GraphicsSurfaces::create_stroke_props()) {
@@ -216,7 +227,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				inline float basic_stroke_props<GraphicsSurfaces>::max_miter_limit() const noexcept {
-					return GraphicsSurfaces::max_miter_limit(_Data);
+					return GraphicsSurfaces::max_miter_limit();
 				}
 
 				// mask props

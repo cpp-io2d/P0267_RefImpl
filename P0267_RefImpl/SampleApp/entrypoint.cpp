@@ -13,8 +13,8 @@ using namespace std::experimental::io2d;
 using namespace path_test;
 using namespace brush_test;
 
-point_2d testArcClockwiseEndAngle(path_builder<>& pb, point_2d location, bool closePath = false, point_2d scale = point_2d{ 1.0, 1.0 }, const point_2d locadd = point_2d{ 200.0, 0.0 });
-point_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, point_2d location, bool closePath = false, point_2d scale = point_2d{ 1.0, 1.0 }, const point_2d locadd = point_2d{ 200.0, 0.0 });
+point_2d testArcClockwiseEndAngle(path_builder& pb, point_2d location, bool closePath = false, point_2d scale = point_2d{ 1.0, 1.0 }, const point_2d locadd = point_2d{ 200.0, 0.0 });
+point_2d testArcCounterclockwiseEndAngle(path_builder& pb, point_2d location, bool closePath = false, point_2d scale = point_2d{ 1.0, 1.0 }, const point_2d locadd = point_2d{ 200.0, 0.0 });
 
 void make_path_examples();
 void make_path_examples() {
@@ -53,19 +53,20 @@ int main() {
 	//ctr = testArc.center(pt, rot);
 	//endPt = testArc.end_pt(pt, rot);
 
-	make_path_examples();
-	make_brush_examples();
+	//make_path_examples();
+	//make_brush_examples();
 
 	//auto ds = make_display_surface(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
-	//sample_draw sd;
-	//ds.draw_callback(sd);
-	//ds.begin_show();
-	//ds.begin_show();
+	output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+	sample_draw sd;
+	os.draw_callback(sd);
+	os.begin_show();
+	os.begin_show();
 	return 0;
 	//	auto imgSfc = make_image_surface(format::argb32, 300, 200);
 	//	auto bkgrndBrush = brush(rgba_color::black());
 	//	auto frgrndBrush = brush(rgba_color::white());
-	//	path_builder<> pb{};
+	//	path_builder pb{};
 	//
 	//	pb.clear();
 	//	pb.new_figure({ 80.0, 20.0 });
@@ -158,7 +159,7 @@ int main() {
 	//	return 0;
 }
 
-point_2d testArcClockwiseEndAngle(path_builder<>& pb, point_2d location, bool closePath, point_2d rad, const point_2d locadd) {
+point_2d testArcClockwiseEndAngle(path_builder& pb, point_2d location, bool closePath, point_2d rad, const point_2d locadd) {
 	const float quarterPi = half_pi<float> / 2.0;
 
 	point_2d ctrVal{};
@@ -242,7 +243,7 @@ point_2d testArcClockwiseEndAngle(path_builder<>& pb, point_2d location, bool cl
 	return location + locadd;
 }
 
-point_2d testArcCounterclockwiseEndAngle(path_builder<>& pb, point_2d location, bool closePath, point_2d rad, const point_2d locadd) {
+point_2d testArcCounterclockwiseEndAngle(path_builder& pb, point_2d location, bool closePath, point_2d rad, const point_2d locadd) {
 	const float quarterPi = half_pi<float> / 2.0;
 
 	// Test end angle 90 degree increments starting at 180.

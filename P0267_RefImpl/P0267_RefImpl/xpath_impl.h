@@ -4,335 +4,335 @@
 
 namespace std::experimental::io2d::v1 {
 	template<class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_new_figure::abs_new_figure() noexcept
+	inline basic_figure_items<GraphicsMath>::abs_new_figure::abs_new_figure() noexcept
 		: _Data() { }
 
 	template<class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_new_figure::abs_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept
+	inline basic_figure_items<GraphicsMath>::abs_new_figure::abs_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept
 		: _Data(pt) {
 	}
 	template<class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::abs_new_figure::at(const basic_point_2d<GraphicsMath>& pt) noexcept {
+	inline void basic_figure_items<GraphicsMath>::abs_new_figure::at(const basic_point_2d<GraphicsMath>& pt) noexcept {
 		_Data = pt;
 	}
 	template<class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_new_figure::at() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_new_figure::at() const noexcept {
 		return _Data;
 	}
 	template<class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::abs_new_figure& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::abs_new_figure& rhs) noexcept {
 		return lhs._Data == rhs._Data;
 	}
 	template<class GraphicsMath>
-	inline constexpr bool operator!=(const typename basic_figure_items<GraphicsMath>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::abs_new_figure& rhs) noexcept {
+	inline bool operator!=(const typename basic_figure_items<GraphicsMath>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::abs_new_figure& rhs) noexcept {
 		return !(lhs == rhs);
 	}
 
 	template<class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_new_figure::rel_new_figure() noexcept {}
+	inline basic_figure_items<GraphicsMath>::rel_new_figure::rel_new_figure() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_new_figure::rel_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept
+	inline basic_figure_items<GraphicsMath>::rel_new_figure::rel_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept
 		: _Data(pt) {}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::rel_new_figure::at(const basic_point_2d<GraphicsMath>& pt) noexcept {
+	inline void basic_figure_items<GraphicsMath>::rel_new_figure::at(const basic_point_2d<GraphicsMath>& pt) noexcept {
 		_Data = pt;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_new_figure::at() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_new_figure::at() const noexcept {
 		return _Data;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::rel_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::rel_new_figure& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::rel_new_figure& rhs) noexcept {
 		return lhs._Data == rhs._Data;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::close_figure::close_figure() noexcept {}
+	inline basic_figure_items<GraphicsMath>::close_figure::close_figure() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::close_figure&, const typename basic_figure_items<GraphicsMath>::close_figure&) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::close_figure&, const typename basic_figure_items<GraphicsMath>::close_figure&) noexcept {
 		return true;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_matrix::abs_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept
+	inline basic_figure_items<GraphicsMath>::abs_matrix::abs_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept
 		: _Matrix(m) {
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_matrix::abs_matrix() noexcept {}
+	inline basic_figure_items<GraphicsMath>::abs_matrix::abs_matrix() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::abs_matrix::matrix(const basic_matrix_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::abs_matrix::matrix(const basic_matrix_2d<GraphicsMath>& value) noexcept {
 		_Matrix = value;
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_matrix_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_matrix::matrix() const noexcept {
+	inline basic_matrix_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_matrix::matrix() const noexcept {
 		return _Matrix;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::abs_matrix& lhs, const typename basic_figure_items<GraphicsMath>::abs_matrix& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_matrix& lhs, const typename basic_figure_items<GraphicsMath>::abs_matrix& rhs) noexcept {
 		return lhs._Matrix == rhs._Matrix;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_matrix::rel_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept
+	inline basic_figure_items<GraphicsMath>::rel_matrix::rel_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept
 		: _Matrix(m) {
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_matrix::rel_matrix() noexcept {}
+	inline basic_figure_items<GraphicsMath>::rel_matrix::rel_matrix() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::rel_matrix::matrix(const basic_matrix_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::rel_matrix::matrix(const basic_matrix_2d<GraphicsMath>& value) noexcept {
 		_Matrix = value;
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_matrix_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_matrix::matrix() const noexcept {
+	inline basic_matrix_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_matrix::matrix() const noexcept {
 		return _Matrix;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::rel_matrix& lhs, const typename basic_figure_items<GraphicsMath>::rel_matrix& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_matrix& lhs, const typename basic_figure_items<GraphicsMath>::rel_matrix& rhs) noexcept {
 		return lhs._Matrix == rhs._Matrix;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::revert_matrix::revert_matrix() noexcept {}
+	inline basic_figure_items<GraphicsMath>::revert_matrix::revert_matrix() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::revert_matrix&, const typename basic_figure_items<GraphicsMath>::revert_matrix&) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::revert_matrix&, const typename basic_figure_items<GraphicsMath>::revert_matrix&) noexcept {
 		return true;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_line::abs_line(const basic_point_2d<GraphicsMath>& to) noexcept
+	inline basic_figure_items<GraphicsMath>::abs_line::abs_line(const basic_point_2d<GraphicsMath>& to) noexcept
 		: _Data(to) {
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_line::abs_line() noexcept {}
+	inline basic_figure_items<GraphicsMath>::abs_line::abs_line() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::abs_line::to(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::abs_line::to(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_Data = value;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_line::to() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_line::to() const noexcept {
 		return _Data;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::abs_line& lhs, const typename basic_figure_items<GraphicsMath>::abs_line& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_line& lhs, const typename basic_figure_items<GraphicsMath>::abs_line& rhs) noexcept {
 		return lhs._Data == rhs._Data;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_line::rel_line(const basic_point_2d<GraphicsMath>& to) noexcept
+	inline basic_figure_items<GraphicsMath>::rel_line::rel_line(const basic_point_2d<GraphicsMath>& to) noexcept
 		: _Data(to) {
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_line::rel_line() noexcept {}
+	inline basic_figure_items<GraphicsMath>::rel_line::rel_line() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::rel_line::to(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::rel_line::to(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_Data = value;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_line::to() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_line::to() const noexcept {
 		return _Data;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::rel_line& lhs, const typename basic_figure_items<GraphicsMath>::rel_line& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_line& lhs, const typename basic_figure_items<GraphicsMath>::rel_line& rhs) noexcept {
 		return lhs._Data == rhs._Data;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_quadratic_curve::abs_quadratic_curve(const basic_point_2d<GraphicsMath>& cp, const basic_point_2d<GraphicsMath>& ep) noexcept
+	inline basic_figure_items<GraphicsMath>::abs_quadratic_curve::abs_quadratic_curve(const basic_point_2d<GraphicsMath>& cp, const basic_point_2d<GraphicsMath>& ep) noexcept
 		: _Control_pt(cp)
 		, _End_pt(ep) {
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_quadratic_curve::abs_quadratic_curve() noexcept {}
+	inline basic_figure_items<GraphicsMath>::abs_quadratic_curve::abs_quadratic_curve() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::abs_quadratic_curve::control_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::abs_quadratic_curve::control_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_Control_pt = value;
 	}
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::abs_quadratic_curve::end_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::abs_quadratic_curve::end_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_End_pt = value;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_quadratic_curve::control_pt() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_quadratic_curve::control_pt() const noexcept {
 		return _Control_pt;
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_quadratic_curve::end_pt() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_quadratic_curve::end_pt() const noexcept {
 		return _End_pt;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& rhs) noexcept {
 		return (lhs._Control_pt == rhs._Control_pt) &&
 			(lhs._End_pt == rhs._End_pt);
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_quadratic_curve::rel_quadratic_curve(const basic_point_2d<GraphicsMath>& cp, const basic_point_2d<GraphicsMath>& ep) noexcept
+	inline basic_figure_items<GraphicsMath>::rel_quadratic_curve::rel_quadratic_curve(const basic_point_2d<GraphicsMath>& cp, const basic_point_2d<GraphicsMath>& ep) noexcept
 		: _Control_pt(cp)
 		, _End_pt(ep) {
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_quadratic_curve::rel_quadratic_curve() noexcept {}
+	inline basic_figure_items<GraphicsMath>::rel_quadratic_curve::rel_quadratic_curve() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::rel_quadratic_curve::control_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::rel_quadratic_curve::control_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_Control_pt = value;
 	}
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::rel_quadratic_curve::end_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::rel_quadratic_curve::end_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_End_pt = value;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_quadratic_curve::control_pt() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_quadratic_curve::control_pt() const noexcept {
 		return _Control_pt;
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_quadratic_curve::end_pt() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_quadratic_curve::end_pt() const noexcept {
 		return _End_pt;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& rhs) noexcept {
 		return (lhs._Control_pt == rhs._Control_pt) &&
 			(lhs._End_pt == rhs._End_pt);
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_cubic_curve::abs_cubic_curve(const basic_point_2d<GraphicsMath>& controlPoint1, const basic_point_2d<GraphicsMath>& controlPoint2, const basic_point_2d<GraphicsMath>& endPoint) noexcept
+	inline basic_figure_items<GraphicsMath>::abs_cubic_curve::abs_cubic_curve(const basic_point_2d<GraphicsMath>& controlPoint1, const basic_point_2d<GraphicsMath>& controlPoint2, const basic_point_2d<GraphicsMath>& endPoint) noexcept
 		: _Control_pt1(controlPoint1)
 		, _Control_pt2(controlPoint2)
 		, _End_pt(endPoint) {
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::abs_cubic_curve::abs_cubic_curve() noexcept {}
+	inline basic_figure_items<GraphicsMath>::abs_cubic_curve::abs_cubic_curve() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::abs_cubic_curve::control_pt1(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::abs_cubic_curve::control_pt1(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_Control_pt1 = value;
 	}
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::abs_cubic_curve::control_pt2(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::abs_cubic_curve::control_pt2(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_Control_pt2 = value;
 	}
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::abs_cubic_curve::end_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::abs_cubic_curve::end_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_End_pt = value;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_cubic_curve::control_pt1() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_cubic_curve::control_pt1() const noexcept {
 		return _Control_pt1;
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_cubic_curve::control_pt2() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_cubic_curve::control_pt2() const noexcept {
 		return _Control_pt2;
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_cubic_curve::end_pt() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::abs_cubic_curve::end_pt() const noexcept {
 		return _End_pt;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& rhs) noexcept {
 		return (lhs._Control_pt1 == rhs._Control_pt1) &&
 			(lhs._Control_pt2 == rhs._Control_pt2) &&
 			(lhs._End_pt == rhs._End_pt);
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_cubic_curve::rel_cubic_curve(const basic_point_2d<GraphicsMath>& controlPoint1, const basic_point_2d<GraphicsMath>& controlPoint2, const basic_point_2d<GraphicsMath>& endPoint) noexcept
+	inline basic_figure_items<GraphicsMath>::rel_cubic_curve::rel_cubic_curve(const basic_point_2d<GraphicsMath>& controlPoint1, const basic_point_2d<GraphicsMath>& controlPoint2, const basic_point_2d<GraphicsMath>& endPoint) noexcept
 		: _Control_pt1(controlPoint1)
 		, _Control_pt2(controlPoint2)
 		, _End_pt(endPoint) {
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::rel_cubic_curve::rel_cubic_curve() noexcept {}
+	inline basic_figure_items<GraphicsMath>::rel_cubic_curve::rel_cubic_curve() noexcept {}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::rel_cubic_curve::control_pt1(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::rel_cubic_curve::control_pt1(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_Control_pt1 = value;
 	}
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::rel_cubic_curve::control_pt2(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::rel_cubic_curve::control_pt2(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_Control_pt2 = value;
 	}
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::rel_cubic_curve::end_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
+	inline void basic_figure_items<GraphicsMath>::rel_cubic_curve::end_pt(const basic_point_2d<GraphicsMath>& value) noexcept {
 		_End_pt = value;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_cubic_curve::control_pt1() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_cubic_curve::control_pt1() const noexcept {
 		return _Control_pt1;
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_cubic_curve::control_pt2() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_cubic_curve::control_pt2() const noexcept {
 		return _Control_pt2;
 	}
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_cubic_curve::end_pt() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::rel_cubic_curve::end_pt() const noexcept {
 		return _End_pt;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& rhs) noexcept {
 		return (lhs._Control_pt1 == rhs._Control_pt1) &&
 			(lhs._Control_pt2 == rhs._Control_pt2) &&
 			(lhs._End_pt == rhs._End_pt);
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::arc::arc() noexcept
+	inline basic_figure_items<GraphicsMath>::arc::arc() noexcept
 		: arc(basic_point_2d<GraphicsMath>{ 10.0F, 10.0F }, pi<float>, pi<float>) { }
 	template <class GraphicsMath>
-	inline constexpr basic_figure_items<GraphicsMath>::arc::arc(const basic_point_2d<GraphicsMath>& rad, float rot, float sang) noexcept
+	inline basic_figure_items<GraphicsMath>::arc::arc(const basic_point_2d<GraphicsMath>& rad, float rot, float sang) noexcept
 		: _Radius(rad)
 		, _Rotation(rot)
 		, _Start_angle(sang) {
 	}
 
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::arc::radius(const basic_point_2d<GraphicsMath>& rad) noexcept {
+	inline void basic_figure_items<GraphicsMath>::arc::radius(const basic_point_2d<GraphicsMath>& rad) noexcept {
 		_Radius = rad;
 	}
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::arc::rotation(float rot) noexcept {
+	inline void basic_figure_items<GraphicsMath>::arc::rotation(float rot) noexcept {
 		_Rotation = rot;
 	}
 	template <class GraphicsMath>
-	inline constexpr void basic_figure_items<GraphicsMath>::arc::start_angle(float sang) noexcept {
+	inline void basic_figure_items<GraphicsMath>::arc::start_angle(float sang) noexcept {
 		_Start_angle = sang;
 	}
 
 	template <class GraphicsMath>
-	inline constexpr basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::arc::radius() const noexcept {
+	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::arc::radius() const noexcept {
 		return _Radius;
 	}
 	template <class GraphicsMath>
-	inline constexpr float basic_figure_items<GraphicsMath>::arc::rotation() const noexcept {
+	inline float basic_figure_items<GraphicsMath>::arc::rotation() const noexcept {
 		return _Rotation;
 	}
 	template <class GraphicsMath>
-	inline constexpr float basic_figure_items<GraphicsMath>::arc::start_angle() const noexcept {
+	inline float basic_figure_items<GraphicsMath>::arc::start_angle() const noexcept {
 		return _Start_angle;
 	}
 
@@ -356,14 +356,14 @@ namespace std::experimental::io2d::v1 {
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator==(const typename basic_figure_items<GraphicsMath>::arc& lhs, const typename basic_figure_items<GraphicsMath>::arc& rhs) noexcept {
+	inline bool operator==(const typename basic_figure_items<GraphicsMath>::arc& lhs, const typename basic_figure_items<GraphicsMath>::arc& rhs) noexcept {
 		return (lhs._Radius == rhs._Radius) &&
 			(lhs._Rotation == rhs._Rotation) &&
 			(lhs._Start_angle == rhs._Start_angle);
 	}
 
 	template <class GraphicsMath>
-	inline constexpr bool operator!=(const typename basic_figure_items<GraphicsMath>::arc& lhs, const typename basic_figure_items<GraphicsMath>::arc& rhs) noexcept {
+	inline bool operator!=(const typename basic_figure_items<GraphicsMath>::arc& lhs, const typename basic_figure_items<GraphicsMath>::arc& rhs) noexcept {
 		return !(lhs == rhs);
 	}
 
@@ -393,14 +393,14 @@ namespace std::experimental::io2d::v1 {
 	template<class GraphicsSurfaces>
 	inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(basic_interpreted_path&& val) noexcept {
 		if (this != &val) {
-			_Data = GraphicsSurfaces::move_interpreted_path(val._Data);
+			_Data = move(GraphicsSurfaces::move_interpreted_path(move(val._Data)));
 		}
 	}
 
 	template<class GraphicsSurfaces>
 	inline basic_interpreted_path<GraphicsSurfaces>& basic_interpreted_path<GraphicsSurfaces>::operator=(basic_interpreted_path&& val) noexcept {
 		if (this != &val) {
-			_Data = GraphicsSurfaces::move_interpreted_path(val._Data);
+			_Data = move(GraphicsSurfaces::move_interpreted_path(move(val._Data)));
 		}
 		return *this;
 	}
@@ -446,7 +446,7 @@ namespace std::experimental::io2d::v1 {
 		static void _Interpret(const T&, ::std::vector<typename basic_figure_items<GraphicsMath>::figure_item>& v, basic_matrix_2d<GraphicsMath>&, basic_point_2d<GraphicsMath>& currentPoint, basic_point_2d<GraphicsMath>& closePoint, stack<basic_matrix_2d<GraphicsMath>>&) noexcept {
 			const auto& item = v.rbegin();
 			auto idx = item->index();
-			if (idx == 0 || idx == 1) {
+			if (idx == 3 || idx == 10) {
 				return; // degenerate path
 			}
 			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::close_figure>);
@@ -505,8 +505,8 @@ namespace std::experimental::io2d::v1 {
 				return; // degenerate path segment
 			}
 			const auto beginPt = currentPoint;
-			GraphicsMath::point_2d cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
-			GraphicsMath::point_2d cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
+			basic_point_2d<GraphicsMath> cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
+			basic_point_2d<GraphicsMath> cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
 			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_cubic_curve>, cpt1, cpt2, endPt);
 			currentPoint = endPt;
 		}
@@ -520,15 +520,15 @@ namespace std::experimental::io2d::v1 {
 				return;
 			}
 			const auto clockwise = (rot < 0.0F) ? true : false;
-			const GraphicsMath::point_2d rad = item.radius();
+			const basic_point_2d<GraphicsMath> rad = item.radius();
 			auto startAng = item.start_angle();
 			const auto origM = m;
 			m = matrix_2d::init_scale(rad);
-			auto centerOffset = (point_for_angle(two_pi<float> -startAng) * rad);
+			auto centerOffset = (point_for_angle<GraphicsMath>(two_pi<float> - startAng) * rad);
 			centerOffset.y(-centerOffset.y());
 			auto ctr = currentPoint - centerOffset;
 
-			GraphicsMath::point_2d pt0, pt1, pt2, pt3;
+			basic_point_2d<GraphicsMath> pt0, pt1, pt2, pt3;
 			int bezCount = 1;
 			float theta = rot;
 
@@ -549,15 +549,15 @@ namespace std::experimental::io2d::v1 {
 			pt1.y(-(((1.0F - cosPhi) * (3.0F - cosPhi)) / (3.0F * sinPhi)));
 			pt2.x(pt1.x());
 			pt2.y(-pt1.y());
-			auto rotCntrCwFn = [](const basic_point_2d<GraphicsMath>& pt, float a) -> basic_point_2d<GraphicsMath>& {
-				auto result = point_2d{ pt.x() * cos(a) - pt.y() * sin(a),
+			auto rotCntrCwFn = [](const basic_point_2d<GraphicsMath>& pt, float a) -> basic_point_2d<GraphicsMath> {
+				auto result = basic_point_2d<GraphicsMath>{ pt.x() * cos(a) - pt.y() * sin(a),
 					pt.x() * sin(a) + pt.y() * cos(a) };
 				result.x(_Round_floating_point_to_zero(result.x()));
 				result.y(_Round_floating_point_to_zero(result.y()));
 				return result;
 			};
-			auto rotCwFn = [](const basic_point_2d<GraphicsMath>& pt, float a) -> basic_point_2d<GraphicsMath>& {
-				auto result = point_2d{ pt.x() * cos(a) - pt.y() * sin(a),
+			auto rotCwFn = [](const basic_point_2d<GraphicsMath>& pt, float a) -> basic_point_2d<GraphicsMath> {
+				auto result = basic_point_2d<GraphicsMath>{ pt.x() * cos(a) - pt.y() * sin(a),
 					-(pt.x() * sin(a) + pt.y() * cos(a)) };
 				result.x(_Round_floating_point_to_zero(result.x()));
 				result.y(_Round_floating_point_to_zero(result.y()));
@@ -597,7 +597,7 @@ namespace std::experimental::io2d::v1 {
 			auto currTheta = startAng;
 			const auto calcAdjustedCurrPt = ((ctr + (rotCntrCwFn(pt0, currTheta) * m)) * origM);
 			auto adjustVal = calcAdjustedCurrPt - currentPoint;
-			const basic_point_2d<GraphicsMath>& tempCurrPt;
+			basic_point_2d<GraphicsMath> tempCurrPt;
 			for (; bezCount > 0; bezCount--) {
 				const auto rapt0 = m.transform_pt(rotCntrCwFn(pt0, currTheta));
 				const auto rapt1 = m.transform_pt(rotCntrCwFn(pt1, currTheta));
@@ -684,7 +684,7 @@ namespace std::experimental::io2d::v1 {
 		for (auto val = first; val != last; val++) {
 			::std::visit([&m, &currentPoint, &closePoint, &matrices, &v](auto&& item) {
 				using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-				_Path_item_interpret_visitor<T>::template _Interpret<T>(item, v, m, currentPoint, closePoint, matrices);
+				_Path_item_interpret_visitor<T>::template _Interpret<GraphicsMath, T>(item, v, m, currentPoint, closePoint, matrices);
 			}, *val);
 		}
 		return v;

@@ -16,7 +16,7 @@ namespace std::experimental::io2d::v1 {
 		template <class _TItem, class GraphicsMath>
 		struct _Path_group_perform_visit {
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_new_figure>, _Path_data_abs_new_figure> = _Path_data_abs_new_figure_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::abs_new_figure& item, basic_point_2d<GraphicsMath>& lastMoveToPoint) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::abs_new_figure& item, basic_point_2d<GraphicsMath>& lastMoveToPoint) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt = item.at();
 				cpdItem.header.type = CAIRO_PATH_MOVE_TO;
@@ -29,7 +29,7 @@ namespace std::experimental::io2d::v1 {
 			}
 
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_line>, _Path_data_abs_line> = _Path_data_abs_line_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::abs_line& item, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::abs_line& item, basic_point_2d<GraphicsMath>&) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt = item.to();
 				cpdItem.header.type = CAIRO_PATH_LINE_TO;
@@ -40,7 +40,7 @@ namespace std::experimental::io2d::v1 {
 				vec.push_back(cpdItem);
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_cubic_curve>, _Path_data_abs_cubic_curve> = _Path_data_abs_cubic_curve_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& item, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& item, basic_point_2d<GraphicsMath>&) noexcept {
 				cairo_path_data_t cpdItem{};
 				auto pt1 = item.control_pt1();
 				auto pt2 = item.control_pt2();
@@ -59,15 +59,15 @@ namespace std::experimental::io2d::v1 {
 				vec.push_back(cpdItem);
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve&, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Abs quadratic curves should have been transformed into cubic curves already.");
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_new_figure>, _Path_data_rel_new_figure> = _Path_data_rel_new_figure_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_new_figure&, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_new_figure&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel new path instructions should have been eliminated.");
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::close_figure>, _Path_data_close_path> = _Path_data_close_path_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::close_figure&, basic_point_2d<GraphicsMath>& lastMoveToPoint) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>& vec, const typename basic_figure_items<GraphicsMath>::close_figure&, basic_point_2d<GraphicsMath>& lastMoveToPoint) noexcept {
 				cairo_path_data_t cpdItem{};
 				cpdItem.header.type = CAIRO_PATH_CLOSE_PATH;
 				cpdItem.header.length = 1;
@@ -80,31 +80,31 @@ namespace std::experimental::io2d::v1 {
 				vec.push_back(cpdItem);
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_line>, _Path_data_rel_line> = _Path_data_rel_line_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_line&, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_line&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel line should have been transformed into non-relative.");
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_cubic_curve>, _Path_data_rel_cubic_curve> = _Path_data_rel_cubic_curve_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_cubic_curve&, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_cubic_curve&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel curve should have been transformed into non-relative.");
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_quadratic_curve>, _Path_data_rel_quadratic_curve> = _Path_data_rel_quadratic_curve_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve&, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel quadratic curves should have been transformed into cubic curves.");
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::arc>, _Path_data_arc> = _Path_data_arc_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::arc&, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::arc&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Arcs should have been transformed into cubic curves.");
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_matrix>, _Path_data_abs_matrix> = _Path_data_abs_matrix_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::abs_matrix&, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::abs_matrix&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Abs matrix should have been eliminated.");
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::rel_matrix>, _Path_data_rel_matrix> = _Path_data_rel_matrix_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_matrix&, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::rel_matrix&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Rel matrix should have been eliminated.");
 			}
 			template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
-			 static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::revert_matrix&, basic_point_2d<GraphicsMath>&) noexcept {
+			static void _Perform(::std::vector<cairo_path_data_t>&, const typename basic_figure_items<GraphicsMath>::revert_matrix&, basic_point_2d<GraphicsMath>&) noexcept {
 				assert(false && "Revert matrix should have been eliminated.");
 			}
 		};
@@ -113,6 +113,7 @@ namespace std::experimental::io2d::v1 {
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_interpreted_path() noexcept {
 			interpreted_path_data_type result;
 			result.path = nullptr;
+			return result;
 		}
 		template<class GraphicsMath>
 		template<class Allocator>
@@ -139,7 +140,19 @@ namespace std::experimental::io2d::v1 {
 				}
 			});
 
-			auto processedVec = _Interpret_path_items<ForwardIterator>(first, last);
+			auto processedVec = _Interpret_path_items<GraphicsMath, ForwardIterator>(first, last);
+			if (processedVec.size() > 0) {
+				bool testForNewFiguresAtEnd = true;
+				while (testForNewFiguresAtEnd) {
+					auto& val = *processedVec.rbegin();
+					if (val.index() == 3) {
+						processedVec.pop_back();
+					}
+					else {
+						testForNewFiguresAtEnd = false;
+					}
+				}
+			}
 			::std::vector<cairo_path_data_t> vec;
 			basic_point_2d<GraphicsMath> lastMoveToPoint;
 			for (const auto& val : processedVec) {
@@ -167,7 +180,7 @@ namespace std::experimental::io2d::v1 {
 		}
 
 		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::destroy_interpreted_path(interpreted_path_data_type &) noexcept {
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::destroy(interpreted_path_data_type &) noexcept {
 			// Do nothing, the shared_ptr deletes for us.
 		}
 
@@ -204,8 +217,8 @@ namespace std::experimental::io2d::v1 {
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last) {
 			brush_data_type data;
 			data.imageSurface = nullptr;
-			data.brushType = brush_type::radial_gradient;
-			data.brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x, start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
+			data.brushType = brush_type::radial;
+			data.brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_radial(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius()), &cairo_pattern_destroy);
 			_Throw_if_failed_cairo_status_t(cairo_pattern_status(data.brush.get()));
 			for (auto it = first; it != last; ++it) {
 				auto stop = *it;
@@ -223,9 +236,10 @@ namespace std::experimental::io2d::v1 {
 			brush_data_type data;
 			// The surface is dying and I want to steal some of its data, ergo const_cast.
 			image_surface_data_type& imgData = const_cast<image_surface_data_type&>(img._Get_data());
-			data.imageSurface = shared_ptr<cairo_surface_t>(imgData._Surface.release(), &cairo_surface_destroy);
+			data.imageSurface = shared_ptr<cairo_surface_t>(imgData.surface.release(), &cairo_surface_destroy);
 			data.brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(data.imageSurface.get()), &cairo_pattern_destroy);
 			data.brushType = brush_type::surface;
+			return data;
 		}
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::copy_brush(const brush_data_type& data) {
@@ -347,7 +361,7 @@ namespace std::experimental::io2d::v1 {
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::clip_props_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_clip_props() noexcept {
 			clip_props_data_type data;
-			data.clip = basic_interpreted_path<_Graphics_surfaces_type>();
+			data.clip = nullopt;
 			data.fr = io2d::fill_rule::winding;
 			return data;
 		}
@@ -355,7 +369,7 @@ namespace std::experimental::io2d::v1 {
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::clip_props_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_clip_props(const basic_bounding_box<GraphicsMath>& bbox, io2d::fill_rule fr) noexcept {
 			clip_props_data_type data;
 			clip(data, bbox);
-			data.fr = io2d::fill_rule::winding;
+			data.fr = fr;
 			return data;
 		}
 		template<class GraphicsMath>
@@ -565,112 +579,115 @@ namespace std::experimental::io2d::v1 {
 		// Helpers to set state when rendering
 
 		template <class GraphicsMath>
-		inline void _Set_render_props(cairo_t* context, const optional<basic_render_props<_Cairo_graphics_surfaces<GraphicsMath>>>& r) {
-			if (r == nullopt) {
-				cairo_set_antialias(context, _Antialias_to_cairo_antialias_t(antialias::good));
-				cairo_identity_matrix(context);
-				cairo_set_operator(context, CAIRO_OPERATOR_OVER);
-			}
-			else {
-				const auto& props = r.value();
-				const auto m = props.surface_matrix();
-				cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-				cairo_set_antialias(context, _Antialias_to_cairo_antialias_t(props.antialiasing()));
-				cairo_set_matrix(context, &cm);
-				cairo_set_operator(context, _Compositing_operator_to_cairo_operator_t(props.compositing()));
-			}
+		inline void _Set_render_props(cairo_t* context, const basic_render_props<_Cairo_graphics_surfaces<GraphicsMath>>& r) {
+			//if (r == nullopt) {
+			//	cairo_set_antialias(context, _Antialias_to_cairo_antialias_t(antialias::good));
+			//	cairo_identity_matrix(context);
+			//	cairo_set_operator(context, CAIRO_OPERATOR_OVER);
+			//}
+			//else {
+			const auto& props = r;// .value();
+			const auto m = props.surface_matrix();
+			cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+			cairo_set_antialias(context, _Antialias_to_cairo_antialias_t(props.antialiasing()));
+			cairo_set_matrix(context, &cm);
+			cairo_set_operator(context, _Compositing_operator_to_cairo_operator_t(props.compositing()));
+			//}
 		}
 
 		template <class GraphicsMath>
-		inline void _Set_clip_props(cairo_t* context, const optional<basic_clip_props<_Cairo_graphics_surfaces<GraphicsMath>>>& c) {
+		inline void _Set_clip_props(cairo_t* context, const basic_clip_props<_Cairo_graphics_surfaces<GraphicsMath>>& c) {
 			cairo_reset_clip(context);
-			if (c != nullopt) {
+			//if (c != nullopt) {
 				// Save state
+			//unique_ptr<cairo_path_t, decltype(&cairo_path_destroy)> op(cairo_copy_path(context), &cairo_path_destroy);
+			// Set clip
+			const auto& props = c._Get_data();// .value()._Get_data();
+			if (props.clip.has_value()) {
 				cairo_fill_rule_t fr = cairo_get_fill_rule(context);
-				//unique_ptr<cairo_path_t, decltype(&cairo_path_destroy)> op(cairo_copy_path(context), &cairo_path_destroy);
-				// Set clip
-				const auto& props = c.value()._Get_data();
-				cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fill_rule()));
+				cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fr));
 				cairo_new_path(context);
-				cairo_append_path(context, props.clip()._Get_data().get());
+
+				cairo_append_path(context, props.clip.value()._Get_data().path.get());
 				cairo_clip(context);
 				// Restore saved state
 				cairo_set_fill_rule(context, fr);
-				//cairo_new_path(context);
-				//cairo_append_path(context, op.get());
 			}
+			//cairo_new_path(context);
+			//cairo_append_path(context, op.get());
+		//}
 		}
 
 		template <class GraphicsMath>
-		inline void _Set_stroke_props(cairo_t* context, const optional<basic_stroke_props<_Cairo_graphics_surfaces<GraphicsMath>>>& s, float miterMax, const optional<basic_dashes<_Cairo_graphics_surfaces<GraphicsMath>>>& ds) {
-			if (s == nullopt) {
-				cairo_set_line_width(context, 2.0);
-				cairo_set_line_cap(context, CAIRO_LINE_CAP_BUTT);
-				cairo_set_line_join(context, CAIRO_LINE_JOIN_MITER);
-				cairo_set_miter_limit(context, 10.0);
+		inline void _Set_stroke_props(cairo_t* context, const basic_stroke_props<_Cairo_graphics_surfaces<GraphicsMath>>& s, float miterMax, const basic_dashes<_Cairo_graphics_surfaces<GraphicsMath>>& ds) {
+			//if (s == nullopt) {
+			//	cairo_set_line_width(context, 2.0);
+			//	cairo_set_line_cap(context, CAIRO_LINE_CAP_BUTT);
+			//	cairo_set_line_join(context, CAIRO_LINE_JOIN_MITER);
+			//	cairo_set_miter_limit(context, 10.0);
+			//}
+			//else {
+			const auto& props = s._Get_data();// .value()._Get_data();
+			cairo_set_line_width(context, props._Line_width);
+			cairo_set_line_cap(context, _Line_cap_to_cairo_line_cap_t(props._Line_cap));
+			cairo_set_line_join(context, _Line_join_to_cairo_line_join_t(props._Line_join));
+			cairo_set_miter_limit(context, ::std::min<float>(miterMax, props._Miter_limit));
+			//}
+			//if (ds == nullopt) {
+			//	cairo_set_dash(context, nullptr, 0, 0.0);
+			//}
+			//else {
+			const auto& d = ds._Get_data();// .value()._Get_data();
+			const auto& dFloatVal = d.pattern;
+			vector<double> dashAsDouble(dFloatVal.size());
+			for (const auto& val : dFloatVal) {
+				dashAsDouble.push_back(static_cast<double>(val));
 			}
-			else {
-				const auto& props = s.value()._Get_data();
-				cairo_set_line_width(context, props.line_width());
-				cairo_set_line_cap(context, _Line_cap_to_cairo_line_cap_t(props.line_cap()));
-				cairo_set_line_join(context, _Line_join_to_cairo_line_join_t(props.line_join()));
-				cairo_set_miter_limit(context, ::std::min<float>(miterMax, props.miter_limit()));
+			cairo_set_dash(context, dashAsDouble.data(), _Container_size_to_int(dashAsDouble), static_cast<double>(d.offset));
+			if (cairo_status(context) == CAIRO_STATUS_INVALID_DASH) {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_DASH);
 			}
-			if (ds == nullopt) {
-				cairo_set_dash(context, nullptr, 0, 0.0);
-			}
-			else {
-				const auto& d = ds.value()._Get_data();
-				const auto& dFloatVal = d.pattern;
-				vector<double> dashAsDouble(dFloatVal.size());
-				for (const auto& val : dFloatVal) {
-					dashAsDouble.push_back(static_cast<double>(val));
-				}
-				cairo_set_dash(context, dashAsDouble.data(), _Container_size_to_int(dashAsDouble), static_cast<double>(d.offset));
-				if (cairo_status(context) == CAIRO_STATUS_INVALID_DASH) {
-					_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_DASH);
-				}
-			}
+			//}
 		}
 
 		template <class GraphicsMath>
-		inline void _Set_brush_props(cairo_t* context, const optional<basic_brush_props<_Cairo_graphics_surfaces<GraphicsMath>>>& bp, const basic_brush<_Cairo_graphics_surfaces<GraphicsMath>>& b) {
-			if (bp == nullopt) {
-				const auto p = b._Get_data().brush.get();
-				cairo_pattern_set_extend(p, CAIRO_EXTEND_NONE);
-				cairo_pattern_set_filter(p, CAIRO_FILTER_BILINEAR);
-				cairo_pattern_set_matrix(p, &_Cairo_identity_matrix);
-				cairo_set_fill_rule(context, CAIRO_FILL_RULE_WINDING);
-			}
-			else {
-				const auto& props = bp.value();
-				auto p = b._Get_data().brush.get();
-				cairo_pattern_set_extend(p, _Extend_to_cairo_extend_t(props.wrap_mode()));
-				cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
-				const auto& m = props.brush_matrix();
-				cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-				cairo_pattern_set_matrix(p, &cm);
-				cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fill_rule()));
-			}
+		inline void _Set_brush_props(cairo_t* context, const basic_brush_props<_Cairo_graphics_surfaces<GraphicsMath>>& bp, const basic_brush<_Cairo_graphics_surfaces<GraphicsMath>>& b) {
+			//if (bp == nullopt) {
+			//	const auto p = b._Get_data().brush.get();
+			//	cairo_pattern_set_extend(p, CAIRO_EXTEND_NONE);
+			//	cairo_pattern_set_filter(p, CAIRO_FILTER_BILINEAR);
+			//	cairo_pattern_set_matrix(p, &_Cairo_identity_matrix);
+			//	cairo_set_fill_rule(context, CAIRO_FILL_RULE_WINDING);
+			//}
+			//else {
+			const auto& props = bp;// .value();
+			auto p = b._Get_data().brush.get();
+			cairo_pattern_set_extend(p, _Extend_to_cairo_extend_t(props.wrap_mode()));
+			cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
+			const auto& m = props.brush_matrix();
+			cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+			cairo_pattern_set_matrix(p, &cm);
+			cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fill_rule()));
+			//}
 		}
 
-		template <class GraphicsMath>
-		inline void _Set_mask_props(const optional<basic_mask_props<_Cairo_graphics_surfaces<GraphicsMath>>>& mp, const basic_brush<_Cairo_graphics_surfaces<GraphicsMath>>& b) {
-			if (mp == nullopt) {
-				auto p = b._Get_data().brush.get();
-				cairo_pattern_set_extend(p, CAIRO_EXTEND_NONE);
-				cairo_pattern_set_filter(p, CAIRO_FILTER_GOOD);
-				cairo_pattern_set_matrix(p, &_Cairo_identity_matrix);
-			}
-			else {
-				const auto& props = mp.value();
-				auto p = b._Get_data().brush.get();
-				cairo_pattern_set_extend(p, _Extend_to_cairo_extend_t(props.wrap_mode()));
-				cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
-				const auto& m = props.mask_matrix();
-				cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-				cairo_pattern_set_matrix(p, &cm);
-			}
+		template <class GraphicsSurfaces>
+		inline void _Set_mask_props(const basic_mask_props<GraphicsSurfaces>& mp, const basic_brush<GraphicsSurfaces>& b) {
+			//if (mp == nullopt) {
+			//	auto p = b._Get_data().brush.get();
+			//	cairo_pattern_set_extend(p, CAIRO_EXTEND_NONE);
+			//	cairo_pattern_set_filter(p, CAIRO_FILTER_GOOD);
+			//	cairo_pattern_set_matrix(p, &_Cairo_identity_matrix);
+			//}
+			//else {
+			const auto& props = mp;// .value();
+			auto p = b._Get_data().brush.get();
+			cairo_pattern_set_extend(p, _Extend_to_cairo_extend_t(props.wrap_mode()));
+			cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
+			const auto& m = props.mask_matrix();
+			cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+			cairo_pattern_set_matrix(p, &cm);
+			//}
 		}
 
 		// image_surface
@@ -693,11 +710,11 @@ namespace std::experimental::io2d::v1 {
 
 #if defined(_Filesystem_support_test)
 		template<class GraphicsMath>
-		inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff) {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt) {
 			throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
 		}
 		template<class GraphicsMath>
-		inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, ::std::error_code & ec) noexcept {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code & ec) noexcept {
 			ec = ::std::make_error_code(::std::errc::not_supported);
 			return image_surface_data_type();
 		}
@@ -714,10 +731,10 @@ namespace std::experimental::io2d::v1 {
 #endif
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_image_surface(image_surface_data_type&& data) noexcept {
-			return data;
+			return move(data);
 		}
 		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::destroy(image_surface_data_type& data) noexcept {
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::destroy(image_surface_data_type& /*data*/) noexcept {
 			// Do nothing.
 		}
 #if defined(_Filesystem_support_test)
@@ -760,29 +777,29 @@ namespace std::experimental::io2d::v1 {
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::flush(image_surface_data_type& data) {
-			cairo_surface_flush(data._Surface.get());
+			cairo_surface_flush(data.surface.get());
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::flush(image_surface_data_type& data, error_code& ec) noexcept {
-			cairo_surface_flush(data._Surface.get());
+			cairo_surface_flush(data.surface.get());
 			ec.clear();
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(image_surface_data_type& data) {
-			cairo_surface_mark_dirty(data._Surface.get());
+			cairo_surface_mark_dirty(data.surface.get());
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(image_surface_data_type& data, error_code& ec) noexcept {
-			cairo_surface_mark_dirty(data._Surface.get());
+			cairo_surface_mark_dirty(data.surface.get());
 			ec.clear();
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents) {
-			cairo_surface_mark_dirty_rectangle(_Surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+			cairo_surface_mark_dirty_rectangle(data.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept {
-			cairo_surface_mark_dirty_rectangle(_Surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+			cairo_surface_mark_dirty_rectangle(data.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
 			ec.clear();
 		}
 		template<class GraphicsMath>
@@ -791,16 +808,16 @@ namespace std::experimental::io2d::v1 {
 			_Set_render_props(context, rp);
 			_Set_clip_props(context, cl);
 			_Set_brush_props(context, bp, b);
-			cairo_set_source(context, b._Native_handle());
+			cairo_set_source(context, b._Get_data().brush.get());
 			cairo_paint(context);
 		}
 		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::stroke(image_surface_data_type & data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::stroke(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
 			auto context = data.context.get();
 			_Set_render_props(context, rp);
 			_Set_clip_props(context, cl);
 			_Set_brush_props(context, bp, b);
-			_Set_stroke_props(context, sp, _Line_join_miter_miter_limit, d);
+			_Set_stroke_props(context, sp, sp.max_miter_limit(), d);
 			cairo_set_source(context, b._Get_data().brush.get());
 			cairo_new_path(context);
 			cairo_append_path(context, ip._Get_data().path.get());
@@ -852,7 +869,7 @@ namespace std::experimental::io2d::v1 {
 			GraphicsSurfaces::paint(data.back_buffer, b, bp, rp, cl);
 		}
 		template <class GraphicsSurfaces>
-		inline void _Ds_stroke(typename GraphicsSurfaces::_Display_surface_data_type& data, const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const basic_brush<GraphicsSurfaces>& bp, const basic_stroke_props<GraphicsSurfaces>& sp, const basic_dashes<GraphicsSurfaces>& d, const basic_render_props<GraphicsSurfaces>& rp, const basic_clip_props<GraphicsSurfaces>& cl) {
+		inline void _Ds_stroke(typename GraphicsSurfaces::_Display_surface_data_type& data, const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const basic_brush_props<GraphicsSurfaces>& bp, const basic_stroke_props<GraphicsSurfaces>& sp, const basic_dashes<GraphicsSurfaces>& d, const basic_render_props<GraphicsSurfaces>& rp, const basic_clip_props<GraphicsSurfaces>& cl) {
 			GraphicsSurfaces::stroke(data.back_buffer, b, ip, bp, sp, d, rp, cl);
 		}
 		template <class GraphicsSurfaces>
@@ -937,10 +954,301 @@ namespace std::experimental::io2d::v1 {
 
 		// unmanaged output surface functions
 
-		template<class GraphicsMath>
+		template <class GraphicsMath>
 		inline basic_display_point<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::max_display_dimensions() noexcept {
 			return basic_display_point<GraphicsMath>(16384, 16384); // This takes up 1 GB of RAM, you probably don't want to do this. 2048x2048 is the max size for hardware that meets 9_1 specs (i.e. quite low powered or really old). Probably much more reasonable.
 		}
+
+		template <class GraphicsMath>
+		inline void _Render_for_scaling_uniform_or_letterbox(typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& /*sfc*/) {
+			const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
+
+			auto& data = osd.data;
+			double displayWidth = static_cast<double>(data.display_dimensions.x());
+			double displayHeight = static_cast<double>(data.display_dimensions.y());
+			double backBufferWidth = static_cast<double>(data.back_buffer.dimensions.x());
+			double backBufferHeight = static_cast<double>(data.back_buffer.dimensions.y());
+			auto backBufferSfc = data.back_buffer.surface.get();
+			//auto displaySfc = data.display_surface.get();
+			auto displayContext = data.display_context.get();
+
+			if (backBufferWidth == displayWidth && backBufferHeight == displayHeight) {
+				cairo_set_source_surface(displayContext, backBufferSfc, 0.0, 0.0);
+				cairo_paint(displayContext);
+			}
+			else {
+				const auto whRatio = backBufferWidth / backBufferHeight;
+				const auto displayWHRatio = displayWidth / displayHeight;
+				cairo_matrix_t ctm;
+				double rectX, rectY, rectWidth, rectHeight;
+				if (whRatio < displayWHRatio) {
+					cairo_new_path(displayContext);
+					rectWidth = trunc(displayHeight * whRatio);
+					rectHeight = displayHeight;
+					rectX = trunc(abs(rectWidth - displayWidth) / 2.0);
+					rectY = 0.0;
+					cairo_rectangle(displayContext, rectX, rectY, rectWidth, rectHeight);
+
+					const auto heightRatio = backBufferHeight / displayHeight;
+					cairo_matrix_init_scale(&ctm, heightRatio, heightRatio);
+					cairo_matrix_translate(&ctm, -rectX, 0.0);
+					unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
+					auto patPtr = pat.get();
+					cairo_pattern_set_matrix(patPtr, &ctm);
+					cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
+					cairo_pattern_set_filter(patPtr, cairoFilter);
+					cairo_set_source(displayContext, patPtr);
+					cairo_fill(displayContext);
+					if (data.scl == io2d::scaling::letterbox) {
+						const auto lboxWidth = trunc(((displayWidth)-rectWidth) / 2.0);
+						cairo_rectangle(displayContext, 0.0, 0.0, lboxWidth, rectHeight);
+						cairo_rectangle(displayContext, rectWidth + lboxWidth, 0.0, lboxWidth, rectHeight);
+						if (data._Letterbox_brush == nullopt) {
+							cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+							//cairo_paint(_Native_context.get());
+						}
+						else {
+							auto pttn = data._Letterbox_brush.value()._Get_data().brush.get();
+							if (data._Letterbox_brush_props == nullopt) {
+								cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
+								cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
+								cairo_matrix_t cPttnMatrix;
+								cairo_matrix_init_identity(&cPttnMatrix);
+								cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+								cairo_set_source(displayContext, pttn);
+								//cairo_paint(_Native_context.get());
+							}
+							else {
+								const brush_props& props = data._Letterbox_brush_props.value();
+								cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
+								cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
+								cairo_matrix_t cPttnMatrix;
+								const auto& m = props.brush_matrix();
+								cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+								cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+								cairo_set_source(displayContext, pttn);
+								//cairo_paint(_Native_context.get());
+							}
+						}
+						cairo_fill(displayContext);
+					}
+				}
+				else {
+					cairo_new_path(displayContext);
+					rectWidth = displayWidth;
+					rectHeight = trunc(displayWidth / whRatio);
+					rectX = 0.0;
+					rectY = trunc(abs(rectHeight - displayHeight) / 2.0);
+					cairo_rectangle(displayContext, rectX, rectY, rectWidth, rectHeight);
+
+					const auto widthRatio = backBufferWidth / displayWidth;
+					cairo_matrix_init_scale(&ctm, widthRatio, widthRatio);
+					cairo_matrix_translate(&ctm, 0.0, -rectY);
+					unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
+					auto patPtr = pat.get();
+					cairo_pattern_set_matrix(patPtr, &ctm);
+					cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
+					cairo_pattern_set_filter(patPtr, cairoFilter);
+					cairo_set_source(displayContext, patPtr);
+					cairo_fill(displayContext);
+					//cairo_restore(nativeContext);
+					if (data.scl == io2d::scaling::letterbox) {
+						const auto lboxHeight = trunc((displayHeight - rectHeight) / 2.0);
+						cairo_rectangle(displayContext, 0.0, 0.0, rectWidth, lboxHeight);
+						cairo_rectangle(displayContext, 0.0, rectHeight + lboxHeight, rectWidth, lboxHeight);
+						//cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.wrap_mode()));
+						//cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
+						//cairo_matrix_t cPttnMatrix;
+						//cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
+						//cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
+						//cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
+						if (data._Letterbox_brush == nullopt) {
+							cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+							//cairo_paint(_Native_context.get());
+						}
+						else {
+							auto pttn = data._Letterbox_brush.value()._Get_data().brush.get();
+							if (data._Letterbox_brush_props == nullopt) {
+								cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
+								cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
+								cairo_matrix_t cPttnMatrix;
+								cairo_matrix_init_identity(&cPttnMatrix);
+								cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+								cairo_set_source(displayContext, pttn);
+								//cairo_paint(_Native_context.get());
+							}
+							else {
+								const brush_props& props = data._Letterbox_brush_props.value();
+								cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
+								cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
+								cairo_matrix_t cPttnMatrix;
+								const auto& m = props.brush_matrix();
+								cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+								cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+								cairo_set_source(displayContext, pttn);
+								//cairo_paint(_Native_context.get());
+							}
+						}
+						cairo_fill(displayContext);
+					}
+				}
+			}
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::_Render_to_native_surface(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
+			const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
+			auto& data = osd.data;
+			double displayWidth = static_cast<double>(data.display_dimensions.x());
+			double displayHeight = static_cast<double>(data.display_dimensions.y());
+			double backBufferWidth = static_cast<double>(data.back_buffer.dimensions.x());
+			double backBufferHeight = static_cast<double>(data.back_buffer.dimensions.y());
+			auto backBufferSfc = data.back_buffer.surface.get();
+			auto displaySfc = data.display_surface.get();
+			auto displayContext = data.display_context.get();
+			cairo_surface_flush(backBufferSfc);
+			cairo_set_operator(displayContext, CAIRO_OPERATOR_SOURCE);
+			if (osd.user_scaling_callback != nullptr) {
+				bool letterbox = false;
+				auto userRect = osd.user_scaling_callback(sfc, letterbox);
+				if (letterbox) {
+					if (data._Letterbox_brush == nullopt) {
+						cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+						cairo_paint(displayContext);
+					}
+					else {
+						auto pttn = data._Letterbox_brush.value()._Get_data().brush.get();
+						if (data._Letterbox_brush_props == nullopt) {
+							cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
+							cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
+							cairo_matrix_t cPttnMatrix;
+							cairo_matrix_init_identity(&cPttnMatrix);
+							cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+							cairo_set_source(displayContext, pttn);
+							cairo_paint(displayContext);
+						}
+						else {
+							const basic_brush_props<_Cairo_graphics_surfaces<GraphicsMath>>& props = data._Letterbox_brush_props.value();
+							cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
+							cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
+							cairo_matrix_t cPttnMatrix;
+							const auto& m = props.brush_matrix();
+							cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+							cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+							cairo_set_source(displayContext, pttn);
+							cairo_paint(displayContext);
+						}
+					}
+				}
+				cairo_matrix_t ctm;
+				cairo_matrix_init_scale(&ctm, 1.0 / displayWidth / static_cast<double>(userRect.width()), 1.0 / displayHeight / static_cast<double>(userRect.height()));
+				cairo_matrix_translate(&ctm, -static_cast<double>(userRect.x()), -static_cast<double>(userRect.y()));
+				unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
+				auto patPtr = pat.get();
+				cairo_pattern_set_matrix(patPtr, &ctm);
+				cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
+				cairo_pattern_set_filter(patPtr, cairoFilter);
+				cairo_set_source(displayContext, patPtr);
+				cairo_paint(displayContext);
+			}
+			else {
+
+				// Calculate the destRect values.
+				switch (data.scl) {
+				case std::experimental::io2d::scaling::letterbox:
+				{
+					_Render_for_scaling_uniform_or_letterbox(osd, sfc);
+				} break;
+				case std::experimental::io2d::scaling::uniform:
+				{
+					_Render_for_scaling_uniform_or_letterbox(osd, sfc);
+				} break;
+
+				case std::experimental::io2d::scaling::fill_uniform:
+				{
+					// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
+					if (backBufferWidth == displayWidth && backBufferHeight == displayHeight) {
+						cairo_set_source_surface(displayContext, backBufferSfc, 0.0, 0.0);
+						cairo_paint(displayContext);
+					}
+					else {
+						auto widthRatio = displayWidth / backBufferWidth;
+						auto heightRatio = displayHeight / backBufferHeight;
+						if (widthRatio < heightRatio) {
+							cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+							cairo_paint(displayContext);
+							cairo_matrix_t ctm;
+							cairo_matrix_init_scale(&ctm, 1.0 / heightRatio, 1.0 / heightRatio);
+							cairo_matrix_translate(&ctm, trunc(abs((displayWidth - (backBufferWidth * heightRatio)) / 2.0)), 0.0);
+							unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
+							auto patPtr = pat.get();
+							cairo_pattern_set_matrix(patPtr, &ctm);
+							cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
+							cairo_pattern_set_filter(patPtr, cairoFilter);
+							cairo_set_source(displayContext, patPtr);
+							cairo_paint(displayContext);
+						}
+						else {
+							cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+							cairo_paint(displayContext);
+							cairo_matrix_t ctm;
+							cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / widthRatio);
+							cairo_matrix_translate(&ctm, 0.0, trunc(abs((displayHeight - (backBufferHeight * widthRatio)) / 2.0)));
+							unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
+							auto patPtr = pat.get();
+							cairo_pattern_set_matrix(patPtr, &ctm);
+							cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
+							cairo_pattern_set_filter(patPtr, cairoFilter);
+							cairo_set_source(displayContext, patPtr);
+							cairo_paint(displayContext);
+						}
+					}
+				} break;
+				case std::experimental::io2d::scaling::fill_exact:
+				{
+					// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
+					if (backBufferWidth == displayWidth && backBufferHeight == displayHeight) {
+						cairo_set_source_surface(displayContext, backBufferSfc, 0.0, 0.0);
+						cairo_paint(displayContext);
+					}
+					else {
+						auto widthRatio = displayWidth / backBufferWidth;
+						auto heightRatio = displayHeight / backBufferHeight;
+						cairo_matrix_t ctm;
+						cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / heightRatio);
+						unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
+						auto patPtr = pat.get();
+						cairo_pattern_set_matrix(patPtr, &ctm);
+						cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
+						cairo_pattern_set_filter(patPtr, cairoFilter);
+						cairo_set_source(displayContext, patPtr);
+						cairo_paint(displayContext);
+					}
+				} break;
+				case std::experimental::io2d::scaling::none:
+				{
+					cairo_set_source_surface(displayContext, backBufferSfc, 0.0, 0.0);
+					cairo_paint(displayContext);
+				} break;
+				default:
+				{
+					assert("Unexpected _Scaling value." && false);
+				} break;
+				}
+			}
+
+			// 	cairo_restore(_Native_context.get());
+			// This call to cairo_surface_flush is needed for Win32 surfaces to update.
+			cairo_surface_flush(displaySfc);
+			cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+		}
+
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::render(output_surface_data_type& data) {
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::render(unmanaged_output_surface_data_type& data) {
+		}
+
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat) {
 			unmanaged_output_surface_data_type uosd;
@@ -1007,6 +1315,34 @@ namespace std::experimental::io2d::v1 {
 		}
 
 		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::flush(unmanaged_output_surface_data_type& data) {
+			cairo_surface_flush(data.data.back_buffer.surface.get());
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::flush(unmanaged_output_surface_data_type& data, error_code& ec) noexcept {
+			cairo_surface_flush(data.data.back_buffer.surface.get());
+			ec.clear();
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(unmanaged_output_surface_data_type& data) {
+			cairo_surface_mark_dirty(data.data.back_buffer.surface.get());
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(unmanaged_output_surface_data_type& data, error_code& ec) noexcept {
+			cairo_surface_mark_dirty(data.data.back_buffer.surface.get());
+			ec.clear();
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(unmanaged_output_surface_data_type & data, const basic_bounding_box<GraphicsMath>& extents) {
+			cairo_surface_mark_dirty_rectangle(data.data.back_buffer.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept {
+			cairo_surface_mark_dirty_rectangle(data.data.back_buffer.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+			ec.clear();
+		}
+
+		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::clear(unmanaged_output_surface_data_type& data) {
 			_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 		}
@@ -1015,7 +1351,7 @@ namespace std::experimental::io2d::v1 {
 			_Ds_paint<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, b, bp, rp, cl);
 		}
 		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::stroke(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::stroke(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
 			_Ds_stroke<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, b, ip, bp, sp, d, rp, cl);
 		}
 		template<class GraphicsMath>
@@ -1104,7 +1440,7 @@ namespace std::experimental::io2d::v1 {
 			data.display_dimensions.x(preferredWidth);
 			data.display_dimensions.y(preferredHeight);
 			data.rr = rr;
-			data.refresh_rate = fps;
+			data.refresh_fps = fps;
 			data.scl = scl;
 			data.back_buffer.format = preferredFormat;
 			data.back_buffer.dimensions.x(preferredWidth);
@@ -1124,7 +1460,7 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer.dimensions.x(preferredWidth);
 			data.back_buffer.dimensions.y(preferredHeight);
 			ec.clear()
-			return result;
+				return result;
 		}
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps) {
@@ -1166,6 +1502,8 @@ namespace std::experimental::io2d::v1 {
 		}
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::show_return_data_type _Cairo_graphics_surfaces<GraphicsMath>::begin_show(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>* instance, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
+			_RegisterWindowClass();
+
 			_Display_surface_data_type& data = osd.data;
 			RECT rc;
 			rc.top = 0;
@@ -1204,19 +1542,20 @@ namespace std::experimental::io2d::v1 {
 			}
 
 			SetLastError(ERROR_SUCCESS);
-			if (SetWindowLongPtrW(data.hwnd, 0, static_cast<LONG_PTR>(instance)) == 0) {
+			if (SetWindowLongPtrW(data.hwnd, 0, (LONG_PTR)instance) == 0) {
 				// SetWindowLongPtr is weird in terms of how it fails. See its documentation. Hence this weird check.
 				DWORD lastError = GetLastError();
 				if (lastError != ERROR_SUCCESS) {
 					_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling)");
 				}
 			}
+
 			data.hasOwnDC = true;
-			data.hdc = GetDC(hwnd);
+			data.hdc = GetDC(data.hwnd);
 
 			_Create_display_surface_and_context<GraphicsMath>(data);
 
-			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
+			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black);
 			data._Letterbox_brush = data._Default_letterbox_brush;
 
 			data.back_buffer = ::std::move(create_image_surface(data.back_buffer.format, data.back_buffer.dimensions.x(), data.back_buffer.dimensions.y()));
@@ -1230,7 +1569,7 @@ namespace std::experimental::io2d::v1 {
 			//			if (_Display_surface.native_handle()._Draw_fn == nullptr) {
 			//				throw system_error(make_error_code(errc::operation_would_block));
 			//			}
-			_Impl._Elapsed_draw_time = 0.0F;
+			data.elapsed_draw_time = 0.0f;
 #ifdef _IO2D_WIN32FRAMERATE
 			auto previousTime = steady_clock::now();
 			long long int elapsedDrawNanoseconds = 0LL;
@@ -1247,12 +1586,12 @@ namespace std::experimental::io2d::v1 {
 #endif
 				if (!PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
 					RECT clientRect;
-					GetClientRect(_Impl._Hwnd, &clientRect);
+					GetClientRect(data.hwnd, &clientRect);
 					if (clientRect.right - clientRect.left != data.display_dimensions.x() || clientRect.bottom - clientRect.top != data.display_dimensions.y()) {
 						// If there is a size mismatch we skip painting and resize the window instead.
-						display_dimensions(data, data.display_dimensions);
-						if (data.display_dimensions != data.dimensions) {
-							invoke_size_change_callback(sfc);
+						display_dimensions(osd, data.display_dimensions);
+						if (data.display_dimensions != data.back_buffer.dimensions) {
+							osd.size_change_callback(sfc);
 						}
 						continue;
 					}
@@ -1273,8 +1612,8 @@ namespace std::experimental::io2d::v1 {
 						}
 						if (redraw) {
 							// Run user draw function:
-							invoke_draw_callback(sfc);
-
+							osd.draw_callback(sfc);
+							_Render_to_native_surface(osd, sfc);
 #ifdef _IO2D_WIN32FRAMERATE
 							elapsedNanoseconds.pop_front();
 							elapsedNanoseconds.push_back(chrono::nanoseconds(elapsedDrawNanoseconds));
@@ -1419,6 +1758,35 @@ namespace std::experimental::io2d::v1 {
 		inline float _Cairo_graphics_surfaces<GraphicsMath>::desired_frame_rate(const output_surface_data_type& data) noexcept {
 			return data.data.refresh_fps;
 		}
+
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::flush(output_surface_data_type& data) {
+			cairo_surface_flush(data.data.back_buffer.surface.get());
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::flush(output_surface_data_type& data, error_code& ec) noexcept {
+			cairo_surface_flush(data.data.back_buffer.surface.get());
+			ec.clear();
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(output_surface_data_type& data) {
+			cairo_surface_mark_dirty(data.data.back_buffer.surface.get());
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(output_surface_data_type& data, error_code& ec) noexcept {
+			cairo_surface_mark_dirty(data.data.back_buffer.surface.get());
+			ec.clear();
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(output_surface_data_type & data, const basic_bounding_box<GraphicsMath>& extents) {
+			cairo_surface_mark_dirty_rectangle(data.data.back_buffer.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept {
+			cairo_surface_mark_dirty_rectangle(data.data.back_buffer.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+			ec.clear();
+		}
+
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::clear(output_surface_data_type& data) {
 			_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
@@ -1428,7 +1796,7 @@ namespace std::experimental::io2d::v1 {
 			_Ds_paint<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, b, bp, rp, cl);
 		}
 		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::stroke(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::stroke(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
 			_Ds_stroke<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, b, ip, bp, sp, d, rp, cl);
 		}
 		template<class GraphicsMath>

@@ -4,14 +4,14 @@
 
 using namespace std;
 using namespace std::experimental::io2d;
-using namespace std::experimental::io2d::v1::cairo;
+//using namespace std::experimental::io2d::v1::cairo;
 
 namespace brush_test {
 	void solid_color_test_01() {
-		auto imgSfc = make_image_surface<cairo_renderer>(format::argb32, 300, 200);
-		brush<cairo_renderer> backBrush{ rgba_color::black };
-		brush<cairo_renderer> foreBrush{ rgba_color::white };
-		path_builder<> pb{};
+		image_surface imgSfc(format::argb32, 300, 200);
+		brush backBrush{ rgba_color::black };
+		brush foreBrush{ rgba_color::white };
+		path_builder pb{};
 		imgSfc.paint(backBrush);
 		pb.new_figure({ 80.0, 20.0 });
 		pb.line({ 220.0, 20.0 });
@@ -20,7 +20,7 @@ namespace brush_test {
 		pb.close_figure();
 
 		// Example code goes here.
-		brush<cairo_renderer> fillBrush{ rgba_color::orange };
+		brush fillBrush{ rgba_color::orange };
 		imgSfc.stroke(foreBrush, pb);
 		imgSfc.fill(fillBrush, pb);
 

@@ -30,80 +30,31 @@ namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
-				constexpr float _Round_floating_point_to_zero(float v) noexcept {
-					if ((v > 0.0f && v < ::std::numeric_limits<float>::epsilon() * 1000.0F) ||
-						(v < 0.0f && -v < ::std::numeric_limits<float>::epsilon() * 1000.0F)) {
-						return (v > 0.0f) ? 0.0f : -0.0f;
-					}
-					return v;
-				}
+				//// Checks for equality between two floating point numbers using an epsilon value to specify the equality tolerance limit.
+				//// See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+				//template <typename T>
+				//inline bool _Almost_equal_relative(T a, T b, T epsilon = ::std::numeric_limits<T>::epsilon()) noexcept {
+				//	auto diff = ::std::abs(a - b);
+				//	a = ::std::abs(a);
+				//	b = ::std::abs(b);
+				//	auto largest = (b > a) ? b : a;
+				//	if (diff <= largest * epsilon) {
+				//		return true;
+				//	}
+				//	return false;
+				//}
 
-				// Converts 'value' to an int and returns it. If nearestNeighbor is true, the return value is the result of calling 'static_cast<int>(round(value))'; if false, the return value is the result of calling 'static_cast<int>(trunc(value))'.
-				inline int _Float_to_int(float value, bool nearestNeighbor = true) {
-					if (nearestNeighbor) {
-						// Round to the nearest neighbor.
-						return static_cast<int>(::std::round(value));
-					}
-					// Otherwise truncate.
-					return static_cast<int>(::std::trunc(value));
-				}
-
-				// Checks for equality between two floating point numbers using an epsilon value to specify the equality tolerance limit.
-				// See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
-				template <typename T>
-				inline bool _Almost_equal_relative(T a, T b, T epsilon = ::std::numeric_limits<T>::epsilon()) noexcept {
-					auto diff = ::std::abs(a - b);
-					a = ::std::abs(a);
-					b = ::std::abs(b);
-					auto largest = (b > a) ? b : a;
-					if (diff <= largest * epsilon) {
-						return true;
-					}
-					return false;
-				}
-
-				template <typename T>
-				inline int _Container_size_to_int(const T& container) noexcept {
-					assert(container.size() <= static_cast<unsigned int>(::std::numeric_limits<int>::max()));
-					return static_cast<int>(container.size());
-				}
-
-				enum class _To_radians_sfinae {};
-				constexpr static _To_radians_sfinae _To_radians_sfinae_val = {};
-				enum class _To_degrees_sfinae {};
-				constexpr static _To_degrees_sfinae _To_degrees_sfinae_val = {};
-
-				template <class T, ::std::enable_if_t<::std::is_arithmetic_v<T>, _To_radians_sfinae> = _To_radians_sfinae_val>
-				constexpr float to_radians(T deg) noexcept {
-					auto angle = static_cast<float>(deg) / 360.0F * two_pi<float>;
-					float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
-					if (((angle > 0.0F) && (angle < oneThousandthOfADegreeInRads)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegreeInRads))) {
-						return (angle < 0.0F) ? -0.0F : 0.0F;
-					}
-					return angle;
-				}
-
-				template <class T, ::std::enable_if_t<::std::is_arithmetic_v<T>, _To_degrees_sfinae> = _To_degrees_sfinae_val>
-				constexpr float to_degrees(T rad) noexcept {
-					auto angle = static_cast<float>(rad) / two_pi<float> * 360.0F;
-					float oneThousandthOfADegree = 0.001F;
-					if (((angle > 0.0F) && (angle < oneThousandthOfADegree)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegree))) {
-						return (angle < 0.0F) ? -0.0F : 0.0F;
-					}
-					return angle;
-				}
-
-				// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0F } 'angle' radians around { 0.0F, 0.0F } in a clockwise ('clockwise' == true) or
-				// counterclockwise ('clockwise' == false) direction.
-				template <class GraphicsMath>
-				inline basic_point_2d<GraphicsMath> _Rotate_point_absolute_angle(const basic_point_2d<GraphicsMath>& center, float radius, float angle, bool clockwise = true) {
-					if (clockwise) {
-						return basic_point_2d<GraphicsMath>((radius * ::std::cos(angle)) + center.x(), (-(radius * -::std::sin(angle))) + center.y());
-					}
-					else {
-						return basic_point_2d<GraphicsMath>((radius * ::std::cos(angle)) + center.x(), (radius * -::std::sin(angle)) + center.y());
-					}
-				}
+				//// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0F } 'angle' radians around { 0.0F, 0.0F } in a clockwise ('clockwise' == true) or
+				//// counterclockwise ('clockwise' == false) direction.
+				//template <class GraphicsMath>
+				//inline basic_point_2d<GraphicsMath> _Rotate_point_absolute_angle(const basic_point_2d<GraphicsMath>& center, float radius, float angle, bool clockwise = true) {
+				//	if (clockwise) {
+				//		return basic_point_2d<GraphicsMath>((radius * ::std::cos(angle)) + center.x(), (-(radius * -::std::sin(angle))) + center.y());
+				//	}
+				//	else {
+				//		return basic_point_2d<GraphicsMath>((radius * ::std::cos(angle)) + center.x(), (radius * -::std::sin(angle)) + center.y());
+				//	}
+				//}
 
 				// color
 

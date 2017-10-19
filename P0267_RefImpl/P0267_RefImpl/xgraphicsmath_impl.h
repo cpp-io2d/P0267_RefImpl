@@ -27,7 +27,7 @@ namespace std::experimental::io2d::v1 {
 	}
 	template <class GraphicsMath>
 	inline float basic_point_2d<GraphicsMath>::x() const noexcept {
-		return GraphicsMath::y(_Data);
+		return GraphicsMath::x(_Data);
 	}
 	template <class GraphicsMath>
 	inline float basic_point_2d<GraphicsMath>::y() const noexcept {
@@ -183,11 +183,11 @@ namespace std::experimental::io2d::v1 {
 	}
 	template <class GraphicsMath>
 	inline void basic_matrix_2d<GraphicsMath>::m00(float val) noexcept {
-		GraphicsMath::m00(val);
+		GraphicsMath::m00(_Data, val);
 	}
 	template <class GraphicsMath>
 	inline void basic_matrix_2d<GraphicsMath>::m01(float val) noexcept {
-		GraphicsMath::m01(val);
+		GraphicsMath::m01(_Data, val);
 	}
 	template <class GraphicsMath>
 	inline void basic_matrix_2d<GraphicsMath>::m10(float val) noexcept {
@@ -195,47 +195,47 @@ namespace std::experimental::io2d::v1 {
 	}
 	template <class GraphicsMath>
 	inline void basic_matrix_2d<GraphicsMath>::m11(float val) noexcept {
-		GraphicsMath::m11(val);
+		GraphicsMath::m11(_Data, val);
 	}
 	template <class GraphicsMath>
 	inline void basic_matrix_2d<GraphicsMath>::m20(float val) noexcept {
-		GraphicsMath::m20(val);
+		GraphicsMath::m20(_Data, val);
 	}
 	template <class GraphicsMath>
 	inline void basic_matrix_2d<GraphicsMath>::m21(float val) noexcept {
-		GraphicsMath::m21(val);
+		GraphicsMath::m21(_Data, val);
 	}
 	template <class GraphicsMath>
 	inline float basic_matrix_2d<GraphicsMath>::m00() const noexcept {
-		return GraphicsMath::m00();
+		return GraphicsMath::m00(_Data);
 	}
 	template <class GraphicsMath>
 	inline float basic_matrix_2d<GraphicsMath>::m01() const noexcept {
-		return GraphicsMath::m01();
+		return GraphicsMath::m01(_Data);
 	}
 	template <class GraphicsMath>
 	inline float basic_matrix_2d<GraphicsMath>::m10() const noexcept {
-		return GraphicsMath::m10();
+		return GraphicsMath::m10(_Data);
 	}
 	template <class GraphicsMath>
 	inline float basic_matrix_2d<GraphicsMath>::m11() const noexcept {
-		return GraphicsMath::m11();
+		return GraphicsMath::m11(_Data);
 	}
 	template <class GraphicsMath>
 	inline float basic_matrix_2d<GraphicsMath>::m20() const noexcept {
-		return GraphicsMath::m20();
+		return GraphicsMath::m20(_Data);
 	}
 	template <class GraphicsMath>
 	inline float basic_matrix_2d<GraphicsMath>::m21() const noexcept {
-		return GraphicsMath::m21();
+		return GraphicsMath::m21(_Data);
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_translate(const basic_point_2d<GraphicsMath>& value) noexcept {
-		return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_translate(value));
+		return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_translate(value._Get_data()));
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_scale(const basic_point_2d<GraphicsMath>& value) noexcept {
-		return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_scale(value));
+		return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_scale(value._Get_data()));
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_rotate(float radians) noexcept {
@@ -243,7 +243,7 @@ namespace std::experimental::io2d::v1 {
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept {
-		return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_rotate(radians, origin));
+		return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_rotate(radians, origin._Get_data()));
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_reflect(float radians) noexcept {
@@ -259,12 +259,12 @@ namespace std::experimental::io2d::v1 {
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath>& basic_matrix_2d<GraphicsMath>::translate(const basic_point_2d<GraphicsMath>& val) noexcept {
-		GraphicsMath::translate(_Data, val);
+		GraphicsMath::translate(_Data, val._Get_data());
 		return *this;
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath>& basic_matrix_2d<GraphicsMath>::scale(const basic_point_2d<GraphicsMath>& val) noexcept {
-		GraphicsMath::scale(_Data, val);
+		GraphicsMath::scale(_Data, val._Get_data());
 		return *this;
 	}
 	template <class GraphicsMath>
@@ -274,7 +274,7 @@ namespace std::experimental::io2d::v1 {
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath>& basic_matrix_2d<GraphicsMath>::rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept {
-		GraphicsMath::rotate(_Data, radians, origin);
+		GraphicsMath::rotate(_Data, radians, origin._Get_data());
 		return *this;
 	}
 	template <class GraphicsMath>
@@ -298,7 +298,7 @@ namespace std::experimental::io2d::v1 {
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::inverse() const noexcept {
-		return GraphicsMath::inverse(_Data);
+		return basic_matrix_2d<GraphicsMath>(GraphicsMath::inverse(_Data));
 	}
 	template <class GraphicsMath>
 	inline bool basic_matrix_2d<GraphicsMath>::is_finite() const noexcept {
@@ -310,7 +310,7 @@ namespace std::experimental::io2d::v1 {
 	}
 	template <class GraphicsMath>
 	inline basic_point_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::transform_pt(const basic_point_2d<GraphicsMath>& pt) const noexcept {
-		return GraphicsMath::transform_pt(_Data, pt);
+		return basic_point_2d<GraphicsMath>(GraphicsMath::transform_pt(_Data, pt._Get_data()));
 	}
 	template <class GraphicsMath>
 	inline basic_matrix_2d<GraphicsMath>& basic_matrix_2d<GraphicsMath>::operator*=(const basic_matrix_2d<GraphicsMath>& rhs) noexcept {
@@ -331,7 +331,7 @@ namespace std::experimental::io2d::v1 {
 	}
 	template <class GraphicsMath>
 	inline basic_point_2d<GraphicsMath> operator*(const basic_point_2d<GraphicsMath>& pt, const basic_matrix_2d<GraphicsMath>& m) noexcept {
-		return GraphicsMath::transform_pt(m, pt);
+		return basic_point_2d<GraphicsMath>(GraphicsMath::transform_pt(m._Get_data(), pt._Get_data()));
 	}
 
 	// basic_display_point
