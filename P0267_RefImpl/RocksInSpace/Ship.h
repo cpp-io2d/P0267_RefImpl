@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Renderer.h"
+#include "Types.h"
 #include "Physics.h"
 
 namespace rocks_in_space
@@ -17,7 +17,7 @@ namespace rocks_in_space
 	public:
 						ship(const controllable_physics&);
 		ship_update		update();
-		void			draw(my_display_surface& ds);
+		void			draw(output_surface& ds);
 
 	private:
 		controllable_physics	m_physics;
@@ -31,7 +31,7 @@ namespace rocks_in_space
 		bool					update();
 		void					destroy();
 		bool					active() const;
-		void					draw(my_display_surface& ds);
+		void					draw(output_surface& ds);
 		std::array<point_2d, 2>	collision_data() const;
 
 	private:

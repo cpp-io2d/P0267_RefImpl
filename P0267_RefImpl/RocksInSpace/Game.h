@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Renderer.h"
+
 #include "Asteroid.h"
 #include "Ship.h"
+#include <random>
 
 namespace rocks_in_space
 {
@@ -10,16 +11,16 @@ namespace rocks_in_space
 	{
 	public:
 				game();
-		void	update(my_display_surface&);
+		void	update(output_surface&);
 
 	private:
 		void	update_asteroids();
 		void	update_ship();
 		void	update_missiles();
 
-		void	draw_asteroids(my_display_surface& ds);
-		void	draw_ship(my_display_surface& ds);
-		void	draw_missiles(my_display_surface& ds);
+		void	draw_asteroids(output_surface& ds);
+		void	draw_ship(output_surface& ds);
+		void	draw_missiles(output_surface& ds);
 
 		void	generate_level();
 

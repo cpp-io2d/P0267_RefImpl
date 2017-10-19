@@ -43,10 +43,10 @@ std::pair<rocks_in_space::path_buffer, float> rocks_in_space::path_from_prototyp
 
 void rocks_in_space::constrain_pos(pos& p)
 {
-	while (p.x >= playing_field_width) p.x = p.x - playing_field_width;
-	while (p.y >= playing_field_height) p.y = p.y - playing_field_height;
-	while (p.x < 0.0f) p.x = p.x + playing_field_width;
-	while (p.y < 0.0f) p.y = p.y + playing_field_height;
+	while (p.x() >= playing_field_width) p.x(p.x() - playing_field_width);
+	while (p.y() >= playing_field_height) p.y(p.y() - playing_field_height);
+	while (p.x() < 0.0f) p.x(p.x() + playing_field_width);
+	while (p.y() < 0.0f) p.y(p.y() + playing_field_height);
 }
 
 void rocks_in_space::constrain_vel(vel& v)

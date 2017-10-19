@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Renderer.h"
+#include "Types.h"
 #include "Physics.h"
 
 namespace rocks_in_space
@@ -19,7 +19,7 @@ namespace rocks_in_space
 		void						update();
 		asteroid_destruction		destroy();
 
-		void						draw(my_display_surface& ds) const;
+		void						draw(output_surface& ds) const;
 		bool						active() const;
 		const collision&			collision_data() const;
 

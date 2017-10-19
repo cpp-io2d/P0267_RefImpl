@@ -294,8 +294,8 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Maths.h" />
     <ClInclude Include="Physics.h" />
-    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Ship.h" />
+    <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\P0267_RefImpl\P0267_RefImpl.vcxproj">

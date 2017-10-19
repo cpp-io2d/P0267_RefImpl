@@ -1,12 +1,8 @@
 #pragma once
-
-#include "Renderer.h"
+#include "Types.h"
 
 namespace rocks_in_space
 {
-	using point_2d = point_2d;
-	using bounding_box = bounding_box;
-
 	class polar_2d
 	{
 	public:
@@ -56,5 +52,5 @@ inline rocks_in_space::point_2d rocks_in_space::pol_to_car(const polar_2d& p)
 
 inline rocks_in_space::polar_2d rocks_in_space::car_to_pol(const point_2d& v)
 {
-	return{ v.magnitude(), atan2(v.y, v.x) };
+	return{ v.magnitude(), atan2(v.y(), v.x()) };
 }

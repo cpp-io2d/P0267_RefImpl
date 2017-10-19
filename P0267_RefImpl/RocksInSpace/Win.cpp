@@ -1,7 +1,8 @@
+#include "io2d.h"
 #include "Input.h"
 #include "Game.h"
 
-#include <Windows.h>
+//#include <Windows.h>
 
 namespace
 {
