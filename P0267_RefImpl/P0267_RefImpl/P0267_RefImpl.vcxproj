@@ -494,6 +494,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cairo_renderer_win32.cpp" />
+    <ClCompile Include="cairo_renderer_xlib.cpp" />
     <ClCompile Include="rgba_color.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1249,6 +1249,7 @@ namespace std::experimental::io2d::v1 {
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::render(unmanaged_output_surface_data_type& data) {
 		}
 
+#if defined(_WIN32) || defined(_WIN64)
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat) {
 			unmanaged_output_surface_data_type uosd;
@@ -1284,6 +1285,8 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer = ::std::move(create_image_surface(preferredFormat, preferredWidth, preferredHeight));
 			return uosd;
 		}
+#endif
+
 		template <class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept {
 			data.data.back_buffer = ::std::move(move_image_surface(::std::move(data.data.back_buffer)));
@@ -1436,7 +1439,7 @@ namespace std::experimental::io2d::v1 {
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps) {
 			output_surface_data_type result;
-			_Display_surface_win32_data& data = result.data;
+			_Display_surface_data_type& data = result.data;
 			data.display_dimensions.x(preferredWidth);
 			data.display_dimensions.y(preferredHeight);
 			data.rr = rr;
@@ -1445,12 +1448,19 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer.format = preferredFormat;
 			data.back_buffer.dimensions.x(preferredWidth);
 			data.back_buffer.dimensions.y(preferredHeight);
+#if defined(USE_XLIB)
+			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpendDisplay(nullptr), &XCloseDisplay));
+			if (data.display == nullptr) {
+				throw ::std::system_error(::std::make_error_code(::std::errc::io_error));
+			}
+			data.wmDeleteWndw = XInternAtom(data.display.get(), "WM_DELETE_WINDOW", False);
+#endif
 			return result;
 		}
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept {
 			output_surface_data_type result;
-			_Display_surface_win32_data& data = result.data;
+			_Display_surface_data_type& data = result.data;
 			data.display_dimensions.x(preferredWidth);
 			data.display_dimensions.y(preferredHeight);
 			data.rr = rr;
@@ -1459,13 +1469,21 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer.format = preferredFormat;
 			data.back_buffer.dimensions.x(preferredWidth);
 			data.back_buffer.dimensions.y(preferredHeight);
-			ec.clear()
-				return result;
+#if defined(USE_XLIB)
+			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpendDisplay(nullptr), &XCloseDisplay));
+			if (data.display == nullptr) {
+				ec = ::std::make_error_code(::std::errc::io_error);
+				return output_surface_data_type{};
+			}
+			data.wmDeleteWndw = XInternAtom(data.display.get(), "WM_DELETE_WINDOW", False);
+#endif
+			ec.clear();
+			return result;
 		}
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps) {
 			output_surface_data_type result;
-			_Display_surface_win32_data& data = result.data;
+			_Display_surface_data_type& data = result.data;
 			data.display_dimensions.x(preferredDisplayWidth);
 			data.display_dimensions.y(preferredDisplayHeight);
 			data.rr = rr;
@@ -1474,12 +1492,19 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer.format = preferredFormat;
 			data.back_buffer.dimensions.x(preferredWidth);
 			data.back_buffer.dimensions.y(preferredHeight);
+#if defined(USE_XLIB)
+			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpendDisplay(nullptr), &XCloseDisplay));
+			if (data.display == nullptr) {
+				throw ::std::system_error(::std::make_error_code(::std::errc::io_error));
+			}
+			data.wmDeleteWndw = XInternAtom(data.display.get(), "WM_DELETE_WINDOW", False);
+#endif
 			return result;
 		}
 		template <class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept {
 			output_surface_data_type result;
-			_Display_surface_win32_data& data = result.data;
+			_Display_surface_data_type& data = result.data;
 			data.display_dimensions.x(preferredDisplayWidth);
 			data.display_dimensions.y(preferredDisplayHeight);
 			data.rr = rr;
@@ -1488,6 +1513,14 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer.format = preferredFormat;
 			data.back_buffer.dimensions.x(preferredWidth);
 			data.back_buffer.dimensions.y(preferredHeight);
+#if defined(USE_XLIB)
+			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpendDisplay(nullptr), &XCloseDisplay));
+			if (data.display == nullptr) {
+				ec = ::std::make_error_code(::std::errc::io_error);
+				return output_surface_data_type{};
+			}
+			data.wmDeleteWndw = XInternAtom(data.display.get(), "WM_DELETE_WINDOW", False);
+#endif
 			ec.clear();
 			return result;
 		}
@@ -1500,6 +1533,7 @@ namespace std::experimental::io2d::v1 {
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::destroy(output_surface_data_type& data) noexcept {
 			destroy(data.data.back_buffer);
 		}
+#if defined(_WIN32) || defined(_WIN64)
 		template<class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::show_return_data_type _Cairo_graphics_surfaces<GraphicsMath>::begin_show(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>* instance, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
 			_RegisterWindowClass();
@@ -1567,7 +1601,7 @@ namespace std::experimental::io2d::v1 {
 			MSG msg{};
 			msg.message = WM_NULL;
 			//			if (_Display_surface.native_handle()._Draw_fn == nullptr) {
-			//				throw system_error(make_error_code(errc::operation_would_block));
+			//				throw system_error(make_error_code(errc::operation_not_supported));
 			//			}
 			data.elapsed_draw_time = 0.0f;
 #ifdef _IO2D_WIN32FRAMERATE
@@ -1704,20 +1738,12 @@ namespace std::experimental::io2d::v1 {
 			return result;
 		}
 
+
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::end_show(output_surface_data_type& data) {
 			PostQuitMessage(0);
 		}
-		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::refresh_rate(output_surface_data_type& data, io2d::refresh_rate val) {
-			data.data.rr = val;
-		}
-		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::desired_frame_rate(output_surface_data_type& data, float val) {
-			const float oneFramePerHour = 1.0f / (60.0f * 60.0f); // If you need a lower framerate than this, use as_needed and control the refresh by writing a timer that will trigger a refresh at your desired interval.
-			const float maxFPS = 120.0f; // It's unlikely to find a display output that operates higher than this.
-			data.data.refresh_fps = ::std::min(::std::max(val, oneFramePerHour), maxFPS);
-		}
+
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::display_dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val) {
 			data.data.display_dimensions = val;
@@ -1749,6 +1775,283 @@ namespace std::experimental::io2d::v1 {
 			//_Ds_display_dimensions<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, val);
 			_Create_display_surface_and_context<GraphicsMath>(data.data);
 			data.data.redraw_required = true;
+		}
+
+#elif defined(USE_XLIB)
+
+		Bool _X11_if_xev_pred(::Display* display, ::XEvent* xev, XPointer arg);
+
+		template<class GraphicsMath>
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::show_return_data_type _Cairo_graphics_surfaces<GraphicsMath>::begin_show(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>* instance, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
+			_Display_surface_data_type& data = osd.data;
+			Display* display = data.display.get();
+			int screenNumber = DefaultScreen(display);
+			int x = 0;
+			int y = 0;
+			unsigned int borderWidth = 4;
+			data.wndw = XCreateSimpleWindow(display, RootWindow(display, screenNumber), x, y, static_cast<unsigned int>(_Display_width), static_cast<unsigned int>(_Display_height), borderWidth, WhitePixel(display, screenNumber), BlackPixel(display, screenNumber));
+			XSelectInput(display, data.wndw, ExposureMask | StructureNotifyMask);
+			XSetWMProtocols(display, data.wndw, &data.wmDeleteWndw, 1);
+			XMapWindow(display, data.wndw);
+			_Create_display_surface_and_context<GraphicsMath>(data);
+
+			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black);
+			data._Letterbox_brush = data._Default_letterbox_brush;
+
+			data.back_buffer = ::std::move(create_image_surface(data.back_buffer.format, data.back_buffer.dimensions.x(), data.back_buffer.dimensions.y()));
+
+			bool exit = false;
+			XEvent xev;
+
+			auto previousTime = steady_clock::now();
+			data.elapsed_draw_time = 0.0F;
+			while (!exit) {
+				auto currentTime = steady_clock::now();
+				auto elapsedTimeIncrement = static_cast<float>(duration_cast<nanoseconds>(currentTime - previousTime).count());
+				data.elapsed_draw_time += elapsedTimeIncrement;
+				previousTime = currentTime;
+				while (XCheckIfEvent(_Display.get(), &xev, &_X11_if_event_pred, reinterpret_cast<XPointer>(&osd))) {
+					switch (xev.type) {
+						// ExposureMask events:
+					case Expose:
+					{
+						if (!data.can_draw && data.wndw != None) {
+							_Create_display_surface_and_context<GraphicsMath>(data);
+						}
+						assert(data.display_surface != nullptr && data.display_context != nullptr);
+						data.can_draw = true;
+						if (osd.draw_callback != nullptr) {
+							if (data.auto_clear) {
+								_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>(data);
+							}
+							ods.draw_callback(sfc);
+						}
+						else {
+							throw system_error(make_error_code(errc::operation_not_supported));
+						}
+						_Render_to_native_surface(osd, sfc);
+
+						data.elapsed_draw_time = 0.0F;
+						//if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+						//	_Elapsed_draw_time -= elapsedTimeIncrement;
+						//}
+						//else {
+						//	_Elapsed_draw_time = 0.0F;
+						//}
+					} break;
+					// StructureNotifyMask events:
+					case CirculateNotify:
+					{
+					} break;
+					case ConfigureNotify:
+					{
+						bool resized = false;
+						if (xev.xconfigure.width != data.display_dimensions.x()) {
+							data.display_dimensions.x(xev.xconfigure.width);
+							resized = true;
+						}
+						if (xev.xconfigure.height != data.display_dimensions.y()) {
+							data.display_dimensions.y(xev.xconfigure.height);
+							resized = true;
+						}
+						if (resized) {
+							cairo_xlib_surface_set_size(data.display_surface.get(), static_cast<double>(data.display_dimensions.x()), static_cast<double>data.display_dimensions.y());
+							if (osd.size_change_callback != nullptr) {
+								osd.size_change_callback(sfc);
+							}
+						}
+					} break;
+					case DestroyNotify:
+					{
+						data.wndw = None;
+						data.can_draw = false;
+						data.display_context.reset();
+						data.display_surface.reset();
+						exit = true;
+					} break;
+					case GravityNotify:
+					{
+					} break;
+					case MapNotify:
+					{
+					} break;
+					case ReparentNotify:
+					{
+					} break;
+					case UnmapNotify:
+					{
+						// The window still exists, it has just been unmapped.
+						data.can_draw = false;
+						data.display_context.reset();
+						data.display_surface.reset();
+					} break;
+					// Might get them even though they are unrequested events (see http://www.x.org/releases/X11R7.7/doc/libX11/libX11/libX11.html#Event_Masks ):
+					case GraphicsExpose:
+					{
+						if (data.can_draw) {
+							if (data.draw_callback != nullptr) {
+								if (data.auto_clear) {
+									_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>(data);
+								}
+								draw_callback(sfc);
+							}
+							else {
+								throw system_error(make_error_code(errc::operation_not_supported));
+							}
+							_Render_to_native_surface(osd, sfc);
+
+							data.elapsed_draw_time = 0.0F;
+						}
+					} break;
+					case NoExpose:
+					{
+					} break;
+					// Unmasked events
+					case ClientMessage:
+					{
+						if (xev.xclient.format == 32 && static_cast<Atom>(xev.xclient.data.l[0]) == data.wmDeleteWndw) {
+							data.can_draw = false;
+							data.display_context.reset();
+							data.display_surface.reset();
+							XDestroyWindow(data.display.get(), data.wndw);
+							data.wndw = None;
+							exit = true;
+						}
+						else {
+							stringstream clientMsgStr;
+							clientMsgStr << "ClientMessage event type '" << xev.xclient.message_type << "' for unknown event type";
+							auto atomName = XGetAtomName(data.display.get(), xev.xclient.message_type);
+							if (atomName != nullptr) {
+								try {
+									clientMsgStr << " (" << atomName << ")";
+								}
+								catch (...) {
+									XFree(atomName);
+									throw;
+								}
+								XFree(atomName);
+							}
+							clientMsgStr << ". Format is '" << xev.xclient.format << "' and first value is '";
+							switch (xev.xclient.format) {
+							case 8:
+							{
+								clientMsgStr << to_string(static_cast<int>(xev.xclient.data.b[0])).c_str();
+							} break;
+							case 16:
+							{
+								clientMsgStr << to_string(xev.xclient.data.s[0]).c_str();
+							} break;
+							case 32:
+							{
+								clientMsgStr << to_string(xev.xclient.data.l[0]).c_str();
+							} break;
+							default:
+							{
+								assert("Unexpected format." && false);
+								clientMsgStr << "(unexpected format)";
+							} break;
+							}
+							clientMsgStr << "'.";
+							auto es = clientMsgStr.str().c_str();
+							cerr << es << endl;
+						}
+					} break;
+					case MappingNotify:
+					{
+					} break;
+					case SelectionClear:
+					{
+					} break;
+					case SelectionNotify:
+					{
+					} break;
+					case SelectionRequest:
+					{
+					} break;
+					default:
+					{
+						stringstream errorString;
+						errorString << "Unexpected xev.type. Value is '" << xev.type << "'.";
+						cerr << errorString.str().c_str();
+						assert(xev.type >= 64 && xev.type <= 127);
+					} break;
+					}
+				}
+				if (data.can_draw) {
+					bool redraw = true;
+					if (data.rr == io2d::refresh_rate::as_needed) {
+						redraw = data.redraw_required;
+						data.redraw_required = false;
+					}
+
+					auto desiredElapsed = 1'000'000'000.0f / data.refresh_fps;
+
+					if (data.rr == io2d::refresh_rate::fixed) {
+						// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
+						redraw = data.elapsed_draw_time >= desiredElapsed;
+					}
+					if (redraw) {
+						// Run user draw function:
+						if (osd.draw_callback != nullptr) {
+							if (data.auto_clear) {
+								_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>(data);
+							}
+							osd.draw_callback(sfc);
+						}
+						else {
+							throw system_error(make_error_code(errc::operation_not_supported));
+						}
+						_Render_to_native_surface(osd, sfc);
+						if (data.rr == io2d::refresh_rate::fixed) {
+							while (data.elapsed_draw_time >= desiredElapsed) {
+								data.elapsed_draw_time -= desiredElapsed;
+							}
+						}
+						else {
+							data.elapsed_draw_time = 0.0f;
+						}
+					}
+				}
+			}
+			data.elapsed_draw_time = 0.0F;
+			return 0;
+		}
+
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::end_show(output_surface_data_type& osd) {
+			XDestroyWindow(osd.data.display.get(), osd.data.wndw);
+		}
+
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::display_dimensions(output_surface_data_type& osd, const basic_display_point<GraphicsMath>& val) {
+			Window rootWindow{};
+			int x{};
+			int y{};
+			unsigned int width = 0;
+			unsigned int height = 0;
+			unsigned int borderWidth{};
+			unsigned int depth{};
+			auto status = XGetGeometry(osd,data.display.get(), osd.data.wndw, &rootWindow, &x, &y, &width, &height, &borderWidth, &depth);
+			if (status == 0) {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STATUS);
+			}
+			if (width != static_cast<unsigned int>(osd.data.display_dimensions.x()) || height != static_cast<unsigned int>(osd.data.display_dimensions.y())) {
+				XWindowChanges xwc{};
+				xwc.width = osd.data.display_dimensions.x();
+				xwc.height = osd.data.display_dimensions.y();
+				XConfigureWindow(osd.data.display.get(), osd.data.wndw, CWWidth | CWHeight, &xwc);
+			}
+		}
+#endif
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::refresh_rate(output_surface_data_type& data, io2d::refresh_rate val) {
+			data.data.rr = val;
+		}
+		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::desired_frame_rate(output_surface_data_type& data, float val) {
+			const float oneFramePerHour = 1.0f / (60.0f * 60.0f); // If you need a lower framerate than this, use as_needed and control the refresh by writing a timer that will trigger a refresh at your desired interval.
+			const float maxFPS = 120.0f; // It's unlikely to find a display output that operates higher than this.
+			data.data.refresh_fps = ::std::min(::std::max(val, oneFramePerHour), maxFPS);
 		}
 		template<class GraphicsMath>
 		inline io2d::refresh_rate _Cairo_graphics_surfaces<GraphicsMath>::refresh_rate(const output_surface_data_type& data) noexcept {
