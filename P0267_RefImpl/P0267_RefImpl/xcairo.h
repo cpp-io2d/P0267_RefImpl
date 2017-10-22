@@ -293,8 +293,6 @@ namespace std {
 						using output_surface_data_type = _Output_surface_win32_data;
 						using unmanaged_output_surface_data_type = _Unmanaged_output_surface_win32_data;
 #elif defined(USE_XLIB)
-						using show_return_data_type = int;
-
 						struct _Display_surface_xlib_data {
 							unique_ptr<Display, decltype(&XCloseDisplay)> display{ nullptr, &XCloseDisplay };
 							Atom wmDeleteWndw;
@@ -388,7 +386,6 @@ namespace std {
 
 						// output_surface functions
 
-#if defined(_WIN32) || defined(_WIN64)
 						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps);
 						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept;
 						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps);
@@ -397,10 +394,13 @@ namespace std {
 						static output_surface_data_type move_output_surface(output_surface_data_type&& data) noexcept;
 						static void destroy(output_surface_data_type& data) noexcept;
 
+#if defined(_WIN32) || defined(_WIN64)
 						struct _Show_return_data_win32 {
 							WPARAM result;
 						};
 						using show_return_data_type = _Show_return_data_win32;
+#elif defined(USE_XLIB)
+						using show_return_data_type = int;
 #endif
 						static show_return_data_type begin_show(output_surface_data_type& data, basic_output_surface<_Graphics_surfaces_type>* instance, basic_output_surface<_Graphics_surfaces_type>& sfc);
 						static void end_show(output_surface_data_type& data);

@@ -289,11 +289,11 @@ namespace std::experimental::io2d::v1 {
 			_Is_finite_check(mtx.m21);
 	}
 
-	inline bool _Graphics_math_float_impl::is_invertible(const typename matrix_2d_data_type& mtx) noexcept {
+	inline bool _Graphics_math_float_impl::is_invertible(const matrix_2d_data_type& mtx) noexcept {
 		return (mtx.m00 * mtx.m11 - mtx.m01 * mtx.m10) != 0.0f;
 	}
 
-	inline float _Graphics_math_float_impl::determinant(const typename matrix_2d_data_type& mtx) noexcept {
+	inline float _Graphics_math_float_impl::determinant(const matrix_2d_data_type& mtx) noexcept {
 		return mtx.m00 * mtx.m11 - mtx.m01 * mtx.m10;
 	}
 

@@ -116,7 +116,7 @@ namespace std {
 					//basic_mask_props(basic_mask_props&&) noexcept = default;
 					//basic_mask_props& operator=(basic_mask_props&&) noexcept = default;
 
-					const _Data_type& basic_mask_props::_Get_data() const noexcept;
+					const _Data_type& _Get_data() const noexcept;
 					basic_mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat, experimental::io2d::filter fi = experimental::io2d::filter::good, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
 					void wrap_mode(experimental::io2d::wrap_mode w) noexcept;
 					void filter(experimental::io2d::filter fi) noexcept;
@@ -287,8 +287,10 @@ namespace std {
 				public:
 					_Data_type& _Get_data() noexcept;
 
+#if defined(_WIN32) || defined (_WIN64)
 					// User manages event loop
 					basic_unmanaged_output_surface(HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, format preferredFormat);
+#endif
 					~basic_unmanaged_output_surface() noexcept;
 					basic_unmanaged_output_surface(basic_unmanaged_output_surface&&) noexcept;
 					basic_unmanaged_output_surface& operator=(basic_unmanaged_output_surface&&) noexcept;

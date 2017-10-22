@@ -9,6 +9,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+#include <cairo/cairo-xlib.h>
 #elif defined(_WIN32) || defined(_WIN64)
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN

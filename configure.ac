@@ -27,7 +27,7 @@ AC_SEARCH_LIBS([zlibVersion],[z],[],[AC_MSG_ERROR(zlib not found. Install zlib)]
 
 AC_SEARCH_LIBS([png_access_version_number],[png],[],[AC_MSG_ERROR(libpng not found. Install libpng)],[-lz -lm])
 
-AC_SEARCH_LIBS([tjInitCompress],[jpeg turbojpeg],[],[AC_MSG_ERROR(libjpeg-turbo not found. Install libjpeg-turbo, called libturbojpeg on Ubuntu and possibly other distros)],[-lz -lm])
+dnl AC_SEARCH_LIBS([tjInitCompress],[jpeg turbojpeg],[],[AC_MSG_ERROR(libjpeg-turbo not found. Install libjpeg-turbo, called libturbojpeg on Ubuntu and possibly other distros)],[-lz -lm])
 
 PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.16])
 PKG_CHECK_MODULES([X11], [x11])

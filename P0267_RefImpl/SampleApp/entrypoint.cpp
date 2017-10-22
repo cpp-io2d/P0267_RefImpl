@@ -32,7 +32,7 @@ void make_path_examples() {
 
 void make_brush_examples();
 void make_brush_examples() {
-	solid_color_test_01();
+	//solid_color_test_01();
 }
 int main() {
 	//auto pt = point_2d{ 80.0, 100.0 };

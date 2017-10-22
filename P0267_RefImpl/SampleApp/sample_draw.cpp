@@ -86,17 +86,17 @@ void sample_draw::operator()(output_surface& ds) {
 
 void test_image_load_save(output_surface& ds) {
 #ifdef _Filesystem_support_test
-	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::argb32);
+//	static auto imgSfc = image_surface(filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::argb32);
 	//static auto alphaSfc = image_surface(filesystem::path("alpha8.png"s), format::a8, image_file_format::png, format::a8);
 #else
-	static auto imgSfc = image_surface("2017_03_05.jpg"s, format::argb32, image_file_format::jpeg, format::argb32);
+//	static auto imgSfc = image_surface("2017_03_05.jpg"s, format::argb32, image_file_format::jpeg, format::argb32);
 	//static auto alphaSfc = image_surface("alpha8.png"s, format::a8, image_file_format::png, format::a8);
 #endif
 	static bool saveOnce = false;
 	if (!saveOnce) {
 #ifdef _Filesystem_support_test
 		//imgSfc.save(filesystem::path("2017-03-05_testsave.png"s), image_file_format::png);
-		imgSfc.save(filesystem::path("2017-03-05_testsave.jpg"s), image_file_format::jpeg);
+//		imgSfc.save(filesystem::path("2017-03-05_testsave.jpg"s), image_file_format::jpeg);
 		//	alphaSfc.save(filesystem::path("alpha8_testsave.png"s), image_file_format::png);
 #else
 		//	imgSfc.save("2017-03-05_testsave.png"s, image_file_format::png);
@@ -105,11 +105,11 @@ void test_image_load_save(output_surface& ds) {
 		saveOnce = true;
 	}
 
-	brush imgBrush{ copy_image_surface(imgSfc) };
+	//brush imgBrush{ ::std::move(image_brush(copy_image_surface(imgSfc))) };
 	//brush alphaBrush{ make_image_surface(alphaSfc) };
 
 	ds.paint(brush{ rgba_color::cornflower_blue });
-	ds.paint(imgBrush);
+	//ds.paint(imgBrush);
 	//ds.mask(imgBrush, alphaBrush, path_builder{});
 	ds.flush();
 }

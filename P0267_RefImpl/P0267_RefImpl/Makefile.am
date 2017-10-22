@@ -4,23 +4,16 @@
 
 lib_LTLIBRARIES =		libio2d.la
 
-libio2d_la_SOURCES =		display_surface-common.cpp \
-				image_surface.cpp \
-				io2d_error_category.cpp \
-				rgba_color.cpp \
-				standalone_functions.cpp \
-				surface.cpp \
-				throw_helpers.h \
-				xdiagnostics.h
+libio2d_la_SOURCES =	rgba_color.cpp
 
 if USE_XCB
-libio2d_la_SOURCES +=	display_surface-xcb.cpp
+libio2d_la_SOURCES +=	cairo_renderer_xcb.cpp
 endif
 if USE_XLIB
-libio2d_la_SOURCES +=	display_surface-xlib.cpp
+libio2d_la_SOURCES +=	cairo_renderer_xlib.cpp
 endif
 
-include_HEADERS =	io2d.h xio2d.h
+include_HEADERS =	io2d.h xio2d.h xcairo.h xcairo_helpers.h xcairo_impl.h xdiagnostics.h xgraphicsmath.h xgraphicsmath_impl.h xgraphicsmathfloat.h xgraphicsmathfloat_impl.h xinclwindows_h.h xinput.h xio2d.h xio2d_impl.h xpath.h xpath_impl.h xpathbuilder_impl.h xsurfaces.h xsurfaces_enums.h xsurfaces_impl.h xsurfacesprops_impl.h xtext.h
 
 libio2d_la_CPPFLAGS =	@CPPFLAGS@
 libio2d_la_CXXFLAGS =	@CXXFLAGS@

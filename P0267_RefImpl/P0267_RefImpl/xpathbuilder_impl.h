@@ -5,67 +5,67 @@
 namespace std::experimental::io2d::v1 {
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::new_figure(const basic_point_2d<GraphicsMath>& v) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_new_figure>, v);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::abs_new_figure>, v);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::rel_new_figure(const basic_point_2d<GraphicsMath>& v) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_new_figure>, v);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::rel_new_figure>, v);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::close_figure() noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::close_figure>);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::close_figure>);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_matrix>, m);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::abs_matrix>, m);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::rel_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_matrix>, m);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::rel_matrix>, m);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::revert_matrix() noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::revert_matrix>);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::revert_matrix>);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::arc(const basic_point_2d<GraphicsMath>& rad, float rot, const float sang) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::arc>, rad, rot, sang);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::arc>, rad, rot, sang);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::cubic_curve(const basic_point_2d<GraphicsMath>& pt0, const basic_point_2d<GraphicsMath>& pt1, const basic_point_2d<GraphicsMath>& pt2) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_cubic_curve>, pt0, pt1, pt2);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::abs_cubic_curve>, pt0, pt1, pt2);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::line(const basic_point_2d<GraphicsMath>& pt) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_line>, pt);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::abs_line>, pt);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::quadratic_curve(const basic_point_2d<GraphicsMath>& pt0, const basic_point_2d<GraphicsMath>& pt1) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::abs_quadratic_curve>, pt0, pt1);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::abs_quadratic_curve>, pt0, pt1);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::rel_cubic_curve(const basic_point_2d<GraphicsMath>& dpt0, const basic_point_2d<GraphicsMath>& dpt1, const basic_point_2d<GraphicsMath>& dpt2) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_cubic_curve>, dpt0, dpt1, dpt2);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::rel_cubic_curve>, dpt0, dpt1, dpt2);
 	}
 
 	template <class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::rel_line(const basic_point_2d<GraphicsMath>& dpt) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_line>, dpt);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::rel_line>, dpt);
 	}
 
 	template<class GraphicsMath, class Allocator>
 	inline void basic_path_builder<GraphicsMath, Allocator>::rel_quadratic_curve(const basic_point_2d<GraphicsMath>& dpt0, const basic_point_2d<GraphicsMath>& dpt1) noexcept {
-		_Data.emplace_back(in_place_type<basic_figure_items<GraphicsMath>::rel_quadratic_curve>, dpt0, dpt1);
+		_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::rel_quadratic_curve>, dpt0, dpt1);
 	}
 
 	template <class GraphicsMath, class Allocator>

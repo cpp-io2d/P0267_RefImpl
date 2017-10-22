@@ -421,6 +421,11 @@ namespace std {
 
 					~basic_interpreted_path() noexcept;
 				};
+
+			template <class GraphicsMath, class ForwardIterator>
+			vector<typename basic_figure_items<GraphicsMath>::figure_item> _Interpret_path_items(ForwardIterator first, ForwardIterator last);
+			template <class GraphicsMath, class Allocator>
+			vector<typename basic_figure_items<GraphicsMath>::figure_item> _Interpret_path_items(const basic_path_builder<GraphicsMath, Allocator>& pb);
 			}
 		}
 	}

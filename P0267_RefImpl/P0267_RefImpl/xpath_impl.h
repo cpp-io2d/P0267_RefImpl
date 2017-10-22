@@ -1,6 +1,7 @@
 #pragma once
 #include "xpath.h"
 #include <vector>
+#include <chrono>
 
 namespace std::experimental::io2d::v1 {
 	template<class GraphicsMath>
@@ -348,7 +349,7 @@ namespace std::experimental::io2d::v1 {
 	template <class GraphicsMath>
 	inline basic_point_2d<GraphicsMath> basic_figure_items<GraphicsMath>::arc::end_pt(const basic_point_2d<GraphicsMath>& cpt, const basic_matrix_2d<GraphicsMath>& m) const noexcept {
 		auto lmtx = m;
-		auto tfrm = matrix_2d::init_rotate(_Start_angle + _Rotation);
+		auto tfrm = basic_matrix_2d<GraphicsMath>::init_rotate(_Start_angle + _Rotation);
 		lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
 		auto pt = (_Radius * tfrm);
 		pt.y(-pt.y());
@@ -427,7 +428,7 @@ namespace std::experimental::io2d::v1 {
 		template <class GraphicsMath, class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_new_figure>, _Path_data_abs_new_figure> = _Path_data_abs_new_figure_val>
 		static void _Interpret(const T& item, ::std::vector<typename basic_figure_items<GraphicsMath>::figure_item>& v, basic_matrix_2d<GraphicsMath>& m, basic_point_2d<GraphicsMath>& currentPoint, basic_point_2d<GraphicsMath>& closePoint, stack<basic_matrix_2d<GraphicsMath>>&) noexcept {
 			const auto pt = m.transform_pt({ 0.0F, 0.0F }) + item.at();
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_new_figure>, pt);
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_new_figure>, pt);
 			currentPoint = pt;
 			closePoint = pt;
 		}
@@ -437,7 +438,7 @@ namespace std::experimental::io2d::v1 {
 			auto amtx = m;
 			amtx.m20(0.0F); amtx.m21(0.0F); // obliterate translation since this is relative.
 			const auto pt = currentPoint + item.at() * amtx;
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_new_figure>, pt);
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_new_figure>, pt);
 			currentPoint = pt;
 			closePoint = pt;
 		}
@@ -449,8 +450,8 @@ namespace std::experimental::io2d::v1 {
 			if (idx == 3 || idx == 10) {
 				return; // degenerate path
 			}
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::close_figure>);
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_new_figure>,
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::close_figure>);
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_new_figure>,
 				closePoint);
 			currentPoint = closePoint;
 		}
@@ -468,7 +469,7 @@ namespace std::experimental::io2d::v1 {
 		template <class GraphicsMath, class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::revert_matrix>, _Path_data_revert_matrix> = _Path_data_revert_matrix_val>
 		static void _Interpret(const T&, ::std::vector<typename basic_figure_items<GraphicsMath>::figure_item>&, basic_matrix_2d<GraphicsMath>& m, basic_point_2d<GraphicsMath>&, basic_point_2d<GraphicsMath>&, stack<basic_matrix_2d<GraphicsMath>>& matrices) noexcept {
 			if (matrices.empty()) {
-				m = matrix_2d{};
+				m = basic_matrix_2d<GraphicsMath>{};
 			}
 			else {
 				m = matrices.top();
@@ -483,7 +484,7 @@ namespace std::experimental::io2d::v1 {
 			if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
 				return; // degenerate path segment
 			}
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_cubic_curve>, pt1,
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_cubic_curve>, pt1,
 				pt2, pt3);
 			currentPoint = pt3;
 		}
@@ -493,7 +494,7 @@ namespace std::experimental::io2d::v1 {
 			if (currentPoint == pt) {
 				return; // degenerate path segment
 			}
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_line>, pt);
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_line>, pt);
 			currentPoint = pt;
 		}
 		template <class GraphicsMath, class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_figure_items<GraphicsMath>::abs_quadratic_curve>, _Path_data_abs_quadratic_curve> = _Path_data_abs_quadratic_curve_val>
@@ -507,7 +508,7 @@ namespace std::experimental::io2d::v1 {
 			const auto beginPt = currentPoint;
 			basic_point_2d<GraphicsMath> cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 			basic_point_2d<GraphicsMath> cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_cubic_curve>, cpt1, cpt2, endPt);
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_cubic_curve>, cpt1, cpt2, endPt);
 			currentPoint = endPt;
 		}
 
@@ -523,7 +524,7 @@ namespace std::experimental::io2d::v1 {
 			const basic_point_2d<GraphicsMath> rad = item.radius();
 			auto startAng = item.start_angle();
 			const auto origM = m;
-			m = matrix_2d::init_scale(rad);
+			m = basic_matrix_2d<GraphicsMath>::init_scale(rad);
 			auto centerOffset = (point_for_angle<GraphicsMath>(two_pi<float> - startAng) * rad);
 			centerOffset.y(-centerOffset.y());
 			auto ctr = currentPoint - centerOffset;
@@ -616,7 +617,7 @@ namespace std::experimental::io2d::v1 {
 				cpt2 -= adjustVal;
 				cpt3 -= adjustVal;
 				currentPoint = cpt3;
-				v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_cubic_curve>, cpt1, cpt2, cpt3);
+				v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_cubic_curve>, cpt1, cpt2, cpt3);
 				currTheta -= theta;
 			}
 			m = origM;
@@ -632,7 +633,7 @@ namespace std::experimental::io2d::v1 {
 			if (currentPoint == pt1 && pt1 == pt2 && pt2 == pt3) {
 				return; // degenerate path segment
 			}
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_cubic_curve>, currentPoint + pt1, currentPoint + pt1 + pt2, currentPoint + pt1 + pt2 + pt3);
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_cubic_curve>, currentPoint + pt1, currentPoint + pt1 + pt2, currentPoint + pt1 + pt2 + pt3);
 			currentPoint = currentPoint + pt1 + pt2 + pt3;
 		}
 
@@ -644,7 +645,7 @@ namespace std::experimental::io2d::v1 {
 			if (currentPoint == pt) {
 				return; // degenerate path segment
 			}
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_line>, pt);
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_line>, pt);
 			currentPoint = pt;
 		}
 
@@ -660,7 +661,7 @@ namespace std::experimental::io2d::v1 {
 			}
 			const basic_point_2d<GraphicsMath>& cpt1 = { ((controlPt.x() - beginPt.x()) * twoThirds) + beginPt.x(), ((controlPt.y() - beginPt.y()) * twoThirds) + beginPt.y() };
 			const basic_point_2d<GraphicsMath>& cpt2 = { ((controlPt.x() - endPt.x()) * twoThirds) + endPt.x(), ((controlPt.y() - endPt.y()) * twoThirds) + endPt.y() };
-			v.emplace_back(::std::in_place_type<basic_figure_items<GraphicsMath>::abs_cubic_curve>, cpt1, cpt2, endPt);
+			v.emplace_back(::std::in_place_type<typename basic_figure_items<GraphicsMath>::abs_cubic_curve>, cpt1, cpt2, endPt);
 			currentPoint = endPt;
 		}
 	};

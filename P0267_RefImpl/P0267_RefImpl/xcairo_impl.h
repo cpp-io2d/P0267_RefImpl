@@ -8,6 +8,8 @@
 #include <cairo-win32.h>
 #endif
 #include "xpath.h"
+#include <iostream>
+#include <sstream>
 
 namespace std::experimental::io2d::v1 {
 	namespace _Cairo {
@@ -419,7 +421,7 @@ namespace std::experimental::io2d::v1 {
 		template<class GraphicsMath>
 		template<class Allocator>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::clip(clip_props_data_type& data, const basic_path_builder<GraphicsMath, Allocator>& pb) {
-			data.clip = basic_interpreted_path<_Graphics_surfaces_type>(pb)
+			data.clip = basic_interpreted_path<_Graphics_surfaces_type>(pb);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::clip(clip_props_data_type& data, const basic_interpreted_path<_Graphics_surfaces_type>& ip) noexcept {
@@ -754,7 +756,7 @@ namespace std::experimental::io2d::v1 {
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, ::std::string p, image_file_format iff, error_code& ec) noexcept {
-			ec = ::std::make_error_code(::std::errc::not_supported));
+			ec = ::std::make_error_code(::std::errc::not_supported);
 			return;
 		}
 #endif
@@ -851,6 +853,7 @@ namespace std::experimental::io2d::v1 {
 
 		template <class GraphicsMath>
 		inline void _Create_display_surface_and_context(typename _Cairo_graphics_surfaces<GraphicsMath>::_Display_surface_data_type& data) {
+#if defined(_WIN32) || defined (_WIN64)
 			if (data.hwnd != 0) {
 				data.display_surface = ::std::move(::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_win32_surface_create(data.hdc), &cairo_surface_destroy));
 				auto sfc = data.display_surface.get();
@@ -858,6 +861,14 @@ namespace std::experimental::io2d::v1 {
 				data.display_context = ::std::move(::std::unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(sfc), &cairo_destroy));
 				_Throw_if_failed_cairo_status_t(cairo_status(data.display_context.get()));
 			}
+#elif defined(USE_XLIB)
+			if (data.wndw != None) {
+				data.display_surface = ::std::move(::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_xlib_surface_create(data.display.get(), data.wndw, DefaultVisual(data.display.get(), DefaultScreen(data.display.get())), data.display_dimensions.x(), data.display_dimensions.y()), &cairo_surface_destroy));
+				_Throw_if_failed_cairo_status_t(cairo_surface_status(data.display_surface.get()));
+				data.display_context = ::std::move(::std::unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(data.display_surface.get()), &cairo_destroy));
+				_Throw_if_failed_cairo_status_t(cairo_status(data.display_context.get()));
+			}
+#endif
 		}
 
 		template <class GraphicsSurfaces>
@@ -928,7 +939,7 @@ namespace std::experimental::io2d::v1 {
 		}
 		template <class GraphicsSurfaces>
 		inline basic_display_point<typename GraphicsSurfaces::graphics_math_type> _Ds_max_display_dimensions() noexcept {
-			return GraphicsSurface::max_display_dimensions();
+			return GraphicsSurfaces::max_display_dimensions();
 		}
 		template <class GraphicsSurfaces>
 		inline io2d::scaling _Ds_scaling(typename GraphicsSurfaces::_Display_surface_data_type& data) noexcept {
@@ -1019,7 +1030,7 @@ namespace std::experimental::io2d::v1 {
 								//cairo_paint(_Native_context.get());
 							}
 							else {
-								const brush_props& props = data._Letterbox_brush_props.value();
+								const auto& props = data._Letterbox_brush_props.value();
 								cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
 								cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
 								cairo_matrix_t cPttnMatrix;
@@ -1078,7 +1089,7 @@ namespace std::experimental::io2d::v1 {
 								//cairo_paint(_Native_context.get());
 							}
 							else {
-								const brush_props& props = data._Letterbox_brush_props.value();
+								const auto& props = data._Letterbox_brush_props.value();
 								cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
 								cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
 								cairo_matrix_t cPttnMatrix;
@@ -1307,7 +1318,7 @@ namespace std::experimental::io2d::v1 {
 		template<class GraphicsMath>
 		inline basic_bounding_box<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush) {
 			useLetterboxBrush = false;
-			return data.data.user_scaling_callback(sfc, useLetterboxBrush)
+			return data.data.user_scaling_callback(sfc, useLetterboxBrush);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::display_dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val) {
@@ -1449,7 +1460,7 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer.dimensions.x(preferredWidth);
 			data.back_buffer.dimensions.y(preferredHeight);
 #if defined(USE_XLIB)
-			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpendDisplay(nullptr), &XCloseDisplay));
+			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpenDisplay(nullptr), &XCloseDisplay));
 			if (data.display == nullptr) {
 				throw ::std::system_error(::std::make_error_code(::std::errc::io_error));
 			}
@@ -1470,7 +1481,7 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer.dimensions.x(preferredWidth);
 			data.back_buffer.dimensions.y(preferredHeight);
 #if defined(USE_XLIB)
-			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpendDisplay(nullptr), &XCloseDisplay));
+			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpenDisplay(nullptr), &XCloseDisplay));
 			if (data.display == nullptr) {
 				ec = ::std::make_error_code(::std::errc::io_error);
 				return output_surface_data_type{};
@@ -1493,7 +1504,7 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer.dimensions.x(preferredWidth);
 			data.back_buffer.dimensions.y(preferredHeight);
 #if defined(USE_XLIB)
-			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpendDisplay(nullptr), &XCloseDisplay));
+			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpenDisplay(nullptr), &XCloseDisplay));
 			if (data.display == nullptr) {
 				throw ::std::system_error(::std::make_error_code(::std::errc::io_error));
 			}
@@ -1514,7 +1525,7 @@ namespace std::experimental::io2d::v1 {
 			data.back_buffer.dimensions.x(preferredWidth);
 			data.back_buffer.dimensions.y(preferredHeight);
 #if defined(USE_XLIB)
-			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpendDisplay(nullptr), &XCloseDisplay));
+			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(XOpenDisplay(nullptr), &XCloseDisplay));
 			if (data.display == nullptr) {
 				ec = ::std::make_error_code(::std::errc::io_error);
 				return output_surface_data_type{};
@@ -1789,7 +1800,7 @@ namespace std::experimental::io2d::v1 {
 			int x = 0;
 			int y = 0;
 			unsigned int borderWidth = 4;
-			data.wndw = XCreateSimpleWindow(display, RootWindow(display, screenNumber), x, y, static_cast<unsigned int>(_Display_width), static_cast<unsigned int>(_Display_height), borderWidth, WhitePixel(display, screenNumber), BlackPixel(display, screenNumber));
+			data.wndw = XCreateSimpleWindow(display, RootWindow(display, screenNumber), x, y, static_cast<unsigned int>(data.display_dimensions.x()), static_cast<unsigned int>(data.display_dimensions.y()), borderWidth, WhitePixel(display, screenNumber), BlackPixel(display, screenNumber));
 			XSelectInput(display, data.wndw, ExposureMask | StructureNotifyMask);
 			XSetWMProtocols(display, data.wndw, &data.wmDeleteWndw, 1);
 			XMapWindow(display, data.wndw);
@@ -1803,14 +1814,14 @@ namespace std::experimental::io2d::v1 {
 			bool exit = false;
 			XEvent xev;
 
-			auto previousTime = steady_clock::now();
+			auto previousTime = ::std::chrono::steady_clock::now();
 			data.elapsed_draw_time = 0.0F;
 			while (!exit) {
-				auto currentTime = steady_clock::now();
-				auto elapsedTimeIncrement = static_cast<float>(duration_cast<nanoseconds>(currentTime - previousTime).count());
+				auto currentTime = ::std::chrono::steady_clock::now();
+				auto elapsedTimeIncrement = static_cast<float>(::std::chrono::duration_cast<::std::chrono::nanoseconds>(currentTime - previousTime).count());
 				data.elapsed_draw_time += elapsedTimeIncrement;
 				previousTime = currentTime;
-				while (XCheckIfEvent(_Display.get(), &xev, &_X11_if_event_pred, reinterpret_cast<XPointer>(&osd))) {
+				while (XCheckIfEvent(data.display.get(), &xev, &_X11_if_xev_pred, reinterpret_cast<XPointer>(&osd))) {
 					switch (xev.type) {
 						// ExposureMask events:
 					case Expose:
@@ -1822,9 +1833,9 @@ namespace std::experimental::io2d::v1 {
 						data.can_draw = true;
 						if (osd.draw_callback != nullptr) {
 							if (data.auto_clear) {
-								_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>(data);
+								_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>>(data);
 							}
-							ods.draw_callback(sfc);
+							osd.draw_callback(sfc);
 						}
 						else {
 							throw system_error(make_error_code(errc::operation_not_supported));
@@ -1855,7 +1866,7 @@ namespace std::experimental::io2d::v1 {
 							resized = true;
 						}
 						if (resized) {
-							cairo_xlib_surface_set_size(data.display_surface.get(), static_cast<double>(data.display_dimensions.x()), static_cast<double>data.display_dimensions.y());
+							cairo_xlib_surface_set_size(data.display_surface.get(), static_cast<double>(data.display_dimensions.x()), static_cast<double>(data.display_dimensions.y()));
 							if (osd.size_change_callback != nullptr) {
 								osd.size_change_callback(sfc);
 							}
@@ -1889,11 +1900,11 @@ namespace std::experimental::io2d::v1 {
 					case GraphicsExpose:
 					{
 						if (data.can_draw) {
-							if (data.draw_callback != nullptr) {
+							if (osd.draw_callback != nullptr) {
 								if (data.auto_clear) {
-									_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>(data);
+									_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>>(data);
 								}
-								draw_callback(sfc);
+								osd.draw_callback(sfc);
 							}
 							else {
 								throw system_error(make_error_code(errc::operation_not_supported));
@@ -1994,7 +2005,7 @@ namespace std::experimental::io2d::v1 {
 						// Run user draw function:
 						if (osd.draw_callback != nullptr) {
 							if (data.auto_clear) {
-								_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>(data);
+								_Ds_clear<_Cairo_graphics_surfaces<GraphicsMath>>(data);
 							}
 							osd.draw_callback(sfc);
 						}
@@ -2031,7 +2042,7 @@ namespace std::experimental::io2d::v1 {
 			unsigned int height = 0;
 			unsigned int borderWidth{};
 			unsigned int depth{};
-			auto status = XGetGeometry(osd,data.display.get(), osd.data.wndw, &rootWindow, &x, &y, &width, &height, &borderWidth, &depth);
+			auto status = XGetGeometry(osd.data.display.get(), osd.data.wndw, &rootWindow, &x, &y, &width, &height, &borderWidth, &depth);
 			if (status == 0) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STATUS);
 			}

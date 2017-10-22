@@ -23,7 +23,7 @@ namespace std {
 				template <class GraphicsSurfaces>
 				template <class ForwardIterator>
 				inline basic_dashes<GraphicsSurfaces>::basic_dashes(float offset, ForwardIterator first, ForwardIterator last)
-					: _Data(GraphicsSurfaces::create_dashes<ForwardIterator>(offset, first, last)) {}
+					: _Data(GraphicsSurfaces::create_dashes(offset, first, last)) {}
 				template <class GraphicsSurfaces>
 				inline basic_dashes<GraphicsSurfaces>::basic_dashes(float offset, ::std::initializer_list<float> il)
 					: _Data(GraphicsSurfaces::create_dashes(offset, il)) {}
@@ -98,7 +98,7 @@ namespace std {
 
 				template<class GraphicsSurfaces>
 				inline basic_display_point<typename basic_image_surface<GraphicsSurfaces>::graphics_math_type> basic_image_surface<GraphicsSurfaces>::max_dimensions() noexcept {
-					return GraphicsSurfaces::max_dimensions(_Data);
+					return GraphicsSurfaces::max_dimensions();
 				}
 				template <class GraphicsSurfaces>
 				inline io2d::format basic_image_surface<GraphicsSurfaces>::format() const noexcept {
@@ -115,7 +115,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_image_surface<GraphicsSurfaces>::flush() {
-					GraphicsSurfaces::flush(_Data)
+					GraphicsSurfaces::flush(_Data);
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_image_surface<GraphicsSurfaces>::flush(error_code& ec) noexcept {
@@ -368,10 +368,13 @@ namespace std {
 
 				// unmanaged output surface
 
+#if defined(_WIN32) || defined(_WIN64)
 				template <class GraphicsSurfaces>
 				inline basic_unmanaged_output_surface<GraphicsSurfaces>::basic_unmanaged_output_surface(HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat)
 					: _Data(move(GraphicsSurfaces::create_unmanaged_output_surface(hwnd, hdc, preferredWidth, preferredHeight, preferredFormat))) {
 				}
+#endif
+
 				template <class GraphicsSurfaces>
 				inline basic_unmanaged_output_surface<GraphicsSurfaces>::basic_unmanaged_output_surface(basic_unmanaged_output_surface&& val) noexcept {
 					_Data = move(GraphicsSurfaces::move_unmanaged_output_surface(move(val._Data)));
@@ -412,7 +415,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::flush() {
-					GraphicsSurfaces::flush(_Data)
+					GraphicsSurfaces::flush(_Data);
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::flush(error_code& ec) noexcept {
