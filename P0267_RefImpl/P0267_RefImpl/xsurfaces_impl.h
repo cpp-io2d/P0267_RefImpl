@@ -370,8 +370,8 @@ namespace std {
 
 #if defined(_WIN32) || defined(_WIN64)
 				template <class GraphicsSurfaces>
-				inline basic_unmanaged_output_surface<GraphicsSurfaces>::basic_unmanaged_output_surface(HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat)
-					: _Data(move(GraphicsSurfaces::create_unmanaged_output_surface(hwnd, hdc, preferredWidth, preferredHeight, preferredFormat))) {
+				inline basic_unmanaged_output_surface<GraphicsSurfaces>::basic_unmanaged_output_surface(data_type&& data) noexcept
+					: _Data(move(data)) {
 				}
 #endif
 
@@ -391,17 +391,35 @@ namespace std {
 					GraphicsSurfaces::destroy(_Data);
 				}
 
+				template<class GraphicsSurfaces>
+				inline bool basic_unmanaged_output_surface<GraphicsSurfaces>::has_draw_callback() const noexcept {
+					return GraphicsSurfaces::has_draw_callback(_Data);
+				}
+
 				template <class GraphicsSurfaces>
 				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::invoke_draw_callback() {
 					GraphicsSurfaces::invoke_draw_callback(_Data);
+				}
+				template<class GraphicsSurfaces>
+				inline bool basic_unmanaged_output_surface<GraphicsSurfaces>::has_size_change_callback() const noexcept {
+					return GraphicsSurfaces::has_size_change_callback(_Data);
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::invoke_size_change_callback() {
 					GraphicsSurfaces::invoke_size_change_callback(_Data);
 				}
+				template<class GraphicsSurfaces>
+				inline bool basic_unmanaged_output_surface<GraphicsSurfaces>::has_user_scaling_callback() const noexcept {
+					return GraphicsSurfaces::has_user_scaling_callback(_Data);
+				}
 				template <class GraphicsSurfaces>
 				inline basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> basic_unmanaged_output_surface<GraphicsSurfaces>::invoke_user_scaling_callback(bool& useLetterboxBrush) {
 					GraphicsSurfaces::invoke_user_scaling_callback(_Data, useLetterboxBrush);
+				}
+
+				template<class GraphicsSurfaces>
+				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::draw_to_output() {
+					GraphicsSurfaces::draw_to_output(_Data, *this);
 				}
 
 				template <class GraphicsSurfaces>

@@ -29,7 +29,8 @@ namespace std {
 					}
 					LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 					void _RegisterWindowClass();
-
+#elif defined(USE_XLIB)
+					void _Xlib_unmanaged_close_display(Display*);
 #endif
 					constexpr const wchar_t* _Refimpl_window_class_name = L"_P0267RefImplCairoRenderer_FF2B4C8D-0AB8-4343-AA02-6D0857E9FA21";
 
@@ -297,6 +298,7 @@ namespace std {
 							unique_ptr<Display, decltype(&XCloseDisplay)> display{ nullptr, &XCloseDisplay };
 							Atom wmDeleteWndw;
 							Window wndw;
+							Visual* visual; // Note: This pointer is not a dynamic allocation and thus does not need to be managed.
 							bool unmanaged = false;
 							bool letterbox_brush_is_default = true;
 							optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
@@ -336,7 +338,8 @@ namespace std {
 						using unmanaged_output_surface_data_type = _Unmanaged_output_surface_xlib_data;
 
 #endif
-						static void _Render_to_native_surface(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc);
+						template <class OutputDataType, class OutputSurfaceType>
+						static void _Render_to_native_surface(OutputDataType& osd, OutputSurfaceType& sfc);
 
 						static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
 						static void render(output_surface_data_type& data);
@@ -344,13 +347,19 @@ namespace std {
 						// unmanaged_output_surface functions
 
 #if defined(_WIN32) || defined(_WIN64)
-						static unmanaged_output_surface_data_type create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat);
+						static unmanaged_output_surface_data_type create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
+#elif defined(USE_XLIB)
+						static unmanaged_output_surface_data_type create_unmanaged_output_surface(Display* display, Window wndw, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
 #endif
 						static unmanaged_output_surface_data_type move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept;
 						static void destroy(unmanaged_output_surface_data_type& data) noexcept;
 
+						static bool has_draw_callback(const unmanaged_output_surface_data_type& data) noexcept;
 						static void invoke_draw_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
+						static void draw_to_output(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
+						static bool has_size_change_callback(const unmanaged_output_surface_data_type& data) noexcept;
 						static void invoke_size_change_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
+						static bool has_user_scaling_callback(const unmanaged_output_surface_data_type& data) noexcept;
 						static basic_bounding_box<GraphicsMath> invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush);
 						static void display_dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
 

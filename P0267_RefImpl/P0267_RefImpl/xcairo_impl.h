@@ -863,7 +863,7 @@ namespace std::experimental::io2d::v1 {
 			}
 #elif defined(USE_XLIB)
 			if (data.wndw != None) {
-				data.display_surface = ::std::move(::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_xlib_surface_create(data.display.get(), data.wndw, DefaultVisual(data.display.get(), DefaultScreen(data.display.get())), data.display_dimensions.x(), data.display_dimensions.y()), &cairo_surface_destroy));
+				data.display_surface = ::std::move(::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_xlib_surface_create(data.display.get(), data.wndw, data.visual, data.display_dimensions.x(), data.display_dimensions.y()), &cairo_surface_destroy));
 				_Throw_if_failed_cairo_status_t(cairo_surface_status(data.display_surface.get()));
 				data.display_context = ::std::move(::std::unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(data.display_surface.get()), &cairo_destroy));
 				_Throw_if_failed_cairo_status_t(cairo_status(data.display_context.get()));
@@ -897,6 +897,15 @@ namespace std::experimental::io2d::v1 {
 				// Recreate the render target that is drawn to the displayed surface
 				data.back_buffer = ::std::move(GraphicsSurfaces::create_image_surface(data.back_buffer.format, val.x(), val.y()));
 			}
+		}
+		template <class GraphicsSurfaces>
+		inline void _Ds_display_dimensions(typename GraphicsSurfaces::_Display_surface_data_type& data, const basic_display_point<typename GraphicsSurfaces::graphics_math_type>& val) {
+			data.display_dimensions = val;
+#if defined(USE_XLIB)
+			if (data.unmanaged) {
+				cairo_xlib_surface_set_size(data.display_surface.get(), val.x(), val.y());
+			}
+#endif
 		}
 		template <class GraphicsSurfaces>
 		inline void _Ds_scaling(typename GraphicsSurfaces::_Display_surface_data_type& data, io2d::scaling val) {
@@ -970,8 +979,8 @@ namespace std::experimental::io2d::v1 {
 			return basic_display_point<GraphicsMath>(16384, 16384); // This takes up 1 GB of RAM, you probably don't want to do this. 2048x2048 is the max size for hardware that meets 9_1 specs (i.e. quite low powered or really old). Probably much more reasonable.
 		}
 
-		template <class GraphicsMath>
-		inline void _Render_for_scaling_uniform_or_letterbox(typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& /*sfc*/) {
+		template <class OutputDataType>
+		inline void _Render_for_scaling_uniform_or_letterbox(OutputDataType& osd) {
 			const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
 
 			auto& data = osd.data;
@@ -980,7 +989,6 @@ namespace std::experimental::io2d::v1 {
 			double backBufferWidth = static_cast<double>(data.back_buffer.dimensions.x());
 			double backBufferHeight = static_cast<double>(data.back_buffer.dimensions.y());
 			auto backBufferSfc = data.back_buffer.surface.get();
-			//auto displaySfc = data.display_surface.get();
 			auto displayContext = data.display_context.get();
 
 			if (backBufferWidth == displayWidth && backBufferHeight == displayHeight) {
@@ -993,6 +1001,7 @@ namespace std::experimental::io2d::v1 {
 				cairo_matrix_t ctm;
 				double rectX, rectY, rectWidth, rectHeight;
 				if (whRatio < displayWHRatio) {
+					// We don't want any existing path on the displayContext since we are doing fill operations.
 					cairo_new_path(displayContext);
 					rectWidth = trunc(displayHeight * whRatio);
 					rectHeight = displayHeight;
@@ -1009,14 +1018,14 @@ namespace std::experimental::io2d::v1 {
 					cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
 					cairo_pattern_set_filter(patPtr, cairoFilter);
 					cairo_set_source(displayContext, patPtr);
-					cairo_fill(displayContext);
-					if (data.scl == io2d::scaling::letterbox) {
+					cairo_fill(displayContext); // Draw the back buffer. Note that this also clears the context path.
+
+					if (data.scl == io2d::scaling::letterbox) { // There is only a scaling::letterbox branch since scaling::uniform doesn't touch contents that would be letterboxed if it was scaling::letterbox.
 						const auto lboxWidth = trunc(((displayWidth)-rectWidth) / 2.0);
 						cairo_rectangle(displayContext, 0.0, 0.0, lboxWidth, rectHeight);
 						cairo_rectangle(displayContext, rectWidth + lboxWidth, 0.0, lboxWidth, rectHeight);
 						if (data._Letterbox_brush == nullopt) {
 							cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
-							//cairo_paint(_Native_context.get());
 						}
 						else {
 							auto pttn = data._Letterbox_brush.value()._Get_data().brush.get();
@@ -1027,7 +1036,6 @@ namespace std::experimental::io2d::v1 {
 								cairo_matrix_init_identity(&cPttnMatrix);
 								cairo_pattern_set_matrix(pttn, &cPttnMatrix);
 								cairo_set_source(displayContext, pttn);
-								//cairo_paint(_Native_context.get());
 							}
 							else {
 								const auto& props = data._Letterbox_brush_props.value();
@@ -1038,7 +1046,6 @@ namespace std::experimental::io2d::v1 {
 								cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
 								cairo_pattern_set_matrix(pttn, &cPttnMatrix);
 								cairo_set_source(displayContext, pttn);
-								//cairo_paint(_Native_context.get());
 							}
 						}
 						cairo_fill(displayContext);
@@ -1062,17 +1069,10 @@ namespace std::experimental::io2d::v1 {
 					cairo_pattern_set_filter(patPtr, cairoFilter);
 					cairo_set_source(displayContext, patPtr);
 					cairo_fill(displayContext);
-					//cairo_restore(nativeContext);
 					if (data.scl == io2d::scaling::letterbox) {
 						const auto lboxHeight = trunc((displayHeight - rectHeight) / 2.0);
 						cairo_rectangle(displayContext, 0.0, 0.0, rectWidth, lboxHeight);
 						cairo_rectangle(displayContext, 0.0, rectHeight + lboxHeight, rectWidth, lboxHeight);
-						//cairo_pattern_set_extend(_Letterbox_brush.native_handle(), _Extend_to_cairo_extend_t(_Letterbox_brush.wrap_mode()));
-						//cairo_pattern_set_filter(_Letterbox_brush.native_handle(), _Filter_to_cairo_filter_t(_Letterbox_brush.filter()));
-						//cairo_matrix_t cPttnMatrix;
-						//cairo_matrix_init(&cPttnMatrix, _Letterbox_brush.matrix().m00(), _Letterbox_brush.matrix().m01(), _Letterbox_brush.matrix().m10(), _Letterbox_brush.matrix().m11(), _Letterbox_brush.matrix().m20(), _Letterbox_brush.matrix().m21());
-						//cairo_pattern_set_matrix(_Letterbox_brush.native_handle(), &cPttnMatrix);
-						//cairo_set_source(_Native_context.get(), _Letterbox_brush.native_handle());
 						if (data._Letterbox_brush == nullopt) {
 							cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
 							//cairo_paint(_Native_context.get());
@@ -1097,16 +1097,16 @@ namespace std::experimental::io2d::v1 {
 								cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
 								cairo_pattern_set_matrix(pttn, &cPttnMatrix);
 								cairo_set_source(displayContext, pttn);
-								//cairo_paint(_Native_context.get());
 							}
 						}
-						cairo_fill(displayContext);
+						cairo_fill(displayContext); // Draws the letterbox brush into the appropriate triangles using the appropriate brush_props, etc., settings.
 					}
 				}
 			}
 		}
-		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::_Render_to_native_surface(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
+		template <class GraphicsMath>
+		template <class OutputDataType, class OutputSurfaceType>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::_Render_to_native_surface(OutputDataType& osd, OutputSurfaceType& sfc) {
 			const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
 			auto& data = osd.data;
 			double displayWidth = static_cast<double>(data.display_dimensions.x());
@@ -1167,11 +1167,11 @@ namespace std::experimental::io2d::v1 {
 				switch (data.scl) {
 				case std::experimental::io2d::scaling::letterbox:
 				{
-					_Render_for_scaling_uniform_or_letterbox(osd, sfc);
+					_Render_for_scaling_uniform_or_letterbox(osd);
 				} break;
 				case std::experimental::io2d::scaling::uniform:
 				{
-					_Render_for_scaling_uniform_or_letterbox(osd, sfc);
+					_Render_for_scaling_uniform_or_letterbox(osd);
 				} break;
 
 				case std::experimental::io2d::scaling::fill_uniform:
@@ -1262,7 +1262,7 @@ namespace std::experimental::io2d::v1 {
 
 #if defined(_WIN32) || defined(_WIN64)
 		template<class GraphicsMath>
-		inline typename _Cairo_graphics_surfaces<GraphicsMath>::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat) {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl) {
 			unmanaged_output_surface_data_type uosd;
 			_Display_surface_data_type& data = uosd.data;
 			data.hInstance = hInstance;
@@ -1287,6 +1287,7 @@ namespace std::experimental::io2d::v1 {
 				_Create_display_surface_and_context<GraphicsMath>(data);
 			}
 			data._Letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
+			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
 			RECT clientRect = {};
 			if (GetClientRect(hwnd, &clientRect) == 0) {
 				_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to GetClientRect.");
@@ -1294,10 +1295,30 @@ namespace std::experimental::io2d::v1 {
 			data.display_dimensions.x(clientRect.right);
 			data.display_dimensions.y(clientRect.bottom);
 			data.back_buffer = ::std::move(create_image_surface(preferredFormat, preferredWidth, preferredHeight));
+			data.scl = scl;
 			return uosd;
 		}
+#elif defined(USE_XLIB)
+		template<class GraphicsMath>
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_unmanaged_output_surface(Display* display, Window wndw, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl) {
+			unmanaged_output_surface_data_type uosd;
+			_Display_surface_data_type& data = uosd.data;
+			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(display, &_Xlib_unmanaged_close_display));
+			XWindowAttributes xwattr{};
+			status = XGetWindowAttributes(display, wndw, &xwattr);
+			if (status == 0) {
+				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STATUS);
+			}
+			data._Letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
+			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
+			data.display_dimensions.x(xwattr.width);
+			data.display_dimensions.y(xwattr.height);
+			data.visual = xwattr.visual;
+			data.unmanaged = true;
+			data.back_buffer = ::std::move(create_image_surface(preferredFormat, preferredWidth, preferredHeight));
+			data.scl = scl;
+		}
 #endif
-
 		template <class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept {
 			data.data.back_buffer = ::std::move(move_image_surface(::std::move(data.data.back_buffer)));
@@ -1308,12 +1329,28 @@ namespace std::experimental::io2d::v1 {
 			destroy(data.data.back_buffer);
 		}
 		template<class GraphicsMath>
+		inline bool _Cairo_graphics_surfaces<GraphicsMath>::has_draw_callback(const unmanaged_output_surface_data_type& data) noexcept {
+			return data.draw_callback != nullptr;
+		}
+		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::invoke_draw_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc) {
 			data.data.draw_callback(sfc);
 		}
 		template<class GraphicsMath>
+		inline void _Cairo_graphics_surfaces<GraphicsMath>::draw_to_output(unmanaged_output_surface_data_type& uosd, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc) {
+			_Render_to_native_surface(uosd, sfc);
+		}
+		template<class GraphicsMath>
+		inline bool _Cairo_graphics_surfaces<GraphicsMath>::has_size_change_callback(const unmanaged_output_surface_data_type& data) noexcept {
+			return data.size_change_callback != nullptr;
+		}
+		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::invoke_size_change_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc) {
 			data.data.size_change_callback(sfc);
+		}
+		template<class GraphicsMath>
+		inline bool _Cairo_graphics_surfaces<GraphicsMath>::has_user_scaling_callback(const unmanaged_output_surface_data_type& data) noexcept {
+			return data.user_scaling_callback != nullptr;
 		}
 		template<class GraphicsMath>
 		inline basic_bounding_box<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush) {
@@ -1464,6 +1501,7 @@ namespace std::experimental::io2d::v1 {
 			if (data.display == nullptr) {
 				throw ::std::system_error(::std::make_error_code(::std::errc::io_error));
 			}
+			data.visual = DefaultVisual(data.display.get(), DefaultScreen(data.display.get()));
 			data.wmDeleteWndw = XInternAtom(data.display.get(), "WM_DELETE_WINDOW", False);
 #endif
 			return result;
@@ -1486,6 +1524,7 @@ namespace std::experimental::io2d::v1 {
 				ec = ::std::make_error_code(::std::errc::io_error);
 				return output_surface_data_type{};
 			}
+			data.visual = DefaultVisual(data.display.get(), DefaultScreen(data.display.get()));
 			data.wmDeleteWndw = XInternAtom(data.display.get(), "WM_DELETE_WINDOW", False);
 #endif
 			ec.clear();
@@ -1508,6 +1547,7 @@ namespace std::experimental::io2d::v1 {
 			if (data.display == nullptr) {
 				throw ::std::system_error(::std::make_error_code(::std::errc::io_error));
 			}
+			data.visual = DefaultVisual(data.display.get(), DefaultScreen(data.display.get()));
 			data.wmDeleteWndw = XInternAtom(data.display.get(), "WM_DELETE_WINDOW", False);
 #endif
 			return result;
@@ -1530,6 +1570,7 @@ namespace std::experimental::io2d::v1 {
 				ec = ::std::make_error_code(::std::errc::io_error);
 				return output_surface_data_type{};
 			}
+			data.visual = DefaultVisual(data.display.get(), DefaultScreen(data.display.get()));
 			data.wmDeleteWndw = XInternAtom(data.display.get(), "WM_DELETE_WINDOW", False);
 #endif
 			ec.clear();
@@ -1636,7 +1677,9 @@ namespace std::experimental::io2d::v1 {
 						// If there is a size mismatch we skip painting and resize the window instead.
 						display_dimensions(osd, data.display_dimensions);
 						if (data.display_dimensions != data.back_buffer.dimensions) {
-							osd.size_change_callback(sfc);
+							if (osd.size_change_callback != nullptr) {
+								osd.size_change_callback(sfc);
+							}
 						}
 						continue;
 					}
@@ -1885,6 +1928,7 @@ namespace std::experimental::io2d::v1 {
 					} break;
 					case MapNotify:
 					{
+						// After the window is mapped, and Expose event will be generated once the window is ACTUALLY ready to be drawn to. As such we do nothing here.
 					} break;
 					case ReparentNotify:
 					{

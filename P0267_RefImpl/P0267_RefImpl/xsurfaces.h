@@ -280,24 +280,27 @@ namespace std {
 				public:
 					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 					using _Data_type = typename GraphicsSurfaces::unmanaged_output_surface_data_type;
-
+					using data_type = typename GraphicsSurfaces::unmanaged_output_surface_data_type;
 				private:
 					_Data_type _Data;
 
 				public:
 					_Data_type& _Get_data() noexcept;
 
-#if defined(_WIN32) || defined (_WIN64)
-					// User manages event loop
-					basic_unmanaged_output_surface(HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, format preferredFormat);
-#endif
+					// Note: This is the only way to construct this type without bringing implementation details out of the GraphicsSurfaces backend. As such, users of this type need to directly invoke the appropriate GraphicsSurfaces::create_unmanaged_output_surface(...) function and pass the result into this ctor.
+					basic_unmanaged_output_surface(data_type&& data) noexcept;
+
 					~basic_unmanaged_output_surface() noexcept;
 					basic_unmanaged_output_surface(basic_unmanaged_output_surface&&) noexcept;
 					basic_unmanaged_output_surface& operator=(basic_unmanaged_output_surface&&) noexcept;
 
+					bool has_draw_callback() const noexcept;
 					void invoke_draw_callback();
+					bool has_size_change_callback() const noexcept;
 					void invoke_size_change_callback();
+					bool has_user_scaling_callback() const noexcept;
 					basic_bounding_box<graphics_math_type> invoke_user_scaling_callback(bool& useLetterbox);
+					void draw_to_output();
 
 					// rendering functions
 					void clear();

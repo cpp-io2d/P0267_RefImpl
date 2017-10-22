@@ -3,6 +3,10 @@
 
 #if defined(USE_XLIB)
 namespace std::experimental::io2d::v1::_Cairo {
+	void _Xlib_unmanaged_close_display(Display*) {
+		// Do nothing. We don't own the display.
+	}
+
 	Bool _X11_if_xev_pred(::Display* display, ::XEvent* xev, XPointer arg) {
 		assert(display != nullptr && xev != nullptr && arg != nullptr);
 		auto sfc = reinterpret_cast<display_surface*>(arg);

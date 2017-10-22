@@ -80,12 +80,15 @@ namespace std::experimental::io2d::v1::_Cairo {
 			case WM_SIZE:
 			{
 				auto dimensions = basic_display_point<_Graphics_math_float_impl>(LOWORD(lParam), HIWORD(lParam));
-
-				if (outputSfc->_Get_data().data.display_dimensions != dimensions) {
-					outputSfc->display_dimensions(dimensions);
+				auto& data = outputSfc->_Get_data();
+				if (data.data.display_dimensions != dimensions) {
+					data.data.display_dimensions = dimensions;
 
 					// Call user size change function.
-					outputSfc->_Get_data().size_change_callback(*outputSfc);
+					
+					if (data.size_change_callback != nullptr) {
+						data.size_change_callback(*outputSfc);
+					}
 					//_Display_surface.invoke_size_change_callback();
 				}
 			} break;
@@ -105,14 +108,8 @@ namespace std::experimental::io2d::v1::_Cairo {
 					break;
 				}
 
-				//				if (_Display_surface._Native_surface.get() == nullptr) {
-				//					EndPaint(hwnd, &ps);
-				//					break;
-				//				}
-				// Run user draw function:
 				outputSfc->_Get_data().draw_callback(*outputSfc);
-				auto& osfc = *outputSfc;
-				_Cairo_graphics_surfaces<_Graphics_math_float_impl>::_Render_to_native_surface(outputSfc->_Get_data(), osfc);
+				_Cairo_graphics_surfaces<_Graphics_math_float_impl>::_Render_to_native_surface(outputSfc->_Get_data(), *outputSfc);
 
 				EndPaint(hwnd, &ps);
 			} break;
