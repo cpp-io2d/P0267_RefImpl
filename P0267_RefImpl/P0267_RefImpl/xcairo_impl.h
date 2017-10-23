@@ -1286,8 +1286,8 @@ namespace std::experimental::io2d::v1 {
 				}
 				_Create_display_surface_and_context<GraphicsMath>(data);
 			}
-			data._Letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
-			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
+			data._Letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black);
+			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black);
 			RECT clientRect = {};
 			if (GetClientRect(hwnd, &clientRect) == 0) {
 				_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to GetClientRect.");
@@ -1305,12 +1305,12 @@ namespace std::experimental::io2d::v1 {
 			_Display_surface_data_type& data = uosd.data;
 			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(display, &_Xlib_unmanaged_close_display));
 			XWindowAttributes xwattr{};
-			status = XGetWindowAttributes(display, wndw, &xwattr);
+			auto status = XGetWindowAttributes(display, wndw, &xwattr);
 			if (status == 0) {
 				_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_STATUS);
 			}
-			data._Letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
-			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black());
+			data._Letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black);
+			data._Default_letterbox_brush = basic_brush<_Cairo_graphics_surfaces>(rgba_color::black);
 			data.display_dimensions.x(xwattr.width);
 			data.display_dimensions.y(xwattr.height);
 			data.visual = xwattr.visual;
