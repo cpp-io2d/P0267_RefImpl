@@ -42,23 +42,6 @@ rocks_in_space::ship_update rocks_in_space::ship::update()
 	return{ fire(), m_physics.position(), m_physics.orientation() };
 }
 
-void rocks_in_space::ship::draw(output_surface& ds)
-{
-	using namespace std::experimental::io2d;
-
-	auto path = path_builder{};
-	path.clear();
-	auto v = m_physics.position() + (m_path.m_vertices[0]);
-	path.new_figure(screen_space(v));
-	std::for_each(&m_path.m_vertices[1], &m_path.m_vertices[m_path.m_count], [&](const auto& vert)
-	{
-		v += vert;
-		path.line(screen_space(v));
-	});
-
-	ds.stroke(brush{ rgba_color::white }, path);
-}
-
 rocks_in_space::missile::missile(const point_2d& position, float orientation, bool active)
 	: m_physics(position, pol_to_car({ missile_travel_distance_per_tick, orientation }))
 	, m_age(active ? 0.0F : max_missile_age)
@@ -81,17 +64,4 @@ void rocks_in_space::missile::destroy()
 bool rocks_in_space::missile::active() const
 {
 	return (m_age < max_missile_age);
-}
-
-void rocks_in_space::missile::draw(output_surface& ds)
-{
-	using namespace std::experimental::io2d;
-
-	if (!active()) return;
-
-	auto path = path_builder{};
-	path.new_figure(screen_space(m_physics.position()));
-	path.line(screen_space(m_physics.position() - m_physics.velocity()));
-
-	ds.stroke(brush{ rgba_color::white }, path);
 }

@@ -25,7 +25,8 @@ rocks_in_space::game::game()
 	generate_level();
 }
 
-void rocks_in_space::game::update(output_surface& ds)
+template <class OutputType>
+void rocks_in_space::game::update(OutputType& ds)
 {
 	using namespace std::experimental::io2d;
 
@@ -35,9 +36,9 @@ void rocks_in_space::game::update(output_surface& ds)
 	update_missiles();
 
 	ds.paint(brush{ rgba_color::black });
-	draw_asteroids(ds);
-	draw_ship(ds);
-	draw_missiles(ds);
+	draw_asteroids<OutputType>(ds);
+	draw_ship<OutputType>(ds);
+	draw_missiles<OutputType>(ds);
 }
 
 void rocks_in_space::game::generate_level()
@@ -66,11 +67,6 @@ void rocks_in_space::game::generate_level()
 void rocks_in_space::game::update_asteroids()
 {
 	for (auto& a : m_asteroids) { a.update(); }
-}
-
-void rocks_in_space::game::draw_asteroids(output_surface& ds)
-{
-	for (auto& a : m_asteroids) { a.draw(ds); }
 }
 
 void rocks_in_space::game::update_ship()
@@ -124,16 +120,6 @@ void rocks_in_space::game::update_missiles()
 	}
 }
 
-void rocks_in_space::game::draw_ship(output_surface& ds)
-{
-	m_ship.draw(ds);
-}
-
-void rocks_in_space::game::draw_missiles(output_surface& ds)
-{
-	for (auto& m : m_ship_missiles) { m.draw(ds); }
-}
-
 //std::once_flag rocks_in_space::my_handler::_Window_class_registered_flag;
 //const wchar_t* rocks_in_space::my_handler::_Refimpl_window_class_name = L"_RefImplWndwCls";
 
@@ -144,7 +130,7 @@ int rocks_in_space::main()
 	rocks_in_space::game sd;
 	output_surface renderer(640, 480, format::argb32, scaling::letterbox);
 	//auto handler = make_handler<my_handler>(renderer, 640, 480, refresh_rate::as_fast_as_possible, 30.0f);
-	renderer.draw_callback([&](output_surface& ds) {sd.update(ds); });
+	renderer.draw_callback([&](output_surface& ds) {sd.update<output_surface>(ds); });
 	auto result = renderer.begin_show();
 	return static_cast<int>(result.result);
 }

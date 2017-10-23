@@ -11,16 +11,20 @@ namespace rocks_in_space
 	{
 	public:
 				game();
-		void	update(output_surface&);
+		template <class OutputType>
+		void	update(OutputType&);
 
 	private:
 		void	update_asteroids();
 		void	update_ship();
 		void	update_missiles();
 
-		void	draw_asteroids(output_surface& ds);
-		void	draw_ship(output_surface& ds);
-		void	draw_missiles(output_surface& ds);
+		template <class OutputType>
+		void	draw_asteroids(OutputType& ds);
+		template <class OutputType>
+		void	draw_ship(OutputType& ds);
+		template <class OutputType>
+		void	draw_missiles(OutputType& ds);
 
 		void	generate_level();
 
@@ -39,4 +43,22 @@ namespace rocks_in_space
 	};
 
 	int main();
+
+	template <class OutputType>
+	inline void rocks_in_space::game::draw_asteroids(OutputType& ds)
+	{
+		for (auto& a : m_asteroids) { a.draw<OutputType>(ds); }
+	}
+
+	template <class OutputType>
+	inline void rocks_in_space::game::draw_ship(OutputType& ds)
+	{
+		m_ship.draw(ds);
+	}
+
+	template <class OutputType>
+	inline void rocks_in_space::game::draw_missiles(OutputType& ds)
+	{
+		for (auto& m : m_ship_missiles) { m.draw(ds); }
+	}
 }

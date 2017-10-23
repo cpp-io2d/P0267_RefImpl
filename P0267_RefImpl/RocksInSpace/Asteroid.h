@@ -18,8 +18,9 @@ namespace rocks_in_space
 									asteroid(physics&& phys, std::pair<const path_buffer&, float> path, float s);
 		void						update();
 		asteroid_destruction		destroy();
-
-		void						draw(output_surface& ds) const;
+		
+		template <class OutputType>
+		void						draw(OutputType& ds) const;
 		bool						active() const;
 		const collision&			collision_data() const;
 
@@ -54,3 +55,25 @@ inline const rocks_in_space::collision&	rocks_in_space::asteroid::collision_data
 {
 	return m_collision;
 }
+
+template <class OutputType>
+inline void rocks_in_space::asteroid::draw(OutputType& ds) const
+{
+	using namespace std::experimental::io2d;
+
+	if (!m_active) return;
+
+	auto path = path_builder{};
+	path.clear();
+	auto v = m_physics.position() + (m_path.m_vertices[0]);
+	path.new_figure(screen_space(v));
+	std::for_each(&m_path.m_vertices[1], &m_path.m_vertices[m_path.m_count], [&](const auto& vert)
+	{
+		v += vert;
+		path.line(screen_space(v));
+	});
+	path.close_figure();
+
+	ds.stroke(brush{ rgba_color::gray }, path);
+}
+
