@@ -50,7 +50,7 @@ void rocks_in_space::game::generate_level()
 	std::uniform_real_distribution<float> theta(0.0F, tau<float>);
 
 	m_asteroids.clear();
-	m_asteroids.reserve(count * 7);
+	m_asteroids.reserve(static_cast<::std::size_t>(count * 7));
 
 	while (count-- != 0)
 	{

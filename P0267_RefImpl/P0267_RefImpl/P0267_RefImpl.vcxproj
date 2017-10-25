@@ -318,7 +318,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token -Wno-newline-eof -ferror-limit=100</AdditionalOptions>
+      <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token -Wno-double-promotion -Wno-newline-eof -ferror-limit=100</AdditionalOptions>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ExceptionHandling>Enabled</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -379,7 +379,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token</AdditionalOptions>
+      <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token -Wno-double-promotion -Wno-newline-eof -ferror-limit=100</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ExceptionHandling>Enabled</ExceptionHandling>
@@ -443,7 +443,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token</AdditionalOptions>
+      <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token -Wno-double-promotion -Wno-newline-eof -ferror-limit=100</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ExceptionHandling>Enabled</ExceptionHandling>

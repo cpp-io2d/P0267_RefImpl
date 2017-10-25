@@ -207,6 +207,19 @@ namespace std {
 					GraphicsSurfaces::destroy(_Data);
 				}
 
+				template<class GraphicsSurfaces>
+				inline basic_output_surface<GraphicsSurfaces>::basic_output_surface(basic_output_surface&& other) noexcept
+					: _Data(move(GraphicsSurfaces::move_output_surface(move(other._Data)))) {
+				}
+
+				template<class GraphicsSurfaces>
+				inline basic_output_surface<GraphicsSurfaces>& basic_output_surface<GraphicsSurfaces>::operator=(basic_output_surface&& other) noexcept {
+					if (this != &other) {
+						_Data = move(GraphicsSurfaces::move_output_surface(move(other._Data)));
+					}
+					return *this;
+				}
+
 				template <class GraphicsSurfaces>
 				inline void basic_output_surface<GraphicsSurfaces>::redraw_required() noexcept {
 					GraphicsSurfaces::redraw_required(_Data);
