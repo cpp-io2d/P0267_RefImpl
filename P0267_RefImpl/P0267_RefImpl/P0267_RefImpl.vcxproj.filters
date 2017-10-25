@@ -94,9 +94,6 @@
     <ClCompile Include="cairo_renderer_win32.cpp">
       <Filter>cairo renderer</Filter>
     </ClCompile>
-    <ClCompile Include="cairo_renderer_xlib.cpp">
-      <Filter>cairo renderer</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="win32\Dependency installation instructions.txt" />
