@@ -6,6 +6,7 @@
 
 #include <random>
 #include <array>
+#include <cstddef>
 
 namespace rocks_in_space
 {
@@ -17,7 +18,7 @@ namespace rocks_in_space
 
 	struct path_buffer
 	{
-		int				m_count;
+		std::size_t		m_count;
 		path_vertices	m_vertices;
 	};
 
