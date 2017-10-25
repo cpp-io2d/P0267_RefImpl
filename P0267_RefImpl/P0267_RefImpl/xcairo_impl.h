@@ -1645,7 +1645,7 @@ namespace std::experimental::io2d {
 				}
 
 				SetLastError(ERROR_SUCCESS);
-				if (SetWindowLongPtrW(data.hwnd, 0, (LONG_PTR)instance) == 0) {
+				if (SetWindowLongPtrW(data.hwnd, 0, reinterpret_cast<LONG_PTR>(instance)) == 0) {
 					// SetWindowLongPtr is weird in terms of how it fails. See its documentation. Hence this weird check.
 					DWORD lastError = GetLastError();
 					if (lastError != ERROR_SUCCESS) {
