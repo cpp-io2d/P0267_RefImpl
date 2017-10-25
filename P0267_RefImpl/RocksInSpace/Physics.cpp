@@ -24,7 +24,7 @@ std::array<rocks_in_space::physics, 2> rocks_in_space::physics::divide(std::mt19
 	auto r2 = r * (1.2F + zero_to_one(gen));
 	auto theta1 = polar.theta() + (zero_to_one(gen) - eighth_tau<float>);
 	auto theta2 = polar.theta() + (zero_to_one(gen) - eighth_tau<float>);
-	return{ physics(m_position, pol_to_car({r1, theta1})), physics(m_position, pol_to_car({r2, theta2})) };
+	return{ { physics(m_position, pol_to_car({r1, theta1})), physics(m_position, pol_to_car({r2, theta2})) } };
 }
 
 void rocks_in_space::controllable_physics::update()

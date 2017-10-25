@@ -10,7 +10,7 @@ namespace
 	using rocks_in_space::path_buffer;
 	using rocks_in_space::point_2d;
 
-	path_vertices ship_vb{ point_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } };
+	path_vertices ship_vb{ { point_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } } };
 	const rocks_in_space::path_buffer ship_shape{ 6, ship_vb };
 }
 
@@ -35,7 +35,7 @@ rocks_in_space::ship_update rocks_in_space::ship::update()
 	}
 	m_physics.update();
 
-	std::transform(&ship_vb[0], &ship_vb[ship_shape.m_count], &m_path.m_vertices[0], [&](const auto & v_in)
+	std::transform(&ship_vb[0], &ship_vb[static_cast<::std::size_t>(ship_shape.m_count)], &m_path.m_vertices[0], [&](const auto & v_in)
 	{
 		return rotate(v_in, m_physics.orientation(), { 0.0, 0.0 });
 	});

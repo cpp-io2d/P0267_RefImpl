@@ -76,5 +76,5 @@ namespace rocks_in_space
 
 inline std::array<rocks_in_space::point_2d, 2>	rocks_in_space::missile::collision_data() const
 {
-	return{ m_physics.position(), m_physics.position() - m_physics.velocity() };
+	return{ { m_physics.position(), m_physics.position() - m_physics.velocity() } };
 }
