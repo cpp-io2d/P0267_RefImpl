@@ -3,8 +3,9 @@
 
 #if defined(USE_XLIB)
 namespace std::experimental::io2d::v1::_Cairo {
-	void _Xlib_unmanaged_close_display(Display*) {
+	int _Xlib_unmanaged_close_display(Display*) {
 		// Do nothing. We don't own the display.
+		return 0;
 	}
 
 	Bool _X11_if_xev_pred(::Display* display, ::XEvent* xev, XPointer arg) {

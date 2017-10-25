@@ -30,7 +30,7 @@ namespace std {
 					LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 					void _RegisterWindowClass();
 #elif defined(USE_XLIB)
-					void _Xlib_unmanaged_close_display(Display*);
+					int _Xlib_unmanaged_close_display(Display*);
 #endif
 					constexpr const wchar_t* _Refimpl_window_class_name = L"_P0267RefImplCairoRenderer_FF2B4C8D-0AB8-4343-AA02-6D0857E9FA21";
 
@@ -297,7 +297,7 @@ namespace std {
 						struct _Display_surface_xlib_data {
 							unique_ptr<Display, decltype(&XCloseDisplay)> display{ nullptr, &XCloseDisplay };
 							Atom wmDeleteWndw;
-							Window wndw;
+							Window wndw = None;
 							Visual* visual; // Note: This pointer is not a dynamic allocation and thus does not need to be managed.
 							bool unmanaged = false;
 							bool letterbox_brush_is_default = true;
@@ -342,10 +342,9 @@ namespace std {
 						static void _Render_to_native_surface(OutputDataType& osd, OutputSurfaceType& sfc);
 
 						static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
-						static void render(output_surface_data_type& data);
-						static void render(unmanaged_output_surface_data_type& data);
 						// unmanaged_output_surface functions
 
+						static unmanaged_output_surface_data_type create_unmanaged_output_surface();
 #if defined(_WIN32) || defined(_WIN64)
 						static unmanaged_output_surface_data_type create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
 #elif defined(USE_XLIB)

@@ -11,7 +11,7 @@ AC_PROG_CXX_C_O
 
 AC_SUBST([LIBTOOL_DEPS])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile P0267_RefImpl/Makefile P0267_RefImpl/P0267_RefImpl/Makefile P0267_RefImpl/SampleApp/Makefile])
+AC_CONFIG_FILES([Makefile P0267_RefImpl/Makefile P0267_RefImpl/P0267_RefImpl/Makefile P0267_RefImpl/SampleApp/Makefile P0267_RefImpl/RocksInSpace/Makefile])
 
 AC_LANG([C++])
 

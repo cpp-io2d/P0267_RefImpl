@@ -1,2 +1,2 @@
-SUBDIRS	=	P0267_RefImpl SampleApp
+SUBDIRS	=	P0267_RefImpl SampleApp RocksInSpace
 

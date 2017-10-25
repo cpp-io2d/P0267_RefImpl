@@ -1253,11 +1253,19 @@ namespace std::experimental::io2d::v1 {
 			cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
 		}
 
+		// template<class GraphicsMath>
+		// inline void _Cairo_graphics_surfaces<GraphicsMath>::render(output_surface_data_type& data) {
+		// }
+		// template<class GraphicsMath>
+		// inline void _Cairo_graphics_surfaces<GraphicsMath>::render(unmanaged_output_surface_data_type& data) {
+		// }
+
+
+
 		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::render(output_surface_data_type& data) {
-		}
-		template<class GraphicsMath>
-		inline void _Cairo_graphics_surfaces<GraphicsMath>::render(unmanaged_output_surface_data_type& data) {
+		inline typename _Cairo_graphics_surfaces<GraphicsMath>::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_unmanaged_output_surface() {
+			unmanaged_output_surface_data_type uosd;
+			return uosd;
 		}
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -1304,6 +1312,7 @@ namespace std::experimental::io2d::v1 {
 			unmanaged_output_surface_data_type uosd;
 			_Display_surface_data_type& data = uosd.data;
 			data.display = move(unique_ptr<Display, decltype(&XCloseDisplay)>(display, &_Xlib_unmanaged_close_display));
+			data.wndw = wndw;
 			XWindowAttributes xwattr{};
 			auto status = XGetWindowAttributes(display, wndw, &xwattr);
 			if (status == 0) {
@@ -1315,14 +1324,17 @@ namespace std::experimental::io2d::v1 {
 			data.display_dimensions.y(xwattr.height);
 			data.visual = xwattr.visual;
 			data.unmanaged = true;
+			_Create_display_surface_and_context<GraphicsMath>(data);
 			data.back_buffer = ::std::move(create_image_surface(preferredFormat, preferredWidth, preferredHeight));
 			data.scl = scl;
+
+			return uosd;
 		}
 #endif
 		template <class GraphicsMath>
 		inline typename _Cairo_graphics_surfaces<GraphicsMath>::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept {
 			data.data.back_buffer = ::std::move(move_image_surface(::std::move(data.data.back_buffer)));
-			return data;
+			return move(data);
 		}
 		template <class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::destroy(unmanaged_output_surface_data_type& data) noexcept {
@@ -1334,7 +1346,7 @@ namespace std::experimental::io2d::v1 {
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::invoke_draw_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc) {
-			data.data.draw_callback(sfc);
+			data.draw_callback(sfc);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::draw_to_output(unmanaged_output_surface_data_type& uosd, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc) {
@@ -1346,7 +1358,7 @@ namespace std::experimental::io2d::v1 {
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::invoke_size_change_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc) {
-			data.data.size_change_callback(sfc);
+			data.size_change_callback(sfc);
 		}
 		template<class GraphicsMath>
 		inline bool _Cairo_graphics_surfaces<GraphicsMath>::has_user_scaling_callback(const unmanaged_output_surface_data_type& data) noexcept {
@@ -1355,12 +1367,12 @@ namespace std::experimental::io2d::v1 {
 		template<class GraphicsMath>
 		inline basic_bounding_box<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush) {
 			useLetterboxBrush = false;
-			return data.data.user_scaling_callback(sfc, useLetterboxBrush);
+			return data.user_scaling_callback(sfc, useLetterboxBrush);
 		}
 		template<class GraphicsMath>
 		inline void _Cairo_graphics_surfaces<GraphicsMath>::display_dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val) {
 			_Ds_display_dimensions<_Cairo_graphics_surfaces<GraphicsMath>>(data.data, val);
-			_Create_display_surface_and_context(data.data);
+			_Create_display_surface_and_context<GraphicsMath>(data.data);
 			data.data.redraw_required = true;
 			// This is unmanaged so we don't deal with resizing the user-visible output (e.g. a window).
 		}
