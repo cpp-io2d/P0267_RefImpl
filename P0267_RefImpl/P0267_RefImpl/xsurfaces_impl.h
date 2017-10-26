@@ -225,7 +225,7 @@ namespace std {
 					GraphicsSurfaces::redraw_required(_Data);
 				}
 				template <class GraphicsSurfaces>
-				inline typename GraphicsSurfaces::show_return_data_type basic_output_surface<GraphicsSurfaces>::begin_show() {
+				inline int basic_output_surface<GraphicsSurfaces>::begin_show() {
 					return GraphicsSurfaces::begin_show(_Data, this, *this);
 				}
 				template <class GraphicsSurfaces>

@@ -402,15 +402,7 @@ namespace std {
 						static output_surface_data_type move_output_surface(output_surface_data_type&& data) noexcept;
 						static void destroy(output_surface_data_type& data) noexcept;
 
-#if defined(_WIN32) || defined(_WIN64)
-						struct _Show_return_data_win32 {
-							WPARAM result;
-						};
-						using show_return_data_type = _Show_return_data_win32;
-#elif defined(USE_XLIB)
-						using show_return_data_type = int;
-#endif
-						static show_return_data_type begin_show(output_surface_data_type& data, basic_output_surface<_Graphics_surfaces_type>* instance, basic_output_surface<_Graphics_surfaces_type>& sfc);
+						static int begin_show(output_surface_data_type& data, basic_output_surface<_Graphics_surfaces_type>* instance, basic_output_surface<_Graphics_surfaces_type>& sfc);
 						static void end_show(output_surface_data_type& data);
 						static void refresh_rate(output_surface_data_type& data, io2d::refresh_rate val);
 						static void desired_frame_rate(output_surface_data_type& data, float val);

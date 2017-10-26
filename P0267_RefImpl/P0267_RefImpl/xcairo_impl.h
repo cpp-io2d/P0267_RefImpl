@@ -1600,7 +1600,7 @@ namespace std::experimental::io2d {
 			}
 #if defined(_WIN32) || defined(_WIN64)
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::show_return_data_type _Cairo_graphics_surfaces<GraphicsMath>::begin_show(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>* instance, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
+			inline int _Cairo_graphics_surfaces<GraphicsMath>::begin_show(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>* instance, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
 				_RegisterWindowClass();
 
 				_Display_surface_data_type& data = osd.data;
@@ -1649,7 +1649,7 @@ namespace std::experimental::io2d {
 					// SetWindowLongPtr is weird in terms of how it fails. See its documentation. Hence this weird check.
 					DWORD lastError = GetLastError();
 					if (lastError != ERROR_SUCCESS) {
-						_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling)");
+						_Throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR)");
 					}
 				}
 
@@ -1804,9 +1804,7 @@ namespace std::experimental::io2d {
 #endif
 				}
 				data.elapsed_draw_time = 0.0F;
-				show_return_data_type result;
-				result.result = msg.wParam;
-				return result;
+				return static_cast<int>(msg.wParam);
 			}
 
 
@@ -1853,7 +1851,7 @@ namespace std::experimental::io2d {
 			Bool _X11_if_xev_pred(::Display* display, ::XEvent* xev, XPointer arg);
 
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::show_return_data_type _Cairo_graphics_surfaces<GraphicsMath>::begin_show(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>* instance, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
+			inline int _Cairo_graphics_surfaces<GraphicsMath>::begin_show(output_surface_data_type& osd, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>* instance, basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) {
 				_Display_surface_data_type& data = osd.data;
 				Display* display = data.display.get();
 				int screenNumber = DefaultScreen(display);

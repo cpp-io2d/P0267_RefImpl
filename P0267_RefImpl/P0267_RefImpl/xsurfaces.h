@@ -228,7 +228,7 @@ namespace std::experimental::io2d {
 			basic_output_surface& operator=(basic_output_surface&&) noexcept;
 
 			void redraw_required() noexcept;
-			typename GraphicsSurfaces::show_return_data_type begin_show();
+			int begin_show();
 			void end_show();
 
 			// rendering functions
