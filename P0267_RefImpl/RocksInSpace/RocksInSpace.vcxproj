@@ -297,21 +297,24 @@
   <ItemGroup>
     <ClCompile Include="Asteroid.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="ImplWin.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Ship.cpp" />
-    <ClCompile Include="Win.cpp" />
+    <ClCompile Include="Win32Win.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asteroid.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="ImplWin.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Maths.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="Types.h" />
+    <ClInclude Include="Win32Win.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\P0267_RefImpl\P0267_RefImpl.vcxproj">

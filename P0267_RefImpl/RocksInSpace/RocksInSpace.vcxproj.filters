@@ -19,9 +19,10 @@
     <ClCompile Include="Ship.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Win.cpp">
+    <ClCompile Include="ImplWin.cpp">
       <Filter>Platform Files</Filter>
     </ClCompile>
+    <ClCompile Include="Win32Win.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asteroid.h">
@@ -48,6 +49,10 @@
     <ClInclude Include="Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImplWin.h">
+      <Filter>Platform Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Win32Win.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

@@ -1,7 +1,10 @@
 #pragma once
 
-
+#include "Types.h"
 #include "Asteroid.h"
+#include "Input.h"
+#include "Maths.h"
+#include "Physics.h"
 #include "Ship.h"
 #include <random>
 
@@ -10,7 +13,8 @@ namespace rocks_in_space
 	class game
 	{
 	public:
-				game();
+		game();
+
 		template <class OutputType>
 		void	update(OutputType&);
 
@@ -42,7 +46,21 @@ namespace rocks_in_space
 		std::uniform_real_distribution<float>	m_0_to_1;
 	};
 
-	int main();
+	template <class OutputType>
+	void rocks_in_space::game::update(OutputType& ds)
+	{
+		using namespace std::experimental::io2d;
+
+		get_key_states();
+		update_asteroids();
+		update_ship();
+		update_missiles();
+
+		ds.paint(brush{ rgba_color::black });
+		draw_asteroids<OutputType>(ds);
+		draw_ship<OutputType>(ds);
+		draw_missiles<OutputType>(ds);
+	}
 
 	template <class OutputType>
 	inline void rocks_in_space::game::draw_asteroids(OutputType& ds)
