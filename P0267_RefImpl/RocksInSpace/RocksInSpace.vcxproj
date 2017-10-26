@@ -59,7 +59,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Clang_C2|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -72,7 +72,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Clang_C2|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -85,13 +85,13 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='dll_Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Clang_C2|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -104,7 +104,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Clang_C2|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -161,7 +161,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -173,7 +173,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>USE_IO2D_API_DLL;_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_IO2D_API_DLL;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -185,7 +185,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token -Wno-double-promotion -Wno-newline-eof -ferror-limit=100</AdditionalOptions>
       <Verbose>true</Verbose>
     </ClCompile>
@@ -197,7 +197,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -209,7 +209,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>USE_IO2D_API_DLL;_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_IO2D_API_DLL;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -221,7 +221,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token -Wno-double-promotion -Wno-newline-eof -ferror-limit=100</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -234,7 +234,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -252,7 +252,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token -Wno-double-promotion -Wno-newline-eof -ferror-limit=100</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -269,7 +269,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings /Zc:implicitNoexcept /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -287,7 +287,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)P0267_RefImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_MBCS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-std=c++1z -Weverything -pedantic -Wno-c++98-compat -Wno-covered-switch-default -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-float-equal -Wno-documentation -Wno-documentation-unknown-command -Wno-padded -Wno-exit-time-destructors -Wno-reserved-id-macro -Wno-language-extension-token -Wno-double-promotion -Wno-newline-eof -ferror-limit=100</AdditionalOptions>
     </ClCompile>
     <Link>

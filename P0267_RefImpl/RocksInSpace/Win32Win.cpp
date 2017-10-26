@@ -29,7 +29,7 @@ void RegisterWindowClass() {
 		// We want to keep a DC so we don't have to constantly recreate the native cairo device.
 		// We want CS_HREDRAW and CS_VREDRAW so we get a refresh of the whole window if the client area changes due to movement or size adjustment.
 		wcex.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = DefaultWindowProc;
+		wcex.lpfnWndProc = rocks_in_space::DefaultWindowProc;
 		wcex.cbClsExtra = 0;
 		wcex.cbWndExtra = sizeof(LONG_PTR);
 		wcex.hInstance = static_cast<HINSTANCE>(GetModuleHandleW(nullptr));
@@ -44,9 +44,14 @@ void RegisterWindowClass() {
 	});
 }
 
-LRESULT CALLBACK DefaultWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK rocks_in_space::DefaultWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	LONG_PTR objPtr = GetWindowLongPtrW(hwnd, 0);
-
+	if (msg == WM_CREATE) {
+		CREATESTRUCT* create = reinterpret_cast<CREATESTRUCT*>(lParam);
+		// Return 0 to allow the window to proceed in the creation process.
+		static_cast<rocks_in_space::Win32Win*>(create->lpCreateParams)->OnWmCreate(hwnd);
+		return static_cast<LRESULT>(0);
+	}
 	if (objPtr == 0) {
 		return DefWindowProcW(hwnd, msg, wParam, lParam);
 	}
@@ -55,6 +60,24 @@ LRESULT CALLBACK DefaultWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		auto win32Win = reinterpret_cast<rocks_in_space::Win32Win*>(objPtr);
 		return win32Win->WindowProc(hwnd, msg, wParam, lParam);
 	}
+}
+
+void rocks_in_space::Win32Win::OnWmCreate(HWND hwnd)
+{
+	SetLastError(ERROR_SUCCESS);
+	if (SetWindowLongPtrW(hwnd, 0, reinterpret_cast<LONG_PTR>(this)) == 0) {
+		// SetWindowLongPtr is weird in terms of how it fails. See its documentation. Hence this weird check.
+		DWORD lastError = GetLastError();
+		if (lastError != ERROR_SUCCESS) {
+			throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling)");
+		}
+	}
+	m_hwnd = hwnd;
+	m_hdc = GetDC(m_hwnd);
+	m_outputSfc = ::std::move(unmanaged_output_surface(::std::move(default_graphics_surfaces::create_unmanaged_output_surface(m_hInstance, m_hwnd, m_hdc, m_w, m_h, m_fmt, m_scl))));
+	m_outputSfc.display_dimensions(display_point{ m_w, m_h });
+	m_outputSfc.draw_callback([&](unmanaged_output_surface& uos) { m_game.update<unmanaged_output_surface>(uos); });
+	m_canDraw = true;
 }
 
 LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -197,7 +220,7 @@ int rocks_in_space::Win32Win::Run()
 		static_cast<HWND>(nullptr),			// handle to parent
 		static_cast<HMENU>(nullptr),		// handle to menu
 		static_cast<HINSTANCE>(nullptr),	// instance of this application
-		static_cast<LPVOID>(nullptr));		// extra creation parms
+		static_cast<LPVOID>(this));			// extra creation parms
 
 	if (m_hwnd == nullptr) {
 		throw_system_error_for_GetLastError(GetLastError(), "Failed call to CreateWindowEx.");

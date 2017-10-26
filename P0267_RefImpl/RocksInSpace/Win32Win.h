@@ -4,6 +4,8 @@
 
 namespace rocks_in_space
 {
+	LRESULT CALLBACK DefaultWindowProc(HWND, UINT, WPARAM, LPARAM);
+
 	class Win32Win
 	{
 	public:
@@ -13,6 +15,10 @@ namespace rocks_in_space
 		int Run();
 
 	private:
+		friend LRESULT CALLBACK DefaultWindowProc(HWND, UINT, WPARAM, LPARAM);
+
+		void									OnWmCreate(HWND hwnd);
+
 		HINSTANCE								m_hInstance = nullptr;
 		HWND									m_hwnd = nullptr;
 		HDC										m_hdc = nullptr;
