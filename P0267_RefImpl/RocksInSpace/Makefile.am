@@ -5,11 +5,12 @@
 bin_PROGRAMS = 		rocks_in_space
 
 rocks_in_space_SOURCES =	Asteroid.cpp \
-				GameXlib.cpp  \
+				Game.cpp \
 				Input.cpp \
 				Maths.cpp \
 				Physics.cpp \
-				Ship.cpp
+				Ship.cpp \
+				XlibWin.cpp
 
 rocks_in_space_CPPFLAGS =	@CPPFLAGS@
 rocks_in_space_CPPFLAGS +=	-I../P0267_RefImpl
