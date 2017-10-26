@@ -22,7 +22,12 @@
     <ClCompile Include="ImplWin.cpp">
       <Filter>Platform Files</Filter>
     </ClCompile>
-    <ClCompile Include="Win32Win.cpp" />
+    <ClCompile Include="Win32Win.cpp">
+      <Filter>Platform Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMain.cpp">
+      <Filter>Platform Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asteroid.h">
@@ -52,7 +57,9 @@
     <ClInclude Include="ImplWin.h">
       <Filter>Platform Files</Filter>
     </ClInclude>
-    <ClInclude Include="Win32Win.h" />
+    <ClInclude Include="Win32Win.h">
+      <Filter>Platform Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

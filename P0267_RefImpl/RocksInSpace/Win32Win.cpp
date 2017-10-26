@@ -2,12 +2,6 @@
 #include <mutex>
 #include <system_error>
 
-int CALLBACK WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
-{
-	rocks_in_space::Win32Win w(hInst);
-	return w.Run();
-}
-
 namespace
 {
 	[[noreturn]]
@@ -61,20 +55,6 @@ LRESULT CALLBACK DefaultWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		auto win32Win = reinterpret_cast<rocks_in_space::Win32Win*>(objPtr);
 		return win32Win->WindowProc(hwnd, msg, wParam, lParam);
 	}
-}
-
-namespace
-{
-	auto anti_clockwise_key = 'Q';
-	auto clockwise_key = 'W';
-	auto thrust_key = 'U';
-	auto fire_key = 'I';
-	auto hyperspace_key = 'O';
-}
-
-void rocks_in_space::get_key_states()
-{
-	press() = { GetKeyState(anti_clockwise_key) < 0, GetKeyState(clockwise_key) < 0, GetKeyState(thrust_key) < 0, GetKeyState(fire_key) < 0, GetKeyState(hyperspace_key) < 0 };
 }
 
 LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -187,10 +167,10 @@ rocks_in_space::Win32Win::Win32Win(HINSTANCE hinst, int w, int h, format fmt, sc
 int rocks_in_space::Win32Win::Run()
 {
 	RECT rc;
-	rc.top = 0;
-	rc.left = 0;
-	rc.right = m_w;
-	rc.bottom = m_h;
+	rc.top = m_x;
+	rc.left = m_y;
+	rc.right = m_x+ m_w;
+	rc.bottom = m_y + m_h;
 
 	// Adjust the window size for correct device size
 	if (!AdjustWindowRect(&rc, (WS_OVERLAPPEDWINDOW | WS_VISIBLE), FALSE)) {
@@ -203,7 +183,7 @@ int rocks_in_space::Win32Win::Run()
 	long lleft = 10;
 	long ltop = 10;
 
-	const wchar_t* winTitle = L"";
+	const wchar_t* winTitle = L"RocksInSpace with Existing Window!";
 
 	// Create an instance of the window
 	m_hwnd = CreateWindowEx(

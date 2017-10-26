@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Game.h"
-#include <optional>
+
 namespace rocks_in_space
 {
 	class Win32Win
@@ -22,7 +22,6 @@ namespace rocks_in_space
 		int										m_y = 0;
 		int										m_w = 640;
 		int										m_h = 480;
-		int										m_borderWidth = 4;
 		format									m_fmt;
 		scaling									m_scl;
 
