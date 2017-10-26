@@ -23,27 +23,27 @@ rocks_in_space::keypress& rocks_in_space::press()
 	return k;
 }
 
-bool rocks_in_space::anti_clockwise()
+bool rocks_in_space::do_anti_clockwise()
 {
 	return press().anti_clockwise_key_press;
 }
 
-bool rocks_in_space::clockwise()
+bool rocks_in_space::do_clockwise()
 {
 	return press().clockwise_key_press;
 }
 
-bool rocks_in_space::thrust()
+bool rocks_in_space::do_thrust()
 {
 	return press().thrust_key_press;
 }
 
-bool rocks_in_space::fire()
+bool rocks_in_space::do_fire()
 {
 	return bounce_check(press().fire_key_press, fire_down);
 }
 
-bool rocks_in_space::hyperspace()
+bool rocks_in_space::do_hyperspace()
 {
 	return bounce_check(press().hyperspace_key_press, hyperspace_down);
 }

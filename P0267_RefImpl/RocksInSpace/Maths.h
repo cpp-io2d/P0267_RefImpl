@@ -3,6 +3,8 @@
 
 namespace rocks_in_space
 {
+	using circle = std::experimental::io2d::circle;
+
 	class polar_2d
 	{
 	public:
@@ -15,18 +17,30 @@ namespace rocks_in_space
 		float m_theta;
 	};
 
-	template <class T> constexpr T	tau			= T(std::experimental::io2d::two_pi<T>);
-	template <class T> constexpr T	eighth_tau	= T(tau<T> / T(8.0L));
+	class stadium
+	{
+	public:
+		stadium(point_2d c1, point_2d c2, float radius);
+		bool intersects(circle) const;
 
-	bool		intersects(point_2d, point_2d, point_2d, point_2d);
-	bool		intersects(const bounding_box&, const bounding_box&);
-	bool		contains(const bounding_box&, const point_2d&);
+	private:
+		point_2d m_c1;
+		point_2d m_c2;
+		float m_radius;
+	};
 
-	point_2d	pol_to_car(const polar_2d& p);
-	polar_2d	car_to_pol(const point_2d& v);
-	float		radius(const bounding_box&);
+	template <class T> constexpr T	eighth_tau = T(std::experimental::io2d::tau<T> / T(8.0L));
 
-	point_2d	rotate(const point_2d& point, float theta, const point_2d& origin);
+	float			minimum_distance_from_line_segment(point_2d end_point1, point_2d end_point2, point_2d remote_point);
+	bool			intersects(point_2d, point_2d, point_2d, point_2d);
+	bool			intersects(const bounding_box&, const bounding_box&);
+	bool			contains(const bounding_box&, const point_2d&);
+
+	point_2d		pol_to_car(const polar_2d& p);
+	polar_2d		car_to_pol(const point_2d& v);
+	float			radius(const bounding_box&);
+
+	point_2d		rotate(const point_2d& point, float theta, const point_2d& origin);
 	bounding_box	translate(const bounding_box&, const point_2d&);
 }
 
@@ -54,3 +68,9 @@ inline rocks_in_space::polar_2d rocks_in_space::car_to_pol(const point_2d& v)
 {
 	return{ v.magnitude(), atan2(v.y(), v.x()) };
 }
+
+inline rocks_in_space::stadium::stadium(point_2d c1, point_2d c2, float radius)
+	: m_c1(c1)
+	, m_c2(c2)
+	, m_radius(radius)
+{}

@@ -4,25 +4,25 @@
 
 namespace
 {
-	static const rocks_in_space::path_buffer* asteroid_vbs[] = { &rocks_in_space::asteroid::a1, &rocks_in_space::asteroid::a2, &rocks_in_space::asteroid::a3, &rocks_in_space::asteroid::a4 };
+	const rocks_in_space::path_buffer* asteroid_vbs[] = { &rocks_in_space::asteroid::a1, &rocks_in_space::asteroid::a2, &rocks_in_space::asteroid::a3, &rocks_in_space::asteroid::a4 };
 }
 
 rocks_in_space::game::game()
-	: m_level{ 1 }
-	, m_score {	0 }
+	: m_level{ 0 }
+	, m_score{ 0 }
 	, m_ship(controllable_physics{
 	physics{ point_2d{ playing_field_width / 2, playing_field_height / 2 },{ point_2d{ 0, 0 } } },
-	point_2d{ 0, 0 },
-	0.0 })
-	, m_ship_missile_count(0)
+	point_2d{ 0.0f, 0.0f },
+	0.0f })
 	, m_next_ship_missile(0)
 	, m_ship_missiles(max_missiles)
 	, m_rd()
 	, m_gen(m_rd())
 	, m_0_to_3(0, 3)
 	, m_0_to_1(0, 1)
+	, m_state(game_state::new_level)
+	, m_state_change(std::chrono::steady_clock::now())
 {
-	generate_level();
 }
 
 void rocks_in_space::game::generate_level()
@@ -31,7 +31,7 @@ void rocks_in_space::game::generate_level()
 	std::uniform_int_distribution<> edge(1, 4);
 	std::uniform_real_distribution<float> x(0.0F, playing_field_width);
 	std::uniform_real_distribution<float> y(0.0F, playing_field_height);
-	std::uniform_real_distribution<float> theta(0.0F, tau<float>);
+	std::uniform_real_distribution<float> theta(0.0F, std::experimental::io2d::tau<float>);
 
 	m_asteroids.clear();
 	m_asteroids.reserve(static_cast<::std::size_t>(count * 7));
@@ -48,37 +48,35 @@ void rocks_in_space::game::generate_level()
 	}
 }
 
-void rocks_in_space::game::update_asteroids()
+void rocks_in_space::game::update_ship(float seconds, std::vector<asteroid_destruction>& ad)
 {
-	for (auto& a : m_asteroids) { a.update(); }
-}
-
-void rocks_in_space::game::update_ship()
-{
-	auto missile = m_ship.update();
-	if (missile.m_launch && m_ship_missile_count < max_missiles)
+	auto ship_update = m_ship.update(seconds);
+	if (ship_update.m_launch && std::count_if(std::begin(m_ship_missiles), std::end(m_ship_missiles), [](const auto& m) { return m.active(); }) < max_missiles)
 	{
-		// launch a missile
-		m_ship_missiles[m_next_ship_missile] = { missile.m_direction, missile.m_orientation, true };
-		if (++m_next_ship_missile == max_missiles)
+		m_ship_missiles[m_next_ship_missile] = { ship_update.m_position, ship_update.m_orientation, true };
+		m_next_ship_missile = ++m_next_ship_missile % max_missiles;
+	}
+	if (m_ship.active())
+	{
+		for (auto& a : m_asteroids)
 		{
-			m_next_ship_missile = 0;
+			if (a.active() && collides(a.collision_data(), { ship_update.m_position, ship_radius(), ship_update.m_path }))
+			{
+				m_ship.destroy();
+				ad.push_back(a.destroy());
+			}
 		}
-		++m_ship_missile_count;
 	}
 }
 
-void rocks_in_space::game::update_missiles()
+void rocks_in_space::game::update_missiles(float seconds, std::vector<asteroid_destruction>& ad)
 {
-	auto ad = std::vector<asteroid_destruction>{};
-	ad.reserve(max_missiles);
 	for (auto& m : m_ship_missiles)
 	{
 		if (!m.active()) continue;
-		if (!m.update())
+		if (!m.update(seconds))
 		{
 			m.destroy();
-			--m_ship_missile_count;
 		}
 		for (auto& a : m_asteroids)
 		{
@@ -86,11 +84,17 @@ void rocks_in_space::game::update_missiles()
 			{
 				ad.push_back(a.destroy());
 				m.destroy();
-				--m_ship_missile_count;
 			}
 		}
 	}
+}
 
+bool rocks_in_space::game::update_asteroids(float seconds, std::vector<asteroid_destruction>& ad)
+{
+	if (m_state == game_state::new_level)
+	{
+		return true;
+	}
 	for (auto& next_asteroids : ad)
 	{
 		m_score += next_asteroids.m_score;
@@ -102,7 +106,9 @@ void rocks_in_space::game::update_missiles()
 		auto path2 = path_from_prototype(*asteroid_vbs[m_0_to_3(m_gen)], next_asteroids.m_size);
 		m_asteroids.emplace_back(std::move(new_physics[1]), path2, next_asteroids.m_size);
 	}
+	return std::count_if(std::begin(m_asteroids), std::end(m_asteroids), [=](auto& a) { return a.update(seconds); }) > 0;
 }
+
 
 //std::once_flag rocks_in_space::my_handler::_Window_class_registered_flag;
 //const wchar_t* rocks_in_space::my_handler::_Refimpl_window_class_name = L"_RefImplWndwCls";

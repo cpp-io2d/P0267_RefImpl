@@ -1,5 +1,22 @@
 #include "Maths.h"
 
+bool rocks_in_space::stadium::intersects(circle c) const
+{
+	return minimum_distance_from_line_segment(m_c1, m_c2, c.center()) < (m_radius + c.radius());
+}
+
+float rocks_in_space::minimum_distance_from_line_segment(point_2d e1, point_2d e2, point_2d p)
+{
+	const auto d_sq = (e1 - e2).magnitude_squared();
+	if (d_sq == 0.0f)
+	{
+		return (e1 - p).magnitude();
+	}
+	const auto t = std::max(0.0f, std::min(1.0f, (p - e1).dot(e2 - e1) / d_sq));
+	const auto projection = e1 + t * (e2 - e1);
+	return (p - projection).magnitude();
+}
+
 rocks_in_space::point_2d rocks_in_space::rotate(const point_2d& point, float theta, const point_2d& origin)
 {
 	const auto translation = point - origin;

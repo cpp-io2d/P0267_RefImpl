@@ -29,19 +29,12 @@ namespace rocks_in_space
 		path_buffer&	m_path;
 	};
 
-	struct rotating_collision
-	{
-		pos&			m_position;
-		float			m_radius;
-		path_buffer		m_path;
-	};
-
 	class physics
 	{
 	public:
 								physics(const pos& position, const vel& velocity);
-		void					update();
-		void					update(const acc&);
+		void					update(float seconds);
+		void					update(float seconds, const acc&);
 
 		std::array<physics, 2>	divide(std::mt19937&, std::uniform_real_distribution<float>&) const;
 		const pos&				position() const;
@@ -56,9 +49,10 @@ namespace rocks_in_space
 	{
 	public:
 					controllable_physics(const physics& phy, const acc& acc, float ori);
-		void		update();
-		void		thrust(float t);
-		void		spin(float spin);
+		void		reset(const physics& phy, const acc& acc, float ori);
+		void		update(float seconds);
+		void		apply_thrust(float t);
+		void		apply_spin(float spin);
 
 		const pos&	position() const;
 		const vel&	velocity() const;
@@ -77,6 +71,7 @@ namespace rocks_in_space
 	void							constrain_ori(double&);
 	point_2d						screen_space(const point_2d& v);
 	bool							collides(const collision& a, const std::array<point_2d, 2>& missile_path);
+	bool							collides(const collision& a, const collision& ship);
 }
 
 inline rocks_in_space::physics::physics(const pos& position, const vel& velocity)
@@ -100,12 +95,19 @@ inline rocks_in_space::controllable_physics::controllable_physics(const physics&
 	, m_orientation(ori)
 {}
 
-inline void	rocks_in_space::controllable_physics::thrust(float t)
+inline void rocks_in_space::controllable_physics::reset(const physics& phy, const acc& acc, float ori)
+{
+	m_physics = phy;
+	m_acceleration = acc;
+	m_orientation = ori;
+}
+
+inline void	rocks_in_space::controllable_physics::apply_thrust(float t)
 {
 	m_acceleration = pol_to_car(polar_2d{ t, m_orientation });
 }
 
-inline void	rocks_in_space::controllable_physics::spin(float spin)
+inline void	rocks_in_space::controllable_physics::apply_spin(float spin)
 {
 	m_orientation += spin;
 }

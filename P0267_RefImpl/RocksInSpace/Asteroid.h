@@ -16,13 +16,14 @@ namespace rocks_in_space
 	{
 	public:
 									asteroid(physics&& phys, std::pair<const path_buffer&, float> path, float s);
-		void						update();
+		bool						update(float seconds);
 		asteroid_destruction		destroy();
 		
 		template <class OutputType>
 		void						draw(OutputType& ds) const;
 		bool						active() const;
 		const collision&			collision_data() const;
+		stadium						sweep(float duration) const;
 
 		static const path_buffer	a1;
 		static const path_buffer	a2;
@@ -54,6 +55,11 @@ inline bool rocks_in_space::asteroid::active() const
 inline const rocks_in_space::collision&	rocks_in_space::asteroid::collision_data() const
 {
 	return m_collision;
+}
+
+inline rocks_in_space::stadium rocks_in_space::asteroid::sweep(float duration) const
+{
+	return { m_physics.position(), m_physics.position() + m_physics.velocity() * duration, m_collision.m_radius };
 }
 
 template <class OutputType>
