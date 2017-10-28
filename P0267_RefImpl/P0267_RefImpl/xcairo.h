@@ -64,7 +64,8 @@ namespace std {
 							brush_type brushType;
 						};
 						using brush_data_type = _Brush_data;
-
+						
+						static brush_data_type create_brush();
 						static brush_data_type create_brush(const rgba_color& c);
 						template <class InputIterator>
 						static brush_data_type create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last);

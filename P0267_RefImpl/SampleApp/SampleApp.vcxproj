@@ -204,6 +204,7 @@
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -227,6 +228,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -249,6 +251,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -272,6 +275,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -295,6 +299,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -317,6 +322,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -344,6 +350,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -370,6 +377,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -397,6 +405,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -423,6 +432,7 @@ copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
       <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
 copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
 copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+copy "$(ProjectDir)2017_07_12.tiff" "$(OutputPath)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

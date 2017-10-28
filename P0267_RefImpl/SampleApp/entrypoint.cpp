@@ -5,6 +5,7 @@
 #include <sstream>
 #include <ios>
 #include <thread>
+#include <mutex>
 #include "path_examples.h"
 #include "brush_examples.h"
 
@@ -57,11 +58,16 @@ int main() {
 	//make_path_examples();
 	//make_brush_examples();
 
-	//auto ds = make_display_surface(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
-	::std::thread outputOne([]() {
+	// Note: We're using a mutex here because you can't rely in thread safety when dealing with the same file. (e.g. In the case of this implementation, GraphicsMagick is NOT thread-safe for JPEG files.)
+	::std::mutex jpegMutex;
+
+	::std::thread outputOne([&jpegMutex]() {
 		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
 		sample_draw sd;
-		image_surface imgSfc(std::experimental::filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::argb32);
+		image_surface imgSfc = [&jpegMutex]() -> image_surface {
+			::std::lock_guard<::std::mutex> lg(jpegMutex);
+			return image_surface(std::experimental::filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::rgb30);
+		}();
 		brush imgSfcBrush(move(imgSfc));
 		os.draw_callback([&](output_surface& outSfc) {
 			outSfc.clear();
@@ -70,10 +76,26 @@ int main() {
 		os.begin_show();
 	});
 
-	::std::thread outputTwo([]() {
+	::std::thread outputTwo([&jpegMutex]() {
 		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
 		sample_draw sd;
-		image_surface imgSfc(std::experimental::filesystem::path("2016_06_22.png"s), image_file_format::png, format::rgb30);
+		image_surface imgSfc = [&jpegMutex]() -> image_surface {
+			::std::lock_guard<::std::mutex> lg(jpegMutex);
+			return image_surface(std::experimental::filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::rgb16_565);
+		}();
+
+		brush imgSfcBrush(move(imgSfc));
+		os.draw_callback([&](output_surface& outSfc) {
+			outSfc.clear();
+			outSfc.paint(imgSfcBrush);
+		});
+		os.begin_show();
+	});
+
+	::std::thread outputThree([]() {
+		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+		sample_draw sd;
+		image_surface imgSfc(std::experimental::filesystem::path("2016_06_22.png"s), image_file_format::png, format::argb32);
 		brush imgSfcBrush(move(imgSfc));
 		os.draw_callback([&](output_surface& outSfc) {
 			outSfc.clear();
@@ -82,7 +104,7 @@ int main() {
 		os.begin_show();
 	});
 	
-	::std::thread outputThree([]() {
+	::std::thread outputFour([]() {
 		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
 		sample_draw sd;
 		image_surface imgSfc(std::experimental::filesystem::path("alpha8.png"s), image_file_format::png, format::a8);
@@ -95,9 +117,23 @@ int main() {
 		os.begin_show();
 	});
 
+	::std::thread outputFive([]() {
+		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+		sample_draw sd;
+		image_surface imgSfc(std::experimental::filesystem::path("2017_07_12.tiff"s), image_file_format::tiff, format::rgb24);
+		brush imgSfcBrush(move(imgSfc));
+		os.draw_callback([&](output_surface& outSfc) {
+			outSfc.clear();
+			outSfc.paint(imgSfcBrush);
+		});
+		os.begin_show();
+	});
+
 	outputOne.join();
 	outputTwo.join();
 	outputThree.join();
+	outputFour.join();
+	outputFive.join();
 
 	return 0;
 	//	auto imgSfc = make_image_surface(format::argb32, 300, 200);
