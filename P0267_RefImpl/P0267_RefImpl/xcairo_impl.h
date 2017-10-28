@@ -14,6 +14,7 @@
 #if defined(_WIN32) || defined(_WIN64) || defined(HAS_GRAPHICS_MAGICK)
 #include <magick/api.h>
 #endif
+#include <system_error>
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
@@ -715,6 +716,299 @@ namespace std::experimental::io2d {
 				return data;
 			}
 
+			inline ::std::error_code _Graphics_magic_exception_type_to_error_code(ExceptionInfo* exInfo) {
+				ExceptionType code = exInfo->severity;
+				::std::error_code ec;
+				switch (code)
+				{
+				case UndefinedException:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case WarningException:
+				{
+					ec = ::std::make_error_code(errc::operation_canceled);
+				} break;
+				case ResourceLimitWarning:
+				{
+					ec = ::std::make_error_code(errc::not_enough_memory);
+				} break;
+				case TypeWarning:
+				{
+					ec = ::std::make_error_code(errc::operation_not_supported);
+				} break;
+				case OptionWarning:
+				{
+					ec = ::std::make_error_code(errc::invalid_argument);
+				} break;
+				case DelegateWarning:
+				{
+					ec = ::std::make_error_code(errc::operation_not_supported);
+				} break;
+				case MissingDelegateWarning:
+				{
+					ec = ::std::make_error_code(errc::no_protocol_option);
+				} break;
+				case CorruptImageWarning:
+				{
+					ec = ::std::make_error_code(errc::illegal_byte_sequence);
+				} break;
+				case FileOpenWarning:
+				{
+					// Note: We're relying on some of the internals of GraphicsMagick here. As such, io_error is a blanket that may cover the more specific cases that are checked for first.
+					if (::std::strstr(exInfo->reason, "UnableToCreateTemporaryFile") != nullptr) {
+						ec = ::std::make_error_code(errc::no_space_on_device);
+					}
+					else {
+						if (::std::strstr(exInfo->reason, "UnableToOpenFile") != nullptr) {
+							ec = ::std::make_error_code(errc::no_such_file_or_directory);
+						}
+						else {
+							ec = ::std::make_error_code(errc::io_error);
+						}
+					}
+				} break;
+				case BlobWarning:
+				{
+					if (::std::strstr(exInfo->reason, "UnableToWriteBlob") != nullptr) {
+						ec = ::std::make_error_code(errc::no_space_on_device);
+					}
+					else {
+						ec = ::std::make_error_code(errc::io_error);
+					}
+				} break;
+				case StreamWarning:
+				{
+					ec = ::std::make_error_code(errc::io_error);
+				} break;
+				case CacheWarning:
+				{
+					ec = ::std::make_error_code(errc::not_enough_memory);
+				} break;
+				case CoderWarning:
+				{
+					ec = ::std::make_error_code(errc::invalid_argument);
+				} break;
+				case ModuleWarning:
+				{
+					ec = ::std::make_error_code(errc::no_protocol_option);
+				} break;
+				case DrawWarning:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case ImageWarning:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case XServerWarning:
+				{
+					ec = ::std::make_error_code(errc::operation_canceled);
+				} break;
+				case MonitorWarning:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case RegistryWarning:
+				{
+					ec = ::std::make_error_code(errc::operation_not_permitted);
+				} break;
+				case ConfigureWarning:
+				{
+					ec = ::std::make_error_code(errc::operation_canceled);
+				} break;
+				case ErrorException:
+				{
+					ec = ::std::make_error_code(errc::operation_not_permitted);
+				} break;
+				case ResourceLimitError:
+				{
+					ec = ::std::make_error_code(errc::not_enough_memory);
+				} break;
+				case TypeError:
+				{
+					ec = ::std::make_error_code(errc::operation_not_supported);
+				} break;
+				case OptionError:
+				{
+					ec = ::std::make_error_code(errc::invalid_argument);
+				} break;
+				case DelegateError:
+				{
+					ec = ::std::make_error_code(errc::operation_not_supported);
+				} break;
+				case MissingDelegateError:
+				{
+					ec = ::std::make_error_code(errc::no_protocol_option);
+				} break;
+				case CorruptImageError:
+				{
+					ec = ::std::make_error_code(errc::illegal_byte_sequence);
+				} break;
+				case FileOpenError:
+				{
+					// Note: We're relying on some of the internals of GraphicsMagick here. As such, io_error is a blanket that may cover the more specific cases that are checked for first.
+					if (::std::strstr(exInfo->reason, "UnableToCreateTemporaryFile") != nullptr) {
+						ec = ::std::make_error_code(errc::no_space_on_device);
+					}
+					else {
+						if (::std::strstr(exInfo->reason, "UnableToOpenFile") != nullptr) {
+							ec = ::std::make_error_code(errc::no_such_file_or_directory);
+						}
+						else {
+							ec = ::std::make_error_code(errc::io_error);
+						}
+					}
+				} break;
+				case BlobError:
+				{
+					if (::std::strstr(exInfo->reason, "UnableToWriteBlob") != nullptr) {
+						ec = ::std::make_error_code(errc::no_space_on_device);
+					}
+					else {
+						ec = ::std::make_error_code(errc::io_error);
+					}
+				} break;
+				case StreamError:
+				{
+					ec = ::std::make_error_code(errc::io_error);
+				} break;
+				case CacheError:
+				{
+					ec = ::std::make_error_code(errc::not_enough_memory);
+				} break;
+				case CoderError:
+				{
+					ec = ::std::make_error_code(errc::invalid_argument);
+				} break;
+				case ModuleError:
+				{
+					ec = ::std::make_error_code(errc::no_protocol_option);
+				} break;
+				case DrawError:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case ImageError:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case XServerError:
+				{
+					ec = ::std::make_error_code(errc::operation_canceled);
+				} break;
+				case MonitorError:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case RegistryError:
+				{
+					ec = ::std::make_error_code(errc::operation_not_permitted);
+				} break;
+				case ConfigureError:
+				{
+					ec = ::std::make_error_code(errc::operation_canceled);
+				} break;
+				case FatalErrorException:
+				{
+					ec = ::std::make_error_code(errc::not_supported);
+				} break;
+				case ResourceLimitFatalError:
+				{
+					ec = ::std::make_error_code(errc::not_enough_memory);
+				} break;
+				case TypeFatalError:
+				{
+					ec = ::std::make_error_code(errc::operation_not_supported);
+				} break;
+				case OptionFatalError:
+				{
+					ec = ::std::make_error_code(errc::invalid_argument);
+				} break;
+				case DelegateFatalError:
+				{
+					ec = ::std::make_error_code(errc::operation_not_supported);
+				} break;
+				case MissingDelegateFatalError:
+				{
+					ec = ::std::make_error_code(errc::no_protocol_option);
+				} break;
+				case CorruptImageFatalError:
+				{
+					ec = ::std::make_error_code(errc::illegal_byte_sequence);
+				} break;
+				case FileOpenFatalError:
+				{
+					// Note: We're relying on some of the internals of GraphicsMagick here. As such, io_error is a blanket that may cover the more specific cases that are checked for first.
+					if (::std::strstr(exInfo->reason, "UnableToCreateTemporaryFile") != nullptr) {
+						ec = ::std::make_error_code(errc::no_space_on_device);
+					}
+					else {
+						if (::std::strstr(exInfo->reason, "UnableToOpenFile") != nullptr) {
+							ec = ::std::make_error_code(errc::no_such_file_or_directory);
+						}
+						else {
+							ec = ::std::make_error_code(errc::io_error);
+						}
+					}
+				} break;
+				case BlobFatalError:
+				{
+					if (::std::strstr(exInfo->reason, "UnableToWriteBlob") != nullptr) {
+						ec = ::std::make_error_code(errc::no_space_on_device);
+					}
+					else {
+						ec = ::std::make_error_code(errc::io_error);
+					}
+				} break;
+				case StreamFatalError:
+				{
+					ec = ::std::make_error_code(errc::io_error);
+				} break;
+				case CacheFatalError:
+				{
+					ec = ::std::make_error_code(errc::not_enough_memory);
+				} break;
+				case CoderFatalError:
+				{
+					ec = ::std::make_error_code(errc::invalid_argument);
+				} break;
+				case ModuleFatalError:
+				{
+					ec = ::std::make_error_code(errc::no_protocol_option);
+				} break;
+				case DrawFatalError:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case ImageFatalError:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case XServerFatalError:
+				{
+					ec = ::std::make_error_code(errc::operation_canceled);
+				} break;
+				case MonitorFatalError:
+				{
+					ec = ::std::make_error_code(errc::no_message);
+				} break;
+				case RegistryFatalError:
+				{
+					ec = ::std::make_error_code(errc::operation_not_permitted);
+				} break;
+				case ConfigureFatalError:
+				{
+					ec = ::std::make_error_code(errc::operation_canceled);
+				} break;
+				default:
+				{
+					ec = ::std::make_error_code(errc::bad_message);
+				} break;
+				}
+				return ec;
+			}
+
 #if defined(_Filesystem_support_test)
 			inline void _Convert_and_set_pixel(io2d::format fmt, unsigned char* mapData, int i, int j, int mapStride, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
 				switch (fmt) {
@@ -759,9 +1053,9 @@ namespace std::experimental::io2d {
 					const unsigned short greenTen = static_cast<unsigned short>(green / 255.0f * 0b1111111111);
 					const unsigned short redTen = static_cast<unsigned short>(red / 255.0f * 0b1111111111);
 					mapData[index + 0] = static_cast<unsigned char>(blueTen & 0b11111111);
-					mapData[index + 1] = static_cast<unsigned char>(((blueTen & 0b1100000000) >> 6) | ((greenTen & 0b111111) << 2));
-					mapData[index + 2] = static_cast<unsigned char>(((greenTen & 0b1111000000) >> 4) | ((redTen & 0b1111) << 4));
-					mapData[index + 3] = static_cast<unsigned char>(((redTen & 0b1111110000) >> 2) | (0 << 6));
+					mapData[index + 1] = static_cast<unsigned char>(((blueTen & 0b1100000000) >> 8) | ((greenTen & 0b111111) << 2));
+					mapData[index + 2] = static_cast<unsigned char>(((greenTen & 0b1111000000) >> 6) | ((redTen & 0b1111) << 4));
+					mapData[index + 3] = static_cast<unsigned char>(((redTen & 0b1111110000) >> 4) | (0 << 6));
 				} break;
 				default:
 				{
@@ -770,6 +1064,15 @@ namespace std::experimental::io2d {
 			}
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt) {
+				::std::error_code ec;
+				auto data = move(create_image_surface(p, iff, fmt, ec));
+				if (ec) {
+					throw ::std::system_error(ec);
+				}
+				return data;
+			}
+			template<class GraphicsMath>
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
 				_Init_graphics_magic();
 				ExceptionInfo exInfo;
 				GetExceptionInfo(&exInfo);
@@ -781,14 +1084,18 @@ namespace std::experimental::io2d {
 				imageInfo->colorspace = TransparentColorspace;
 				auto pathStr = p.string();
 				if (pathStr.length() > MaxTextExtent - 1) {
-					throw ::std::system_error(make_error_code(errc::filename_too_long));
+					ec = make_error_code(errc::filename_too_long);
+					DestroyExceptionInfo(&exInfo);
+					return image_surface_data_type{};
 				}
 				strncpy(imageInfo->filename, pathStr.c_str(), pathStr.length());
 				PixelPacket mattePixel{};
 				imageInfo->matte_color = mattePixel;
 				unique_ptr<Image, decltype(&DestroyImage)> image(ReadImage(imageInfo.get(), &exInfo), &DestroyImage);
 				if (image == nullptr) {
-					throw ::std::runtime_error(exInfo.reason);
+					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
+					DestroyExceptionInfo(&exInfo);
+					return image_surface_data_type{};
 				}
 				auto width = image->columns;
 				auto height = image->rows;
@@ -803,66 +1110,142 @@ namespace std::experimental::io2d {
 				// Note: We don't own the pixels pointer.
 				PixelPacket* pixels = GetImagePixelsEx(image.get(), 0, 0, width, height, &exInfo);
 				if (pixels == nullptr) {
-					//throw ::std::runtime_error("Reason: " + exInfo.reason + ".\nDescription: " + exInfo.description);
-					throw ::std::runtime_error(exInfo.reason);
+					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
+					DestroyExceptionInfo(&exInfo);
+					return image_surface_data_type{};
 				}
 
 				DestroyExceptionInfo(&exInfo);
 
 				auto map = cairo_surface_map_to_image(data.surface.get(), nullptr);
-				try {
-					auto mapStride = cairo_image_surface_get_stride(map);
-					//auto mapWidth = cairo_image_surface_get_width(map);
-					//auto mapHeight = cairo_image_surface_get_height(map);
-					auto mapData = cairo_image_surface_get_data(map);
-					const auto channelMaxValue = static_cast<float>(numeric_limits<decltype(mattePixel.red)>::max());
-					if (image->matte != 0) {
-						for (unsigned long y = 0; y < height; y++) {
-							for (unsigned long x = 0; x < width; x++) {
-								const PixelPacket& currPixel = pixels[y * width + x];
-								auto red = static_cast<unsigned char>(currPixel.red * currPixel.opacity / channelMaxValue * 255);
-								auto green = static_cast<unsigned char>(currPixel.green * currPixel.opacity / channelMaxValue * 255);
-								auto blue = static_cast<unsigned char>(currPixel.blue * currPixel.opacity / channelMaxValue * 255);
-								auto alpha = static_cast<unsigned char>(currPixel.opacity / channelMaxValue * 255);
-								_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
-							}
-						}
-					}
-					else {
-						for (unsigned long y = 0; y < height; y++) {
-							for (unsigned long x = 0; x < width; x++) {
-								const PixelPacket& currPixel = pixels[y * width + x];
-								auto red = static_cast<unsigned char>(currPixel.red / channelMaxValue * 255);
-								auto green = static_cast<unsigned char>(currPixel.green / channelMaxValue * 255);
-								auto blue = static_cast<unsigned char>(currPixel.blue / channelMaxValue * 255);
-								auto alpha = static_cast<unsigned char>(255);
-								_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
-							}
+				auto mapStride = cairo_image_surface_get_stride(map);
+				auto mapData = cairo_image_surface_get_data(map);
+				const auto channelMaxValue = static_cast<float>(numeric_limits<decltype(mattePixel.red)>::max());
+				if (image->matte != 0) {
+					for (unsigned long y = 0; y < height; y++) {
+						for (unsigned long x = 0; x < width; x++) {
+							const PixelPacket& currPixel = pixels[y * width + x];
+							auto red = static_cast<unsigned char>(currPixel.red * currPixel.opacity / channelMaxValue * 255);
+							auto green = static_cast<unsigned char>(currPixel.green * currPixel.opacity / channelMaxValue * 255);
+							auto blue = static_cast<unsigned char>(currPixel.blue * currPixel.opacity / channelMaxValue * 255);
+							auto alpha = static_cast<unsigned char>(currPixel.opacity / channelMaxValue * 255);
+							_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
 						}
 					}
 				}
-				catch (...) {
-					cairo_surface_unmap_image(data.surface.get(), map);
-					throw;
+				else {
+					for (unsigned long y = 0; y < height; y++) {
+						for (unsigned long x = 0; x < width; x++) {
+							const PixelPacket& currPixel = pixels[y * width + x];
+							auto red = static_cast<unsigned char>(currPixel.red / channelMaxValue * 255);
+							auto green = static_cast<unsigned char>(currPixel.green / channelMaxValue * 255);
+							auto blue = static_cast<unsigned char>(currPixel.blue / channelMaxValue * 255);
+							auto alpha = static_cast<unsigned char>(255);
+							_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+						}
+					}
 				}
 				cairo_surface_unmap_image(data.surface.get(), map);
 				cairo_surface_mark_dirty(data.surface.get());
+				if (cairo_surface_status(data.surface.get()) != CAIRO_STATUS_SUCCESS) {
+					ec = ::std::make_error_code(errc::operation_canceled);
+					return image_surface_data_type{};
+				}
+				ec.clear();
 				return data;
-			}
-			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
-				ec = ::std::make_error_code(::std::errc::not_supported);
-				return image_surface_data_type();
 			}
 #else
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::string p, image_file_format iff) {
-				throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
+				::std::error_code ec;
+				auto data = move(create_image_surface(p, iff, ec));
+				if (ec) {
+					throw ::std::system_error(ec);
+				}
+				return data;
 			}
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::string p, image_file_format iff, ::std::error_code& ec) noexcept {
-				ec = ::std::make_error_code(::std::errc::not_supported);
-				return image_surface_data_type();
+				_Init_graphics_magic();
+				ExceptionInfo exInfo;
+				GetExceptionInfo(&exInfo);
+
+				image_surface_data_type data;
+
+				unique_ptr<ImageInfo, decltype(&DestroyImageInfo)> imageInfo(CloneImageInfo(nullptr), &DestroyImageInfo);
+				imageInfo->depth = 8;
+				imageInfo->colorspace = TransparentColorspace;
+				auto& pathStr = p;
+				if (pathStr.length() > MaxTextExtent - 1) {
+					ec = make_error_code(errc::filename_too_long);
+					DestroyExceptionInfo(&exInfo);
+					return image_surface_data_type{};
+				}
+				strncpy(imageInfo->filename, pathStr.c_str(), pathStr.length());
+				PixelPacket mattePixel{};
+				imageInfo->matte_color = mattePixel;
+				unique_ptr<Image, decltype(&DestroyImage)> image(ReadImage(imageInfo.get(), &exInfo), &DestroyImage);
+				if (image == nullptr) {
+					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
+					DestroyExceptionInfo(&exInfo);
+					return image_surface_data_type{};
+				}
+				auto width = image->columns;
+				auto height = image->rows;
+				auto gamma = image->gamma;
+
+				data.surface = ::std::move(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy));
+				data.context = ::std::move(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(data.surface.get()), &cairo_destroy));
+				data.dimensions.x(width);
+				data.dimensions.y(height);
+				data.format = fmt;
+
+				// Note: We don't own the pixels pointer.
+				PixelPacket* pixels = GetImagePixelsEx(image.get(), 0, 0, width, height, &exInfo);
+				if (pixels == nullptr) {
+					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
+					DestroyExceptionInfo(&exInfo);
+					return image_surface_data_type{};
+				}
+
+				DestroyExceptionInfo(&exInfo);
+
+				auto map = cairo_surface_map_to_image(data.surface.get(), nullptr);
+				auto mapStride = cairo_image_surface_get_stride(map);
+				auto mapData = cairo_image_surface_get_data(map);
+				const auto channelMaxValue = static_cast<float>(numeric_limits<decltype(mattePixel.red)>::max());
+				if (image->matte != 0) {
+					for (unsigned long y = 0; y < height; y++) {
+						for (unsigned long x = 0; x < width; x++) {
+							const PixelPacket& currPixel = pixels[y * width + x];
+							auto red = static_cast<unsigned char>(currPixel.red * currPixel.opacity / channelMaxValue * 255);
+							auto green = static_cast<unsigned char>(currPixel.green * currPixel.opacity / channelMaxValue * 255);
+							auto blue = static_cast<unsigned char>(currPixel.blue * currPixel.opacity / channelMaxValue * 255);
+							auto alpha = static_cast<unsigned char>(currPixel.opacity / channelMaxValue * 255);
+							_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+						}
+					}
+				}
+				else {
+					for (unsigned long y = 0; y < height; y++) {
+						for (unsigned long x = 0; x < width; x++) {
+							const PixelPacket& currPixel = pixels[y * width + x];
+							auto red = static_cast<unsigned char>(currPixel.red / channelMaxValue * 255);
+							auto green = static_cast<unsigned char>(currPixel.green / channelMaxValue * 255);
+							auto blue = static_cast<unsigned char>(currPixel.blue / channelMaxValue * 255);
+							auto alpha = static_cast<unsigned char>(255);
+							_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+						}
+					}
+				}
+				cairo_surface_unmap_image(data.surface.get(), map);
+				cairo_surface_mark_dirty(data.surface.get());
+				if (cairo_surface_status(data.surface.get()) != CAIRO_STATUS_SUCCESS) {
+					ec = ::std::make_error_code(errc::operation_canceled);
+					return image_surface_data_type{};
+				}
+				ec.clear();
+				return data;
 			}
 #endif
 			template<class GraphicsMath>
@@ -876,20 +1259,24 @@ namespace std::experimental::io2d {
 #if defined(_Filesystem_support_test)
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, filesystem::path p, image_file_format iff) {
+				_Init_graphics_magic();
 				throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
 			}
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, filesystem::path p, image_file_format iff, error_code& ec) noexcept {
+				_Init_graphics_magic();
 				ec = ::std::make_error_code(::std::errc::not_supported);
 				return;
 			}
 #else
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, ::std::string p, image_file_format iff) {
+				_Init_graphics_magic();
 				throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
 			}
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, ::std::string p, image_file_format iff, error_code& ec) noexcept {
+				_Init_graphics_magic();
 				ec = ::std::make_error_code(::std::errc::not_supported);
 				return;
 			}
@@ -1675,7 +2062,7 @@ namespace std::experimental::io2d {
 #endif
 				ec.clear();
 				return result;
-				}
+			}
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps) {
 				output_surface_data_type result;
@@ -1721,7 +2108,7 @@ namespace std::experimental::io2d {
 #endif
 				ec.clear();
 				return result;
-				}
+			}
 			template <class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_output_surface(output_surface_data_type&& data) noexcept {
 				data.data.back_buffer = ::std::move(move_image_surface(::std::move(data.data.back_buffer)));
@@ -1847,7 +2234,7 @@ namespace std::experimental::io2d {
 							if (data.rr == io2d::refresh_rate::fixed) {
 								// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
 								redraw = data.elapsed_draw_time >= desiredElapsed;
-						}
+							}
 							if (redraw) {
 								// Run user draw function:
 								osd.draw_callback(sfc);
@@ -1859,7 +2246,7 @@ namespace std::experimental::io2d {
 								if (data.rr == experimental::io2d::refresh_rate::fixed) {
 									while (data.elapsed_draw_time >= desiredElapsed) {
 										data.elapsed_draw_time -= desiredElapsed;
-							}
+									}
 #ifdef _IO2D_WIN32FRAMERATE
 									while (elapsedDrawNanoseconds >= desiredElapsedNanoseconds) {
 										elapsedDrawNanoseconds -= desiredElapsedNanoseconds;
@@ -1873,8 +2260,8 @@ namespace std::experimental::io2d {
 #endif
 								}
 							}
-									}
-			}
+						}
+					}
 					else {
 						if (msg.message != WM_QUIT) {
 							TranslateMessage(&msg);
@@ -1891,7 +2278,7 @@ namespace std::experimental::io2d {
 								if (data.rr == io2d::refresh_rate::fixed) {
 									while (data.elapsed_draw_time >= desiredElapsed) {
 										data.elapsed_draw_time -= desiredElapsed;
-							}
+									}
 #ifdef _IO2D_WIN32FRAMERATE
 									while (elapsedDrawNanoseconds >= desiredElapsedNanoseconds) {
 										elapsedDrawNanoseconds -= desiredElapsedNanoseconds;
@@ -1905,8 +2292,8 @@ namespace std::experimental::io2d {
 #endif
 								}
 							}
-									}
 						}
+					}
 
 #ifdef _IO2D_WIN32FRAMERATE
 					if (updateTitleCounter == -1) {
@@ -1938,7 +2325,7 @@ namespace std::experimental::io2d {
 				}
 				data.elapsed_draw_time = 0.0F;
 				return static_cast<int>(msg.wParam);
-					}
+			}
 
 
 			template<class GraphicsMath>
@@ -2249,7 +2636,7 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::refresh_rate(output_surface_data_type& data, io2d::refresh_rate val) {
 				data.data.rr = val;
-					}
+			}
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::desired_frame_rate(output_surface_data_type& data, float val) {
 				const float oneFramePerHour = 1.0f / (60.0f * 60.0f); // If you need a lower framerate than this, use as_needed and control the refresh by writing a timer that will trigger a refresh at your desired interval.
@@ -2381,6 +2768,6 @@ namespace std::experimental::io2d {
 			inline bool _Cairo_graphics_surfaces<GraphicsMath>::redraw_required(const output_surface_data_type& data) noexcept {
 				return _Ds_redraw_required<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 			}
-			}
-				}
-			}
+		}
+	}
+}

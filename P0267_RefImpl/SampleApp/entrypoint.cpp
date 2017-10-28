@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <sstream>
 #include <ios>
+#include <thread>
 #include "path_examples.h"
 #include "brush_examples.h"
 
@@ -57,16 +58,47 @@ int main() {
 	//make_brush_examples();
 
 	//auto ds = make_display_surface(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
-	output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
-	sample_draw sd;
-	image_surface imgSfc(std::experimental::filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::argb32);
-	brush imgSfcBrush(move(imgSfc));
-	os.draw_callback([&](output_surface& outSfc) {
-		outSfc.clear();
-		outSfc.paint(imgSfcBrush);
+	::std::thread outputOne([]() {
+		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+		sample_draw sd;
+		image_surface imgSfc(std::experimental::filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::argb32);
+		brush imgSfcBrush(move(imgSfc));
+		os.draw_callback([&](output_surface& outSfc) {
+			outSfc.clear();
+			outSfc.paint(imgSfcBrush);
+		});
+		os.begin_show();
 	});
-	os.begin_show();
-	//os.begin_show();
+
+	::std::thread outputTwo([]() {
+		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+		sample_draw sd;
+		image_surface imgSfc(std::experimental::filesystem::path("2016_06_22.png"s), image_file_format::png, format::rgb30);
+		brush imgSfcBrush(move(imgSfc));
+		os.draw_callback([&](output_surface& outSfc) {
+			outSfc.clear();
+			outSfc.paint(imgSfcBrush);
+		});
+		os.begin_show();
+	});
+	
+	::std::thread outputThree([]() {
+		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+		sample_draw sd;
+		image_surface imgSfc(std::experimental::filesystem::path("alpha8.png"s), image_file_format::png, format::a8);
+		brush imgSfcBrush(move(imgSfc));
+		brush redBrush(rgba_color::red);
+		os.draw_callback([&](output_surface& outSfc) {
+			outSfc.clear();
+			outSfc.mask(redBrush, imgSfcBrush);
+		});
+		os.begin_show();
+	});
+
+	outputOne.join();
+	outputTwo.join();
+	outputThree.join();
+
 	return 0;
 	//	auto imgSfc = make_image_surface(format::argb32, 300, 200);
 	//	auto bkgrndBrush = brush(rgba_color::black());

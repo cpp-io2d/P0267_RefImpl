@@ -201,7 +201,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='dll_Debug|Win32'">
@@ -221,7 +224,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Clang_C2|Win32'">
@@ -240,7 +246,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -260,7 +269,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='dll_Debug|x64'">
@@ -280,7 +292,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Clang_C2|x64'">
@@ -299,7 +314,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -323,7 +341,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Clang_C2|Win32'">
@@ -346,7 +367,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -370,7 +394,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Clang_C2|x64'">
@@ -393,7 +420,10 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"</Command>
+      <Command>copy "$(ProjectDir)2017_03_05.jpg" "$(OutputPath)"
+copy "$(ProjectDir)2016_06_22.png" "$(OutputPath)"
+copy "$(ProjectDir)alpha8.png" "$(OutputPath)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
