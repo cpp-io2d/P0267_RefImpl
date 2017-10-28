@@ -16,6 +16,8 @@ namespace std {
 		namespace io2d {
 			inline namespace v1 {
 				namespace _Cairo {
+					void _Init_graphics_magic();
+
 #if defined(_WIN32) || defined(_WIN64)
 					[[noreturn]]
 					inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const char* message) {
@@ -207,6 +209,7 @@ namespace std {
 						static void destroy(dashes_data_type& data) noexcept;
 
 						// image_surface
+
 						static basic_display_point<GraphicsMath> max_dimensions() noexcept;
 
 						struct _Image_surface_data {

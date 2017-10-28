@@ -493,6 +493,7 @@
     <ClInclude Include="xtext.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cairo_renderer-graphicsmagickinit.cpp" />
     <ClCompile Include="cairo_renderer_win32.cpp" />
     <ClCompile Include="rgba_color.cpp" />
   </ItemGroup>

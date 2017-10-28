@@ -59,9 +59,14 @@ int main() {
 	//auto ds = make_display_surface(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
 	output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
 	sample_draw sd;
-	os.draw_callback(sd);
+	image_surface imgSfc(std::experimental::filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::argb32);
+	brush imgSfcBrush(move(imgSfc));
+	os.draw_callback([&](output_surface& outSfc) {
+		outSfc.clear();
+		outSfc.paint(imgSfcBrush);
+	});
 	os.begin_show();
-	os.begin_show();
+	//os.begin_show();
 	return 0;
 	//	auto imgSfc = make_image_surface(format::argb32, 300, 200);
 	//	auto bkgrndBrush = brush(rgba_color::black());

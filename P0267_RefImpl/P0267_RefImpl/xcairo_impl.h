@@ -11,6 +11,10 @@
 #include <iostream>
 #include <sstream>
 
+#if defined(_WIN32) || defined(_WIN64) || defined(HAS_GRAPHICS_MAGICK)
+#include <magick/api.h>
+#endif
+
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		namespace _Cairo {
@@ -712,12 +716,141 @@ namespace std::experimental::io2d {
 			}
 
 #if defined(_Filesystem_support_test)
-			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt) {
-				throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
+			inline void _Convert_and_set_pixel(io2d::format fmt, unsigned char* mapData, int i, int j, int mapStride, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+				switch (fmt) {
+				case std::experimental::io2d::v1::format::invalid:
+				{
+					_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
+				} break;
+				case std::experimental::io2d::v1::format::argb32:
+				{
+					const auto index = i * mapStride + j * 4;
+					mapData[index + 0] = blue;
+					mapData[index + 1] = green;
+					mapData[index + 2] = red;
+					mapData[index + 3] = alpha;
+				} break;
+				case std::experimental::io2d::v1::format::rgb24:
+				{
+					const auto index = i * mapStride + j * 4;
+					mapData[index + 0] = blue;
+					mapData[index + 1] = green;
+					mapData[index + 2] = red;
+					mapData[index + 3] = static_cast<unsigned char>(1);
+				} break;
+				case std::experimental::io2d::v1::format::a8:
+				{
+					const auto index = i * mapStride + j;
+					mapData[index + 0] = alpha;
+				} break;
+				case std::experimental::io2d::v1::format::rgb16_565:
+				{
+					const auto index = i * mapStride + j * 2;
+					blue = static_cast<unsigned char>(blue / 255.0F * 31.0F + 0.5F);
+					green = static_cast<unsigned char>(green / 255.0F * 63.0F + 0.5F);
+					red = static_cast<unsigned char>(red / 255.0F * 31.0F + 0.5F);
+					mapData[index + 0] = static_cast<unsigned char>(((blue & 0b00011111)) | ((green & 0b00000111) << 5));
+					mapData[index + 1] = static_cast<unsigned char>(((green & 0b00111000) >> 3) | ((red & 0b00011111) << 3));
+				} break;
+				case std::experimental::io2d::v1::format::rgb30:
+				{
+					const auto index = i * mapStride + j * 4;
+					const unsigned short blueTen = static_cast<unsigned short>(blue / 255.0f * 0b1111111111);
+					const unsigned short greenTen = static_cast<unsigned short>(green / 255.0f * 0b1111111111);
+					const unsigned short redTen = static_cast<unsigned short>(red / 255.0f * 0b1111111111);
+					mapData[index + 0] = static_cast<unsigned char>(blueTen & 0b11111111);
+					mapData[index + 1] = static_cast<unsigned char>(((blueTen & 0b1100000000) >> 6) | ((greenTen & 0b111111) << 2));
+					mapData[index + 2] = static_cast<unsigned char>(((greenTen & 0b1111000000) >> 4) | ((redTen & 0b1111) << 4));
+					mapData[index + 3] = static_cast<unsigned char>(((redTen & 0b1111110000) >> 2) | (0 << 6));
+				} break;
+				default:
+				{
+				} break;
+				}
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code & ec) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt) {
+				_Init_graphics_magic();
+				ExceptionInfo exInfo;
+				GetExceptionInfo(&exInfo);
+
+				image_surface_data_type data;
+
+				unique_ptr<ImageInfo, decltype(&DestroyImageInfo)> imageInfo(CloneImageInfo(nullptr), &DestroyImageInfo);
+				imageInfo->depth = 8;
+				imageInfo->colorspace = TransparentColorspace;
+				auto pathStr = p.string();
+				if (pathStr.length() > MaxTextExtent - 1) {
+					throw ::std::system_error(make_error_code(errc::filename_too_long));
+				}
+				strncpy(imageInfo->filename, pathStr.c_str(), pathStr.length());
+				PixelPacket mattePixel{};
+				imageInfo->matte_color = mattePixel;
+				unique_ptr<Image, decltype(&DestroyImage)> image(ReadImage(imageInfo.get(), &exInfo), &DestroyImage);
+				if (image == nullptr) {
+					throw ::std::runtime_error(exInfo.reason);
+				}
+				auto width = image->columns;
+				auto height = image->rows;
+				auto gamma = image->gamma;
+
+				data.surface = ::std::move(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy));
+				data.context = ::std::move(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(data.surface.get()), &cairo_destroy));
+				data.dimensions.x(width);
+				data.dimensions.y(height);
+				data.format = fmt;
+
+				// Note: We don't own the pixels pointer.
+				PixelPacket* pixels = GetImagePixelsEx(image.get(), 0, 0, width, height, &exInfo);
+				if (pixels == nullptr) {
+					//throw ::std::runtime_error("Reason: " + exInfo.reason + ".\nDescription: " + exInfo.description);
+					throw ::std::runtime_error(exInfo.reason);
+				}
+
+				DestroyExceptionInfo(&exInfo);
+
+				auto map = cairo_surface_map_to_image(data.surface.get(), nullptr);
+				try {
+					auto mapStride = cairo_image_surface_get_stride(map);
+					//auto mapWidth = cairo_image_surface_get_width(map);
+					//auto mapHeight = cairo_image_surface_get_height(map);
+					auto mapData = cairo_image_surface_get_data(map);
+					const auto channelMaxValue = static_cast<float>(numeric_limits<decltype(mattePixel.red)>::max());
+					if (image->matte != 0) {
+						for (unsigned long y = 0; y < height; y++) {
+							for (unsigned long x = 0; x < width; x++) {
+								const PixelPacket& currPixel = pixels[y * width + x];
+								auto red = static_cast<unsigned char>(currPixel.red * currPixel.opacity / channelMaxValue * 255);
+								auto green = static_cast<unsigned char>(currPixel.green * currPixel.opacity / channelMaxValue * 255);
+								auto blue = static_cast<unsigned char>(currPixel.blue * currPixel.opacity / channelMaxValue * 255);
+								auto alpha = static_cast<unsigned char>(currPixel.opacity / channelMaxValue * 255);
+								_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+							}
+						}
+					}
+					else {
+						for (unsigned long y = 0; y < height; y++) {
+							for (unsigned long x = 0; x < width; x++) {
+								const PixelPacket& currPixel = pixels[y * width + x];
+								auto red = static_cast<unsigned char>(currPixel.red / channelMaxValue * 255);
+								auto green = static_cast<unsigned char>(currPixel.green / channelMaxValue * 255);
+								auto blue = static_cast<unsigned char>(currPixel.blue / channelMaxValue * 255);
+								auto alpha = static_cast<unsigned char>(255);
+								_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+							}
+						}
+					}
+				}
+				catch (...) {
+					cairo_surface_unmap_image(data.surface.get(), map);
+					throw;
+				}
+				cairo_surface_unmap_image(data.surface.get(), map);
+				cairo_surface_mark_dirty(data.surface.get());
+				return data;
+			}
+			template<class GraphicsMath>
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
 				ec = ::std::make_error_code(::std::errc::not_supported);
 				return image_surface_data_type();
 			}
@@ -727,7 +860,7 @@ namespace std::experimental::io2d {
 				throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::string p, image_file_format iff, ::std::error_code & ec) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::string p, image_file_format iff, ::std::error_code& ec) noexcept {
 				ec = ::std::make_error_code(::std::errc::not_supported);
 				return image_surface_data_type();
 			}
@@ -1542,7 +1675,7 @@ namespace std::experimental::io2d {
 #endif
 				ec.clear();
 				return result;
-			}
+				}
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps) {
 				output_surface_data_type result;
@@ -1588,7 +1721,7 @@ namespace std::experimental::io2d {
 #endif
 				ec.clear();
 				return result;
-			}
+				}
 			template <class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_output_surface(output_surface_data_type&& data) noexcept {
 				data.data.back_buffer = ::std::move(move_image_surface(::std::move(data.data.back_buffer)));
@@ -1621,12 +1754,12 @@ namespace std::experimental::io2d {
 				long lleft = 10;
 				long ltop = 10;
 
-//#if defined(UNICODE)
+				//#if defined(UNICODE)
 				const wchar_t* winTitle = L"";
-//#else
-				//const char* winTitle = "";
-//#endif
-				// Create an instance of the window
+				//#else
+								//const char* winTitle = "";
+				//#endif
+								// Create an instance of the window
 				data.hwnd = CreateWindowEx(
 					static_cast<DWORD>(0),				// extended style
 					_Refimpl_window_class_name,			// class name
@@ -1714,7 +1847,7 @@ namespace std::experimental::io2d {
 							if (data.rr == io2d::refresh_rate::fixed) {
 								// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
 								redraw = data.elapsed_draw_time >= desiredElapsed;
-							}
+						}
 							if (redraw) {
 								// Run user draw function:
 								osd.draw_callback(sfc);
@@ -1726,7 +1859,7 @@ namespace std::experimental::io2d {
 								if (data.rr == experimental::io2d::refresh_rate::fixed) {
 									while (data.elapsed_draw_time >= desiredElapsed) {
 										data.elapsed_draw_time -= desiredElapsed;
-									}
+							}
 #ifdef _IO2D_WIN32FRAMERATE
 									while (elapsedDrawNanoseconds >= desiredElapsedNanoseconds) {
 										elapsedDrawNanoseconds -= desiredElapsedNanoseconds;
@@ -1740,8 +1873,8 @@ namespace std::experimental::io2d {
 #endif
 								}
 							}
-						}
-					}
+									}
+			}
 					else {
 						if (msg.message != WM_QUIT) {
 							TranslateMessage(&msg);
@@ -1758,7 +1891,7 @@ namespace std::experimental::io2d {
 								if (data.rr == io2d::refresh_rate::fixed) {
 									while (data.elapsed_draw_time >= desiredElapsed) {
 										data.elapsed_draw_time -= desiredElapsed;
-									}
+							}
 #ifdef _IO2D_WIN32FRAMERATE
 									while (elapsedDrawNanoseconds >= desiredElapsedNanoseconds) {
 										elapsedDrawNanoseconds -= desiredElapsedNanoseconds;
@@ -1772,8 +1905,8 @@ namespace std::experimental::io2d {
 #endif
 								}
 							}
+									}
 						}
-					}
 
 #ifdef _IO2D_WIN32FRAMERATE
 					if (updateTitleCounter == -1) {
@@ -1805,7 +1938,7 @@ namespace std::experimental::io2d {
 				}
 				data.elapsed_draw_time = 0.0F;
 				return static_cast<int>(msg.wParam);
-			}
+					}
 
 
 			template<class GraphicsMath>
@@ -2116,7 +2249,7 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::refresh_rate(output_surface_data_type& data, io2d::refresh_rate val) {
 				data.data.rr = val;
-			}
+					}
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::desired_frame_rate(output_surface_data_type& data, float val) {
 				const float oneFramePerHour = 1.0f / (60.0f * 60.0f); // If you need a lower framerate than this, use as_needed and control the refresh by writing a timer that will trigger a refresh at your desired interval.
@@ -2248,6 +2381,6 @@ namespace std::experimental::io2d {
 			inline bool _Cairo_graphics_surfaces<GraphicsMath>::redraw_required(const output_surface_data_type& data) noexcept {
 				return _Ds_redraw_required<_Cairo_graphics_surfaces<GraphicsMath>>(data.data);
 			}
-		}
-	}
-}
+			}
+				}
+			}
