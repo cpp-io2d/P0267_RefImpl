@@ -40,6 +40,28 @@ namespace std {
 					struct _Cairo_graphics_surfaces {
 						using graphics_math_type = GraphicsMath;
 						using _Graphics_surfaces_type = _Cairo_graphics_surfaces;
+						
+						struct additional_image_file_formats {
+							const static int _Base = 1000;
+							const static image_file_format bmp = static_cast<image_file_format>(_Base + 0);
+							const static image_file_format tga = static_cast<image_file_format>(_Base + 1);
+							const static image_file_format dib = static_cast<image_file_format>(_Base + 2);
+							const static image_file_format gif = static_cast<image_file_format>(_Base + 3);
+							const static image_file_format pcx = static_cast<image_file_format>(_Base + 4);
+							const static image_file_format pbm = static_cast<image_file_format>(_Base + 5);
+							const static image_file_format pgm = static_cast<image_file_format>(_Base + 6);
+							const static image_file_format ppm = static_cast<image_file_format>(_Base + 7);
+							const static image_file_format psd = static_cast<image_file_format>(_Base + 8);
+							const static image_file_format xbm = static_cast<image_file_format>(_Base + 10);
+							const static image_file_format xpm = static_cast<image_file_format>(_Base + 11);
+
+							struct read_only {
+								const static int _Base = 2000;
+								const static image_file_format xcf = static_cast<image_file_format>(_Base + 0);
+								const static image_file_format ico = static_cast<image_file_format>(_Base + 1);
+							};
+						};
+						
 						// interpreted_path
 
 						struct _Interpreted_path_data {
@@ -65,7 +87,6 @@ namespace std {
 						};
 						using brush_data_type = _Brush_data;
 						
-						static brush_data_type create_brush();
 						static brush_data_type create_brush(const rgba_color& c);
 						template <class InputIterator>
 						static brush_data_type create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last);

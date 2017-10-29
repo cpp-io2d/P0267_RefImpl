@@ -99,9 +99,8 @@ int main() {
 		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
 		sample_draw sd;
 		image_surface imgSfc(std::experimental::filesystem::path("2016_06_22.png"s), image_file_format::png, format::argb32);
-		imgSfc.save(::std::experimental::filesystem::path("2016_06_22_copy_argb32.jpg"s), image_file_format::jpeg);
-		imgSfc.save(::std::experimental::filesystem::path("2016_06_22_copy_argb32.png"s), image_file_format::png);
-		imgSfc.save(::std::experimental::filesystem::path("2016_06_22_copy_argb32.tiff"s), image_file_format::tiff);
+		//imgSfc.save(::std::experimental::filesystem::path("2016_06_22_copy_argb32.jpg"s), image_file_format::jpeg);
+		imgSfc.save(::std::experimental::filesystem::path("2016_06_22_copy_argb32.bmp"s), default_graphics_surfaces::additional_image_file_formats::bmp);
 		brush imgSfcBrush(move(imgSfc));
 		os.draw_callback([&](output_surface& outSfc) {
 			outSfc.clear();

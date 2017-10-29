@@ -1402,6 +1402,10 @@ namespace std::experimental::io2d {
 				strncpy(image->filename, pathStr.c_str(), pathStr.length());
 				switch (iff)
 				{
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code-break"
+#endif
 				case std::experimental::io2d::v1::image_file_format::unknown:
 				{
 					//if (p.has_extension()) {
@@ -1413,28 +1417,43 @@ namespace std::experimental::io2d {
 					//}
 					return;
 				} break;
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 				case std::experimental::io2d::v1::image_file_format::png:
 				{
 					const char format[] = "PNG";
-					strncpy(imageInfo->magick, format, MaxTextExtent);
-					strncpy(image->magick, format, MaxTextExtent);
+					const auto formatElemCount = ::std::extent_v<decltype(format)>;
+					strncpy(imageInfo->magick, format, formatElemCount);
+					strncpy(image->magick, format, formatElemCount);
 				} break;
 				case std::experimental::io2d::v1::image_file_format::jpeg:
 				{
 					const char format[] = "JPEG";
-					strncpy(imageInfo->magick, format, MaxTextExtent);
-					strncpy(image->magick, format, MaxTextExtent);
+					const auto formatElemCount = ::std::extent_v<decltype(format)>;
+					strncpy(imageInfo->magick, format, formatElemCount);
+					strncpy(image->magick, format, formatElemCount);
 				} break;
 				case std::experimental::io2d::v1::image_file_format::tiff:
 				{
 					const char format[] = "TIFF";
-					strncpy(imageInfo->magick, format, MaxTextExtent);
-					strncpy(image->magick, format, MaxTextExtent);
-				}break;
+					const auto formatElemCount = ::std::extent_v<decltype(format)>;
+					strncpy(imageInfo->magick, format, formatElemCount);
+					strncpy(image->magick, format, formatElemCount);
+				} break;
 				default:
+				{
+					if (iff == default_graphics_surfaces::additional_image_file_formats::bmp) {
+						const char format[] = "BMP";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
 					ec = make_error_code(errc::invalid_argument);
 					DestroyExceptionInfo(&exInfo);
 					return;
+				} break;
 				}
 				image->background_color = PixelPacket{};
 				imageInfo->background_color = PixelPacket{};
