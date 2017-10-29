@@ -1010,7 +1010,7 @@ namespace std::experimental::io2d {
 			}
 
 #if defined(_Filesystem_support_test)
-			inline void _Convert_and_set_pixel(io2d::format fmt, unsigned char* mapData, int i, int j, int mapStride, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+			inline void _Convert_and_set_pixel_to_io2d_format(io2d::format fmt, unsigned char* mapData, int i, int j, int mapStride, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
 				switch (fmt) {
 				case std::experimental::io2d::v1::format::invalid:
 				{
@@ -1062,6 +1062,102 @@ namespace std::experimental::io2d {
 				} break;
 				}
 			}
+			template <class result_type = unsigned char>
+			inline ::std::unique_ptr<result_type[]> _Convert_and_create_pixel_array_from_map_pixels(io2d::format fmt, unsigned char* mapData, int w, int h, int mapStride) {
+				//using result_type = unsigned char;
+				size_t pixelsArraySize = static_cast<size_t>(w * h * 4);
+				::std::unique_ptr<result_type[]> pixels(new result_type[pixelsArraySize]);
+				const float maxChannelSize = static_cast<float>(::std::numeric_limits<result_type>::max());
+				const bool keepPremultiplied = false;
+				auto pixel = pixels.get();
+				switch (fmt)
+				{
+				case std::experimental::io2d::v1::format::invalid:
+				{
+					_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
+				} break;
+				case std::experimental::io2d::v1::format::argb32:
+				{
+					for (int i = 0; i < h; i++) {
+						for (int j = 0; j < w; j++) {
+							const auto ppIndex = i * w * 4 + j * 4;
+							const auto mapIndex = i * mapStride + j * 4;
+							const float premul = (keepPremultiplied ? 1.0f : mapData[mapIndex + 3] / 255.0f);
+							pixel[ppIndex + 0] = static_cast<result_type>(mapData[mapIndex + 0] * premul / 255.0f * maxChannelSize);
+							pixel[ppIndex + 1] = static_cast<result_type>(mapData[mapIndex + 1] * premul / 255.0f * maxChannelSize);
+							pixel[ppIndex + 2] = static_cast<result_type>(mapData[mapIndex + 2] * premul / 255.0f * maxChannelSize);
+							pixel[ppIndex + 3] = static_cast<result_type>(mapData[mapIndex + 3] / 255.0f * maxChannelSize);
+						}
+					}
+				} break;
+				case std::experimental::io2d::v1::format::rgb24:
+				{
+					for (int i = 0; i < h; i++) {
+						for (int j = 0; j < w; j++) {
+							const auto ppIndex = i * w * 4 + j * 4;
+							const auto mapIndex = i * mapStride + j * 4;
+							pixel[ppIndex + 0] = static_cast<result_type>(mapData[mapIndex + 0] / 255.0f * maxChannelSize);
+							pixel[ppIndex + 1] = static_cast<result_type>(mapData[mapIndex + 1] / 255.0f * maxChannelSize);
+							pixel[ppIndex + 2] = static_cast<result_type>(mapData[mapIndex + 2] / 255.0f * maxChannelSize);
+							pixel[ppIndex + 3] = static_cast<result_type>(maxChannelSize);
+						}
+					}
+				} break;
+				case std::experimental::io2d::v1::format::a8:
+				{
+					for (int i = 0; i < h; i++) {
+						for (int j = 0; j < w; j++) {
+							const auto ppIndex = i * w * 4 + j * 4;
+							const auto mapIndex = i * mapStride + j;
+							const float premul = (keepPremultiplied ? 1.0f : mapData[mapIndex + 3] / 255.0f);
+							const auto pixVal = static_cast<result_type>(mapData[mapIndex] / 255.0f * maxChannelSize);
+							pixel[ppIndex + 0] = pixVal;
+							pixel[ppIndex + 1] = pixVal;
+							pixel[ppIndex + 2] = pixVal;
+							pixel[ppIndex + 3] = pixVal;
+						}
+					}
+				} break;
+				case std::experimental::io2d::v1::format::rgb16_565:
+				{
+					for (int i = 0; i < h; i++) {
+						for (int j = 0; j < w; j++) {
+							const auto ppIndex = i * w * 4 + j * 4;
+							const auto mapIndex = i * mapStride + j * 2;
+							pixel[ppIndex + 0] = static_cast<result_type>(((mapData[mapIndex + 0] & 0b11111) / static_cast<float>(0b11111)) * maxChannelSize);
+							pixel[ppIndex + 1] = static_cast<result_type>((((mapData[mapIndex + 0] & 0b11100000) >> 5) | ((mapData[mapIndex + 1] & 0b111) << 3)) / static_cast<float>(0b111111) * maxChannelSize);
+							pixel[ppIndex + 2] = static_cast<result_type>((((mapData[mapIndex + 1] & 0b11111000) >> 3) / static_cast<float>(0b11111)) * maxChannelSize);
+							pixel[ppIndex + 3] = static_cast<result_type>(maxChannelSize);
+						}
+					}
+				} break;
+				case std::experimental::io2d::v1::format::rgb30:
+				{
+					for (int i = 0; i < h; i++) {
+						for (int j = 0; j < w; j++) {
+							const auto ppIndex = i * w * 4 + j * 4;
+							const auto mapIndex = i * mapStride + j * 4;
+							const auto tenBitsAsFloat = static_cast<float>(0b1111111111);
+
+							const auto map0 = static_cast<unsigned short>(mapData[mapIndex + 0]);
+							const auto map1 = static_cast<unsigned short>(mapData[mapIndex + 1]);
+							const auto map2 = static_cast<unsigned short>(mapData[mapIndex + 2]);
+							const auto map3 = static_cast<unsigned short>(mapData[mapIndex + 3]);
+
+							pixel[ppIndex + 0] = static_cast<result_type>(((map0 & 0b11111111) | ((map1 & 0b11) << 8)) / tenBitsAsFloat * maxChannelSize);
+							pixel[ppIndex + 1] = static_cast<result_type>((((map1 & 0b11111100) >> 2) | ((map2 & 0b1111) << 6)) / tenBitsAsFloat * maxChannelSize);
+							pixel[ppIndex + 2] = static_cast<result_type>((((map2 & 0b11110000) >> 4) | ((map3 & 0b111111) << 4)) / tenBitsAsFloat * maxChannelSize);
+							pixel[ppIndex + 3] = static_cast<result_type>(maxChannelSize);
+						}
+					}
+				} break;
+				default:
+				{
+					_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_FORMAT);
+				} break;
+				}
+				return pixels;
+			}
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt) {
 				::std::error_code ec;
@@ -1074,6 +1170,10 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
 				_Init_graphics_magic();
+				if (iff == image_file_format::unknown) {
+					ec = ::std::make_error_code(errc::not_supported);
+					return image_surface_data_type{};
+				}
 				ExceptionInfo exInfo;
 				GetExceptionInfo(&exInfo);
 
@@ -1099,7 +1199,7 @@ namespace std::experimental::io2d {
 				}
 				auto width = image->columns;
 				auto height = image->rows;
-				auto gamma = image->gamma;
+				//auto gamma = image->gamma;
 
 				data.surface = ::std::move(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy));
 				data.context = ::std::move(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(data.surface.get()), &cairo_destroy));
@@ -1129,7 +1229,7 @@ namespace std::experimental::io2d {
 							auto green = static_cast<unsigned char>(currPixel.green * currPixel.opacity / channelMaxValue * 255);
 							auto blue = static_cast<unsigned char>(currPixel.blue * currPixel.opacity / channelMaxValue * 255);
 							auto alpha = static_cast<unsigned char>(currPixel.opacity / channelMaxValue * 255);
-							_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+							_Convert_and_set_pixel_to_io2d_format(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
 						}
 					}
 				}
@@ -1141,7 +1241,7 @@ namespace std::experimental::io2d {
 							auto green = static_cast<unsigned char>(currPixel.green / channelMaxValue * 255);
 							auto blue = static_cast<unsigned char>(currPixel.blue / channelMaxValue * 255);
 							auto alpha = static_cast<unsigned char>(255);
-							_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+							_Convert_and_set_pixel_to_io2d_format(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
 						}
 					}
 				}
@@ -1167,6 +1267,9 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::string p, image_file_format iff, ::std::error_code& ec) noexcept {
 				_Init_graphics_magic();
+				if (iff == image_file_format::unknown) {
+					return ::std::make_error_code(errc::not_supported);
+				}
 				ExceptionInfo exInfo;
 				GetExceptionInfo(&exInfo);
 
@@ -1222,7 +1325,7 @@ namespace std::experimental::io2d {
 							auto green = static_cast<unsigned char>(currPixel.green * currPixel.opacity / channelMaxValue * 255);
 							auto blue = static_cast<unsigned char>(currPixel.blue * currPixel.opacity / channelMaxValue * 255);
 							auto alpha = static_cast<unsigned char>(currPixel.opacity / channelMaxValue * 255);
-							_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+							_Convert_and_set_pixel_to_io2d_format(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
 						}
 					}
 				}
@@ -1234,7 +1337,7 @@ namespace std::experimental::io2d {
 							auto green = static_cast<unsigned char>(currPixel.green / channelMaxValue * 255);
 							auto blue = static_cast<unsigned char>(currPixel.blue / channelMaxValue * 255);
 							auto alpha = static_cast<unsigned char>(255);
-							_Convert_and_set_pixel(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+							_Convert_and_set_pixel_to_io2d_format(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
 						}
 					}
 				}
@@ -1260,24 +1363,213 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, filesystem::path p, image_file_format iff) {
 				_Init_graphics_magic();
-				throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
+				::std::error_code ec;
+				save(data, p, iff, ec);
+				if (ec) {
+					throw ::std::system_error(ec);
+				}
 			}
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, filesystem::path p, image_file_format iff, error_code& ec) noexcept {
 				_Init_graphics_magic();
-				ec = ::std::make_error_code(::std::errc::not_supported);
+				if (iff == image_file_format::unknown) {
+					ec = make_error_code(errc::not_supported);
+					return;
+				}
+				ExceptionInfo exInfo;
+				GetExceptionInfo(&exInfo);
+
+				auto map = cairo_surface_map_to_image(data.surface.get(), nullptr);
+				auto mapStride = cairo_image_surface_get_stride(map);
+				auto mapData = cairo_image_surface_get_data(map);
+				auto width = data.dimensions.x();
+				auto height = data.dimensions.y();
+				auto pixelDataUP = _Convert_and_create_pixel_array_from_map_pixels<unsigned char>(data.format, mapData, width, height, mapStride);
+				::std::unique_ptr<Image, decltype(&DestroyImage)> image(ConstituteImage(static_cast<unsigned long>(width), static_cast<unsigned long>(height), "BGRA", CharPixel, pixelDataUP.get(), &exInfo), &DestroyImage);
+				if (image == nullptr) {
+					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
+					DestroyExceptionInfo(&exInfo);
+					return;
+				}
+				unique_ptr<ImageInfo, decltype(&DestroyImageInfo)> imageInfo(CloneImageInfo(nullptr), &DestroyImageInfo);
+				auto pathStr = p.string();
+				if (pathStr.length() > MaxTextExtent - 1) {
+					ec = make_error_code(errc::filename_too_long);
+					DestroyExceptionInfo(&exInfo);
+					return;
+				}
+				strncpy(imageInfo->filename, pathStr.c_str(), pathStr.length());
+				strncpy(image->filename, pathStr.c_str(), pathStr.length());
+				switch (iff)
+				{
+				case std::experimental::io2d::v1::image_file_format::unknown:
+				{
+					//if (p.has_extension()) {
+
+					//}
+					//else {
+						ec = make_error_code(errc::not_supported);
+						DestroyExceptionInfo(&exInfo);
+					//}
+					return;
+				} break;
+				case std::experimental::io2d::v1::image_file_format::png:
+				{
+					const char format[] = "PNG";
+					strncpy(imageInfo->magick, format, MaxTextExtent);
+					strncpy(image->magick, format, MaxTextExtent);
+				} break;
+				case std::experimental::io2d::v1::image_file_format::jpeg:
+				{
+					const char format[] = "JPEG";
+					strncpy(imageInfo->magick, format, MaxTextExtent);
+					strncpy(image->magick, format, MaxTextExtent);
+				} break;
+				case std::experimental::io2d::v1::image_file_format::tiff:
+				{
+					const char format[] = "TIFF";
+					strncpy(imageInfo->magick, format, MaxTextExtent);
+					strncpy(image->magick, format, MaxTextExtent);
+				}break;
+				default:
+					ec = make_error_code(errc::invalid_argument);
+					DestroyExceptionInfo(&exInfo);
+					return;
+				}
+				image->background_color = PixelPacket{};
+				imageInfo->background_color = PixelPacket{};
+				image->colorspace = TransparentColorspace;
+				imageInfo->colorspace = TransparentColorspace;
+				image->depth = 8;
+				imageInfo->depth = 8;
+				image->matte = 1;
+
+				image->matte_color = PixelPacket{};
+				imageInfo->matte_color = PixelPacket{};
+				image->orientation = TopLeftOrientation;
+
+
+				imageInfo->quality = 90;
+				image->units = PixelsPerInchResolution;
+				imageInfo->units = PixelsPerInchResolution;
+				image->x_resolution = 96.0;
+
+				image->y_resolution = 96.0;
+
+				if (WriteImage(imageInfo.get(), image.get()) == MagickFail) {
+					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
+					DestroyExceptionInfo(&exInfo);
+					return;
+				}
+				DestroyExceptionInfo(&exInfo);
+				ec.clear();
 				return;
 			}
 #else
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, ::std::string p, image_file_format iff) {
 				_Init_graphics_magic();
-				throw ::std::system_error(::std::make_error_code(::std::errc::not_supported));
+				::std::error_code ec;
+				save(data, p, iff, ec);
+				if (ec) {
+					throw ::std::system_error(ec);
+				}
 			}
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::save(image_surface_data_type& data, ::std::string p, image_file_format iff, error_code& ec) noexcept {
 				_Init_graphics_magic();
-				ec = ::std::make_error_code(::std::errc::not_supported);
+				if (iff == image_file_format::unknown) {
+					ec = make_error_code(errc::not_supported);
+					return;
+				}
+				ExceptionInfo exInfo;
+				GetExceptionInfo(&exInfo);
+
+				auto map = cairo_surface_map_to_image(data.surface.get(), nullptr);
+				auto mapStride = cairo_image_surface_get_stride(map);
+				auto mapData = cairo_image_surface_get_data(map);
+				auto width = data.dimensions.x();
+				auto height = data.dimensions.y();
+				auto pixelDataUP = _Convert_and_create_pixel_array_from_map_pixels(data.format, mapData, width, height, mapStride);
+				::std::unique_ptr<Image, decltype(&DestroyImage)> img(ConstituteImage(static_cast<unsigned long>(width), static_cast<unsigned long>(height), "BGRA", ShortPixel, pixelDataUP.get(), &exInfo), &DestroyImage);
+				if (img == nullptr) {
+					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
+					DestroyExceptionInfo(&exInfo);
+					return;
+				}
+				unique_ptr<ImageInfo, decltype(&DestroyImageInfo)> imageInfo(CloneImageInfo(nullptr), &DestroyImageInfo);
+				auto& pathStr = p;
+				if (pathStr.length() > MaxTextExtent - 1) {
+					ec = make_error_code(errc::filename_too_long);
+					DestroyExceptionInfo(&exInfo);
+					return;
+				}
+				strncpy(imageInfo->filename, pathStr.c_str(), pathStr.length());
+				strncpy(image->filename, pathStr.c_str(), pathStr.length());
+				switch (iff)
+				{
+				case std::experimental::io2d::v1::image_file_format::unknown:
+				{
+					//if (p.has_extension()) {
+
+					//}
+					//else {
+					ec = make_error_code(errc::not_supported);
+					DestroyExceptionInfo(&exInfo);
+					//}
+					return;
+				} break;
+				case std::experimental::io2d::v1::image_file_format::png:
+				{
+					const char format[] = "PNG";
+					strncpy(imageInfo->magick, format, MaxTextExtent);
+					strncpy(image->magick, format, MaxTextExtent);
+				} break;
+				case std::experimental::io2d::v1::image_file_format::jpeg:
+				{
+					const char format[] = "JPEG";
+					strncpy(imageInfo->magick, format, MaxTextExtent);
+					strncpy(image->magick, format, MaxTextExtent);
+				} break;
+				case std::experimental::io2d::v1::image_file_format::tiff:
+				{
+					const char format[] = "TIFF";
+					strncpy(imageInfo->magick, format, MaxTextExtent);
+					strncpy(image->magick, format, MaxTextExtent);
+				}break;
+				default:
+					ec = make_error_code(errc::invalid_argument);
+					DestroyExceptionInfo(&exInfo);
+					return;
+				}
+				image->background_color = PixelPacket{};
+				imageInfo->background_color = PixelPacket{};
+				image->colorspace = TransparentColorspace;
+				imageInfo->colorspace = TransparentColorspace;
+				image->depth = 8;
+				imageInfo->depth = 8;
+				image->matte = 1;
+
+				image->matte_color = PixelPacket{};
+				imageInfo->matte_color = PixelPacket{};
+				image->orientation = TopLeftOrientation;
+
+
+				imageInfo->quality = 90;
+				image->units = PixelsPerInchResolution;
+				imageInfo->units = PixelsPerInchResolution;
+				image->x_resolution = 96.0;
+
+				image->y_resolution = 96.0;
+
+				if (WriteImage(imageInfo.get(), img.get()) == MagickFail) {
+					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
+					DestroyExceptionInfo(&exInfo);
+					return;
+				}
+				DestroyExceptionInfo(&exInfo);
+				ec.clear();
+				return;
 				return;
 			}
 #endif
