@@ -1,29 +1,60 @@
 ﻿You will need a relatively recent build of GNU autotools. Any recent distro
 should have a reasonably new version available which will fit the needs here.
 
-You will also need cairo version 1.12.14 or newer and libjpeg-turbo (note: on 
-Ubuntu it's called libturbojpeg, maybe on other distros). To support PNG
-functionality, you need libpng 1.6.X or later.
+You will need GCC 7.1 or newer or Clang 5.0 or newer. The current code
+implicitly relies on the presence of <experimental/filesystem> in certain
+places. When linking against libstdc++ you will need to make sure you
+specifically add "-lstdc++fs". You will need cairo version 1.12.14 or newer.
+You need the GraphicsMagick library. You will also need the X11 (Xlib)
+development headers.
 
-This has been tested with Clang 4.0 and the version of libc++ that accompanies 
-it. It will likely work with GCC 7 and the version of libstdc++ that 
-accompanies it. The reason is that it requires std::variant, std::optional, 
-and various other library features that are only in C++.
+This has been tested on Mac OS X High Sierra using its X11 functionality and
+on Windows 10 using Xming with OpenSUSE via the Windows Subsystem for Linux -
+see: https://msdn.microsoft.com/en-us/commandline/wsl/about
+
+(Note: You will need to add the following line to your .bashrc in you OpenSUSE
+home directory:
+
+export DISPLAY=localhost:0.0
+
+and you will also need to make sure Xming is running when you try to run any
+programs using this implementation. Lastly, you may want/need to override the
+high DPI Compatibility Property in your shortcut to run Xming. By default it
+performs its own scaling (i.e. none). On a high dpi display changing the
+value to System or System (Enhanced) may provide you with a better
+experience).
 
 To build the project, from this directory run the command 'autoreconf -i'. It
 should run for a bit then complete silently. If so, you should then run the
 generated './configure' script with any necessary parameters. This should
 notify you if you are missing any pre-requisites or have an older version that
-won't work. If configure completes successfully, you should be able to run the
-'make' command and then execute the resulting executable by calling
-the './N3888_RefImpl/src/N3888_RefImpl' executable. In sample_draw.cpp, the 
-test_image_load_and_save function will only work if you run N3888_RefImpl from 
-the N3888_RefImpl/src/ directory since it uses relative paths to load the 
-images it uses.
+won't work. Once you get configure to complete successfully, you should run
+the 'make' command. Once you get make to complete successfully, you can
+run sample_app (note: you need to be in the SampleApp directory when you run
+it because it expects certain image files to be in the directory you are in
+when you run the program) and rocks_in_space.
 
-By default it will build using Xlib. You can use Xcb by passing the 
-"--enable-xcb" option to configure.
+You can also create your own programs or modify those existing test
+applications. You will need some basic familiarity with writing an automake
+Makefile.am file. Read through the ones that are in SampleApp and
+RocksInSpace to get an idea of what is expected. The most common error I make
+with them is that I will create a new .cpp file or remove an existing one and
+then forget to update Makefile.am accordingly. Note also that while automake
+is good about detecting whether a Makefile.am has changed when you run 'make'
+it is still good practice to run configure again. Either way, before running
+'make' you should run 'make clean' to ensure that you aren't relying on any
+stale files that will cause linker errors or other problems.
+
+The xcb configuration is the least likely to be up-to-date. Ensuring that
+this reference implementation builds and runs successfully in both Win32 and
+X11 (via Xlib) environments is a higher priority right now.
 
 The "run-configure-with-*" shell scripts are provided as examples only. They 
 are used for my personal testing. Like everything else, they are subject to 
-the terms of LICENSE.md.
+the terms of LICENSE.md. So if you use them and they mess up your system
+don't blame me.
+
+Lastly, do not run 'make install'. I have never tested it and there is no
+good reason to do it currently. Running anything other than 'make' and
+'make clean' should be considered "undefined behavior".
+
