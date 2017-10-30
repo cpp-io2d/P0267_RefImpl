@@ -10,10 +10,14 @@ sample_app_SOURCES =	entrypoint.cpp \
 
 sample_app_CPPFLAGS =	@CPPFLAGS@
 sample_app_CPPFLAGS +=	-I../P0267_RefImpl
-sample_app_CPPFLAGS +=	@CAIRO_CFLAGS@
+
 sample_app_CXXFLAGS =	@CXXFLAGS@
+sample_app_CXXFLAGS +=	-I../P0267_RefImpl
+sample_app_CXXFLAGS +=	@CAIRO_CFLAGS@
+sample_app_CXXFLAGS +=	@GRAPHMAG_CFLAGS@
 sample_app_CXXFLAGS +=	@GRAPHMAG_CPPFLAGS@
 sample_app_CXXFLAGS +=	@X11_CFLAGS@ -DUSE_XLIB
+
 sample_app_LDFLAGS =	-static
 sample_app_LDFLAGS +=	@GRAPHMAG_LDFLAGS@
 sample_app_LDADD =	../P0267_RefImpl/libio2d.la

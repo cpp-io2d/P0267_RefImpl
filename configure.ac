@@ -32,12 +32,10 @@ dnl AC_SEARCH_LIBS([tjInitCompress],[jpeg turbojpeg],[],[AC_MSG_ERROR(libjpeg-tu
 AC_CHECK_PROG([graphmag], [GraphicsMagick-config], [true], [false])
 AS_IF([test x$graphmag = xfalse], [AC_MSG_ERROR(GraphicsMagick not found. Install GraphicsMagick)])
 AC_DEFINE([HAS_GRAPHICKS_MAGICK], [1], [Define if GraphicsMagick is available])
-dnl GRAPHMAG_CPPFLAGS =           `GraphicsMagick-config --cppflags`
-dnl GRAPHMAG_LDFLAGS =            `GraphicsMagick-config --ldflags`
-dnl GRAPHMAG_LIBS =              `GraphicsMagick-config --libs`
-AC_SUBST([GRAPHMAG_CPPFLAGS], ["`GraphicsMagick-config --cppflags`"])
-AC_SUBST([GRAPHMAG_LDFLAGS], ["`GraphicsMagick-config --ldflags`"])
-AC_SUBST([GRAPHMAG_LIBS], ["`GraphicsMagick-config --libs`"])
+AC_SUBST([GRAPHMAG_CFLAGS],		["`GraphicsMagick-config --cflags`"])
+AC_SUBST([GRAPHMAG_CPPFLAGS],	["`GraphicsMagick-config --cppflags`"])
+AC_SUBST([GRAPHMAG_LDFLAGS],	["`GraphicsMagick-config --ldflags`"])
+AC_SUBST([GRAPHMAG_LIBS],		["`GraphicsMagick-config --libs`"])
 
 PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.16])
 PKG_CHECK_MODULES([X11], [x11])

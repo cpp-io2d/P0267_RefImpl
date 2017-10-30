@@ -14,9 +14,11 @@ rocks_in_space_SOURCES =	Asteroid.cpp \
 
 rocks_in_space_CPPFLAGS =	@CPPFLAGS@
 rocks_in_space_CPPFLAGS +=	-I../P0267_RefImpl
-rocks_in_space_CPPFLAGS +=	@CAIRO_CFLAGS@
 
 rocks_in_space_CXXFLAGS =	@CXXFLAGS@
+rocks_in_space_CXXFLAGS +=	-I../P0267_RefImpl
+rocks_in_space_CXXFLAGS +=	@CAIRO_CFLAGS@
+rocks_in_space_CXXFLAGS +=	@GRAPHMAG_CFLAGS@
 rocks_in_space_CXXFLAGS +=	@GRAPHMAG_CPPFLAGS@
 rocks_in_space_CXXFLAGS +=	@X11_CFLAGS@ -DUSE_XLIB
 rocks_in_space_LDFLAGS =	-static

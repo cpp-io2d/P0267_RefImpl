@@ -19,6 +19,7 @@ include_HEADERS =	io2d.h xio2d.h xcairo.h xcairo_helpers.h xcairo_impl.h xdiagno
 libio2d_la_CPPFLAGS =	@CPPFLAGS@
 libio2d_la_CXXFLAGS =	@CXXFLAGS@
 libio2d_la_CXXFLAGS +=	@CAIRO_CFLAGS@
+libio2d_la_CXXFLAGS +=	@GRAPHMAG_CFLAGS@
 libio2d_la_CXXFLAGS +=	@GRAPHMAG_CPPFLAGS@
 if USE_XCB
 libio2d_la_CXXFLAGS +=	-DUSE_XCB
