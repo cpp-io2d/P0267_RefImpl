@@ -160,7 +160,6 @@ namespace std {
 				class basic_bounding_box {
 				public:
 					using _Data_type = typename GraphicsMath::bounding_box_data_type;
-					//using point_2d_data_type = typename GraphicsMath::point_2d_data_type;
 				private:
 					_Data_type _Data;
 				public:
@@ -195,7 +194,6 @@ namespace std {
 					using _Data_type = typename GraphicsMath::circle_data_type;
 				private:
 					_Data_type _Data;
-					friend bool operator==(const basic_circle&, const basic_circle&) noexcept;
 				public:
 					const _Data_type& _Get_data() const noexcept;
 					basic_circle() noexcept;

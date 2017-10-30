@@ -255,8 +255,12 @@ namespace std {
 
 				template <class GraphicsMath, class Allocator = ::std::allocator<typename basic_figure_items<GraphicsMath>::figure_item>>
 				class basic_path_builder {
-					::std::vector<typename basic_figure_items<GraphicsMath>::figure_item, Allocator> _Data;
 				public:
+					using _Data_type = ::std::vector<typename basic_figure_items<GraphicsMath>::figure_item, Allocator>;
+				private:
+					_Data_type _Data;
+				public:
+					const _Data_type& _Get_data() const noexcept;
 					using value_type = typename basic_figure_items<GraphicsMath>::figure_item;
 					using allocator_type = Allocator;
 					using reference = value_type&;
@@ -364,8 +368,8 @@ namespace std {
 						noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value
 							|| allocator_traits<Allocator>::is_always_equal::value);
 					void clear() noexcept;
-				private:
-					friend bool operator==(const basic_path_builder&, const basic_path_builder&) noexcept;
+				//private:
+				//	friend bool operator==(const basic_path_builder&, const basic_path_builder&) noexcept;
 				};
 
 				template <class GraphicsMath, class Allocator>

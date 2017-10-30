@@ -69,6 +69,11 @@ namespace std::experimental::io2d {
 			_Data.emplace_back(in_place_type<typename basic_figure_items<GraphicsMath>::rel_quadratic_curve>, dpt0, dpt1);
 		}
 
+		template<class GraphicsMath, class Allocator>
+		inline const typename basic_path_builder<GraphicsMath, Allocator>::_Data_type& basic_path_builder<GraphicsMath, Allocator>::_Get_data() const noexcept {
+			return _Data;
+		}
+
 		template <class GraphicsMath, class Allocator>
 		inline basic_path_builder<GraphicsMath, Allocator>::basic_path_builder() noexcept(noexcept(Allocator())) :
 			basic_path_builder(Allocator()) { }
@@ -367,10 +372,12 @@ namespace std::experimental::io2d {
 				return false;
 			}
 			//return equal(_Data.cbegin(), _Data.cend(), rhs._Data.cbegin(), rhs._Data.cend());
-			auto lhsEnd = lhs._Data.end();
-			auto rhsEnd = rhs._Data.end();
-			auto lhsIter = lhs._Data.begin();
-			auto rhsIter = rhs._Data.begin();
+			const auto& lhsData = lhs._Get_data();
+			const auto& rhsData = rhs._Get_data();
+			auto lhsEnd = lhsData.end();
+			auto rhsEnd = rhsData.end();
+			auto lhsIter = lhsData.begin();
+			auto rhsIter = rhsData.begin();
 			for (; lhsIter != lhsEnd &&
 				rhsIter != rhsEnd; ++lhsIter, ++rhsIter) {
 				assert(lhsIter != lhsEnd && "Unexpected basic_path_builder op== size mismatch. rhs greater than lhs.");
@@ -379,12 +386,6 @@ namespace std::experimental::io2d {
 					return false;
 				}
 			}
-			//const size_t dataSize = _Data.size();
-			//for (size_t i = 0; i < dataSize; i++) {
-			//	if (_Data.at(i) != rhs._Data.at(i)) {
-			//		return false;
-			//	}
-			//}
 			return true;
 		}
 
