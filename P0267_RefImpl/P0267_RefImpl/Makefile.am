@@ -4,7 +4,8 @@
 
 lib_LTLIBRARIES =		libio2d.la
 
-libio2d_la_SOURCES =	rgba_color.cpp
+libio2d_la_SOURCES =	rgba_color.cpp \
+			cairo_renderer-graphicsmagickinit.cpp
 
 if USE_XCB
 libio2d_la_SOURCES +=	cairo_renderer_xcb.cpp
@@ -18,6 +19,7 @@ include_HEADERS =	io2d.h xio2d.h xcairo.h xcairo_helpers.h xcairo_impl.h xdiagno
 libio2d_la_CPPFLAGS =	@CPPFLAGS@
 libio2d_la_CXXFLAGS =	@CXXFLAGS@
 libio2d_la_CXXFLAGS +=	@CAIRO_CFLAGS@
+libio2d_la_CXXFLAGS +=	@GRAPHMAG_CPPFLAGS@
 if USE_XCB
 libio2d_la_CXXFLAGS +=	-DUSE_XCB
 libio2d_la_CXXFLAGS +=	@xcb_CFLAGS@
@@ -28,7 +30,8 @@ libio2d_la_CXXFLAGS +=	@X11_CFLAGS@
 endif
 
 libio2d_la_LDFLAGS =	@LIBS@
-libio2d_la_LDFLAGS +=	-lturbojpeg
+libio2d_la_LDFLAGS +=	@GRAPHMAG_LDFLAGS@
+libio2d_la_LDFLAGS +=	@GRAPHMAG_LIBS@
 libio2d_la_LDFLAGS +=	@CAIRO_LIBS@
 if USE_XCB
 libio2d_la_LDFLAGS +=	@xcb_LIBS@

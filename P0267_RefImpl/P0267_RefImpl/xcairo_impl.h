@@ -11,10 +11,11 @@
 #include <iostream>
 #include <sstream>
 
-#if defined(_WIN32) || defined(_WIN64) || defined(HAS_GRAPHICS_MAGICK)
+//#if defined(_WIN32) || defined(_WIN64) || defined(HAS_GRAPHICS_MAGICK)
 #include <magick/api.h>
-#endif
+//#endif
 #include <system_error>
+#include <cstring>
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
@@ -1009,7 +1010,7 @@ namespace std::experimental::io2d {
 				return ec;
 			}
 
-#if defined(_Filesystem_support_test)
+//#if defined(_Filesystem_support_test)
 			inline void _Convert_and_set_pixel_to_io2d_format(io2d::format fmt, unsigned char* mapData, int i, int j, int mapStride, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
 				switch (fmt) {
 				case std::experimental::io2d::v1::format::invalid:
@@ -1158,6 +1159,8 @@ namespace std::experimental::io2d {
 				}
 				return pixels;
 			}
+
+#if defined(_Filesystem_support_test)
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt) {
 				::std::error_code ec;
@@ -1256,19 +1259,20 @@ namespace std::experimental::io2d {
 			}
 #else
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::string p, image_file_format iff) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::string p, image_file_format iff, io2d::format fmt) {
 				::std::error_code ec;
-				auto data = move(create_image_surface(p, iff, ec));
+				auto data = move(create_image_surface(p, iff, fmt, ec));
 				if (ec) {
 					throw ::std::system_error(ec);
 				}
 				return data;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::string p, image_file_format iff, ::std::error_code& ec) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(::std::string p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
 				_Init_graphics_magic();
 				if (iff == image_file_format::unknown) {
-					return ::std::make_error_code(errc::not_supported);
+					ec = ::std::make_error_code(errc::not_supported);
+					return image_surface_data_type{};
 				}
 				ExceptionInfo exInfo;
 				GetExceptionInfo(&exInfo);
@@ -1443,7 +1447,7 @@ namespace std::experimental::io2d {
 				} break;
 				default:
 				{
-					if (iff == default_graphics_surfaces::additional_image_file_formats::bmp) {
+					if (iff == additional_image_file_formats::bmp) {
 						const char format[] = "BMP";
 						const auto formatElemCount = ::std::extent_v<decltype(format)>;
 						strncpy(imageInfo->magick, format, formatElemCount);
@@ -1509,9 +1513,9 @@ namespace std::experimental::io2d {
 				auto mapData = cairo_image_surface_get_data(map);
 				auto width = data.dimensions.x();
 				auto height = data.dimensions.y();
-				auto pixelDataUP = _Convert_and_create_pixel_array_from_map_pixels(data.format, mapData, width, height, mapStride);
-				::std::unique_ptr<Image, decltype(&DestroyImage)> img(ConstituteImage(static_cast<unsigned long>(width), static_cast<unsigned long>(height), "BGRA", ShortPixel, pixelDataUP.get(), &exInfo), &DestroyImage);
-				if (img == nullptr) {
+				auto pixelDataUP = _Convert_and_create_pixel_array_from_map_pixels<unsigned char>(data.format, mapData, width, height, mapStride);
+				::std::unique_ptr<Image, decltype(&DestroyImage)> image(ConstituteImage(static_cast<unsigned long>(width), static_cast<unsigned long>(height), "BGRA", ShortPixel, pixelDataUP.get(), &exInfo), &DestroyImage);
+				if (image == nullptr) {
 					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
 					DestroyExceptionInfo(&exInfo);
 					return;
@@ -1557,6 +1561,13 @@ namespace std::experimental::io2d {
 					strncpy(image->magick, format, MaxTextExtent);
 				}break;
 				default:
+					if (iff == additional_image_file_formats::bmp) {
+						const char format[] = "BMP";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
 					ec = make_error_code(errc::invalid_argument);
 					DestroyExceptionInfo(&exInfo);
 					return;
@@ -1581,14 +1592,13 @@ namespace std::experimental::io2d {
 
 				image->y_resolution = 96.0;
 
-				if (WriteImage(imageInfo.get(), img.get()) == MagickFail) {
+				if (WriteImage(imageInfo.get(), image.get()) == MagickFail) {
 					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
 					DestroyExceptionInfo(&exInfo);
 					return;
 				}
 				DestroyExceptionInfo(&exInfo);
 				ec.clear();
-				return;
 				return;
 			}
 #endif

@@ -248,8 +248,8 @@ namespace std {
 						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt);
 						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
 #else
-						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff);
-						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, ::std::error_code& ec) noexcept;
+						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, io2d::format fmt);
+						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
 #endif
 						static image_surface_data_type move_image_surface(image_surface_data_type&& data) noexcept;
 						static void destroy(image_surface_data_type& data) noexcept;
