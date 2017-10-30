@@ -23,7 +23,7 @@ namespace std::experimental::io2d {
 		}
 		template<class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::abs_new_figure& rhs) noexcept {
-			return lhs._Data == rhs._Data;
+			return lhs.at() == rhs.at();
 		}
 		template<class GraphicsMath>
 		inline bool operator!=(const typename basic_figure_items<GraphicsMath>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::abs_new_figure& rhs) noexcept {
@@ -49,7 +49,7 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::rel_new_figure& rhs) noexcept {
-			return lhs._Data == rhs._Data;
+			return lhs.at() == rhs.at();
 		}
 
 		template <class GraphicsMath>
@@ -78,7 +78,7 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_matrix& lhs, const typename basic_figure_items<GraphicsMath>::abs_matrix& rhs) noexcept {
-			return lhs._Matrix == rhs._Matrix;
+			return lhs.matrix() == rhs.matrix();
 		}
 
 		template <class GraphicsMath>
@@ -99,7 +99,7 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_matrix& lhs, const typename basic_figure_items<GraphicsMath>::rel_matrix& rhs) noexcept {
-			return lhs._Matrix == rhs._Matrix;
+			return lhs.matrix() == rhs.matrix();
 		}
 
 		template <class GraphicsMath>
@@ -129,7 +129,7 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_line& lhs, const typename basic_figure_items<GraphicsMath>::abs_line& rhs) noexcept {
-			return lhs._Data == rhs._Data;
+			return lhs.to() == rhs.to();
 		}
 
 		template <class GraphicsMath>
@@ -151,7 +151,7 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_line& lhs, const typename basic_figure_items<GraphicsMath>::rel_line& rhs) noexcept {
-			return lhs._Data == rhs._Data;
+			return lhs.to() == rhs.to();
 		}
 
 		template <class GraphicsMath>
@@ -182,8 +182,8 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& rhs) noexcept {
-			return (lhs._Control_pt == rhs._Control_pt) &&
-				(lhs._End_pt == rhs._End_pt);
+			return (lhs.control_pt() == rhs.control_pt()) &&
+				(lhs.end_pt() == rhs.end_pt());
 		}
 
 		template <class GraphicsMath>
@@ -214,8 +214,8 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& rhs) noexcept {
-			return (lhs._Control_pt == rhs._Control_pt) &&
-				(lhs._End_pt == rhs._End_pt);
+			return (lhs.control_pt() == rhs.control_pt()) &&
+				(lhs.end_pt() == rhs.end_pt());
 		}
 
 		template <class GraphicsMath>
@@ -255,9 +255,9 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& rhs) noexcept {
-			return (lhs._Control_pt1 == rhs._Control_pt1) &&
-				(lhs._Control_pt2 == rhs._Control_pt2) &&
-				(lhs._End_pt == rhs._End_pt);
+			return (lhs.control_pt1() == rhs.control_pt1()) &&
+				(lhs.control_pt2() == rhs.control_pt2()) &&
+				(lhs.end_pt() == rhs.end_pt());
 		}
 
 		template <class GraphicsMath>
@@ -297,9 +297,9 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& rhs) noexcept {
-			return (lhs._Control_pt1 == rhs._Control_pt1) &&
-				(lhs._Control_pt2 == rhs._Control_pt2) &&
-				(lhs._End_pt == rhs._End_pt);
+			return (lhs.control_pt1() == rhs.control_pt1()) &&
+				(lhs.control_pt2() == rhs.control_pt2()) &&
+				(lhs.end_pt() == rhs.end_pt());
 		}
 
 		template <class GraphicsMath>
@@ -359,9 +359,9 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const typename basic_figure_items<GraphicsMath>::arc& lhs, const typename basic_figure_items<GraphicsMath>::arc& rhs) noexcept {
-			return (lhs._Radius == rhs._Radius) &&
-				(lhs._Rotation == rhs._Rotation) &&
-				(lhs._Start_angle == rhs._Start_angle);
+			return (lhs.radius() == rhs.radius()) &&
+				(lhs.rotation() == rhs.rotation()) &&
+				(lhs.start_angle() == rhs.start_angle());
 		}
 
 		template <class GraphicsMath>

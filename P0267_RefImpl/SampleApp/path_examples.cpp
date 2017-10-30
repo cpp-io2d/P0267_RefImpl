@@ -280,7 +280,7 @@ namespace path_test {
 		// Example code goes here.
 		auto scl = matrix_2d::init_scale({ 0.5F, 1.0F });
 		auto rot = matrix_2d::init_rotate(half_pi<float> / 2.0F);
-		auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
+		//auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
 		pb.matrix(scl);
 		pb.new_figure({ 40.0F, 50.0F });
 		pb.line({ 80.0F, 50.0F });
@@ -315,7 +315,7 @@ namespace path_test {
 		// Example code goes here.
 		auto scl = matrix_2d::init_scale({ 0.5F, 1.0F });
 		auto rot = matrix_2d::init_rotate(half_pi<float> / 2.0F);
-		auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
+		//auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
 		pb.matrix(scl);
 		pb.new_figure({ 40.0F, 50.0F });
 		pb.line({ 80.0F, 50.0F });
@@ -350,7 +350,7 @@ namespace path_test {
 		// Example code goes here.
 		auto scl = matrix_2d::init_scale({ 0.5F, 1.0F });
 		auto rot = matrix_2d::init_rotate(half_pi<float> / 2.0F);
-		auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
+		//auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
 		pb.matrix(scl);
 		pb.new_figure({ 40.0F, 50.0F });
 		pb.line({ 80.0F, 50.0F });

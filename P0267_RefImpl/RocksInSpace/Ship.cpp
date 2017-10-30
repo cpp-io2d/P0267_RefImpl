@@ -10,7 +10,7 @@ namespace
 	using rocks_in_space::path_buffer;
 	using rocks_in_space::point_2d;
 
-	const path_vertices ship_vb{ point_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } };
+	const path_vertices ship_vb{ { point_2d{ 8, 0 },{ -15, -5 },{ 2, 3 },{ 0, 5 },{ -2, 3 },{ 15, -5 } } };
 	const auto ship_path_radius{ 9.7f };
 	const auto ship_shape = path_buffer{ 6, ship_vb };
 	const auto wait_period{ 1 };

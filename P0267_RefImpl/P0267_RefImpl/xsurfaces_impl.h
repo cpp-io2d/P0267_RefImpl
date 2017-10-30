@@ -351,7 +351,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				inline basic_display_point<typename basic_output_surface<GraphicsSurfaces>::graphics_math_type> basic_output_surface<GraphicsSurfaces>::max_dimensions() const noexcept {
-					return GraphicsSurfaces::max_dimensions(_Data);
+					return GraphicsSurfaces::max_dimensions();
 				}
 				template<class GraphicsSurfaces>
 				inline basic_display_point<typename basic_output_surface<GraphicsSurfaces>::graphics_math_type> basic_output_surface<GraphicsSurfaces>::display_dimensions() const noexcept {
@@ -359,7 +359,7 @@ namespace std {
 				}
 				template<class GraphicsSurfaces>
 				inline basic_display_point<typename basic_output_surface<GraphicsSurfaces>::graphics_math_type> basic_output_surface<GraphicsSurfaces>::max_display_dimensions() const noexcept {
-					return GraphicsSurfaces::max_display_dimensions(_Data);
+					return GraphicsSurfaces::max_display_dimensions();
 				}
 				template <class GraphicsSurfaces>
 				inline io2d::scaling basic_output_surface<GraphicsSurfaces>::scaling() const noexcept {
@@ -551,7 +551,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				inline basic_display_point<typename basic_unmanaged_output_surface<GraphicsSurfaces>::graphics_math_type> basic_unmanaged_output_surface<GraphicsSurfaces>::max_dimensions() const noexcept {
-					return GraphicsSurfaces::max_dimensions(_Data);
+					return GraphicsSurfaces::max_dimensions();
 				}
 				template<class GraphicsSurfaces>
 				inline basic_display_point<typename basic_unmanaged_output_surface<GraphicsSurfaces>::graphics_math_type> basic_unmanaged_output_surface<GraphicsSurfaces>::display_dimensions() const noexcept {
@@ -559,7 +559,7 @@ namespace std {
 				}
 				template<class GraphicsSurfaces>
 				inline basic_display_point<typename basic_unmanaged_output_surface<GraphicsSurfaces>::graphics_math_type> basic_unmanaged_output_surface<GraphicsSurfaces>::max_display_dimensions() const noexcept {
-					return GraphicsSurfaces::max_display_dimensions(_Data);
+					return GraphicsSurfaces::max_display_dimensions();
 				}
 				template <class GraphicsSurfaces>
 				inline io2d::scaling basic_unmanaged_output_surface<GraphicsSurfaces>::scaling() const noexcept {

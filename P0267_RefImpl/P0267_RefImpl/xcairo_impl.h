@@ -717,6 +717,10 @@ namespace std::experimental::io2d {
 				return data;
 			}
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
 			inline ::std::error_code _Graphics_magic_exception_type_to_error_code(ExceptionInfo* exInfo) {
 				ExceptionType code = exInfo->severity;
 				::std::error_code ec;
@@ -1009,6 +1013,9 @@ namespace std::experimental::io2d {
 				}
 				return ec;
 			}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 //#if defined(_Filesystem_support_test)
 			inline void _Convert_and_set_pixel_to_io2d_format(io2d::format fmt, unsigned char* mapData, int i, int j, int mapStride, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
@@ -1110,7 +1117,7 @@ namespace std::experimental::io2d {
 						for (int j = 0; j < w; j++) {
 							const auto ppIndex = i * w * 4 + j * 4;
 							const auto mapIndex = i * mapStride + j;
-							const float premul = (keepPremultiplied ? 1.0f : mapData[mapIndex + 3] / 255.0f);
+							//const float premul = (keepPremultiplied ? 1.0f : mapData[mapIndex + 3] / 255.0f);
 							const auto pixVal = static_cast<result_type>(mapData[mapIndex] / 255.0f * maxChannelSize);
 							pixel[ppIndex + 0] = pixVal;
 							pixel[ppIndex + 1] = pixVal;
@@ -1164,7 +1171,7 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt) {
 				::std::error_code ec;
-				auto data = move(create_image_surface(p, iff, fmt, ec));
+				auto data = create_image_surface(p, iff, fmt, ec);
 				if (ec) {
 					throw ::std::system_error(ec);
 				}
@@ -1204,10 +1211,10 @@ namespace std::experimental::io2d {
 				auto height = image->rows;
 				//auto gamma = image->gamma;
 
-				data.surface = ::std::move(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy));
+				data.surface = ::std::move(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), static_cast<int>(width), static_cast<int>(height)), &cairo_surface_destroy));
 				data.context = ::std::move(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(data.surface.get()), &cairo_destroy));
-				data.dimensions.x(width);
-				data.dimensions.y(height);
+				data.dimensions.x(static_cast<int>(width));
+				data.dimensions.y(static_cast<int>(height));
 				data.format = fmt;
 
 				// Note: We don't own the pixels pointer.
@@ -1232,7 +1239,7 @@ namespace std::experimental::io2d {
 							auto green = static_cast<unsigned char>(currPixel.green * currPixel.opacity / channelMaxValue * 255);
 							auto blue = static_cast<unsigned char>(currPixel.blue * currPixel.opacity / channelMaxValue * 255);
 							auto alpha = static_cast<unsigned char>(currPixel.opacity / channelMaxValue * 255);
-							_Convert_and_set_pixel_to_io2d_format(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+							_Convert_and_set_pixel_to_io2d_format(fmt, mapData, static_cast<int>(y), static_cast<int>(x), mapStride, red, green, blue, alpha);
 						}
 					}
 				}
@@ -1244,7 +1251,7 @@ namespace std::experimental::io2d {
 							auto green = static_cast<unsigned char>(currPixel.green / channelMaxValue * 255);
 							auto blue = static_cast<unsigned char>(currPixel.blue / channelMaxValue * 255);
 							auto alpha = static_cast<unsigned char>(255);
-							_Convert_and_set_pixel_to_io2d_format(fmt, mapData, y, x, mapStride, red, green, blue, alpha);
+							_Convert_and_set_pixel_to_io2d_format(fmt, mapData, static_cast<int>(y), static_cast<int>(x), mapStride, red, green, blue, alpha);
 						}
 					}
 				}
@@ -1449,6 +1456,76 @@ namespace std::experimental::io2d {
 				{
 					if (iff == additional_image_file_formats::bmp) {
 						const char format[] = "BMP";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::tga) {
+						const char format[] = "TGA";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::dib) {
+						const char format[] = "DIB";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::gif) {
+						const char format[] = "GIF";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::pcx) {
+						const char format[] = "PCX";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::pbm) {
+						const char format[] = "PBM";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::pgm) {
+						const char format[] = "PGM";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::ppm) {
+						const char format[] = "PPM";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::psd) {
+						const char format[] = "PSD";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::xbm) {
+						const char format[] = "XBM";
+						const auto formatElemCount = ::std::extent_v<decltype(format)>;
+						strncpy(imageInfo->magick, format, formatElemCount);
+						strncpy(image->magick, format, formatElemCount);
+						break;
+					}
+					if (iff == additional_image_file_formats::xpm) {
+						const char format[] = "XPM";
 						const auto formatElemCount = ::std::extent_v<decltype(format)>;
 						strncpy(imageInfo->magick, format, formatElemCount);
 						strncpy(image->magick, format, formatElemCount);

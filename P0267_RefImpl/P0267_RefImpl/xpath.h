@@ -50,7 +50,6 @@ namespace std {
 
 					class abs_new_figure {
 						basic_point_2d<GraphicsMath> _Data = {};
-						friend bool operator==(const abs_new_figure&, const abs_new_figure&) noexcept;
 					public:
 						abs_new_figure() noexcept;
 						explicit abs_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
@@ -60,7 +59,6 @@ namespace std {
 
 					class rel_new_figure {
 						basic_point_2d<GraphicsMath> _Data = {};
-						friend bool operator==(const rel_new_figure&, const rel_new_figure&) noexcept;
 					public:
 						rel_new_figure() noexcept;
 						explicit rel_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
@@ -69,14 +67,12 @@ namespace std {
 					};
 
 					class close_figure {
-						friend bool operator==(const close_figure&, const close_figure&) noexcept;
 					public:
 						close_figure() noexcept;
 					};
 
 					class abs_matrix {
 						basic_matrix_2d<GraphicsMath> _Matrix;
-						friend bool operator==(const abs_matrix&, const abs_matrix&) noexcept;
 					public:
 						abs_matrix() noexcept;
 						explicit abs_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
@@ -86,7 +82,6 @@ namespace std {
 
 					class rel_matrix {
 						basic_matrix_2d<GraphicsMath> _Matrix;
-						friend bool operator==(const rel_matrix&, const rel_matrix&) noexcept;
 					public:
 						rel_matrix() noexcept;
 						explicit rel_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
@@ -95,14 +90,12 @@ namespace std {
 					};
 
 					class revert_matrix {
-						friend bool operator==(const revert_matrix&, const revert_matrix&) noexcept;
 					public:
 						revert_matrix() noexcept;
 					};
 
 					class abs_line {
 						basic_point_2d<GraphicsMath> _Data = {};
-						friend bool operator==(const abs_line&, const abs_line&) noexcept;
 					public:
 						abs_line() noexcept;
 						explicit abs_line(const basic_point_2d<GraphicsMath>& pt) noexcept;
@@ -112,7 +105,6 @@ namespace std {
 
 					class rel_line {
 						basic_point_2d<GraphicsMath> _Data = {};
-						friend bool operator==(const rel_line&, const rel_line&) noexcept;
 					public:
 						rel_line() noexcept;
 						explicit rel_line(const basic_point_2d<GraphicsMath>& pt) noexcept;
@@ -123,7 +115,6 @@ namespace std {
 					class abs_quadratic_curve {
 						basic_point_2d<GraphicsMath> _Control_pt = {};
 						basic_point_2d<GraphicsMath> _End_pt = {};
-						friend bool operator==(const abs_quadratic_curve&, const abs_quadratic_curve&) noexcept;
 					public:
 						abs_quadratic_curve() noexcept;
 						abs_quadratic_curve(const basic_point_2d<GraphicsMath>& cpt, const basic_point_2d<GraphicsMath>& ept) noexcept;
@@ -136,7 +127,6 @@ namespace std {
 					class rel_quadratic_curve {
 						basic_point_2d<GraphicsMath> _Control_pt = {};
 						basic_point_2d<GraphicsMath> _End_pt = {};
-						friend bool operator==(const rel_quadratic_curve&, const rel_quadratic_curve&) noexcept;
 					public:
 						rel_quadratic_curve() noexcept;
 						rel_quadratic_curve(const basic_point_2d<GraphicsMath>& cpt, const basic_point_2d<GraphicsMath>& ept) noexcept;
@@ -150,7 +140,6 @@ namespace std {
 						basic_point_2d<GraphicsMath> _Control_pt1 = {};
 						basic_point_2d<GraphicsMath> _Control_pt2 = {};
 						basic_point_2d<GraphicsMath> _End_pt = {};
-						friend bool operator==(const abs_cubic_curve&, const abs_cubic_curve&) noexcept;
 					public:
 						abs_cubic_curve() noexcept;
 						abs_cubic_curve(const basic_point_2d<GraphicsMath>& cpt1, const basic_point_2d<GraphicsMath>& cpt2, const basic_point_2d<GraphicsMath>& ept) noexcept;
@@ -166,7 +155,6 @@ namespace std {
 						basic_point_2d<GraphicsMath> _Control_pt1 = {};
 						basic_point_2d<GraphicsMath> _Control_pt2 = {};
 						basic_point_2d<GraphicsMath> _End_pt = {};
-						friend bool operator==(const rel_cubic_curve&, const rel_cubic_curve&) noexcept;
 					public:
 						rel_cubic_curve() noexcept;
 						rel_cubic_curve(const basic_point_2d<GraphicsMath>& cpt1, const basic_point_2d<GraphicsMath>& cpt2, const basic_point_2d<GraphicsMath>& ept) noexcept;
@@ -182,8 +170,6 @@ namespace std {
 						basic_point_2d<GraphicsMath> _Radius;
 						float _Rotation;
 						float _Start_angle;
-
-						friend bool operator==(const arc&, const arc&) noexcept;
 					public:
 						arc() noexcept;
 						arc(const basic_point_2d<GraphicsMath>& rad, float rot, float sang) noexcept;

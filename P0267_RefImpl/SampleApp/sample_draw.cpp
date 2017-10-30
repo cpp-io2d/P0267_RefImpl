@@ -378,8 +378,8 @@ void draw_radial_circles(output_surface& ds) {
 	// Clear to background color.
 	ds.paint(brush{ rgba_color::magenta });
 	ds.paint(brush{ rgba_color::cornflower_blue }, nullopt, nullopt, clip_props{ bounding_box(40.0F, 40.0F, 1200.0F, 640.0F) });
-	auto sfc = ds._Get_data().data.back_buffer.surface.get();
-	auto data = cairo_image_surface_get_data(sfc);
+	//auto sfc = ds._Get_data().data.back_buffer.surface.get();
+	//auto data = cairo_image_surface_get_data(sfc);
 
 	vector<gradient_stop> csv;
 	csv.emplace_back(0.0F, rgba_color::white);

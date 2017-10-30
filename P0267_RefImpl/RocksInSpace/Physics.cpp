@@ -89,7 +89,7 @@ bool rocks_in_space::collides(const collision& col_a, const collision& col_b)
 	auto segment_start = col_a.m_path.m_vertices[col_a.m_path.m_count - 1];
 	return &col_a.m_path.m_vertices[col_a.m_path.m_count] != std::find_if(&col_a.m_path.m_vertices[0], &col_a.m_path.m_vertices[col_a.m_path.m_count], [&](const auto& v)
 	{
-		if (collides(col_b, { segment_start + col_a.m_position, v + col_a.m_position }))
+		if (collides(col_b, { { segment_start + col_a.m_position, v + col_a.m_position } }))
 		{
 			return true;
 		}

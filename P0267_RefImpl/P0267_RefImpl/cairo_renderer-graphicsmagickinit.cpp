@@ -3,7 +3,7 @@
 #include <mutex>
 #include <magick/api.h>
 
-::std::once_flag _Init_graphics_magick_once_flag;
+static ::std::once_flag _Init_graphics_magick_once_flag;
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
