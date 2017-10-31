@@ -35,33 +35,33 @@ namespace std::experimental::io2d {
 
 		template<class GraphicsSurfaces>
 		inline basic_brush<GraphicsSurfaces>::basic_brush(const rgba_color & c)
-			: _Data(GraphicsSurfaces::create_brush(c)) {
+			: _Data(GraphicsSurfaces::brushes::create_brush(c)) {
 		}
 		template<class GraphicsSurfaces>
 		inline basic_brush<GraphicsSurfaces>::basic_brush(const basic_point_2d<graphics_math_type>& begin, const basic_point_2d<graphics_math_type>& end, ::std::initializer_list<gradient_stop> il)
-			: _Data(GraphicsSurfaces::create_brush(begin, end, il)) {
+			: _Data(GraphicsSurfaces::brushes::create_brush(begin, end, il)) {
 		}
 		template<class GraphicsSurfaces>
 		template<class InputIterator>
 		inline std::experimental::io2d::v1::basic_brush<GraphicsSurfaces>::basic_brush(const basic_point_2d<graphics_math_type>& begin, const basic_point_2d<graphics_math_type>& end, InputIterator first, InputIterator last)
-			: _Data(GraphicsSurfaces::create_brush(begin, end, first, last)) {
+			: _Data(GraphicsSurfaces::brushes::create_brush(begin, end, first, last)) {
 		}
 		template<class GraphicsSurfaces>
 		inline basic_brush<GraphicsSurfaces>::basic_brush(const basic_circle<graphics_math_type>& start, const basic_circle<graphics_math_type>& end, ::std::initializer_list<gradient_stop> il)
-			: _Data(GraphicsSurfaces::create_brush(start, end, il)) {
+			: _Data(GraphicsSurfaces::brushes::create_brush(start, end, il)) {
 		}
 		template<class GraphicsSurfaces>
 		template<class InputIterator>
 		inline basic_brush<GraphicsSurfaces>::basic_brush(const basic_circle<graphics_math_type>& start, const basic_circle<graphics_math_type>& end, InputIterator first, InputIterator last)
-			: _Data(GraphicsSurfaces::create_brush(start, end, first, last)) {
+			: _Data(GraphicsSurfaces::brushes::create_brush(start, end, first, last)) {
 		}
 		template<class GraphicsSurfaces>
 		inline basic_brush<GraphicsSurfaces>::basic_brush(basic_image_surface<GraphicsSurfaces>&& img)
-			: _Data(GraphicsSurfaces::create_brush(move(img))) {
+			: _Data(GraphicsSurfaces::brushes::create_brush(move(img))) {
 		}
 		template<class GraphicsSurfaces>
 		inline brush_type basic_brush<GraphicsSurfaces>::type() const noexcept {
-			return GraphicsSurfaces::brush_type(_Data);
+			return GraphicsSurfaces::brushes::brush_type(_Data);
 		}
 	}
 }

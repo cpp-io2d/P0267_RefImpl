@@ -194,7 +194,7 @@ namespace std::experimental::io2d {
 			}
 
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_brush(const rgba_color& c) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::create_brush(const rgba_color& c) {
 				brush_data_type data;
 				data.imageSurface = nullptr;
 				data.brushType = brush_type::solid_color;
@@ -203,7 +203,7 @@ namespace std::experimental::io2d {
 			}
 			template<class GraphicsMath>
 			template<class InputIterator>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last) {
 				brush_data_type data;
 				data.brushType = brush_type::linear;
 				data.imageSurface = nullptr;
@@ -218,12 +218,12 @@ namespace std::experimental::io2d {
 				return data;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_brush(const basic_point_2d<GraphicsMath>& b, const basic_point_2d<GraphicsMath>& e, ::std::initializer_list<gradient_stop> il) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::create_brush(const basic_point_2d<GraphicsMath>& b, const basic_point_2d<GraphicsMath>& e, ::std::initializer_list<gradient_stop> il) {
 				return create_brush(b, e, ::std::begin(il), ::std::end(il));
 			}
 			template<class GraphicsMath>
 			template<class InputIterator>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::create_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last) {
 				brush_data_type data;
 				data.imageSurface = nullptr;
 				data.brushType = brush_type::radial;
@@ -237,35 +237,36 @@ namespace std::experimental::io2d {
 				return data;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_brush(const basic_circle<GraphicsMath>& s, const basic_circle<GraphicsMath>& e, ::std::initializer_list<gradient_stop> il) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::create_brush(const basic_circle<GraphicsMath>& s, const basic_circle<GraphicsMath>& e, ::std::initializer_list<gradient_stop> il) {
 				return create_brush(s, e, ::std::begin(il), ::std::end(il));
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_brush(basic_image_surface<_Graphics_surfaces_type>&& img) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::create_brush(basic_image_surface<_Graphics_surfaces_type>&& img) {
+				using img_sfc_data_type = _Cairo_graphics_surfaces<GraphicsMath>::image_surface_data_type;
 				brush_data_type data;
 				// The surface is dying and I want to steal some of its data, ergo const_cast.
-				image_surface_data_type& imgData = const_cast<image_surface_data_type&>(img._Get_data());
+				img_sfc_data_type& imgData = const_cast<img_sfc_data_type&>(img._Get_data());
 				data.imageSurface = shared_ptr<cairo_surface_t>(imgData.surface.release(), &cairo_surface_destroy);
 				data.brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(data.imageSurface.get()), &cairo_pattern_destroy);
 				data.brushType = brush_type::surface;
 				return data;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::copy_brush(const brush_data_type& data) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::copy_brush(const brush_data_type& data) {
 				return data;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_brush(brush_data_type&& data) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::move_brush(brush_data_type&& data) noexcept {
 				return data;
 			}
 
 			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::destroy(brush_data_type& /*data*/) noexcept {
+			inline void _Cairo_graphics_surfaces<GraphicsMath>::brushes::destroy(brush_data_type& /*data*/) noexcept {
 				// Do nothing; it destroys itself via the shared_ptr's.
 			}
 
 			template<class GraphicsMath>
-			inline brush_type _Cairo_graphics_surfaces<GraphicsMath>::get_brush_type(const brush_data_type& data) noexcept {
+			inline brush_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::get_brush_type(const brush_data_type& data) noexcept {
 				return data.brushType;
 			}
 

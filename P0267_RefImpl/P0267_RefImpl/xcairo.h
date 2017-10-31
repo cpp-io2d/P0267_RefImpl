@@ -80,25 +80,27 @@ namespace std {
 
 						// brush
 
-						struct _Brush_data {
-							::std::shared_ptr<cairo_surface_t> imageSurface;
-							::std::shared_ptr<cairo_pattern_t> brush;
-							brush_type brushType;
+						struct brushes {
+							struct _Brush_data {
+								::std::shared_ptr<cairo_surface_t> imageSurface;
+								::std::shared_ptr<cairo_pattern_t> brush;
+								brush_type brushType;
+							};
+							using brush_data_type = _Brush_data;
+
+							static brush_data_type create_brush(const rgba_color& c);
+							template <class InputIterator>
+							static brush_data_type create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last);
+							static brush_data_type create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
+							template <class InputIterator>
+							static brush_data_type create_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last);
+							static brush_data_type create_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
+							static brush_data_type create_brush(basic_image_surface<_Graphics_surfaces_type>&& img);
+							static brush_data_type copy_brush(const brush_data_type& data);
+							static brush_data_type move_brush(brush_data_type&& data) noexcept;
+							static void destroy(brush_data_type& data) noexcept;
+							static brush_type get_brush_type(const brush_data_type& data) noexcept;
 						};
-						using brush_data_type = _Brush_data;
-						
-						static brush_data_type create_brush(const rgba_color& c);
-						template <class InputIterator>
-						static brush_data_type create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last);
-						static brush_data_type create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
-						template <class InputIterator>
-						static brush_data_type create_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last);
-						static brush_data_type create_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, ::std::initializer_list<gradient_stop> il);
-						static brush_data_type create_brush(basic_image_surface<_Graphics_surfaces_type>&& img);
-						static brush_data_type copy_brush(const brush_data_type& data);
-						static brush_data_type move_brush(brush_data_type&& data) noexcept;
-						static void destroy(brush_data_type& data) noexcept;
-						static brush_type get_brush_type(const brush_data_type& data) noexcept;
 
 						// render_props
 						struct _Render_props_data {
