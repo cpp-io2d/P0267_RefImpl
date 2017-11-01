@@ -65,9 +65,6 @@
     <ClInclude Include="xbrushes_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="xinclwindows_h.h">
-      <Filter>cairo renderer</Filter>
-    </ClInclude>
     <ClInclude Include="xgraphicsmath_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -85,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="xgraphicsmath.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xsystemheaders.h">
+      <Filter>cairo renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

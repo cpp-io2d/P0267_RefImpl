@@ -14,7 +14,32 @@ if USE_XLIB
 libio2d_la_SOURCES +=	cairo_renderer_xlib.cpp
 endif
 
-include_HEADERS =	io2d.h xio2d.h xcairo.h xcairo_helpers.h xcairo_impl.h xdiagnostics.h xgraphicsmath.h xgraphicsmath_impl.h xgraphicsmathfloat.h xgraphicsmathfloat_impl.h xinclwindows_h.h xinput.h xio2d.h xio2d_impl.h xpath.h xpath_impl.h xpathbuilder_impl.h xsurfaces.h xsurfaces_enums.h xsurfaces_impl.h xsurfacesprops_impl.h xtext.h
+include_HEADERS =		io2d.h \
+						xbrushes.h \
+						xbrushes_impl.h \
+						xcolor.h \
+						xdiagnostics.h \
+						xgraphicsmath.h \
+						xgraphicsmath_impl.h \
+						xgraphicsmathfloat.h \
+						xgraphicsmathfloat_impl.h \
+						xinput.h \
+						xio2d.h \
+						xio2d_impl.h \
+						xpath.h \
+						xpath_impl.h \
+						xpathbuilder_impl.h \
+						xsurfaces.h \
+						xsurfaces_enums.h \
+						xsurfaces_impl.h \
+						xsurfacesprops_impl.h \
+						xtext.h
+
+include_HEADERS +=		xcairo.h \
+						xcairo_helpers.h \
+						xcairo_impl.h \
+						xsystemheaders.h
+
 
 libio2d_la_CPPFLAGS =	@CPPFLAGS@
 libio2d_la_CXXFLAGS =	@CXXFLAGS@

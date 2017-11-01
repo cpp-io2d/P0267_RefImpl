@@ -145,7 +145,7 @@ namespace path_test {
 		pb.rel_line({ 0.0F, -25.0F });
 		pb.close_figure();
 		imgSfc.fill(foreBrush, pb);
-		pb.insert(pb.begin(), figure_items::abs_matrix(matrix_2d::init_translate({ 80.0F, 0.0F })));
+		//pb.insert(pb.begin(), basic_figure_items<default_graphics_surfaces>::abs_matrix(matrix_2d::init_translate({ 80.0F, 0.0F })));
 		//pb.insert(pb.begin() + 2, figure_items::revert_matrix());
 		imgSfc.fill(foreBrush, pb);
 		// Example code ends.
@@ -257,8 +257,8 @@ namespace path_test {
 		pb.close_figure();
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		imgSfc.fill(blueBrush, pb);
-		pb.insert(pb.begin(), figure_items::abs_matrix(matrix_2d::init_translate({ 135.0F, 0.0F })));
-		//pb.insert(pb.begin() + 2, figure_items::revert_matrix());
+		//pb.insert(pb.begin(), figure_items::abs_matrix(matrix_2d::init_translate({ 135.0F, 0.0F })));
+		////pb.insert(pb.begin() + 2, figure_items::revert_matrix());
 		imgSfc.fill(blueBrush, pb);
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		// Example code ends.

@@ -127,7 +127,7 @@ namespace std {
 					: _Data(GraphicsSurfaces::create_clip_props()) {}
 				template <class GraphicsSurfaces>
 				template <class Allocator>
-				inline basic_clip_props<GraphicsSurfaces>::basic_clip_props(const basic_path_builder<graphics_math_type, Allocator> &pb,
+				inline basic_clip_props<GraphicsSurfaces>::basic_clip_props(const basic_path_builder<GraphicsSurfaces, Allocator> &pb,
 					io2d::fill_rule fr)
 					: _Data(GraphicsSurfaces::create_clip_props(pb, fr)) { }
 
@@ -137,7 +137,7 @@ namespace std {
 					: _Data(GraphicsSurfaces::create_clip_props(ip, fr)) { }
 
 				template <class GraphicsSurfaces>
-				inline basic_clip_props<GraphicsSurfaces>::basic_clip_props(const basic_bounding_box<typename basic_clip_props<GraphicsSurfaces>::graphics_math_type>& bbox,
+				inline basic_clip_props<GraphicsSurfaces>::basic_clip_props(const basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>& bbox,
 					experimental::io2d::fill_rule fr)
 					: _Data(GraphicsSurfaces::create_clip_props(bbox, fr)) {
 					//path_builder<> clip;
@@ -151,7 +151,7 @@ namespace std {
 
 				template <class GraphicsSurfaces>
 				template <class Allocator>
-				inline void basic_clip_props<GraphicsSurfaces>::clip(const basic_path_builder<graphics_math_type, Allocator>& pb) {
+				inline void basic_clip_props<GraphicsSurfaces>::clip(const basic_path_builder<GraphicsSurfaces, Allocator>& pb) {
 					GraphicsSurfaces::clip(_Data, pb);
 				}
 
@@ -260,7 +260,7 @@ namespace std {
 					return GraphicsSurfaces::filter(_Data);
 				}
 				template <class GraphicsSurfaces>
-				inline basic_matrix_2d<typename basic_mask_props<GraphicsSurfaces>::graphics_math_type> basic_mask_props<GraphicsSurfaces>::mask_matrix() const noexcept {
+				inline basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type> basic_mask_props<GraphicsSurfaces>::mask_matrix() const noexcept {
 					return GraphicsSurfaces::mask_matrix(_Data);
 				}
 			}

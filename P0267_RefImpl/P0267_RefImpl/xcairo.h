@@ -6,7 +6,7 @@
 #include <cairo.h>
 
 #include "io2d.h"
-#include "xinclwindows_h.h"
+#include "xsystemheaders.h"
 #if defined(_Filesystem_support_test)
 #include <filesystem>
 #endif
@@ -40,7 +40,7 @@ namespace std {
 					struct _Cairo_graphics_surfaces {
 						using graphics_math_type = GraphicsMath;
 						using _Graphics_surfaces_type = _Cairo_graphics_surfaces;
-						
+
 						struct additional_image_file_formats {
 							const static int _Base = 1000;
 							const static image_file_format bmp = static_cast<image_file_format>(_Base + 0);
@@ -61,7 +61,182 @@ namespace std {
 								const static image_file_format ico = static_cast<image_file_format>(_Base + 1);
 							};
 						};
-						
+
+						struct paths {
+							struct _Abs_new_figure_data {
+								basic_point_2d<GraphicsMath> pt;
+							};
+							using abs_new_figure_data_type = _Abs_new_figure_data;
+							static abs_new_figure_data_type create_abs_new_figure();
+							static abs_new_figure_data_type create_abs_new_figure(const basic_point_2d<GraphicsMath>& pt);
+							static abs_new_figure_data_type copy_abs_new_figure(const abs_new_figure_data_type& data);
+							static abs_new_figure_data_type move_abs_new_figure(abs_new_figure_data_type&& data) noexcept;
+							static void destroy(abs_new_figure_data_type& data) noexcept;
+							static void at(abs_new_figure_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static basic_point_2d<GraphicsMath> at(const abs_new_figure_data_type& data) noexcept;
+
+							struct _Rel_new_figure_data {
+								basic_point_2d<GraphicsMath> pt;
+							};
+							using rel_new_figure_data_type = _Rel_new_figure_data;
+							static rel_new_figure_data_type create_rel_new_figure();
+							static rel_new_figure_data_type create_rel_new_figure(const basic_point_2d<GraphicsMath>& pt);
+							static rel_new_figure_data_type copy_rel_new_figure(const rel_new_figure_data_type& data);
+							static rel_new_figure_data_type move_rel_new_figure(rel_new_figure_data_type&& data) noexcept;
+							static void destroy(rel_new_figure_data_type& data) noexcept;
+							static void at(rel_new_figure_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static basic_point_2d<GraphicsMath> at(const rel_new_figure_data_type& data) noexcept;
+
+							struct _Close_figure_data {
+							};
+							using close_figure_data_type = _Close_figure_data;
+							static close_figure_data_type create_close_figure();
+							static close_figure_data_type copy_close_figure(const close_figure_data_type& data);
+							static close_figure_data_type move_close_figure(close_figure_data_type&& data) noexcept;
+							static void destroy(close_figure_data_type& data) noexcept;
+
+							struct _Abs_matrix_data {
+								basic_matrix_2d<GraphicsMath> m;
+							};
+							using abs_matrix_data_type = _Abs_matrix_data;
+							static abs_matrix_data_type create_abs_matrix();
+							static abs_matrix_data_type create_abs_matrix(const basic_matrix_2d<GraphicsMath>& m);
+							static abs_matrix_data_type copy_abs_matrix(const abs_matrix_data_type& data);
+							static abs_matrix_data_type move_abs_matrix(abs_matrix_data_type&& data) noexcept;
+							static void destroy(abs_matrix_data_type& data) noexcept;
+							static void matrix(abs_matrix_data_type& data, const basic_matrix_2d<GraphicsMath>& m);
+							static basic_matrix_2d<GraphicsMath> matrix(const abs_matrix_data_type& data) noexcept;
+
+							struct _Rel_matrix_data {
+								basic_matrix_2d<GraphicsMath> m;
+							};
+							using rel_matrix_data_type = _Rel_matrix_data;
+							static rel_matrix_data_type create_rel_matrix();
+							static rel_matrix_data_type create_rel_matrix(const basic_matrix_2d<GraphicsMath>& m);
+							static rel_matrix_data_type copy_rel_matrix(const rel_matrix_data_type& data);
+							static rel_matrix_data_type move_rel_matrix(rel_matrix_data_type&& data) noexcept;
+							static void destroy(rel_matrix_data_type& data) noexcept;
+							static void matrix(rel_matrix_data_type& data, const basic_matrix_2d<GraphicsMath>& m);
+							static basic_matrix_2d<GraphicsMath> matrix(const rel_matrix_data_type& data) noexcept;
+
+							struct _Revert_matrix_data {
+							};
+							using revert_matrix_data_type = _Revert_matrix_data;
+							static revert_matrix_data_type create_revert_matrix();
+							static revert_matrix_data_type copy_revert_matrix(const revert_matrix_data_type& data);
+							static revert_matrix_data_type move_revert_matrix(revert_matrix_data_type&& data) noexcept;
+							static void destroy(revert_matrix_data_type& data) noexcept;
+
+							struct _Abs_cubic_curve_data {
+								basic_point_2d<GraphicsMath> cpt1;
+								basic_point_2d<GraphicsMath> cpt2;
+								basic_point_2d<GraphicsMath> ept;
+							};
+							using abs_cubic_curve_data_type = _Abs_cubic_curve_data;
+							static abs_cubic_curve_data_type create_abs_cubic_curve();
+							static abs_cubic_curve_data_type create_abs_cubic_curve(const basic_point_2d<GraphicsMath>& cpt1, const basic_point_2d<GraphicsMath>& cpt2, const basic_point_2d<GraphicsMath>& ept);
+							static abs_cubic_curve_data_type copy_abs_cubic_curve(const abs_cubic_curve_data_type& data);
+							static abs_cubic_curve_data_type move_abs_cubic_curve(abs_cubic_curve_data_type&& data) noexcept;
+							static void destroy(abs_cubic_curve_data_type& data) noexcept;
+							static void control_pt1(abs_cubic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static void control_pt2(abs_cubic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static void end_pt(abs_cubic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static basic_point_2d<GraphicsMath> control_pt1(const abs_cubic_curve_data_type& data) noexcept;
+							static basic_point_2d<GraphicsMath> control_pt2(const abs_cubic_curve_data_type& data) noexcept;
+							static basic_point_2d<GraphicsMath> end_pt(const abs_cubic_curve_data_type& data) noexcept;
+
+							struct _Abs_line_data {
+								basic_point_2d<GraphicsMath> pt;
+							};
+							using abs_line_data_type = _Abs_line_data;
+							static abs_line_data_type create_abs_line();
+							static abs_line_data_type create_abs_line(const basic_point_2d<GraphicsMath>& pt);
+							static abs_line_data_type copy_abs_line(const abs_line_data_type& data);
+							static abs_line_data_type move_abs_line(abs_line_data_type&& data) noexcept;
+							static void destroy(abs_line_data_type& data) noexcept;
+							static void to(abs_line_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static basic_point_2d<GraphicsMath> to(const abs_line_data_type& data) noexcept;
+
+							struct _Abs_quadratic_curve_data {
+								basic_point_2d<GraphicsMath> cpt;
+								basic_point_2d<GraphicsMath> ept;
+							};
+							using abs_quadratic_curve_data_type = _Abs_quadratic_curve_data;
+							static abs_quadratic_curve_data_type create_abs_quadratic_curve();
+							static abs_quadratic_curve_data_type create_abs_quadratic_curve(const basic_point_2d<GraphicsMath>& cpt, const basic_point_2d<GraphicsMath>& ept);
+							static abs_quadratic_curve_data_type copy_abs_quadratic_curve(const abs_quadratic_curve_data_type& data);
+							static abs_quadratic_curve_data_type move_abs_quadratic_curve(abs_quadratic_curve_data_type&& data) noexcept;
+							static void destroy(abs_quadratic_curve_data_type& data) noexcept;
+							static void control_pt(abs_quadratic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static void end_pt(abs_quadratic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static basic_point_2d<GraphicsMath> control_pt(const abs_quadratic_curve_data_type& data) noexcept;
+							static basic_point_2d<GraphicsMath> end_pt(const abs_quadratic_curve_data_type& data);
+
+							struct _Arc_data {
+								basic_point_2d<GraphicsMath> radius;
+								float rotation = {};
+								float startAngle = {};
+							};
+							using arc_data_type = _Arc_data;
+							static arc_data_type create_arc();
+							static arc_data_type create_arc(const basic_point_2d<GraphicsMath>& rad, float rot, float sang);
+							static arc_data_type copy_arc(const arc_data_type& data);
+							static arc_data_type move_arc(arc_data_type&& data) noexcept;
+							static void destroy(arc_data_type& data) noexcept;
+							static void radius(arc_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static void rotation(arc_data_type& data, float rot);
+							static void start_angle(arc_data_type& data, float sang);
+							static basic_point_2d<GraphicsMath> radius(const arc_data_type& data) noexcept;
+							static float rotation(const arc_data_type& data) noexcept;
+							static float start_angle(const arc_data_type& data) noexcept;
+							static basic_point_2d<GraphicsMath> center(const arc_data_type& data, const basic_point_2d<GraphicsMath>& cpt, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+							static basic_point_2d<GraphicsMath> end_pt(const arc_data_type& data, const basic_point_2d<GraphicsMath>& cpt, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+
+							struct _Rel_cubic_curve_data {
+								basic_point_2d<GraphicsMath> cpt1;
+								basic_point_2d<GraphicsMath> cpt2;
+								basic_point_2d<GraphicsMath> ept;
+							};
+							using rel_cubic_curve_data_type = _Rel_cubic_curve_data;
+							static rel_cubic_curve_data_type create_rel_cubic_curve();
+							static rel_cubic_curve_data_type create_rel_cubic_curve(const basic_point_2d<GraphicsMath>& cpt1, const basic_point_2d<GraphicsMath>& cpt2, const basic_point_2d<GraphicsMath>& ept);
+							static rel_cubic_curve_data_type copy_rel_cubic_curve(const rel_cubic_curve_data_type& data);
+							static rel_cubic_curve_data_type move_rel_cubic_curve(rel_cubic_curve_data_type&& data) noexcept;
+							static void destroy(rel_cubic_curve_data_type& data) noexcept;
+							static void control_pt1(rel_cubic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static void control_pt2(rel_cubic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static void end_pt(rel_cubic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static basic_point_2d<GraphicsMath> control_pt1(const rel_cubic_curve_data_type& data) noexcept;
+							static basic_point_2d<GraphicsMath> control_pt2(const rel_cubic_curve_data_type& data) noexcept;
+							static basic_point_2d<GraphicsMath> end_pt(const rel_cubic_curve_data_type& data) noexcept;
+
+							struct _Rel_line_data {
+								basic_point_2d<GraphicsMath> pt;
+							};
+							using rel_line_data_type = _Rel_line_data;
+							static rel_line_data_type create_rel_line();
+							static rel_line_data_type create_rel_line(const basic_point_2d<GraphicsMath>& pt);
+							static rel_line_data_type copy_rel_line(const rel_line_data_type& data);
+							static rel_line_data_type move_rel_line(rel_line_data_type&& data) noexcept;
+							static void destroy(rel_line_data_type& data) noexcept;
+							static void to(rel_line_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static basic_point_2d<GraphicsMath> to(const rel_line_data_type& data) noexcept;
+
+							struct _Rel_quadratic_curve_data {
+								basic_point_2d<GraphicsMath> cpt;
+								basic_point_2d<GraphicsMath> ept;
+							};
+							using rel_quadratic_curve_data_type = _Rel_quadratic_curve_data;
+							static rel_quadratic_curve_data_type create_rel_quadratic_curve();
+							static rel_quadratic_curve_data_type create_rel_quadratic_curve(const basic_point_2d<GraphicsMath>& cpt, const basic_point_2d<GraphicsMath>& ept);
+							static rel_quadratic_curve_data_type copy_rel_quadratic_curve(const rel_quadratic_curve_data_type& data);
+							static rel_quadratic_curve_data_type move_rel_quadratic_curve(rel_quadratic_curve_data_type&& data) noexcept;
+							static void destroy(rel_quadratic_curve_data_type& data) noexcept;
+							static void control_pt(rel_quadratic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static void end_pt(rel_quadratic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
+							static basic_point_2d<GraphicsMath> control_pt(const rel_quadratic_curve_data_type& data) noexcept;
+							static basic_point_2d<GraphicsMath> end_pt(const rel_quadratic_curve_data_type& data) noexcept;
+						};
 						// interpreted_path
 
 						struct _Interpreted_path_data {
@@ -71,7 +246,7 @@ namespace std {
 
 						static interpreted_path_data_type create_interpreted_path() noexcept;
 						template <class Allocator>
-						static interpreted_path_data_type create_interpreted_path(const basic_path_builder<GraphicsMath, Allocator>& pb);
+						static interpreted_path_data_type create_interpreted_path(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb);
 						template <class ForwardIterator>
 						static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
 						static interpreted_path_data_type copy_interpreted_path(const interpreted_path_data_type&);
@@ -157,7 +332,7 @@ namespace std {
 						static clip_props_data_type create_clip_props() noexcept;
 						static clip_props_data_type create_clip_props(const basic_bounding_box<GraphicsMath>& bbox, io2d::fill_rule fr) noexcept;
 						template <class Allocator>
-						static clip_props_data_type create_clip_props(const basic_path_builder<GraphicsMath, Allocator>& pb, io2d::fill_rule fr);
+						static clip_props_data_type create_clip_props(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb, io2d::fill_rule fr);
 						static clip_props_data_type create_clip_props(const basic_interpreted_path<_Graphics_surfaces_type> ip, io2d::fill_rule fr) noexcept;
 						static clip_props_data_type copy_clip_props(const clip_props_data_type& data);
 						static clip_props_data_type move_clip_props(clip_props_data_type&& data) noexcept;
@@ -165,7 +340,7 @@ namespace std {
 
 						static void clip(clip_props_data_type& data, const basic_bounding_box<GraphicsMath>& bbox) noexcept;
 						template <class Allocator>
-						static void clip(clip_props_data_type& data, const basic_path_builder<GraphicsMath, Allocator>& pb);
+						static void clip(clip_props_data_type& data, const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb);
 						static void clip(clip_props_data_type& data, const basic_interpreted_path<_Graphics_surfaces_type>& ip) noexcept;
 						static void fill_rule(clip_props_data_type& data, io2d::fill_rule fr) noexcept;
 						static interpreted_path_data_type clip(const clip_props_data_type& data) noexcept;
@@ -475,7 +650,6 @@ namespace std {
 		}
 	}
 }
-
 #include "xcairo_impl.h"
 
 #endif

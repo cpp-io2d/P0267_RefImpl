@@ -32,7 +32,7 @@ namespace std {
 				enum class _Path_data_rel_quadratic_curve {};
 				constexpr static _Path_data_rel_quadratic_curve _Path_data_rel_quadratic_curve_val = {};
 
-				template <class GraphicsMath>
+				template <class GraphicsSurfaces>
 				struct basic_figure_items {
 					class abs_new_figure;
 					class rel_new_figure;
@@ -49,138 +49,262 @@ namespace std {
 					class rel_quadratic_curve;
 
 					class abs_new_figure {
-						basic_point_2d<GraphicsMath> _Data = {};
 					public:
-						abs_new_figure() noexcept;
-						explicit abs_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
-						void at(const basic_point_2d<GraphicsMath>& pt) noexcept;
-						basic_point_2d<GraphicsMath> at() const noexcept;
+						using _Data_type = typename GraphicsSurfaces::paths::abs_new_figure_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
+						abs_new_figure();
+						explicit abs_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt);
+						abs_new_figure(const abs_new_figure& other);
+						abs_new_figure& operator=(const abs_new_figure& other);
+						abs_new_figure(abs_new_figure&& other) noexcept;
+						abs_new_figure& operator=(abs_new_figure&& other) noexcept;
+						~abs_new_figure() noexcept;
+						void at(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> at() const noexcept;
 					};
 
 					class rel_new_figure {
-						basic_point_2d<GraphicsMath> _Data = {};
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::rel_new_figure_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						rel_new_figure() noexcept;
-						explicit rel_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
-						void at(const basic_point_2d<GraphicsMath>& pt) noexcept;
-						basic_point_2d<GraphicsMath> at() const noexcept;
+						explicit rel_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+						rel_new_figure(const rel_new_figure& other);
+						rel_new_figure& operator=(const rel_new_figure& other);
+						rel_new_figure(rel_new_figure&& other) noexcept;
+						rel_new_figure& operator=(rel_new_figure&& other) noexcept;
+						~rel_new_figure() noexcept;
+						void at(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> at() const noexcept;
 					};
 
 					class close_figure {
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::close_figure_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						close_figure() noexcept;
+						close_figure(const close_figure& other);
+						close_figure& operator=(const close_figure& other);
+						close_figure(close_figure&& other) noexcept;
+						close_figure& operator=(close_figure&& other) noexcept;
+						~close_figure() noexcept;
 					};
 
 					class abs_matrix {
-						basic_matrix_2d<GraphicsMath> _Matrix;
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::abs_matrix_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						abs_matrix() noexcept;
-						explicit abs_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
-						void matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
-						basic_matrix_2d<GraphicsMath> matrix() const noexcept;
+						explicit abs_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
+						abs_matrix(const abs_matrix& other);
+						abs_matrix& operator=(const abs_matrix& other);
+						abs_matrix(abs_matrix&& other) noexcept;
+						abs_matrix& operator=(abs_matrix&& other) noexcept;
+						~abs_matrix() noexcept;
+						void matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
+						basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type> matrix() const noexcept;
 					};
 
 					class rel_matrix {
-						basic_matrix_2d<GraphicsMath> _Matrix;
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::rel_matrix_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						rel_matrix() noexcept;
-						explicit rel_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
-						void matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
-						basic_matrix_2d<GraphicsMath> matrix() const noexcept;
+						explicit rel_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
+						rel_matrix(const rel_matrix& other);
+						rel_matrix& operator=(const rel_matrix& other);
+						rel_matrix(rel_matrix&& other) noexcept;
+						rel_matrix& operator=(rel_matrix&& other) noexcept;
+						~rel_matrix() noexcept;
+						void matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
+						basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type> matrix() const noexcept;
 					};
 
 					class revert_matrix {
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::revert_matrix_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						revert_matrix() noexcept;
+						revert_matrix(const revert_matrix& other);
+						revert_matrix& operator=(const revert_matrix& other);
+						revert_matrix(revert_matrix&& other) noexcept;
+						revert_matrix& operator=(revert_matrix&& other) noexcept;
+						~revert_matrix() noexcept;
 					};
 
 					class abs_line {
-						basic_point_2d<GraphicsMath> _Data = {};
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::abs_line_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						abs_line() noexcept;
-						explicit abs_line(const basic_point_2d<GraphicsMath>& pt) noexcept;
-						void to(const basic_point_2d<GraphicsMath>& pt) noexcept;
-						basic_point_2d<GraphicsMath> to() const noexcept;
+						explicit abs_line(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+						abs_line(const abs_line& other);
+						abs_line& operator=(const abs_line& other);
+						abs_line(abs_line&& other) noexcept;
+						abs_line& operator=(abs_line&& other) noexcept;
+						~abs_line() noexcept;
+						void to(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> to() const noexcept;
 					};
 
 					class rel_line {
-						basic_point_2d<GraphicsMath> _Data = {};
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::rel_line_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						rel_line() noexcept;
-						explicit rel_line(const basic_point_2d<GraphicsMath>& pt) noexcept;
-						void to(const basic_point_2d<GraphicsMath>& pt) noexcept;
-						basic_point_2d<GraphicsMath> to() const noexcept;
+						explicit rel_line(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+						rel_line(const rel_line& other);
+						rel_line& operator=(const rel_line& other);
+						rel_line(rel_line&& other) noexcept;
+						rel_line& operator=(rel_line&& other) noexcept;
+						~rel_line() noexcept;
+						void to(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> to() const noexcept;
 					};
 
 					class abs_quadratic_curve {
-						basic_point_2d<GraphicsMath> _Control_pt = {};
-						basic_point_2d<GraphicsMath> _End_pt = {};
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::abs_quadratic_curve_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						abs_quadratic_curve() noexcept;
-						abs_quadratic_curve(const basic_point_2d<GraphicsMath>& cpt, const basic_point_2d<GraphicsMath>& ept) noexcept;
-						void control_pt(const basic_point_2d<GraphicsMath>& cpt) noexcept;
-						void end_pt(const basic_point_2d<GraphicsMath>& ept) noexcept;
-						basic_point_2d<GraphicsMath> control_pt() const noexcept;
-						basic_point_2d<GraphicsMath> end_pt() const noexcept;
+						abs_quadratic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
+						abs_quadratic_curve(const abs_quadratic_curve& other);
+						abs_quadratic_curve& operator=(const abs_quadratic_curve& other);
+						abs_quadratic_curve(abs_quadratic_curve&& other) noexcept;
+						abs_quadratic_curve& operator=(abs_quadratic_curve&& other) noexcept;
+						~abs_quadratic_curve() noexcept;
+						void control_pt(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt) noexcept;
+						void end_pt(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> control_pt() const noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> end_pt() const noexcept;
 					};
 
 					class rel_quadratic_curve {
-						basic_point_2d<GraphicsMath> _Control_pt = {};
-						basic_point_2d<GraphicsMath> _End_pt = {};
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::rel_quadratic_curve_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						rel_quadratic_curve() noexcept;
-						rel_quadratic_curve(const basic_point_2d<GraphicsMath>& cpt, const basic_point_2d<GraphicsMath>& ept) noexcept;
-						void control_pt(const basic_point_2d<GraphicsMath>& cpt) noexcept;
-						void end_pt(const basic_point_2d<GraphicsMath>& ept) noexcept;
-						basic_point_2d<GraphicsMath> control_pt() const noexcept;
-						basic_point_2d<GraphicsMath> end_pt() const noexcept;
+						rel_quadratic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
+						rel_quadratic_curve(const rel_quadratic_curve& other);
+						rel_quadratic_curve& operator=(const rel_quadratic_curve& other);
+						rel_quadratic_curve(rel_quadratic_curve&& other) noexcept;
+						rel_quadratic_curve& operator=(rel_quadratic_curve&& other) noexcept;
+						~rel_quadratic_curve() noexcept;
+						void control_pt(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt) noexcept;
+						void end_pt(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> control_pt() const noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> end_pt() const noexcept;
 					};
 
 					class abs_cubic_curve {
-						basic_point_2d<GraphicsMath> _Control_pt1 = {};
-						basic_point_2d<GraphicsMath> _Control_pt2 = {};
-						basic_point_2d<GraphicsMath> _End_pt = {};
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::abs_cubic_curve_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						abs_cubic_curve() noexcept;
-						abs_cubic_curve(const basic_point_2d<GraphicsMath>& cpt1, const basic_point_2d<GraphicsMath>& cpt2, const basic_point_2d<GraphicsMath>& ept) noexcept;
-						void control_pt1(const basic_point_2d<GraphicsMath>& cpt) noexcept;
-						void control_pt2(const basic_point_2d<GraphicsMath>& cpt) noexcept;
-						void end_pt(const basic_point_2d<GraphicsMath>& ept) noexcept;
-						basic_point_2d<GraphicsMath> control_pt1() const noexcept;
-						basic_point_2d<GraphicsMath> control_pt2() const noexcept;
-						basic_point_2d<GraphicsMath> end_pt() const noexcept;
+						abs_cubic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt1, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt2, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
+						abs_cubic_curve(const abs_cubic_curve& other);
+						abs_cubic_curve& operator=(const abs_cubic_curve& other);
+						abs_cubic_curve(abs_cubic_curve&& other) noexcept;
+						abs_cubic_curve& operator=(abs_cubic_curve&& other) noexcept;
+						~abs_cubic_curve() noexcept;
+						void control_pt1(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt) noexcept;
+						void control_pt2(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt) noexcept;
+						void end_pt(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> control_pt1() const noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> control_pt2() const noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> end_pt() const noexcept;
 					};
 
 					class rel_cubic_curve {
-						basic_point_2d<GraphicsMath> _Control_pt1 = {};
-						basic_point_2d<GraphicsMath> _Control_pt2 = {};
-						basic_point_2d<GraphicsMath> _End_pt = {};
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::rel_cubic_curve_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						rel_cubic_curve() noexcept;
-						rel_cubic_curve(const basic_point_2d<GraphicsMath>& cpt1, const basic_point_2d<GraphicsMath>& cpt2, const basic_point_2d<GraphicsMath>& ept) noexcept;
-						void control_pt1(const basic_point_2d<GraphicsMath>& cpt) noexcept;
-						void control_pt2(const basic_point_2d<GraphicsMath>& cpt) noexcept;
-						void end_pt(const basic_point_2d<GraphicsMath>& ept) noexcept;
-						basic_point_2d<GraphicsMath> control_pt1() const noexcept;
-						basic_point_2d<GraphicsMath> control_pt2() const noexcept;
-						basic_point_2d<GraphicsMath> end_pt() const noexcept;
+						rel_cubic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt1, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt2, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
+						rel_cubic_curve(const abs_new_figure& other);
+						rel_cubic_curve& operator=(const rel_cubic_curve& other);
+						rel_cubic_curve(rel_cubic_curve&& other) noexcept;
+						rel_cubic_curve& operator=(rel_cubic_curve&& other) noexcept;
+						~rel_cubic_curve() noexcept;
+						void control_pt1(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt) noexcept;
+						void control_pt2(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt) noexcept;
+						void end_pt(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> control_pt1() const noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> control_pt2() const noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> end_pt() const noexcept;
 					};
 
 					class arc {
-						basic_point_2d<GraphicsMath> _Radius;
-						float _Rotation;
-						float _Start_angle;
 					public:
+						using _Data_type = typename GraphicsSurfaces::paths::arc_data_type;
+					private:
+						_Data_type _Data;
+					public:
+						const _Data_type& _Get_data() const noexcept;
+
 						arc() noexcept;
-						arc(const basic_point_2d<GraphicsMath>& rad, float rot, float sang) noexcept;
-						void radius(const basic_point_2d<GraphicsMath>& rad) noexcept;
+						arc(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& rad, float rot, float sang) noexcept;
+						arc(const arc& other);
+						arc& operator=(const arc& other);
+						arc(arc&& other) noexcept;
+						arc& operator=(arc&& other) noexcept;
+						~arc() noexcept;
+						void radius(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& rad) noexcept;
 						void rotation(float rot) noexcept;
 						void start_angle(float radians) noexcept;
-						basic_point_2d<GraphicsMath> radius() const noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> radius() const noexcept;
 						float rotation() const noexcept;
 						float start_angle() const noexcept;
-						basic_point_2d<GraphicsMath> center(const basic_point_2d<GraphicsMath>& cpt, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) const noexcept;
-						basic_point_2d<GraphicsMath> end_pt(const basic_point_2d<GraphicsMath>& cpt, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) const noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> center(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt, const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m = basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>{}) const noexcept;
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> end_pt(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt, const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m = basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>{}) const noexcept;
 					};
 
 					using figure_item = variant<abs_cubic_curve, abs_line, abs_matrix,
@@ -189,79 +313,80 @@ namespace std {
 						revert_matrix>;
 				};
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::abs_new_figure& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::abs_new_figure& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::rel_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::rel_new_figure& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::rel_new_figure& lhs, const typename basic_figure_items<GraphicsMath>::rel_new_figure& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_new_figure& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::abs_new_figure& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_new_figure& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::rel_new_figure& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_new_figure& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::rel_new_figure& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_new_figure& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::close_figure&, const typename basic_figure_items<GraphicsMath>::close_figure&) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::close_figure&, const typename basic_figure_items<GraphicsMath>::close_figure&) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::close_figure&, const typename basic_figure_items<GraphicsSurfaces>::close_figure&) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::close_figure&, const typename basic_figure_items<GraphicsSurfaces>::close_figure&) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::abs_matrix& lhs, const typename basic_figure_items<GraphicsMath>::abs_matrix& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::abs_matrix& lhs, const typename basic_figure_items<GraphicsMath>::abs_matrix& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::abs_matrix& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_matrix& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::abs_matrix& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_matrix& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::rel_matrix& lhs, const typename basic_figure_items<GraphicsMath>::rel_matrix& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::rel_matrix& lhs, const typename basic_figure_items<GraphicsMath>::rel_matrix& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::rel_matrix& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_matrix& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::rel_matrix& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_matrix& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::revert_matrix& lhs, const typename basic_figure_items<GraphicsMath>::revert_matrix& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::revert_matrix& lhs, const typename basic_figure_items<GraphicsMath>::revert_matrix& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::revert_matrix& lhs, const typename basic_figure_items<GraphicsSurfaces>::revert_matrix& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::revert_matrix& lhs, const typename basic_figure_items<GraphicsSurfaces>::revert_matrix& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::abs_line& lhs, const typename basic_figure_items<GraphicsMath>::abs_line& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::abs_line& lhs, const typename basic_figure_items<GraphicsMath>::abs_line& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::abs_line& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_line& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::abs_line& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_line& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::rel_line& lhs, const typename basic_figure_items<GraphicsMath>::rel_line& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::rel_line& lhs, const typename basic_figure_items<GraphicsMath>::rel_line& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::rel_line& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_line& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::rel_line& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_line& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_quadratic_curve& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_quadratic_curve& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::abs_cubic_curve& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::abs_cubic_curve& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_cubic_curve& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::abs_cubic_curve& lhs, const typename basic_figure_items<GraphicsSurfaces>::abs_cubic_curve& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& rhs) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& lhs, const typename basic_figure_items<GraphicsMath>::rel_cubic_curve& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::rel_cubic_curve& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_cubic_curve& rhs) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::rel_cubic_curve& lhs, const typename basic_figure_items<GraphicsSurfaces>::rel_cubic_curve& rhs) noexcept;
 
-				template <class GraphicsMath>
-				bool operator==(const typename basic_figure_items<GraphicsMath>::arc&, const typename basic_figure_items<GraphicsMath>::arc&) noexcept;
-				template <class GraphicsMath>
-				bool operator!=(const typename basic_figure_items<GraphicsMath>::arc&, const typename basic_figure_items<GraphicsMath>::arc&) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator==(const typename basic_figure_items<GraphicsSurfaces>::arc&, const typename basic_figure_items<GraphicsSurfaces>::arc&) noexcept;
+				template <class GraphicsSurfaces>
+				bool operator!=(const typename basic_figure_items<GraphicsSurfaces>::arc&, const typename basic_figure_items<GraphicsSurfaces>::arc&) noexcept;
 
-				template <class GraphicsMath, class Allocator = ::std::allocator<typename basic_figure_items<GraphicsMath>::figure_item>>
+				template <class GraphicsSurfaces, class Allocator = ::std::allocator<typename basic_figure_items<GraphicsSurfaces>::figure_item>>
 				class basic_path_builder {
 				public:
-					using _Data_type = ::std::vector<typename basic_figure_items<GraphicsMath>::figure_item, Allocator>;
+					using _Data_type = ::std::vector<typename basic_figure_items<GraphicsSurfaces>::figure_item, Allocator>;
+					//using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 				private:
 					_Data_type _Data;
 				public:
 					const _Data_type& _Get_data() const noexcept;
-					using value_type = typename basic_figure_items<GraphicsMath>::figure_item;
+					using value_type = typename basic_figure_items<GraphicsSurfaces>::figure_item;
 					using allocator_type = Allocator;
 					using reference = value_type&;
 					using const_reference = const value_type&;
@@ -271,6 +396,25 @@ namespace std {
 					using const_iterator = typename ::std::vector<value_type>::const_iterator;
 					using reverse_iterator = std::reverse_iterator<iterator>;
 					using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+					void new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+					void rel_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+					void close_figure() noexcept;
+					void matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
+					void rel_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
+					void revert_matrix() noexcept;
+					void line(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
+					void rel_line(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& dpt) noexcept;
+					void quadratic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt0, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt2)
+						noexcept;
+					void rel_quadratic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt0, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt2)
+						noexcept;
+					void cubic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt0, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt1,
+						const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt2) noexcept;
+					void rel_cubic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& dpt0, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& dpt1,
+						const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& dpt2) noexcept;
+					void arc(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& rad, float rot, float sang = pi<float>)
+						noexcept;
 
 					basic_path_builder() noexcept(noexcept(Allocator()));
 					explicit basic_path_builder(const Allocator&) noexcept;
@@ -329,25 +473,8 @@ namespace std {
 					const_reference front() const;
 					reference back();
 					const_reference back() const;
+
 					// 10.5.5, modifiers:
-					void new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
-					void rel_new_figure(const basic_point_2d<GraphicsMath>& pt) noexcept;
-					void close_figure() noexcept;
-					void matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
-					void rel_matrix(const basic_matrix_2d<GraphicsMath>& m) noexcept;
-					void revert_matrix() noexcept;
-					void line(const basic_point_2d<GraphicsMath>& pt) noexcept;
-					void rel_line(const basic_point_2d<GraphicsMath>& dpt) noexcept;
-					void quadratic_curve(const basic_point_2d<GraphicsMath>& pt0, const basic_point_2d<GraphicsMath>& pt2)
-						noexcept;
-					void rel_quadratic_curve(const basic_point_2d<GraphicsMath>& pt0, const basic_point_2d<GraphicsMath>& pt2)
-						noexcept;
-					void cubic_curve(const basic_point_2d<GraphicsMath>& pt0, const basic_point_2d<GraphicsMath>& pt1,
-						const basic_point_2d<GraphicsMath>& pt2) noexcept;
-					void rel_cubic_curve(const basic_point_2d<GraphicsMath>& dpt0, const basic_point_2d<GraphicsMath>& dpt1,
-						const basic_point_2d<GraphicsMath>& dpt2) noexcept;
-					void arc(const basic_point_2d<GraphicsMath>& rad, float rot, float sang = pi<float>)
-						noexcept;
 					template <class... Args>
 					reference emplace_back(Args&&... args);
 					void push_back(const value_type& x);
@@ -368,16 +495,14 @@ namespace std {
 						noexcept(allocator_traits<Allocator>::propagate_on_container_swap::value
 							|| allocator_traits<Allocator>::is_always_equal::value);
 					void clear() noexcept;
-				//private:
-				//	friend bool operator==(const basic_path_builder&, const basic_path_builder&) noexcept;
 				};
 
-				template <class GraphicsMath, class Allocator>
-				bool operator==(const basic_path_builder<GraphicsMath, Allocator>& lhs, const basic_path_builder<GraphicsMath, Allocator>& rhs) noexcept;
-				template <class GraphicsMath, class Allocator>
-				bool operator!=(const basic_path_builder<GraphicsMath, Allocator>& lhs, const basic_path_builder<GraphicsMath, Allocator>& rhs) noexcept;
-				template <class GraphicsMath, class Allocator>
-				void swap(basic_path_builder<GraphicsMath, Allocator>& lhs, basic_path_builder<GraphicsMath, Allocator>& rhs) noexcept(noexcept(lhs.swap(rhs)));
+				template <class GraphicsSurfaces, class Allocator>
+				bool operator==(const basic_path_builder<GraphicsSurfaces, Allocator>& lhs, const basic_path_builder<GraphicsSurfaces, Allocator>& rhs) noexcept;
+				template <class GraphicsSurfaces, class Allocator>
+				bool operator!=(const basic_path_builder<GraphicsSurfaces, Allocator>& lhs, const basic_path_builder<GraphicsSurfaces, Allocator>& rhs) noexcept;
+				template <class GraphicsSurfaces, class Allocator>
+				void swap(basic_path_builder<GraphicsSurfaces, Allocator>& lhs, basic_path_builder<GraphicsSurfaces, Allocator>& rhs) noexcept(noexcept(lhs.swap(rhs)));
 				// 8.17.8, specialized algorithms:
 				/*		template <class Allocator>
 				void swap(path_builder<Allocator>& lhs, path_builder<Allocator>& rhs)
@@ -398,8 +523,8 @@ namespace std {
 					// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
 					basic_interpreted_path() noexcept;
 
-					template <class GraphicsMath, class Allocator>
-					explicit basic_interpreted_path(const basic_path_builder<GraphicsMath, Allocator>& pb);
+					template <class Allocator>
+					explicit basic_interpreted_path(const basic_path_builder<GraphicsSurfaces, Allocator>& pb);
 
 					template <class ForwardIterator>
 					basic_interpreted_path(ForwardIterator first, ForwardIterator last);
@@ -412,10 +537,10 @@ namespace std {
 					~basic_interpreted_path() noexcept;
 				};
 
-			template <class GraphicsMath, class ForwardIterator>
-			vector<typename basic_figure_items<GraphicsMath>::figure_item> _Interpret_path_items(ForwardIterator first, ForwardIterator last);
-			template <class GraphicsMath, class Allocator>
-			vector<typename basic_figure_items<GraphicsMath>::figure_item> _Interpret_path_items(const basic_path_builder<GraphicsMath, Allocator>& pb);
+				template <class GraphicsSurfaces, class ForwardIterator>
+				vector<typename basic_figure_items<GraphicsSurfaces>::figure_item> _Interpret_path_items(ForwardIterator first, ForwardIterator last);
+				template <class GraphicsSurfaces, class Allocator>
+				vector<typename basic_figure_items<GraphicsSurfaces>::figure_item> _Interpret_path_items(const basic_path_builder<GraphicsSurfaces, Allocator>& pb);
 			}
 		}
 	}

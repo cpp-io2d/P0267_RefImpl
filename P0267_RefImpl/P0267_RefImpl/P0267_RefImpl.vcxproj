@@ -479,7 +479,7 @@
     <ClInclude Include="xgraphicsmathfloat.h" />
     <ClInclude Include="xgraphicsmathfloat_impl.h" />
     <ClInclude Include="xgraphicsmath_impl.h" />
-    <ClInclude Include="xinclwindows_h.h" />
+    <ClInclude Include="xsystemheaders.h" />
     <ClInclude Include="xinput.h" />
     <ClInclude Include="xio2d.h" />
     <ClInclude Include="xio2d_impl.h" />

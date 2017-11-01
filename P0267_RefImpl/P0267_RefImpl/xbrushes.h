@@ -1,5 +1,8 @@
 #pragma once
 
+#include "xcolor.h"
+#include "xgraphicsmath.h"
+
 namespace std {
 	namespace experimental {
 		namespace io2d {

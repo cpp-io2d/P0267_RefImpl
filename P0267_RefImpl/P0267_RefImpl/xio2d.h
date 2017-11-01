@@ -2,22 +2,11 @@
 
 #ifndef _XIO2D_
 #define _XIO2D_
-//
-//#include <map>
-//#include <cassert>
-//#include <cstdint>
-//#include <tuple>
-//#include <mutex>
-//#include <cmath>
-//#include <utility>
-//#include <stack>
-//#include <array>
-//#include <sstream>
-//#include <ios>
-//#include <type_traits>
+
 #include <limits>
 #include <cmath>
 #include <cassert>
+#include <type_traits>
 
 //
 #if ((defined(_MSC_VER) && ((_MSC_VER >= 1910) || (defined(__clang__) && (_MSC_VER >= 1900)))) || defined(HAVE_FILESYSTEM))
