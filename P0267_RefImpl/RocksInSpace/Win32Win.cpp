@@ -153,7 +153,9 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 			GetClientRect(hwnd, &clientRect);
 			int width = clientRect.right - clientRect.left;
 			int height = clientRect.bottom - clientRect.top;
-			if (width != m_outputSfc.display_dimensions().x() || height != m_outputSfc.display_dimensions().y()) {
+			const auto& data = m_outputSfc._Get_data();
+			if (width != data.data.display_dimensions.x() || height != data.data.display_dimensions.y()) {
+				//if (width != m_outputSfc.display_dimensions().x() || height != m_outputSfc.display_dimensions().y()) {
 				// If there is a size mismatch we skip painting and resize the window instead.
 				EndPaint(hwnd, &ps);
 				m_outputSfc.display_dimensions(display_point{ width, height });
@@ -251,12 +253,15 @@ int rocks_in_space::Win32Win::Run()
 			GetClientRect(m_hwnd, &clientRect);
 			int width = clientRect.right - clientRect.left;
 			int height = clientRect.bottom - clientRect.top;
-			if (width != m_outputSfc.display_dimensions().x() || height != m_outputSfc.display_dimensions().y())
+			const auto& data = m_outputSfc._Get_data();
+			if (width != data.data.display_dimensions.x() || height != data.data.display_dimensions.y())
+				//if (width != m_outputSfc.display_dimensions().x() || height != m_outputSfc.display_dimensions().y())
 			{
 				// If there is a size mismatch we skip painting and resize the window instead.
 				auto displayDimensions = display_point{ width, height };
 				m_outputSfc.display_dimensions(displayDimensions);
-				if (display_point{ width, height } != m_outputSfc.dimensions())
+				
+				if (display_point{ width, height } != data.data.display_dimensions)//m_outputSfc.dimensions())
 				{
 					if (m_outputSfc.has_size_change_callback())
 					{

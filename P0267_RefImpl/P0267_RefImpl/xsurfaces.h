@@ -14,7 +14,7 @@ namespace std::experimental::io2d {
 		template <class GraphicsSurfaces>
 		class basic_render_props {
 		public:
-			using _Data_type = typename GraphicsSurfaces::render_props_data_type;
+			using _Data_type = typename GraphicsSurfaces::surface_state_props::render_props_data_type;
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 		private:
 			_Data_type _Data;
@@ -22,6 +22,11 @@ namespace std::experimental::io2d {
 			const _Data_type& _Get_data() const noexcept;
 			basic_render_props() noexcept;
 			explicit basic_render_props(antialias a, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}, compositing_op co = compositing_op::over) noexcept;
+			basic_render_props(const basic_render_props& other);
+			basic_render_props& operator=(const basic_render_props& other);
+			basic_render_props(basic_render_props&& other) noexcept;
+			basic_render_props& operator=(basic_render_props&& other) noexcept;
+			~basic_render_props() noexcept;
 			void antialiasing(antialias a) noexcept;
 			void compositing(compositing_op co) noexcept;
 			void surface_matrix(const basic_matrix_2d<graphics_math_type>& m) noexcept;
@@ -33,14 +38,19 @@ namespace std::experimental::io2d {
 		template <class GraphicsSurfaces>
 		class basic_brush_props {
 		public:
+			using _Data_type = typename GraphicsSurfaces::surface_state_props::brush_props_data_type;
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::brush_props_data_type;
 
 		private:
 			_Data_type _Data;
 
 		public:
 			basic_brush_props(io2d::wrap_mode w = io2d::wrap_mode::none, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
+			basic_brush_props(const basic_brush_props& other);
+			basic_brush_props& operator=(const basic_brush_props& other);
+			basic_brush_props(basic_brush_props&& other) noexcept;
+			basic_brush_props& operator=(basic_brush_props&& other) noexcept;
+			~basic_brush_props() noexcept;
 			void filter(io2d::filter fi) noexcept;
 			void wrap_mode(io2d::wrap_mode w) noexcept;
 			void fill_rule(io2d::fill_rule fr) noexcept;
@@ -54,19 +64,23 @@ namespace std::experimental::io2d {
 		template <class GraphicsSurfaces>
 		class basic_clip_props {
 		public:
-			using _Data_type = typename GraphicsSurfaces::clip_props_data_type;
+			using _Data_type = typename GraphicsSurfaces::surface_state_props::clip_props_data_type;
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 		private:
 			_Data_type _Data;
 		public:
 			const _Data_type& _Get_data() const noexcept;
 
-			explicit basic_clip_props(const basic_bounding_box<graphics_math_type>& r, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
-
 			basic_clip_props() noexcept;
+			explicit basic_clip_props(const basic_bounding_box<graphics_math_type>& r, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
 			template <class Allocator>
 			explicit basic_clip_props(const basic_path_builder<GraphicsSurfaces, Allocator>& pb, io2d::fill_rule fr = io2d::fill_rule::winding);
 			explicit basic_clip_props(const basic_interpreted_path<GraphicsSurfaces>& ip, io2d::fill_rule fr = io2d::fill_rule::winding) noexcept;
+			basic_clip_props(const basic_clip_props& other);
+			basic_clip_props& operator=(const basic_clip_props& other);
+			basic_clip_props(basic_clip_props&& other) noexcept;
+			basic_clip_props& operator=(basic_clip_props&& other) noexcept;
+			~basic_clip_props() noexcept;
 			template <class Allocator>
 			void clip(const basic_path_builder<GraphicsSurfaces, Allocator>& pb);
 			void clip(const basic_interpreted_path<GraphicsSurfaces>& ip) noexcept;
@@ -79,20 +93,25 @@ namespace std::experimental::io2d {
 		class basic_stroke_props {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::stroke_props_data_type;
+			using _Data_type = typename GraphicsSurfaces::surface_state_props::stroke_props_data_type;
 		private:
 			_Data_type _Data;
 		public:
 			const _Data_type& _Get_data() const noexcept;
 			basic_stroke_props() noexcept;
 			explicit basic_stroke_props(float w, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
+			basic_stroke_props(const basic_stroke_props& other);
+			basic_stroke_props& operator=(const basic_stroke_props& other);
+			basic_stroke_props(basic_stroke_props&& other) noexcept;
+			basic_stroke_props& operator=(basic_stroke_props&& other) noexcept;
+			~basic_stroke_props() noexcept;
 			void line_width(float w) noexcept;
-			void line_cap(experimental::io2d::line_cap lc) noexcept;
-			void line_join(experimental::io2d::line_join lj) noexcept;
+			void line_cap(io2d::line_cap lc) noexcept;
+			void line_join(io2d::line_join lj) noexcept;
 			void miter_limit(float ml) noexcept;
 			float line_width() const noexcept;
-			experimental::io2d::line_cap line_cap() const noexcept;
-			experimental::io2d::line_join line_join() const noexcept;
+			io2d::line_cap line_cap() const noexcept;
+			io2d::line_join line_join() const noexcept;
 			float miter_limit() const noexcept;
 			float max_miter_limit() const noexcept;
 		};
@@ -101,18 +120,18 @@ namespace std::experimental::io2d {
 		class basic_mask_props {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::mask_props_data_type;
+			using _Data_type = typename GraphicsSurfaces::surface_state_props::mask_props_data_type;
 		private:
 			_Data_type _Data;
 		public:
-			//// surplus to paper
-			//basic_mask_props(const basic_mask_props&) noexcept = default;
-			//basic_mask_props& operator=(const basic_mask_props&) noexcept = default;
-			//basic_mask_props(basic_mask_props&&) noexcept = default;
-			//basic_mask_props& operator=(basic_mask_props&&) noexcept = default;
-
 			const _Data_type& _Get_data() const noexcept;
-			basic_mask_props(experimental::io2d::wrap_mode w = experimental::io2d::wrap_mode::repeat, experimental::io2d::filter fi = experimental::io2d::filter::good, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
+
+			basic_mask_props(io2d::wrap_mode w = io2d::wrap_mode::repeat, io2d::filter fi = io2d::filter::good, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
+			basic_mask_props(const basic_mask_props& other) noexcept;
+			basic_mask_props& operator=(const basic_mask_props& other) noexcept;
+			basic_mask_props(basic_mask_props&& other) noexcept;
+			basic_mask_props& operator=(basic_mask_props&& other) noexcept;
+			~basic_mask_props() noexcept;
 			void wrap_mode(experimental::io2d::wrap_mode w) noexcept;
 			void filter(experimental::io2d::filter fi) noexcept;
 			void mask_matrix(const basic_matrix_2d<graphics_math_type>& m) noexcept;
@@ -124,7 +143,7 @@ namespace std::experimental::io2d {
 		template <class GraphicsSurfaces>
 		class basic_dashes {
 		public:
-			using _Data_type = typename GraphicsSurfaces::dashes_data_type;
+			using _Data_type = typename GraphicsSurfaces::surface_state_props::dashes_data_type;
 		private:
 			_Data_type _Data;
 		public:
@@ -133,6 +152,11 @@ namespace std::experimental::io2d {
 			template <class ForwardIterator>
 			basic_dashes(float offset, ForwardIterator first, ForwardIterator last);
 			basic_dashes(float offset, ::std::initializer_list<float> il);
+			basic_dashes(const basic_dashes& other);
+			basic_dashes& operator=(const basic_dashes& other);
+			basic_dashes(basic_dashes&& other) noexcept;
+			basic_dashes& operator=(basic_dashes&& other) noexcept;
+			~basic_dashes() noexcept;
 		};
 
 		template <class GraphicsSurfaces>

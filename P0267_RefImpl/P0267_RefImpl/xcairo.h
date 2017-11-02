@@ -277,135 +277,137 @@ namespace std {
 							static brush_type get_brush_type(const brush_data_type& data) noexcept;
 						};
 
-						// render_props
-						struct _Render_props_data {
-							antialias _Antialiasing = antialias::good;
-							basic_matrix_2d<GraphicsMath> _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
-							compositing_op _Compositing = compositing_op::over;
+						struct surface_state_props {
+							// render_props
+							struct _Render_props_data {
+								antialias _Antialiasing = antialias::good;
+								basic_matrix_2d<GraphicsMath> _Matrix;// = matrix_2d::init_identity(); // Transformation matrix
+								compositing_op _Compositing = compositing_op::over;
+							};
+
+							using render_props_data_type = _Render_props_data;
+
+							static render_props_data_type create_render_props(antialias aa = antialias::good, basic_matrix_2d<GraphicsMath> m = basic_matrix_2d<GraphicsMath>{}, compositing_op co = compositing_op::over) noexcept;
+							static render_props_data_type copy_render_props(const render_props_data_type& data);
+							static render_props_data_type move_render_props(render_props_data_type&& data) noexcept;
+							static void destroy(render_props_data_type& data) noexcept;
+							static void antialiasing(render_props_data_type& data, antialias aa) noexcept;
+							static void surface_matrix(render_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+							static void compositing(render_props_data_type& data, io2d::compositing_op co) noexcept;
+							static antialias antialiasing(const render_props_data_type& data) noexcept;
+							static basic_matrix_2d<GraphicsMath> surface_matrix(const render_props_data_type& data) noexcept;
+							static compositing_op compositing(const render_props_data_type& data) noexcept;
+
+							// brush_props
+
+							struct _Brush_props_data {
+								experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::none;
+								experimental::io2d::filter _Filter = experimental::io2d::filter::good;
+								experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
+								basic_matrix_2d<GraphicsMath> _Matrix;
+							};
+
+							using brush_props_data_type = _Brush_props_data;
+
+							static brush_props_data_type create_brush_props(io2d::wrap_mode wm = io2d::wrap_mode::none, io2d::filter f = io2d::filter::good, io2d::fill_rule = io2d::fill_rule::winding, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
+							static brush_props_data_type copy_brush_props(const brush_props_data_type& data);
+							static brush_props_data_type move_brush_props(brush_props_data_type&& data) noexcept;
+							static void destroy(brush_props_data_type& data) noexcept;
+							static void wrap_mode(brush_props_data_type& data, io2d::wrap_mode wm) noexcept;
+							static void filter(brush_props_data_type& data, io2d::filter f) noexcept;
+							static void fill_rule(brush_props_data_type& data, io2d::fill_rule fr) noexcept;
+							static void brush_matrix(brush_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+							static io2d::wrap_mode wrap_mode(const brush_props_data_type& data) noexcept;
+							static io2d::filter filter(const brush_props_data_type& data) noexcept;
+							static io2d::fill_rule fill_rule(const brush_props_data_type& data) noexcept;
+							static basic_matrix_2d<GraphicsMath> brush_matrix(const brush_props_data_type& data) noexcept;
+
+							// clip_props
+							struct _Clip_props_data {
+								optional<basic_interpreted_path<_Graphics_surfaces_type>> clip;
+								io2d::fill_rule fr;
+							};
+
+							using clip_props_data_type = _Clip_props_data;
+
+							static clip_props_data_type create_clip_props() noexcept;
+							static clip_props_data_type create_clip_props(const basic_bounding_box<GraphicsMath>& bbox, io2d::fill_rule fr) noexcept;
+							template <class Allocator>
+							static clip_props_data_type create_clip_props(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb, io2d::fill_rule fr);
+							static clip_props_data_type create_clip_props(const basic_interpreted_path<_Graphics_surfaces_type> ip, io2d::fill_rule fr) noexcept;
+							static clip_props_data_type copy_clip_props(const clip_props_data_type& data);
+							static clip_props_data_type move_clip_props(clip_props_data_type&& data) noexcept;
+							static void destroy(clip_props_data_type& data) noexcept;
+
+							static void clip(clip_props_data_type& data, const basic_bounding_box<GraphicsMath>& bbox) noexcept;
+							template <class Allocator>
+							static void clip(clip_props_data_type& data, const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb);
+							static void clip(clip_props_data_type& data, const basic_interpreted_path<_Graphics_surfaces_type>& ip) noexcept;
+							static void fill_rule(clip_props_data_type& data, io2d::fill_rule fr) noexcept;
+							static interpreted_path_data_type clip(const clip_props_data_type& data) noexcept;
+							static io2d::fill_rule fill_rule(const clip_props_data_type& data) noexcept;
+
+							// stroke_props
+
+							struct _Stroke_props_data {
+								float _Line_width = 2.0F;
+								float _Miter_limit = 10.0F;
+								experimental::io2d::line_cap _Line_cap = experimental::io2d::line_cap::none;
+								experimental::io2d::line_join _Line_join = experimental::io2d::line_join::miter;
+							};
+
+							using stroke_props_data_type = _Stroke_props_data;
+
+							static stroke_props_data_type create_stroke_props(float lw = 2.0f, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
+							static stroke_props_data_type copy_stroke_props(const stroke_props_data_type& data);
+							static stroke_props_data_type move_stroke_props(stroke_props_data_type&& data) noexcept;
+							static void destroy(stroke_props_data_type& data) noexcept;
+							static void line_width(stroke_props_data_type& data, float lw) noexcept;
+							static void line_cap(stroke_props_data_type& data, io2d::line_cap lc) noexcept;
+							static void line_join(stroke_props_data_type& data, io2d::line_join lj) noexcept;
+							static void miter_limit(stroke_props_data_type& data, float ml) noexcept;
+							static float line_width(const stroke_props_data_type& data) noexcept;
+							static io2d::line_cap line_cap(const stroke_props_data_type& data) noexcept;
+							static io2d::line_join line_join(const stroke_props_data_type& data) noexcept;
+							static float miter_limit(const stroke_props_data_type& data) noexcept;
+							static float max_miter_limit() noexcept;
+
+							// mask_props
+
+							struct _Mask_props_data {
+								experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::repeat;
+								experimental::io2d::filter _Filter = experimental::io2d::filter::good;
+								basic_matrix_2d<GraphicsMath> _Matrix = basic_matrix_2d<GraphicsMath>{};
+							};
+
+							using mask_props_data_type = _Mask_props_data;
+
+							static mask_props_data_type create_mask_props(io2d::wrap_mode wm = io2d::wrap_mode::none, io2d::filter f = io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
+							static mask_props_data_type copy_mask_props(const mask_props_data_type& data);
+							static mask_props_data_type move_mask_props(mask_props_data_type&& data) noexcept;
+							static void destroy(mask_props_data_type& data) noexcept;
+							static void wrap_mode(mask_props_data_type& data, io2d::wrap_mode wm) noexcept;
+							static void filter(mask_props_data_type& data, io2d::filter f) noexcept;
+							static void mask_matrix(mask_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+							static io2d::wrap_mode wrap_mode(const mask_props_data_type& data) noexcept;
+							static io2d::filter filter(const mask_props_data_type& data) noexcept;
+							static basic_matrix_2d<GraphicsMath> mask_matrix(const mask_props_data_type& data) noexcept;
+
+							// dashes
+							struct _Dashes_data {
+								float offset;
+								::std::vector<float> pattern;
+							};
+
+							using dashes_data_type = _Dashes_data;
+							static dashes_data_type create_dashes() noexcept;
+							template <class ForwardIterator>
+							static dashes_data_type create_dashes(float offset, ForwardIterator first, ForwardIterator last);
+							static dashes_data_type create_dashes(float offset, ::std::initializer_list<float> il);
+							static dashes_data_type copy_dashes(const dashes_data_type& data);
+							static dashes_data_type move_dashes(dashes_data_type&& data) noexcept;
+							static void destroy(dashes_data_type& data) noexcept;
 						};
-
-						using render_props_data_type = _Render_props_data;
-
-						static render_props_data_type create_render_props(antialias aa = antialias::good, basic_matrix_2d<GraphicsMath> m = basic_matrix_2d<GraphicsMath>{}, compositing_op co = compositing_op::over) noexcept;
-						static render_props_data_type copy_render_props(const render_props_data_type& data);
-						static render_props_data_type move_render_props(render_props_data_type&& data) noexcept;
-						static void destroy(render_props_data_type& data) noexcept;
-						static void antialiasing(render_props_data_type& data, antialias aa) noexcept;
-						static void surface_matrix(render_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
-						static void compositing(render_props_data_type& data, io2d::compositing_op co) noexcept;
-						static antialias antialiasing(const render_props_data_type& data) noexcept;
-						static basic_matrix_2d<GraphicsMath> surface_matrix(const render_props_data_type& data) noexcept;
-						static compositing_op compositing(const render_props_data_type& data) noexcept;
-
-						// brush_props
-
-						struct _Brush_props_data {
-							experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::none;
-							experimental::io2d::filter _Filter = experimental::io2d::filter::good;
-							experimental::io2d::fill_rule _Fill_rule = experimental::io2d::fill_rule::winding;
-							basic_matrix_2d<GraphicsMath> _Matrix;
-						};
-
-						using brush_props_data_type = _Brush_props_data;
-
-						static brush_props_data_type create_brush_props(io2d::wrap_mode wm = io2d::wrap_mode::none, io2d::filter f = io2d::filter::good, io2d::fill_rule = io2d::fill_rule::winding, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
-						static brush_props_data_type copy_brush_props(const brush_props_data_type& data);
-						static brush_props_data_type move_brush_props(brush_props_data_type&& data) noexcept;
-						static void destroy(brush_props_data_type& data) noexcept;
-						static void wrap_mode(brush_props_data_type& data, io2d::wrap_mode wm) noexcept;
-						static void filter(brush_props_data_type& data, io2d::filter f) noexcept;
-						static void fill_rule(brush_props_data_type& data, io2d::fill_rule fr) noexcept;
-						static void brush_matrix(brush_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
-						static io2d::wrap_mode wrap_mode(const brush_props_data_type& data) noexcept;
-						static io2d::filter filter(const brush_props_data_type& data) noexcept;
-						static io2d::fill_rule fill_rule(const brush_props_data_type& data) noexcept;
-						static basic_matrix_2d<GraphicsMath> brush_matrix(const brush_props_data_type& data) noexcept;
-
-						// clip_props
-						struct _Clip_props_data {
-							optional<basic_interpreted_path<_Graphics_surfaces_type>> clip;
-							io2d::fill_rule fr;
-						};
-
-						using clip_props_data_type = _Clip_props_data;
-
-						static clip_props_data_type create_clip_props() noexcept;
-						static clip_props_data_type create_clip_props(const basic_bounding_box<GraphicsMath>& bbox, io2d::fill_rule fr) noexcept;
-						template <class Allocator>
-						static clip_props_data_type create_clip_props(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb, io2d::fill_rule fr);
-						static clip_props_data_type create_clip_props(const basic_interpreted_path<_Graphics_surfaces_type> ip, io2d::fill_rule fr) noexcept;
-						static clip_props_data_type copy_clip_props(const clip_props_data_type& data);
-						static clip_props_data_type move_clip_props(clip_props_data_type&& data) noexcept;
-						static void destroy(clip_props_data_type& data) noexcept;
-
-						static void clip(clip_props_data_type& data, const basic_bounding_box<GraphicsMath>& bbox) noexcept;
-						template <class Allocator>
-						static void clip(clip_props_data_type& data, const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb);
-						static void clip(clip_props_data_type& data, const basic_interpreted_path<_Graphics_surfaces_type>& ip) noexcept;
-						static void fill_rule(clip_props_data_type& data, io2d::fill_rule fr) noexcept;
-						static interpreted_path_data_type clip(const clip_props_data_type& data) noexcept;
-						static io2d::fill_rule fill_rule(const clip_props_data_type& data) noexcept;
-
-						// stroke_props
-
-						struct _Stroke_props_data {
-							float _Line_width = 2.0F;
-							float _Miter_limit = 10.0F;
-							experimental::io2d::line_cap _Line_cap = experimental::io2d::line_cap::none;
-							experimental::io2d::line_join _Line_join = experimental::io2d::line_join::miter;
-						};
-
-						using stroke_props_data_type = _Stroke_props_data;
-
-						static stroke_props_data_type create_stroke_props(float lw = 2.0f, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
-						static stroke_props_data_type copy_stroke_props(const stroke_props_data_type& data);
-						static stroke_props_data_type move_stroke_props(stroke_props_data_type&& data) noexcept;
-						static void destroy(stroke_props_data_type& data) noexcept;
-						static void line_width(stroke_props_data_type& data, float lw) noexcept;
-						static void line_cap(stroke_props_data_type& data, io2d::line_cap lc) noexcept;
-						static void line_join(stroke_props_data_type& data, io2d::line_join lj) noexcept;
-						static void miter_limit(stroke_props_data_type& data, float ml) noexcept;
-						static float line_width(const stroke_props_data_type& data) noexcept;
-						static io2d::line_cap line_cap(const stroke_props_data_type& data) noexcept;
-						static io2d::line_join line_join(const stroke_props_data_type& data) noexcept;
-						static float miter_limit(const stroke_props_data_type& data) noexcept;
-						static float max_miter_limit() noexcept;
-
-						// mask_props
-
-						struct _Mask_props_data {
-							experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::repeat;
-							experimental::io2d::filter _Filter = experimental::io2d::filter::good;
-							basic_matrix_2d<GraphicsMath> _Matrix = basic_matrix_2d<GraphicsMath>{};
-						};
-
-						using mask_props_data_type = _Mask_props_data;
-
-						static mask_props_data_type create_mask_props(io2d::wrap_mode wm = io2d::wrap_mode::none, io2d::filter f = io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
-						static mask_props_data_type copy_mask_props(const mask_props_data_type& data);
-						static mask_props_data_type move_mask_props(mask_props_data_type&& data) noexcept;
-						static void destroy(mask_props_data_type& data) noexcept;
-						static void wrap_mode(mask_props_data_type& data, io2d::wrap_mode wm) noexcept;
-						static void filter(mask_props_data_type& data, io2d::filter f) noexcept;
-						static void mask_matrix(mask_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
-						static io2d::wrap_mode wrap_mode(const mask_props_data_type& data) noexcept;
-						static io2d::filter filter(const mask_props_data_type& data) noexcept;
-						static basic_matrix_2d<GraphicsMath> mask_matrix(const mask_props_data_type& data) noexcept;
-
-						// dashes
-						struct _Dashes_data {
-							float offset;
-							::std::vector<float> pattern;
-						};
-
-						using dashes_data_type = _Dashes_data;
-						static dashes_data_type create_dashes() noexcept;
-						template <class ForwardIterator>
-						static dashes_data_type create_dashes(float offset, ForwardIterator first, ForwardIterator last);
-						static dashes_data_type create_dashes(float offset, ::std::initializer_list<float> il);
-						static dashes_data_type copy_dashes(const dashes_data_type& data);
-						static dashes_data_type move_dashes(dashes_data_type&& data) noexcept;
-						static void destroy(dashes_data_type& data) noexcept;
 
 						// image_surface
 

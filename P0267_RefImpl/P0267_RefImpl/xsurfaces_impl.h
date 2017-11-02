@@ -6,24 +6,6 @@ namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
-				// dashes
-
-				template<class GraphicsSurfaces>
-				inline const typename basic_dashes<GraphicsSurfaces>::_Data_type& basic_dashes<GraphicsSurfaces>::_Get_data() const noexcept {
-					return _Data;
-				}
-
-				template <class GraphicsSurfaces>
-				inline basic_dashes<GraphicsSurfaces>::basic_dashes() noexcept
-					: _Data(GraphicsSurfaces::create_dashes()) {}
-				template <class GraphicsSurfaces>
-				template <class ForwardIterator>
-				inline basic_dashes<GraphicsSurfaces>::basic_dashes(float offset, ForwardIterator first, ForwardIterator last)
-					: _Data(GraphicsSurfaces::create_dashes(offset, first, last)) {}
-				template <class GraphicsSurfaces>
-				inline basic_dashes<GraphicsSurfaces>::basic_dashes(float offset, ::std::initializer_list<float> il)
-					: _Data(GraphicsSurfaces::create_dashes(offset, il)) {}
-
 				// image_surface
 
 				template <class GraphicsSurfaces>
