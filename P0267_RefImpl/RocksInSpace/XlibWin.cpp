@@ -1,5 +1,3 @@
-#pragma once
-
 #include "XlibWin.h"
 #include <iostream>
 
