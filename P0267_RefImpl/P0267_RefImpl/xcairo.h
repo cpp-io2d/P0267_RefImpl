@@ -412,243 +412,245 @@ namespace std {
 							static void destroy(dashes_data_type& data) noexcept;
 						};
 
-						// image_surface
+						struct surfaces {
+							// image_surface
 
-						static basic_display_point<GraphicsMath> max_dimensions() noexcept;
+							static basic_display_point<GraphicsMath> max_dimensions() noexcept;
 
-						struct _Image_surface_data {
-							::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> surface{ nullptr, &cairo_surface_destroy };
-							::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> context{ nullptr, &cairo_destroy };
-							basic_display_point<GraphicsMath> dimensions;
-							io2d::format format;
-						};
+							struct _Image_surface_data {
+								::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> surface{ nullptr, &cairo_surface_destroy };
+								::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> context{ nullptr, &cairo_destroy };
+								basic_display_point<GraphicsMath> dimensions;
+								io2d::format format;
+							};
 
-						using image_surface_data_type = _Image_surface_data;
+							using image_surface_data_type = _Image_surface_data;
 
-						static image_surface_data_type create_image_surface(io2d::format fmt, int width, int height);
+							static image_surface_data_type create_image_surface(io2d::format fmt, int width, int height);
 #if defined(_Filesystem_support_test)
-						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt);
-						static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
+							static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt);
+							static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
 #else
-						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, io2d::format fmt);
-						static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
+							static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, io2d::format fmt);
+							static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
 #endif
-						static image_surface_data_type move_image_surface(image_surface_data_type&& data) noexcept;
-						static void destroy(image_surface_data_type& data) noexcept;
+							static image_surface_data_type move_image_surface(image_surface_data_type&& data) noexcept;
+							static void destroy(image_surface_data_type& data) noexcept;
 #if defined(_Filesystem_support_test)
-						static void save(image_surface_data_type& data, filesystem::path p, image_file_format iff);
-						static void save(image_surface_data_type& data, filesystem::path p, image_file_format iff, error_code& ec) noexcept;
+							static void save(image_surface_data_type& data, filesystem::path p, image_file_format iff);
+							static void save(image_surface_data_type& data, filesystem::path p, image_file_format iff, error_code& ec) noexcept;
 #else
-						static void save(image_surface_data_type& data, ::std::string p, image_file_format iff);
-						static void save(image_surface_data_type& data, ::std::string p, image_file_format iff, error_code& ec) noexcept;
+							static void save(image_surface_data_type& data, ::std::string p, image_file_format iff);
+							static void save(image_surface_data_type& data, ::std::string p, image_file_format iff, error_code& ec) noexcept;
 #endif
-						static io2d::format format(const image_surface_data_type& data) noexcept;
-						static basic_display_point<GraphicsMath> dimensions(const image_surface_data_type& data) noexcept;
-						static void clear(image_surface_data_type& data);
-						static void flush(image_surface_data_type& data);
-						static void flush(image_surface_data_type& data, error_code& ec) noexcept;
-						static void mark_dirty(image_surface_data_type& data);
-						static void mark_dirty(image_surface_data_type& data, error_code& ec) noexcept;
-						static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
-						static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
-						static void paint(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void stroke(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void fill(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void mask(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static io2d::format format(const image_surface_data_type& data) noexcept;
+							static basic_display_point<GraphicsMath> dimensions(const image_surface_data_type& data) noexcept;
+							static void clear(image_surface_data_type& data);
+							static void flush(image_surface_data_type& data);
+							static void flush(image_surface_data_type& data, error_code& ec) noexcept;
+							static void mark_dirty(image_surface_data_type& data);
+							static void mark_dirty(image_surface_data_type& data, error_code& ec) noexcept;
+							static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
+							static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
+							static void paint(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void stroke(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void fill(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void mask(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 
-						// display surfaces
+							// display surfaces
 
 #if defined(_WIN32) || defined(_WIN64)
-						struct _Display_surface_win32_data {
-							HINSTANCE hInstance = nullptr;
-							HWND hwnd = nullptr;
-							HDC hdc = nullptr;
-							bool hasOwnDC = true;
-							bool unmanaged = false;
-							bool letterbox_brush_is_default = true;
-							optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
-							optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
+							struct _Display_surface_win32_data {
+								HINSTANCE hInstance = nullptr;
+								HWND hwnd = nullptr;
+								HDC hdc = nullptr;
+								bool hasOwnDC = true;
+								bool unmanaged = false;
+								bool letterbox_brush_is_default = true;
+								optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
+								optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
 
-							optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
+								optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
 
-							basic_display_point<GraphicsMath> display_dimensions;
-							::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
-							::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
+								basic_display_point<GraphicsMath> display_dimensions;
+								::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
+								::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
 
-							image_surface_data_type back_buffer;
+								image_surface_data_type back_buffer;
 
-							bool auto_clear = false;
-							io2d::scaling scl = io2d::scaling::letterbox;
-							io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible;
-							float refresh_fps = 30.0f;
-							bool redraw_required = false;
-							float elapsed_draw_time = 0.0f;
-						};
+								bool auto_clear = false;
+								io2d::scaling scl = io2d::scaling::letterbox;
+								io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible;
+								float refresh_fps = 30.0f;
+								bool redraw_required = false;
+								float elapsed_draw_time = 0.0f;
+							};
 
-						using _Display_surface_data_type = _Display_surface_win32_data;
-						struct _Output_surface_win32_data {
-							_Display_surface_data_type data;
-							::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> draw_callback;
-							::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
-							::std::function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
-						};
-						struct _Unmanaged_output_surface_win32_data {
-							_Display_surface_data_type data;
-							::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
-							::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
-							::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
-						};
-						using output_surface_data_type = _Output_surface_win32_data;
-						using unmanaged_output_surface_data_type = _Unmanaged_output_surface_win32_data;
+							using _Display_surface_data_type = _Display_surface_win32_data;
+							struct _Output_surface_win32_data {
+								_Display_surface_data_type data;
+								::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> draw_callback;
+								::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
+								::std::function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
+							};
+							struct _Unmanaged_output_surface_win32_data {
+								_Display_surface_data_type data;
+								::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
+								::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
+								::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
+							};
+							using output_surface_data_type = _Output_surface_win32_data;
+							using unmanaged_output_surface_data_type = _Unmanaged_output_surface_win32_data;
 #elif defined(USE_XLIB)
-						struct _Display_surface_xlib_data {
-							unique_ptr<Display, decltype(&XCloseDisplay)> display{ nullptr, &XCloseDisplay };
-							Atom wmDeleteWndw;
-							Window wndw = None;
-							Visual* visual; // Note: This pointer is not a dynamic allocation and thus does not need to be managed.
-							bool unmanaged = false;
-							bool letterbox_brush_is_default = true;
-							optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
-							optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
+							struct _Display_surface_xlib_data {
+								unique_ptr<Display, decltype(&XCloseDisplay)> display{ nullptr, &XCloseDisplay };
+								Atom wmDeleteWndw;
+								Window wndw = None;
+								Visual* visual; // Note: This pointer is not a dynamic allocation and thus does not need to be managed.
+								bool unmanaged = false;
+								bool letterbox_brush_is_default = true;
+								optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
+								optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
 
-							optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
+								optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
 
-							basic_display_point<GraphicsMath> display_dimensions;
-							::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
-							::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
+								basic_display_point<GraphicsMath> display_dimensions;
+								::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
+								::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
 
-							image_surface_data_type back_buffer;
+								image_surface_data_type back_buffer;
 
-							bool auto_clear = false;
-							io2d::scaling scl = io2d::scaling::letterbox;
-							io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible;
-							float refresh_fps = 30.0f;
-							bool redraw_required = false;
-							float elapsed_draw_time = 0.0f;
-							bool can_draw = false;
-						};
+								bool auto_clear = false;
+								io2d::scaling scl = io2d::scaling::letterbox;
+								io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible;
+								float refresh_fps = 30.0f;
+								bool redraw_required = false;
+								float elapsed_draw_time = 0.0f;
+								bool can_draw = false;
+							};
 
-						using _Display_surface_data_type = _Display_surface_xlib_data;
-						struct _Output_surface_xlib_data {
-							_Display_surface_data_type data;
-							::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> draw_callback;
-							::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
-							::std::function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
-						};
-						struct _Unmanaged_output_surface_xlib_data {
-							_Display_surface_data_type data;
-							::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
-							::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
-							::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
-						};
-						using output_surface_data_type = _Output_surface_xlib_data;
-						using unmanaged_output_surface_data_type = _Unmanaged_output_surface_xlib_data;
+							using _Display_surface_data_type = _Display_surface_xlib_data;
+							struct _Output_surface_xlib_data {
+								_Display_surface_data_type data;
+								::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> draw_callback;
+								::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
+								::std::function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
+							};
+							struct _Unmanaged_output_surface_xlib_data {
+								_Display_surface_data_type data;
+								::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
+								::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
+								::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
+							};
+							using output_surface_data_type = _Output_surface_xlib_data;
+							using unmanaged_output_surface_data_type = _Unmanaged_output_surface_xlib_data;
 
 #endif
-						template <class OutputDataType, class OutputSurfaceType>
-						static void _Render_to_native_surface(OutputDataType& osd, OutputSurfaceType& sfc);
+							template <class OutputDataType, class OutputSurfaceType>
+							static void _Render_to_native_surface(OutputDataType& osd, OutputSurfaceType& sfc);
 
-						static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
-						// unmanaged_output_surface functions
+							static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
+							// unmanaged_output_surface functions
 
-						static unmanaged_output_surface_data_type create_unmanaged_output_surface();
+							static unmanaged_output_surface_data_type create_unmanaged_output_surface();
 #if defined(_WIN32) || defined(_WIN64)
-						static unmanaged_output_surface_data_type create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
+							static unmanaged_output_surface_data_type create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
 #elif defined(USE_XLIB)
-						static unmanaged_output_surface_data_type create_unmanaged_output_surface(Display* display, Window wndw, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
+							static unmanaged_output_surface_data_type create_unmanaged_output_surface(Display* display, Window wndw, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
 #endif
-						static unmanaged_output_surface_data_type move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept;
-						static void destroy(unmanaged_output_surface_data_type& data) noexcept;
+							static unmanaged_output_surface_data_type move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept;
+							static void destroy(unmanaged_output_surface_data_type& data) noexcept;
 
-						static bool has_draw_callback(const unmanaged_output_surface_data_type& data) noexcept;
-						static void invoke_draw_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
-						static void draw_to_output(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
-						static bool has_size_change_callback(const unmanaged_output_surface_data_type& data) noexcept;
-						static void invoke_size_change_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
-						static bool has_user_scaling_callback(const unmanaged_output_surface_data_type& data) noexcept;
-						static basic_bounding_box<GraphicsMath> invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush);
-						static void display_dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
+							static bool has_draw_callback(const unmanaged_output_surface_data_type& data) noexcept;
+							static void invoke_draw_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
+							static void draw_to_output(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
+							static bool has_size_change_callback(const unmanaged_output_surface_data_type& data) noexcept;
+							static void invoke_size_change_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
+							static bool has_user_scaling_callback(const unmanaged_output_surface_data_type& data) noexcept;
+							static basic_bounding_box<GraphicsMath> invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush);
+							static void display_dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
 
-						static void flush(unmanaged_output_surface_data_type& data);
-						static void flush(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
-						static void mark_dirty(unmanaged_output_surface_data_type& data);
-						static void mark_dirty(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
-						static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
-						static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
-						static void clear(unmanaged_output_surface_data_type& data);
-						static void paint(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void stroke(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void fill(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& pg, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void mask(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void draw_callback(unmanaged_output_surface_data_type& data, function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)>);
-						static void size_change_callback(unmanaged_output_surface_data_type& data, function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)>);
-						static void user_scaling_callback(unmanaged_output_surface_data_type& data, function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)>);
-						static void dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
-						static void scaling(unmanaged_output_surface_data_type& data, io2d::scaling val);
-						static void letterbox_brush(unmanaged_output_surface_data_type& data, const optional<basic_brush<_Graphics_surfaces_type>>& val, const optional<basic_brush_props<_Graphics_surfaces_type>>& bp) noexcept;
-						static void letterbox_brush_props(unmanaged_output_surface_data_type& data, const basic_brush_props<_Graphics_surfaces_type>& val);
-						static void auto_clear(unmanaged_output_surface_data_type& data, bool val);
-						static void redraw_required(unmanaged_output_surface_data_type& data, bool val);
+							static void flush(unmanaged_output_surface_data_type& data);
+							static void flush(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
+							static void mark_dirty(unmanaged_output_surface_data_type& data);
+							static void mark_dirty(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
+							static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
+							static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
+							static void clear(unmanaged_output_surface_data_type& data);
+							static void paint(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void stroke(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void fill(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& pg, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void mask(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void draw_callback(unmanaged_output_surface_data_type& data, function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)>);
+							static void size_change_callback(unmanaged_output_surface_data_type& data, function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)>);
+							static void user_scaling_callback(unmanaged_output_surface_data_type& data, function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)>);
+							static void dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
+							static void scaling(unmanaged_output_surface_data_type& data, io2d::scaling val);
+							static void letterbox_brush(unmanaged_output_surface_data_type& data, const optional<basic_brush<_Graphics_surfaces_type>>& val, const optional<basic_brush_props<_Graphics_surfaces_type>>& bp) noexcept;
+							static void letterbox_brush_props(unmanaged_output_surface_data_type& data, const basic_brush_props<_Graphics_surfaces_type>& val);
+							static void auto_clear(unmanaged_output_surface_data_type& data, bool val);
+							static void redraw_required(unmanaged_output_surface_data_type& data, bool val);
 
-						static io2d::format format(const unmanaged_output_surface_data_type& data) noexcept;
-						static basic_display_point<GraphicsMath> dimensions(const unmanaged_output_surface_data_type& data) noexcept;
-						static basic_display_point<GraphicsMath> display_dimensions(const unmanaged_output_surface_data_type& data) noexcept;
-						static io2d::scaling scaling(unmanaged_output_surface_data_type& data) noexcept;
-						static optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const unmanaged_output_surface_data_type& data) noexcept;
-						static basic_brush_props<_Graphics_surfaces_type> letterbox_brush_props(const unmanaged_output_surface_data_type& data) noexcept;
-						static bool auto_clear(const unmanaged_output_surface_data_type& data) noexcept;
-						static bool redraw_required(const unmanaged_output_surface_data_type& data) noexcept;
+							static io2d::format format(const unmanaged_output_surface_data_type& data) noexcept;
+							static basic_display_point<GraphicsMath> dimensions(const unmanaged_output_surface_data_type& data) noexcept;
+							static basic_display_point<GraphicsMath> display_dimensions(const unmanaged_output_surface_data_type& data) noexcept;
+							static io2d::scaling scaling(unmanaged_output_surface_data_type& data) noexcept;
+							static optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const unmanaged_output_surface_data_type& data) noexcept;
+							static basic_brush_props<_Graphics_surfaces_type> letterbox_brush_props(const unmanaged_output_surface_data_type& data) noexcept;
+							static bool auto_clear(const unmanaged_output_surface_data_type& data) noexcept;
+							static bool redraw_required(const unmanaged_output_surface_data_type& data) noexcept;
 
-						// output_surface functions
+							// output_surface functions
 
-						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps);
-						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept;
-						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps);
-						static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept;
+							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps);
+							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept;
+							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps);
+							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept;
 
-						static output_surface_data_type move_output_surface(output_surface_data_type&& data) noexcept;
-						static void destroy(output_surface_data_type& data) noexcept;
+							static output_surface_data_type move_output_surface(output_surface_data_type&& data) noexcept;
+							static void destroy(output_surface_data_type& data) noexcept;
 
-						static int begin_show(output_surface_data_type& data, basic_output_surface<_Graphics_surfaces_type>* instance, basic_output_surface<_Graphics_surfaces_type>& sfc);
-						static void end_show(output_surface_data_type& data);
-						static void refresh_rate(output_surface_data_type& data, io2d::refresh_rate val);
-						static void desired_frame_rate(output_surface_data_type& data, float val);
-						static void display_dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
-						static io2d::refresh_rate refresh_rate(const output_surface_data_type& data) noexcept;
-						static float desired_frame_rate(const output_surface_data_type& data) noexcept;
+							static int begin_show(output_surface_data_type& data, basic_output_surface<_Graphics_surfaces_type>* instance, basic_output_surface<_Graphics_surfaces_type>& sfc);
+							static void end_show(output_surface_data_type& data);
+							static void refresh_rate(output_surface_data_type& data, io2d::refresh_rate val);
+							static void desired_frame_rate(output_surface_data_type& data, float val);
+							static void display_dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
+							static io2d::refresh_rate refresh_rate(const output_surface_data_type& data) noexcept;
+							static float desired_frame_rate(const output_surface_data_type& data) noexcept;
 
-						// rendering functions
-						static void flush(output_surface_data_type& data);
-						static void flush(output_surface_data_type& data, error_code& ec) noexcept;
-						static void mark_dirty(output_surface_data_type& data);
-						static void mark_dirty(output_surface_data_type& data, error_code& ec) noexcept;
-						static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
-						static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
-						static void clear(output_surface_data_type& data);
-						static void paint(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void stroke(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void fill(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& pg, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-						static void mask(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							// rendering functions
+							static void flush(output_surface_data_type& data);
+							static void flush(output_surface_data_type& data, error_code& ec) noexcept;
+							static void mark_dirty(output_surface_data_type& data);
+							static void mark_dirty(output_surface_data_type& data, error_code& ec) noexcept;
+							static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
+							static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
+							static void clear(output_surface_data_type& data);
+							static void paint(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void stroke(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void fill(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& pg, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+							static void mask(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 
-						// display_surface common functions
-						static void draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_Graphics_surfaces_type>&)>);
-						static void size_change_callback(output_surface_data_type& data, function<void(basic_output_surface<_Graphics_surfaces_type>&)>);
-						static void user_scaling_callback(output_surface_data_type& data, function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)>);
-						static void dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
-						static void scaling(output_surface_data_type& data, io2d::scaling val);
-						static void letterbox_brush(output_surface_data_type& data, const optional<basic_brush<_Graphics_surfaces_type>>& val, const optional<basic_brush_props<_Graphics_surfaces_type>>& bp) noexcept;
-						static void letterbox_brush_props(output_surface_data_type& data, const basic_brush_props<_Graphics_surfaces_type>& val);
-						static void auto_clear(output_surface_data_type& data, bool val);
-						static void redraw_required(output_surface_data_type& data, bool val);
+							// display_surface common functions
+							static void draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_Graphics_surfaces_type>&)>);
+							static void size_change_callback(output_surface_data_type& data, function<void(basic_output_surface<_Graphics_surfaces_type>&)>);
+							static void user_scaling_callback(output_surface_data_type& data, function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)>);
+							static void dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
+							static void scaling(output_surface_data_type& data, io2d::scaling val);
+							static void letterbox_brush(output_surface_data_type& data, const optional<basic_brush<_Graphics_surfaces_type>>& val, const optional<basic_brush_props<_Graphics_surfaces_type>>& bp) noexcept;
+							static void letterbox_brush_props(output_surface_data_type& data, const basic_brush_props<_Graphics_surfaces_type>& val);
+							static void auto_clear(output_surface_data_type& data, bool val);
+							static void redraw_required(output_surface_data_type& data, bool val);
 
-						static io2d::format format(const output_surface_data_type& data) noexcept;
-						static basic_display_point<GraphicsMath> dimensions(const output_surface_data_type& data) noexcept;
-						static basic_display_point<GraphicsMath> display_dimensions(const output_surface_data_type& data) noexcept;
-						static io2d::scaling scaling(output_surface_data_type& data) noexcept;
-						static optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const output_surface_data_type& data) noexcept;
-						static basic_brush_props<_Graphics_surfaces_type> letterbox_brush_props(const output_surface_data_type& data) noexcept;
-						static bool auto_clear(const output_surface_data_type& data) noexcept;
-						static bool redraw_required(const output_surface_data_type& data) noexcept;
+							static io2d::format format(const output_surface_data_type& data) noexcept;
+							static basic_display_point<GraphicsMath> dimensions(const output_surface_data_type& data) noexcept;
+							static basic_display_point<GraphicsMath> display_dimensions(const output_surface_data_type& data) noexcept;
+							static io2d::scaling scaling(output_surface_data_type& data) noexcept;
+							static optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const output_surface_data_type& data) noexcept;
+							static basic_brush_props<_Graphics_surfaces_type> letterbox_brush_props(const output_surface_data_type& data) noexcept;
+							static bool auto_clear(const output_surface_data_type& data) noexcept;
+							static bool redraw_required(const output_surface_data_type& data) noexcept;
+						};
 					};
 				}
 			}

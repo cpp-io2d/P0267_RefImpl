@@ -71,6 +71,10 @@ rocks_in_space::ship_update rocks_in_space::ship::update(float seconds)
 		}
 		return{ false, m_physics.position(), m_physics.orientation(), m_path };
 	}
+	default:
+	{
+		throw ::std::system_error(::std::make_error_code(::std::errc::invalid_argument));
+	} break;
 	}
 }
 

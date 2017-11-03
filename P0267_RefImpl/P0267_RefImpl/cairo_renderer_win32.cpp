@@ -119,7 +119,7 @@ namespace std::experimental::io2d {
 						}
 
 						outputSfc->_Get_data().draw_callback(*outputSfc);
-						_Cairo_graphics_surfaces<_Graphics_math_float_impl>::_Render_to_native_surface(outputSfc->_Get_data(), *outputSfc);
+						_Cairo_graphics_surfaces<_Graphics_math_float_impl>::surfaces::_Render_to_native_surface(outputSfc->_Get_data(), *outputSfc);
 
 						EndPaint(hwnd, &ps);
 					} break;

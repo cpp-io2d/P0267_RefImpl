@@ -163,7 +163,7 @@ namespace std::experimental::io2d {
 		class basic_image_surface {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::image_surface_data_type;
+			using _Data_type = typename GraphicsSurfaces::surfaces::image_surface_data_type;
 
 		private:
 			_Data_type _Data;
@@ -216,7 +216,7 @@ namespace std::experimental::io2d {
 		class basic_output_surface {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::output_surface_data_type;
+			using _Data_type = typename GraphicsSurfaces::surfaces::output_surface_data_type;
 
 		private:
 			_Data_type _Data;
@@ -298,15 +298,14 @@ namespace std::experimental::io2d {
 		class basic_unmanaged_output_surface {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::unmanaged_output_surface_data_type;
-			using data_type = typename GraphicsSurfaces::unmanaged_output_surface_data_type;
+			using data_type = typename GraphicsSurfaces::surfaces::unmanaged_output_surface_data_type;
 		private:
-			_Data_type _Data;
+			data_type _Data;
 
 		public:
-			_Data_type& _Get_data() noexcept;
+			data_type& _Get_data() noexcept;
 
-			// Note: This is the only way to construct this type without bringing implementation details out of the GraphicsSurfaces backend. As such, users of this type need to directly invoke the appropriate GraphicsSurfaces::create_unmanaged_output_surface(...) function and pass the result into this ctor.
+			// Note: This is the only way to construct this type without bringing implementation details out of the GraphicsSurfaces backend. As such, users of this type need to directly invoke the appropriate GraphicsSurfaces::surfaces::create_unmanaged_output_surface(...) function and pass the result into this ctor.
 			basic_unmanaged_output_surface(data_type&& data) noexcept;
 
 			~basic_unmanaged_output_surface() noexcept;
