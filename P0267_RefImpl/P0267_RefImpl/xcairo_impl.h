@@ -242,7 +242,7 @@ namespace std::experimental::io2d {
 			}
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Cairo_graphics_surfaces<GraphicsMath>::brushes::create_brush(basic_image_surface<_Graphics_surfaces_type>&& img) {
-				using img_sfc_data_type = _Cairo_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type;
+				using img_sfc_data_type = typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type;
 				brush_data_type data;
 				// The surface is dying and I want to steal some of its data, ergo const_cast.
 				img_sfc_data_type& imgData = const_cast<img_sfc_data_type&>(img._Get_data());

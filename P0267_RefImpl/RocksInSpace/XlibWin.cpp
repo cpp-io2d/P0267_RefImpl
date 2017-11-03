@@ -17,7 +17,7 @@ namespace rocks_in_space
 		, m_scl(scl)
 		, m_game()
 		, m_wndw()
-		, m_uosfc(::std::move(default_graphics_surfaces::create_unmanaged_output_surface()))
+		, m_uosfc(::std::move(default_graphics_surfaces::surfaces::create_unmanaged_output_surface()))
 	{
 	}
 
@@ -43,7 +43,7 @@ namespace rocks_in_space
 				{
 					m_canDraw = false;
 					assert(m_wndw != None && "m_wndw == None?");
-					m_uosfc = ::std::move(unmanaged_output_surface(::std::move(default_graphics_surfaces::create_unmanaged_output_surface(display, m_wndw, m_w, m_h, m_fmt, m_scl))));
+					m_uosfc = ::std::move(unmanaged_output_surface(::std::move(default_graphics_surfaces::surfaces::create_unmanaged_output_surface(display, m_wndw, m_w, m_h, m_fmt, m_scl))));
 					m_canDraw = true;
 					m_uosfc.draw_callback([&](unmanaged_output_surface& uos) { m_game.update<unmanaged_output_surface>(uos); });
 					m_uosfc.clear();
