@@ -513,7 +513,7 @@ namespace std {
 				template <class GraphicsSurfaces>
 				class basic_interpreted_path {
 				public:
-					using _Data_type = typename GraphicsSurfaces::interpreted_path_data_type;
+					using _Data_type = typename GraphicsSurfaces::paths::interpreted_path_data_type;
 
 				private:
 					_Data_type _Data;

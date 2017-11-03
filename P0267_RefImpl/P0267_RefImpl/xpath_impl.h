@@ -706,48 +706,48 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsSurfaces>
 		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path() noexcept
-			: _Data(GraphicsSurfaces::create_interpreted_path()) { }
+			: _Data(GraphicsSurfaces::paths::create_interpreted_path()) { }
 
 		template<class GraphicsSurfaces>
 		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const basic_interpreted_path& val) {
-			_Data = GraphicsSurfaces::copy_interpreted_path(val._Data);
+			_Data = GraphicsSurfaces::paths::copy_interpreted_path(val._Data);
 		}
 
 		template<class GraphicsSurfaces>
 		inline basic_interpreted_path<GraphicsSurfaces>& basic_interpreted_path<GraphicsSurfaces>::operator=(const basic_interpreted_path& val) {
-			_Data = GraphicsSurfaces::copy_interpreted_path(val._Data);
+			_Data = GraphicsSurfaces::paths::copy_interpreted_path(val._Data);
 			return *this;
 		}
 
 		template<class GraphicsSurfaces>
 		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(basic_interpreted_path&& val) noexcept {
 			if (this != &val) {
-				_Data = move(GraphicsSurfaces::move_interpreted_path(move(val._Data)));
+				_Data = move(GraphicsSurfaces::paths::move_interpreted_path(move(val._Data)));
 			}
 		}
 
 		template<class GraphicsSurfaces>
 		inline basic_interpreted_path<GraphicsSurfaces>& basic_interpreted_path<GraphicsSurfaces>::operator=(basic_interpreted_path&& val) noexcept {
 			if (this != &val) {
-				_Data = move(GraphicsSurfaces::move_interpreted_path(move(val._Data)));
+				_Data = move(GraphicsSurfaces::paths::move_interpreted_path(move(val._Data)));
 			}
 			return *this;
 		}
 
 		template<class GraphicsSurfaces>
 		inline basic_interpreted_path<GraphicsSurfaces>::~basic_interpreted_path() noexcept {
-			GraphicsSurfaces::destroy(_Data);
+			GraphicsSurfaces::paths::destroy(_Data);
 		}
 
 		template <class GraphicsSurfaces>
 		template <class Allocator>
 		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const basic_path_builder<GraphicsSurfaces, Allocator>& pb)
-			: _Data(GraphicsSurfaces::create_interpreted_path(pb)) { }
+			: _Data(GraphicsSurfaces::paths::create_interpreted_path(pb)) { }
 
 		template <class GraphicsSurfaces>
 		template <class ForwardIterator>
 		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(ForwardIterator first, ForwardIterator last)
-			: _Data(GraphicsSurfaces::create_interpreted_path(first, last)) { }
+			: _Data(GraphicsSurfaces::paths::create_interpreted_path(first, last)) { }
 
 		template <class GraphicsSurfaces, class _TItem>
 		struct _Path_item_interpret_visitor {

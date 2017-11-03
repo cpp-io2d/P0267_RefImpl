@@ -119,19 +119,19 @@ namespace std::experimental::io2d {
 			};
 
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_interpreted_path() noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::create_interpreted_path() noexcept {
 				interpreted_path_data_type result;
 				result.path = nullptr;
 				return result;
 			}
 			template<class GraphicsMath>
 			template<class Allocator>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_interpreted_path(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb) {
-				return _Cairo_graphics_surfaces<GraphicsMath>::template create_interpreted_path<typename basic_path_builder<_Graphics_surfaces_type, Allocator>::const_iterator>(begin(pb), end(pb));
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::create_interpreted_path(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb) {
+				return _Cairo_graphics_surfaces<GraphicsMath>::paths::template create_interpreted_path<typename basic_path_builder<_Graphics_surfaces_type, Allocator>::const_iterator>(begin(pb), end(pb));
 			}
 			template<class GraphicsMath>
 			template<class ForwardIterator>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::create_interpreted_path(ForwardIterator first, ForwardIterator last) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::create_interpreted_path(ForwardIterator first, ForwardIterator last) {
 				interpreted_path_data_type result;
 				auto cairoPathT = new cairo_path_t;
 				if (cairoPathT == nullptr) {
@@ -180,16 +180,16 @@ namespace std::experimental::io2d {
 				return result;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::copy_interpreted_path(const interpreted_path_data_type& data) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::copy_interpreted_path(const interpreted_path_data_type& data) {
 				return data;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::move_interpreted_path(interpreted_path_data_type&& data) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::move_interpreted_path(interpreted_path_data_type&& data) noexcept {
 				return data;
 			}
 
 			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::destroy(interpreted_path_data_type& /*data*/) noexcept {
+			inline void _Cairo_graphics_surfaces<GraphicsMath>::paths::destroy(interpreted_path_data_type& /*data*/) noexcept {
 				// Do nothing, the shared_ptr deletes for us.
 			}
 
@@ -994,7 +994,7 @@ namespace std::experimental::io2d {
 				data.fr = fr;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::clip(const clip_props_data_type& data) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::clip(const clip_props_data_type& data) noexcept {
 				return data.clip;
 			}
 			template<class GraphicsMath>

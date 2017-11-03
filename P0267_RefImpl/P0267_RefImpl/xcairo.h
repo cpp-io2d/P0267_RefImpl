@@ -236,22 +236,25 @@ namespace std {
 							static void end_pt(rel_quadratic_curve_data_type& data, const basic_point_2d<GraphicsMath>& pt);
 							static basic_point_2d<GraphicsMath> control_pt(const rel_quadratic_curve_data_type& data) noexcept;
 							static basic_point_2d<GraphicsMath> end_pt(const rel_quadratic_curve_data_type& data) noexcept;
-						};
-						// interpreted_path
 
-						struct _Interpreted_path_data {
-							::std::shared_ptr<cairo_path_t> path;
-						};
-						using interpreted_path_data_type = _Interpreted_path_data;
 
-						static interpreted_path_data_type create_interpreted_path() noexcept;
-						template <class Allocator>
-						static interpreted_path_data_type create_interpreted_path(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb);
-						template <class ForwardIterator>
-						static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
-						static interpreted_path_data_type copy_interpreted_path(const interpreted_path_data_type&);
-						static interpreted_path_data_type move_interpreted_path(interpreted_path_data_type&&) noexcept;
-						static void destroy(interpreted_path_data_type&) noexcept;
+							// interpreted_path
+
+							struct _Interpreted_path_data {
+								::std::shared_ptr<cairo_path_t> path;
+							};
+							using interpreted_path_data_type = _Interpreted_path_data;
+
+							static interpreted_path_data_type create_interpreted_path() noexcept;
+							template <class Allocator>
+							static interpreted_path_data_type create_interpreted_path(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb);
+							template <class ForwardIterator>
+							static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
+							static interpreted_path_data_type copy_interpreted_path(const interpreted_path_data_type&);
+							static interpreted_path_data_type move_interpreted_path(interpreted_path_data_type&&) noexcept;
+							static void destroy(interpreted_path_data_type&) noexcept;
+						};
+
 
 						// brush
 
@@ -344,7 +347,7 @@ namespace std {
 							static void clip(clip_props_data_type& data, const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb);
 							static void clip(clip_props_data_type& data, const basic_interpreted_path<_Graphics_surfaces_type>& ip) noexcept;
 							static void fill_rule(clip_props_data_type& data, io2d::fill_rule fr) noexcept;
-							static interpreted_path_data_type clip(const clip_props_data_type& data) noexcept;
+							static typename _Graphics_surfaces_type::paths::interpreted_path_data_type clip(const clip_props_data_type& data) noexcept;
 							static io2d::fill_rule fill_rule(const clip_props_data_type& data) noexcept;
 
 							// stroke_props
