@@ -77,7 +77,7 @@ namespace std {
 					none            // Do not scale.
 				};
 
-				enum class refresh_rate {
+				enum class refresh_style {
 					as_needed,
 					as_fast_as_possible,
 					fixed

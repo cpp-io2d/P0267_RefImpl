@@ -227,21 +227,21 @@ namespace std::experimental::io2d {
 			// System manages event loop
 			basic_output_surface(int preferredWidth, int preferredHeight,
 				io2d::format preferredFormat, io2d::scaling scl = io2d::scaling::letterbox,
-				io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible, float fps = 30.0f);
 			basic_output_surface(int preferredWidth, int preferredHeight,
 				io2d::format preferredFormat, error_code& ec,
 				io2d::scaling scl = io2d::scaling::letterbox,
-				io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f)
+				io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible, float fps = 30.0f)
 				noexcept;
 			basic_output_surface(int preferredWidth, int preferredHeight,
 				io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight,
 				io2d::scaling scl = io2d::scaling::letterbox,
-				io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f);
+				io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible, float fps = 30.0f);
 			basic_output_surface(int preferredWidth, int preferredHeight,
 				experimental::io2d::format preferredFormat,
 				int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec,
 				io2d::scaling scl = io2d::scaling::letterbox,
-				io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible, float fps = 30.0f)
+				io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible, float fps = 30.0f)
 				noexcept;
 
 			~basic_output_surface() noexcept;

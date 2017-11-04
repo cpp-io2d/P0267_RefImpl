@@ -161,22 +161,22 @@ namespace std {
 				template <class GraphicsSurfaces>
 				inline basic_output_surface<GraphicsSurfaces>::basic_output_surface(int preferredWidth,
 					int preferredHeight, io2d::format preferredFormat, io2d::scaling scl,
-					io2d::refresh_rate rr, float fps)
+					io2d::refresh_style rr, float fps)
 					: _Data(move(GraphicsSurfaces::surfaces::create_output_surface(preferredWidth, preferredHeight, preferredFormat, scl, rr, fps))) {}
 				template <class GraphicsSurfaces>
 				inline basic_output_surface<GraphicsSurfaces>::basic_output_surface(int preferredWidth,
 					int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl,
-					io2d::refresh_rate rr, float fps) noexcept
+					io2d::refresh_style rr, float fps) noexcept
 					: _Data(move(GraphicsSurfaces::surfaces::create_output_surface(preferredWidth, preferredHeight, preferredFormat, ec, scl, rr, fps))) {}
 				template <class GraphicsSurfaces>
 				inline basic_output_surface<GraphicsSurfaces>::basic_output_surface(int preferredWidth,
 					int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth,
-					int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps)
+					int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_style rr, float fps)
 					: _Data(move(GraphicsSurfaces::surfaces::create_output_surface(preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, scl, rr, fps))) {}
 				template <class GraphicsSurfaces>
 				inline basic_output_surface<GraphicsSurfaces>::basic_output_surface(int preferredWidth,
 					int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth,
-					int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr,
+					int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_style rr,
 					float fps) noexcept
 					: _Data(move(GraphicsSurfaces::surfaces::create_output_surface(preferredWidth, preferredHeight, preferredFormat, preferredDisplayWidth, preferredDisplayHeight, ec, scl, rr, fps))) {}
 

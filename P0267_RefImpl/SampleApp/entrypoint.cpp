@@ -64,7 +64,7 @@ int main() {
 		::std::mutex jpegMutex;
 
 		::std::thread outputOne([&jpegMutex]() {
-			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_style::as_fast_as_possible, 30.0);
 			image_surface imgSfc = [&jpegMutex]() -> image_surface {
 				::std::lock_guard<::std::mutex> lg(jpegMutex);
 				return image_surface(std::experimental::filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::rgb30);
@@ -80,7 +80,7 @@ int main() {
 		});
 
 		::std::thread outputTwo([&jpegMutex]() {
-			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_style::as_fast_as_possible, 30.0);
 			image_surface imgSfc = [&jpegMutex]() -> image_surface {
 				::std::lock_guard<::std::mutex> lg(jpegMutex);
 				return image_surface(std::experimental::filesystem::path("2017_03_05.jpg"s), image_file_format::jpeg, format::rgb16_565);
@@ -96,7 +96,7 @@ int main() {
 		});
 
 		::std::thread outputThree([]() {
-			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_style::as_fast_as_possible, 30.0);
 			image_surface imgSfc(std::experimental::filesystem::path("2016_06_22.png"s), image_file_format::png, format::argb32);
 			//imgSfc.save(::std::experimental::filesystem::path("2016_06_22_copy_argb32.jpg"s), image_file_format::jpeg);
 			imgSfc.save(::std::experimental::filesystem::path("2016_06_22_copy_argb32.bmp"s), default_graphics_surfaces::additional_image_file_formats::bmp);
@@ -109,7 +109,7 @@ int main() {
 		});
 
 		::std::thread outputFour([]() {
-			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_style::as_fast_as_possible, 30.0);
 			image_surface imgSfc(std::experimental::filesystem::path("alpha8.png"s), image_file_format::png, format::a8);
 			imgSfc.save(::std::experimental::filesystem::path("alpha8_copy_a8.png"s), image_file_format::png);
 			brush imgSfcBrush(move(imgSfc));
@@ -122,7 +122,7 @@ int main() {
 		});
 
 		::std::thread outputFive([]() {
-			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+			output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_style::as_fast_as_possible, 30.0);
 			image_surface imgSfc(std::experimental::filesystem::path("2017_07_12.tiff"s), image_file_format::tiff, format::rgb24);
 			imgSfc.save(::std::experimental::filesystem::path("2017_07_12_copy_rgb24.tiff"s), image_file_format::tiff);
 			brush imgSfcBrush(move(imgSfc));
@@ -140,7 +140,7 @@ int main() {
 		outputFive.join();
 	}
 	else {
-		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_rate::as_fast_as_possible, 30.0);
+		output_surface os(1280, 720, format::argb32, scaling::letterbox, refresh_style::as_fast_as_possible, 30.0);
 		image_surface imgSfc(std::experimental::filesystem::path("2016_06_22.png"s), image_file_format::png, format::argb32);
 		//imgSfc.save(::std::experimental::filesystem::path("2016_06_22_copy_argb32.jpg"s), image_file_format::jpeg);
 		imgSfc.save(::std::experimental::filesystem::path("2016_06_22_copy_argb32.bmp"s), default_graphics_surfaces::additional_image_file_formats::bmp);

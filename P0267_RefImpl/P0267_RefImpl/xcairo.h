@@ -480,7 +480,7 @@ namespace std {
 
 								bool auto_clear = false;
 								io2d::scaling scl = io2d::scaling::letterbox;
-								io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible;
+								io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible;
 								float refresh_fps = 30.0f;
 								bool redraw_required = false;
 								float elapsed_draw_time = 0.0f;
@@ -522,7 +522,7 @@ namespace std {
 
 								bool auto_clear = false;
 								io2d::scaling scl = io2d::scaling::letterbox;
-								io2d::refresh_rate rr = io2d::refresh_rate::as_fast_as_possible;
+								io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible;
 								float refresh_fps = 30.0f;
 								bool redraw_required = false;
 								float elapsed_draw_time = 0.0f;
@@ -602,20 +602,20 @@ namespace std {
 
 							// output_surface functions
 
-							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps);
-							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept;
-							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps);
-							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept;
+							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_style rr, float fps);
+							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_style rr, float fps) noexcept;
+							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_style rr, float fps);
+							static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_style rr, float fps) noexcept;
 
 							static output_surface_data_type move_output_surface(output_surface_data_type&& data) noexcept;
 							static void destroy(output_surface_data_type& data) noexcept;
 
 							static int begin_show(output_surface_data_type& data, basic_output_surface<_Graphics_surfaces_type>* instance, basic_output_surface<_Graphics_surfaces_type>& sfc);
 							static void end_show(output_surface_data_type& data);
-							static void refresh_rate(output_surface_data_type& data, io2d::refresh_rate val);
+							static void refresh_style(output_surface_data_type& data, io2d::refresh_style val);
 							static void desired_frame_rate(output_surface_data_type& data, float val);
 							static void display_dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
-							static io2d::refresh_rate refresh_rate(const output_surface_data_type& data) noexcept;
+							static io2d::refresh_style refresh_style(const output_surface_data_type& data) noexcept;
 							static float desired_frame_rate(const output_surface_data_type& data) noexcept;
 
 							// rendering functions

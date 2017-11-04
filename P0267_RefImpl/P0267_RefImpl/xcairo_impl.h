@@ -2955,7 +2955,7 @@ namespace std::experimental::io2d {
 			// output surface functions
 
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_rate rr, float fps) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_style rr, float fps) {
 				output_surface_data_type result;
 				_Display_surface_data_type& data = result.data;
 				data.display_dimensions.x(preferredWidth);
@@ -2977,13 +2977,13 @@ namespace std::experimental::io2d {
 				return result;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_style rr, float fps) noexcept {
 				output_surface_data_type result;
 				_Display_surface_data_type& data = result.data;
 				data.display_dimensions.x(preferredWidth);
 				data.display_dimensions.y(preferredHeight);
 				data.rr = rr;
-				data.refresh_rate = fps;
+				data.refresh_style = fps;
 				data.scl = scl;
 				data.back_buffer.format = preferredFormat;
 				data.back_buffer.dimensions.x(preferredWidth);
@@ -3001,13 +3001,13 @@ namespace std::experimental::io2d {
 				return result;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_rate rr, float fps) {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, io2d::scaling scl, io2d::refresh_style rr, float fps) {
 				output_surface_data_type result;
 				_Display_surface_data_type& data = result.data;
 				data.display_dimensions.x(preferredDisplayWidth);
 				data.display_dimensions.y(preferredDisplayHeight);
 				data.rr = rr;
-				data.refresh_rate = fps;
+				data.refresh_style = fps;
 				data.scl = scl;
 				data.back_buffer.format = preferredFormat;
 				data.back_buffer.dimensions.x(preferredWidth);
@@ -3023,13 +3023,13 @@ namespace std::experimental::io2d {
 				return result;
 			}
 			template <class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_rate rr, float fps) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_style rr, float fps) noexcept {
 				output_surface_data_type result;
 				_Display_surface_data_type& data = result.data;
 				data.display_dimensions.x(preferredDisplayWidth);
 				data.display_dimensions.y(preferredDisplayHeight);
 				data.rr = rr;
-				data.refresh_rate = fps;
+				data.refresh_style = fps;
 				data.scl = scl;
 				data.back_buffer.format = preferredFormat;
 				data.back_buffer.dimensions.x(preferredWidth);
@@ -3159,7 +3159,7 @@ namespace std::experimental::io2d {
 						}
 						else {
 							bool redraw = true;
-							if (data.rr == io2d::refresh_rate::as_needed) {
+							if (data.rr == io2d::refresh_style::as_needed) {
 								redraw = data.redraw_required;
 								data.redraw_required = false;
 							}
@@ -3168,7 +3168,7 @@ namespace std::experimental::io2d {
 #ifdef _IO2D_WIN32FRAMERATE
 							const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00F / data.refresh_fps);
 #endif
-							if (data.rr == io2d::refresh_rate::fixed) {
+							if (data.rr == io2d::refresh_style::fixed) {
 								// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
 								redraw = data.elapsed_draw_time >= desiredElapsed;
 							}
@@ -3180,7 +3180,7 @@ namespace std::experimental::io2d {
 								elapsedNanoseconds.pop_front();
 								elapsedNanoseconds.push_back(chrono::nanoseconds(elapsedDrawNanoseconds));
 #endif
-								if (data.rr == experimental::io2d::refresh_rate::fixed) {
+								if (data.rr == experimental::io2d::refresh_style::fixed) {
 									while (data.elapsed_draw_time >= desiredElapsed) {
 										data.elapsed_draw_time -= desiredElapsed;
 									}
@@ -3212,7 +3212,7 @@ namespace std::experimental::io2d {
 
 								const long long desiredElapsedNanoseconds = static_cast<long long>(1'000'000'000.00F / data.refresh_fps);
 #endif
-								if (data.rr == io2d::refresh_rate::fixed) {
+								if (data.rr == io2d::refresh_style::fixed) {
 									while (data.elapsed_draw_time >= desiredElapsed) {
 										data.elapsed_draw_time -= desiredElapsed;
 									}
@@ -3358,7 +3358,7 @@ namespace std::experimental::io2d {
 							_Render_to_native_surface(osd, sfc);
 
 							data.elapsed_draw_time = 0.0F;
-							//if (_Refresh_rate == experimental::io2d::refresh_rate::fixed) {
+							//if (_Refresh_rate == experimental::io2d::refresh_style::fixed) {
 							//	_Elapsed_draw_time -= elapsedTimeIncrement;
 							//}
 							//else {
@@ -3506,14 +3506,14 @@ namespace std::experimental::io2d {
 					}
 					if (data.can_draw) {
 						bool redraw = true;
-						if (data.rr == io2d::refresh_rate::as_needed) {
+						if (data.rr == io2d::refresh_style::as_needed) {
 							redraw = data.redraw_required;
 							data.redraw_required = false;
 						}
 
 						auto desiredElapsed = 1'000'000'000.0f / data.refresh_fps;
 
-						if (data.rr == io2d::refresh_rate::fixed) {
+						if (data.rr == io2d::refresh_style::fixed) {
 							// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
 							redraw = data.elapsed_draw_time >= desiredElapsed;
 						}
@@ -3529,7 +3529,7 @@ namespace std::experimental::io2d {
 								throw system_error(make_error_code(errc::operation_not_supported));
 							}
 							_Render_to_native_surface(osd, sfc);
-							if (data.rr == io2d::refresh_rate::fixed) {
+							if (data.rr == io2d::refresh_style::fixed) {
 								while (data.elapsed_draw_time >= desiredElapsed) {
 									data.elapsed_draw_time -= desiredElapsed;
 								}
@@ -3571,7 +3571,7 @@ namespace std::experimental::io2d {
 			}
 #endif
 			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::refresh_rate(output_surface_data_type& data, io2d::refresh_rate val) {
+			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::refresh_style(output_surface_data_type& data, io2d::refresh_style val) {
 				data.data.rr = val;
 			}
 			template<class GraphicsMath>
@@ -3581,7 +3581,7 @@ namespace std::experimental::io2d {
 				data.data.refresh_fps = ::std::min(::std::max(val, oneFramePerHour), maxFPS);
 			}
 			template<class GraphicsMath>
-			inline io2d::refresh_rate _Cairo_graphics_surfaces<GraphicsMath>::surfaces::refresh_rate(const output_surface_data_type& data) noexcept {
+			inline io2d::refresh_style _Cairo_graphics_surfaces<GraphicsMath>::surfaces::refresh_style(const output_surface_data_type& data) noexcept {
 				return data.data.rr;
 			}
 			template<class GraphicsMath>
