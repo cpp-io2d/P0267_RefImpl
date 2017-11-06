@@ -52,8 +52,6 @@
 
 #include "xsystemheaders.h"
 #include "xcairo.h"
-#include "xcairo_helpers.h"
-#include "xcairo_impl.h"
 
 namespace std {
 	namespace experimental {

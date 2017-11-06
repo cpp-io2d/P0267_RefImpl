@@ -36,8 +36,14 @@ include_HEADERS =		io2d.h \
 						xtext.h
 
 include_HEADERS +=		xcairo.h \
+						xcairo_brushes_impl.h \
 						xcairo_helpers.h \
-						xcairo_impl.h \
+						xcairo_paths_impl.h \
+						xcairo_surface_state_props_impl.h \
+						xcairo_surfaces_image_impl.h \
+						xcairo_surfaces_impl.h \
+						xcairo_surfaces_output_impl.h \
+						xcairo_surfaces_unmanaged_impl.h \
 						xsystemheaders.h
 
 

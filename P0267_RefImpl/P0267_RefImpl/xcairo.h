@@ -657,6 +657,9 @@ namespace std {
 		}
 	}
 }
-#include "xcairo_impl.h"
+#include "xcairo_brushes_impl.h"
+#include "xcairo_paths_impl.h"
+#include "xcairo_surface_state_props_impl.h"
+#include "xcairo_surfaces_impl.h"
 
 #endif

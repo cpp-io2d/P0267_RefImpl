@@ -471,8 +471,14 @@
     <ClInclude Include="xbrushes.h" />
     <ClInclude Include="xbrushes_impl.h" />
     <ClInclude Include="xcairo.h" />
+    <ClInclude Include="xcairo_brushes_impl.h" />
     <ClInclude Include="xcairo_helpers.h" />
-    <ClInclude Include="xcairo_impl.h" />
+    <ClInclude Include="xcairo_paths_impl.h" />
+    <ClInclude Include="xcairo_surfaces_image_impl.h" />
+    <ClInclude Include="xcairo_surfaces_impl.h" />
+    <ClInclude Include="xcairo_surfaces_output_impl.h" />
+    <ClInclude Include="xcairo_surfaces_unmanaged_impl.h" />
+    <ClInclude Include="xcairo_surface_state_props_impl.h" />
     <ClInclude Include="xcolor.h" />
     <ClInclude Include="xdiagnostics.h" />
     <ClInclude Include="xgraphicsmath.h" />

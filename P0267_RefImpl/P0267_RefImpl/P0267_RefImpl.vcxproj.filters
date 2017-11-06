@@ -47,9 +47,6 @@
     <ClInclude Include="xcairo.h">
       <Filter>cairo renderer</Filter>
     </ClInclude>
-    <ClInclude Include="xcairo_impl.h">
-      <Filter>cairo renderer</Filter>
-    </ClInclude>
     <ClInclude Include="xsurfaces_enums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -84,6 +81,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xsystemheaders.h">
+      <Filter>cairo renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="xcairo_brushes_impl.h">
+      <Filter>cairo renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="xcairo_paths_impl.h">
+      <Filter>cairo renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="xcairo_surface_state_props_impl.h">
+      <Filter>cairo renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="xcairo_surfaces_impl.h">
+      <Filter>cairo renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="xcairo_surfaces_image_impl.h">
+      <Filter>cairo renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="xcairo_surfaces_output_impl.h">
+      <Filter>cairo renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="xcairo_surfaces_unmanaged_impl.h">
       <Filter>cairo renderer</Filter>
     </ClInclude>
   </ItemGroup>
