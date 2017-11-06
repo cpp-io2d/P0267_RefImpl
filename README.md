@@ -15,9 +15,11 @@ This is a reference implementations of [P0267: A Proposal to Add 2D Rendering an
 Requirements
 -------------
 
-For Windows platforms, it currently requires Visual Studio 2017 (the free Community edition should suffice) and Windows 7 or newer. It also requires [vcpkg](https://github.com/Microsoft/vcpkg/) for installing dependencies - this is described more fully here: [Dependency installation instructions.txt](https://raw.githubusercontent.com/mikebmcl/N3888_RefImpl/master/N3888_RefImpl/src/win32/Dependency%20installation%20instructions.txt).
+For Windows platforms, it currently requires Visual Studio 2017 (the free Community edition should suffice) and Windows 7 or newer. It also requires [vcpkg](https://github.com/Microsoft/vcpkg/) for installing dependencies - this is described more fully here: [Dependency installation instructions.txt](https://raw.githubusercontent.com/mikebmcl/P0267_RefImpl/D0267R7/P0267_RefImpl/P0267_RefImpl/win32/Dependency%20installation%20instructions.txt).
 
-For GNU/Linux platforms, it currently requires a non-ancient version of GNU autotools, cairo (>= 1.12.16), GTK+3.0 (>= 3.8.0), gmodule-2.0, gobject-2.0, and related libraries (autotools will tell you about any missing dependencies). By default it builds using GCC (>= 4.9.0), but you can configure it to use recent versions of Clang.
+For GNU/Linux platforms, it currently requires a non-ancient version of GNU autotools, cairo (>= 1.12.16), GraphicsMagick (autotools will tell you about any missing dependencies), and either GCC 7+ or Clang 5.0+.
+
+For OS X, I have tested it on High Sierra using X11 and MacPorts (with the relevant dependencies).
 
 Feedback
 -------------
