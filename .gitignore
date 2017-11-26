@@ -280,3 +280,7 @@ Release_Clang_C2
 /P0267_RefImpl/SampleApp/2017_03_05_copy_rgb30.jpg
 /P0267_RefImpl/SampleApp/2017_07_12_copy_rgb24.tiff
 /P0267_RefImpl/SampleApp/2016_06_22_copy_argb32.bmp
+*.dll
+*.CopyComplete
+P0267_RefImpl/dll_Debug/2017_03_05.jpg
+P0267_RefImpl/dll_Debug/2017_07_12.tiff

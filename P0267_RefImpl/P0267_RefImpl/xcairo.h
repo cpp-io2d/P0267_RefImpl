@@ -16,7 +16,7 @@ namespace std {
 		namespace io2d {
 			inline namespace v1 {
 				namespace _Cairo {
-					void _Init_graphics_magic();
+					_IO2D_API void _Init_graphics_magic();
 
 #if defined(_WIN32) || defined(_WIN64)
 					[[noreturn]]
@@ -29,8 +29,8 @@ namespace std {
 							throw system_error(static_cast<int>(getLastErrorValue), system_category());
 						}
 					}
-					LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-					void _RegisterWindowClass();
+					_IO2D_API LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+					_IO2D_API void _RegisterWindowClass();
 #elif defined(USE_XLIB)
 					int _Xlib_unmanaged_close_display(Display*);
 #endif
