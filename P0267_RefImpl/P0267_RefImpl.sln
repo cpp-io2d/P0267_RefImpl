@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26720.2
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 12.0.21005.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "P0267_RefImpl", "P0267_RefImpl\P0267_RefImpl.vcxproj", "{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}"
 EndProject
@@ -17,6 +17,8 @@ Global
 		Debug|x64 = Debug|x64
 		dll_Debug|Win32 = dll_Debug|Win32
 		dll_Debug|x64 = dll_Debug|x64
+		dll_Release|Win32 = dll_Release|Win32
+		dll_Release|x64 = dll_Release|x64
 		Release_Clang_C2|Win32 = Release_Clang_C2|Win32
 		Release_Clang_C2|x64 = Release_Clang_C2|x64
 		Release|Win32 = Release|Win32
@@ -35,6 +37,10 @@ Global
 		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.dll_Debug|Win32.Build.0 = dll_Debug|Win32
 		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.dll_Debug|x64.ActiveCfg = dll_Debug|x64
 		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.dll_Debug|x64.Build.0 = dll_Debug|x64
+		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.dll_Release|Win32.ActiveCfg = dll_Release|Win32
+		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.dll_Release|Win32.Build.0 = dll_Release|Win32
+		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.dll_Release|x64.ActiveCfg = dll_Release|x64
+		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.dll_Release|x64.Build.0 = dll_Release|x64
 		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.Release_Clang_C2|Win32.ActiveCfg = Release_Clang_C2|Win32
 		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.Release_Clang_C2|Win32.Build.0 = Release_Clang_C2|Win32
 		{1B3FB96B-B90D-40B7-B0D9-20D15BE707B8}.Release_Clang_C2|x64.ActiveCfg = Release_Clang_C2|x64
@@ -55,6 +61,10 @@ Global
 		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.dll_Debug|Win32.Build.0 = dll_Debug|Win32
 		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.dll_Debug|x64.ActiveCfg = dll_Debug|x64
 		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.dll_Debug|x64.Build.0 = dll_Debug|x64
+		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.dll_Release|Win32.ActiveCfg = dll_Release|Win32
+		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.dll_Release|Win32.Build.0 = dll_Release|Win32
+		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.dll_Release|x64.ActiveCfg = dll_Release|x64
+		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.dll_Release|x64.Build.0 = dll_Release|x64
 		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.Release_Clang_C2|Win32.ActiveCfg = Release_Clang_C2|Win32
 		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.Release_Clang_C2|Win32.Build.0 = Release_Clang_C2|Win32
 		{69BE4182-3360-465A-8077-C2EE8E9C45E2}.Release_Clang_C2|x64.ActiveCfg = Release_Clang_C2|x64
@@ -75,6 +85,10 @@ Global
 		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.dll_Debug|Win32.Build.0 = dll_Debug|Win32
 		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.dll_Debug|x64.ActiveCfg = dll_Debug|x64
 		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.dll_Debug|x64.Build.0 = dll_Debug|x64
+		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.dll_Release|Win32.ActiveCfg = dll_Release|Win32
+		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.dll_Release|Win32.Build.0 = dll_Release|Win32
+		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.dll_Release|x64.ActiveCfg = dll_Release|x64
+		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.dll_Release|x64.Build.0 = dll_Release|x64
 		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.Release_Clang_C2|Win32.ActiveCfg = Release_Clang_C2|Win32
 		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.Release_Clang_C2|Win32.Build.0 = Release_Clang_C2|Win32
 		{887C0667-7B90-4FBA-A88E-A955EFDE5C24}.Release_Clang_C2|x64.ActiveCfg = Release_Clang_C2|x64
