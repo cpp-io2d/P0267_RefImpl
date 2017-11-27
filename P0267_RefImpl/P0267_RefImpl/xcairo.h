@@ -246,8 +246,6 @@ namespace std {
 							using interpreted_path_data_type = _Interpreted_path_data;
 
 							static interpreted_path_data_type create_interpreted_path() noexcept;
-							template <class Allocator>
-							static interpreted_path_data_type create_interpreted_path(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb);
 							template <class ForwardIterator>
 							static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
 							static interpreted_path_data_type copy_interpreted_path(const interpreted_path_data_type&);

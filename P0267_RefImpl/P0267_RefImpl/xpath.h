@@ -529,6 +529,8 @@ namespace std {
 					template <class ForwardIterator>
 					basic_interpreted_path(ForwardIterator first, ForwardIterator last);
 
+					explicit basic_interpreted_path(initializer_list<typename basic_figure_items<GraphicsSurfaces>::figure_item> il);
+
 					basic_interpreted_path(const basic_interpreted_path&);
 					basic_interpreted_path& operator=(const basic_interpreted_path&);
 					basic_interpreted_path(basic_interpreted_path&&) noexcept;

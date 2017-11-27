@@ -708,6 +708,21 @@ namespace std::experimental::io2d {
 		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path() noexcept
 			: _Data(GraphicsSurfaces::paths::create_interpreted_path()) { }
 
+		template <class GraphicsSurfaces>
+		template <class Allocator>
+		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const basic_path_builder<GraphicsSurfaces, Allocator>& pb)
+			: _Data(GraphicsSurfaces::paths::create_interpreted_path(begin(pb), end(pb))) { }
+
+		template <class GraphicsSurfaces>
+		template <class ForwardIterator>
+		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(ForwardIterator first, ForwardIterator last)
+			: _Data(GraphicsSurfaces::paths::create_interpreted_path(first, last)) { }
+
+		template<class GraphicsSurfaces>
+		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(initializer_list<typename basic_figure_items<GraphicsSurfaces>::figure_item> il)
+			: _Data(GraphicsSurfaces::paths::create_interpreted_path(begin(il), end(il))) {
+		}
+
 		template<class GraphicsSurfaces>
 		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const basic_interpreted_path& val) {
 			_Data = GraphicsSurfaces::paths::copy_interpreted_path(val._Data);
@@ -738,16 +753,6 @@ namespace std::experimental::io2d {
 		inline basic_interpreted_path<GraphicsSurfaces>::~basic_interpreted_path() noexcept {
 			GraphicsSurfaces::paths::destroy(_Data);
 		}
-
-		template <class GraphicsSurfaces>
-		template <class Allocator>
-		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const basic_path_builder<GraphicsSurfaces, Allocator>& pb)
-			: _Data(GraphicsSurfaces::paths::create_interpreted_path(pb)) { }
-
-		template <class GraphicsSurfaces>
-		template <class ForwardIterator>
-		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(ForwardIterator first, ForwardIterator last)
-			: _Data(GraphicsSurfaces::paths::create_interpreted_path(first, last)) { }
 
 		template <class GraphicsSurfaces, class _TItem>
 		struct _Path_item_interpret_visitor {

@@ -15,6 +15,7 @@
 #include <system_error>
 #include <cstring>
 #include <chrono>
+#include "xcairo.h"
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
@@ -122,11 +123,6 @@ namespace std::experimental::io2d {
 				interpreted_path_data_type result;
 				result.path = nullptr;
 				return result;
-			}
-			template<class GraphicsMath>
-			template<class Allocator>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::create_interpreted_path(const basic_path_builder<_Graphics_surfaces_type, Allocator>& pb) {
-				return _Cairo_graphics_surfaces<GraphicsMath>::paths::template create_interpreted_path<typename basic_path_builder<_Graphics_surfaces_type, Allocator>::const_iterator>(begin(pb), end(pb));
 			}
 			template<class GraphicsMath>
 			template<class ForwardIterator>
