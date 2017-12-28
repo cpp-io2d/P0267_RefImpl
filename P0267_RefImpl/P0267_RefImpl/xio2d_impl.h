@@ -194,9 +194,41 @@ namespace std {
 					};
 				}
 
+				inline rgba_color rgba_from_HSL(float hue, float saturation, float luminescence) noexcept
+				{
+					auto chroma = 1.0f - fabs(2.0f * luminescence - 1.0f) * saturation;
+					auto hue_segment = hue / 60.0f;
+					auto int_part = floorf(hue_segment);
+					auto rem_part = hue_segment - int_part;
+					auto x = chroma * (1.0f - fabs(rem_part - 1.0f + float(int(int_part) % 2)));
+					auto m = luminescence - chroma / 2.0f;
+					if (hue_segment <= 1.0f) return rgba_color{ chroma + m, x + m, m, 1.0f };
+					if (hue_segment <= 2.0f) return rgba_color{ x + m, chroma + m, m, 1.0f };
+					if (hue_segment <= 3.0f) return rgba_color{ m, chroma + m, x + m, 1.0f };
+					if (hue_segment <= 4.0f) return rgba_color{ m, x + m, chroma + m, 1.0f };
+					if (hue_segment <= 5.0f) return rgba_color{ x + m, m, chroma + m, 1.0f };
+					if (hue_segment <= 6.0f) return rgba_color{ chroma + m, m, x + m, 1.0f };
+				}
+
+				inline rgba_color rgba_from_HSV(float hue, float saturation, float value) noexcept
+				{
+					auto chroma = value * saturation;
+					auto hue_segment = hue / 60.0f;
+					auto int_part = floorf(hue_segment);
+					auto rem_part = hue_segment - int_part;
+					auto x = chroma * (1.0f - fabs(rem_part - 1.0f + float(int(int_part) % 2)));
+					auto m = value - chroma;
+					if (hue_segment <= 1.0f) return rgba_color{ chroma + m, x + m, m, 1.0f };
+					if (hue_segment <= 2.0f) return rgba_color{ x + m, chroma + m, m, 1.0f };
+					if (hue_segment <= 3.0f) return rgba_color{ m, chroma + m, x + m, 1.0f };
+					if (hue_segment <= 4.0f) return rgba_color{ m, x + m, chroma + m, 1.0f };
+					if (hue_segment <= 5.0f) return rgba_color{ x + m, m, chroma + m, 1.0f };
+					if (hue_segment <= 6.0f) return rgba_color{ chroma + m, m, x + m, 1.0f };
+				}
+
 				// Paths
 
-						//Brushes
+				//Brushes
 
 				//// Standalone functions
 

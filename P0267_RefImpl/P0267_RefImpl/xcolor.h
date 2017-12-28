@@ -372,6 +372,9 @@ namespace std {
 
 				template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating> = _Color_is_floating_val>
 				constexpr rgba_color operator*(U lhs, const rgba_color& rhs) noexcept;
+
+				rgba_color rgba_from_HSL(float hue, float saturation, float luminescence) noexcept;		// 0.0f <= hue <= 360.0f, 0.0f <= saturation <= 1.0f, 0.0f <= luminescence <= 1.0f
+				rgba_color rgba_from_HSV(float hue, float saturation, float value) noexcept;			// 0.0f <= hue <= 360.0f, 0.0f <= saturation <= 1.0f, 0.0f <= value <= 1.0f
 			}
 		}
 	}

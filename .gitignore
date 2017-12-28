@@ -258,3 +258,6 @@ Release_Clang_C2
 *.CopyComplete
 P0267_RefImpl/dll_Debug
 P0267_RefImpl/dll_Release
+*.db
+*.db-shm
+*.db-wal
