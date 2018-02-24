@@ -269,7 +269,7 @@ namespace std {
 
 						rel_cubic_curve() noexcept;
 						rel_cubic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt1, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt2, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
-						rel_cubic_curve(const abs_new_figure& other);
+						rel_cubic_curve(const rel_cubic_curve& other);
 						rel_cubic_curve& operator=(const rel_cubic_curve& other);
 						rel_cubic_curve(rel_cubic_curve&& other) noexcept;
 						rel_cubic_curve& operator=(rel_cubic_curve&& other) noexcept;

@@ -4,9 +4,9 @@
 #include "xpath.h"
 #include "xgraphicsmath.h"
 
-#if defined(_Filesystem_support_test)
-#include <filesystem>
-#endif
+//#if defined(_Filesystem_support_test)
+//#include <filesystem>
+//#endif
 #include <initializer_list>
 
 namespace std::experimental::io2d {

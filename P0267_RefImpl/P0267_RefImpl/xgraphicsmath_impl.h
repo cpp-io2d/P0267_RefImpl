@@ -176,7 +176,7 @@ namespace std::experimental::io2d {
 			: _Data(GraphicsMath::init_identity()) {}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath>::basic_matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept
-			: _Data(GraphicsMath::init_values(v00, v01, v10, v11, v20, v21)) {
+			: _Data(GraphicsMath::create_matrix_2d(v00, v01, v10, v11, v20, v21)) {
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath>::basic_matrix_2d(const typename GraphicsMath::matrix_2d_data_type& val) noexcept

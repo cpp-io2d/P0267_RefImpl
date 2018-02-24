@@ -43,6 +43,7 @@ namespace std::experimental::io2d {
 			if (this != &other) {
 				_Data = move(GraphicsSurfaces::paths::move_abs_new_figure(move(other._Data)));
 			}
+            return *this;
 		}
 
 		template<class GraphicsSurfaces>
@@ -574,7 +575,7 @@ namespace std::experimental::io2d {
 			: _Data(GraphicsSurfaces::paths::create_rel_cubic_curve(cpt1, cpt2, ept)) {
 		}
 		template<class GraphicsSurfaces>
-		inline basic_figure_items<GraphicsSurfaces>::rel_cubic_curve::rel_cubic_curve(const abs_new_figure& other)
+		inline basic_figure_items<GraphicsSurfaces>::rel_cubic_curve::rel_cubic_curve(const rel_cubic_curve& other)
 			: _Data(GraphicsSurfaces::paths::copy_rel_cubic_curve(other._Data)) {
 		}
 		template<class GraphicsSurfaces>

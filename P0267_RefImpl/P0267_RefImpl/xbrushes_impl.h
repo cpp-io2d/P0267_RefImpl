@@ -61,7 +61,7 @@ namespace std::experimental::io2d {
 		}
 		template<class GraphicsSurfaces>
 		inline brush_type basic_brush<GraphicsSurfaces>::type() const noexcept {
-			return GraphicsSurfaces::brushes::brush_type(_Data);
+			return GraphicsSurfaces::brushes::get_brush_type(_Data);
 		}
 	}
 }

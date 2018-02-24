@@ -19,9 +19,9 @@
 #include <cmath>
 #include <utility>
 
-#ifdef _Filesystem_support_test
-#include <filesystem>
-#endif
+//#ifdef _Filesystem_support_test
+//#include <filesystem>
+//#endif
 
 #include "xsurfaces.h"
 #include "xpath.h"
@@ -208,6 +208,7 @@ namespace std {
 					if (hue_segment <= 4.0f) return rgba_color{ m, x + m, chroma + m, 1.0f };
 					if (hue_segment <= 5.0f) return rgba_color{ x + m, m, chroma + m, 1.0f };
 					if (hue_segment <= 6.0f) return rgba_color{ chroma + m, m, x + m, 1.0f };
+                    return {};
 				}
 
 				inline rgba_color rgba_from_HSV(float hue, float saturation, float value) noexcept
@@ -224,6 +225,7 @@ namespace std {
 					if (hue_segment <= 4.0f) return rgba_color{ m, x + m, chroma + m, 1.0f };
 					if (hue_segment <= 5.0f) return rgba_color{ x + m, m, chroma + m, 1.0f };
 					if (hue_segment <= 6.0f) return rgba_color{ chroma + m, m, x + m, 1.0f };
+                    return {};
 				}
 
 				// Paths
