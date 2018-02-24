@@ -4,7 +4,6 @@ project(io2d CXX)
 
 add_subdirectory(P0267_RefImpl/P0267_RefImpl/coregraphics/mac)
 
-
 add_subdirectory(P0267_RefImpl/Demo)
 
 
