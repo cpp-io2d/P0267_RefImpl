@@ -3,3 +3,4 @@ project(io2d CXX)
 
 add_subdirectory(DrawCPP)
 add_subdirectory(RocksInSpace)
+add_subdirectory(SVG)

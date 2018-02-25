@@ -1,0 +1,6 @@
+[submodule "P0267_RefImpl/Samples/SVG/external/svgpp"]
+	path = P0267_RefImpl/Samples/SVG/external/svgpp
+	url = https://github.com/svgpp/svgpp
+[submodule "P0267_RefImpl/Samples/SVG/external/rapidxml_ns"]
+	path = P0267_RefImpl/Samples/SVG/external/rapidxml_ns
+	url = https://github.com/svgpp/rapidxml_ns
