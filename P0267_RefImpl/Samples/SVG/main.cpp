@@ -7,14 +7,17 @@
 #include <svgpp/policy/xml/rapidxml_ns.hpp>
 #include <svgpp/svgpp.hpp>
 
-
-
 using namespace std;
 using namespace std::experimental;
 using namespace std::experimental::io2d;
 
 using namespace svgpp;
 typedef rapidxml_ns::xml_node<> const * xml_element_t;
+
+struct Document {
+    unordered_map< string, pair<brush, brush_props> > gradients;
+    
+};
 
 struct Transformable
 {
@@ -167,34 +170,29 @@ struct Stylable
 
 struct Canvas: Transformable, Stylable
 {
-    Canvas()
-    {
+    Canvas(Document &document):
+        document_(document) {
         length_factory_.set_absolute_units_coefficient(90, tag::length_units::in());
     }
     
     Canvas(Canvas const & parent):
         Transformable(parent),
-        surface(parent.surface)
-    {
-    }
+        surface(parent.surface),
+        document_(parent.document_) {}
     
-    void on_exit_element()
-    {}
+    void on_exit_element() {}
     
-    void set_viewport(double viewport_x, double viewport_y, double viewport_width, double viewport_height)
-    {
+    void set_viewport(double viewport_x, double viewport_y, double viewport_width, double viewport_height) {
         surface = make_shared<image_surface>(format::argb32, viewport_width, viewport_height);
         surface->clear();
         length_factory_.set_viewport_size(viewport_width, viewport_height);
     }
     
-    void set_viewbox_size(double viewbox_width, double viewbox_height)
-    {
+    void set_viewbox_size(double viewbox_width, double viewbox_height) {
         length_factory_.set_viewport_size(viewbox_width, viewbox_height);
     }
     
-    void disable_rendering()
-    {}
+    void disable_rendering() {}
     
     using length_factory_type = factory::length::unitless<float, float>;
     
@@ -206,53 +204,39 @@ struct Canvas: Transformable, Stylable
     
     
     length_factory_type length_factory_;
-    
     shared_ptr<image_surface> surface;
+    Document &document_;
 };
 
 struct ShapeContext: Canvas
 {
-    path_builder pb;
     ShapeContext(Canvas const & parent): Canvas(parent) {}
-    
-    void path_move_to(float x, float y, tag::coordinate::absolute)
-    {
-        pb.new_figure({x, y});
-    }
-    
-    void path_line_to(float x, float y, tag::coordinate::absolute)
-    {
-        pb.line({x, y});
-    }
-    
-    void path_cubic_bezier_to(float x1, float y1, float x2, float y2, float x, float y, tag::coordinate::absolute)
-    {
-        pb.cubic_curve({x1, y1}, {x2, y2}, {x, y});
-    }
-    
-    void path_close_subpath()
-    {
-        pb.close_figure();
-    }
-    
-    void path_exit()
-    {}
-    
-    void on_exit_element()
-    {
+    void path_move_to(float x, float y, tag::coordinate::absolute) { pb.new_figure({x, y}); }
+    void path_line_to(float x, float y, tag::coordinate::absolute) { pb.line({x, y}); }
+    void path_cubic_bezier_to(float x1, float y1, float x2, float y2, float x, float y, tag::coordinate::absolute) { pb.cubic_curve({x1, y1}, {x2, y2}, {x, y}); }
+    void path_close_subpath() { pb.close_figure(); }
+    void path_exit() {}
+    void on_exit_element() {
         pb.insert(begin(pb), figure_items::abs_matrix{trans_matrix});
-        
         if( auto color = get_if<rgba_color>(&fill_paint) ) {
             auto effective_color = rgba_color{ color->r(), color->g(), color->b(), color->a() * opacity };
             surface->fill(brush{effective_color}, pb);
         }
-        
+        else if( auto name = get_if<string>(&fill_paint) ) {
+            auto gr = document_.gradients.find(*name);
+            if( gr != end(document_.gradients) ) {
+                auto bp = gr->second.second;
+                bp.brush_matrix( bp.brush_matrix() * trans_matrix ); // assume userSpaceOnUse
+                surface->fill(gr->second.first, pb, bp);
+            }
+        }
         if( auto color = get_if<rgba_color>(&stroke_paint) ) {
             auto effective_color = rgba_color{ color->r(), color->g(), color->b(), color->a() * opacity };
             stroke_props sp{stroke_width};
             surface->stroke(brush{effective_color}, pb, nullopt, sp);
         }
     }
+    path_builder pb;
 };
 
 class UseContext: public Canvas
@@ -317,6 +301,49 @@ private:
   UseContext & referencing_;
 };
 
+struct LinearGradientContext : Canvas {
+    LinearGradientContext(Canvas &parent): Canvas(parent) {}
+    void on_exit_element() {
+        auto b = brush{ p1, p2, begin(stops), end(stops) };
+        auto bp = brush_props{io2d::wrap_mode::repeat, io2d::filter::good, io2d::fill_rule::winding, trans_matrix };
+        document_.gradients.insert({name, make_pair(move(b), move(bp))});
+    }
+    void transform_matrix(const boost::array<double, 6> & matrix) {
+        trans_matrix = matrix_2d(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+    }
+    using Canvas::set;
+    template<class Range>
+    void set(svgpp::tag::attribute::id, Range node_id) { name = string( begin(node_id), end(node_id) ); }
+    void set(svgpp::tag::attribute::x1, float val) { p1.x(val); }
+    void set(svgpp::tag::attribute::y1, float val) { p1.y(val); }
+    void set(svgpp::tag::attribute::x2, float val) { p2.x(val); }
+    void set(svgpp::tag::attribute::y2, float val) { p2.y(val); }
+    vector<io2d::gradient_stop> stops;
+    point_2d p1, p2;
+    string name;
+};
+
+struct GradientStopContext : LinearGradientContext {
+    GradientStopContext(LinearGradientContext & parent):
+        LinearGradientContext(parent),
+        parent_(parent)
+    {}
+    void on_exit_element() {
+        parent_.stops.emplace_back(offset_, rgba_color(color_.r(), color_.g(), color_.b(), color_.a() * opacity_));
+    }
+    using LinearGradientContext::set;
+    void set(tag::attribute::offset, float val) {offset_ = std::clamp(val, 0.f, 1.f);}
+    void set(tag::attribute::stop_color, tag::value::inherit) {/*TODO*/}
+    void set(tag::attribute::stop_color, tag::value::currentColor) {/*TODO*/}
+    void set(tag::attribute::stop_color, rgba_color color, tag::skip_icc_color = tag::skip_icc_color()) { color_ = color; }
+    void set(tag::attribute::stop_opacity, float val) { opacity_ = clamp(val, 0.f, 1.f); }
+    void set(svgpp::tag::attribute::stop_opacity, svgpp::tag::value::inherit) {/*TODO*/}
+    LinearGradientContext & parent_;
+    rgba_color color_;
+    float opacity_ = 1.f;
+    float offset_ = 0.f;
+};
+
 struct ChildContextFactories
 {
     template<class ParentContext, class ElementTag, class Enable = void>
@@ -339,6 +366,18 @@ template<>
 struct ChildContextFactories::apply<Canvas, tag::element::use_>
 {
     typedef factory::context::on_stack<UseContext> type;
+};
+
+template<>
+struct ChildContextFactories::apply<Canvas, tag::element::linearGradient>
+{
+    typedef factory::context::on_stack<LinearGradientContext> type;
+};
+
+template<>
+struct ChildContextFactories::apply<LinearGradientContext, svgpp::tag::element::stop>
+{
+    typedef svgpp::factory::context::on_stack<GradientStopContext> type;
 };
 
 // Elements referenced by 'use' element
@@ -404,7 +443,9 @@ using processed_elements_t = boost::mpl::set<
     tag::element::path,
     tag::element::polygon,
     tag::element::polyline,
-    tag::element::rect
+    tag::element::rect,
+    tag::element::linearGradient,
+    svgpp::tag::element::stop
 >::type;
 
 // This cryptic code just merges predefined sequences traits::shapes_attributes_by_element
@@ -417,11 +458,26 @@ typedef boost::mpl::fold<
         >
     >,
     boost::mpl::set<
+
+
         tag::attribute::transform,
         tag::attribute::stroke,
         tag::attribute::stroke_width,
         tag::attribute::fill,
         tag::attribute::opacity,
+
+        boost::mpl::pair<tag::element::linearGradient, tag::attribute::gradientTransform>,
+        boost::mpl::pair<tag::element::linearGradient, tag::attribute::x1>,
+        boost::mpl::pair<tag::element::linearGradient, tag::attribute::y1>,
+        boost::mpl::pair<tag::element::linearGradient, tag::attribute::x2>,
+        boost::mpl::pair<tag::element::linearGradient, tag::attribute::y2>,
+        boost::mpl::pair<tag::element::linearGradient, tag::attribute::id>,
+        boost::mpl::pair<tag::element::stop, tag::attribute::offset>,
+        boost::mpl::pair<tag::element::stop, tag::attribute::stop_color>,
+        boost::mpl::pair<tag::element::stop, tag::attribute::stop_opacity>,
+
+//    boost::mpl::pair<svgpp::tag::element::polyline, svgpp::tag::attribute::points>,
+
         boost::mpl::pair<tag::element::use_, tag::attribute::xlink::href>
     >::type,
     boost::mpl::insert<boost::mpl::_1, boost::mpl::_2>
@@ -450,7 +506,8 @@ void loadSvg(xml_element_t xml_root_element)
         attribute_traversal_policy<AttributeTraversal>
     >;
     
-    Canvas context;
+    Document document;
+    Canvas context(document);
     traversal::load_document(xml_root_element, context);
     
     context.surface->save("/users/migun/desktop/test.png", image_file_format::png);
@@ -490,8 +547,9 @@ int main()
 //    TEXT( </g>)
 //    TEXT(</svg>);
     
-    std::ifstream t("/Users/migun/Desktop/SVG_example_markup_grid.svg");
+//    std::ifstream t("/Users/migun/Desktop/SVG_example_markup_grid.svg");
 //    std::ifstream t("/Users/migun/Desktop/European_Ombudsman_logo.svg");
+    std::ifstream t("/Users/migun/Desktop/Vector-based_example.svg");
     std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
     
     rapidxml_ns::xml_document<> doc;    // character type defaults to char
