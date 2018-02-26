@@ -237,7 +237,6 @@ Release_Clang_C2
 *.exp
 *.lib
 /CMakeBuild
-/CMakeLists.txt
 /CustomCMakeModules
 /P0267_RefImpl/.vs
 /P0267_RefImpl/SampleApp/CMakeLists.txt

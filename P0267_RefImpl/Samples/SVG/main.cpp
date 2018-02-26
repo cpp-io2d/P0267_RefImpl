@@ -1,9 +1,13 @@
+#define BOOST_PARAMETER_MAX_ARITY 11
+
 #include <iostream>
 #include <fstream>
 #include <io2d.h>
 #include <rapidxml_ns/rapidxml_ns.hpp>
 #include <svgpp/policy/xml/rapidxml_ns.hpp>
 #include <svgpp/svgpp.hpp>
+
+
 
 using namespace std;
 using namespace std::experimental;
@@ -12,21 +16,13 @@ using namespace std::experimental::io2d;
 using namespace svgpp;
 typedef rapidxml_ns::xml_node<> const * xml_element_t;
 
-class Transformable
+struct Transformable
 {
-public:
-    Transformable()
-    {
-    }
+    Transformable() {}
+    Transformable(Transformable const & src):trans_matrix{src.trans_matrix} {}
     
-    Transformable(Transformable const & src):
-        trans_matrix{src.trans_matrix}
-    {
-    }
-    
-    void transform_matrix(const boost::array<double, 6> & matrix)
-    {
-        trans_matrix = trans_matrix * matrix_2d(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5] );
+    void transform_matrix(const boost::array<double, 6> & matrix) {
+        trans_matrix =  matrix_2d(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5] ) * trans_matrix;
     }
 
     matrix_2d trans_matrix;
@@ -44,9 +40,8 @@ using ColorFactory = factory::color::percentage_adapter<ColorFactoryBase>;
 
 using Paint = variant<rgba_color, tag::value::none, tag::value::currentColor, string>;
 
-class Stylable
+struct Stylable
 {
-public:
     void set(tag::attribute::stroke_width, float val) {
         stroke_width = val;
     }
@@ -103,9 +98,6 @@ public:
         set(tag, tag::iri_fragment{}, fragment);
     }
 
-    
-    
-    
     void set(tag::attribute::fill, tag::value::none) {
         fill_paint = tag::value::none();
     }
@@ -173,12 +165,11 @@ public:
 };
 
 
-class Canvas: public Transformable, public Stylable
+struct Canvas: Transformable, Stylable
 {
-public:
     Canvas()
     {
-//        surface = make_shared<image_surface>(format::argb32, 500, 500);
+        length_factory_.set_absolute_units_coefficient(90, tag::length_units::in());
     }
     
     Canvas(Canvas const & parent):
@@ -190,42 +181,39 @@ public:
     void on_exit_element()
     {}
     
-//    void transform_matrix(const boost::array<double, 6> & matrix)
-//    {}
-    
-    // Viewport Events Policy
     void set_viewport(double viewport_x, double viewport_y, double viewport_width, double viewport_height)
     {
         surface = make_shared<image_surface>(format::argb32, viewport_width, viewport_height);
         surface->clear();
+        length_factory_.set_viewport_size(viewport_width, viewport_height);
     }
     
     void set_viewbox_size(double viewbox_width, double viewbox_height)
-    {}
+    {
+        length_factory_.set_viewport_size(viewbox_width, viewbox_height);
+    }
     
     void disable_rendering()
     {}
     
-//    void transform_matrix(const boost::array<double, 6> & matrix)
-//    {
-//        int a = 10;
-//
-//    }
-
+    using length_factory_type = factory::length::unitless<float, float>;
+    
+    length_factory_type & length_factory()
+    { return length_factory_; }
+    
+    length_factory_type const & length_factory() const
+    { return length_factory_; }
+    
+    
+    length_factory_type length_factory_;
     
     shared_ptr<image_surface> surface;
 };
 
-class ShapeContext: public Canvas
+struct ShapeContext: Canvas
 {
-public:
     path_builder pb;
-    
-    ShapeContext(Canvas const & parent):
-        Canvas(parent)
-    {
-//        pb.matrix(tranform_matrix);
-    }
+    ShapeContext(Canvas const & parent): Canvas(parent) {}
     
     void path_move_to(float x, float y, tag::coordinate::absolute)
     {
@@ -253,9 +241,8 @@ public:
     void on_exit_element()
     {
         pb.insert(begin(pb), figure_items::abs_matrix{trans_matrix});
-                
+        
         if( auto color = get_if<rgba_color>(&fill_paint) ) {
-//            auto c = color->
             auto effective_color = rgba_color{ color->r(), color->g(), color->b(), color->a() * opacity };
             surface->fill(brush{effective_color}, pb);
         }
@@ -265,8 +252,69 @@ public:
             stroke_props sp{stroke_width};
             surface->stroke(brush{effective_color}, pb, nullopt, sp);
         }
-        
     }
+};
+
+class UseContext: public Canvas
+{
+public:
+  UseContext(Canvas const & parent)
+    : Canvas(parent)
+  {}
+
+  boost::optional<double> const & width() const { return width_; }
+  boost::optional<double> const & height() const { return height_; }
+
+  using Canvas::set;
+
+  template<class IRI>
+  void set(tag::attribute::xlink::href, tag::iri_fragment, IRI const & fragment)
+  { fragment_id_.assign(boost::begin(fragment), boost::end(fragment)); }
+
+  template<class IRI>
+  void set(tag::attribute::xlink::href, IRI const & fragment)
+  { std::cerr << "External references aren't supported\n"; }
+
+  void set(tag::attribute::x, double val)
+  { x_ = val; }
+
+  void set(tag::attribute::y, double val)
+  { y_ = val; }
+
+  void set(tag::attribute::width, double val)
+  { width_ = val; }
+
+  void set(tag::attribute::height, double val)
+  { height_ = val; }
+
+  void on_exit_element();
+
+private:
+  std::string fragment_id_;
+  double x_, y_;
+  boost::optional<double> width_, height_;
+};
+
+class ReferencedSymbolOrSvgContext: public Canvas
+{
+public:
+  ReferencedSymbolOrSvgContext(UseContext & referencing)
+    : Canvas(referencing)
+    , referencing_(referencing)
+  {
+  }
+
+  // Viewport Events Policy
+  void get_reference_viewport_size(double & width, double & height)
+  {
+    if (referencing_.width())
+      width = *referencing_.width();
+    if (referencing_.height())
+      height = *referencing_.height();
+  }
+
+private:
+  UseContext & referencing_;
 };
 
 struct ChildContextFactories
@@ -287,20 +335,77 @@ typename boost::enable_if<boost::mpl::has_key<traits::shape_elements, ElementTag
     typedef factory::context::on_stack<ShapeContext> type;
 };
 
-typedef
-boost::mpl::set<
-// SVG Structural Elements
-tag::element::svg,
-tag::element::g,
-// SVG Shape Elements
-tag::element::circle,
-tag::element::ellipse,
-tag::element::line,
-tag::element::path,
-tag::element::polygon,
-tag::element::polyline,
-tag::element::rect
->::type processed_elements_t;
+template<>
+struct ChildContextFactories::apply<Canvas, tag::element::use_>
+{
+    typedef factory::context::on_stack<UseContext> type;
+};
+
+// Elements referenced by 'use' element
+template<>
+struct ChildContextFactories::apply<UseContext, tag::element::svg, void>
+{
+    typedef factory::context::on_stack<ReferencedSymbolOrSvgContext> type;
+};
+
+template<>
+struct ChildContextFactories::apply<UseContext, tag::element::symbol, void>
+{
+    typedef factory::context::on_stack<ReferencedSymbolOrSvgContext> type;
+};
+
+template<class ElementTag>
+struct ChildContextFactories::apply<UseContext, ElementTag, void>: ChildContextFactories::apply<Canvas, ElementTag>
+{};
+
+template<class ElementTag>
+struct ChildContextFactories::apply<ReferencedSymbolOrSvgContext, ElementTag, void>:
+ChildContextFactories::apply<Canvas, ElementTag>
+{};
+
+
+struct AttributeTraversal: policy::attribute_traversal::default_policy
+{
+    typedef boost::mpl::if_<
+    // If element is 'svg' or 'symbol'...
+    boost::mpl::has_key<
+    boost::mpl::set<
+    tag::element::svg,
+    tag::element::symbol
+    >,
+    boost::mpl::_1
+    >,
+    boost::mpl::vector<
+    // ... load viewport-related attributes first ...
+    tag::attribute::x,
+    tag::attribute::y,
+    tag::attribute::width,
+    tag::attribute::height,
+    tag::attribute::viewBox,
+    tag::attribute::preserveAspectRatio,
+    // ... notify library, that all viewport attributes that are present was loaded.
+    // It will result in call to BaseContext::set_viewport and BaseContext::set_viewbox_size
+    notify_context<tag::event::after_viewport_attributes>
+    >::type,
+    boost::mpl::empty_sequence
+    > get_priority_attributes_by_element;
+};
+
+
+using processed_elements_t = boost::mpl::set<
+    // SVG Structural Elements
+    tag::element::svg,
+    tag::element::g,
+    tag::element::use_,
+    // SVG Shape Elements
+    tag::element::circle,
+    tag::element::ellipse,
+    tag::element::line,
+    tag::element::path,
+    tag::element::polygon,
+    tag::element::polyline,
+    tag::element::rect
+>::type;
 
 // This cryptic code just merges predefined sequences traits::shapes_attributes_by_element
 // and traits::viewport_attributes with tag::attribute::transform attribute into single MPL sequence
@@ -316,34 +421,57 @@ typedef boost::mpl::fold<
         tag::attribute::stroke,
         tag::attribute::stroke_width,
         tag::attribute::fill,
-        tag::attribute::opacity
+        tag::attribute::opacity,
+        boost::mpl::pair<tag::element::use_, tag::attribute::xlink::href>
     >::type,
     boost::mpl::insert<boost::mpl::_1, boost::mpl::_2>
 >::type processed_attributes_t;
 
 struct PathPolicy
 {
-    static const bool absolute_coordinates_only     = true;
-    static const bool no_ortho_line_to              = true;
-    static const bool no_quadratic_bezier_shorthand = true;
-    static const bool no_cubic_bezier_shorthand     = true;
-    static const bool quadratic_bezier_as_cubic     = true;
-    static const bool arc_as_cubic_bezier           = true;
+    static constexpr bool absolute_coordinates_only     = true;
+    static constexpr bool no_ortho_line_to              = true;
+    static constexpr bool no_quadratic_bezier_shorthand = true;
+    static constexpr bool no_cubic_bezier_shorthand     = true;
+    static constexpr bool quadratic_bezier_as_cubic     = true;
+    static constexpr bool arc_as_cubic_bezier           = true;
 };
 
 void loadSvg(xml_element_t xml_root_element)
 {
-    Canvas context;
-    document_traversal<
+    using traversal = document_traversal<
         processed_elements<processed_elements_t>,
         processed_attributes<processed_attributes_t>,
         viewport_policy<policy::viewport::as_transform>,
         path_policy<PathPolicy>,
         context_factories<ChildContextFactories>,
-        color_factory<ColorFactory>
-    >::load_document(xml_root_element, context);
+        color_factory<ColorFactory>,
+        length_policy<policy::length::forward_to_method<Canvas>>,
+        attribute_traversal_policy<AttributeTraversal>
+    >;
+    
+    Canvas context;
+    traversal::load_document(xml_root_element, context);
     
     context.surface->save("/users/migun/desktop/test.png", image_file_format::png);
+}
+
+void UseContext::on_exit_element()
+{
+//    if (xml_element_t element = FindCurrentDocumentElementById(fragment_id_))
+//    {
+//        // TODO: Check for cyclic references
+//        // TODO: Apply translate transform (x_, y_)
+//        document_traversal_t::load_referenced_element<
+//        referencing_element<tag::element::use_>,
+//        expected_elements<traits::reusable_elements>,
+//        processed_elements<
+//        boost::mpl::insert<processed_elements_t, tag::element::symbol>::type
+//        >
+//        >::load(element, *this);
+//    }
+//    else
+//        std::cerr << "Element referenced by 'use' not found\n";
 }
 
 int main()
@@ -362,8 +490,8 @@ int main()
 //    TEXT( </g>)
 //    TEXT(</svg>);
     
-//    std::ifstream t("/Users/migun/Desktop/SVG_example_markup_grid.svg");
-    std::ifstream t("/Users/migun/Desktop/European_Ombudsman_logo.svg");
+    std::ifstream t("/Users/migun/Desktop/SVG_example_markup_grid.svg");
+//    std::ifstream t("/Users/migun/Desktop/European_Ombudsman_logo.svg");
     std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
     
     rapidxml_ns::xml_document<> doc;    // character type defaults to char
