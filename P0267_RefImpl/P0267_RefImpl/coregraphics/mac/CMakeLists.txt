@@ -5,6 +5,9 @@ project(io2d CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 set(IO2D_LIB_SRC 
+	io2d.h
+	io2d_cg.h
+	io2d_x.h
 	io2d_cg_brushes.h
 	io2d_cg_brushes.cpp
 	io2d_cg_interop.h

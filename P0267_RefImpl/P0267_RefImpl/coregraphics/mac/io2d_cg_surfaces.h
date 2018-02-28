@@ -64,11 +64,18 @@ _GS::surfaces::create_image_surface(filesystem::path p, image_file_format iff, i
     return data;
 }
 
-inline void _GS::surfaces::destroy(image_surface_data_type& /*data*/) noexcept {
+inline _GS::surfaces::image_surface_data_type
+_GS::surfaces::move_image_surface(image_surface_data_type&& data) noexcept {
+    return move(data);
+}
+    
+inline void
+_GS::surfaces::destroy(image_surface_data_type& /*data*/) noexcept {
     // Do nothing.
 }
             
-inline basic_display_point<GraphicsMath> _GS::surfaces::dimensions(const image_surface_data_type& data) noexcept {
+inline basic_display_point<GraphicsMath>
+_GS::surfaces::dimensions(const image_surface_data_type& data) noexcept {
     return data.dimensions;
 }
             
