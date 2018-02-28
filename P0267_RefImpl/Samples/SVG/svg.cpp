@@ -13,17 +13,13 @@ using xml_element_t = rapidxml_ns::xml_node<> const*;
 
 struct Document {
     unordered_map< string, pair<brush, brush_props> > gradients;
+    float scale = 1.;
 };
 
-struct Transformable
-{
+struct Transformable {
     Transformable() {}
     Transformable(Transformable const & src):trans_matrix{src.trans_matrix} {}
-    
-    void transform_matrix(const boost::array<double, 6> & matrix) {
-        trans_matrix =  matrix_2d(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5] ) * trans_matrix;
-    }
-    
+    void transform_matrix(const boost::array<double, 6> & m) { trans_matrix = matrix_2d(m[0], m[1], m[2], m[3], m[4], m[5]) * trans_matrix; }
     matrix_2d trans_matrix;
 };
 
@@ -87,7 +83,7 @@ struct Stylable {
 struct Canvas: Transformable, Stylable {
     Canvas(Document &document):
     document_(document) {
-        length_factory_.set_absolute_units_coefficient(90, tag::length_units::in());
+        length_factory_.set_absolute_units_coefficient(96.f, tag::length_units::in());
     }
     
     Canvas(Canvas const & parent):
@@ -98,8 +94,10 @@ struct Canvas: Transformable, Stylable {
     void on_exit_element() {}
     
     void set_viewport(double viewport_x, double viewport_y, double viewport_width, double viewport_height) {
-        surface = make_shared<image_surface>(format::argb32, viewport_width, viewport_height);
-        surface->clear();
+        if( !surface ) {
+            surface = make_shared<image_surface>(format::argb32, document_.scale * viewport_width, document_.scale * viewport_height);
+            surface->clear();
+        }
         length_factory_.set_viewport_size(viewport_width, viewport_height);
     }
     
@@ -128,23 +126,24 @@ struct ShapeContext: Canvas {
     void path_close_subpath() { pb.close_figure(); }
     void path_exit() {}
     void on_exit_element() {
-        pb.insert(begin(pb), figure_items::abs_matrix{trans_matrix});
+        auto rp = render_props{ antialias::best, matrix_2d::init_scale({document_.scale, document_.scale}) };
+        pb.insert(begin(pb), figure_items::rel_matrix{trans_matrix});
         if( auto color = get_if<rgba_color>(&fill_paint) ) {
             auto effective_color = rgba_color{ color->r(), color->g(), color->b(), color->a() * opacity };
-            surface->fill(brush{effective_color}, pb);
+            surface->fill(brush{effective_color}, pb, nullopt, rp);
         }
         else if( auto name = get_if<string>(&fill_paint) ) {
             auto gr = document_.gradients.find(*name);
             if( gr != end(document_.gradients) ) {
                 auto bp = gr->second.second;
                 bp.brush_matrix( bp.brush_matrix() * trans_matrix ); // assume userSpaceOnUse
-                surface->fill(gr->second.first, pb, bp);
+                surface->fill(gr->second.first, pb, bp, rp);
             }
         }
         if( auto color = get_if<rgba_color>(&stroke_paint) ) {
             auto effective_color = rgba_color{ color->r(), color->g(), color->b(), color->a() * opacity };
             stroke_props sp{stroke_width};
-            surface->stroke(brush{effective_color}, pb, nullopt, sp);
+            surface->stroke(brush{effective_color}, pb, nullopt, sp, nullopt, rp);
         }
     }
     path_builder pb;
@@ -396,7 +395,7 @@ struct PathPolicy
     static constexpr bool arc_as_cubic_bezier           = true;
 };
 
-static optional<image_surface> loadSvg(xml_element_t xml_root_element)
+static optional<image_surface> loadSvg(xml_element_t xml_root_element, Document &document)
 {
     using traversal = document_traversal<
     processed_elements<processed_elements_t>,
@@ -409,10 +408,8 @@ static optional<image_surface> loadSvg(xml_element_t xml_root_element)
     attribute_traversal_policy<AttributeTraversal>
     >;
     
-    Document document;
     Canvas context(document);
     traversal::load_document(xml_root_element, context);
-
     if( context.surface )
         return move(*context.surface);
     else
@@ -438,12 +435,14 @@ void UseContext::on_exit_element()
 }
 
 
-optional<std::experimental::io2d::image_surface> RenderSVG( const string &data )
+optional<std::experimental::io2d::image_surface> RenderSVG( const string &data, float scale )
 {
+    Document document;
+    document.scale = scale;
     rapidxml_ns::xml_document<> doc;    // character type defaults to char
     auto text = data;
     doc.parse<0>(text.data());
     if( auto svg = doc.first_node("svg") )
-        return loadSvg(svg);
+        return loadSvg(svg, document);
     return nullopt;
 }
