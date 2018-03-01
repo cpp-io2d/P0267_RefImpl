@@ -62,7 +62,6 @@ target_include_directories(io2d PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/..
   ${CMAKE_CURRENT_SOURCE_DIR}/../..
 )
-#set_target_properties(io2d PROPERTIES PUBLIC_HEADER ${IO2D_LIB_HEADERS})
 
 target_link_libraries(io2d "-framework Cocoa")
 target_link_libraries(io2d "-framework AppKit")
@@ -74,7 +73,6 @@ target_link_libraries(io2d "-framework CoreGraphics")
 install(TARGETS io2d
 	ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/lib
 )
-
-INSTALL(FILES ${IO2D_LIB_HEADERS}
+install(FILES ${IO2D_LIB_HEADERS}
         DESTINATION ${CMAKE_BINARY_DIR}/include
 )

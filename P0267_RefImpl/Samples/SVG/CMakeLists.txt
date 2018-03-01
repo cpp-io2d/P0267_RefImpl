@@ -18,11 +18,13 @@ target_include_directories(svg
   PRIVATE external/svgpp/include
   PRIVATE external
 )
-
 target_include_directories(svg SYSTEM
   PRIVATE ${Boost_INCLUDE_DIRS}
 )
 
 install(TARGETS svg
 	RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/samples
+)
+install(FILES example.svg
+        DESTINATION ${CMAKE_BINARY_DIR}/samples
 )
