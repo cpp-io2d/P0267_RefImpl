@@ -599,7 +599,7 @@ struct surface_state_props {
 //
 //                    // display_surface common functions
                     static void draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_GS>&)>);
-//                    static void size_change_callback(output_surface_data_type& data, function<void(basic_output_surface<_Graphics_surfaces_type>&)>);
+                    static void size_change_callback(output_surface_data_type& data, function<void(basic_output_surface<_GS>&)>);
 //                    static void user_scaling_callback(output_surface_data_type& data, function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)>);
 //                    static void dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
 //                    static void scaling(output_surface_data_type& data, io2d::scaling val);
@@ -609,7 +609,7 @@ struct surface_state_props {
 //                    static void redraw_required(output_surface_data_type& data, bool val);
 //
 //                    static io2d::format format(const output_surface_data_type& data) noexcept;
-//                    static basic_display_point<GraphicsMath> dimensions(const output_surface_data_type& data) noexcept;
+                    static basic_display_point<GraphicsMath> dimensions(const output_surface_data_type& data) noexcept;
 //                    static basic_display_point<GraphicsMath> display_dimensions(const output_surface_data_type& data) noexcept;
 //                    static io2d::scaling scaling(output_surface_data_type& data) noexcept;
 //                    static optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const output_surface_data_type& data) noexcept;

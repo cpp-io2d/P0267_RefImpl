@@ -18,12 +18,16 @@ struct _GS::surfaces::_OutputSurfaceCocoa
     basic_display_point<GraphicsMath> buffer_size;
     _IO2DOutputView *output_view = nullptr;
     function<void(basic_output_surface<_GS>&)> draw_callback;
+    function<void(basic_output_surface<_GS>&)> size_change_callback;
     basic_output_surface<_GS> *frontend;
 
     bool auto_clear = false;
+    io2d::format preferred_format;
     io2d::refresh_style refresh_style;
     float fps;
 };
+    
+static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, basic_display_point<GraphicsMath> new_dimensions );
 
 _GS::surfaces::output_surface_data_type _GS::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_style rr, float fps)
 {
@@ -51,17 +55,18 @@ _GS::surfaces::output_surface_data_type _GS::surfaces::create_output_surface(int
 _GS::surfaces::output_surface_data_type _GS::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, int preferredDisplayWidth, int preferredDisplayHeight, error_code& ec, io2d::scaling scl, io2d::refresh_style rr, float fps) noexcept
 {
     auto ctx = make_unique<_OutputSurfaceCocoa>();
+    auto style = NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskResizable;
     ctx->window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, preferredWidth, preferredHeight)
-                                              styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable
+                                              styleMask:style
                                                 backing:NSBackingStoreBuffered
                                                   defer:false];
     ctx->output_view = [[_IO2DOutputView alloc] initWithFrame:ctx->window.contentView.bounds];
     ctx->output_view.data = ctx.get();
     ctx->window.contentView = ctx->output_view;
-    ctx->draw_buffer = _CreateBitmap(preferredFormat, preferredWidth, preferredHeight);
-    ctx->buffer_size = {preferredWidth, preferredHeight};
+    ctx->preferred_format = preferredFormat;
     ctx->refresh_style = rr;
     ctx->fps = fps;
+    RebuildBackBuffer(*ctx, {preferredWidth, preferredHeight});
     
     return ctx.release();
 }
@@ -84,9 +89,19 @@ void _GS::surfaces::destroy(output_surface_data_type& data) noexcept
     }
 }
     
+basic_display_point<GraphicsMath> _GS::surfaces::dimensions(const output_surface_data_type& data) noexcept
+{
+    return data->buffer_size;
+}
+    
 void _GS::surfaces::draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_GS>&)> callback)
 {
     data->draw_callback = std::move(callback);
+}
+    
+void _GS::surfaces::size_change_callback(output_surface_data_type& data, function<void(basic_output_surface<_GS>&)> callback)
+{
+    data->size_change_callback = std::move(callback);
 }
     
 bool _GS::surfaces::auto_clear(const output_surface_data_type& data) noexcept
@@ -137,32 +152,35 @@ static void _FireDisplay( _GS::surfaces::_OutputSurfaceCocoa *data )
     [NSApp updateWindows];
 }
 
-static NSEvent *_GetFakeEvent()
-{
-    static auto fake = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
-                                          location:NSMakePoint(0, 0)
-                                     modifierFlags:0
-                                         timestamp:0
-                                      windowNumber:0
-                                           context:nil
-                                           subtype:9076
-                                             data1:2875342
-                                             data2:8976345];
-    return fake;
-}
-
-static void _EnqueFakeEvent()
-{
-    [NSApp postEvent:_GetFakeEvent() atStart:false];
-}
+struct FakeEvent {
+    static constexpr short subtype = 9076;
+    static constexpr long data1 = 2875342;
+    static constexpr long data2 = 8976345;
     
-static bool _IsFakeEvent( NSEvent *event )
-{
-    return event.type == NSEventTypeApplicationDefined &&
-    short(event.subtype) == 9076 &&
-    event.data1 == 2875342 &&
-    event.data2 == 8976345;
-}
+    static NSEvent *Get()
+    {
+        static auto fake = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
+                                              location:NSMakePoint(0, 0)
+                                         modifierFlags:0
+                                             timestamp:0
+                                          windowNumber:0
+                                               context:nil
+                                               subtype:subtype
+                                                 data1:data1
+                                                 data2:data2];
+        return fake;
+    }
+    
+    static void Enqueue()
+    {
+        [NSApp postEvent:Get() atStart:false];
+    }
+
+    static bool IsFake( NSEvent *event )
+    {
+        return event.type == NSEventTypeApplicationDefined && short(event.subtype) == subtype && event.data1 == data1 && event.data2 == data2;
+    }
+};
     
 static NSEvent *_NextEvent()
 {
@@ -191,12 +209,12 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
         [fixed_timer invalidate];
     }
     else if( data->refresh_style == refresh_style::as_fast_as_possible ) {
-        _EnqueFakeEvent();
+        FakeEvent::Enqueue();
         while( auto event = _NextEvent() ) {
             [NSApp sendEvent:event];
-            if( _IsFakeEvent(event) ) {
+            if( FakeEvent::IsFake(event) ) {
                 _FireDisplay(data);
-                _EnqueFakeEvent();
+                FakeEvent::Enqueue();
             }
         }
     }
@@ -204,17 +222,48 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
     return 0;
 }
     
+static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, basic_display_point<GraphicsMath> new_dimensions )
+{
+    context.draw_buffer = _CreateBitmap(context.preferred_format, new_dimensions.x(), new_dimensions.y());
+    context.buffer_size = new_dimensions;
+}
+    
 } // namespace _CoreGraphics
 } // inline namespace v1
 } // std::experimental::io2d
 
+using namespace std::experimental::io2d;
 using namespace std::experimental::io2d::_CoreGraphics;
 
 @implementation _IO2DOutputView
 
+- (void)viewDidMoveToWindow
+{
+    if( self.window ) {
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(frameDidChange)
+                                                   name:NSViewFrameDidChangeNotification
+                                                 object:self];
+    }
+    else {
+        [NSNotificationCenter.defaultCenter removeObserver:self
+                                                      name:NSViewFrameDidChangeNotification
+                                                    object:self];
+
+    }
+}
+
+- (void)frameDidChange
+{
+    auto dimensions = basic_display_point<GraphicsMath>(self.bounds.size.width, self.bounds.size.height);
+    RebuildBackBuffer(*_data, dimensions);
+    if( _data->size_change_callback )
+        _data->size_change_callback(*_data->frontend);
+}
+
 - (void)drawRect:(NSRect)dirtyRect
 {
-    auto now = std::chrono:: high_resolution_clock::now();
+    auto was = std::chrono:: high_resolution_clock::now();
     
     if( _data->auto_clear )
         _GS::surfaces::clear(_data);
@@ -224,15 +273,21 @@ using namespace std::experimental::io2d::_CoreGraphics;
         
     _data->draw_callback(*_data->frontend);
     
-    // this is a really naive and slow approach
+    // this is a really naive and slow approach, need to switch to CGLayer for display surface drawing
     auto ctx = [[NSGraphicsContext currentContext] CGContext];
-    auto cgImage = CGBitmapContextCreateImage(_data->draw_buffer);
-    CGContextTranslateCTM(ctx, 0, CGImageGetHeight(cgImage));
-    CGContextScaleCTM(ctx, 1.0, -1.0);
-    CGContextDrawImage(ctx, self.bounds, cgImage);
-    CGImageRelease(cgImage);
+    auto image = CGBitmapContextCreateImage(_data->draw_buffer);
+    _AutoRelease release_image{image};
     
-    auto interval = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - now).count();
+    CGContextTranslateCTM(ctx, 0, CGImageGetHeight(image));
+    CGContextScaleCTM(ctx, 1.0, -1.0);
+    
+    // TODO: proper scaling regarding current settings
+    auto rc = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
+//    CGContextSet
+    CGContextDrawImage(ctx, rc, image);
+
+    auto now = std::chrono:: high_resolution_clock::now();
+    auto interval = std::chrono::duration_cast<std::chrono::microseconds>(now - was).count();
     std::cout << "frame time: " << interval << "us" << std::endl;
 }
 

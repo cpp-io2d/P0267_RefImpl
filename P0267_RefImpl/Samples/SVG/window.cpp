@@ -1,0 +1,60 @@
+#include "window.h"
+#include <iostream>
+#include <fstream>
+#include <io2d.h>
+#include "svg.h"
+
+using namespace std;
+using namespace std::experimental;
+using namespace std::experimental::io2d;
+
+static string Load( const string &path ) {
+    ifstream file(path);
+    if( !file.is_open() )
+        return {};
+    return string{ istreambuf_iterator<char>(file), istreambuf_iterator<char>() };
+}
+
+static optional<image_surface> Render( const string& svg, float scale = 1.f ) {
+    try {
+        return RenderSVG(svg, scale);
+    }
+    catch (exception const & e) {
+        return nullopt;
+    }
+}
+
+void RunWindowed( const string &path_in ) {
+    auto data = Load(path_in);
+    auto canonical = Render(data);
+    if( !canonical )
+        return;
+    auto canonical_dims = canonical->dimensions();
+    
+    auto scale = 1.f;
+    auto dims = display_point{};
+    auto brush = optional<io2d::brush>{};
+    auto build = [&](int target_width, int target_heigt) {
+        scale = min(float(target_width) / float(canonical_dims.x()), float(target_heigt) / float(canonical_dims.y()));
+        auto new_img = Render(data, scale);
+        dims = new_img->dimensions();
+        brush = io2d::brush{ move(*new_img)};
+    };
+    build(640, 480);
+    
+    output_surface display{ 640, 480, format::argb32, scaling::letterbox, refresh_style::fixed, 30.0f };
+    display.size_change_callback([&](output_surface& os) {
+        build(os.dimensions().x(), os.dimensions().y());
+    });
+    display.draw_callback([&](output_surface& os) {
+        path_builder pb;
+        pb.new_figure({0, 0});
+        pb.rel_line(point_2d(dims.x(), 0));
+        pb.rel_line(point_2d(0, dims.y()));
+        pb.rel_line(point_2d(-dims.x(), 0));
+        pb.rel_line(point_2d(0, -dims.y()));
+        pb.close_figure();
+        os.fill(*brush, pb);
+    });
+    display.begin_show();
+}

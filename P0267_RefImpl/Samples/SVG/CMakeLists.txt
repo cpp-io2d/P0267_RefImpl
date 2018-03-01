@@ -9,6 +9,8 @@ add_executable(svg
 	main.cpp
 	svg.h
 	svg.cpp
+	window.h
+	window.cpp
 )
 
 target_link_libraries(svg io2dlib)
