@@ -22,16 +22,59 @@ set(IO2D_LIB_SRC
 	io2d_cg_surfaces.cpp
 	../../rgba_color.cpp
 )
+set(IO2D_LIB_HEADERS 
+	io2d.h
+	io2d_cg.h
+	io2d_x.h
+	io2d_cg_brushes.h
+	io2d_cg_interop.h
+	io2d_cg_output_surfaces.h
+	io2d_cg_paths.h
+	io2d_cg_surface_state_props.h
+	io2d_cg_paths_figures.h
+	io2d_cg_surfaces.h
+	../../xio2d.h
+	../../xbrushes.h
+	../../xcolor.h
+	../../xdiagnostics.h
+	../../xgraphicsmath.h
+	../../xgraphicsmathfloat.h
+	../../xinput.h
+	../../xio2d.h
+	../../xpath.h
+	../../xsurfaces_enums.h
+	../../xsurfaces.h
+	../../xtext.h
+	../../xbrushes_impl.h
+	../../xgraphicsmath_impl.h
+	../../xgraphicsmathfloat_impl.h
+	../../xio2d_impl.h
+	../../xpath_impl.h
+	../../xpathbuilder_impl.h
+	../../xsurfaces_impl.h
+	../../xsurfacesprops_impl.h
+) 
 
-add_library(io2dlib ${IO2D_LIB_SRC})
+add_library(io2d ${IO2D_LIB_SRC})
 
-target_include_directories(io2dlib INTERFACE
+target_include_directories(io2d PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_SOURCE_DIR}/../..
+)
+#set_target_properties(io2d PROPERTIES PUBLIC_HEADER ${IO2D_LIB_HEADERS})
+
+target_link_libraries(io2d "-framework Cocoa")
+target_link_libraries(io2d "-framework AppKit")
+target_link_libraries(io2d "-framework CoreServices")
+target_link_libraries(io2d "-framework CoreFoundation")
+target_link_libraries(io2d "-framework ImageIO")
+target_link_libraries(io2d "-framework CoreGraphics")
+
+install(TARGETS io2d
+	ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/lib
 )
 
-target_link_libraries(io2dlib "-framework Cocoa")
-target_link_libraries(io2dlib "-framework AppKit")
-target_link_libraries(io2dlib "-framework CoreServices")
-target_link_libraries(io2dlib "-framework CoreFoundation")
-target_link_libraries(io2dlib "-framework ImageIO")
-target_link_libraries(io2dlib "-framework CoreGraphics")
+INSTALL(FILES ${IO2D_LIB_HEADERS}
+        DESTINATION ${CMAKE_BINARY_DIR}/include
+)

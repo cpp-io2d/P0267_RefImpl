@@ -263,7 +263,7 @@ using namespace std::experimental::io2d::_CoreGraphics;
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    auto was = std::chrono:: high_resolution_clock::now();
+//    auto was = std::chrono:: high_resolution_clock::now();
     
     if( _data->auto_clear )
         _GS::surfaces::clear(_data);
@@ -283,12 +283,11 @@ using namespace std::experimental::io2d::_CoreGraphics;
     
     // TODO: proper scaling regarding current settings
     auto rc = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
-//    CGContextSet
     CGContextDrawImage(ctx, rc, image);
 
-    auto now = std::chrono:: high_resolution_clock::now();
-    auto interval = std::chrono::duration_cast<std::chrono::microseconds>(now - was).count();
-    std::cout << "frame time: " << interval << "us" << std::endl;
+//    auto now = std::chrono:: high_resolution_clock::now();
+//    auto interval = std::chrono::duration_cast<std::chrono::microseconds>(now - was).count();
+//    std::cout << "frame time: " << interval << "us" << std::endl;
 }
 
 - (BOOL)acceptsFirstResponder

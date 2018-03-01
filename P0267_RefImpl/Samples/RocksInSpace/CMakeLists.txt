@@ -24,4 +24,8 @@ set(ROCKS_IN_SPACE_SRC
 
 add_executable(rocks_in_space ${ROCKS_IN_SPACE_SRC})
 
-target_link_libraries(rocks_in_space io2dlib)
+target_link_libraries(rocks_in_space io2d)
+
+install(TARGETS rocks_in_space
+	RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/samples
+)

@@ -27,27 +27,28 @@ namespace std::filesystem {
     using path = ::std::experimental::filesystem::path;
 }
 
-#include "../../xio2d.h"
-#include "../../xbrushes.h"
-#include "../../xcolor.h"
-#include "../../xdiagnostics.h"
-#include "../../xgraphicsmath.h"
-#include "../../xgraphicsmathfloat.h"
-#include "../../xinput.h"
-#include "../../xio2d.h"
-#include "../../xpath.h"
-#include "../../xsurfaces_enums.h"
-#include "../../xsurfaces.h"
-#include "../../xtext.h"
+#include "xio2d.h"
 
-#include "../../xbrushes_impl.h"
-#include "../../xgraphicsmath_impl.h"
-#include "../../xgraphicsmathfloat_impl.h"
-#include "../../xio2d_impl.h"
-#include "../../xpath_impl.h"
-#include "../../xpathbuilder_impl.h"
-#include "../../xsurfaces_impl.h"
-#include "../../xsurfacesprops_impl.h"
+#include "xbrushes.h"
+#include "xcolor.h"
+#include "xdiagnostics.h"
+#include "xgraphicsmath.h"
+#include "xgraphicsmathfloat.h"
+#include "xinput.h"
+#include "xio2d.h"
+#include "xpath.h"
+#include "xsurfaces_enums.h"
+#include "xsurfaces.h"
+#include "xtext.h"
+
+#include "xbrushes_impl.h"
+#include "xgraphicsmath_impl.h"
+#include "xgraphicsmathfloat_impl.h"
+#include "xio2d_impl.h"
+#include "xpath_impl.h"
+#include "xpathbuilder_impl.h"
+#include "xsurfaces_impl.h"
+#include "xsurfacesprops_impl.h"
 
 #endif
 

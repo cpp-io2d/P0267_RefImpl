@@ -5,4 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(draw_cpp main.cpp)
 
-target_link_libraries(draw_cpp io2dlib)
+target_link_libraries(draw_cpp io2d)
+
+install(TARGETS draw_cpp
+	RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/samples
+)

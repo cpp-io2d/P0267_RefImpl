@@ -13,7 +13,7 @@ add_executable(svg
 	window.cpp
 )
 
-target_link_libraries(svg io2dlib)
+target_link_libraries(svg io2d)
 target_include_directories(svg
   PRIVATE external/svgpp/include
   PRIVATE external
@@ -21,4 +21,8 @@ target_include_directories(svg
 
 target_include_directories(svg SYSTEM
   PRIVATE ${Boost_INCLUDE_DIRS}
+)
+
+install(TARGETS svg
+	RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/samples
 )
