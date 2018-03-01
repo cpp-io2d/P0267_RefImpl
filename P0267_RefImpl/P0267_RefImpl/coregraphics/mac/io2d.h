@@ -3,7 +3,7 @@
 #ifndef _IO2D_
 #define _IO2D_
 
-#include "io2d_x.h"
+#include "io2d_cg_frontend.h"
 #include "io2d_cg.h"
 
 namespace std::experimental::io2d {

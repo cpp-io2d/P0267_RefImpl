@@ -8,9 +8,28 @@
 #include <cassert>
 #include <type_traits>
 
-//
-#if ((defined(_MSC_VER) && ((_MSC_VER >= 1910) || (defined(__clang__) && (_MSC_VER >= 1900)))) || defined(HAVE_FILESYSTEM))
-#define _Filesystem_support_test
+#define __cpp_lib_experimental_io2d 201710
+
+////
+//#if ((defined(_MSC_VER) && ((_MSC_VER >= 1910) || (defined(__clang__) && (_MSC_VER >= 1900)))) || defined(HAVE_FILESYSTEM))
+//#define _Filesystem_support_test
+//#endif
+
+//#define HAVE_FILESYSTEM
+//#include <experimental/filesystem>
+//namespace std::filesystem {
+//    using path = ::std::experimental::filesystem::path;
+//}
+
+#if __has_include(<filesystem>)
+    #define _IO2D_Has_Filesystem
+    #include <filesystem>
+#elif __has_include(<experimental/filesystem>)
+    #define _IO2D_Has_Filesystem
+    #include <experimental/filesystem>
+    namespace std::filesystem {
+        using path = ::std::experimental::filesystem::path;
+    }
 #endif
 
 #if defined BUILD_IO2D_API_DLL 

@@ -6,9 +6,9 @@
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
 
 CGContextRef _CreateBitmap(io2d::format fmt, int width, int height) noexcept;
-CGContextRef _LoadBitmap(const filesystem::path &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec);
+CGContextRef _LoadBitmap(const string &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec);
     
-void _WriteBitmap(CGContextRef ctx, const filesystem::path &p, image_file_format iff, ::std::error_code &ec);
+void _WriteBitmap(CGContextRef ctx, const string &p, image_file_format iff, ::std::error_code &ec);
 CGColorRef _ClearColor();
 void _Clear(CGContextRef ctx, CGColorRef with_color, CGRect in_rect );
 void _Stroke(CGContextRef ctx, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_stroke_props<_GS>& sp, const basic_dashes<_GS>& d, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
@@ -36,7 +36,11 @@ inline _GS::surfaces::image_surface_data_type _GS::surfaces::create_image_surfac
 }
     
 inline _GS::surfaces::image_surface_data_type
-_GS::surfaces::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt) {
+#ifdef _IO2D_Has_Filesystem
+_GS::surfaces::create_image_surface(const filesystem::path &p, image_file_format iff, io2d::format fmt) {
+#else
+_GS::surfaces::create_image_surface(const string &p, image_file_format iff, io2d::format fmt) {
+#endif
     ::std::error_code ec;
     auto data = create_image_surface(p, iff, fmt, ec);
     if( ec )
@@ -45,7 +49,11 @@ _GS::surfaces::create_image_surface(filesystem::path p, image_file_format iff, i
 }
     
 inline _GS::surfaces::image_surface_data_type
-_GS::surfaces::create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
+#ifdef _IO2D_Has_Filesystem
+_GS::surfaces::create_image_surface(const filesystem::path &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
+#else
+_GS::surfaces::create_image_surface(const string &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
+#endif
     auto context = _LoadBitmap(p, iff, fmt, ec);
     if( !context )
         return {};
@@ -78,15 +86,25 @@ inline basic_display_point<GraphicsMath>
 _GS::surfaces::dimensions(const image_surface_data_type& data) noexcept {
     return data.dimensions;
 }
-            
-inline void _GS::surfaces::save(image_surface_data_type& data, const filesystem::path &p, image_file_format iff) {
+
+inline void
+#ifdef _IO2D_Has_Filesystem
+_GS::surfaces::save(image_surface_data_type& data, const filesystem::path &p, image_file_format iff) {
+#else
+_GS::surfaces::save(image_surface_data_type& data, const string &p, image_file_format iff) {
+#endif
     ::std::error_code ec;
     save(data, p, iff, ec);
     if( ec )
         throw ::std::system_error(ec);
 }
             
-inline void _GS::surfaces::save(image_surface_data_type& data, const filesystem::path &p, image_file_format iff, error_code& ec) noexcept {
+inline void
+#ifdef _IO2D_Has_Filesystem
+_GS::surfaces::save(image_surface_data_type& data, const filesystem::path &p, image_file_format iff, error_code& ec) noexcept {
+#else
+_GS::surfaces::save(image_surface_data_type& data, const string &p, image_file_format iff, error_code& ec) noexcept {
+#endif
     _WriteBitmap(data.context.get(), p, iff, ec);
 }
             

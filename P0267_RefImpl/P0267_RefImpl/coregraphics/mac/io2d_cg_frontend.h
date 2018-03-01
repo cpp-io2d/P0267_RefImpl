@@ -1,7 +1,5 @@
-#ifndef _IO2D_X_
-#define _IO2D_X_
-
-#define __cpp_lib_experimental_io2d 201710
+#ifndef _IO2D_CG_FRONTEND_
+#define _IO2D_CG_FRONTEND_
 
 #include <memory>
 #include <functional>
@@ -21,14 +19,8 @@
 #include <cmath>
 #include <chrono>
 
-#define HAVE_FILESYSTEM
-#include <experimental/filesystem>
-namespace std::filesystem {
-    using path = ::std::experimental::filesystem::path;
-}
 
 #include "xio2d.h"
-
 #include "xbrushes.h"
 #include "xcolor.h"
 #include "xdiagnostics.h"
@@ -40,7 +32,6 @@ namespace std::filesystem {
 #include "xsurfaces_enums.h"
 #include "xsurfaces.h"
 #include "xtext.h"
-
 #include "xbrushes_impl.h"
 #include "xgraphicsmath_impl.h"
 #include "xgraphicsmathfloat_impl.h"
@@ -51,4 +42,3 @@ namespace std::filesystem {
 #include "xsurfacesprops_impl.h"
 
 #endif
-

@@ -1,17 +1,7 @@
 #ifndef _IO2D_CG_
 #define _IO2D_CG_
 
-#include "io2d_x.h"
-
-//#if defined(_Filesystem_support_test)
-//#include <filesystem>
-//#endif
-//#include "P0267_RefImpl/P0267_RefImpl/P0267_RefImpl/xgraphicsmath.h"
-//#include "P0267_RefImpl/P0267_RefImpl/P0267_RefImpl/xgraphicsmathfloat.h"
-//#include "P0267_RefImpl/P0267_RefImpl/P0267_RefImpl/xgraphicsmath_impl.h"
-//#include "P0267_RefImpl/P0267_RefImpl/P0267_RefImpl/xgraphicsmathfloat_impl.h"
-
-
+#include "io2d_cg_frontend.h"
 #include <CoreGraphics/CoreGraphics.h>
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
@@ -383,15 +373,26 @@ struct surface_state_props {
                 
                     // 13.15.3, construct/copy/move/destroy:
                     static image_surface_data_type create_image_surface(io2d::format fmt, int width, int height);
-                    static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt);
-                    static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
+#ifdef _IO2D_Has_Filesystem
+                    static image_surface_data_type create_image_surface(const filesystem::path &p, image_file_format iff, io2d::format fmt);
+                    static image_surface_data_type create_image_surface(const filesystem::path &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
+#else
+                    static image_surface_data_type create_image_surface(const string &p, image_file_format iff, io2d::format fmt);
+                    static image_surface_data_type create_image_surface(const string &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
+#endif
+                    
                     static image_surface_data_type move_image_surface(image_surface_data_type&& data) noexcept;
                     static void destroy(image_surface_data_type& data) noexcept;
                     
                     // 13.15.4, members:
+#ifdef _IO2D_Has_Filesystem
                     static void save(image_surface_data_type& data, const filesystem::path &p, image_file_format iff);
                     static void save(image_surface_data_type& data, const filesystem::path &p, image_file_format iff, error_code& ec) noexcept;
-
+#else
+                    static void save(image_surface_data_type& data, const string &p, image_file_format iff);
+                    static void save(image_surface_data_type& data, const string &p, image_file_format iff, error_code& ec) noexcept;
+#endif
+                    
                     // 13.15.5, static members:
                     static basic_display_point<GraphicsMath> max_dimensions() noexcept;
 

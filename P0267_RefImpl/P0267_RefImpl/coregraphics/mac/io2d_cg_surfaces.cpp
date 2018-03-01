@@ -33,7 +33,7 @@ CGContextRef _CreateBitmap(io2d::format fmt, int width, int height) noexcept
     }
 }
     
-CGContextRef _LoadBitmap(const filesystem::path &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec)
+CGContextRef _LoadBitmap(const string &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec)
 {
  //             TODO: error codes
     std::ifstream ifs(p, std::ifstream::in | std::ifstream::binary);
@@ -75,7 +75,7 @@ CGContextRef _LoadBitmap(const filesystem::path &p, image_file_format iff, io2d:
     return bitmap;
 }
             
-void _WriteBitmap(CGContextRef ctx, const filesystem::path &p, image_file_format iff, ::std::error_code &ec)
+void _WriteBitmap(CGContextRef ctx, const string &p, image_file_format iff, ::std::error_code &ec)
 {
     if (iff == image_file_format::unknown) {
         ec = make_error_code(errc::not_supported);
@@ -83,8 +83,6 @@ void _WriteBitmap(CGContextRef ctx, const filesystem::path &p, image_file_format
     }
     
     //             TODO: error codes
-    
-    auto path_str = p.string();
     auto type = _ToCG(iff);
     
     auto data = CFDataCreateMutable(nullptr, 0 );
