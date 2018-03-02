@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(IO2D_LIB_SRC 
 	io2d.h
 	io2d_cg.h
-	io2d_x.h
+	io2d_cg_frontend.h
 	io2d_cg_brushes.h
 	io2d_cg_brushes.cpp
 	io2d_cg_interop.h
@@ -25,7 +25,7 @@ set(IO2D_LIB_SRC
 set(IO2D_LIB_HEADERS 
 	io2d.h
 	io2d_cg.h
-	io2d_x.h
+	io2d_frontend.h
 	io2d_cg_brushes.h
 	io2d_cg_interop.h
 	io2d_cg_output_surfaces.h
