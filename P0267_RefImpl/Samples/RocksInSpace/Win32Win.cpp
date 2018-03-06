@@ -75,9 +75,9 @@ void rocks_in_space::Win32Win::OnWmCreate(HWND hwnd)
 	}
 	m_hwnd = hwnd;
 	m_hdc = GetDC(m_hwnd);
-	m_outputSfc = unmanaged_output_surface(default_graphics_surfaces::surfaces::create_unmanaged_output_surface(m_hInstance, m_hwnd, m_hdc, m_w, m_h, m_fmt, m_scl));
+	m_outputSfc = std::experimental::io2d::unmanaged_output_surface(default_graphics_surfaces::surfaces::create_unmanaged_output_surface(m_hInstance, m_hwnd, m_hdc, m_w, m_h, m_fmt, m_scl));
 	m_outputSfc.display_dimensions(display_point{ m_w, m_h });
-	m_outputSfc.draw_callback([&](unmanaged_output_surface& uos) { m_game.update<unmanaged_output_surface>(uos); });
+	m_outputSfc.draw_callback([&](std::experimental::io2d::unmanaged_output_surface& uos) { m_game.update<std::experimental::io2d::unmanaged_output_surface>(uos); });
 	m_canDraw = true;
 }
 
@@ -92,9 +92,9 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 	case WM_CREATE:
 	{
 		m_hdc = GetDC(m_hwnd);
-		m_outputSfc = unmanaged_output_surface(default_graphics_surfaces::surfaces::create_unmanaged_output_surface(m_hInstance, m_hwnd, m_hdc, m_w, m_h, m_fmt, m_scl));
+		m_outputSfc = std::experimental::io2d::unmanaged_output_surface(default_graphics_surfaces::surfaces::create_unmanaged_output_surface(m_hInstance, m_hwnd, m_hdc, m_w, m_h, m_fmt, m_scl));
 		m_outputSfc.display_dimensions(display_point{ m_w, m_h });
-		m_outputSfc.draw_callback([&](unmanaged_output_surface& uos) { m_game.update<unmanaged_output_surface>(uos); });
+		m_outputSfc.draw_callback([&](std::experimental::io2d::unmanaged_output_surface& uos) { m_game.update<std::experimental::io2d::unmanaged_output_surface>(uos); });
 		m_canDraw = true;
 		// Return 0 to allow the window to proceed in the creation process.
 		return lrZero;

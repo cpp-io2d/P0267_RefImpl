@@ -32,6 +32,6 @@ namespace rocks_in_space
 		scaling									m_scl;
 
 		game								m_game;
-		unmanaged_output_surface			m_outputSfc;
+		std::experimental::io2d::unmanaged_output_surface			m_outputSfc;
 	};
 }

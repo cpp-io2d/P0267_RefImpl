@@ -890,7 +890,7 @@ namespace std::experimental::io2d {
 				auto width = data.dimensions.x();
 				auto height = data.dimensions.y();
 				auto pixelDataUP = _Convert_and_create_pixel_array_from_map_pixels<unsigned char>(data.format, mapData, width, height, mapStride);
-				::std::unique_ptr<Image, decltype(&DestroyImage)> image(ConstituteImage(static_cast<unsigned long>(width), static_cast<unsigned long>(height), "BGRA", ShortPixel, pixelDataUP.get(), &exInfo), &DestroyImage);
+				::std::unique_ptr<Image, decltype(&DestroyImage)> image(ConstituteImage(static_cast<unsigned long>(width), static_cast<unsigned long>(height), "BGRA", /* ShortPixel*/CharPixel, pixelDataUP.get(), &exInfo), &DestroyImage);
 				if (image == nullptr) {
 					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
 					DestroyExceptionInfo(&exInfo);

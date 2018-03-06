@@ -13,6 +13,10 @@ add_executable(svg
 	window.cpp
 )
 
+if(MSVC)
+	target_compile_options(svg PUBLIC /bigobj)
+endif()
+
 target_link_libraries(svg io2d)
 target_include_directories(svg
   PRIVATE external/svgpp/include
