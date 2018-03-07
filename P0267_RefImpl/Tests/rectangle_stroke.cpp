@@ -71,5 +71,29 @@ TEST_CASE("IO2D properly strokes a rectangle")
         image.stroke(b, pb);
     }
     
+    SECTION("Draw via rel separated lines") {
+        auto rp = render_props{antialias::none};
+        auto sp = stroke_props{2.f, line_cap::square};
+        auto pb = path_builder{};
+        pb.new_figure({ 50.f, 50.f });
+        pb.rel_line({200.f, 0.f});
+        image.stroke(b, pb, nullopt, sp, nullopt, rp);
+        
+        pb.clear();
+        pb.new_figure({ 250.f, 50.f });
+        pb.rel_line({0.f, 100.f});
+        image.stroke(b, pb, nullopt, sp, nullopt, rp);
+
+        pb.clear();
+        pb.new_figure({ 250.f, 150.f });
+        pb.rel_line({-200.f, 0.f});
+        image.stroke(b, pb, nullopt, sp, nullopt, rp);
+
+        pb.clear();
+        pb.new_figure({ 50.f, 150.f });
+        pb.rel_line({0.f, -100.f});
+        image.stroke(b, pb, nullopt, sp, nullopt, rp);
+    }
+    
     CHECK( ComparePNGExact(image, reference) == true );
 }
