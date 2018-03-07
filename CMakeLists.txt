@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.0.0)
-
 project(io2d CXX)
 
 if(MSVC)
@@ -25,3 +24,4 @@ elseif( ${IO2D_BACKEND} STREQUAL "CAIRO_WIN32" )
 endif()
 
 add_subdirectory(P0267_RefImpl/Samples)
+add_subdirectory(P0267_RefImpl/Tests)

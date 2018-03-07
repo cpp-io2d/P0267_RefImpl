@@ -4,3 +4,6 @@
 [submodule "P0267_RefImpl/Samples/SVG/external/rapidxml_ns"]
 	path = P0267_RefImpl/Samples/SVG/external/rapidxml_ns
 	url = https://github.com/svgpp/rapidxml_ns
+[submodule "P0267_RefImpl/Tests/Catch2"]
+	path = P0267_RefImpl/Tests/Catch2
+	url = https://github.com/catchorg/Catch2

@@ -108,33 +108,44 @@ _GS::surfaces::save(image_surface_data_type& data, const string &p, image_file_f
     _WriteBitmap(data.context.get(), p, iff, ec);
 }
             
-inline io2d::format _GS::surfaces::format(const image_surface_data_type& data) noexcept {
+inline io2d::format
+_GS::surfaces::format(const image_surface_data_type& data) noexcept {
     return data.format;
 }
             
-inline void _GS::surfaces::flush(image_surface_data_type& data) {
+inline void
+_GS::surfaces::flush(image_surface_data_type& data) {
     ::std::error_code ec;
     flush(data, ec);
     if( ec )
         throw ::std::system_error(ec);
 }
             
-inline void _GS::surfaces::flush(image_surface_data_type& data, error_code& ec) noexcept {
+inline void
+_GS::surfaces::flush(image_surface_data_type& data, error_code& ec) noexcept {
     CGContextFlush(data.context.get());
 }
             
-inline void _GS::surfaces::clear(image_surface_data_type& data) {
+inline void
+_GS::surfaces::clear(image_surface_data_type& data) {
     _Clear(data.context.get(), _ClearColor(), CGRectMake(0, 0, data.dimensions.x(), data.dimensions.y()) );
 }
 
-inline void _GS::surfaces::stroke(image_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_stroke_props<_GS>& sp, const basic_dashes<_GS>& d, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl) {
+inline void
+_GS::surfaces::stroke(image_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_stroke_props<_GS>& sp, const basic_dashes<_GS>& d, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl) {
     _Stroke(data.context.get(), b, ip, bp, sp, d, rp, cl);
 }
     
-inline void _GS::surfaces::fill(image_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl) {
+inline void
+_GS::surfaces::fill(image_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl) {
     _Fill(data.context.get(), b, ip, bp, rp, cl);
 }
-            
+    
+inline void
+_GS::surfaces::paint(image_surface_data_type& data, const basic_brush<_GS>& b, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl) {
+    _Paint(data.context.get(), b, bp, rp, cl);
+}
+
 } // namespace _CoreGraphics
 } // inline namespace v1
 } // std::experimental::io2d
