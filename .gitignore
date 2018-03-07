@@ -242,7 +242,6 @@ Release_Clang_C2
 /P0267_RefImpl/SampleApp/CMakeLists.txt
 /P0267_RefImpl/P0267_RefImpl/CMakeLists.txt
 /P0267_RefImpl/CMakeLists.txt
-*.png
 *.a
 *.la
 *.o
