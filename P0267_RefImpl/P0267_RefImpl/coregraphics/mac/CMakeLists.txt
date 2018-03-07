@@ -25,7 +25,7 @@ set(IO2D_LIB_SRC
 set(IO2D_LIB_HEADERS 
 	io2d.h
 	io2d_cg.h
-	io2d_frontend.h
+	io2d_cg_frontend.h
 	io2d_cg_brushes.h
 	io2d_cg_interop.h
 	io2d_cg_output_surfaces.h

@@ -2,7 +2,7 @@
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
             
-// I don't understand the math in §11.3.16. This is my version of it.
+// I don't understand the math in §11.3.16. Processing of abs_ figures makes no sense.
 
 [[maybe_unused]] static auto DropTranslation(basic_matrix_2d<GraphicsMath> m) noexcept {
     m.m20(0.0f);
@@ -11,17 +11,15 @@ namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphic
 }
     
 static void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::abs_new_figure &figure ) {
-    ctx.position = figure.at();
+    ctx.position = ctx.transform.transform_pt({0.0f, 0.0f}) + figure.at();
     ctx.figure_start = ctx.position;
-    auto pt_dev = ctx.position * ctx.transform;
-    CGPathMoveToPoint(ctx.path, nullptr, pt_dev.x(), pt_dev.y());
+    CGPathMoveToPoint(ctx.path, nullptr, ctx.position.x(), ctx.position.y());
 }
     
 static void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::rel_new_figure &figure ) {
-    ctx.position = ctx.position + figure.at();
+    ctx.position = ctx.position + figure.at() * DropTranslation(ctx.transform);
     ctx.figure_start = ctx.position;
-    auto pt_dev = ctx.position * ctx.transform;
-    CGPathMoveToPoint(ctx.path, nullptr, pt_dev.x(), pt_dev.y());
+    CGPathMoveToPoint(ctx.path, nullptr, ctx.position.x(), ctx.position.y());
 }
     
 static void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::close_figure &figure ) {
@@ -50,18 +48,18 @@ static void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::r
 }
     
 static void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::abs_line &figure ) {
-    ctx.position = figure.to();
-    auto pt_dev = ctx.position * ctx.transform;
-    CGPathAddLineToPoint(ctx.path, nullptr, pt_dev.x(), pt_dev.y());
+    ctx.position = ctx.transform.transform_pt(figure.to() - ctx.position) + ctx.position;
+    CGPathAddLineToPoint(ctx.path, nullptr, ctx.position.x(), ctx.position.y());
 }
     
 inline void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::rel_line &figure ) {
-    ctx.position = ctx.position + figure.to();
-    auto pt_dev = ctx.position * ctx.transform;
-    CGPathAddLineToPoint(ctx.path, nullptr, pt_dev.x(), pt_dev.y());
+    ctx.position = ctx.position + figure.to() * DropTranslation(ctx.transform);
+    CGPathAddLineToPoint(ctx.path, nullptr, ctx.position.x(), ctx.position.y());
 }
     
 inline void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::arc &figure ) {
+    // TODO: update transform math
+    
     // this implementation was shamelessly copied from RefImpl
     const float rot = figure.rotation();
     const float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
@@ -175,34 +173,35 @@ inline void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::a
 }
     
 static void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::abs_cubic_curve &figure ) {
-    auto cpt1 = figure.control_pt1() * ctx.transform;
-    auto cpt2 = figure.control_pt2() * ctx.transform;
-    auto ept  = figure.end_pt() * ctx.transform;
-    
+    auto cpt1 = ctx.transform.transform_pt(figure.control_pt1() - ctx.position) + ctx.position;
+    auto cpt2 = ctx.transform.transform_pt(figure.control_pt2() - ctx.position) + ctx.position;
+    auto ept  = ctx.transform.transform_pt(figure.end_pt() - ctx.position) + ctx.position;
     CGPathAddCurveToPoint(ctx.path, nullptr, cpt1.x(), cpt1.y(), cpt2.x(), cpt2.y(), ept.x(), ept.y());
     ctx.position = figure.end_pt();
 }
     
 static void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::rel_cubic_curve &figure ) {
-    auto cpt1 = (ctx.position + figure.control_pt1()) * ctx.transform;
-    auto cpt2 = (ctx.position + figure.control_pt1() + figure.control_pt2()) * ctx.transform;
-    auto ept = (ctx.position + figure.control_pt1() + figure.control_pt2() + figure.end_pt()) * ctx.transform;
+    auto mm = DropTranslation(ctx.transform);
+    auto cpt1 = ctx.position + figure.control_pt1() * mm;
+    auto cpt2 = ctx.position + figure.control_pt1() * mm + figure.control_pt2() * mm;
+    auto ept =  ctx.position + figure.control_pt1() * mm + figure.control_pt2() * mm + figure.end_pt() * mm;
     CGPathAddCurveToPoint(ctx.path, nullptr, cpt1.x(), cpt1.y(), cpt2.x(), cpt2.y(), ept.x(), ept.y());
     ctx.position = ctx.position + figure.control_pt1() + figure.control_pt2() + figure.end_pt();
 }
     
 static void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::abs_quadratic_curve &figure ) {
-    auto cpt = figure.control_pt() * ctx.transform;
-    auto ept = figure.end_pt() * ctx.transform;
+    auto cpt = ctx.transform.transform_pt(figure.control_pt() - ctx.position) + ctx.position;
+    auto ept = ctx.transform.transform_pt(figure.end_pt() - ctx.position) + ctx.position;
     CGPathAddQuadCurveToPoint(ctx.path, nullptr, cpt.x(), cpt.y(), ept.x(), ept.y());
     ctx.position = figure.end_pt();
 }
     
 static void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::rel_quadratic_curve &figure ) {
-    auto cpt = (ctx.position + figure.control_pt()) * ctx.transform;
-    auto ept =  (ctx.position + figure.control_pt() + figure.end_pt()) * ctx.transform;
+    auto mm = DropTranslation(ctx.transform);
+    auto cpt = ctx.position + figure.control_pt() * mm;
+    auto ept =  ctx.position + figure.control_pt() * mm + figure.end_pt() * mm;
     CGPathAddQuadCurveToPoint(ctx.path, nullptr, cpt.x(), cpt.y(), ept.x(), ept.y());
-    ctx.position = ctx.position + figure.control_pt() + figure.end_pt();
+    ctx.position = ept;
 }
 
 void _PathInterperationContext::Insert( const basic_figure_items<_GS>::figure_item &figure )
