@@ -119,5 +119,49 @@ TEST_CASE("IO2D properly strokes a rectangle")
         image.stroke(b, pb, nullopt, sp, nullopt, rp);
     }
     
+    SECTION("Draw via abs_quadratic_curves") {
+        auto pb = path_builder{};
+        pb.new_figure({50.f, 50.f});
+        pb.quadratic_curve({150.f, 50.f}, {250.f, 50.f});
+        pb.quadratic_curve({250.f, 100.f}, {250.f, 150.f});
+        pb.quadratic_curve({200.f, 150.f}, {50.f, 150.f});
+        pb.quadratic_curve({50.f, 100.f}, {50.f, 50.f});
+        pb.close_figure();
+        image.stroke(b, pb);
+    }
+    
+    SECTION("Draw via rel_quadratic_curves") {
+        auto pb = path_builder{};
+        pb.new_figure({50.f, 50.f});
+        pb.rel_quadratic_curve({50.f, 0.f}, {150.f, 0.f});
+        pb.rel_quadratic_curve({0.f, 50.f}, {0.f, 50.f});
+        pb.rel_quadratic_curve({-100.f, 0.f}, {-100.f, 0.f});
+        pb.rel_quadratic_curve({0.f, -50.f}, {0.f, -50.f});
+        pb.close_figure();
+        image.stroke(b, pb);
+    }
+
+    SECTION("Draw via abs_cubic_curves") {
+        auto pb = path_builder{};
+        pb.new_figure({50.f, 50.f});
+        pb.cubic_curve({100.f, 50.f}, {150.f, 50.f}, {250.f, 50.f});
+        pb.cubic_curve({250.f, 100.f}, {250.f, 125.f}, {250.f, 150.f});
+        pb.cubic_curve({200.f, 150.f}, {100.f, 150.f}, {50.f, 150.f});
+        pb.cubic_curve({50.f, 100.f}, {50.f, 75.f}, {50.f, 50.f});
+        pb.close_figure();
+        image.stroke(b, pb);
+    }
+    
+    SECTION("Draw via rel_cubic_curves") {
+        auto pb = path_builder{};
+        pb.new_figure({50.f, 50.f});
+        pb.rel_cubic_curve({50.f, 0.f}, {100.f, 0.f}, {50.f, 0.f});
+        pb.rel_cubic_curve({0.f, 50.f}, {0.f, 25.f}, {0.f, 25.f});
+        pb.rel_cubic_curve({-100.f, 0.f}, {-50.f, 0.f}, {-50.f, 0.f});
+        pb.rel_cubic_curve({0.f, -25.f}, {0.f, -25.f}, {0.f, -50.f});
+        pb.close_figure();
+        image.stroke(b, pb);
+    }
+
     CHECK( ComparePNGExact(image, reference) == true );
 }
