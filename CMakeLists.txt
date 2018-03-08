@@ -24,4 +24,6 @@ elseif( ${IO2D_BACKEND} STREQUAL "CAIRO_WIN32" )
 endif()
 
 add_subdirectory(P0267_RefImpl/Samples)
+
+enable_testing()
 add_subdirectory(P0267_RefImpl/Tests)

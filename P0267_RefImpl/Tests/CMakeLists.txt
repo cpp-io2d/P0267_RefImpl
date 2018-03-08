@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 
 project(io2d CXX)
-enable_testing()
 set(CMAKE_CXX_STANDARD 17)
 
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Catch2/single_include)
@@ -34,5 +33,8 @@ if(MSVC)
 	set_target_properties(tests PROPERTIES  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)")
 endif()
 
-add_test(NAME Tests COMMAND tests)
-
+add_test(
+    NAME Tests
+    COMMAND tests
+    WORKING_DIRECTORY ${RSC_TARGET}
+)
