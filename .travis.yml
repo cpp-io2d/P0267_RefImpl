@@ -11,6 +11,7 @@ osx_image:
   - xcode9.1
 
 before_script:
+  - brew install libpng
   - mkdir build
   - cd build
   - curl -# -o clang6_0_0.tar.xz http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz
