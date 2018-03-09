@@ -1,0 +1,24 @@
+language: cpp
+sudo: false
+
+os:
+  - osx
+
+compiler:
+  - clang
+
+osx_image:
+  - xcode9.1
+
+before_script:
+  - mkdir build
+  - cd build
+  - curl -# -o clang6_0_0.tar.xz http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz
+  - tar -xJf clang6_0_0.tar.xz
+
+script:
+  - export CXXFLAGS="-nostdinc++ -I ${$TRAVIS_BUILD_DIR}/build/clang+llvm-6.0.0-x86_64-apple-darwin/include/c++/v1"
+  - export LDFLAGS="-L ${$TRAVIS_BUILD_DIR}/build/clang+llvm-6.0.0-x86_64-apple-darwin/lib"
+  - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_BACKEND=COREGRAPHICS_MAC ../.
+  - make tests
+  - make test
