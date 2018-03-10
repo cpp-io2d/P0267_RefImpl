@@ -3,7 +3,7 @@ project(io2d CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(Boost REQUIRED)
+find_package(Boost)
 
 add_executable(svg
 	main.cpp
