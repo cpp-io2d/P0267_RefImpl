@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.0.0)
 
 project(io2d CXX)
 
-find_package(Boost REQUIRED)
-
 set(CMAKE_CXX_STANDARD 17)
 
 set(IO2D_LIB_SRC 
