@@ -17,13 +17,21 @@ if(MSVC)
 endif()
 
 
+
 if( ${IO2D_BACKEND} STREQUAL "COREGRAPHICS_MAC" )
 	add_subdirectory(P0267_RefImpl/P0267_RefImpl/coregraphics/mac)
 elseif( ${IO2D_BACKEND} STREQUAL "CAIRO_WIN32" )
 	add_subdirectory(P0267_RefImpl/P0267_RefImpl/cairo)
 endif()
 
-add_subdirectory(P0267_RefImpl/Samples)
 
-enable_testing()
-add_subdirectory(P0267_RefImpl/Tests)
+
+if( not defined IO2D_WITHOUT_SAMPLES )
+	add_subdirectory(P0267_RefImpl/Samples)
+endif()
+
+
+if( not defined IO2D_WITHOUT_TESTS )
+	enable_testing()
+	add_subdirectory(P0267_RefImpl/Tests)
+endif()
