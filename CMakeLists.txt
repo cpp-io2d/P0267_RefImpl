@@ -26,12 +26,12 @@ endif()
 
 
 
-if( not defined IO2D_WITHOUT_SAMPLES )
+if( NOT DEFINED IO2D_WITHOUT_SAMPLES )
 	add_subdirectory(P0267_RefImpl/Samples)
 endif()
 
 
-if( not defined IO2D_WITHOUT_TESTS )
+if( NOT DEFINED IO2D_WITHOUT_TESTS )
 	enable_testing()
 	add_subdirectory(P0267_RefImpl/Tests)
 endif()
