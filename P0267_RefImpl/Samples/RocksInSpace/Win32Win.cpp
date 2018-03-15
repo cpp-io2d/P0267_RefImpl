@@ -75,7 +75,11 @@ void rocks_in_space::Win32Win::OnWmCreate(HWND hwnd)
 	}
 	m_hwnd = hwnd;
 	m_hdc = GetDC(m_hwnd);
-	m_outputSfc = std::experimental::io2d::unmanaged_output_surface(default_graphics_surfaces::surfaces::create_unmanaged_output_surface(m_hInstance, m_hwnd, m_hdc, m_w, m_h, m_fmt, m_scl));
+	default_graphics_surfaces::surfaces::unmanaged_surface_context_type unmanaged_context;
+	unmanaged_context.hInstance = m_hInstance;
+	unmanaged_context.hwnd = m_hwnd;
+	unmanaged_context.hdc = m_hdc;
+	m_outputSfc = std::experimental::io2d::unmanaged_output_surface(default_graphics_surfaces::surfaces::create_unmanaged_output_surface(unmanaged_context, m_w, m_h, m_fmt, m_scl));
 	m_outputSfc.display_dimensions(display_point{ m_w, m_h });
 	m_outputSfc.draw_callback([&](std::experimental::io2d::unmanaged_output_surface& uos) { m_game.update<std::experimental::io2d::unmanaged_output_surface>(uos); });
 	m_canDraw = true;
@@ -92,7 +96,11 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 	case WM_CREATE:
 	{
 		m_hdc = GetDC(m_hwnd);
-		m_outputSfc = std::experimental::io2d::unmanaged_output_surface(default_graphics_surfaces::surfaces::create_unmanaged_output_surface(m_hInstance, m_hwnd, m_hdc, m_w, m_h, m_fmt, m_scl));
+		default_graphics_surfaces::surfaces::unmanaged_surface_context_type unmanaged_context;
+		unmanaged_context.hInstance = m_hInstance;
+		unmanaged_context.hwnd = m_hwnd;
+		unmanaged_context.hdc = m_hdc;
+		m_outputSfc = std::experimental::io2d::unmanaged_output_surface(default_graphics_surfaces::surfaces::create_unmanaged_output_surface(unmanaged_context, m_w, m_h, m_fmt, m_scl));
 		m_outputSfc.display_dimensions(display_point{ m_w, m_h });
 		m_outputSfc.draw_callback([&](std::experimental::io2d::unmanaged_output_surface& uos) { m_game.update<std::experimental::io2d::unmanaged_output_surface>(uos); });
 		m_canDraw = true;
@@ -115,7 +123,7 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 			throw_system_error_for_GetLastError(GetLastError(), "Failed call to DestroyWindow when processing WM_CLOSE.");
 		}
 		m_hwnd = nullptr;
-		m_outputSfc._Get_data().data.hwnd = m_hwnd;
+		m_outputSfc._Get_data()->data.hwnd = m_hwnd;
 		return lrZero;
 	} break;
 
@@ -153,7 +161,7 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 			GetClientRect(hwnd, &clientRect);
 			int width = clientRect.right - clientRect.left;
 			int height = clientRect.bottom - clientRect.top;
-			const auto& data = m_outputSfc._Get_data();
+			const auto& data = *m_outputSfc._Get_data();
 			if (width != data.data.display_dimensions.x() || height != data.data.display_dimensions.y()) {
 				//if (width != m_outputSfc.display_dimensions().x() || height != m_outputSfc.display_dimensions().y()) {
 				// If there is a size mismatch we skip painting and resize the window instead.
@@ -253,7 +261,7 @@ int rocks_in_space::Win32Win::Run()
 			GetClientRect(m_hwnd, &clientRect);
 			int width = clientRect.right - clientRect.left;
 			int height = clientRect.bottom - clientRect.top;
-			const auto& data = m_outputSfc._Get_data();
+			const auto& data = *m_outputSfc._Get_data();
 			if (width != data.data.display_dimensions.x() || height != data.data.display_dimensions.y())
 				//if (width != m_outputSfc.display_dimensions().x() || height != m_outputSfc.display_dimensions().y())
 			{

@@ -5,9 +5,16 @@ project(io2d CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 set(IO2D_LIB_SRC 
+	io2d.h
+	io2d_cairo_win32_frontend.h
+	io2d_cairo_win32_output_surface.h
+	io2d_cairo_win32_unmanaged_output_surface.h
+	io2d_cairo_win32_surfaces.h
+	io2d_cairo_win32_surfaces_impl.h
+	io2d_cairo_win32_error.h
 	cairo_renderer_win32.cpp
-	cairo_renderer-graphicsmagickinit.cpp
-	../rgba_color.cpp
+	../cairo_renderer-graphicsmagickinit.cpp
+	../../rgba_color.cpp
 )
 
 add_library(io2d ${IO2D_LIB_SRC})
@@ -15,6 +22,7 @@ add_library(io2d ${IO2D_LIB_SRC})
 target_include_directories(io2d PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_SOURCE_DIR}/../..
 )
  
 if(MSVC)
