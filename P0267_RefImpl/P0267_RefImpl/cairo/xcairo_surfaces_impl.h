@@ -131,6 +131,8 @@ namespace std::experimental::io2d {
 				return basic_display_point<GraphicsMath>(16384, 16384); // This takes up 1 GB of RAM, you probably don't want to do this. 2048x2048 is the max size for hardware that meets 9_1 specs (i.e. quite low powered or really old). Probably much more reasonable.
 			}
 
+#if 0
+            
 			// helper functions for output surfaces
 
 			template <class GraphicsMath>
@@ -531,10 +533,14 @@ namespace std::experimental::io2d {
 				cairo_surface_flush(displaySfc);
 				cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
 			}
+            
+#endif
+
 		}
 	}
 }
 
 #include "xcairo_surfaces_image_impl.h"
-#include "xcairo_surfaces_output_impl.h"
-#include "xcairo_surfaces_unmanaged_impl.h"
+//#include "xcairo_surfaces_output_impl.h"
+//#include "xcairo_surfaces_unmanaged_impl.h"
+

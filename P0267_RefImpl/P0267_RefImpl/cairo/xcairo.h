@@ -4,12 +4,15 @@
 #define _XCAIRO_
 
 #include <cairo.h>
+//#include "xio2d.h"
 
 #include "io2d.h"
 #include "xsystemheaders.h"
-#if defined(_Filesystem_support_test)
-#include <filesystem>
-#endif
+#include "xsurfaces_enums.h"
+
+//#if defined(_Filesystem_support_test)
+//#include <filesystem>
+//#endif
 
 namespace std {
 	namespace experimental {
@@ -18,22 +21,22 @@ namespace std {
 				namespace _Cairo {
 					_IO2D_API void _Init_graphics_magic();
 
-#if defined(_WIN32) || defined(_WIN64)
-					[[noreturn]]
-					inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const char* message) {
-						if (message != nullptr) {
-							// Updated Note: Changed to static_cast due to 4.7F/3 [conv.integral]. // Old Note: C-style cast because system_error requires an int but GetLastError returns a DWORD (i.e. unsigned long) but ordinary WinError.h values never exceed the max value of an int.
-							throw system_error(static_cast<int>(getLastErrorValue), system_category(), message);
-						}
-						else {
-							throw system_error(static_cast<int>(getLastErrorValue), system_category());
-						}
-					}
-					_IO2D_API LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-					_IO2D_API void _RegisterWindowClass();
-#elif defined(USE_XLIB)
-					int _Xlib_unmanaged_close_display(Display*);
-#endif
+//#if defined(_WIN32) || defined(_WIN64)
+//                    [[noreturn]]
+//                    inline void _Throw_system_error_for_GetLastError(DWORD getLastErrorValue, const char* message) {
+//                        if (message != nullptr) {
+//                            // Updated Note: Changed to static_cast due to 4.7F/3 [conv.integral]. // Old Note: C-style cast because system_error requires an int but GetLastError returns a DWORD (i.e. unsigned long) but ordinary WinError.h values never exceed the max value of an int.
+//                            throw system_error(static_cast<int>(getLastErrorValue), system_category(), message);
+//                        }
+//                        else {
+//                            throw system_error(static_cast<int>(getLastErrorValue), system_category());
+//                        }
+//                    }
+//                    _IO2D_API LRESULT CALLBACK _RefImplWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+//                    _IO2D_API void _RegisterWindowClass();
+//#elif defined(USE_XLIB)
+//                    int _Xlib_unmanaged_close_display(Display*);
+//#endif
 					constexpr const wchar_t* _Refimpl_window_class_name = L"_P0267RefImplCairoRenderer_FF2B4C8D-0AB8-4343-AA02-6D0857E9FA21";
 
 					template <class GraphicsMath>
@@ -457,105 +460,116 @@ namespace std {
 
 							// display surfaces
 
-#if defined(_WIN32) || defined(_WIN64)
-							struct _Display_surface_win32_data {
-								HINSTANCE hInstance = nullptr;
-								HWND hwnd = nullptr;
-								HDC hdc = nullptr;
-								bool hasOwnDC = true;
-								bool unmanaged = false;
-								bool letterbox_brush_is_default = true;
-								optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
-								optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
-
-								optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
-
-								basic_display_point<GraphicsMath> display_dimensions;
-								::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
-								::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
-
-								image_surface_data_type back_buffer;
-
-								bool auto_clear = false;
-								io2d::scaling scl = io2d::scaling::letterbox;
-								io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible;
-								float refresh_fps = 30.0f;
-								bool redraw_required = false;
-								float elapsed_draw_time = 0.0f;
-							};
-
-							using _Display_surface_data_type = _Display_surface_win32_data;
-							struct _Output_surface_win32_data {
-								_Display_surface_data_type data;
-								::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> draw_callback;
-								::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
-								::std::function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
-							};
-							struct _Unmanaged_output_surface_win32_data {
-								_Display_surface_data_type data;
-								::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
-								::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
-								::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
-							};
-							using output_surface_data_type = _Output_surface_win32_data;
-							using unmanaged_output_surface_data_type = _Unmanaged_output_surface_win32_data;
-#elif defined(USE_XLIB)
-							struct _Display_surface_xlib_data {
-								unique_ptr<Display, decltype(&XCloseDisplay)> display{ nullptr, &XCloseDisplay };
-								Atom wmDeleteWndw;
-								Window wndw = None;
-								Visual* visual; // Note: This pointer is not a dynamic allocation and thus does not need to be managed.
-								bool unmanaged = false;
-								bool letterbox_brush_is_default = true;
-								optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
-								optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
-
-								optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
-
-								basic_display_point<GraphicsMath> display_dimensions;
-								::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
-								::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
-
-								image_surface_data_type back_buffer;
-
-								bool auto_clear = false;
-								io2d::scaling scl = io2d::scaling::letterbox;
-								io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible;
-								float refresh_fps = 30.0f;
-								bool redraw_required = false;
-								float elapsed_draw_time = 0.0f;
-								bool can_draw = false;
-							};
-
-							using _Display_surface_data_type = _Display_surface_xlib_data;
-							struct _Output_surface_xlib_data {
-								_Display_surface_data_type data;
-								::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> draw_callback;
-								::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
-								::std::function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
-							};
-							struct _Unmanaged_output_surface_xlib_data {
-								_Display_surface_data_type data;
-								::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
-								::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
-								::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
-							};
-							using output_surface_data_type = _Output_surface_xlib_data;
-							using unmanaged_output_surface_data_type = _Unmanaged_output_surface_xlib_data;
-
-#endif
+//#if defined(_WIN32) || defined(_WIN64)
+//                            struct _Display_surface_win32_data {
+//                                HINSTANCE hInstance = nullptr;
+//                                HWND hwnd = nullptr;
+//                                HDC hdc = nullptr;
+//                                bool hasOwnDC = true;
+//                                bool unmanaged = false;
+//                                bool letterbox_brush_is_default = true;
+//                                optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
+//                                optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
+//
+//                                optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
+//
+//                                basic_display_point<GraphicsMath> display_dimensions;
+//                                ::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
+//                                ::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
+//
+//                                image_surface_data_type back_buffer;
+//
+//                                bool auto_clear = false;
+//                                io2d::scaling scl = io2d::scaling::letterbox;
+//                                io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible;
+//                                float refresh_fps = 30.0f;
+//                                bool redraw_required = false;
+//                                float elapsed_draw_time = 0.0f;
+//                            };
+//
+//                            using _Display_surface_data_type = _Display_surface_win32_data;
+//                            struct _Output_surface_win32_data {
+//                                _Display_surface_data_type data;
+//                                ::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> draw_callback;
+//                                ::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
+//                                ::std::function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
+//                            };
+//                            struct _Unmanaged_output_surface_win32_data {
+//                                _Display_surface_data_type data;
+//                                ::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
+//                                ::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
+//                                ::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
+//                            };
+//                            using output_surface_data_type = _Output_surface_win32_data;
+//                            using unmanaged_output_surface_data_type = _Unmanaged_output_surface_win32_data;
+//#elif defined(USE_XLIB)
+//                            struct _Display_surface_xlib_data {
+//                                unique_ptr<Display, decltype(&XCloseDisplay)> display{ nullptr, &XCloseDisplay };
+//                                Atom wmDeleteWndw;
+//                                Window wndw = None;
+//                                Visual* visual; // Note: This pointer is not a dynamic allocation and thus does not need to be managed.
+//                                bool unmanaged = false;
+//                                bool letterbox_brush_is_default = true;
+//                                optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
+//                                optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
+//
+//                                optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
+//
+//                                basic_display_point<GraphicsMath> display_dimensions;
+//                                ::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
+//                                ::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
+//
+//                                image_surface_data_type back_buffer;
+//
+//                                bool auto_clear = false;
+//                                io2d::scaling scl = io2d::scaling::letterbox;
+//                                io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible;
+//                                float refresh_fps = 30.0f;
+//                                bool redraw_required = false;
+//                                float elapsed_draw_time = 0.0f;
+//                                bool can_draw = false;
+//                            };
+//
+//                            using _Display_surface_data_type = _Display_surface_xlib_data;
+//                            struct _Output_surface_xlib_data {
+//                                _Display_surface_data_type data;
+//                                ::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> draw_callback;
+//                                ::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
+//                                ::std::function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
+//                            };
+//                            struct _Unmanaged_output_surface_xlib_data {
+//                                _Display_surface_data_type data;
+//                                ::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
+//                                ::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
+//                                ::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
+//                            };
+//                            using output_surface_data_type = _Output_surface_xlib_data;
+//                            using unmanaged_output_surface_data_type = _Unmanaged_output_surface_xlib_data;
+//
+//#endif
+                            struct _Display_surface_data_type;
+                            struct _Output_surface_data;
+                            struct _Unmanaged_output_surface_data;
+                            using output_surface_data_type = _Output_surface_data*;
+                            using unmanaged_output_surface_data_type = _Unmanaged_output_surface_data*;
+                            
 							template <class OutputDataType, class OutputSurfaceType>
 							static void _Render_to_native_surface(OutputDataType& osd, OutputSurfaceType& sfc);
 
 							static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
 							// unmanaged_output_surface functions
 
+                            
+                            struct _UnmanagedSurfaceContext;
+                            using unmanaged_surface_context_type = _UnmanagedSurfaceContext;
+                            
 							static unmanaged_output_surface_data_type create_unmanaged_output_surface();
-#if defined(_WIN32) || defined(_WIN64)
-							static unmanaged_output_surface_data_type create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
-#elif defined(USE_XLIB)
-							static unmanaged_output_surface_data_type create_unmanaged_output_surface(Display* display, Window wndw, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
-#endif
+//#if defined(_WIN32) || defined(_WIN64)
+//                            static unmanaged_output_surface_data_type create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
+//#elif defined(USE_XLIB)
+//                            static unmanaged_output_surface_data_type create_unmanaged_output_surface(Display* display, Window wndw, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
+//#endif
+                            static unmanaged_output_surface_data_type create_unmanaged_output_surface(unmanaged_surface_context_type &context, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
 							static unmanaged_output_surface_data_type move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept;
 							static void destroy(unmanaged_output_surface_data_type& data) noexcept;
 
