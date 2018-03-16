@@ -18,6 +18,11 @@ static uint32_t ToRGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
     return rgba;
 }
 
+static uint8_t GetRed(uint32_t rgba) { return (uint8_t)(rgba & 0xFF); }
+static uint8_t GetGreen(uint32_t rgba) { return (uint8_t)((rgba >> 8) & 0xFF); }
+static uint8_t GetBlue(uint32_t rgba) { return (uint8_t)((rgba >> 16) & 0xFF); }
+static uint8_t GetAlpha(uint32_t rgba) { return (uint8_t)((rgba >> 24) & 0xFF); }
+
 struct RawImage
 {
     vector<uint32_t> pixmap;
@@ -145,6 +150,31 @@ bool ComparePNGExact( const string &path1, const string &path2 )
         return false;
     
     return *img1 == *img2;
+}
+
+bool ComparePNGWithTolerance( const std::string &path1, const std::string &path2, float intensity_tolerance , int spatial_tolerance )
+{
+    auto img1 = ReadFile(path1);
+    auto img2 = ReadFile(path2);
+    if( !img1 || !img2 )
+        return false;
+    if( img1->width != img2->width || img1->height != img2->height )
+        return false;
+    
+    auto abs_intensity_tolerance = static_cast<int>(256.f * intensity_tolerance);
+    auto pred = [abs_intensity_tolerance](uint32_t first, uint32_t second) -> bool {
+        return abs( int(GetRed(first))   - int(GetRed(second))   )  <= abs_intensity_tolerance &&
+               abs( int(GetGreen(first)) - int(GetGreen(second)) )  <= abs_intensity_tolerance &&
+               abs( int(GetBlue(first))  - int(GetBlue(second))  )  <= abs_intensity_tolerance &&
+               abs( int(GetAlpha(first)) - int(GetAlpha(second)) )  <= abs_intensity_tolerance ;
+    };
+    return equal( begin(img1->pixmap), end(img1->pixmap), begin(img2->pixmap), end(img2->pixmap), pred );
+}
+
+bool ComparePNGWithTolerance( std::experimental::io2d::image_surface &image, const std::string &path2, float intensity_tolerance, int spatial_tolerance )
+{
+    image.save("tmp.png", image_file_format::png);
+    return ComparePNGWithTolerance("tmp.png", path2, intensity_tolerance, spatial_tolerance);
 }
 
 bool ComparePNGExact( image_surface &image, const string &path2 )
