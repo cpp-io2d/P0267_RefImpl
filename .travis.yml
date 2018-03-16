@@ -34,10 +34,10 @@ matrix:
         - ./macports-ci install
         - PATH="/opt/local/bin:$PATH"
         - sudo port -N -k install cairo +x11
-        - brew install -v libpng graphicsmagick
+        - brew install libpng graphicsmagick
 
       script:
-        - export CXXFLAGS="-nostdinc++ -I$TRAVIS_BUILD_DIR/Developer/llvm_clean/build/include/c++/v1 -I/opt/X11/include -I/opt/local/include -I/usr/local/include"
+        - export CXXFLAGS="-nostdinc++ -I$TRAVIS_BUILD_DIR/build/clang/include/c++/v1 -I/opt/X11/include -I/opt/local/include -I/usr/local/include"
         - export LDFLAGS="-L$TRAVIS_BUILD_DIR/build/clang/lib -Wl,-rpath,$TRAVIS_BUILD_DIR/build/clang/lib -L/opt/X11/lib -L/opt/local/lib -L/usr/local/lib"
         - export CTEST_OUTPUT_ON_FAILURE="1"
         - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_BACKEND=CAIRO_XLIB ../.
