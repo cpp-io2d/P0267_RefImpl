@@ -22,7 +22,9 @@ matrix:
         - make tests
         - make test
 
-    - brew_packages: libpng, graphicsmagick
+    - brew_packages:
+        - libpng
+        - graphicsmagick
 
       before_script:
         - mkdir build
