@@ -5,19 +5,42 @@ osx_image: xcode9.1
 
 matrix:
   include:
-    brew_packages: libpng
+    - brew_packages: libpng
 
-    before_script:
-      - mkdir build
-      - cd build
-      - curl -# -o clang6_0_0.tar.xz http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz
-      - tar -xJf clang6_0_0.tar.xz
-      - mv clang+llvm-6.0.0-x86_64-apple-darwin clang
+      before_script:
+        - mkdir build
+        - cd build
+        - curl -# -o clang6_0_0.tar.xz http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz
+        - tar -xJf clang6_0_0.tar.xz
+        - mv clang+llvm-6.0.0-x86_64-apple-darwin clang
 
-    script:
-      - export CXXFLAGS="-nostdinc++ -I $TRAVIS_BUILD_DIR/build/clang/include/c++/v1"
-      - export LDFLAGS="-L$TRAVIS_BUILD_DIR/build/clang/lib -Wl,-rpath,$TRAVIS_BUILD_DIR/build/clang/lib"
-      - export CTEST_OUTPUT_ON_FAILURE="1"
-      - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_BACKEND=COREGRAPHICS_MAC ../.
-      - make tests
-      - make test
+      script:
+        - export CXXFLAGS="-nostdinc++ -I $TRAVIS_BUILD_DIR/build/clang/include/c++/v1"
+        - export LDFLAGS="-L$TRAVIS_BUILD_DIR/build/clang/lib -Wl,-rpath,$TRAVIS_BUILD_DIR/build/clang/lib"
+        - export CTEST_OUTPUT_ON_FAILURE="1"
+        - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_BACKEND=COREGRAPHICS_MAC ../.
+        - make tests
+        - make test
+
+    - brew_packages: libpng, graphicsmagick
+
+      before_script:
+        - mkdir build
+        - cd build
+        - curl -# -o clang6_0_0.tar.xz http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz
+        - tar -xJf clang6_0_0.tar.xz
+        - mv clang+llvm-6.0.0-x86_64-apple-darwin clang
+        - export COLUMNS=80
+        - curl -LO https://raw.githubusercontent.com/GiovanniBussi/macports-ci/master/macports-ci
+        - chmod +x ./macports-ci
+        - ./macports-ci install
+        - PATH="/opt/local/bin:$PATH"
+        - sudo port install cairo +quartz +x11
+
+      script:
+        - export CXXFLAGS="-nostdinc++ -I$TRAVIS_BUILD_DIR/Developer/llvm_clean/build/include/c++/v1 -I/opt/X11/include -I/opt/local/include -I/usr/local/include"
+        - export LDFLAGS="-L$TRAVIS_BUILD_DIR/build/clang/lib -Wl,-rpath,$TRAVIS_BUILD_DIR/build/clang/lib -L/opt/X11/lib -L/opt/local/lib -L/usr/local/lib"
+        - export CTEST_OUTPUT_ON_FAILURE="1"
+        - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_BACKEND=CAIRO_XLIB ../.
+        - make tests
+        - make test
