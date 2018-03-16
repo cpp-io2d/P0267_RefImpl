@@ -5,6 +5,8 @@ osx_image: xcode9.1
 
 matrix:
   include:
+
+# CoreGraphics/Cocoa on MacOSX
     - brew_packages: libpng
 
       before_script:
@@ -20,8 +22,9 @@ matrix:
         - export CTEST_OUTPUT_ON_FAILURE="1"
         - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_BACKEND=COREGRAPHICS_MAC ../.
         - make tests
-        - make test
+        - ctest -V -C Debug
 
+# Cairo/Xlib on MacOSX
     - before_script:
         - mkdir build
         - cd build
@@ -42,4 +45,4 @@ matrix:
         - export CTEST_OUTPUT_ON_FAILURE="1"
         - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_BACKEND=CAIRO_XLIB ../.
         - make tests
-        - make test
+        - ctest -V -C Debug
