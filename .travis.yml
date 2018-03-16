@@ -35,7 +35,7 @@ matrix:
         - chmod +x ./macports-ci
         - ./macports-ci install
         - PATH="/opt/local/bin:$PATH"
-        - sudo port install cairo +x11
+        - sudo port -N -k install cairo +x11
 
       script:
         - export CXXFLAGS="-nostdinc++ -I$TRAVIS_BUILD_DIR/Developer/llvm_clean/build/include/c++/v1 -I/opt/X11/include -I/opt/local/include -I/usr/local/include"
