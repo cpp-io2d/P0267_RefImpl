@@ -13,6 +13,7 @@ add_executable(tests
 	background_paint.cpp
     rectangle_stroke.cpp
     stroke_width.cpp
+    stroke_dashes.cpp
     comparison.h
     comparison.cpp
 )
@@ -40,6 +41,7 @@ add_custom_command( TARGET tests POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/red_background_300x200.png" "${RSC_TARGET}/red_background_300x200.png"
     COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/stroked_rectangle_300x200.png" "${RSC_TARGET}/stroked_rectangle_300x200.png"
     COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/stroke_widths_300x200.png" "${RSC_TARGET}/stroke_widths_300x200.png"
+    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/dash_pattern_two_one_300x200.png" "${RSC_TARGET}/dash_pattern_two_one_300x200.png"
 )
 
 if(MSVC)
