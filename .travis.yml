@@ -22,11 +22,7 @@ matrix:
         - make tests
         - make test
 
-    - brew_packages:
-        - libpng
-        - graphicsmagick
-
-      before_script:
+    - before_script:
         - mkdir build
         - cd build
         - curl -# -o clang6_0_0.tar.xz http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz
@@ -38,6 +34,7 @@ matrix:
         - ./macports-ci install
         - PATH="/opt/local/bin:$PATH"
         - sudo port -N -k install cairo +x11
+        - brew install -v libpng graphicsmagick
 
       script:
         - export CXXFLAGS="-nostdinc++ -I$TRAVIS_BUILD_DIR/Developer/llvm_clean/build/include/c++/v1 -I/opt/X11/include -I/opt/local/include -I/usr/local/include"
