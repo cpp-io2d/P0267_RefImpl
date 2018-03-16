@@ -7,8 +7,6 @@ set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Catch2/single_include)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
-find_path(PNG_INCLUDE_DIR libpng16/png.h)
-find_library(PNG_LIB png16)
 
 add_executable(tests
 	main.cpp
@@ -18,8 +16,21 @@ add_executable(tests
     comparison.cpp
 )
 
-target_include_directories(tests PUBLIC ${PNG_INCLUDE_DIR})
-target_link_libraries(tests io2d Catch ${PNG_LIB})
+target_link_libraries(tests io2d Catch)
+
+if(MSVC)
+	find_path(PNG_INCLUDE_DIR libpng16/png.h)
+	target_include_directories(tests PUBLIC ${PNG_INCLUDE_DIR})
+	find_library(PNG_LIB_DEBUG libpng16d)
+	find_library(PNG_LIB_RELEASE libpng16)
+	target_link_libraries(tests debug ${PNG_LIB_DEBUG} optimized ${PNG_LIB_RELEASE})
+else()
+	find_path(PNG_INCLUDE_DIR libpng16/png.h)
+	target_include_directories(tests PUBLIC ${PNG_INCLUDE_DIR})
+	find_library(PNG_LIB png16)
+	target_link_libraries(tests ${PNG_LIB})	
+endif()
+
 
 set(RSC_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Reference)
 set(RSC_TARGET $<TARGET_FILE_DIR:tests>)

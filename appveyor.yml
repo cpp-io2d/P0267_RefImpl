@@ -4,9 +4,8 @@ os:
 install:
   - choco upgrade git -y
   - git submodule update --init --recursive
-  - vcpkg install cairo:x64-windows-static
-  - vcpkg install graphicsmagick:x64-windows-static
-  - vcpkg install graphicsmagick:x64-windows-static
+  - vcpkg install cairo:x64-windows
+  - vcpkg install graphicsmagick:x64-windows
 
 platform:
   - x64
@@ -18,7 +17,7 @@ before_build:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - mkdir %CONFIGURATION%
   - cd %CONFIGURATION%
-  - cmake -G "Visual Studio 15 2017 Win64" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_BACKEND=CAIRO_WIN32 -DIO2D_WITHOUT_SAMPLES=1 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows-static" ../.
+  - cmake -G "Visual Studio 15 2017 Win64" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_BACKEND=CAIRO_WIN32 -DIO2D_WITHOUT_SAMPLES=1 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows" ../.
 
 build_script:
   - msbuild io2d.sln /t:tests /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"

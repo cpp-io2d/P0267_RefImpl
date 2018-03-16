@@ -30,26 +30,31 @@ if(MSVC)
 
 	find_path(CAIRO_INCLUDE_DIR cairo.h)
 	find_path(GRAPHICSMAGICK_INCLUDE_DIR magick/api.h)
-	find_library(CAIRO_LIB cairo)
+	find_library(CAIRO_LIB_DEBUG cairod)
+	find_library(CAIRO_LIB_RELEASE cairo)
 	find_library(GRAPHICSMAGICK_LIB graphicsmagick)
 	find_library(PIXMAN_LIB pixman-1)
 	find_library(FREETYPE_LIB freetype)
 	find_library(FONTCONFIG_LIB fontconfig)
 	find_library(BZ_LIB bz2)
-	find_library(ZLIB_LIB zlib)
+	find_library(ZLIB_LIB_DEBUG zlibd)
+	find_library(ZLIB_LIB_RELEASE zlib)
 	find_library(JPEG_LIB jpeg)
-	find_library(PNG_LIB libpng16)
+	find_library(PNG_LIB_DEBUG libpng16d)
+	find_library(PNG_LIB_RELEASE libpng16)
 	find_library(TIFF_LIB tiff)
 	find_library(EXPAT_LIB expat)
 	find_library(LZMA_LIB lzma)
 	find_library(ICONV_LIB libiconv)
 	find_library(CHARSET_LIB libcharset)
+
+	target_include_directories(io2d PUBLIC ${CAIRO_INCLUDE_DIR} ${GRAPHICSMAGICK_INCLUDE_DIR})
+	target_link_libraries(io2d ${GRAPHICSMAGICK_LIB} ${PIXMAN_LIB} ${FREETYPE_LIB} ${FONTCONFIG_LIB} ${BZ_LIB} ${JPEG_LIB} ${TIFF_LIB} ${EXPAT_LIB} ${LZMA_LIB} ${ICONV_LIB} ${CHARSET_LIB})
+	target_link_libraries(io2d debug ${PNG_LIB_DEBUG} optimized ${PNG_LIB_RELEASE})
+	target_link_libraries(io2d debug ${ZLIB_LIB_DEBUG} optimized ${ZLIB_LIB_RELEASE})
+	target_link_libraries(io2d debug ${CAIRO_LIB_DEBUG} optimized ${CAIRO_LIB_RELEASE})
 endif()
  
-
-target_include_directories(io2d PUBLIC ${CAIRO_INCLUDE_DIR} ${GRAPHICSMAGICK_INCLUDE_DIR})
-target_link_libraries(io2d ${CAIRO_LIB} ${GRAPHICSMAGICK_LIB} ${PIXMAN_LIB} ${FREETYPE_LIB} ${FONTCONFIG_LIB} ${BZ_LIB} ${ZLIB_LIB} ${JPEG_LIB} ${PNG_LIB} ${TIFF_LIB} ${EXPAT_LIB} ${LZMA_LIB} ${ICONV_LIB} ${CHARSET_LIB})
-
 install(TARGETS io2d
 	ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/lib
 )
