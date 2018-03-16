@@ -2,7 +2,7 @@ os:
   - Visual Studio 2017
 
 install:
-  - choco upgrade git -y
+#  - choco upgrade git -y
   - git submodule update --init --recursive
   - vcpkg install cairo:x64-windows
   - vcpkg install graphicsmagick:x64-windows
