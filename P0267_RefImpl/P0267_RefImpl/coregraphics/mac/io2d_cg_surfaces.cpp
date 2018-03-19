@@ -4,6 +4,7 @@
 #include <ImageIO/ImageIO.h>
 #include <fstream>
 #include "io2d_cg_interop.h"
+#include "io2d_cg_linear_gradient.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
     
@@ -194,10 +195,7 @@ void _Stroke(CGContextRef ctx,
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextReplacePathWithStrokedPath(ctx);
         CGContextClip(ctx);
-        auto pt1 = _ToCG( linear_brush.start * bp.brush_matrix().inverse() );
-        auto pt2 = _ToCG( linear_brush.end * bp.brush_matrix().inverse() );
-        auto flags = bp.wrap_mode() == wrap_mode::none ? 0 : (kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
-        CGContextDrawLinearGradient(ctx, linear_brush.gradient.get(), pt1, pt2, flags);
+        _DrawLinearGradient(ctx, linear_brush, bp);
     }
 }
     
@@ -272,10 +270,7 @@ void _Fill(CGContextRef ctx,
         const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextClip(ctx);
-        auto pt1 = _ToCG( linear_brush.start * bp.brush_matrix().inverse() );
-        auto pt2 = _ToCG( linear_brush.end * bp.brush_matrix().inverse() );
-        auto flags = bp.wrap_mode() == wrap_mode::none ? 0 : (kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
-        CGContextDrawLinearGradient(ctx, linear_brush.gradient.get(), pt1, pt2, flags);
+        _DrawLinearGradient(ctx, linear_brush, bp);
     }
 }
 

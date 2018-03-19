@@ -23,6 +23,26 @@ set(IO2D_LIB_SRC
 	../xcairo_surfaces_impl.h
 	../cairo_renderer-graphicsmagickinit.cpp
 	../../rgba_color.cpp
+    ../../xbrushes.h
+    ../../xbrushes_impl.h
+    ../../xcolor.h
+    ../../xdiagnostics.h
+    ../../xgraphicsmath.h
+    ../../xgraphicsmath_impl.h
+    ../../xgraphicsmathfloat.h
+    ../../xgraphicsmathfloat_impl.h
+    ../../xinput.h
+    ../../xio2d.h
+    ../../xio2d_impl.h
+    ../../xpath.h
+    ../../xpath_impl.h
+    ../../xpathbuilder_impl.h
+    ../../xsurfaces.h
+    ../../xsurfaces_enums.h
+    ../../xsurfaces_impl.h
+    ../../xsurfacesprops_impl.h
+    ../../xsystemheaders.h
+    ../../xtext.h
 )
 
 add_library(io2d ${IO2D_LIB_SRC})

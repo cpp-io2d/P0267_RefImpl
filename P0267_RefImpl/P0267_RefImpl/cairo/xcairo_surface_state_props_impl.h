@@ -74,8 +74,8 @@ namespace std::experimental::io2d {
 				return data;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::brush_props_data_type _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::copy_brush_props(const brush_props_data_type& /*data*/) {
-				return brush_props_data_type();
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::brush_props_data_type _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::copy_brush_props(const brush_props_data_type& data) {
+				return data;
 			}
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::brush_props_data_type _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::move_brush_props(brush_props_data_type&& data) noexcept {

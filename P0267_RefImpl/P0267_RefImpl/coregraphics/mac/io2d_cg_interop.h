@@ -100,6 +100,11 @@ inline constexpr CFStringRef _ToCG(image_file_format iff) noexcept
         default:                        return CFSTR("");
     }
 }
+    
+inline basic_bounding_box<GraphicsMath> _FromCG(const CGRect& rc)
+{
+    return basic_bounding_box<GraphicsMath>( rc.origin.x, rc.origin.y, rc.size.width, rc.size.height );
+}
 
 } // namespace _CoreGraphics
 } // inline namespace v1

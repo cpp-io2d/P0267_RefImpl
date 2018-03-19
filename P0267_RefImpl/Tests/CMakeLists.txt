@@ -44,6 +44,7 @@ add_custom_command( TARGET tests POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/stroke_widths_300x200.png" "${RSC_TARGET}/stroke_widths_300x200.png"
     COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/dash_pattern_two_one_300x200.png" "${RSC_TARGET}/dash_pattern_two_one_300x200.png"
     COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/linear_gradient_aquamarine_dark_magenta_lime_300x200.png" "${RSC_TARGET}/linear_gradient_aquamarine_dark_magenta_lime_300x200.png"
+    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/linear_gradient_wrapping_modes_300x200.png" "${RSC_TARGET}/linear_gradient_wrapping_modes_300x200.png"
 )
 
 if(MSVC)

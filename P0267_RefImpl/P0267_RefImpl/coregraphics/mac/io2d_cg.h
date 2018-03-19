@@ -207,10 +207,9 @@ struct brushes {
         ::std::unique_ptr<color_t, decltype(&CGColorRelease)> color{ nullptr, &CGColorRelease };
     };
     struct _Linear {
-        using gradient_t = remove_pointer_t<CGGradientRef>;
         basic_point_2d<GraphicsMath> start;
         basic_point_2d<GraphicsMath> end;
-        ::std::unique_ptr<gradient_t, decltype(&CGGradientRelease)> gradient{ nullptr, &CGGradientRelease };
+        vector<gradient_stop> stops;
     };
     struct _Radial {
         using gradient_t = remove_pointer_t<CGGradientRef>;

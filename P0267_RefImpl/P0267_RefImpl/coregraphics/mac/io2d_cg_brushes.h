@@ -60,9 +60,9 @@ template <class InputIterator>
 inline _GS::brushes::brush_data_type
 _GS::brushes::create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last) {
     _Linear linear_data;
-    linear_data.gradient.reset( _BuildGradient(first, last) );
     linear_data.start = begin;
     linear_data.end = end;
+    linear_data.stops.assign(first, last);
     
     brush_data_type data;
     data.brush = std::make_shared<typename brush_data_type::brush_t>( ::std::move(linear_data) );
