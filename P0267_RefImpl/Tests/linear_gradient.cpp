@@ -95,7 +95,7 @@ TEST_CASE("IO2D properly handles wrapping modes for linear gradients")
     CHECK( ComparePNGWithTolerance(image, reference, 0.08f) == true );
 }
 
-TEST_CASE("IO2D's linear gradient fills an entire non-convex figure")
+TEST_CASE("IO2D linear gradient fills an entire non-convex figure")
 {
     auto reference = "linear_gradient_non_convex_300x200.png";
     auto image = image_surface{format::argb32, 300, 200};
@@ -126,4 +126,30 @@ TEST_CASE("IO2D's linear gradient fills an entire non-convex figure")
     image.fill(b, pb, brush_props{wrap_mode::reflect}, rp);
     
     CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 1) == true );
+}
+
+TEST_CASE("IO2D linear gradient properly strokes an open figure")
+{
+    auto reference = "linear_gradient_curve_stroke_300x200.png";    
+    auto image = image_surface{format::argb32, 300, 200};
+    auto b = brush{ {0.f, 0.f}, {50, 0.f},
+                    {gradient_stop{0.0f, rgba_color::coral},
+                     gradient_stop{1.f, rgba_color::cyan}} };
+    auto bp = brush_props{wrap_mode::reflect};
+    auto rp = render_props{antialias::none};
+    auto build = [](point_2d pos) {
+        auto pb = path_builder{};
+        pb.new_figure(pos);
+        pb.rel_quadratic_curve({0.f, -50.f}, {50.f, 0.f});
+        pb.rel_quadratic_curve({50.f, 0.f}, {0.f, 50.f});
+        pb.rel_quadratic_curve({0.f, 50.f}, {50.f, 0.f});
+        pb.rel_quadratic_curve({50.f, 0.f}, {0.f, -50.f});
+        pb.rel_quadratic_curve({0.f, -50.f}, {50.f, 0.f});
+        return pb;
+    };
+    
+    auto sp = stroke_props{10., line_cap::square, line_join::round};
+    image.stroke(b, build({20.f, 100.f}), bp, sp, nullopt, rp);
+    
+    CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 2) == true );
 }
