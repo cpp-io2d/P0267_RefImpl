@@ -26,7 +26,7 @@ TEST_CASE("IO2D properly draws a linear gradient")
         pb.close_figure();
         image.fill(b, pb);
     }
-    SECTION("Draw with a brush transformation") {
+    SECTION("Draw with a brush transformation - translate") {
         auto b = brush{ {100.f, 250.f},
                         {400.f, 250.f},
                         {gradient_stop{0.0f, rgba_color::aquamarine},
@@ -42,7 +42,24 @@ TEST_CASE("IO2D properly draws a linear gradient")
         pb.close_figure();
         image.fill(b, pb, bp);
     }
-    
+    SECTION("Draw with a brush transformation - horizontal mirror") {
+        auto b = brush{ {300.f, 100.f},
+                        {0.f, 100.f},
+                        {gradient_stop{0.0f, rgba_color::aquamarine},
+                         gradient_stop{0.5f, rgba_color::dark_magenta},
+                         gradient_stop{1.0f, rgba_color::lime}}};
+        auto m = matrix_2d::init_translate({-150.f, 0.}) * matrix_2d::init_scale({-1.f, 1.f}) * matrix_2d::init_translate({150.f, 0.});
+        auto bp = brush_props{wrap_mode::none, filter::good, fill_rule::winding, m};
+        auto pb = path_builder{};
+        pb.new_figure({0.f, 0.f});
+        pb.rel_line({300.f, 0.f});
+        pb.rel_line({0.f, 200.f});
+        pb.rel_line({-300.f, 0.f});
+        pb.rel_line({0.f, -200.f});
+        pb.close_figure();
+        image.fill(b, pb, bp);
+    }
+
     CHECK( ComparePNGWithTolerance(image, reference, 0.01f) == true );
 }
 
