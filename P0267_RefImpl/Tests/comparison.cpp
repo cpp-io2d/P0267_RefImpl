@@ -152,14 +152,9 @@ bool ComparePNGExact( const string &path1, const string &path2 )
     return *img1 == *img2;
 }
 
-bool ComparePNGWithTolerance( const std::string &path1, const std::string &path2, float intensity_tolerance , int spatial_tolerance )
+static bool CompareWithIntensityTolerance(const RawImage& first, const RawImage& second, float intensity_tolerance)
 {
-    auto img1 = ReadFile(path1);
-    auto img2 = ReadFile(path2);
-    if( !img1 || !img2 )
-        return false;
-    if( img1->width != img2->width || img1->height != img2->height )
-        return false;
+    assert( first.width == second.width && first.height == second.height );
     
     auto abs_intensity_tolerance = static_cast<int>(256.f * intensity_tolerance);
     auto pred = [abs_intensity_tolerance](uint32_t first, uint32_t second) -> bool {
@@ -168,7 +163,52 @@ bool ComparePNGWithTolerance( const std::string &path1, const std::string &path2
                abs( int(GetBlue(first))  - int(GetBlue(second))  )  <= abs_intensity_tolerance &&
                abs( int(GetAlpha(first)) - int(GetAlpha(second)) )  <= abs_intensity_tolerance ;
     };
-    return equal( begin(img1->pixmap), end(img1->pixmap), begin(img2->pixmap), end(img2->pixmap), pred );
+    return equal( begin(first.pixmap), end(first.pixmap), begin(second.pixmap), end(second.pixmap), pred );
+}
+
+static bool CompareWithIntensityAndSpatialTolerance(const RawImage& first, const RawImage& second, float intensity_tolerance, int spatial_tolerance )
+{
+    assert( first.width == second.width && first.height == second.height );
+
+    auto abs_intensity_tolerance = static_cast<int>(256.f * intensity_tolerance);
+    auto cmp = [abs_intensity_tolerance](uint32_t first, uint32_t second) -> bool {
+        return abs( int(GetRed(first))   - int(GetRed(second))   )  <= abs_intensity_tolerance &&
+               abs( int(GetGreen(first)) - int(GetGreen(second)) )  <= abs_intensity_tolerance &&
+               abs( int(GetBlue(first))  - int(GetBlue(second))  )  <= abs_intensity_tolerance &&
+               abs( int(GetAlpha(first)) - int(GetAlpha(second)) )  <= abs_intensity_tolerance ;
+    };
+    auto pred = [cmp, spatial_tolerance, &first, &second](int x, int y) -> bool {
+        auto v = first.pixmap[x + y * first.width];
+        for( int iy = max(y - spatial_tolerance, 0); iy < min(second.height, y + spatial_tolerance); ++iy )
+            for( int ix = max(x - spatial_tolerance, 0); ix < min(second.width, x + spatial_tolerance); ++ix )
+                if( cmp(v, second.pixmap[ix + iy * first.width]) )
+                    return true;
+        return false;
+    };
+    for( auto y = 0; y < first.height; ++y )
+        for( auto x = 0; x < first.width; ++x )
+            if( !pred(x, y) )
+                return false;
+    
+    return true;
+}
+
+bool ComparePNGWithTolerance( const std::string &path1, const std::string &path2, float intensity_tolerance, int spatial_tolerance )
+{
+    assert( intensity_tolerance >= 0. && intensity_tolerance <= 1.f );
+    assert( spatial_tolerance >= 0 && spatial_tolerance <= 10 );
+    
+    auto img1 = ReadFile(path1);
+    auto img2 = ReadFile(path2);
+    if( !img1 || !img2 )
+        return false;
+    if( img1->width != img2->width || img1->height != img2->height )
+        return false;
+    
+    if( spatial_tolerance == 0 )
+        return CompareWithIntensityTolerance(*img1, *img2, intensity_tolerance);
+    else
+        return CompareWithIntensityAndSpatialTolerance(*img1, *img2, intensity_tolerance, spatial_tolerance);
 }
 
 bool ComparePNGWithTolerance( std::experimental::io2d::image_surface &image, const std::string &path2, float intensity_tolerance, int spatial_tolerance )

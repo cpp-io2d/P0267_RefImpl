@@ -94,3 +94,36 @@ TEST_CASE("IO2D properly handles wrapping modes for linear gradients")
     // need to invesitage it.
     CHECK( ComparePNGWithTolerance(image, reference, 0.08f) == true );
 }
+
+TEST_CASE("IO2D's linear gradient fills an entire non-convex figure")
+{
+    auto reference = "linear_gradient_non_convex_300x200.png";
+    auto image = image_surface{format::argb32, 300, 200};
+    
+    auto b = brush{ {0.f, 0.f},
+                    {60, 30.f},
+                    {gradient_stop{0.0f, rgba_color::coral},
+                     gradient_stop{1.f, rgba_color::cyan} }};
+    auto rp = render_props{antialias::none};
+    auto pb = path_builder{};
+    pb.new_figure({50.f, 25.f});
+    pb.rel_line({100.f, 0.f});
+    pb.rel_line({0.f, 100.f});
+    pb.rel_line({50.f, 0.f});
+    pb.rel_line({0.f, -50.f});
+    pb.rel_line({50.f, 0.f});
+    pb.rel_line({25.f, 25.f});
+    pb.rel_line({0.f, 50.f});
+    pb.rel_line({-25.f, 25.f});
+    pb.rel_line({-200.f, 0.f});
+    pb.rel_line({0.f, -50.f});
+    pb.rel_line({50.f, 0.f});
+    pb.rel_line({0.f, -50.f});
+    pb.rel_line({-50.f, 0.f});
+    pb.rel_line({0.f, -50.f});
+    pb.close_figure();
+    
+    image.fill(b, pb, brush_props{wrap_mode::reflect}, rp);
+    
+    CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 1) == true );
+}
