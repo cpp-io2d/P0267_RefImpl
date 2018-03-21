@@ -60,10 +60,10 @@ static pair<float, float> ExpandParameters(const circle p1, const circle p2, con
             expand(focus_t);
     }
     
-    touch_edge_ext( bb_tl.x() - p1.center().x() - p1.radius(), dx + dr, p1.center().y(), dy, bb_tl.y(), bb_br.y() );
-    touch_edge_ext( bb_tl.x() - p1.center().x() + p1.radius(), dx - dr, p1.center().y(), dy, bb_tl.y(), bb_br.y() );
-    touch_edge_ext( bb_tl.y() - p1.center().y() - p1.radius(), dy + dr, p1.center().x(), dx, bb_tl.x(), bb_br.x() );
-    touch_edge_ext( bb_tl.y() - p1.center().y() + p1.radius(), dy - dr, p1.center().x(), dx, bb_tl.x(), bb_br.x() );
+    touch_edge_ext( bb_tl.x() - p1.center().x() - p1.radius(), dx + dr, p1.center().y(), dy, bb_tl.y(), bb_br.y() ); // left
+    touch_edge_ext( bb_br.x() - p1.center().x() + p1.radius(), dx - dr, p1.center().y(), dy, bb_tl.y(), bb_br.y() ); // right
+    touch_edge_ext( bb_tl.y() - p1.center().y() - p1.radius(), dy + dr, p1.center().x(), dx, bb_tl.x(), bb_br.x() ); // top
+    touch_edge_ext( bb_br.y() - p1.center().y() + p1.radius(), dy - dr, p1.center().x(), dx, bb_tl.x(), bb_br.x() ); // bottom
 
     const auto a = dx*dx + dy*dy - dr*dr;
     if( abs(a) >= FLT_EPSILON*FLT_EPSILON ) { // regular case

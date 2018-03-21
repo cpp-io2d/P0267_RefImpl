@@ -50,6 +50,7 @@ add_custom_command( TARGET tests POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/linear_gradient_curve_stroke_300x200.png" "${RSC_TARGET}/linear_gradient_curve_stroke_300x200.png"
     COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/radial_gradient_aquamarine_dark_magenta_lime_300x200.png" "${RSC_TARGET}/radial_gradient_aquamarine_dark_magenta_lime_300x200.png"
     COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/radial_gradient_aquamarine_dark_magenta_lime_reflect_300x200.png" "${RSC_TARGET}/radial_gradient_aquamarine_dark_magenta_lime_reflect_300x200.png"
+    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/radial_gradient_wrapping_modes_300x200.png" "${RSC_TARGET}/radial_gradient_wrapping_modes_300x200.png"
 )
 
 
