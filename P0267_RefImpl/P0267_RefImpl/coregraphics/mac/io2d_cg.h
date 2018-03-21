@@ -212,10 +212,9 @@ struct brushes {
         vector<gradient_stop> stops;
     };
     struct _Radial {
-        using gradient_t = remove_pointer_t<CGGradientRef>;
         basic_circle<GraphicsMath> start;
         basic_circle<GraphicsMath> end;
-        ::std::unique_ptr<gradient_t, decltype(&CGGradientRelease)> gradient{ nullptr, &CGGradientRelease };
+        vector<gradient_stop> stops;
     };
     struct _Surface {
         using bitmap_t = remove_pointer_t<CGContextRef>;

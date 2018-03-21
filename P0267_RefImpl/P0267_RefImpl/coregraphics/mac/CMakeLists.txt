@@ -20,8 +20,8 @@ set(IO2D_LIB_SRC
 	io2d_cg_paths_figures.cpp
 	io2d_cg_surfaces.h
 	io2d_cg_surfaces.cpp
-    io2d_cg_linear_gradient.cpp
-    io2d_cg_linear_gradient.h
+    io2d_cg_gradient.cpp
+    io2d_cg_gradient.h
 	../../rgba_color.cpp
 )
 set(IO2D_LIB_HEADERS 

@@ -4,7 +4,7 @@
 #include <ImageIO/ImageIO.h>
 #include <fstream>
 #include "io2d_cg_interop.h"
-#include "io2d_cg_linear_gradient.h"
+#include "io2d_cg_gradient.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
     
@@ -183,12 +183,7 @@ void _Stroke(CGContextRef ctx,
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextReplacePathWithStrokedPath(ctx);
         CGContextClip(ctx);
-        auto center1 = _ToCG( radial_brush.start.center() * bp.brush_matrix().inverse() );
-        auto radius1 = radial_brush.start.radius();
-        auto center2 = _ToCG( radial_brush.end.center() * bp.brush_matrix().inverse() );
-        auto radius2 = radial_brush.end.radius();
-        auto flags = bp.wrap_mode() == wrap_mode::none ? 0 : (kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
-        CGContextDrawRadialGradient(ctx, radial_brush.gradient.get(), center1, radius1, center2, radius2, flags);
+        _DrawRadialGradient(ctx, radial_brush, bp);
     }
     else if( b.type() == brush_type::linear ) {
         const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
@@ -259,12 +254,7 @@ void _Fill(CGContextRef ctx,
         const auto &radial_brush = std::get<_GS::brushes::_Radial>(*b._Get_data().brush);        
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextClip(ctx);
-        auto center1 = _ToCG( radial_brush.start.center() * bp.brush_matrix().inverse() );
-        auto radius1 = radial_brush.start.radius();
-        auto center2 = _ToCG( radial_brush.end.center() * bp.brush_matrix().inverse() );
-        auto radius2 = radial_brush.end.radius();
-        auto flags = bp.wrap_mode() == wrap_mode::none ? 0 : (kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
-        CGContextDrawRadialGradient(ctx, radial_brush.gradient.get(), center1, radius1, center2, radius2, flags);
+        _DrawRadialGradient(ctx, radial_brush, bp);
     }
     else if( b.type() == brush_type::linear ) {
         const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);

@@ -38,25 +38,6 @@ _GS::brushes::create_brush(basic_image_surface<_GS>&& img) {
 }
 
 template <class InputIterator>
-inline CGGradientRef _BuildGradient(InputIterator first, InputIterator last ) {
-    auto colors = CFArrayCreateMutable(nullptr, 0, &kCFTypeArrayCallBacks);
-    _AutoRelease colors_release{colors};
-    std::vector<double> locations;
-    
-    for( ; first != last; first++ ) {
-        auto &stop = *first;
-        locations.emplace_back(stop.offset());
-        
-        auto stop_color = stop.color();
-        auto color = CGColorCreateGenericRGB(stop_color.r(), stop_color.g(), stop_color.b(), stop_color.a());
-        CFArrayAppendValue(colors, color);
-        CGColorRelease(color);
-    }
-    
-    return CGGradientCreateWithColors(nullptr, colors, locations.data());
-}
-
-template <class InputIterator>
 inline _GS::brushes::brush_data_type
 _GS::brushes::create_brush(const basic_point_2d<GraphicsMath>& begin, const basic_point_2d<GraphicsMath>& end, InputIterator first, InputIterator last) {
     _Linear linear_data;
@@ -79,9 +60,9 @@ template <class InputIterator>
 inline _GS::brushes::brush_data_type
 _GS::brushes::create_brush(const basic_circle<GraphicsMath>& start, const basic_circle<GraphicsMath>& end, InputIterator first, InputIterator last) {
     _Radial radial_data;
-    radial_data.gradient.reset( _BuildGradient(first, last) );
     radial_data.start = start;
     radial_data.end = end;
+    radial_data.stops.assign(first, last);
     
     brush_data_type data;
     data.brush = std::make_shared<typename brush_data_type::brush_t>( ::std::move(radial_data) );
