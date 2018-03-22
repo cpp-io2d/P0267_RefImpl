@@ -11,13 +11,13 @@ target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 add_executable(tests
 	main.cpp
 	background_paint.cpp
-    rectangle_stroke.cpp
-    stroke_width.cpp
-    stroke_dashes.cpp
-    linear_gradient.cpp
-    radial_gradient.cpp
-    comparison.h
-    comparison.cpp
+   	rectangle_stroke.cpp
+	stroke_width.cpp
+	stroke_dashes.cpp
+	linear_gradient.cpp
+	radial_gradient.cpp
+	comparison.h
+   	comparison.cpp
 )
 
 target_link_libraries(tests io2d Catch)
@@ -36,21 +36,29 @@ else()
 endif()
 
 
-set(RSC_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Reference)
-set(RSC_TARGET $<TARGET_FILE_DIR:tests>)
+function(COPY_REF_RSC)
+   	set(RSC_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Reference)
+   	set(RSC_TARGET $<TARGET_FILE_DIR:tests>)
+	foreach(arg IN LISTS ARGN)
+		add_custom_command( TARGET tests POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/${arg}" "${RSC_TARGET}/${arg}"
+		)
+	endforeach()
+endfunction()
 
-add_custom_command( TARGET tests POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/red_background_300x200.png" "${RSC_TARGET}/red_background_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/stroked_rectangle_300x200.png" "${RSC_TARGET}/stroked_rectangle_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/stroke_widths_300x200.png" "${RSC_TARGET}/stroke_widths_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/dash_pattern_two_one_300x200.png" "${RSC_TARGET}/dash_pattern_two_one_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/linear_gradient_aquamarine_dark_magenta_lime_300x200.png" "${RSC_TARGET}/linear_gradient_aquamarine_dark_magenta_lime_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/linear_gradient_wrapping_modes_300x200.png" "${RSC_TARGET}/linear_gradient_wrapping_modes_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/linear_gradient_non_convex_300x200.png" "${RSC_TARGET}/linear_gradient_non_convex_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/linear_gradient_curve_stroke_300x200.png" "${RSC_TARGET}/linear_gradient_curve_stroke_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/radial_gradient_aquamarine_dark_magenta_lime_300x200.png" "${RSC_TARGET}/radial_gradient_aquamarine_dark_magenta_lime_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/radial_gradient_aquamarine_dark_magenta_lime_reflect_300x200.png" "${RSC_TARGET}/radial_gradient_aquamarine_dark_magenta_lime_reflect_300x200.png"
-    COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/radial_gradient_wrapping_modes_300x200.png" "${RSC_TARGET}/radial_gradient_wrapping_modes_300x200.png"
+COPY_REF_RSC(
+    red_background_300x200.png
+    stroked_rectangle_300x200.png
+    stroke_widths_300x200.png
+    dash_pattern_two_one_300x200.png
+    linear_gradient_aquamarine_dark_magenta_lime_300x200.png
+    linear_gradient_wrapping_modes_300x200.png
+    linear_gradient_non_convex_300x200.png
+    linear_gradient_curve_stroke_300x200.png
+    radial_gradient_aquamarine_dark_magenta_lime_300x200.png
+    radial_gradient_aquamarine_dark_magenta_lime_reflect_300x200.png
+    radial_gradient_wrapping_modes_300x200.png
+    radial_gradient_non_convex_300x200.png
 )
 
 

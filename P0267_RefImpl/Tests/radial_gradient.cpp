@@ -95,3 +95,37 @@ TEST_CASE("IO2D properly handles wrap modes for radial gradients")
 
     CHECK( ComparePNGWithTolerance(image, reference, 0.02f, 2) == true );
 }
+
+TEST_CASE("Radial gradient fills an entire non-convex figure")
+{
+    auto reference = "radial_gradient_non_convex_300x200.png";
+    auto image = image_surface{format::argb32, 300, 200};
+    
+    auto b = brush{ circle{{0.f, 0.f}, 190.f},
+                    circle{{100.f, 150.f}, 0.f},
+                    {gradient_stop{0.0f, rgba_color::aquamarine},
+                     gradient_stop{0.5f, rgba_color::dark_magenta},
+                     gradient_stop{1.0f, rgba_color::lime}}};
+    auto rp = render_props{antialias::none};
+    auto pb = path_builder{};
+    pb.new_figure({50.f, 25.f});
+    pb.rel_line({100.f, 0.f});
+    pb.rel_line({0.f, 100.f});
+    pb.rel_line({50.f, 0.f});
+    pb.rel_line({0.f, -50.f});
+    pb.rel_line({50.f, 0.f});
+    pb.rel_line({25.f, 25.f});
+    pb.rel_line({0.f, 50.f});
+    pb.rel_line({-25.f, 25.f});
+    pb.rel_line({-200.f, 0.f});
+    pb.rel_line({0.f, -50.f});
+    pb.rel_line({50.f, 0.f});
+    pb.rel_line({0.f, -50.f});
+    pb.rel_line({-50.f, 0.f});
+    pb.rel_line({0.f, -50.f});
+    pb.close_figure();
+    
+    image.fill(b, pb, brush_props{wrap_mode::reflect}, rp);
+
+    CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 1) == true );
+}
