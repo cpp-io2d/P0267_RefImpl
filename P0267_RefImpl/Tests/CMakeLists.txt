@@ -59,6 +59,7 @@ COPY_REF_RSC(
     radial_gradient_aquamarine_dark_magenta_lime_reflect_300x200.png
     radial_gradient_wrapping_modes_300x200.png
     radial_gradient_non_convex_300x200.png
+    radial_gradient_curve_stroke_300x200.png
 )
 
 

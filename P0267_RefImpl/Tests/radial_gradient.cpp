@@ -129,3 +129,31 @@ TEST_CASE("Radial gradient fills an entire non-convex figure")
 
     CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 1) == true );
 }
+
+TEST_CASE("Radial gradient properly strokes an open figure")
+{
+    auto reference = "radial_gradient_curve_stroke_300x200.png";
+    auto image = image_surface{format::argb32, 300, 200};
+    auto b = brush{ circle{{0.f, 0.f}, 100.f},
+                    circle{{50.f, 75.f}, 0.f},
+                    {gradient_stop{0.0f, rgba_color::aquamarine},
+                     gradient_stop{0.5f, rgba_color::dark_magenta},
+                     gradient_stop{1.0f, rgba_color::lime}}};
+    auto bp = brush_props{wrap_mode::reflect};
+    auto rp = render_props{antialias::none};
+    auto build = [](point_2d pos) {
+        auto pb = path_builder{};
+        pb.new_figure(pos);
+        pb.rel_quadratic_curve({0.f, -50.f}, {50.f, 0.f});
+        pb.rel_quadratic_curve({50.f, 0.f}, {0.f, 50.f});
+        pb.rel_quadratic_curve({0.f, 50.f}, {50.f, 0.f});
+        pb.rel_quadratic_curve({50.f, 0.f}, {0.f, -50.f});
+        pb.rel_quadratic_curve({0.f, -50.f}, {50.f, 0.f});
+        return pb;
+    };
+    
+    auto sp = stroke_props{10., line_cap::square, line_join::round};
+    image.stroke(b, build({20.f, 100.f}), bp, sp, nullopt, rp);
+        
+    CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 2) == true );
+}
