@@ -5,6 +5,7 @@
 #include <fstream>
 #include "io2d_cg_interop.h"
 #include "io2d_cg_gradient.h"
+#include "io2d_cg_colors.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
     
@@ -12,23 +13,20 @@ static void SetStrokeProps( CGContextRef ctx, const basic_stroke_props<_GS>& sp 
 static void SetDashProps( CGContextRef ctx, const basic_dashes<_GS>& d ) noexcept;
 static void SetRenderProps( CGContextRef ctx, const basic_render_props<_GS>& rp ) noexcept;
 static void SetClipProps( CGContextRef ctx, const basic_clip_props<_GS>& cp ) noexcept;
-static CGColorSpaceRef PatternColorSpace() noexcept;
     
 CGContextRef _CreateBitmap(io2d::format fmt, int width, int height) noexcept
 {
-    static const auto rgb = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-    static const auto gray = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
     switch (fmt) {
         case format::argb32:
-            return CGBitmapContextCreate(nullptr, width, height, 8, 0, rgb, kCGImageAlphaPremultipliedFirst);
+            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaPremultipliedFirst);
         case format::rgb24:
-            return CGBitmapContextCreate(nullptr, width, height, 8, 0, rgb, kCGImageAlphaNoneSkipFirst);
+            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaNoneSkipFirst);
         case format::rgb30:
-            return CGBitmapContextCreate(nullptr, width, height, 8, 0, rgb, kCGImageAlphaNoneSkipFirst);
+            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaNoneSkipFirst);
         case format::a8:
-            return CGBitmapContextCreate(nullptr, width, height, 8, 0, gray, kCGImageAlphaOnly);
+            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _GrayColorSpace(), kCGImageAlphaOnly);
         case format::rgb16_565:
-            return CGBitmapContextCreate(nullptr, width, height, 5, 0, rgb, kCGImageAlphaNoneSkipFirst);
+            return CGBitmapContextCreate(nullptr, width, height, 5, 0, _RGBColorSpace(), kCGImageAlphaNoneSkipFirst);
         default:
             return nullptr;
     }
@@ -149,8 +147,6 @@ void _Stroke(CGContextRef ctx,
     if( b.type() == brush_type::solid_color ) {
         auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*b._Get_data().brush);
         CGContextSetStrokeColorWithColor(ctx, solid_color_brush.color.get());
-        
-        
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextStrokePath(ctx);
     }
@@ -185,7 +181,7 @@ void _Stroke(CGContextRef ctx,
                                        &callbacks);
         _AutoRelease pattern_release{pattern};
         
-        CGContextSetFillColorSpace(ctx, PatternColorSpace());
+        CGContextSetFillColorSpace(ctx, _PatternColorSpace());
         constexpr double components[4] = {1., 1., 1., 1.};
         CGContextSetFillPattern(ctx, pattern, components);
         CGContextAddPath(ctx, ip._Get_data().path.get());
@@ -203,10 +199,11 @@ void _Paint(CGContextRef ctx,
     _GStateGuard state_guard{ctx};
     SetRenderProps(ctx, rp);
     SetClipProps(ctx, cl);
+    
     if( b.type() == brush_type::solid_color ) {
         const auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*b._Get_data().brush);
         CGContextSetFillColorWithColor(ctx, solid_color_brush.color.get());
-        CGContextFillRect(ctx, CGRectMake(0, 0, CGBitmapContextGetWidth(ctx), CGBitmapContextGetHeight(ctx)));
+        CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
     }
     else if( b.type() == brush_type::linear ) {
         const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
@@ -232,10 +229,10 @@ void _Fill(CGContextRef ctx,
     _GStateGuard state_guard{ctx};
     SetRenderProps(ctx, rp);
     SetClipProps(ctx, cl);
+    
     if( b.type() == brush_type::solid_color ) {
         const auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*b._Get_data().brush);
         CGContextSetFillColorWithColor(ctx, solid_color_brush.color.get());
-        
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextFillPath(ctx);
     }
@@ -268,7 +265,7 @@ void _Fill(CGContextRef ctx,
                                        &callbacks);
         _AutoRelease pattern_release{pattern};
         
-        CGContextSetFillColorSpace(ctx, PatternColorSpace());
+        CGContextSetFillColorSpace(ctx, _PatternColorSpace());
         constexpr double components[4] = {1., 1., 1., 1.};
         CGContextSetFillPattern(ctx, pattern, components);
         CGContextAddPath(ctx, ip._Get_data().path.get());
@@ -315,12 +312,6 @@ static void SetDashProps( CGContextRef ctx, const basic_dashes<_GS>& d ) noexcep
     }
 }
 
-static CGColorSpaceRef PatternColorSpace() noexcept
-{
-    static auto color_space = CGColorSpaceCreatePattern(nullptr);
-    return color_space;
-}
-    
 } // namespace _CoreGraphics
 } // inline namespace v1
 } // std::experimental::io2d

@@ -12,4 +12,4 @@ void _DrawRadialGradient(CGContextRef ctx, const _GS::brushes::_Radial &gradient
 } // inline namespace v1
 } // std::experimental::io2d
 
-#endif // GRADIENT_H_
+#endif // _IO2D_CG_GRADIENT_H_

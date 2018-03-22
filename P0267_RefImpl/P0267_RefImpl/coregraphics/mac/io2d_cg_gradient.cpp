@@ -1,4 +1,5 @@
 #include "io2d_cg_gradient.h"
+#include "io2d_cg_colors.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
 
@@ -217,8 +218,6 @@ static inline bool IsEmpty( const bounding_box &bb )
     return bb.width() < FLT_MIN || bb.height() < FLT_MIN;
 }
 
-static const auto rgb = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB); // need some central place to manage color spaces
-
 void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient, const basic_brush_props<_GS> &bp)
 {
     if( gradient.stops.empty() )
@@ -242,7 +241,7 @@ void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient
     auto shading_function = CGFunctionCreate((void*)(&gradient.stops), domain_dimension, domain, range_dimension, range, &callbacks);
     _AutoRelease release_shading_function{shading_function};
     
-    auto shading = CGShadingCreateAxial(rgb, _ToCG(p0), _ToCG(p1), shading_function, false, false);
+    auto shading = CGShadingCreateAxial(_RGBColorSpace(), _ToCG(p0), _ToCG(p1), shading_function, false, false);
     _AutoRelease release_shading{shading};
     
     CGContextDrawShading(ctx, shading);
@@ -273,7 +272,7 @@ void _DrawRadialGradient(CGContextRef ctx, const _GS::brushes::_Radial &gradient
     auto shading_function = CGFunctionCreate((void*)(&gradient.stops), domain_dimension, domain, range_dimension, range, &callbacks);
     _AutoRelease release_shading_function{shading_function};
 
-    auto shading = CGShadingCreateRadial(rgb, _ToCG(c0.center()), c0.radius(), _ToCG(c1.center()), c1.radius(), shading_function, false, false);
+    auto shading = CGShadingCreateRadial(_RGBColorSpace(), _ToCG(c0.center()), c0.radius(), _ToCG(c1.center()), c1.radius(), shading_function, false, false);
     _AutoRelease release_shading{shading};
     
     CGContextDrawShading(ctx, shading);
