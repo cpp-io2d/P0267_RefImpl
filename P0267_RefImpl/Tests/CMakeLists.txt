@@ -36,9 +36,10 @@ else()
 endif()
 
 
+set(RSC_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Reference)
+set(RSC_TARGET $<TARGET_FILE_DIR:tests>)
+
 function(COPY_REF_RSC)
-   	set(RSC_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Reference)
-   	set(RSC_TARGET $<TARGET_FILE_DIR:tests>)
 	foreach(arg IN LISTS ARGN)
 		add_custom_command( TARGET tests POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/${arg}" "${RSC_TARGET}/${arg}"
