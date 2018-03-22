@@ -59,7 +59,15 @@ TEST_CASE("IO2D properly draws a linear gradient")
         pb.close_figure();
         image.fill(b, pb, bp);
     }
-
+    SECTION("Draw with via paint") {
+        auto b = brush{ {0.f, 100.f},
+            {300.f, 100.f},
+            {gradient_stop{0.0f, rgba_color::aquamarine},
+                gradient_stop{0.5f, rgba_color::dark_magenta},
+                gradient_stop{1.0f, rgba_color::lime}}};
+        image.paint(b);
+    }
+    
     CHECK( ComparePNGWithTolerance(image, reference, 0.01f) == true );
 }
 

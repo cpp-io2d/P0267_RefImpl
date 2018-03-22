@@ -154,6 +154,20 @@ void _Stroke(CGContextRef ctx,
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextStrokePath(ctx);
     }
+    else if( b.type() == brush_type::linear ) {
+        const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
+        CGContextAddPath(ctx, ip._Get_data().path.get());
+        CGContextReplacePathWithStrokedPath(ctx);
+        CGContextClip(ctx);
+        _DrawLinearGradient(ctx, linear_brush, bp);
+    }
+    else if( b.type() == brush_type::radial ) {
+        const auto &radial_brush = std::get<_GS::brushes::_Radial>(*b._Get_data().brush);
+        CGContextAddPath(ctx, ip._Get_data().path.get());
+        CGContextReplacePathWithStrokedPath(ctx);
+        CGContextClip(ctx);
+        _DrawRadialGradient(ctx, radial_brush, bp);
+    }
     else if( b.type() == brush_type::surface ) {
         const auto &surface_brush = std::get<_GS::brushes::_Surface>(*b._Get_data().brush);
         
@@ -178,20 +192,6 @@ void _Stroke(CGContextRef ctx,
         CGContextReplacePathWithStrokedPath(ctx);
         CGContextFillPath(ctx);
     }
-    else if( b.type() == brush_type::radial ) {
-        const auto &radial_brush = std::get<_GS::brushes::_Radial>(*b._Get_data().brush);
-        CGContextAddPath(ctx, ip._Get_data().path.get());
-        CGContextReplacePathWithStrokedPath(ctx);
-        CGContextClip(ctx);
-        _DrawRadialGradient(ctx, radial_brush, bp);
-    }
-    else if( b.type() == brush_type::linear ) {
-        const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
-        CGContextAddPath(ctx, ip._Get_data().path.get());
-        CGContextReplacePathWithStrokedPath(ctx);
-        CGContextClip(ctx);
-        _DrawLinearGradient(ctx, linear_brush, bp);
-    }
 }
     
 void _Paint(CGContextRef ctx,
@@ -201,10 +201,22 @@ void _Paint(CGContextRef ctx,
             const basic_clip_props<_GS>& cl)
 {
     _GStateGuard state_guard{ctx};
+    SetRenderProps(ctx, rp);
+    SetClipProps(ctx, cl);
     if( b.type() == brush_type::solid_color ) {
         const auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*b._Get_data().brush);
         CGContextSetFillColorWithColor(ctx, solid_color_brush.color.get());
         CGContextFillRect(ctx, CGRectMake(0, 0, CGBitmapContextGetWidth(ctx), CGBitmapContextGetHeight(ctx)));
+    }
+    else if( b.type() == brush_type::linear ) {
+        const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
+        _DrawLinearGradient(ctx, linear_brush, bp);
+    }
+    else if( b.type() == brush_type::radial ) {
+        const auto &radial_brush = std::get<_GS::brushes::_Radial>(*b._Get_data().brush);
+        _DrawRadialGradient(ctx, radial_brush, bp);
+    }
+    else if( b.type() == brush_type::surface ) {
     }
 }
 
@@ -227,6 +239,18 @@ void _Fill(CGContextRef ctx,
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextFillPath(ctx);
     }
+    else if( b.type() == brush_type::linear ) {
+        const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
+        CGContextAddPath(ctx, ip._Get_data().path.get());
+        CGContextClip(ctx);
+        _DrawLinearGradient(ctx, linear_brush, bp);
+    }
+    else if( b.type() == brush_type::radial ) {
+        const auto &radial_brush = std::get<_GS::brushes::_Radial>(*b._Get_data().brush);
+        CGContextAddPath(ctx, ip._Get_data().path.get());
+        CGContextClip(ctx);
+        _DrawRadialGradient(ctx, radial_brush, bp);
+    }
     else if( b.type() == brush_type::surface ) {
         const auto &surface_brush = std::get<_GS::brushes::_Surface>(*b._Get_data().brush);
         
@@ -249,18 +273,6 @@ void _Fill(CGContextRef ctx,
         CGContextSetFillPattern(ctx, pattern, components);
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextFillPath(ctx);
-    }
-    else if( b.type() == brush_type::radial ) {
-        const auto &radial_brush = std::get<_GS::brushes::_Radial>(*b._Get_data().brush);        
-        CGContextAddPath(ctx, ip._Get_data().path.get());
-        CGContextClip(ctx);
-        _DrawRadialGradient(ctx, radial_brush, bp);
-    }
-    else if( b.type() == brush_type::linear ) {
-        const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
-        CGContextAddPath(ctx, ip._Get_data().path.get());
-        CGContextClip(ctx);
-        _DrawLinearGradient(ctx, linear_brush, bp);
     }
 }
 
