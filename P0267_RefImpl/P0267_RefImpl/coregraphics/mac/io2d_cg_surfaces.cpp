@@ -6,6 +6,7 @@
 #include "io2d_cg_interop.h"
 #include "io2d_cg_gradient.h"
 #include "io2d_cg_colors.h"
+#include "io2d_cg_texture.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
     
@@ -100,16 +101,9 @@ void _WriteBitmap(CGContextRef ctx, const string &p, image_file_format iff, ::st
     auto size = static_cast<streamsize>(CFDataGetLength(data));
     ofs.write(bytes, size);
     
-    
     CFRelease(data);
 }
-            
-CGColorRef _ClearColor()
-{
-    static auto color = CGColorCreateGenericRGB(1.0, 1.0, 1.0, 1.0);
-    return color;
-}
-    
+
 void _Clear(CGContextRef ctx, CGColorRef with_color, CGRect in_rect)
 {
     CGContextSaveGState(ctx);
@@ -117,7 +111,7 @@ void _Clear(CGContextRef ctx, CGColorRef with_color, CGRect in_rect)
     CGContextFillRect(ctx, in_rect);
     CGContextRestoreGState(ctx);
 }
-    
+
 static void PatternDraw(void * info, CGContextRef context)
 {
     auto &surface_brush = *(const _GS::brushes::_Surface*)info;
@@ -214,6 +208,8 @@ void _Paint(CGContextRef ctx,
         _DrawRadialGradient(ctx, radial_brush, bp);
     }
     else if( b.type() == brush_type::surface ) {
+        const auto &surface_brush = std::get<_GS::brushes::_Surface>(*b._Get_data().brush);
+        _DrawTexture(ctx, surface_brush, bp);
     }
 }
 
@@ -296,6 +292,9 @@ static void SetRenderProps( CGContextRef ctx, const basic_render_props<_GS>& rp 
 {
     CGContextSetShouldAntialias(ctx, rp.antialiasing() != antialias::none);
     CGContextSetBlendMode(ctx, _ToCG(rp.compositing()));
+    
+    auto height = CGBitmapContextGetHeight(ctx);
+    CGContextConcatCTM(ctx, CGAffineTransform{ 1., 0., 0., -1., 0., double(height) } );
     CGContextConcatCTM(ctx, _ToCG(rp.surface_matrix()));
 }
     

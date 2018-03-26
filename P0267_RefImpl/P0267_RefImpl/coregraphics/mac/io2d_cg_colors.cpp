@@ -20,6 +20,12 @@ CGColorSpaceRef _PatternColorSpace() noexcept
     return pattern;
 }
     
+CGColorRef _ClearColor() noexcept
+{
+    static auto color = CGColorCreateGenericRGB(0.0, 0.0, 0.0, 1.0);
+    return color;
+}
+    
 } // namespace _CoreGraphics
 } // inline namespace v1
 } // std::experimental::io2d

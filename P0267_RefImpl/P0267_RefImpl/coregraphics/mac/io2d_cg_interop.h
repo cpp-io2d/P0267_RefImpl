@@ -101,6 +101,18 @@ inline constexpr CFStringRef _ToCG(image_file_format iff) noexcept
     }
 }
     
+inline constexpr CGInterpolationQuality _ToCG(filter f) noexcept
+{
+    switch (f) {
+        case filter::fast:      return kCGInterpolationNone;
+        case filter::good:      return kCGInterpolationMedium;
+        case filter::best:      return kCGInterpolationHigh;
+        case filter::nearest:   return kCGInterpolationNone;
+        case filter::bilinear:  return kCGInterpolationHigh;
+        default:                return kCGInterpolationDefault;
+    }
+}
+    
 inline basic_bounding_box<GraphicsMath> _FromCG(const CGRect& rc)
 {
     return basic_bounding_box<GraphicsMath>( rc.origin.x, rc.origin.y, rc.size.width, rc.size.height );

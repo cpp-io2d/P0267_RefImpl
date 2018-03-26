@@ -1,13 +1,15 @@
 #ifndef _IO2D_CG_COLORS_H_
 #define _IO2D_CG_COLORS_H_
 
-#include "io2d_cg.h"
+#include <CoreGraphics/CoreGraphics.h>
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
     
 CGColorSpaceRef _RGBColorSpace() noexcept;
 CGColorSpaceRef _GrayColorSpace() noexcept;
 CGColorSpaceRef _PatternColorSpace() noexcept;
+
+CGColorRef _ClearColor() noexcept;
     
 } // namespace _CoreGraphics
 } // inline namespace v1

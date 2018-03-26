@@ -251,7 +251,7 @@ _GS::surface_state_props::create_clip_props(const basic_bounding_box<GraphicsMat
     pb.rel_line({bbox.width(), 0});
     pb.rel_line({0, bbox.height()});
     pb.rel_line({-bbox.width(), 0});
-    pb.rel_line({-bbox.width(), -bbox.height()});
+    pb.rel_line({0, -bbox.height()});
     pb.close_figure();
 
     clip_props_data_type data;

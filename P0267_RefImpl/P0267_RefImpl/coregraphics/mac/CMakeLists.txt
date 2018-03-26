@@ -24,6 +24,8 @@ set(IO2D_LIB_SRC
     io2d_cg_gradient.h
     io2d_cg_colors.cpp
     io2d_cg_colors.h
+    io2d_cg_texture.cpp
+    io2d_cg_texture.h
 	../../rgba_color.cpp
 )
 set(IO2D_LIB_HEADERS 

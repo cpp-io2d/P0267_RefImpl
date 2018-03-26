@@ -2,6 +2,7 @@
 #define _IO2D_CG_SURFACES_
 
 #include "io2d.h"
+#include "io2d_cg_colors.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
 
@@ -9,7 +10,6 @@ CGContextRef _CreateBitmap(io2d::format fmt, int width, int height) noexcept;
 CGContextRef _LoadBitmap(const string &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec);
     
 void _WriteBitmap(CGContextRef ctx, const string &p, image_file_format iff, ::std::error_code &ec);
-CGColorRef _ClearColor();
 void _Clear(CGContextRef ctx, CGColorRef with_color, CGRect in_rect );
 void _Stroke(CGContextRef ctx, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_stroke_props<_GS>& sp, const basic_dashes<_GS>& d, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
 void _Paint(CGContextRef ctx, const basic_brush<_GS>& b, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
@@ -24,7 +24,6 @@ inline _GS::surfaces::image_surface_data_type _GS::surfaces::create_image_surfac
     if( context == nullptr )
         throw ::std::runtime_error("Failed to create an image surface");
 
-    CGContextConcatCTM(context, CGAffineTransform{ 1., 0., 0., -1., 0., double(height) } );
     CGContextSetAllowsAntialiasing(context, true);
     
     image_surface_data_type data;
