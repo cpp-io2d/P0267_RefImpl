@@ -16,6 +16,7 @@ void _DrawTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const
 static void DrawSingleTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp)
 {
     CGContextConcatCTM(ctx, _ToCG(bp.brush_matrix().inverse()) );
+    CGContextConcatCTM(ctx, CGAffineTransform{ 1., 0., 0., -1., 0., double(surface.height) } );    
     CGContextSetInterpolationQuality(ctx, _ToCG(bp.filter()));
     CGContextDrawImage(ctx, CGRectMake(0, 0, surface.width, surface.height), surface.image.get());
 }

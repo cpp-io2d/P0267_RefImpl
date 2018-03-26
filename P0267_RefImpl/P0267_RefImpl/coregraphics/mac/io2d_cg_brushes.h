@@ -27,19 +27,6 @@ _GS::brushes::create_brush(basic_image_surface<_GS>&& img) {
     
     _Surface surface_data;
     surface_data.bitmap = ::std::move(source_data.context);
-    
-    // this swaps row order for surface brush PoC, need something more elegant later
-    void *p = CGBitmapContextGetData(surface_data.bitmap.get());
-    auto height = (int)CGBitmapContextGetHeight(surface_data.bitmap.get());
-    auto bytes_per_row = CGBitmapContextGetBytesPerRow(surface_data.bitmap.get());
-    for( int row = 0; row < height / 2; ++row ) {
-        auto row2 = height - row - 1;
-        auto p1 = (byte*)p + (row*bytes_per_row);
-        auto p2 = (byte*)p + (row2*bytes_per_row);
-        for( int b = 0; b < bytes_per_row; ++b )
-            swap( p1[b], p2[b] );
-    }
-    
     surface_data.image.reset( CGBitmapContextCreateImage(surface_data.bitmap.get()) );
     surface_data.width = (int)CGImageGetWidth(surface_data.image.get());
     surface_data.height = (int)CGImageGetHeight(surface_data.image.get());
