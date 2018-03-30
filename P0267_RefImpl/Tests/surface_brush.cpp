@@ -8,7 +8,7 @@ using namespace std::experimental::io2d;
 
 static image_surface DrawCheckerboard4x4();
 
-TEST_CASE("surface brush")
+TEST_CASE("Properly draws with a non-wrapped surface brush")
 {
     auto reference = "surface_brush_no_wrapping_20x20.png";
     image_surface img{format::argb32, 20, 20};
@@ -30,6 +30,37 @@ TEST_CASE("surface brush")
     mats.emplace_back(matrix_2d::init_scale({3.f, 3.f}) * matrix_2d::init_translate({8.f, 0.f}));
 
     for( auto &m: mats ) {
+        bp.brush_matrix(m.inverse());
+        img.paint(b, bp, rp);
+    }
+
+    CHECK( ComparePNGExact(img, reference) == true );
+}
+
+TEST_CASE("Properly draws with a repeatedly wrapped surface brush")
+{
+    auto reference = "surface_brush_repeat_no_transform_20x20.png";
+    image_surface img{format::argb32, 20, 20};
+    auto b = brush{ DrawCheckerboard4x4() };
+    
+    auto bp = brush_props{};
+    bp.wrap_mode(wrap_mode::repeat);
+    bp.filter(filter::nearest);
+    auto rp = render_props{};
+    rp.antialiasing(antialias::none);
+
+
+    SECTION("No transforms") {
+        img.paint(b, bp, rp);
+    }
+
+    SECTION("Translate") {
+        bp.brush_matrix( matrix_2d::init_translate({-16.f, -16.f}) );
+        img.paint(b, bp, rp);
+    }
+
+    SECTION("Rotated 180 degrees") {
+        auto m = matrix_2d::init_translate({-2.f, -2.f}) * matrix_2d::init_rotate(pi<float>) * matrix_2d::init_translate({2.f, 2.f});
         bp.brush_matrix(m.inverse());
         img.paint(b, bp, rp);
     }
