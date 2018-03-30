@@ -68,6 +68,7 @@ COPY_REF_RSC(
     surface_brush_repeat_non_uniform_scale_20x20.png
     surface_brush_repeat_x_shear_20x20.png
     surface_brush_reflect_no_transform_20x20.png
+    surface_brush_reflect_2x_scale_20x20.png
 )
 
 
