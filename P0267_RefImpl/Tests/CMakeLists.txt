@@ -64,6 +64,7 @@ COPY_REF_RSC(
     radial_gradient_curve_stroke_300x200.png
     surface_brush_no_wrapping_20x20.png
     surface_brush_repeat_no_transform_20x20.png
+    surface_brush_repeat_2x_scale_20x20.png
 )
 
 
