@@ -24,6 +24,7 @@ inline _GS::surfaces::image_surface_data_type _GS::surfaces::create_image_surfac
     if( context == nullptr )
         throw ::std::runtime_error("Failed to create an image surface");
 
+    CGContextConcatCTM(context, CGAffineTransform{ 1., 0., 0., -1., 0., double(height) } );
     CGContextSetAllowsAntialiasing(context, true);
     
     image_surface_data_type data;

@@ -37,7 +37,7 @@ TEST_CASE("Properly draws with a non-wrapped surface brush")
     CHECK( ComparePNGExact(img, reference) == true );
 }
 
-TEST_CASE("Properly draws with a repeatedly wrapped surface brush")
+TEST_CASE("Properly draws with a repeateded surface brush")
 {
     auto reference = "surface_brush_repeat_no_transform_20x20.png";
     image_surface img{format::argb32, 20, 20};
@@ -56,6 +56,10 @@ TEST_CASE("Properly draws with a repeatedly wrapped surface brush")
         bp.brush_matrix( matrix_2d::init_translate({-16.f, -16.f}) );
         img.paint(b, bp, rp);
     }
+    SECTION("Translate by 2 px") {
+        bp.brush_matrix( matrix_2d::init_translate({-2.f, -2.f}) );
+        img.paint(b, bp, rp);
+    }
     SECTION("Rotated 180 degrees") {
         auto m = matrix_2d::init_translate({-2.f, -2.f}) * matrix_2d::init_rotate(pi<float>) * matrix_2d::init_translate({2.f, 2.f});
         bp.brush_matrix(m.inverse());
@@ -65,7 +69,7 @@ TEST_CASE("Properly draws with a repeatedly wrapped surface brush")
     CHECK( ComparePNGExact(img, reference) == true );
 }
 
-TEST_CASE("Properly draws with a repeatedly wrapped scaled surface brush")
+TEST_CASE("Properly draws with a repeateded scaled surface brush")
 {
     auto reference = "surface_brush_repeat_2x_scale_20x20.png";
     image_surface img{format::argb32, 20, 20};
@@ -93,7 +97,7 @@ TEST_CASE("Properly draws with a repeatedly wrapped scaled surface brush")
     CHECK( ComparePNGExact(img, reference) == true );
 }
 
-TEST_CASE("Properly draws with a repeatedly wrapped non-uniformely scaled surface brush")
+TEST_CASE("Properly draws with a repeateded non-uniformely scaled surface brush")
 {
     auto reference = "surface_brush_repeat_non_uniform_scale_20x20.png";
     image_surface img{format::argb32, 20, 20};
@@ -123,7 +127,7 @@ TEST_CASE("Properly draws with a repeatedly wrapped non-uniformely scaled surfac
 
 // Not actually sure how eligible this test is.
 // Rasterized might have a freedom to interpret this differently on per-pixel level.
-TEST_CASE("Properly draws with a repeatedly wrapped sheared surface brush")
+TEST_CASE("Properly draws with a repeateded sheared surface brush")
 {
     auto reference = "surface_brush_repeat_x_shear_20x20.png";
     image_surface img{format::argb32, 20, 20};
@@ -142,6 +146,34 @@ TEST_CASE("Properly draws with a repeatedly wrapped sheared surface brush")
         bp.brush_matrix( (matrix_2d::init_shear_x(-1.f) * matrix_2d::init_translate({-1.f, 0.f}) ).inverse() );
     }
     img.paint(b, bp, rp);
+    
+    CHECK( ComparePNGWithTolerance(img, reference, 0.0f, 1) == true );
+}
+
+TEST_CASE("Properly draws with a reflected surface brush")
+{
+    auto reference = "surface_brush_reflect_no_transform_20x20.png";
+    image_surface img{format::argb32, 20, 20};
+    auto b = brush{ DrawCheckerboard4x4() };
+    
+    auto bp = brush_props{};
+    bp.wrap_mode(wrap_mode::reflect);
+    bp.filter(filter::nearest);
+    auto rp = render_props{};
+    rp.antialiasing(antialias::none);
+    
+    SECTION("No transforms") {
+        img.paint(b, bp, rp);
+    }
+    SECTION("Translate") {
+        bp.brush_matrix( matrix_2d::init_translate({-16.f, -16.f}) );
+        img.paint(b, bp, rp);
+    }
+    SECTION("Rotated 180 degrees") {
+        auto m = matrix_2d::init_translate({-2.f, -2.f}) * matrix_2d::init_rotate(pi<float>) * matrix_2d::init_translate({2.f, 2.f});
+        bp.brush_matrix(m.inverse());
+        img.paint(b, bp, rp);
+    }
     
     CHECK( ComparePNGExact(img, reference) == true );
 }
@@ -166,3 +198,4 @@ static image_surface DrawCheckerboard4x4()
     
     return img;
 }
+

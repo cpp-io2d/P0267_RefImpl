@@ -179,8 +179,12 @@ static bool CompareWithIntensityAndSpatialTolerance(const RawImage& first, const
     };
     auto pred = [cmp, spatial_tolerance, &first, &second](int x, int y) -> bool {
         auto v = first.pixmap[x + y * first.width];
-        for( int iy = max(y - spatial_tolerance, 0); iy < min(second.height, y + spatial_tolerance); ++iy )
-            for( int ix = max(x - spatial_tolerance, 0); ix < min(second.width, x + spatial_tolerance); ++ix )
+        const auto top = max(y - spatial_tolerance, 0);
+        const auto bottom = min(second.height-1, y + spatial_tolerance);
+        const auto left = max(x - spatial_tolerance, 0);
+        const auto right = min(second.width-1, x + spatial_tolerance);
+        for( int iy = top; iy <= bottom; ++iy )
+            for( int ix = left; ix <= right; ++ix )
                 if( cmp(v, second.pixmap[ix + iy * first.width]) )
                     return true;
         return false;

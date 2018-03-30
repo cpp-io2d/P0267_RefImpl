@@ -112,15 +112,6 @@ void _Clear(CGContextRef ctx, CGColorRef with_color, CGRect in_rect)
     CGContextRestoreGState(ctx);
 }
 
-static void PatternDraw(void * info, CGContextRef context)
-{
-    auto &surface_brush = *(const _GS::brushes::_Surface*)info;
-    
-    CGContextDrawImage(context,
-                       CGRectMake(0, 0, surface_brush.width, surface_brush.height),
-                       surface_brush.image.get());
-}
-    
 void _Stroke(CGContextRef ctx,
              const basic_brush<_GS>& b,
              const basic_interpreted_path<_GS>& ip,
@@ -160,27 +151,10 @@ void _Stroke(CGContextRef ctx,
     }
     else if( b.type() == brush_type::surface ) {
         const auto &surface_brush = std::get<_GS::brushes::_Surface>(*b._Get_data().brush);
-        
-        auto transform = CGAffineTransformMake(1, 0, 0, 1, 0, 0);
-        
-        CGPatternCallbacks callbacks = {0, &PatternDraw, nullptr};
-        
-        auto pattern = CGPatternCreate((void*)&surface_brush,
-                                       CGRectMake (0, 0, surface_brush.width, surface_brush.height),
-                                       transform,
-                                       surface_brush.width,
-                                       surface_brush.height,
-                                       kCGPatternTilingConstantSpacing,
-                                       true,
-                                       &callbacks);
-        _AutoRelease pattern_release{pattern};
-        
-        CGContextSetFillColorSpace(ctx, _PatternColorSpace());
-        constexpr double components[4] = {1., 1., 1., 1.};
-        CGContextSetFillPattern(ctx, pattern, components);
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextReplacePathWithStrokedPath(ctx);
-        CGContextFillPath(ctx);
+        CGContextClip(ctx);
+        _DrawTexture(ctx, surface_brush, bp);
     }
 }
     
@@ -246,26 +220,9 @@ void _Fill(CGContextRef ctx,
     }
     else if( b.type() == brush_type::surface ) {
         const auto &surface_brush = std::get<_GS::brushes::_Surface>(*b._Get_data().brush);
-        
-        auto transform = CGAffineTransformMake(1, 0, 0, 1, 0, 0);
-        
-        CGPatternCallbacks callbacks = {0, &PatternDraw, nullptr};
-        
-        auto pattern = CGPatternCreate((void*)&surface_brush,
-                                       CGRectMake (0, 0, surface_brush.width, surface_brush.height),
-                                       transform,
-                                       surface_brush.width,
-                                       surface_brush.height,
-                                       kCGPatternTilingConstantSpacing,
-                                       true,
-                                       &callbacks);
-        _AutoRelease pattern_release{pattern};
-        
-        CGContextSetFillColorSpace(ctx, _PatternColorSpace());
-        constexpr double components[4] = {1., 1., 1., 1.};
-        CGContextSetFillPattern(ctx, pattern, components);
         CGContextAddPath(ctx, ip._Get_data().path.get());
-        CGContextFillPath(ctx);
+        CGContextClip(ctx);
+        _DrawTexture(ctx, surface_brush, bp);
     }
 }
 
@@ -291,10 +248,7 @@ static void SetStrokeProps( CGContextRef ctx, const basic_stroke_props<_GS>& sp 
 static void SetRenderProps( CGContextRef ctx, const basic_render_props<_GS>& rp ) noexcept
 {
     CGContextSetShouldAntialias(ctx, rp.antialiasing() != antialias::none);
-    CGContextSetBlendMode(ctx, _ToCG(rp.compositing()));
-    
-    auto height = CGBitmapContextGetHeight(ctx);
-    CGContextConcatCTM(ctx, CGAffineTransform{ 1., 0., 0., -1., 0., double(height) } );
+    CGContextSetBlendMode(ctx, _ToCG(rp.compositing()));    
     CGContextConcatCTM(ctx, _ToCG(rp.surface_matrix()));
 }
     

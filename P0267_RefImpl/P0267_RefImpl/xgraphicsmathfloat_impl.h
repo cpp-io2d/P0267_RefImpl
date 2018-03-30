@@ -240,7 +240,11 @@ namespace std::experimental::io2d {
 			return create_matrix_2d(cosine, -sine, sine, cosine, 0.0f, 0.0f);
 		}
 		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_rotate(float radians, const typename _Graphics_math_float_impl::point_2d_data_type& origin) noexcept {
-			return multiply(multiply(init_translate(origin), init_rotate(radians)), init_translate(negate(origin)));
+//
+//            return multiply(multiply(init_translate(origin), init_rotate(radians)), init_translate(negate(origin)));
+            
+//  MK: IO2D is de-facto pre-multiply, so:
+            return multiply(multiply(init_translate(negate(origin)), init_rotate(radians)), init_translate(origin));
 		}
 		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_reflect(float radians) noexcept {
 			auto sine = sin(radians * 2.0f);
