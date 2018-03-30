@@ -81,17 +81,47 @@ TEST_CASE("Properly draws with a repeatedly wrapped scaled surface brush")
         bp.brush_matrix( matrix_2d::init_scale({2.f, 2.f}).inverse() );
         img.paint(b, bp, rp);
     }
-    SECTION("Scale and transform") {
+    SECTION("Scale and translate") {
         auto m = matrix_2d::init_scale({2.f, 2.f}) * matrix_2d::init_translate({8.f, 8.f});
         bp.brush_matrix( m.inverse() );
         img.paint(b, bp, rp);
     }
-    SECTION("Scale, transform and 180 degree rotate") {
+    SECTION("Scale, translate and 180 degree rotate") {
         auto m = matrix_2d::init_scale({2.f, 2.f}) * matrix_2d::init_translate({8.f, 8.f}) * matrix_2d::init_rotate(pi<float>);
         bp.brush_matrix( m.inverse() );
         img.paint(b, bp, rp);
     }
 
+    CHECK( ComparePNGExact(img, reference) == true );
+}
+
+TEST_CASE("Properly draws with a repeatedly wrapped non-uniformely scaled surface brush")
+{
+    auto reference = "surface_brush_repeat_non_uniform_scale_20x20.png";
+    image_surface img{format::argb32, 20, 20};
+    auto b = brush{ DrawCheckerboard4x4() };
+    
+    auto bp = brush_props{};
+    bp.wrap_mode(wrap_mode::repeat);
+    bp.filter(filter::nearest);
+    auto rp = render_props{};
+    rp.antialiasing(antialias::none);
+    
+    SECTION("Just scale") {
+        bp.brush_matrix( matrix_2d::init_scale({3.f, 2.f}).inverse() );
+        img.paint(b, bp, rp);
+    }
+    SECTION("Scale and translate") {
+        auto m = matrix_2d::init_scale({3.f, 2.f}) * matrix_2d::init_translate({12.f, 8.f});
+        bp.brush_matrix( m.inverse() );
+        img.paint(b, bp, rp);
+    }
+    SECTION("Scale, translate and 180 degree rotate") {
+        auto m = matrix_2d::init_scale({3.f, 2.f}) * matrix_2d::init_translate({12.f, 8.f}) * matrix_2d::init_rotate(pi<float>);
+        bp.brush_matrix( m.inverse() );
+        img.paint(b, bp, rp);
+    }
+    
     CHECK( ComparePNGExact(img, reference) == true );
 }
 
