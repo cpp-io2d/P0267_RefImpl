@@ -210,6 +210,40 @@ TEST_CASE("Properly draws with a reflected scaled surface brush")
     CHECK( ComparePNGExact(img, reference) == true );
 }
 
+TEST_CASE("Properly draws with a reflected non-uniformely scaled surface brush")
+{
+    auto reference = "surface_brush_reflect_non_uniform_scale_20x20.png";
+
+    image_surface img{format::argb32, 20, 20};
+    auto b = brush{ DrawCheckerboard4x4() };
+    
+    auto bp = brush_props{};
+    bp.wrap_mode(wrap_mode::reflect);
+    bp.filter(filter::nearest);
+    auto rp = render_props{};
+    rp.antialiasing(antialias::none);
+    
+    SECTION("Just scale") {
+        bp.brush_matrix( matrix_2d::init_scale({3.f, 2.f}).inverse() );
+    }
+    SECTION("Scale and translate") {
+        auto m = matrix_2d::init_scale({3.f, 2.f}) * matrix_2d::init_translate({12.f, 8.f});
+        bp.brush_matrix(m.inverse());
+    }
+    SECTION("Scale, translate and rotated 180 degrees") {
+        auto m = matrix_2d::init_translate({-2.f, -2.f}) *
+                 matrix_2d::init_rotate(pi<float>) *
+                 matrix_2d::init_translate({2.f, 2.f}) *
+                 matrix_2d::init_scale({3.f, 2.f}) *
+                 matrix_2d::init_translate({12.f, 8.f});
+        bp.brush_matrix(m.inverse());
+    }
+
+    img.paint(b, bp, rp);
+    
+    CHECK( ComparePNGExact(img, reference) == true );
+}
+
 /**
  * Draws the following pattern:
  * BWBW
