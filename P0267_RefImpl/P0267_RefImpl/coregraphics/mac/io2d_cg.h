@@ -217,10 +217,23 @@ struct brushes {
         vector<gradient_stop> stops;
     };
     struct _Surface {
+        using color_t = remove_pointer_t<CGColorRef>;
         using bitmap_t = remove_pointer_t<CGContextRef>;
         using image_t = remove_pointer_t<CGImageRef>;
-        ::std::unique_ptr<bitmap_t, decltype(&CGContextRelease)> bitmap{ nullptr, &CGContextRelease };
-        ::std::unique_ptr<image_t, decltype(&CGImageRelease)> image{ nullptr, &CGImageRelease };
+        struct _Pad {
+            unique_ptr<image_t, decltype(&CGImageRelease)> top{ nullptr, &CGImageRelease };
+            unique_ptr<image_t, decltype(&CGImageRelease)> right{ nullptr, &CGImageRelease };
+            unique_ptr<image_t, decltype(&CGImageRelease)> bottom{ nullptr, &CGImageRelease };
+            unique_ptr<image_t, decltype(&CGImageRelease)> left{ nullptr, &CGImageRelease };
+            unique_ptr<color_t, decltype(&CGColorRelease)> top_left{ nullptr, &CGColorRelease };
+            unique_ptr<color_t, decltype(&CGColorRelease)> top_right{ nullptr, &CGColorRelease };
+            unique_ptr<color_t, decltype(&CGColorRelease)> bottom_left{ nullptr, &CGColorRelease };
+            unique_ptr<color_t, decltype(&CGColorRelease)> bottom_right{ nullptr, &CGColorRelease };
+        };
+        
+        unique_ptr<bitmap_t, decltype(&CGContextRelease)> bitmap{ nullptr, &CGContextRelease };
+        unique_ptr<image_t, decltype(&CGImageRelease)> image{ nullptr, &CGImageRelease };
+        mutable unique_ptr<_Pad> pad;
         int width = 0;
         int height = 0;
     };

@@ -265,6 +265,34 @@ static void SetDashProps( CGContextRef ctx, const basic_dashes<_GS>& d ) noexcep
     }
 }
 
+// this ad-hoc implementation needs to be tested thoroughly, especially with non-unit alpha values
+CGColorRef _CreateColorFromBitmapLocation(CGContextRef ctx, int x, int y)
+{
+    const auto data = (const byte*)CGBitmapContextGetData(ctx);
+    if( !data )
+        return nullptr;
+    
+    const auto width = CGBitmapContextGetWidth(ctx);
+    const auto height = CGBitmapContextGetHeight(ctx);
+    if( x < 0 || x >= width || y < 0 || y >= height )
+        return nullptr;
+    
+    const auto stride = CGBitmapContextGetBytesPerRow(ctx);
+    const auto bpp = CGBitmapContextGetBitsPerPixel(ctx);
+    if( bpp != 32 )
+        return nullptr; // only ARGB32 is implemented now
+
+    const auto row = data + stride * y;
+    const auto pixel = (const uint8_t*)(row + (bpp / 8) * x);
+    const auto alpha = pixel[0];
+    const auto red = pixel[1];
+    const auto green = pixel[2];
+    const auto blue = pixel[3];
+
+    double components[4] = { double(red)/255., double(green)/255., double(blue)/255., double(alpha)/255. };
+    return CGColorCreate(CGBitmapContextGetColorSpace(ctx), components);
+}
+    
 } // namespace _CoreGraphics
 } // inline namespace v1
 } // std::experimental::io2d

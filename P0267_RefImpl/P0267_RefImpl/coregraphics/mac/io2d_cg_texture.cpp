@@ -17,6 +17,7 @@ struct PatternContext {
 static void DrawSingleTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp);
 static void DrawRepeatedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp);
 static void DrawReflectedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp);
+static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp);
     
 void _DrawTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp)
 {
@@ -29,6 +30,9 @@ void _DrawTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const
             break;
         case wrap_mode::reflect:
             DrawReflectedTexture(ctx, surface, bp);
+            break;
+        case wrap_mode::pad:
+            DrawPaddedTexture(ctx, surface, bp);
             break;
         default:
             break;
@@ -118,6 +122,95 @@ static void DrawReflectedTexture(CGContextRef ctx, const _GS::brushes::_Surface 
     CGContextSetFillPattern(ctx, pattern, components);
     CGContextSetInterpolationQuality(ctx, _ToCG(bp.filter()));
     CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
+}
+
+static _GS::brushes::_Surface::_Pad BuildPad(CGImageRef image, CGContextRef orig_ctx)
+{
+    _GS::brushes::_Surface::_Pad pad;
+ 
+    auto image_info = CGImageGetBitmapInfo(image);
+    auto image_width = CGImageGetWidth(image);
+    auto image_height = CGImageGetHeight(image);
+    auto image_rc = CGRectMake(0, 0, image_width, image_height);
+    auto image_bpc = CGImageGetBitsPerComponent(image);
+    auto image_cs = CGImageGetColorSpace(image);
+    
+    { // bottom
+        auto ctx = CGBitmapContextCreate(nullptr, image_width, 1, image_bpc, 0, image_cs, image_info);
+        _AutoRelease release_ctx{ctx};
+        CGContextSetInterpolationQuality(ctx, kCGInterpolationNone);
+        CGContextDrawImage(ctx, image_rc, image);
+        pad.bottom.reset( CGBitmapContextCreateImage(ctx) );
+    }
+    
+    { // top
+        auto ctx = CGBitmapContextCreate(nullptr, image_width, 1, image_bpc, 0, image_cs, image_info);
+        _AutoRelease release_ctx{ctx};
+        CGContextSetInterpolationQuality(ctx, kCGInterpolationNone);
+        CGContextConcatCTM(ctx, { 1., 0., 0., 1., 0., -double(image_height-1) } );
+        CGContextDrawImage(ctx, image_rc, image);
+        pad.top.reset( CGBitmapContextCreateImage(ctx) );
+    }
+    
+    { // right
+        auto ctx = CGBitmapContextCreate(nullptr, 1, image_height, image_bpc, 0, image_cs, image_info);
+        _AutoRelease release_ctx{ctx};
+        CGContextSetInterpolationQuality(ctx, kCGInterpolationNone);
+        CGContextConcatCTM(ctx, { 1., 0., 0., 1., -double(image_width-1), 0. } );
+        CGContextDrawImage(ctx, image_rc, image);
+        pad.right.reset( CGBitmapContextCreateImage(ctx) );
+    }
+    
+    { // left
+        auto ctx = CGBitmapContextCreate(nullptr, 1, image_height, image_bpc, 0, image_cs, image_info);
+        _AutoRelease release_ctx{ctx};
+        CGContextSetInterpolationQuality(ctx, kCGInterpolationNone);
+        CGContextDrawImage(ctx, image_rc, image);
+        pad.left.reset( CGBitmapContextCreateImage(ctx) );
+    }
+    
+    pad.top_left.reset( _CreateColorFromBitmapLocation(orig_ctx, 0, 0) );
+    pad.top_right.reset( _CreateColorFromBitmapLocation(orig_ctx, image_width-1, 0) );
+    pad.bottom_left.reset( _CreateColorFromBitmapLocation(orig_ctx, 0, image_height-1) );
+    pad.bottom_right.reset( _CreateColorFromBitmapLocation(orig_ctx, image_width-1, image_height-1) );
+    
+    return pad;
+}
+
+static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp)
+{
+    // TODO: need to calculate real extends instead of using this fake "far" approach. For some reason, it fails for small images.
+//    const auto distant_far = 12000.;
+    const auto distant_far = 2000.;
+    const auto eps = 0.7;
+
+    if( surface.pad == nullptr )
+        surface.pad = make_unique<_GS::brushes::_Surface::_Pad>(BuildPad(surface.image.get(), surface.bitmap.get()));
+
+    CGContextSetInterpolationQuality(ctx, _ToCG(bp.filter()));
+    CGContextConcatCTM(ctx, _ToCG(bp.brush_matrix().inverse()) );
+
+    CGContextSaveGState(ctx);
+    CGContextConcatCTM(ctx, { 1., 0., 0., -1., 0., double(surface.height) } );
+    CGContextDrawImage(ctx, CGRectMake(0, 0, surface.width, surface.height), surface.image.get());
+    CGContextDrawImage(ctx, CGRectMake(surface.width - eps, 0, distant_far, surface.height), surface.pad->right.get());
+    CGContextDrawImage(ctx, CGRectMake(-distant_far, 0, distant_far + eps, surface.height), surface.pad->left.get());
+    CGContextRestoreGState(ctx);
+
+    CGContextDrawImage(ctx, CGRectMake(0, -distant_far, surface.width, distant_far + eps), surface.pad->top.get());
+    CGContextDrawImage(ctx, CGRectMake(0, surface.height - eps, surface.width, distant_far), surface.pad->bottom.get());
+    
+    CGContextSetFillColorWithColor(ctx, surface.pad->top_right.get());
+    CGContextFillRect(ctx, CGRectMake(surface.width - eps, -distant_far, distant_far, distant_far + eps));
+
+    CGContextSetFillColorWithColor(ctx, surface.pad->top_left.get());
+    CGContextFillRect(ctx, CGRectMake(-distant_far, -distant_far, distant_far + eps, distant_far + eps));
+
+    CGContextSetFillColorWithColor(ctx, surface.pad->bottom_left.get());
+    CGContextFillRect(ctx, CGRectMake(-distant_far, surface.height - eps, distant_far + eps, distant_far));
+
+    CGContextSetFillColorWithColor(ctx, surface.pad->bottom_right.get());
+    CGContextFillRect(ctx, CGRectMake(surface.width - eps, surface.height - eps, distant_far, distant_far));
 }
     
 } // namespace _CoreGraphics

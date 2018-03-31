@@ -244,6 +244,35 @@ TEST_CASE("Properly draws with a reflected non-uniformely scaled surface brush")
     CHECK( ComparePNGExact(img, reference) == true );
 }
 
+TEST_CASE("Properly draws with a padded surface brush")
+{
+    auto reference = "surface_brush_pad_translate_20x20.png";
+    
+    image_surface img{format::argb32, 20, 20};
+    auto b = brush{ DrawCheckerboard4x4() };
+    
+    auto bp = brush_props{};
+    bp.wrap_mode(wrap_mode::pad);
+    bp.filter(filter::nearest);
+    auto rp = render_props{};
+    rp.antialiasing(antialias::none);
+    
+    SECTION("Just translate") {
+        bp.brush_matrix( matrix_2d::init_translate({-8.f, -8.f}) );
+    }
+    SECTION("Rotate 180 degrees and translate") {
+        auto m = matrix_2d::init_translate({-2.f, -2.f}) *
+                 matrix_2d::init_rotate(pi<float>) *
+                 matrix_2d::init_translate({2.f, 2.f}) *
+                 matrix_2d::init_translate({8.f, 8.f});
+        bp.brush_matrix( m.inverse() );
+    }
+
+    img.paint(b, bp, rp);
+    
+    CHECK( ComparePNGExact(img, reference) == true );
+}
+
 /**
  * Draws the following pattern:
  * BWBW

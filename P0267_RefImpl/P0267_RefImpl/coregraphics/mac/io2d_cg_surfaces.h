@@ -8,6 +8,7 @@ namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphic
 
 CGContextRef _CreateBitmap(io2d::format fmt, int width, int height) noexcept;
 CGContextRef _LoadBitmap(const string &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec);
+CGColorRef _CreateColorFromBitmapLocation(CGContextRef ctx, int x, int y);
     
 void _WriteBitmap(CGContextRef ctx, const string &p, image_file_format iff, ::std::error_code &ec);
 void _Clear(CGContextRef ctx, CGColorRef with_color, CGRect in_rect );
