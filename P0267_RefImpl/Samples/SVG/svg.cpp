@@ -136,7 +136,7 @@ struct ShapeContext: Canvas {
             auto gr = document_.gradients.find(*name);
             if( gr != end(document_.gradients) ) {
                 auto bp = gr->second.second;
-                bp.brush_matrix( bp.brush_matrix() * trans_matrix ); // assume userSpaceOnUse
+                bp.brush_matrix( (bp.brush_matrix().inverse() * trans_matrix).inverse()  ); // assume userSpaceOnUse
                 surface->fill(gr->second.first, pb, bp, rp);
             }
         }
@@ -208,7 +208,7 @@ struct LinearGradientContext : Canvas {
     LinearGradientContext(Canvas &parent): Canvas(parent) {}
     void on_exit_element() {
         auto b = brush{ p1, p2, begin(stops), end(stops) };
-        auto bp = brush_props{io2d::wrap_mode::repeat, io2d::filter::good, io2d::fill_rule::winding, trans_matrix };
+        auto bp = brush_props{io2d::wrap_mode::pad, io2d::filter::good, io2d::fill_rule::winding, trans_matrix.inverse() };
         document_.gradients.insert({name, make_pair(move(b), move(bp))});
     }
     void transform_matrix(const boost::array<double, 6> & matrix) {
