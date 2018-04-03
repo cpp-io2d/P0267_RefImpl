@@ -49,7 +49,20 @@ static rgba_color Out( const rgba_color& a, const rgba_color& b ) noexcept
         return rgba_color::transparent_black;
     return {a.r(), a.g(), a.b(), ra};
 }
-    
+
+static rgba_color Atop( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = b.a();
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+
+    auto inv = 1.f - a.a();
+    auto rr = a.r() * a.a() + b.r() * inv;
+    auto rg = a.g() * a.a() + b.g() * inv;
+    auto rb = a.b() * a.a() + b.b() * inv;
+    return {rr, rg, rb, ra};
+}
+
 }
 
 static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction( compositing_op op  )
@@ -60,6 +73,7 @@ static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction(
         case compositing_op::source:    return Blend::Source;
         case compositing_op::in:        return Blend::In;
         case compositing_op::out:       return Blend::Out;
+        case compositing_op::atop:      return Blend::Atop;
         default: return nullptr;
     }
 }
@@ -159,6 +173,21 @@ TEST_CASE("IO2D properly blends colors using compositing_op::in")
 TEST_CASE("IO2D properly blends colors using compositing_op::out")
 {
     auto op = compositing_op::out;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05)  == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::atop")
+{
+    auto op = compositing_op::atop;
     auto rp = render_props{};
     rp.compositing(op);
     auto colors = BuildRefData( BlendFunction(rp.compositing()) );
