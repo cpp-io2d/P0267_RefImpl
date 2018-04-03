@@ -44,17 +44,6 @@ namespace std {
 				//	return false;
 				//}
 
-				//// Returns the result of adding 'center' to the result of rotating the point { 'radius', 0.0F } 'angle' radians around { 0.0F, 0.0F } in a clockwise ('clockwise' == true) or
-				//// counterclockwise ('clockwise' == false) direction.
-				//template <class GraphicsMath>
-				//inline basic_point_2d<GraphicsMath> _Rotate_point_absolute_angle(const basic_point_2d<GraphicsMath>& center, float radius, float angle, bool clockwise = true) {
-				//	if (clockwise) {
-				//		return basic_point_2d<GraphicsMath>((radius * ::std::cos(angle)) + center.x(), (-(radius * -::std::sin(angle))) + center.y());
-				//	}
-				//	else {
-				//		return basic_point_2d<GraphicsMath>((radius * ::std::cos(angle)) + center.x(), (radius * -::std::sin(angle)) + center.y());
-				//	}
-				//}
 
 				// color
 
@@ -227,24 +216,6 @@ namespace std {
 					if (hue_segment <= 6.0f) return rgba_color{ chroma + m, m, x + m, 1.0f };
                     return {};
 				}
-
-				// Paths
-
-				//Brushes
-
-				//// Standalone functions
-
-				//template <class GraphicsMath, class T>
-				//inline image_surface<GraphicsMath, T> copy_image_surface(image_surface<GraphicsMath, T>& sfc) noexcept {
-				//	image_surface<GraphicsMath, T> retval(sfc.format(), sfc.width(), sfc.height());
-				//	retval.map([&sfc](mapped_surface<GraphicsMath, T>& rvms) {
-				//		sfc.map([&rvms](mapped_surface<GraphicsMath, T>& sfcms) {
-				//			memcpy(rvms.data(), sfcms.data(), static_cast<size_t>(rvms.height() * rvms.stride()));
-				//		});
-				//	});
-				//	retval.mark_dirty();
-				//	return retval;
-				//}
 			}
 		}
 	}

@@ -17,6 +17,8 @@ add_executable(tests
 	linear_gradient.cpp
 	radial_gradient.cpp
     surface_brush.cpp
+#    mask.cpp
+    color.cpp
 	comparison.h
    	comparison.cpp
 )

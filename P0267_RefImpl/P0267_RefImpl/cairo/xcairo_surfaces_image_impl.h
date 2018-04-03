@@ -389,7 +389,10 @@ namespace std::experimental::io2d {
 						for (int j = 0; j < w; j++) {
 							const auto ppIndex = i * w * 4 + j * 4;
 							const auto mapIndex = i * mapStride + j * 4;
-							const float premul = (keepPremultiplied ? 1.0f : mapData[mapIndex + 3] / 255.0f);
+                            const float premul = (keepPremultiplied ?
+                                                  1.0f :
+                                                  (mapData[mapIndex + 3] != 0 ? 255.0f / float(mapData[mapIndex + 3]) : 0.f )
+                                                  );
 							pixel[ppIndex + 0] = static_cast<result_type>(mapData[mapIndex + 0] * premul / 255.0f * maxChannelSize);
 							pixel[ppIndex + 1] = static_cast<result_type>(mapData[mapIndex + 1] * premul / 255.0f * maxChannelSize);
 							pixel[ppIndex + 2] = static_cast<result_type>(mapData[mapIndex + 2] * premul / 255.0f * maxChannelSize);

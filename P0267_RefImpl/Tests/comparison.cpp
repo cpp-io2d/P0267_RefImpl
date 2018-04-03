@@ -8,6 +8,8 @@ using namespace std;
 using namespace std::experimental;
 using namespace std::experimental::io2d;
 
+static const auto g_TMPFN = "tmp.png";
+
 static uint32_t ToRGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
     uint32_t rgba = 0;
@@ -217,12 +219,50 @@ bool ComparePNGWithTolerance( const std::string &path1, const std::string &path2
 
 bool ComparePNGWithTolerance( std::experimental::io2d::image_surface &image, const std::string &path2, float intensity_tolerance, int spatial_tolerance )
 {
-    image.save("tmp.png", image_file_format::png);
-    return ComparePNGWithTolerance("tmp.png", path2, intensity_tolerance, spatial_tolerance);
+    image.save(g_TMPFN, image_file_format::png);
+    return ComparePNGWithTolerance(g_TMPFN, path2, intensity_tolerance, spatial_tolerance);
 }
 
 bool ComparePNGExact( image_surface &image, const string &path2 )
 {
-    image.save("tmp.png", image_file_format::png);
-    return ComparePNGExact("tmp.png", path2);
+    image.save(g_TMPFN, image_file_format::png);
+    return ComparePNGExact(g_TMPFN, path2);
 }
+
+bool CheckPNGColorWithTolerance( const std::string &image_path, int x, int y, std::experimental::io2d::rgba_color color, float intensity_tolerance)
+{
+    assert( intensity_tolerance >= 0. && intensity_tolerance <= 1.f );
+    
+    auto img = ReadFile(image_path);
+    if( !img )
+        return false;
+
+    if( x < 0 || x >= img->width || y < 0 || y >= img->height )
+        return false;
+
+    auto at = [&](int px, int py){
+        return img->pixmap[py*img->width + px];
+    };
+    auto to_float = [](uint8_t c){
+        return static_cast<float>(c) / 255.f;
+    };
+    
+    auto value = at(x, y);
+    auto r = to_float(GetRed(value));
+    auto g = to_float(GetGreen(value));
+    auto b = to_float(GetBlue(value));
+    auto a = to_float(GetAlpha(value));
+    if( abs( r - color.r() ) > intensity_tolerance )    return false;
+    if( abs( g - color.g() ) > intensity_tolerance )    return false;
+    if( abs( b - color.b() ) > intensity_tolerance )    return false;
+    if( abs( a - color.a() ) > intensity_tolerance ) 	return false;
+    
+    return true;
+}
+
+bool CheckPNGColorWithTolerance( std::experimental::io2d::image_surface &image, int x, int y, std::experimental::io2d::rgba_color color, float intensity_tolerance)
+{
+    image.save(g_TMPFN, image_file_format::png);
+    return CheckPNGColorWithTolerance(g_TMPFN, x, y, color, intensity_tolerance);
+}
+
