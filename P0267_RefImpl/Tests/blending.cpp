@@ -9,7 +9,7 @@ using namespace std::experimental::io2d;
 /*
 Current state of blend operators compatibility:
 
-Operator        | Tested? | Cairo     | CoreGraphics  |
+Operator        | Testing?| Cairo     | CoreGraphics  |
 ===================================================================================================
 over            |   yes   |   +       |     +         |
 clear           |   yes   |   +       |     +         |
@@ -17,23 +17,23 @@ source          |   yes   |   +       |     +         |
 in              |   yes   |   +       |     +         |
 out             |   yes   |   +       |     +         |
 atop            |   yes   |   +       |     +         |
-dest            |   NO!!! |   +       |    N/A        |
+dest            |   NO!!! |   +       |    N/A [0]    |
 dest_over       |   yes   |   +       |     +         |
 dest_in         |   yes   |   +       |     +         |
 dest_out        |   yes   |   +       |     +         |
 dest_atop       |   yes   |   +       |     +         |
 xor_op          |   yes   |   +       |     +         |
 add             |   yes   |   +       |     +         |
-saturate        |   NO!!! |   +       |    N/A        |
+saturate        |   NO!!! |   +       |    N/A [1]    |
 multiply        |   yes   |   +       |     +         |
 screen          |   yes   |   +       |     +         |
 overlay         |   yes   |   +       |     +         |
 darken          |   yes   |   +       |     +         |
 lighten         |   yes   |   +       |     +         |
-color_dodge     |         |   +       |     ?         |
-color_burn      |         |   +       |     ?         |
-hard_light      |         |   +       |     ?         |
-soft_light      |         |   +       |     ?         |
+color_dodge     |   NO!!! |   +       | not comp. [2] |
+color_burn      |   NO!!! |   +       | not comp. [3] |
+hard_light      |   yes   |   +       |     +         |
+soft_light      |   NO!!! |   +       | not comp. [4] |
 difference      |         |   +       |     ?         |
 exclusion       |         |   +       |     ?         |
 hsl_hue         |         |   +       |     ?         |
@@ -41,8 +41,13 @@ hsl_saturation  |         |   +       |     ?         |
 hsl_color       |         |   +       |     ?         |
 hsl_luminosity  |         |   +       |     ?         |
 ===================================================================================================
+[0] there's no such operator in CoreGraphics.
+[1] there's no such operator in CoreGraphics.
+[2] color_dodge in CoreGraphics is kCGBlendModeColorDodge and it apparently follows another formula, which is not specified in Apple's docs.
+[3] color_burn in CoreGraphics is kCGBlendModeColorBurn and it apparently follows another formula, which is not specified in Apple's docs.
+[4] soft_light in CoreGraphics is kCGBlendModeSoftLight and it apparently follows another formula, which is not specified in Apple's docs.
+ 
 */
-
 
 namespace Blend {
 // zero alpha processing does not match the mathetical model in some operators,
@@ -161,68 +166,95 @@ static rgba_color Add( const rgba_color& a, const rgba_color& b ) noexcept
     auto rb = ( a.b() * a.a() + b.b() * b.a() ) / ra;
     return {rr, rg, rb, ra};
 }
-    
-static rgba_color Multiply( const rgba_color& a, const rgba_color& b ) noexcept
+
+template <class F>
+static rgba_color ComplexBlend( const rgba_color& a, const rgba_color& b, F f ) noexcept
 {
     auto ra = a.a() + b.a() * (1.f - a.a());
     if( ra <= numeric_limits<float>::min() )
         return rgba_color::transparent_black;
-    auto f = [](float a, float b){ return a * b; };
     auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
     auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
     auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
     return {rr, rg, rb, ra};
+}
+
+static rgba_color Multiply( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](float a, float b){ return a * b; };
+    return ComplexBlend(a, b, f);
 }
 
 static rgba_color Screen( const rgba_color& a, const rgba_color& b ) noexcept
 {
-    auto ra = a.a() + b.a() * (1.f - a.a());
-    if( ra <= numeric_limits<float>::min() )
-        return rgba_color::transparent_black;
     auto f = [](float a, float b){ return a + b - a * b; };
-    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
-    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
-    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
-    return {rr, rg, rb, ra};
+    return ComplexBlend(a, b, f);
 }
 
 static rgba_color Overlay( const rgba_color& a, const rgba_color& b ) noexcept
 {
-    auto ra = a.a() + b.a() * (1.f - a.a());
-    if( ra <= numeric_limits<float>::min() )
-        return rgba_color::transparent_black;
     auto f = [](float a, float b){
         if( b <= 0.5f ) return 2.f * a * b;
         else            return 1.f - 2.f * (1.f - a) * (1.f - b);
     };
-    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
-    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
-    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
-    return {rr, rg, rb, ra};
+    return ComplexBlend(a, b, f);
 }
 
 static rgba_color Darken( const rgba_color& a, const rgba_color& b ) noexcept
 {
-    auto ra = a.a() + b.a() * (1.f - a.a());
-    if( ra <= numeric_limits<float>::min() )
-        return rgba_color::transparent_black;
     auto f = [](float a, float b){ return min(a, b); };
-    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
-    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
-    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
-    return {rr, rg, rb, ra};
+    return ComplexBlend(a, b, f);
 }
     
 static rgba_color Lighten( const rgba_color& a, const rgba_color& b ) noexcept
 {
-    auto ra = a.a() + b.a() * (1.f - a.a());
-    if( ra <= numeric_limits<float>::min() )
-        return rgba_color::transparent_black;
     auto f = [](float a, float b){ return max(a, b); };
-    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
-    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
-    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
-    return {rr, rg, rb, ra};
+    return ComplexBlend(a, b, f);
+}
+
+static rgba_color ColorDodge( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](float a, float b){
+        if( b <= numeric_limits<float>::min() )
+            return 0.f;
+        return a < 1.f ? min(1.f, b / (1.f - a)) : 1.f;
+    };
+    return ComplexBlend(a, b, f);
+}
+
+static rgba_color ColorBurn( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](float a, float b){
+        if( 1.f - b <= numeric_limits<float>::min() )
+            return 1.f;
+        return a > numeric_limits<float>::min() ? 1.f - min(1.f, (1.f - b) / a) : 0.f;
+    };
+    return ComplexBlend(a, b, f);
+}
+
+static rgba_color HardLight( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](float a, float b){
+        if( a <= 0.5 )  return 2.f * a * b;
+        else            return 1.f - 2.f * (1.f - a) * (1.f - b);
+    };
+    return ComplexBlend(a, b, f);
+}
+    
+static rgba_color SoftLight( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](float a, float b){
+        if( a <= 0.5 ) {
+            return b - (1.f - 2.f * a) * b * (1.f - b);
+        }
+        else {
+            if( b <= 0.25 )
+                return b + (2.f * a - 1.f) * (((16.f * b - 12.f) * b + 4.f) * b - b);
+            else
+                return b + (2.f * a - 1.f) * (sqrt(b) - b);
+        }
+    };
+    return ComplexBlend(a, b, f);
 }
     
 }
@@ -230,23 +262,27 @@ static rgba_color Lighten( const rgba_color& a, const rgba_color& b ) noexcept
 static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction( compositing_op op  )
 {
     switch (op) {
-        case compositing_op::over:      return Blend::Over;
-        case compositing_op::clear:     return Blend::Clear;
-        case compositing_op::source:    return Blend::Source;
-        case compositing_op::in:        return Blend::In;
-        case compositing_op::out:       return Blend::Out;
-        case compositing_op::atop:      return Blend::Atop;
-        case compositing_op::dest_over: return Blend::DestOver;
-        case compositing_op::dest_in:   return Blend::DestIn;
-        case compositing_op::dest_out:  return Blend::DestOut;
-        case compositing_op::dest_atop: return Blend::DestAtop;
-        case compositing_op::xor_op:    return Blend::Xor;
-        case compositing_op::add:       return Blend::Add;
-        case compositing_op::multiply:  return Blend::Multiply;
-        case compositing_op::screen:    return Blend::Screen;
-        case compositing_op::overlay:   return Blend::Overlay;
-        case compositing_op::darken:    return Blend::Darken;
-        case compositing_op::lighten:   return Blend::Lighten;
+        case compositing_op::over:          return Blend::Over;
+        case compositing_op::clear:         return Blend::Clear;
+        case compositing_op::source:        return Blend::Source;
+        case compositing_op::in:            return Blend::In;
+        case compositing_op::out:           return Blend::Out;
+        case compositing_op::atop:          return Blend::Atop;
+        case compositing_op::dest_over:     return Blend::DestOver;
+        case compositing_op::dest_in:       return Blend::DestIn;
+        case compositing_op::dest_out:      return Blend::DestOut;
+        case compositing_op::dest_atop:     return Blend::DestAtop;
+        case compositing_op::xor_op:        return Blend::Xor;
+        case compositing_op::add:           return Blend::Add;
+        case compositing_op::multiply:      return Blend::Multiply;
+        case compositing_op::screen:        return Blend::Screen;
+        case compositing_op::overlay:       return Blend::Overlay;
+        case compositing_op::darken:        return Blend::Darken;
+        case compositing_op::lighten:       return Blend::Lighten;
+        case compositing_op::color_dodge:   return Blend::ColorDodge;
+        case compositing_op::color_burn:    return Blend::ColorBurn;
+        case compositing_op::hard_light:    return Blend::HardLight;
+        case compositing_op::soft_light:    return Blend::SoftLight;
         default: return nullptr;
     }
 }
@@ -538,4 +574,17 @@ TEST_CASE("IO2D properly blends colors using compositing_op::lighten")
     }
 }
 
-
+TEST_CASE("IO2D properly blends colors using compositing_op::hard_light")
+{
+    auto op = compositing_op::hard_light;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
