@@ -9,7 +9,7 @@ using namespace std::experimental::io2d;
 /*
 Current state of blend operators compatibility:
 
-Opeator         | Tested? | Cairo     | CoreGraphics  |
+Operator        | Tested? | Cairo     | CoreGraphics  |
 ===================================================================================================
 over            |   yes   |   +       |     +         |
 clear           |   yes   |   +       |     +         |
@@ -25,11 +25,11 @@ dest_atop       |   yes   |   +       |     +         |
 xor_op          |   yes   |   +       |     +         |
 add             |   yes   |   +       |     +         |
 saturate        |   NO!!! |   +       |    N/A        |
-multiply        |         |   +       |     ?         |
-screen          |         |   +       |     ?         |
-overlay         |         |   +       |     ?         |
-darken          |         |   +       |     ?         |
-lighten         |         |   +       |     ?         |
+multiply        |   yes   |   +       |     +         |
+screen          |   yes   |   +       |     +         |
+overlay         |   yes   |   +       |     +         |
+darken          |   yes   |   +       |     +         |
+lighten         |   yes   |   +       |     +         |
 color_dodge     |         |   +       |     ?         |
 color_burn      |         |   +       |     ?         |
 hard_light      |         |   +       |     ?         |
@@ -119,7 +119,7 @@ static rgba_color DestIn( const rgba_color& a, const rgba_color& b ) noexcept
         return rgba_color::transparent_black;
     return {b.r(), b.g(), b.b(), ra};
 }
-    
+
 static rgba_color DestOut( const rgba_color& a, const rgba_color& b ) noexcept
 {
     auto ra = (1.f - a.a()) * b.a();
@@ -162,6 +162,69 @@ static rgba_color Add( const rgba_color& a, const rgba_color& b ) noexcept
     return {rr, rg, rb, ra};
 }
     
+static rgba_color Multiply( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = a.a() + b.a() * (1.f - a.a());
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto f = [](float a, float b){ return a * b; };
+    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
+    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
+    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
+    return {rr, rg, rb, ra};
+}
+
+static rgba_color Screen( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = a.a() + b.a() * (1.f - a.a());
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto f = [](float a, float b){ return a + b - a * b; };
+    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
+    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
+    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
+    return {rr, rg, rb, ra};
+}
+
+static rgba_color Overlay( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = a.a() + b.a() * (1.f - a.a());
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto f = [](float a, float b){
+        if( b <= 0.5f ) return 2.f * a * b;
+        else            return 1.f - 2.f * (1.f - a) * (1.f - b);
+    };
+    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
+    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
+    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
+    return {rr, rg, rb, ra};
+}
+
+static rgba_color Darken( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = a.a() + b.a() * (1.f - a.a());
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto f = [](float a, float b){ return min(a, b); };
+    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
+    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
+    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
+    return {rr, rg, rb, ra};
+}
+    
+static rgba_color Lighten( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = a.a() + b.a() * (1.f - a.a());
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto f = [](float a, float b){ return max(a, b); };
+    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.r(), b.r()) ) / ra;
+    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.g(), b.g()) ) / ra;
+    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * f(a.b(), b.b()) ) / ra;
+    return {rr, rg, rb, ra};
+}
+    
 }
 
 static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction( compositing_op op  )
@@ -179,6 +242,11 @@ static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction(
         case compositing_op::dest_atop: return Blend::DestAtop;
         case compositing_op::xor_op:    return Blend::Xor;
         case compositing_op::add:       return Blend::Add;
+        case compositing_op::multiply:  return Blend::Multiply;
+        case compositing_op::screen:    return Blend::Screen;
+        case compositing_op::overlay:   return Blend::Overlay;
+        case compositing_op::darken:    return Blend::Darken;
+        case compositing_op::lighten:   return Blend::Lighten;
         default: return nullptr;
     }
 }
@@ -394,3 +462,80 @@ TEST_CASE("IO2D properly blends colors using compositing_op::add")
         CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
     }
 }
+
+TEST_CASE("IO2D properly blends colors using compositing_op::multiply")
+{
+    auto op = compositing_op::multiply;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::screen")
+{
+    auto op = compositing_op::screen;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::overlay")
+{
+    auto op = compositing_op::overlay;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::darken")
+{
+    auto op = compositing_op::darken;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::lighten")
+{
+    auto op = compositing_op::lighten;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+

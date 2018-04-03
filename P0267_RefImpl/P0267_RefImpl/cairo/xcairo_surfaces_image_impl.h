@@ -608,7 +608,6 @@ namespace std::experimental::io2d {
 				}
 				auto width = image->columns;
 				auto height = image->rows;
-				auto gamma = image->gamma;
 
 				data.surface = ::std::move(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), width, height), &cairo_surface_destroy));
 				data.context = ::std::move(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(data.surface.get()), &cairo_destroy));
