@@ -36,10 +36,10 @@ hard_light      |   yes   |   +       |     +         |
 soft_light      |   NO!!! |   +       | not comp. [4] |
 difference      |   yes   |   +       |     +         |
 exclusion       |   yes   |   +       |     +         |
-hsl_hue         |         |   +       |     ?         |
-hsl_saturation  |         |   +       |     ?         |
-hsl_color       |         |   +       |     ?         |
-hsl_luminosity  |         |   +       |     ?         |
+hsl_hue         |   yes   |   +       |     +         |
+hsl_saturation  |   yes   |   +       |     +         |
+hsl_color       |   yes   |   +       |     +         |
+hsl_luminosity  |   yes   |   +       |     +         |
 ===================================================================================================
 [0] there's no such operator in CoreGraphics.
 [1] there's no such operator in CoreGraphics.
@@ -272,7 +272,120 @@ static rgba_color Exclusion( const rgba_color& a, const rgba_color& b ) noexcept
     };
     return ComplexBlend(a, b, f);
 }
-    
+
+namespace hsl {
+
+static float sat( tuple<float, float, float> c )
+{
+    return max({get<0>(c), get<1>(c), get<2>(c)}) - min({get<0>(c), get<1>(c), get<2>(c)});
+}
+
+static float lum( tuple<float, float, float> c )
+{
+    return 0.3f * get<0>(c) + 0.59f * get<1>(c) + 0.11f * get<2>(c);
+}
+
+static tuple<float, float, float> clip( tuple<float, float, float> c )
+{
+    auto& [r, g, b] = c;
+    auto L = lum(c);
+    auto N = min({r, g, b});
+    auto X = max({r, g, b});
+    if( N < 0.0f ) {
+        r = L + ((r - L) * L) / (L - N);
+        g = L + ((g - L) * L) / (L - N);
+        b = L + ((b - L) * L) / (L - N);
+    }
+    if( X > 1.0f ) {
+        r = L + ((r - L) * (1.f - L)) / (X - L);
+        g = L + ((g - L) * (1.f - L)) / (X - L);
+        b = L + ((b - L) * (1.f - L)) / (X - L);
+    }
+    return c;
+}
+
+static tuple<float, float, float> set_lum( tuple<float, float, float> c, float L )
+{
+    auto D = L - lum(c);
+    auto& [r, g, b] = c;
+    r = r + D;
+    g = g + D;
+    b = b + D;
+    return clip(c);
+}
+
+static tuple<float, float, float> set_sat( tuple<float, float, float> c, float S )
+{
+    auto& [r, g, b] = c;
+    auto &cmax = r > g ? ( r > b ? r : b ) : ( g > b ? g : b );
+    auto &cmin = r < g ? ( r < b ? r : b ) : ( g < b ? g : b );
+    auto &cmid = r > g ? ( r < b ? r : b ) : ( g < b ? g : b );
+    if( cmax > cmin ) {
+        cmid = ((cmid - cmin) * S) / (cmax - cmin);
+        cmax = S;
+    }
+    else {
+        cmid = cmax = 0.f;
+    }
+    cmin = 0.f;
+    return c;
+}
+
+}
+
+template <class F>
+static rgba_color ComplexHSLBlend( const rgba_color& a, const rgba_color& b, F f ) noexcept
+{
+    auto ra = a.a() + b.a() * (1.f - a.a());
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto fc = f(a, b);
+    auto rr = ( a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) + a.a() * b.a() * get<0>(fc) ) / ra;
+    auto rg = ( a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) + a.a() * b.a() * get<1>(fc) ) / ra;
+    auto rb = ( a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) + a.a() * b.a() * get<2>(fc) ) / ra;
+    return {rr, rg, rb, ra};
+}
+
+static rgba_color HSL_Hue( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](const rgba_color& a, const rgba_color& b){
+        auto A = make_tuple(a.r(), a.g(), a.b());
+        auto B = make_tuple(b.r(), b.g(), b.b());
+        return hsl::set_lum( hsl::set_sat(A, hsl::sat(B)), hsl::lum(B) );
+    };
+    return ComplexHSLBlend(a, b, f);
+}
+
+static rgba_color HSL_Saturation( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](const rgba_color& a, const rgba_color& b){
+        auto A = make_tuple(a.r(), a.g(), a.b());
+        auto B = make_tuple(b.r(), b.g(), b.b());
+        return hsl::set_lum( hsl::set_sat(B, hsl::sat(A)), hsl::lum(B) );
+    };
+    return ComplexHSLBlend(a, b, f);
+}
+
+static rgba_color HSL_Color( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](const rgba_color& a, const rgba_color& b){
+        auto A = make_tuple(a.r(), a.g(), a.b());
+        auto B = make_tuple(b.r(), b.g(), b.b());
+        return hsl::set_lum( A, hsl::lum(B) );
+    };
+    return ComplexHSLBlend(a, b, f);
+}
+
+static rgba_color HSL_Luminosity( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](const rgba_color& a, const rgba_color& b){
+        auto A = make_tuple(a.r(), a.g(), a.b());
+        auto B = make_tuple(b.r(), b.g(), b.b());
+        return hsl::set_lum( B, hsl::lum(A) );
+    };
+    return ComplexHSLBlend(a, b, f);
+}
+
 }
 
 static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction( compositing_op op  )
@@ -301,6 +414,10 @@ static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction(
         case compositing_op::soft_light:    return Blend::SoftLight;
         case compositing_op::difference:    return Blend::Difference;
         case compositing_op::exclusion:     return Blend::Exclusion;
+        case compositing_op::hsl_hue:       return Blend::HSL_Hue;
+        case compositing_op::hsl_saturation:return Blend::HSL_Saturation;
+        case compositing_op::hsl_color:     return Blend::HSL_Color;
+        case compositing_op::hsl_luminosity:return Blend::HSL_Luminosity;
         default: return nullptr;
     }
 }
@@ -625,6 +742,66 @@ TEST_CASE("IO2D properly blends colors using compositing_op::difference")
 TEST_CASE("IO2D properly blends colors using compositing_op::exclusion")
 {
     auto op = compositing_op::exclusion;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::hsl_hue")
+{
+    auto op = compositing_op::hsl_hue;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::hsl_saturation")
+{
+    auto op = compositing_op::hsl_saturation;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::hsl_color")
+{
+    auto op = compositing_op::hsl_color;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::hsl_luminosity")
+{
+    auto op = compositing_op::hsl_luminosity;
     auto rp = render_props{};
     rp.compositing(op);
     auto colors = BuildRefData( BlendFunction(rp.compositing()) );
