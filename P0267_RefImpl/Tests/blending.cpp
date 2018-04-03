@@ -6,6 +6,44 @@ using namespace std;
 using namespace std::experimental;
 using namespace std::experimental::io2d;
 
+/*
+Current state of blend operators compatibility:
+
+Opeator         | Tested? | Cairo     | CoreGraphics  |
+===================================================================================================
+over            |   yes   |   +       |     +         |
+clear           |   yes   |   +       |     +         |
+source          |   yes   |   +       |     +         |
+in              |   yes   |   +       |     +         |
+out             |   yes   |   +       |     +         |
+atop            |   yes   |   +       |     +         |
+dest            |   NO!!! |   +       |    N/A        |
+dest_over       |   yes   |   +       |     +         |
+dest_in         |   yes   |   +       |     +         |
+dest_out        |   yes   |   +       |     +         |
+dest_atop       |   yes   |   +       |     +         |
+xor_op          |   yes   |   +       |     +         |
+add             |   yes   |   +       |     +         |
+saturate        |   NO!!! |   +       |    N/A        |
+multiply        |         |   +       |     ?         |
+screen          |         |   +       |     ?         |
+overlay         |         |   +       |     ?         |
+darken          |         |   +       |     ?         |
+lighten         |         |   +       |     ?         |
+color_dodge     |         |   +       |     ?         |
+color_burn      |         |   +       |     ?         |
+hard_light      |         |   +       |     ?         |
+soft_light      |         |   +       |     ?         |
+difference      |         |   +       |     ?         |
+exclusion       |         |   +       |     ?         |
+hsl_hue         |         |   +       |     ?         |
+hsl_saturation  |         |   +       |     ?         |
+hsl_color       |         |   +       |     ?         |
+hsl_luminosity  |         |   +       |     ?         |
+===================================================================================================
+*/
+
+
 namespace Blend {
 // zero alpha processing does not match the mathetical model in some operators,
 // which is coherent between Cairo and CoreGraphics.
@@ -55,7 +93,6 @@ static rgba_color Atop( const rgba_color& a, const rgba_color& b ) noexcept
     auto ra = b.a();
     if( ra <= numeric_limits<float>::min() )
         return rgba_color::transparent_black;
-
     auto inv = 1.f - a.a();
     auto rr = a.r() * a.a() + b.r() * inv;
     auto rg = a.g() * a.a() + b.g() * inv;
@@ -63,6 +100,68 @@ static rgba_color Atop( const rgba_color& a, const rgba_color& b ) noexcept
     return {rr, rg, rb, ra};
 }
 
+static rgba_color DestOver( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto inv = 1.f - b.a();
+    auto ra = a.a() * inv + b.a();
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto rr = (a.r() * a.a() * inv + b.r() * b.a() ) / ra;
+    auto rg = (a.g() * a.a() * inv + b.g() * b.a() ) / ra;
+    auto rb = (a.b() * a.a() * inv + b.b() * b.a() ) / ra;
+    return {rr, rg, rb, ra};
+}
+    
+static rgba_color DestIn( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = a.a() * b.a();
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    return {b.r(), b.g(), b.b(), ra};
+}
+    
+static rgba_color DestOut( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = (1.f - a.a()) * b.a();
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    return {b.r(), b.g(), b.b(), ra};
+}
+
+static rgba_color DestAtop( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = a.a();
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto inv = 1.f - b.a();
+    auto rr = a.r() * inv + b.r() * b.a();
+    auto rg = a.g() * inv + b.g() * b.a();
+    auto rb = a.b() * inv + b.b() * b.a();
+    return {rr, rg, rb, ra};
+}
+
+static rgba_color Xor( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = a.a() + b.a() - 2.f * a.a() * b.a();
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto rr = (a.r() * a.a() * (1.f - b.a()) + b.r() * b.a() * (1.f - a.a()) ) / ra;
+    auto rg = (a.g() * a.a() * (1.f - b.a()) + b.g() * b.a() * (1.f - a.a()) ) / ra;
+    auto rb = (a.b() * a.a() * (1.f - b.a()) + b.b() * b.a() * (1.f - a.a()) ) / ra;
+    return {rr, rg, rb, ra};
+}
+    
+static rgba_color Add( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto ra = min( 1.f, a.a() + b.a() );
+    if( ra <= numeric_limits<float>::min() )
+        return rgba_color::transparent_black;
+    auto rr = ( a.r() * a.a() + b.r() * b.a() ) / ra;
+    auto rg = ( a.g() * a.a() + b.g() * b.a() ) / ra;
+    auto rb = ( a.b() * a.a() + b.b() * b.a() ) / ra;
+    return {rr, rg, rb, ra};
+}
+    
 }
 
 static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction( compositing_op op  )
@@ -74,6 +173,12 @@ static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction(
         case compositing_op::in:        return Blend::In;
         case compositing_op::out:       return Blend::Out;
         case compositing_op::atop:      return Blend::Atop;
+        case compositing_op::dest_over: return Blend::DestOver;
+        case compositing_op::dest_in:   return Blend::DestIn;
+        case compositing_op::dest_out:  return Blend::DestOut;
+        case compositing_op::dest_atop: return Blend::DestAtop;
+        case compositing_op::xor_op:    return Blend::Xor;
+        case compositing_op::add:       return Blend::Add;
         default: return nullptr;
     }
 }
@@ -151,7 +256,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::source")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05)  == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
     }
 }
 
@@ -166,7 +271,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::in")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05)  == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
     }
 }
 
@@ -181,7 +286,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::out")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05)  == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
     }
 }
 
@@ -196,6 +301,96 @@ TEST_CASE("IO2D properly blends colors using compositing_op::atop")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05)  == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::dest_over")
+{
+    auto op = compositing_op::dest_over;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::dest_in")
+{
+    auto op = compositing_op::dest_in;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::dest_out")
+{
+    auto op = compositing_op::dest_out;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::dest_atop")
+{
+    auto op = compositing_op::dest_atop;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::xor_op")
+{
+    auto op = compositing_op::xor_op;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::add")
+{
+    auto op = compositing_op::add;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
     }
 }
