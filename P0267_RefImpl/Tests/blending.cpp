@@ -34,8 +34,8 @@ color_dodge     |   NO!!! |   +       | not comp. [2] |
 color_burn      |   NO!!! |   +       | not comp. [3] |
 hard_light      |   yes   |   +       |     +         |
 soft_light      |   NO!!! |   +       | not comp. [4] |
-difference      |         |   +       |     ?         |
-exclusion       |         |   +       |     ?         |
+difference      |   yes   |   +       |     +         |
+exclusion       |   yes   |   +       |     +         |
 hsl_hue         |         |   +       |     ?         |
 hsl_saturation  |         |   +       |     ?         |
 hsl_color       |         |   +       |     ?         |
@@ -257,6 +257,22 @@ static rgba_color SoftLight( const rgba_color& a, const rgba_color& b ) noexcept
     return ComplexBlend(a, b, f);
 }
     
+static rgba_color Difference( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](float a, float b){
+        return abs(a - b);
+    };
+    return ComplexBlend(a, b, f);
+}
+
+static rgba_color Exclusion( const rgba_color& a, const rgba_color& b ) noexcept
+{
+    auto f = [](float a, float b){
+        return a + b - 2.f * a * b;
+    };
+    return ComplexBlend(a, b, f);
+}
+    
 }
 
 static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction( compositing_op op  )
@@ -283,6 +299,8 @@ static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction(
         case compositing_op::color_burn:    return Blend::ColorBurn;
         case compositing_op::hard_light:    return Blend::HardLight;
         case compositing_op::soft_light:    return Blend::SoftLight;
+        case compositing_op::difference:    return Blend::Difference;
+        case compositing_op::exclusion:     return Blend::Exclusion;
         default: return nullptr;
     }
 }
@@ -577,6 +595,36 @@ TEST_CASE("IO2D properly blends colors using compositing_op::lighten")
 TEST_CASE("IO2D properly blends colors using compositing_op::hard_light")
 {
     auto op = compositing_op::hard_light;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::difference")
+{
+    auto op = compositing_op::difference;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::exclusion")
+{
+    auto op = compositing_op::exclusion;
     auto rp = render_props{};
     rp.compositing(op);
     auto colors = BuildRefData( BlendFunction(rp.compositing()) );
