@@ -64,14 +64,14 @@ static function<rgba_color(const rgba_color&, const rgba_color&)> BlendFunction(
     }
 }
 
-using ABC = tuple<rgba_color, rgba_color, rgba_color>;
+using Triplet = tuple<rgba_color, rgba_color, rgba_color>;
 
 // returns 625 combinations of "A blend B = C", iterating over one color component and over alpha component
-static vector<ABC> BuildRefData( function<rgba_color(const rgba_color&, const rgba_color&)> blend )
+static vector<Triplet> BuildRefData( function<rgba_color(const rgba_color&, const rgba_color&)> blend )
 {
     assert( blend );
     auto step = 51;
-    vector< ABC > colors;
+    vector<Triplet> colors;
     for( int a_r = 0; a_r <= 255; a_r += step )
         for( int a_a = 0; a_a <= 255; a_a += step )
             for( int b_r = 0; b_r <= 255; b_r += step )
