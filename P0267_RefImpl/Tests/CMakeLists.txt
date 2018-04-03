@@ -19,6 +19,7 @@ add_executable(tests
     surface_brush.cpp
 #    mask.cpp
     color.cpp
+    blending.cpp
 	comparison.h
    	comparison.cpp
 )

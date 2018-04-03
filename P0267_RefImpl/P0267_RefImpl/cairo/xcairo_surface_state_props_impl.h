@@ -50,7 +50,7 @@ namespace std::experimental::io2d {
 			}
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::compositing(render_props_data_type& data, io2d::compositing_op co) noexcept {
-				data.Compositing = co;
+				data._Compositing = co;
 			}
 			template<class GraphicsMath>
 			inline antialias _Cairo_graphics_surfaces<GraphicsMath>::surface_state_props::antialiasing(const render_props_data_type& data) noexcept {
