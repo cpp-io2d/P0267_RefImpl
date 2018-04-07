@@ -1,15 +1,7 @@
 #ifndef _IO2D_CAIRO_XLIB_
 #define _IO2D_CAIRO_XLIB_
 
-#include <cairo.h>
-
-#include "io2d.h"
-#include "xsystemheaders.h"
-#if defined(_Filesystem_support_test)
-#include <filesystem>
-#endif
-
-#include "xcairo.h"
+#include "xio2d_cairo_xlib_main.h"
 
 namespace std {
     namespace experimental {
@@ -17,8 +9,7 @@ namespace std {
             inline namespace v1 {
                 namespace _Cairo {
 
-                    
-                    
+                    // TODO: cairo-specific typenames definition
                     
                     
                     

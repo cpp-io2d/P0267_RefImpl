@@ -1,7 +1,7 @@
 #ifndef _IO2D_CG_BRUSHES_
 #define _IO2D_CG_BRUSHES_
 
-#include "io2d_cg.h"
+#include "io2d_cg_main.h"
 #include "io2d_cg_interop.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {

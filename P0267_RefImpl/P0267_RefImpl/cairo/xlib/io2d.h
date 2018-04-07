@@ -1,14 +1,16 @@
 #pragma once
 
-#ifndef _IO2D_
-#define _IO2D_
+#ifndef _IO2D_H_
+#define _IO2D_H_
 
-#include "io2d_cairo_xlib_frontend.h"
-#include "xcairo.h"
-#include "io2d_cairo_xlib_surfaces.h"
-#include "io2d_cairo_xlib_output_surfaces.h"
-#include "io2d_cairo_xlib_unmanaged_output_surfaces.h"
-#include "io2d_cairo_xlib_surfaces_impl.h"
+//#include "io2d_cairo_xlib_frontend.h"
+//#include "xcairo.h"
+//#include "io2d_cairo_xlib_surfaces.h"
+//#include "io2d_cairo_xlib_output_surfaces.h"
+//#include "io2d_cairo_xlib_unmanaged_output_surfaces.h"
+//#include "io2d_cairo_xlib_surfaces_impl.h"
+
+#include "io2d_cairo_xlib.h"
 
 namespace std::experimental::io2d {
     inline namespace v1 {

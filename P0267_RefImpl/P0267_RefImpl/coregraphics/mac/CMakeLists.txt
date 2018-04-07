@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(IO2D_LIB_SRC 
 	io2d.h
-	io2d_cg.h
-	io2d_cg_frontend.h
+	io2d_coregraphics_mac.h
+	io2d_cg_main.h
 	io2d_cg_brushes.h
 	io2d_cg_brushes.cpp
 	io2d_cg_interop.h
@@ -26,7 +26,7 @@ set(IO2D_LIB_SRC
     io2d_cg_colors.h
     io2d_cg_texture.cpp
     io2d_cg_texture.h
-	../../rgba_color.cpp
+#	../../rgba_color.cpp
 )
 set(IO2D_LIB_HEADERS 
 	io2d.h
@@ -39,46 +39,31 @@ set(IO2D_LIB_HEADERS
 	io2d_cg_surface_state_props.h
 	io2d_cg_paths_figures.h
 	io2d_cg_surfaces.h
-	../../xio2d.h
-	../../xbrushes.h
-	../../xcolor.h
-	../../xdiagnostics.h
-	../../xgraphicsmath.h
-	../../xgraphicsmathfloat.h
-	../../xinput.h
-	../../xio2d.h
-	../../xpath.h
-	../../xsurfaces_enums.h
-	../../xsurfaces.h
-	../../xtext.h
-	../../xbrushes_impl.h
-	../../xgraphicsmath_impl.h
-	../../xgraphicsmathfloat_impl.h
-	../../xio2d_impl.h
-	../../xpath_impl.h
-	../../xpathbuilder_impl.h
-	../../xsurfaces_impl.h
-	../../xsurfacesprops_impl.h
+
 ) 
 
-add_library(io2d ${IO2D_LIB_SRC})
+add_library(io2d_coregraphics_mac ${IO2D_LIB_SRC})
 
-target_include_directories(io2d PUBLIC
+target_include_directories(io2d_coregraphics_mac PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/..
   ${CMAKE_CURRENT_SOURCE_DIR}/../..
 )
 
-target_link_libraries(io2d "-framework Cocoa")
-target_link_libraries(io2d "-framework AppKit")
-target_link_libraries(io2d "-framework CoreServices")
-target_link_libraries(io2d "-framework CoreFoundation")
-target_link_libraries(io2d "-framework ImageIO")
-target_link_libraries(io2d "-framework CoreGraphics")
 
-install(TARGETS io2d
-	ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/lib
-)
-install(FILES ${IO2D_LIB_HEADERS}
-        DESTINATION ${CMAKE_BINARY_DIR}/include
-)
+target_link_libraries(io2d_coregraphics_mac "-framework Cocoa")
+target_link_libraries(io2d_coregraphics_mac "-framework AppKit")
+target_link_libraries(io2d_coregraphics_mac "-framework CoreServices")
+target_link_libraries(io2d_coregraphics_mac "-framework CoreFoundation")
+target_link_libraries(io2d_coregraphics_mac "-framework ImageIO")
+target_link_libraries(io2d_coregraphics_mac "-framework CoreGraphics")
+
+
+#target_link_libraries(io2d io2d_coregraphics_mac)
+
+#install(TARGETS io2d
+#	ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/lib
+#)
+#install(FILES ${IO2D_LIB_HEADERS}
+#        DESTINATION ${CMAKE_BINARY_DIR}/include
+#)

@@ -1,5 +1,7 @@
-#include "io2d.h"
-#include "xcairo.h"
+//#include "io2d.h"
+//#include <xio2d.h>
+//#include "xcairo.h"
+#include "xio2d_cairo_xlib_main.h"
 
 namespace std::experimental::io2d {
 	inline namespace v1 {

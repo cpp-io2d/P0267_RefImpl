@@ -1,7 +1,7 @@
 #ifndef _IO2D_CG_SURFACES_
 #define _IO2D_CG_SURFACES_
 
-#include "io2d.h"
+#include "io2d_cg_main.h"
 #include "io2d_cg_colors.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {

@@ -1,17 +1,21 @@
-#ifndef _IO2D_CG_
-#define _IO2D_CG_
+#ifndef _IO2D_CG_MAIN_H_
+#define _IO2D_CG_MAIN_H_
 
-#include "io2d_cg_frontend.h"
+#include <xio2d.h>
 #include <CoreGraphics/CoreGraphics.h>
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
 
 using GraphicsMath = _Graphics_math_float_impl;
-
+using matrix_2d = basic_matrix_2d<GraphicsMath>;
+using point_2d = basic_point_2d<GraphicsMath>;
+using bounding_box = basic_bounding_box<GraphicsMath>;
+using circle = basic_circle<GraphicsMath>;
+    
 struct _GS {
 
 using graphics_math_type = GraphicsMath;
-            
+    
 struct paths {
     struct _AbsNewFigure {
         basic_point_2d<GraphicsMath> pt;
@@ -194,13 +198,13 @@ struct paths {
     using interpreted_path_data_type = _InterpretedPath;
     static interpreted_path_data_type create_interpreted_path() noexcept;
     template <class ForwardIterator>
-    static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);    
+    static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
     static interpreted_path_data_type copy_interpreted_path(const interpreted_path_data_type&) noexcept;
     static interpreted_path_data_type move_interpreted_path(interpreted_path_data_type&&) noexcept;
     static void destroy(interpreted_path_data_type&) noexcept;
     static bool is_empty(const interpreted_path_data_type&) noexcept;
 };
-                
+    
 struct brushes {
     struct _SolidColor {
         using color_t = remove_pointer_t<CGColorRef>;
@@ -372,7 +376,7 @@ struct surface_state_props {
     static dashes_data_type move_dashes(dashes_data_type&& data) noexcept;
     static void destroy(dashes_data_type& data) noexcept;
 };
-                
+    
                 struct surfaces {
                     struct _Image_surface_data {
                         using context_t = remove_pointer_t<CGContextRef>;
@@ -440,15 +444,15 @@ struct surface_state_props {
                         bool letterbox_brush_is_default = true;
                         optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
                         optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
-                        
+ 
                         optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
-                        
+ 
                         basic_display_point<GraphicsMath> display_dimensions;
                         ::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
                         ::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
-                        
+ 
                         image_surface_data_type back_buffer;
-                        
+ 
                         bool auto_clear = false;
                         io2d::scaling scl = io2d::scaling::letterbox;
                         io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible;
@@ -456,7 +460,7 @@ struct surface_state_props {
                         bool redraw_required = false;
                         float elapsed_draw_time = 0.0f;
                     };
-                    
+ 
                     using _Display_surface_data_type = _Display_surface_win32_data;
                     struct _Output_surface_win32_data {
                         _Display_surface_data_type data;
@@ -485,15 +489,15 @@ struct surface_state_props {
                         bool letterbox_brush_is_default = true;
                         optional<basic_brush<_Graphics_surfaces_type>> _Letterbox_brush;
                         optional<basic_brush_props<_Graphics_surfaces_type>> _Letterbox_brush_props;
-                        
+ 
                         optional<basic_brush<_Graphics_surfaces_type>> _Default_letterbox_brush;
-                        
+ 
                         basic_display_point<GraphicsMath> display_dimensions;
                         ::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> display_surface{ nullptr, &cairo_surface_destroy };
                         ::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> display_context{ nullptr, &cairo_destroy };
-                        
+ 
                         image_surface_data_type back_buffer;
-                        
+ 
                         bool auto_clear = false;
                         io2d::scaling scl = io2d::scaling::letterbox;
                         io2d::refresh_style rr = io2d::refresh_style::as_fast_as_possible;
@@ -502,7 +506,7 @@ struct surface_state_props {
                         float elapsed_draw_time = 0.0f;
                         bool can_draw = false;
                     };
-                    
+ 
                     using _Display_surface_data_type = _Display_surface_xlib_data;
                     struct _Output_surface_xlib_data {
                         _Display_surface_data_type data;
@@ -518,15 +522,15 @@ struct surface_state_props {
                     };
                     using output_surface_data_type = _Output_surface_xlib_data;
                     using unmanaged_output_surface_data_type = _Unmanaged_output_surface_xlib_data;
-                    
+ 
 #endif
 
                     template <class OutputDataType, class OutputSurfaceType>
                     static void _Render_to_native_surface(OutputDataType& osd, OutputSurfaceType& sfc);
-                    
+ 
                     static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
                     // unmanaged_output_surface functions
-                    
+ 
                     static unmanaged_output_surface_data_type create_unmanaged_output_surface();
 #if defined(_WIN32) || defined(_WIN64)
                     static unmanaged_output_surface_data_type create_unmanaged_output_surface(HINSTANCE hInstance, HWND hwnd, HDC hdc, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
@@ -535,7 +539,7 @@ struct surface_state_props {
 #endif
                     static unmanaged_output_surface_data_type move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept;
                     static void destroy(unmanaged_output_surface_data_type& data) noexcept;
-                    
+ 
                     static bool has_draw_callback(const unmanaged_output_surface_data_type& data) noexcept;
                     static void invoke_draw_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
                     static void draw_to_output(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc);
@@ -544,7 +548,7 @@ struct surface_state_props {
                     static bool has_user_scaling_callback(const unmanaged_output_surface_data_type& data) noexcept;
                     static basic_bounding_box<GraphicsMath> invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush);
                     static void display_dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
-                    
+ 
                     static void flush(unmanaged_output_surface_data_type& data);
                     static void flush(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
                     static void mark_dirty(unmanaged_output_surface_data_type& data);
@@ -565,7 +569,7 @@ struct surface_state_props {
                     static void letterbox_brush_props(unmanaged_output_surface_data_type& data, const basic_brush_props<_Graphics_surfaces_type>& val);
                     static void auto_clear(unmanaged_output_surface_data_type& data, bool val);
                     static void redraw_required(unmanaged_output_surface_data_type& data, bool val);
-                    
+ 
                     static io2d::format format(const unmanaged_output_surface_data_type& data) noexcept;
                     static basic_display_point<GraphicsMath> dimensions(const unmanaged_output_surface_data_type& data) noexcept;
                     static basic_display_point<GraphicsMath> display_dimensions(const unmanaged_output_surface_data_type& data) noexcept;
@@ -643,4 +647,4 @@ struct surface_state_props {
 #include "io2d_cg_surface_state_props.h"
 #include "io2d_cg_output_surfaces.h"
 
-#endif
+#endif // _IO2D_CG_MAIN_H_

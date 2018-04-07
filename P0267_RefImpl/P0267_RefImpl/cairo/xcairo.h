@@ -4,10 +4,7 @@
 #define _XCAIRO_
 
 #include <cairo.h>
-
-#include "io2d.h"
-#include "xsystemheaders.h"
-#include "xsurfaces_enums.h"
+#include <xio2d.h>
 
 namespace std {
 	namespace experimental {

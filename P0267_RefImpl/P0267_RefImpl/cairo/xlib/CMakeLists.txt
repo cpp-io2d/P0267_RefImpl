@@ -5,15 +5,15 @@ project(io2d CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 set(IO2D_LIB_SRC
-    io2d.h
+   	io2d.h
+    io2d_cairo_xlib.h
 	cairo_renderer_xlib.cpp
-    io2d_cairo_xlib_frontend.h
-	io2d_cairo_xlib.h
-	io2d_cairo_xlib_output_surfaces.h
-	io2d_cairo_xlib_unmanaged_output_surfaces.h
-    io2d_cairo_xlib_surfaces.h
-    io2d_cairo_xlib_surfaces_impl.h
-	io2d.h
+    xio2d_cairo_xlib_main.h
+	xio2d_cairo_xlib_output_surfaces.h
+	xio2d_cairo_xlib_unmanaged_output_surfaces.h
+	xio2d_cairo_xlib_surfaces.h
+   	xio2d_cairo_xlib_surfaces_impl.h
+	../xio2d_cairo_main.h
 	../xcairo.h
 	../xcairo_brushes_impl.h
 	../xcairo_helpers.h
@@ -22,32 +22,12 @@ set(IO2D_LIB_SRC
 	../xcairo_surfaces_image_impl.h
 	../xcairo_surfaces_impl.h
 	../cairo_renderer-graphicsmagickinit.cpp
-	../../rgba_color.cpp
-    ../../xbrushes.h
-    ../../xbrushes_impl.h
-    ../../xcolor.h
-    ../../xdiagnostics.h
-    ../../xgraphicsmath.h
-    ../../xgraphicsmath_impl.h
-    ../../xgraphicsmathfloat.h
-    ../../xgraphicsmathfloat_impl.h
-    ../../xinput.h
-    ../../xio2d.h
-    ../../xio2d_impl.h
-    ../../xpath.h
-    ../../xpath_impl.h
-    ../../xpathbuilder_impl.h
-    ../../xsurfaces.h
-    ../../xsurfaces_enums.h
-    ../../xsurfaces_impl.h
-    ../../xsurfacesprops_impl.h
-    ../../xsystemheaders.h
-    ../../xtext.h
+
 )
 
-add_library(io2d ${IO2D_LIB_SRC})
+add_library(io2d_cairo_xlib ${IO2D_LIB_SRC})
 
-target_include_directories(io2d PUBLIC
+target_include_directories(io2d_cairo_xlib PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/..
   ${CMAKE_CURRENT_SOURCE_DIR}/../..
@@ -78,9 +58,9 @@ endif()
 
 # message(STATUS ${CAIRO_INCLUDE_DIR})
 
-target_include_directories(io2d SYSTEM PUBLIC ${CAIRO_INCLUDE_DIR} ${GRAPHICSMAGICK_INCLUDE_DIR})
-target_link_libraries(io2d ${CAIRO_LIB} ${GRAPHICSMAGICK_LIB} ${PIXMAN_LIB} ${FREETYPE_LIB} ${FONTCONFIG_LIB} ${BZ_LIB} ${ZLIB_LIB} ${JPEG_LIB} ${PNG_LIB} ${TIFF_LIB} ${EXPAT_LIB} ${LZMA_LIB} ${ICONV_LIB} ${CHARSET_LIB} ${X11_LIB})
+target_include_directories(io2d_cairo_xlib SYSTEM PUBLIC ${CAIRO_INCLUDE_DIR} ${GRAPHICSMAGICK_INCLUDE_DIR})
+target_link_libraries(io2d_cairo_xlib ${CAIRO_LIB} ${GRAPHICSMAGICK_LIB} ${PIXMAN_LIB} ${FREETYPE_LIB} ${FONTCONFIG_LIB} ${BZ_LIB} ${ZLIB_LIB} ${JPEG_LIB} ${PNG_LIB} ${TIFF_LIB} ${EXPAT_LIB} ${LZMA_LIB} ${ICONV_LIB} ${CHARSET_LIB} ${X11_LIB})
 
-install(TARGETS io2d
-    ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/lib
-)
+#install(TARGETS io2d
+#    ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/lib
+#)

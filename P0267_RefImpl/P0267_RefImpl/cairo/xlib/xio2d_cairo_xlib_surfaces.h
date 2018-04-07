@@ -1,5 +1,7 @@
 #pragma once
 
+#include "xio2d_cairo_xlib_main.h"
+
 namespace std::experimental::io2d {
     inline namespace v1 {
         namespace _Cairo {
