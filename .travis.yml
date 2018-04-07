@@ -20,7 +20,7 @@ matrix:
         - export CXXFLAGS="-nostdinc++ -isystem$TRAVIS_BUILD_DIR/build/clang/include/c++/v1"
         - export LDFLAGS="-L$TRAVIS_BUILD_DIR/build/clang/lib -Wl,-rpath,$TRAVIS_BUILD_DIR/build/clang/lib"
         - export CTEST_OUTPUT_ON_FAILURE="1"
-        - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_BACKEND=COREGRAPHICS_MAC ../.
+        - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_DEFAULT=COREGRAPHICS_MAC ../.
         - make tests
         - ctest -V -C Debug
 
@@ -43,6 +43,6 @@ matrix:
         - export CXXFLAGS="-nostdinc++ -isystem$TRAVIS_BUILD_DIR/build/clang/include/c++/v1 -isystem/opt/X11/include -isystem/opt/local/include -isystem/usr/local/include"
         - export LDFLAGS="-L$TRAVIS_BUILD_DIR/build/clang/lib -Wl,-rpath,$TRAVIS_BUILD_DIR/build/clang/lib -L/opt/X11/lib -L/opt/local/lib -L/usr/local/lib"
         - export CTEST_OUTPUT_ON_FAILURE="1"
-        - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_BACKEND=CAIRO_XLIB ../.
+        - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_DEFAULT=CAIRO_XLIB ../.
         - make tests
         - ctest -V -C Debug
