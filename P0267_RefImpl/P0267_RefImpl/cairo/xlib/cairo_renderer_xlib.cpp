@@ -1,11 +1,10 @@
-//#include "io2d.h"
-//#include <xio2d.h>
-//#include "xcairo.h"
 #include "xio2d_cairo_xlib_main.h"
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		namespace _Cairo {
+            
+            using output_surface = basic_output_surface<_Cairo::_Cairo_graphics_surfaces<_Graphics_math_float_impl>>;
 
 			int _Xlib_unmanaged_close_display(Display*) {
 				// Do nothing. We don't own the display.
