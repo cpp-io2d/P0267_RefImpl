@@ -1,5 +1,6 @@
 #pragma once
 #include "xcairo_surfaces_impl.h"
+#include "xcairo_helpers.h"
 
 namespace std::experimental::io2d {
 	inline namespace v1 {

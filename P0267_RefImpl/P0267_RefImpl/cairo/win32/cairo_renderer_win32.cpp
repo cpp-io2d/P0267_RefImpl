@@ -1,5 +1,6 @@
-#include "io2d.h"
-#include "xcairo.h"
+//#include "io2d.h"
+// #include "xcairo.h"
+#include "xio2d_cairo_win32_main.h"
 #include <mutex>
 
 namespace std::experimental::io2d {

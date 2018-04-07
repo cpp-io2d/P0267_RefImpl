@@ -3,13 +3,15 @@
 #ifndef _IO2D_
 #define _IO2D_
 
-#include "io2d_cairo_win32_frontend.h"
-#include "xcairo.h"
-#include "io2d_cairo_win32_error.h"
-#include "io2d_cairo_win32_surfaces.h"
-#include "io2d_cairo_win32_output_surface.h"
-#include "io2d_cairo_win32_unmanaged_output_surface.h"
-#include "io2d_cairo_win32_surfaces_impl.h"
+//#include "io2d_cairo_win32_frontend.h"
+//#include "xcairo.h"
+//#include "io2d_cairo_win32_error.h"
+//#include "io2d_cairo_win32_surfaces.h"
+//#include "io2d_cairo_win32_output_surface.h"
+//#include "io2d_cairo_win32_unmanaged_output_surface.h"
+//#include "io2d_cairo_win32_surfaces_impl.h"
+
+#include "io2d_cairo_win32.h"
 
 namespace std::experimental::io2d {
     inline namespace v1 {
