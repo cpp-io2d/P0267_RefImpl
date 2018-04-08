@@ -8,5 +8,6 @@
 #include "xio2d_cairo_xlib_surfaces.h"
 #include "xio2d_cairo_xlib_output_surfaces.h"
 #include "xio2d_cairo_xlib_unmanaged_output_surfaces.h"
+#include "xio2d_cairo_xlib_surfaces_impl.h"
 
 #endif // _XIO2D_CAIRO_XLIB_MAIN_H_
