@@ -59,7 +59,7 @@ matrix:
       addons:
         apt:
             sources: ubuntu-toolchain-r-test
-            packages: ['g++-7', 'build-essential',  'libcairo2-dev', 'libgraphicsmagick1-dev']
+            packages: ['g++-7', 'build-essential',  'libcairo2-dev', 'libgraphicsmagick1-dev', 'libpng-dev']
       before_script:
 #        - sudo apt-get update
 #        - sudo apt-get upgrade
