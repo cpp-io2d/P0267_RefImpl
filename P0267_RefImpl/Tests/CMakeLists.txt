@@ -32,11 +32,17 @@ if(MSVC)
 	find_library(PNG_LIB_DEBUG libpng16d)
 	find_library(PNG_LIB_RELEASE libpng16)
 	target_link_libraries(tests debug ${PNG_LIB_DEBUG} optimized ${PNG_LIB_RELEASE})
-else()
+else(APPLE)
 	find_path(PNG_INCLUDE_DIR libpng16/png.h)
 	target_include_directories(tests PUBLIC ${PNG_INCLUDE_DIR})
 	find_library(PNG_LIB png16)
 	target_link_libraries(tests ${PNG_LIB})	
+else() # LINUX
+	find_path(PNG_INCLUDE_DIR libpng/png.h)
+	target_include_directories(tests PUBLIC ${PNG_INCLUDE_DIR})
+	find_library(PNG_LIB png)
+	target_link_libraries(tests ${PNG_LIB})	
+
 endif()
 
 
