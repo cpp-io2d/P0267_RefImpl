@@ -1,13 +1,13 @@
 language: cpp
-os: osx
-compiler: clang
-osx_image: xcode9.1
 
 matrix:
   include:
 
 # CoreGraphics/Cocoa on MacOSX
-    - brew_packages: libpng
+    - os: osx
+      compiler: clang
+      osx_image: xcode9.1
+      brew_packages: libpng
 
       before_script:
         - mkdir build
@@ -25,7 +25,11 @@ matrix:
         - ctest -V -C Debug
 
 # Cairo/Xlib on MacOSX
-    - before_script:
+    - os: osx
+      compiler: clang
+      osx_image: xcode9.1
+      brew_packages: libpng
+      before_script:
         - mkdir build
         - cd build
         - curl -# -o clang6_0_0.tar.xz http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz
@@ -44,5 +48,25 @@ matrix:
         - export LDFLAGS="-L$TRAVIS_BUILD_DIR/build/clang/lib -Wl,-rpath,$TRAVIS_BUILD_DIR/build/clang/lib -L/opt/X11/lib -L/opt/local/lib -L/usr/local/lib"
         - export CTEST_OUTPUT_ON_FAILURE="1"
         - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_DEFAULT=CAIRO_XLIB ../.
+        - make tests
+        - ctest -V -C Debug
+
+# Cairo/Xlib on Linux
+    - os: linux
+      sudo: required
+      dist: trusty
+
+      before_script:
+        - sudo apt-get update
+        - sudo apt-get upgrade
+        - sudo apt-get install build-essential
+        - sudo apt-get install libcairo2-dev
+        - sudo apt-get install libgraphicsmagick1-dev
+        - mkdir build
+        - cd build
+
+      script:
+        - export CTEST_OUTPUT_ON_FAILURE="1"
+        - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_DEFAULT=CAIRO_XLIB -DIO2D_WITHOUT_SAMPLES=1 ../.
         - make tests
         - ctest -V -C Debug
