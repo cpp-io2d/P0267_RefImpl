@@ -72,12 +72,26 @@ static void Feed(png_structp png , png_bytep out, png_size_t sz )
     memory_source.position += sz;
 }
 
-static optional<RawImage> Load(const vector<uint8_t> &data)
+static bool HasPNGSignature( const vector<uint8_t> &data )
 {
     const auto signature_len = 8;
-    if( data.size() < signature_len || !png_check_sig(data.data(), signature_len) )
+    if( data.size() < signature_len )
+        return false;
+    
+    uint8_t sign_buf[signature_len] = {0};
+    copy( begin(data), begin(data) + signature_len, begin(sign_buf) );
+    if( png_sig_cmp(&sign_buf[0], 0, signature_len) != 0 )
+        return false;
+ 
+    return true;
+}
+
+static optional<RawImage> Load(const vector<uint8_t> &data)
+{
+    if( !HasPNGSignature(data) )
         return nullopt;
     
+    const auto signature_len = 8;
     MemorySource memory_source;
     memory_source.data = &data;
     memory_source.position = signature_len;
