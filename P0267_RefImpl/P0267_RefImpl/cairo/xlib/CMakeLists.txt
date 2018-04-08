@@ -64,7 +64,7 @@ else() # Linux
 	find_library(BZ_LIB bz2)
 	find_library(ZLIB_LIB z)
 	find_library(JPEG_LIB jpeg)
-	find_library(PNG_LIB png16)
+	find_library(PNG_LIB png)
 	find_library(TIFF_LIB tiff)
 	find_library(EXPAT_LIB expat)
 	find_library(LZMA_LIB lzma)
