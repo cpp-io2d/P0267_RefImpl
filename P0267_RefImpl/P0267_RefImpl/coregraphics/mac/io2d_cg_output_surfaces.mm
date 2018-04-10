@@ -13,8 +13,10 @@ namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphic
 
 struct _GS::surfaces::_OutputSurfaceCocoa
 {
+    using context_t = remove_pointer_t<CGContextRef>;
+    
     NSWindow *window = nullptr;
-    CGContextRef draw_buffer = nullptr;
+    unique_ptr<context_t, decltype(&CGContextRelease)> draw_buffer{ nullptr, &CGContextRelease };
     basic_display_point<GraphicsMath> buffer_size;
     _IO2DOutputView *output_view = nullptr;
     function<void(basic_output_surface<_GS>&)> draw_callback;
@@ -81,9 +83,6 @@ _GS::surfaces::output_surface_data_type _GS::surfaces::move_output_surface(outpu
 void _GS::surfaces::destroy(output_surface_data_type& data) noexcept
 {
     if( data ) {
-        CGContextRelease(data->draw_buffer);
-        
-        
         delete data;
         data = nullptr;
     }
@@ -116,22 +115,22 @@ void _GS::surfaces::auto_clear(output_surface_data_type& data, bool val) noexcep
     
 void _GS::surfaces::clear(output_surface_data_type& data)
 {
-    _Clear( data->draw_buffer, _ClearColor(), CGRectMake(0, 0, data->buffer_size.x(), data->buffer_size.y()) );
+    _Clear( data->draw_buffer.get(), _ClearColor(), CGRectMake(0, 0, data->buffer_size.x(), data->buffer_size.y()) );
 }
     
 void _GS::surfaces::stroke(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_stroke_props<_GS>& sp, const basic_dashes<_GS>& d, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl)
 {
-    _Stroke(data->draw_buffer, b, ip, bp, sp, d, rp, cl);
+    _Stroke(data->draw_buffer.get(), b, ip, bp, sp, d, rp, cl);
 }
     
 void _GS::surfaces::paint(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl)
 {
-    _Paint(data->draw_buffer, b, bp, rp, cl);
+    _Paint(data->draw_buffer.get(), b, bp, rp, cl);
 }
     
 void _GS::surfaces::fill(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl)
 {
-    _Fill(data->draw_buffer, b, ip, bp, rp, cl);
+    _Fill(data->draw_buffer.get(), b, ip, bp, rp, cl);
 }
     
 static void _NSAppBootstrap()
@@ -204,17 +203,28 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
                                                              block:^(NSTimer*){
                                                                  _FireDisplay(data);
                                                              }];
-        while( auto event = _NextEvent() )
-            [NSApp sendEvent:event];
+        while( true ) {
+            @autoreleasepool {
+                auto event = _NextEvent();
+                if( event == nil )
+                    break;
+                [NSApp sendEvent:event];
+            }
+        }
         [fixed_timer invalidate];
     }
     else if( data->refresh_style == refresh_style::as_fast_as_possible ) {
         FakeEvent::Enqueue();
-        while( auto event = _NextEvent() ) {
-            [NSApp sendEvent:event];
-            if( FakeEvent::IsFake(event) ) {
-                _FireDisplay(data);
-                FakeEvent::Enqueue();
+        while( true ) {
+            @autoreleasepool {
+                auto event = _NextEvent();
+                if( event == nil )
+                    break;
+                [NSApp sendEvent:event];
+                if( FakeEvent::IsFake(event) ) {
+                    _FireDisplay(data);
+                    FakeEvent::Enqueue();
+                }
             }
         }
     }
@@ -224,7 +234,7 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
     
 static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, basic_display_point<GraphicsMath> new_dimensions )
 {
-    context.draw_buffer = _CreateBitmap(context.preferred_format, new_dimensions.x(), new_dimensions.y());
+    context.draw_buffer.reset( _CreateBitmap(context.preferred_format, new_dimensions.x(), new_dimensions.y()) );
     context.buffer_size = new_dimensions;
 }
     
@@ -275,7 +285,7 @@ using namespace std::experimental::io2d::_CoreGraphics;
     
     // this is a really naive and slow approach, need to switch to CGLayer for display surface drawing
     auto ctx = [[NSGraphicsContext currentContext] CGContext];
-    auto image = CGBitmapContextCreateImage(_data->draw_buffer);
+    auto image = CGBitmapContextCreateImage(_data->draw_buffer.get());
     _AutoRelease release_image{image};
     
     CGContextTranslateCTM(ctx, 0, CGImageGetHeight(image));
