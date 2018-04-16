@@ -538,11 +538,6 @@ namespace std {
 
 					~basic_interpreted_path() noexcept;
 				};
-
-				template <class GraphicsSurfaces, class ForwardIterator>
-				vector<typename basic_figure_items<GraphicsSurfaces>::figure_item> _Interpret_path_items(ForwardIterator first, ForwardIterator last);
-				template <class GraphicsSurfaces, class Allocator>
-				vector<typename basic_figure_items<GraphicsSurfaces>::figure_item> _Interpret_path_items(const basic_path_builder<GraphicsSurfaces, Allocator>& pb);
 			}
 		}
 	}

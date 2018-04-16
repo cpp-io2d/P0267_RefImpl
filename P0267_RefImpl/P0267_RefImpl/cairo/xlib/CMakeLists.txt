@@ -22,7 +22,9 @@ set(IO2D_LIB_SRC
 	../xcairo_surfaces_image_impl.h
 	../xcairo_surfaces_impl.h
 	../cairo_renderer-graphicsmagickinit.cpp
-
+    ../../xpath.h
+    ../../xpath_impl.h
+    ../../xpathbuilder_impl.h
 )
 
 add_library(io2d_cairo_xlib ${IO2D_LIB_SRC})
