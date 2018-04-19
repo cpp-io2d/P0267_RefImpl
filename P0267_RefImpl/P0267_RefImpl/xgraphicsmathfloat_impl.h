@@ -224,14 +224,9 @@ namespace std::experimental::io2d {
 		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_translate(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 			return create_matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, val._X, val._Y);
 		}
-//        inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_scale(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
-//            return create_matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, val._X, val._Y);
-//        }
-
         inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_scale(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
             return create_matrix_2d(val._X, 0.0f, 0.0f, val._Y, 0.0f , 0.0f);
         }
-        
 		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_rotate(float radians) noexcept {
 			float sine = sin(radians);
 			float cosine = cos(radians);
@@ -240,10 +235,6 @@ namespace std::experimental::io2d {
 			return create_matrix_2d(cosine, -sine, sine, cosine, 0.0f, 0.0f);
 		}
 		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_rotate(float radians, const typename _Graphics_math_float_impl::point_2d_data_type& origin) noexcept {
-//
-//            return multiply(multiply(init_translate(origin), init_rotate(radians)), init_translate(negate(origin)));
-            
-//  MK: IO2D is de-facto pre-multiply, so:
             return multiply(multiply(init_translate(negate(origin)), init_rotate(radians)), init_translate(origin));
 		}
 		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_reflect(float radians) noexcept {
@@ -280,7 +271,6 @@ namespace std::experimental::io2d {
 		inline void _Graphics_math_float_impl::shear_y(matrix_2d_data_type& mtx, float factor) noexcept {
 			mtx = multiply(mtx, init_shear_y(factor));
 		}
-		bool _Is_finite_check(float) noexcept;
 		inline bool _Is_finite_check(float val) noexcept {
 			float infinity = ::std::numeric_limits<float>::infinity();
 			return val != infinity &&

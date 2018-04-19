@@ -377,25 +377,18 @@ namespace std::experimental::io2d {
 			return GraphicsMath::not_equal(lhs._Get_data(), rhs._Get_data());
 		}
 
-		//template <class GraphicsMath>
-		//inline basic_point_2d<GraphicsMath> arc_start(const basic_point_2d<GraphicsMath>& ctr, float sang, const basic_point_2d<GraphicsMath>& rad) noexcept {
-		//	auto lmtx = basic_matrix_2d<GraphicsMath>();
-		//	lmtx.m20(0.0f); lmtx.m21(0.0f); // Eliminate translation.
-		//	auto pt = point_for_angle<GraphicsMath>(sang, rad);
-		//	return ctr + pt * lmtx;
-		//}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> point_for_angle(float ang, float mgn) noexcept {
 			return basic_point_2d<GraphicsMath>(GraphicsMath::point_for_angle(ang, mgn));
 		}
 
 		template <class GraphicsMath>
-		basic_point_2d<GraphicsMath> point_for_angle(float ang, const basic_point_2d<GraphicsMath>& rad) noexcept {
+		inline basic_point_2d<GraphicsMath> point_for_angle(float ang, const basic_point_2d<GraphicsMath>& rad) noexcept {
 			return basic_point_2d<GraphicsMath>(GraphicsMath::point_for_angle(ang, rad._Get_data()));
 		}
 
 		template <class GraphicsMath>
-		float angle_for_point(const basic_point_2d<GraphicsMath>& ctr, const basic_point_2d<GraphicsMath>& pt) noexcept {
+		inline float angle_for_point(const basic_point_2d<GraphicsMath>& ctr, const basic_point_2d<GraphicsMath>& pt) noexcept {
 			return GraphicsMath::angle_for_point(ctr._Get_data(), pt._Get_data());
 		}
 
