@@ -15,6 +15,7 @@ void _Clear(CGContextRef ctx, CGColorRef with_color, CGRect in_rect );
 void _Stroke(CGContextRef ctx, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_stroke_props<_GS>& sp, const basic_dashes<_GS>& d, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
 void _Paint(CGContextRef ctx, const basic_brush<_GS>& b, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
 void _Fill(CGContextRef ctx, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
+void _Mask(CGContextRef ctx, const basic_brush<_GS>& b, const basic_brush<_GS>& mb, const basic_brush_props<_GS>& bp, const basic_mask_props<_GS>& mp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);    
     
 inline basic_display_point<GraphicsMath> _GS::surfaces::max_dimensions() noexcept {
     return basic_display_point<GraphicsMath>(16384, 16384);
@@ -145,6 +146,11 @@ _GS::surfaces::fill(image_surface_data_type& data, const basic_brush<_GS>& b, co
 inline void
 _GS::surfaces::paint(image_surface_data_type& data, const basic_brush<_GS>& b, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl) {
     _Paint(data.context.get(), b, bp, rp, cl);
+}
+    
+inline void
+_GS::surfaces::mask(image_surface_data_type& data, const basic_brush<_GS>& b, const basic_brush<_GS>& mb, const basic_brush_props<_GS>& bp, const basic_mask_props<_GS>& mp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl) {
+    _Mask(data.context.get(), b, mb, bp, mp, rp, cl);
 }
 
 } // namespace _CoreGraphics

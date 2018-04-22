@@ -218,7 +218,7 @@ static inline bool IsEmpty( const bounding_box &bb )
     return bb.width() < FLT_MIN || bb.height() < FLT_MIN;
 }
 
-void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient, const basic_brush_props<_GS> &bp)
+void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient, const matrix_2d &m, wrap_mode wm)
 {
     if( gradient.stops.empty() )
         return;
@@ -227,13 +227,13 @@ void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient
     if( IsEmpty(bounding_box) )
         return;
 
-    const auto gradient_start = gradient.start * bp.brush_matrix().inverse();
-    const auto gradient_end = gradient.end * bp.brush_matrix().inverse();
+    const auto gradient_start = gradient.start * m.inverse();
+    const auto gradient_end = gradient.end * m.inverse();
     const auto [t0, t1] = ExpandParameters(gradient_start, gradient_end, bounding_box);
     const auto p0 = Interpolate(gradient_start, gradient_end, t0);
     const auto p1 = Interpolate(gradient_start, gradient_end, t1);
     
-    auto callbacks = CallbacksByMode(bp.wrap_mode());
+    auto callbacks = CallbacksByMode(wm);
     size_t domain_dimension = 1;
     double domain[2] = {t0, t1};
     size_t range_dimension = 4;
@@ -247,7 +247,7 @@ void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient
     CGContextDrawShading(ctx, shading);
 }
 
-void _DrawRadialGradient(CGContextRef ctx, const _GS::brushes::_Radial &gradient, const basic_brush_props<_GS> &bp)
+void _DrawRadialGradient(CGContextRef ctx, const _GS::brushes::_Radial &gradient, const matrix_2d &m, wrap_mode wm)
 {
     if( gradient.stops.empty() )
         return;
@@ -256,15 +256,15 @@ void _DrawRadialGradient(CGContextRef ctx, const _GS::brushes::_Radial &gradient
     if( IsEmpty(bounding_box) )
         return;
     
-    const auto gradient_start = circle{ gradient.start.center() * bp.brush_matrix().inverse(), gradient.start.radius() };
-    const auto gradient_end = circle{ gradient.end.center() * bp.brush_matrix().inverse(), gradient.end.radius() };
+    const auto gradient_start = circle{ gradient.start.center() * m.inverse(), gradient.start.radius() };
+    const auto gradient_end = circle{ gradient.end.center() * m.inverse(), gradient.end.radius() };
     const auto [t0, t1] = ExpandParameters(gradient_start, gradient_end, bounding_box);
     if( isnan(t0) || isnan(t1) )
         return;
     const auto c0 = Interpolate(gradient_start, gradient_end, t0);
     const auto c1 = Interpolate(gradient_start, gradient_end, t1);
     
-    auto callbacks = CallbacksByMode(bp.wrap_mode());
+    auto callbacks = CallbacksByMode(wm);
     size_t domain_dimension = 1;
     double domain[2] = {t0, t1};
     size_t range_dimension = 4;

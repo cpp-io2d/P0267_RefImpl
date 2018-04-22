@@ -7,8 +7,8 @@ namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphic
 
 // relies only on current clipping state of ctx
     
-void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient, const basic_brush_props<_GS> &bp);
-void _DrawRadialGradient(CGContextRef ctx, const _GS::brushes::_Radial &gradient, const basic_brush_props<_GS> &bp);
+void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient, const matrix_2d &brush_matrix, wrap_mode brush_wrapping_mode);
+void _DrawRadialGradient(CGContextRef ctx, const _GS::brushes::_Radial &gradient, const matrix_2d &brush_matrix, wrap_mode brush_wrapping_mode);
 
 } // namespace _CoreGraphics
 } // inline namespace v1

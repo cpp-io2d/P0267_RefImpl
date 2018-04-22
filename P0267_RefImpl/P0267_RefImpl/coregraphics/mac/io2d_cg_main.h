@@ -339,35 +339,29 @@ struct surface_state_props {
     static io2d::line_join line_join(const stroke_props_data_type& data) noexcept;
     static float miter_limit(const stroke_props_data_type& data) noexcept;
     static float max_miter_limit() noexcept;
-    //
-    //                    // mask_props
-    //
-    //                    struct _Mask_props_data {
-    //                        experimental::io2d::wrap_mode _Wrap_mode = experimental::io2d::wrap_mode::repeat;
-    //                        experimental::io2d::filter _Filter = experimental::io2d::filter::good;
-    //                        basic_matrix_2d<GraphicsMath> _Matrix = basic_matrix_2d<GraphicsMath>{};
-    //                    };
-    //
-    //                    using mask_props_data_type = _Mask_props_data;
-    //
-    //                    static mask_props_data_type create_mask_props(io2d::wrap_mode wm = io2d::wrap_mode::none, io2d::filter f = io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
-    //                    static mask_props_data_type copy_mask_props(const mask_props_data_type& data);
-    //                    static mask_props_data_type move_mask_props(mask_props_data_type&& data) noexcept;
-    //                    static void destroy(mask_props_data_type& data) noexcept;
-    //                    static void wrap_mode(mask_props_data_type& data, io2d::wrap_mode wm) noexcept;
-    //                    static void filter(mask_props_data_type& data, io2d::filter f) noexcept;
-    //                    static void mask_matrix(mask_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
-    //                    static io2d::wrap_mode wrap_mode(const mask_props_data_type& data) noexcept;
-    //                    static io2d::filter filter(const mask_props_data_type& data) noexcept;
-    //                    static basic_matrix_2d<GraphicsMath> mask_matrix(const mask_props_data_type& data) noexcept;
-    //
-    // dashes
-    struct _Dashes_data {
+
+    struct _Mask {
+        enum wrap_mode wrap_mode = wrap_mode::repeat;
+        enum filter filter = filter::good;
+        basic_matrix_2d<GraphicsMath> matrix;
+    };
+    using mask_props_data_type = _Mask;
+    static mask_props_data_type create_mask_props(io2d::wrap_mode wm = io2d::wrap_mode::none, io2d::filter f = io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
+    static mask_props_data_type copy_mask_props(const mask_props_data_type& data) noexcept;
+    static mask_props_data_type move_mask_props(mask_props_data_type&& data) noexcept;
+    static void destroy(mask_props_data_type& data) noexcept;
+    static void wrap_mode(mask_props_data_type& data, io2d::wrap_mode wm) noexcept;
+    static void filter(mask_props_data_type& data, io2d::filter f) noexcept;
+    static void mask_matrix(mask_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept;
+    static io2d::wrap_mode wrap_mode(const mask_props_data_type& data) noexcept;
+    static io2d::filter filter(const mask_props_data_type& data) noexcept;
+    static basic_matrix_2d<GraphicsMath> mask_matrix(const mask_props_data_type& data) noexcept;
+
+    struct _Dashes {
         float offset;
         ::std::vector<double> pattern;
     };
-    
-    using dashes_data_type = _Dashes_data;
+    using dashes_data_type = _Dashes;
     static dashes_data_type create_dashes() noexcept;
     template <class ForwardIterator>
     static dashes_data_type create_dashes(float offset, ForwardIterator first, ForwardIterator last);

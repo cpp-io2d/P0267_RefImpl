@@ -140,14 +140,14 @@ void _Stroke(CGContextRef ctx,
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextReplacePathWithStrokedPath(ctx);
         CGContextClip(ctx);
-        _DrawLinearGradient(ctx, linear_brush, bp);
+        _DrawLinearGradient(ctx, linear_brush, bp.brush_matrix(), bp.wrap_mode());
     }
     else if( b.type() == brush_type::radial ) {
         const auto &radial_brush = std::get<_GS::brushes::_Radial>(*b._Get_data().brush);
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextReplacePathWithStrokedPath(ctx);
         CGContextClip(ctx);
-        _DrawRadialGradient(ctx, radial_brush, bp);
+        _DrawRadialGradient(ctx, radial_brush, bp.brush_matrix(), bp.wrap_mode());
     }
     else if( b.type() == brush_type::surface ) {
         const auto &surface_brush = std::get<_GS::brushes::_Surface>(*b._Get_data().brush);
@@ -175,11 +175,11 @@ void _Paint(CGContextRef ctx,
     }
     else if( b.type() == brush_type::linear ) {
         const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
-        _DrawLinearGradient(ctx, linear_brush, bp);
+        _DrawLinearGradient(ctx, linear_brush, bp.brush_matrix(), bp.wrap_mode());
     }
     else if( b.type() == brush_type::radial ) {
         const auto &radial_brush = std::get<_GS::brushes::_Radial>(*b._Get_data().brush);
-        _DrawRadialGradient(ctx, radial_brush, bp);
+        _DrawRadialGradient(ctx, radial_brush, bp.brush_matrix(), bp.wrap_mode());
     }
     else if( b.type() == brush_type::surface ) {
         const auto &surface_brush = std::get<_GS::brushes::_Surface>(*b._Get_data().brush);
@@ -210,13 +210,13 @@ void _Fill(CGContextRef ctx,
         const auto &linear_brush = std::get<_GS::brushes::_Linear>(*b._Get_data().brush);
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextClip(ctx);
-        _DrawLinearGradient(ctx, linear_brush, bp);
+        _DrawLinearGradient(ctx, linear_brush, bp.brush_matrix(), bp.wrap_mode());
     }
     else if( b.type() == brush_type::radial ) {
         const auto &radial_brush = std::get<_GS::brushes::_Radial>(*b._Get_data().brush);
         CGContextAddPath(ctx, ip._Get_data().path.get());
         CGContextClip(ctx);
-        _DrawRadialGradient(ctx, radial_brush, bp);
+        _DrawRadialGradient(ctx, radial_brush, bp.brush_matrix(), bp.wrap_mode());
     }
     else if( b.type() == brush_type::surface ) {
         const auto &surface_brush = std::get<_GS::brushes::_Surface>(*b._Get_data().brush);
@@ -224,6 +224,50 @@ void _Fill(CGContextRef ctx,
         CGContextClip(ctx);
         _DrawTexture(ctx, surface_brush, bp);
     }
+}
+    
+void _Mask(CGContextRef ctx,
+           const basic_brush<_GS>& b,
+           const basic_brush<_GS>& mb,
+           const basic_brush_props<_GS>& bp,
+           const basic_mask_props<_GS>& mp,
+           const basic_render_props<_GS>& rp,
+           const basic_clip_props<_GS>& cl)
+{
+    // This is a preliminary and kinda brute-force implementation of the Mask operation, made mostly to serve as a proof-of-concept.
+    
+    _GStateGuard state_guard{ctx};
+    SetRenderProps(ctx, rp);
+    SetClipProps(ctx, cl);
+
+    const auto clip_rc = CGContextGetClipBoundingBox(ctx);
+    
+    auto layer = CGLayerCreateWithContext(ctx, clip_rc.size, nullptr);
+    _AutoRelease layer_release{layer};
+    
+    auto layer_ctx = CGLayerGetContext(layer);
+    CGContextTranslateCTM(layer_ctx, -clip_rc.origin.x, -clip_rc.origin.y);
+    CGContextSetBlendMode(layer_ctx, kCGBlendModeCopy);    
+    
+    if( mb.type() == brush_type::solid_color ) {
+        const auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*mb._Get_data().brush);
+        CGContextSetFillColorWithColor(layer_ctx, solid_color_brush.color.get());
+        CGContextFillRect(layer_ctx, CGContextGetClipBoundingBox(layer_ctx));
+    }
+    else if( mb.type() == brush_type::linear ) {
+        const auto &linear_brush = std::get<_GS::brushes::_Linear>(*mb._Get_data().brush);
+        _DrawLinearGradient(layer_ctx, linear_brush, mp.mask_matrix(), mp.wrap_mode());
+    }
+     // else ....
+
+    CGContextSetBlendMode(layer_ctx, kCGBlendModeSourceIn);
+    if( b.type() == brush_type::solid_color ) {
+        const auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*b._Get_data().brush);
+        CGContextSetFillColorWithColor(layer_ctx, solid_color_brush.color.get());
+        CGContextFillRect(layer_ctx, CGContextGetClipBoundingBox(layer_ctx));
+    } // else ....
+    
+    CGContextDrawLayerAtPoint(ctx, clip_rc.origin, layer);
 }
 
 static void SetClipProps( CGContextRef ctx, const basic_clip_props<_GS>& cp ) noexcept {

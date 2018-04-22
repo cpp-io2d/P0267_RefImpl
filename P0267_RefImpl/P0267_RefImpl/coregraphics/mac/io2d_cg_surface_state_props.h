@@ -318,6 +318,63 @@ _GS::surface_state_props::clip(const clip_props_data_type& data) noexcept {
     return data.clip;
 }
 
+// mask_props_data_type
+
+inline _GS::surface_state_props::mask_props_data_type
+_GS::surface_state_props::create_mask_props(io2d::wrap_mode wm, io2d::filter f, const basic_matrix_2d<GraphicsMath>& m) noexcept {
+    mask_props_data_type data;
+    data.filter = f;
+    data.wrap_mode = wm;
+    data.matrix = m;
+    return data;
+}
+
+inline _GS::surface_state_props::mask_props_data_type
+_GS::surface_state_props::copy_mask_props(const mask_props_data_type& data) noexcept {
+    return data;
+}
+    
+inline _GS::surface_state_props::mask_props_data_type 
+_GS::surface_state_props::move_mask_props(mask_props_data_type&& data) noexcept {
+    return data;
+}
+    
+inline void
+_GS::surface_state_props::destroy(mask_props_data_type& data) noexcept {
+    // do nothing
+}
+    
+inline void
+_GS::surface_state_props::wrap_mode(mask_props_data_type& data, io2d::wrap_mode wm) noexcept {
+    data.wrap_mode = wm;
+}
+    
+inline void
+_GS::surface_state_props::filter(mask_props_data_type& data, io2d::filter f) noexcept {
+    data.filter = f;
+}
+    
+inline void
+_GS::surface_state_props::mask_matrix(mask_props_data_type& data, const basic_matrix_2d<GraphicsMath>& m) noexcept {
+    data.matrix = m;
+        
+}
+    
+inline wrap_mode
+_GS::surface_state_props::wrap_mode(const mask_props_data_type& data) noexcept {
+    return data.wrap_mode;
+}
+    
+inline filter
+_GS::surface_state_props::filter(const mask_props_data_type& data) noexcept {
+    return data.filter;
+}
+    
+inline basic_matrix_2d<GraphicsMath>
+_GS::surface_state_props::mask_matrix(const mask_props_data_type& data) noexcept {
+    return data.matrix;
+}
+
 } // namespace _CoreGraphics
 } // inline namespace v1
 } // std::experimental::io2d

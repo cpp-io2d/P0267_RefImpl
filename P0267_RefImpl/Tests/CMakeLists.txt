@@ -17,7 +17,7 @@ add_executable(tests
 	linear_gradient.cpp
 	radial_gradient.cpp
     surface_brush.cpp
-#    mask.cpp
+    mask.cpp
     color.cpp
     blending.cpp
 	comparison.h
@@ -80,6 +80,7 @@ COPY_REF_RSC(
     surface_brush_reflect_2x_scale_20x20.png
     surface_brush_reflect_non_uniform_scale_20x20.png
     surface_brush_pad_translate_20x20.png
+    mask_green_to_red_blending_50x50.png
 )
 
 
