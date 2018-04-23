@@ -260,6 +260,10 @@ void _Mask(CGContextRef ctx,
         const auto &linear_brush = std::get<_GS::brushes::_Linear>(*mb._Get_data().brush);
         _DrawLinearGradient(layer_ctx, linear_brush, mp.mask_matrix(), mp.wrap_mode());
     }
+    else if( mb.type() == brush_type::radial ) {
+        const auto &radial_brush = std::get<_GS::brushes::_Radial>(*mb._Get_data().brush);
+        _DrawRadialGradient(layer_ctx, radial_brush, mp.mask_matrix(), mp.wrap_mode());
+    }
      // else ....
 
     CGContextSetBlendMode(layer_ctx, kCGBlendModeSourceIn);

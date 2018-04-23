@@ -104,3 +104,21 @@ TEST_CASE("Properly blends a solid brush with a linear gradient mask using clip 
         
     CHECK( ComparePNGWithTolerance(img, reference, 0.05f) == true );
 }
+
+TEST_CASE("Properly blends a solid brush with a radial gradient mask using a clip region")
+{
+    auto reference = "mask_green_to_red_radial_blending_clipped_with_triangle_50x50.png";    
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color{0., 1., 0., 1.}});
+    auto b = brush{rgba_color{1., 0., 0., 1.}};
+    auto mb = brush{ circle(point_2d{25, 25}, 30), circle(point_2d{25, 25}, 0), {{0., rgba_color{0., 0., 0., 0.}}, {1., rgba_color{0., 0., 0., 1.}}}};
+    auto pb = path_builder{};
+    pb.new_figure({25, 10});
+    pb.line({40, 40});
+    pb.line({10, 40});
+    pb.line({25, 10});
+    pb.close_figure();
+    auto cl = clip_props{pb};    
+    img.mask(b, mb, nullopt, nullopt, nullopt, cl);        
+    CHECK( ComparePNGWithTolerance(img, reference, 0.02f) == true );
+}
