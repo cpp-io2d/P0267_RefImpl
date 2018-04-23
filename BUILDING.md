@@ -60,7 +60,7 @@ Example of CMake execution (assuming that vcpkg was installed in c:/tools):
 ```
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 git clone --recurse-submodules https://github.com/ISOCPP-2D/P0267_RefImpl
-cd P0267_cg
+cd P0267_RefImpl
 mkdir Debug
 cd Debug
 cmake -G "Visual Studio 15 2017 Win64" --config Debug "-DCMAKE_BUILD_TYPE=Debug" -DIO2D_DEFAULT=CAIRO_WIN32 -DIO2D_WITHOUT_SAMPLES=1 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows" ../.
