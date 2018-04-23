@@ -122,3 +122,14 @@ TEST_CASE("Properly blends a solid brush with a radial gradient mask using a cli
     img.mask(b, mb, nullopt, nullopt, nullopt, cl);        
     CHECK( ComparePNGWithTolerance(img, reference, 0.02f) == true );
 }
+
+TEST_CASE("Properly blends a radial brush with a linear gradient mask")
+{
+    auto reference = "mask_radial_gradient_with_linear_gradient_50x50.png";
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color{0., 1., 0., 1.}});
+    auto b = brush{ circle(point_2d{25, 25}, 24), circle(point_2d{25, 25}, 0), {{0., rgba_color{1., 0., 0., 1.}}, {1., rgba_color{0., 0., 1., 1.}}}};
+    auto mb = brush{point_2d{0, 0}, point_2d{0, 50}, {{0., rgba_color{0., 0., 0., 0.}}, {1., rgba_color{0., 0., 0., 1.}}}};    
+    img.mask(b, mb);    
+    CHECK( ComparePNGWithTolerance(img, reference, 0.02f, 1) == true );    
+}
