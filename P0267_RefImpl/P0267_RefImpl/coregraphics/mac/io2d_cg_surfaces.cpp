@@ -246,9 +246,11 @@ void _Mask(CGContextRef ctx,
     _AutoRelease layer_release{layer};
     
     auto layer_ctx = CGLayerGetContext(layer);
+    CGContextSetShouldAntialias(ctx, rp.antialiasing() != antialias::none);    
+    CGContextSetBlendMode(layer_ctx, kCGBlendModeCopy);        
     CGContextTranslateCTM(layer_ctx, -clip_rc.origin.x, -clip_rc.origin.y);
-    CGContextSetBlendMode(layer_ctx, kCGBlendModeCopy);    
-    
+    CGContextConcatCTM(ctx, _ToCG(rp.surface_matrix()));    
+
     if( mb.type() == brush_type::solid_color ) {
         const auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*mb._Get_data().brush);
         CGContextSetFillColorWithColor(layer_ctx, solid_color_brush.color.get());
