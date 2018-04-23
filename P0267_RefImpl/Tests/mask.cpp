@@ -76,4 +76,31 @@ TEST_CASE("Properly blends a solid brush with a linear gradient mask using a cli
     CHECK( ComparePNGWithTolerance(img, reference, 0.02f) == true );
 }
 
+TEST_CASE("Properly blends a solid brush with a linear gradient mask using clip regions and mask transformations")
+{
+    auto reference = "mask_green_to_red_blending_clipped_with_rects_and_rotated_35x35.png";    
+    image_surface img{format::argb32, 35, 35};
+    img.paint(brush{rgba_color{0., 1., 0., 1.}});
+    auto b = brush{rgba_color{1., 0., 0., 1.}};
+    auto mb = brush{point_2d{0, 0}, point_2d{0, 10}, {{0., rgba_color{0., 0., 0., 0.}}, {1., rgba_color{0., 0., 0., 1.}}}};    
+    auto mp = mask_props{};
+    auto cl = clip_props{};    
+    
+    cl = clip_props{bounding_box{5, 5, 10, 10}};
+    mp.mask_matrix(matrix_2d::init_translate({5, 5}));
+    img.mask(b, mb, nullopt, mp, nullopt, cl);    
 
+    cl = clip_props{bounding_box{20, 5, 10, 10}};
+    mp.mask_matrix(matrix_2d::init_translate({20, 5}) * matrix_2d::init_rotate(-pi<float>/2));
+    img.mask(b, mb, nullopt, mp, nullopt, cl);    
+    
+    cl = clip_props{bounding_box{5, 20, 10, 10}};
+    mp.mask_matrix(matrix_2d::init_translate({5, 20}) * matrix_2d::init_rotate(pi<float>/2));
+    img.mask(b, mb, nullopt, mp, nullopt, cl);    
+    
+    cl = clip_props{bounding_box{20, 20, 10, 10}};
+    mp.mask_matrix(matrix_2d::init_translate({20, 20}) * matrix_2d::init_rotate(pi<float>));
+    img.mask(b, mb, nullopt, mp, nullopt, cl);    
+        
+    CHECK( ComparePNGWithTolerance(img, reference, 0.05f) == true );
+}
