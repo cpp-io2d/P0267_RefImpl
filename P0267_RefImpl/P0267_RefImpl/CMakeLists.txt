@@ -2,10 +2,24 @@ cmake_minimum_required(VERSION 3.0.0)
 project(io2d CXX)
 set(CMAKE_CXX_STANDARD 17)
 
+# If there's no default backend we try to set it automatically
 if( NOT DEFINED IO2D_DEFAULT )
-	message( FATAL_ERROR "Please specify the default backend via IO2D_DEFAULT. Possible values are CAIRO_WIN32, CAIRO_XLIB, COREGRAPHICS_MAC" )
+	message( "Default IO2D backend was not specified, choosing automatically..." )
+	if( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
+		message( "Found Windows, using CAIRO_WIN32." )
+		set(IO2D_DEFAULT CAIRO_WIN32)
+	elseif( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" )
+		message( "Found macOS, using CAIRO_XLIB." )
+		set(IO2D_DEFAULT CAIRO_XLIB)
+	elseif( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )	
+		message( "Found Linux, using CAIRO_XLIB." )
+		set(IO2D_DEFAULT CAIRO_XLIB)
+	else()	
+		message( FATAL_ERROR "Failed to detect the platform type. Please manually specify the default backend via IO2D_DEFAULT. Possible values include CAIRO_WIN32, CAIRO_XLIB, COREGRAPHICS_MAC." )
+	endif()
 endif()
 
+# In most of the cases, there's only one enabled backend which is IO2D_DEFAULT.
 if( NOT DEFINED IO2D_ENABLED )
 	set(IO2D_ENABLED ${IO2D_DEFAULT})
 endif()
@@ -39,6 +53,7 @@ target_include_directories(io2d PUBLIC
 )
 
 
+# function that maps a backend name into it's path and library name
 function(GET_BACKEND_INFO backend_name)
 	if( ${backend_name} STREQUAL "COREGRAPHICS_MAC" )
 		set(BACKEND_PATH coregraphics/mac PARENT_SCOPE)
@@ -54,35 +69,17 @@ function(GET_BACKEND_INFO backend_name)
 	endif()
 endfunction(GET_BACKEND_INFO)
 
-
-#GET_BACKEND_INFO(COREGRAPHICS_MAC)
-
+# fetch info about the default backend
 GET_BACKEND_INFO(${IO2D_DEFAULT})
-
-
 
 # add a search path depending on a default backend setting
 target_include_directories(io2d PUBLIC
-#  ${CMAKE_CURRENT_SOURCE_DIR}/coregraphics/mac
   ${CMAKE_CURRENT_SOURCE_DIR}/${BACKEND_PATH}
 )
 
-
 # add backends themselves
-
-
 foreach(backend ${IO2D_ENABLED})
 	GET_BACKEND_INFO(${backend})
 	add_subdirectory(${BACKEND_PATH})
 	target_link_libraries(io2d ${BACKEND_LIBRARY})
 endforeach(backend)
-
-#BACKEND_LIBRARY
-
-#add_subdirectory(${BACKEND_PATH})
-#target_link_libraries(io2d ${BACKEND_LIBRARY})
-
-	
-#add_subdirectory(coregraphics/mac)
-#target_link_libraries(io2d io2d_coregraphics_mac)
-
