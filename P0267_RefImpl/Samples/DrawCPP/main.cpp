@@ -9,6 +9,8 @@ using namespace std::experimental::io2d;
 static auto g_Img = "C:/Windows/Web/Wallpaper/Architecture/img14.jpg";
 #elif __APPLE__
 static auto g_Img = "/Library/Desktop Pictures/Abstract Shapes.jpg";
+#else
+static auto g_Img = "No image to use, sorry...";
 #endif
 
 void DrawCPP()

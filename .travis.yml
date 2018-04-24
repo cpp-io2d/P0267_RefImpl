@@ -21,7 +21,7 @@ matrix:
         - export LDFLAGS="-L$TRAVIS_BUILD_DIR/build/clang/lib -Wl,-rpath,$TRAVIS_BUILD_DIR/build/clang/lib"
         - export CTEST_OUTPUT_ON_FAILURE="1"
         - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_DEFAULT=COREGRAPHICS_MAC ../.
-        - make tests
+        - make
         - ctest -V -C Debug
 
 # Cairo/Xlib on MacOSX
@@ -48,7 +48,7 @@ matrix:
         - export LDFLAGS="-L$TRAVIS_BUILD_DIR/build/clang/lib -Wl,-rpath,$TRAVIS_BUILD_DIR/build/clang/lib -L/opt/X11/lib -L/opt/local/lib -L/usr/local/lib"
         - export CTEST_OUTPUT_ON_FAILURE="1"
         - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_DEFAULT=CAIRO_XLIB ../.
-        - make tests
+        - make
         - ctest -V -C Debug
 
 # Cairo/Xlib on Linux
@@ -68,5 +68,5 @@ matrix:
         - export CXX=g++-7
         - export CTEST_OUTPUT_ON_FAILURE="1"
         - cmake -G "Unix Makefiles" --config Debug -DCMAKE_BUILD_TYPE=Debug -DIO2D_DEFAULT=CAIRO_XLIB ../.
-        - make tests
+        - make
         - ctest -V -C Debug

@@ -2,7 +2,6 @@ os:
   - Visual Studio 2017
 
 install:
-#  - choco upgrade git -y
   - git submodule update --init --recursive
   - vcpkg install cairo:x64-windows
   - vcpkg install graphicsmagick:x64-windows
@@ -20,7 +19,7 @@ before_build:
   - cmake -G "Visual Studio 15 2017 Win64" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows" ../.
 
 build_script:
-  - msbuild io2d.sln /t:tests /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - msbuild io2d.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 test_script:
   - ctest -V -C %CONFIGURATION%
