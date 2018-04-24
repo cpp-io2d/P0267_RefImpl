@@ -30,11 +30,19 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 		Win32Win.cpp
 	)
 	set(EXECUTABLE_FLAGS WIN32)
+else()
+	message( "RocksInSpace doesn't have a frontend for this platform, skipping." )
+	return()
 endif()
 
 add_executable(rocks_in_space ${EXECUTABLE_FLAGS} ${ROCKS_IN_SPACE_SRC})
 
 target_link_libraries(rocks_in_space io2d)
+
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+	target_link_libraries(rocks_in_space "-framework CoreFoundation")
+	target_link_libraries(rocks_in_space "-framework CoreGraphics")
+endif()
 
 install(TARGETS rocks_in_space
 	RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/samples
