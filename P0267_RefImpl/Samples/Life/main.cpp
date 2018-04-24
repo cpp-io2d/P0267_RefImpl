@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <numeric>
 #include <random>
 #include <chrono>
 #include <io2d.h>

@@ -416,18 +416,9 @@ namespace std::experimental::io2d {
 				});
 
 				auto processedVec = _Interpret_path_items<_Graphics_surfaces_type, ForwardIterator>(first, last);
-				if (processedVec.size() > 0) {
-					bool testForNewFiguresAtEnd = true;
-					while (testForNewFiguresAtEnd) {
-						auto& val = *processedVec.rbegin();
-						if (val.index() == 3) {
-							processedVec.pop_back();
-						}
-						else {
-							testForNewFiguresAtEnd = false;
-						}
-					}
-				}
+				while (processedVec.size() > 0 && holds_alternative<typename basic_figure_items<_Graphics_surfaces_type>::abs_new_figure>(processedVec.back()) )
+					processedVec.pop_back(); // remove trailing new_figures
+
 				::std::vector<cairo_path_data_t> vec;
 				basic_point_2d<GraphicsMath> lastMoveToPoint;
 				for (const auto& val : processedVec) {
