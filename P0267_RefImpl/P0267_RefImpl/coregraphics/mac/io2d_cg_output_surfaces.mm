@@ -290,6 +290,7 @@ using namespace std::experimental::io2d::_CoreGraphics;
     
     CGContextTranslateCTM(ctx, 0, CGImageGetHeight(image));
     CGContextScaleCTM(ctx, 1.0, -1.0);
+    CGContextSetBlendMode(ctx, kCGBlendModeCopy);
     
     // TODO: proper scaling regarding current settings
     auto rc = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));

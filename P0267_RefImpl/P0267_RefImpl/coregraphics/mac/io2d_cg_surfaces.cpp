@@ -233,11 +233,14 @@ void _Mask(CGContextRef ctx,
     _AutoRelease layer_release{layer};
     
     auto layer_ctx = CGLayerGetContext(layer);
-    CGContextSetShouldAntialias(ctx, rp.antialiasing() != antialias::none);    
-    CGContextSetBlendMode(layer_ctx, kCGBlendModeCopy);        
+    CGContextSetShouldAntialias(layer_ctx, rp.antialiasing() != antialias::none);    
     CGContextTranslateCTM(layer_ctx, -clip_rc.origin.x, -clip_rc.origin.y);
     CGContextConcatCTM(layer_ctx, _ToCG(rp.surface_matrix()));    
 
+    CGContextSetBlendMode(layer_ctx, kCGBlendModeCopy);
+    PerformPaint(layer_ctx, b, bp);
+
+    CGContextSetBlendMode(layer_ctx, kCGBlendModeDestinationIn);
     if( mb.type() == brush_type::solid_color ) {
         const auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*mb._Get_data().brush);
         CGContextSetFillColorWithColor(layer_ctx, solid_color_brush.color.get());
@@ -253,8 +256,6 @@ void _Mask(CGContextRef ctx,
     }
      // else ....
 
-    CGContextSetBlendMode(layer_ctx, kCGBlendModeSourceIn);
-    PerformPaint(layer_ctx, b, bp);
         
     CGContextDrawLayerAtPoint(ctx, clip_rc.origin, layer);
 }
