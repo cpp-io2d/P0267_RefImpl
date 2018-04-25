@@ -25,7 +25,7 @@ before_build:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - mkdir %CONFIGURATION%
   - cd %CONFIGURATION%
-  - cmake -G %cmake_generator% --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%vcpkg_triplet%" ../.
+  - cmake -G "%cmake_generator%" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%vcpkg_triplet%" ../.
 
 build_script:
   - msbuild io2d.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
