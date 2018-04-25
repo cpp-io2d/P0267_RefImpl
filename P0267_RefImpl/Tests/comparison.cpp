@@ -2,6 +2,7 @@
 #include <optional>
 #include <fstream>
 #include <vector>
+#include <array>
 #include <png.h>
 
 using namespace std;
@@ -69,7 +70,7 @@ static void Feed(png_structp png , png_bytep out, png_size_t sz )
     }
     
     memcpy(out, memory_source.data->data() + memory_source.position, sz );
-    memory_source.position += sz;
+    memory_source.position += (int)sz;
 }
 
 static bool HasPNGSignature( const vector<uint8_t> &data )
@@ -78,7 +79,7 @@ static bool HasPNGSignature( const vector<uint8_t> &data )
     if( data.size() < signature_len )
         return false;
     
-    uint8_t sign_buf[signature_len] = {0};
+	array<uint8_t, signature_len> sign_buf;
     copy( begin(data), begin(data) + signature_len, begin(sign_buf) );
     if( png_sig_cmp(&sign_buf[0], 0, signature_len) != 0 )
         return false;
@@ -135,9 +136,9 @@ static optional<RawImage> Load(const vector<uint8_t> &data)
     auto bytesPerRow = png_get_rowbytes(png_ptr, info_ptr);
     auto row = make_unique<uint8_t[]>(bytesPerRow);
     
-    for(int row_index = 0; row_index < height; ++row_index) {
+    for(int row_index = 0; row_index < (int)height; ++row_index) {
         png_read_row(png_ptr, row.get(), nullptr);
-        for(int col_index = 0, byte_index = 0; col_index < width; ++col_index) {
+        for(int col_index = 0, byte_index = 0; col_index < (int)width; ++col_index) {
             auto red   = row[byte_index++];
             auto green = row[byte_index++];
             auto blue  = row[byte_index++];

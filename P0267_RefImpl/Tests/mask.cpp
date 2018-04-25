@@ -9,47 +9,47 @@ using namespace std::experimental::io2d;
 TEST_CASE("Properly blends a solid brush with a solid mask")
 {
     image_surface img{format::argb32, 1, 1};
-    img.paint(brush{rgba_color{0., 0., 0., 0.0}});
+    img.paint(brush{rgba_color{0, 0, 0, 0}});
     
     SECTION("M=1.0, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.}}, brush{rgba_color{0., 0., 0., 1.0}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 1.0), 0.01) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 1.0), 0.01f) == true);
     }
     SECTION("M=1.0, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.5}}, brush{rgba_color{0., 0., 0., 1.0}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.5), 0.01) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.5), 0.01f) == true);
     }    
     SECTION("M=0.9, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.}}, brush{rgba_color{0., 0., 0., 0.9}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.9), 0.01) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.9), 0.01f) == true);
     }
     SECTION("M=0.9, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.5}}, brush{rgba_color{0., 0., 0., 0.9}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.45), 0.01) == true);        
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.45), 0.01f) == true);        
     }
     SECTION("M=0.5, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.0}}, brush{rgba_color{0., 0., 0., 0.5}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.5), 0.01) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.5), 0.01f) == true);
     }
     SECTION("M=0.5, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.7}}, brush{rgba_color{0., 0., 0., 0.5}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.35), 0.01) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.35), 0.01f) == true);
     }
     SECTION("M=0.1, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.}}, brush{rgba_color{0., 0., 0., 0.1}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.1), 0.01) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.1), 0.01f) == true);
     }    
     SECTION("M=0.1, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.5}}, brush{rgba_color{0., 0., 0., 0.1}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.05), 0.01) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.05), 0.01f) == true);
     }    
     SECTION("M=0.0, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.}}, brush{rgba_color{0., 0., 0., 0.0}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(0., 0., 0., 0.0), 0.01) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(0., 0., 0., 0.0), 0.01f) == true);
     }
     SECTION("M=0.0, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.5}}, brush{rgba_color{0., 0., 0., 0.0}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(0., 0., 0., 0.0), 0.01) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(0., 0., 0., 0.0), 0.01f) == true);
     }
 }
 

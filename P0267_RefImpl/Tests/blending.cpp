@@ -465,7 +465,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::over")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -480,7 +480,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::clear")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -495,7 +495,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::source")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -510,7 +510,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::in")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -525,7 +525,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::out")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -540,7 +540,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::atop")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -555,7 +555,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::dest_over")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -570,7 +570,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::dest_in")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -585,7 +585,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::dest_out")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -600,7 +600,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::dest_atop")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -615,7 +615,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::xor_op")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -630,7 +630,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::add")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -645,7 +645,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::multiply")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -660,7 +660,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::screen")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -675,7 +675,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::overlay")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -690,7 +690,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::darken")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -705,7 +705,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::lighten")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -720,7 +720,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::hard_light")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -735,7 +735,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::difference")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -750,7 +750,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::exclusion")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -765,7 +765,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::hsl_hue")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -780,7 +780,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::hsl_saturation")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -795,7 +795,7 @@ TEST_CASE("IO2D properly blends colors using compositing_op::hsl_color")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }
 
@@ -810,6 +810,6 @@ TEST_CASE("IO2D properly blends colors using compositing_op::hsl_luminosity")
         img.paint(brush{get<1>(t)});
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05) == true);
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
     }
 }

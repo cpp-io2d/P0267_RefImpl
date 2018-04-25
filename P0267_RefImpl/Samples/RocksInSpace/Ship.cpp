@@ -54,7 +54,7 @@ rocks_in_space::ship_update rocks_in_space::ship::update(float seconds)
 		}
 		m_physics.update(seconds);
 
-		std::transform(&ship_vb[0], &ship_vb[ship_shape.m_count], &m_path.m_vertices[0], [&](const auto & v_in)
+		std::transform( std::begin(ship_vb), std::next(std::begin(ship_vb), ship_shape.m_count), std::begin(m_path.m_vertices), [&](const auto & v_in)
 		{
 			return rotate(v_in, m_physics.orientation(), { 0.0, 0.0 });
 		});
