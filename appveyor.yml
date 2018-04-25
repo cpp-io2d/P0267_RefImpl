@@ -2,40 +2,42 @@ os:
   - Visual Studio 2017
 
 matrix:
+  include:
+
 #64-bit build
-  - install:
-      - git submodule update --init --recursive
-      - vcpkg install cairo:x64-windows
-      - vcpkg install graphicsmagick:x64-windows
-    platform:
-      - x64
-    configuration:
-      - Debug
-    before_build:
-      - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-      - mkdir %CONFIGURATION%
-      - cd %CONFIGURATION%
-      - cmake -G "Visual Studio 15 2017 Win64" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows" ../.
-    build_script:
-      - msbuild io2d.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-    test_script:
-      - ctest -V -C %CONFIGURATION%
+    - install:
+        - git submodule update --init --recursive
+        - vcpkg install cairo:x64-windows
+        - vcpkg install graphicsmagick:x64-windows
+      platform:
+        - x64
+      configuration:
+        - Debug
+      before_build:
+        - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+        - mkdir %CONFIGURATION%
+        - cd %CONFIGURATION%
+        - cmake -G "Visual Studio 15 2017 Win64" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows" ../.
+      build_script:
+        - msbuild io2d.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+      test_script:
+        - ctest -V -C %CONFIGURATION%
 
 #32-bit build
-  - install:
-      - git submodule update --init --recursive
-      - vcpkg install cairo:x86-windows
-      - vcpkg install graphicsmagick:x86-windows
-    platform:
-      - x86
-    configuration:
-      - Debug
-    before_build:
-      - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-      - mkdir %CONFIGURATION%
-      - cd %CONFIGURATION%
-      - cmake -G "Visual Studio 15 2017" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x86-windows" ../.
-    build_script:
-      - msbuild io2d.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-    test_script:
-      - ctest -V -C %CONFIGURATION%
+    - install:
+        - git submodule update --init --recursive
+        - vcpkg install cairo:x86-windows
+        - vcpkg install graphicsmagick:x86-windows
+      platform:
+        - x86
+      configuration:
+        - Debug
+      before_build:
+        - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+        - mkdir %CONFIGURATION%
+        - cd %CONFIGURATION%
+        - cmake -G "Visual Studio 15 2017" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x86-windows" ../.
+      build_script:
+        - msbuild io2d.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+      test_script:
+        - ctest -V -C %CONFIGURATION%
