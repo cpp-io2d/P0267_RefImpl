@@ -6,10 +6,12 @@ environment:
         - vcpkg_triplet: x64-windows
 #          cmake_generator: "Visual Studio 15 2017 Win64"
           platform: x64
+	  generator_platform: x64
 
         - vcpkg_triplet: x86-windows
 #          cmake_generator: "Visual Studio 15 2017"
           platform: x86
+	  generator_platform: Win32
 
 
 
@@ -26,7 +28,7 @@ before_build:
   - mkdir %CONFIGURATION%
   - cd %CONFIGURATION%
 #  - cmake -G "%cmake_generator%" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%vcpkg_triplet%" ../.
-  - cmake -G "Visual Studio 15 2017" -DCMAKE_GENERATOR_PLATFORM=%platform% --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%vcpkg_triplet%" ../.
+  - cmake -G "Visual Studio 15 2017" -DCMAKE_GENERATOR_PLATFORM=%generator_platform% --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%vcpkg_triplet%" ../.
 
 
 build_script:
