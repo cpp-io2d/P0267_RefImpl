@@ -20,14 +20,16 @@ There're 3 backends in this RefImpl:
   * CAIRO_XLIB
   * COREGRAPHICS_MAC
 
-  The build script expects this variable to have a valid value, otherwise the script will abort.  
+  If no default backend was defined, the build script will try to automatically set an appropriate Cairo backend based on the host environment.  
+  
 * IO2D_ENABLED  
 Specifies a list of enabled backends, which means a set of backends included in the build process.
 By default, a value of IO2D_DEFAULT is used, so this variable can be left undefined.
 If, however, you want to have a multi-backend configuration of IO2D, this variable has to contain a valid list, for instance: "COREGRAPHICS_MAC;CAIRO_XLIB". 
 * IO2D_WITHOUT_SAMPLES  
 This variable can be defined to exclude sample code from the build process.
-Please note that Boost is required to build the sample code.
+Please note that some samples might be exculed from the build process depending on your environment.
+More specifically, the SVG example requieres Boost and RocksInSpace example supports only Windows and macOS.
 Pass any value, like "1" to skip this part. 
 * IO2D_WITHOUT_TESTS  
 This variable controls whether test suites will be included in the build process.
@@ -54,7 +56,7 @@ Installation steps:
 6. Install graphicsmagick for win32 with the command ".\vcpkg.exe install graphicsmagick"
 7. Install graphicsmagick for x64 with the command ".\vcpkg.exe install graphicsmagick --triplet x64-windows"
 8. Inspect which packages have been installed with the command ".\vcpkg.exe list"   
-Please note that only x64 build is being tested at the moment.
+Both Win32 and x64 builds are supported and being tested.
 
 Example of CMake execution (assuming that vcpkg was installed in c:/tools):
 ```
