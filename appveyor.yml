@@ -3,14 +3,15 @@ os:
 
 environment:
     matrix:
-        - TRIPLET: x64-windows
-          GENERATOR: "Visual Studio 15 2017 Win64"
-          PLATFORM: x64
+#        - TRIPLET: x64-windows
+#          GENERATOR: "Visual Studio 15 2017 Win64"
+#          PLATFORM: x64
 #          generator_platform: x64
 
         - TRIPLET: x86-windows
           GENERATOR: "Visual Studio 15 2017"
-          PLATFORM: x86
+          PLATFORM: Win32
+#          PLATFORM: x86
 #          generator_platform: Win32
 
 
@@ -27,8 +28,8 @@ configuration:
 before_build:
 #  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 
-  - if "%PLATFORM%" == "x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - if "%PLATFORM%" == "x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+#  - if "%PLATFORM%" == "x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+#  - if "%PLATFORM%" == "x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 
   - mkdir %CONFIGURATION%
   - cd %CONFIGURATION%
