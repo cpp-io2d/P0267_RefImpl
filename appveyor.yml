@@ -3,18 +3,13 @@ os:
 
 environment:
     matrix:
-#        - TRIPLET: x64-windows
-#          GENERATOR: "Visual Studio 15 2017 Win64"
-#          PLATFORM: x64
-#          generator_platform: x64
+        - TRIPLET: x64-windows
+          GENERATOR: "Visual Studio 15 2017 Win64"
+          PLATFORM: x64
 
         - TRIPLET: x86-windows
           GENERATOR: "Visual Studio 15 2017"
           PLATFORM: Win32
-#          PLATFORM: x86
-#          generator_platform: Win32
-
-
 
 install:
   - git submodule update --init --recursive
@@ -24,19 +19,10 @@ install:
 configuration:
   - Debug
 
-
 before_build:
-#  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-
-#  - if "%PLATFORM%" == "x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
-#  - if "%PLATFORM%" == "x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-
   - mkdir %CONFIGURATION%
   - cd %CONFIGURATION%
-#  - cmake -G "%cmake_generator%" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%vcpkg_triplet%" ../.
-#  - cmake -G "Visual Studio 15 2017" -DCMAKE_GENERATOR_PLATFORM=%generator_platform% --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%vcpkg_triplet%" ../.
   - cmake -G "%GENERATOR%" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%TRIPLET%" ../.
-
 
 build_script:
   - msbuild io2d.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
