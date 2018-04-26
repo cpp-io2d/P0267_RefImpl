@@ -6,12 +6,12 @@ environment:
         - vcpkg_triplet: x64-windows
 #          cmake_generator: "Visual Studio 15 2017 Win64"
           platform: x64
-	  generator_platform: x64
+          generator_platform: x64
 
         - vcpkg_triplet: x86-windows
 #          cmake_generator: "Visual Studio 15 2017"
           platform: x86
-	  generator_platform: Win32
+          generator_platform: Win32
 
 
 
