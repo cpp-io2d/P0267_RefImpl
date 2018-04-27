@@ -11,6 +11,8 @@ set(CPULOAD_SRC
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     list(APPEND CPULOAD_SRC profiler_mach.cpp)
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+    list(APPEND CPULOAD_SRC profiler_nt.cpp)
 else()
     return()
 endif()

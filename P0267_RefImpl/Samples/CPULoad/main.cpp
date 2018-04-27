@@ -19,7 +19,7 @@ private:
     void DrawGraphs(output_surface& surface) const;
     
     DataSource m_Source;
-    brush m_FillBrush{ {0, 0}, {0, 1}, { {0., rgba_color::green}, {0.4, rgba_color::yellow}, {1.0, rgba_color::red}}};
+    brush m_FillBrush{ {0, 0}, {0, 1}, { {0.f, rgba_color::green}, {0.4f, rgba_color::yellow}, {1.0f, rgba_color::red}}};
     brush m_CountourBrush{ rgba_color{0, 0, 255, 128} };
     stroke_props m_ContourStrokeProps{1.f};
     brush m_BackgroundFill{rgba_color::alice_blue};

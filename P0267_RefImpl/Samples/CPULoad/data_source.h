@@ -3,6 +3,7 @@
 #include <vector>
 #include <chrono>
 #include <deque>
+#include <algorithm>
 
 class DataSource
 {

@@ -1,5 +1,6 @@
 #include "data_source.h"
 #include "profiler.h"
+#include <assert.h>
 
 DataSource::DataSource(int max_samples, std::chrono::milliseconds fetch_interval):
     m_MaxSamples(max_samples),
@@ -43,8 +44,8 @@ void DataSource::Smooth(std::deque<float> &data)
     auto p = std::end(data);
     auto v = (*--p);
     v += (*--p);
-    v += (*--p) * 2.;
+    v += (*--p) * 2.f;
     v += (*--p);
     v += (*--p);
-    (*std::prev(std::end(data), 3)) = v / 6.;
+    (*std::prev(std::end(data), 3)) = v / 6.f;
 }    
