@@ -161,10 +161,17 @@ static optional<RawImage> ReadFile(const std::string &path)
 
 bool ComparePNGExact( const string &path1, const string &path2 )
 {
-    auto img1 = ReadFile(path1);
-    auto img2 = ReadFile(path2);
-    if( !img1 || !img2 )
+    auto img1 = ReadFile(path1);    
+    if( !img1 ) {
+        cerr << "Failed to load an image at " << path1 << endl;
         return false;
+    }
+    
+    auto img2 = ReadFile(path2);
+    if( !img2 ) {
+        cerr << "Failed to load an image at " << path2 << endl;
+        return false;
+    }    
     
     return *img1 == *img2;
 }
@@ -220,9 +227,17 @@ bool ComparePNGWithTolerance( const std::string &path1, const std::string &path2
     assert( spatial_tolerance >= 0 && spatial_tolerance <= 10 );
     
     auto img1 = ReadFile(path1);
-    auto img2 = ReadFile(path2);
-    if( !img1 || !img2 )
+    if( !img1 ) {
+        cerr << "Failed to load an image at " << path1 << endl;
         return false;
+    }
+    
+    auto img2 = ReadFile(path2);
+    if( !img2 ) {
+        cerr << "Failed to load an image at " << path2 << endl;
+        return false;
+    }
+    
     if( img1->width != img2->width || img1->height != img2->height )
         return false;
     

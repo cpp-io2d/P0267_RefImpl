@@ -85,8 +85,10 @@ COPY_REF_RSC(
     mask_green_to_red_blending_clipped_with_rects_and_rotated_35x35.png
     mask_green_to_red_radial_blending_clipped_with_triangle_50x50.png
     mask_radial_gradient_with_linear_gradient_50x50.png
+    mask_circles_intersection_50x50.png
+    mask_circles_intersection_clipped_with_bb_50x50.png
+    mask_circles_intersection_clipped_with_nc_figure_50x50.png
 )
-
 
 if(MSVC)
 	set_target_properties(tests PROPERTIES  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)")

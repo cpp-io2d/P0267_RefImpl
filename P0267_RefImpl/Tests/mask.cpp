@@ -133,3 +133,54 @@ TEST_CASE("Properly blends a radial brush with a linear gradient mask")
     img.mask(b, mb);    
     CHECK( ComparePNGWithTolerance(img, reference, 0.02f, 1) == true );    
 }
+
+TEST_CASE("Properly intersects a radial brush with a radial gradient mask")
+{
+    auto reference = "mask_circles_intersection_50x50.png";
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color{0., 0., 0., 1.}});
+    auto b = brush{ circle(point_2d{20, 25}, 18), circle(point_2d{20, 25}, 0), {{0., rgba_color{1., 0., 0., 1.}}, {1., rgba_color{1., 0., 0., 1.}}}};
+    auto mb = brush{ circle(point_2d{32, 25}, 18), circle(point_2d{32, 25}, 0), {{0., rgba_color{1., 1., 1., 1.}}, {1., rgba_color{1., 1., 1., 1.}}}};
+    auto mbp = mask_props{};
+    mbp.wrap_mode(wrap_mode::none);
+    img.mask(b, mb, nullopt, mbp);
+    CHECK( ComparePNGWithTolerance(img, reference, 0.02f, 1) == true );    
+}
+
+TEST_CASE("Properly intersects a radial brush with a radial gradient mask, clipped with a bounding box")
+{
+    auto reference = "mask_circles_intersection_clipped_with_bb_50x50.png";
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color{0., 0., 0., 1.}});
+    auto b = brush{ circle(point_2d{20, 25}, 18), circle(point_2d{20, 25}, 0), {{0., rgba_color{1., 0., 0., 1.}}, {1., rgba_color{1., 0., 0., 1.}}}};
+    auto mb = brush{ circle(point_2d{32, 25}, 18), circle(point_2d{32, 25}, 0), {{0., rgba_color{1., 1., 1., 1.}}, {1., rgba_color{1., 1., 1., 1.}}}};
+    auto mbp = mask_props{};
+    mbp.wrap_mode(wrap_mode::none);
+    auto cl = clip_props{ bounding_box(10., 10., 30., 20.) };    
+    img.mask(b, mb, nullopt, mbp, nullopt, cl);
+    CHECK( ComparePNGWithTolerance(img, reference, 0.02f, 1) == true );    
+}
+
+TEST_CASE("Properly intersects a radial brush with a radial gradient mask, clipped with a non-convex figure")
+{
+    auto reference = "mask_circles_intersection_clipped_with_nc_figure_50x50.png";
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color{0., 0., 0., 1.}});
+    auto b = brush{ circle(point_2d{20, 25}, 18), circle(point_2d{20, 25}, 0), {{0., rgba_color{1., 0., 0., 1.}}, {1., rgba_color{1., 0., 0., 1.}}}};
+    auto mb = brush{ circle(point_2d{32, 25}, 18), circle(point_2d{32, 25}, 0), {{0., rgba_color{1., 1., 1., 1.}}, {1., rgba_color{1., 1., 1., 1.}}}};
+    auto mbp = mask_props{};
+    mbp.wrap_mode(wrap_mode::none);
+    
+    auto pb = path_builder{};
+    pb.new_figure({10., 12.});
+    pb.line({10., 40.});
+    pb.line({26., 20.});
+    pb.line({40., 40.});
+    pb.line({40., 12.});
+    pb.line({10., 12.});
+    pb.close_figure();
+    auto cl = clip_props{ pb };    
+    
+    img.mask(b, mb, nullopt, mbp, nullopt, cl);
+    CHECK( ComparePNGWithTolerance(img, reference, 0.03f, 1) == true );    
+}
