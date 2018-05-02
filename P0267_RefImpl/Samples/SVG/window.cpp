@@ -33,12 +33,12 @@ void RunWindowed( const string &path_in ) {
     
     auto scale = 1.f;
     auto dims = display_point{};
-    auto brush = optional<io2d::brush>{};
+    auto img_brush = optional<io2d::brush>{};
     auto build = [&](int target_width, int target_heigt) {
         scale = min(float(target_width) / float(canonical_dims.x()), float(target_heigt) / float(canonical_dims.y()));
         auto new_img = Render(data, scale);
         dims = new_img->dimensions();
-        brush = io2d::brush{ move(*new_img)};
+        img_brush = io2d::brush{ move(*new_img)};
     };
     build(640, 480);
     
@@ -47,6 +47,7 @@ void RunWindowed( const string &path_in ) {
         build(os.dimensions().x(), os.dimensions().y());
     });
     display.draw_callback([&](output_surface& os) {
+        os.paint(brush{rgba_color::white});
         path_builder pb;
         pb.new_figure({0, 0});
         pb.rel_line(point_2d(dims.x(), 0));
@@ -54,7 +55,7 @@ void RunWindowed( const string &path_in ) {
         pb.rel_line(point_2d(-dims.x(), 0));
         pb.rel_line(point_2d(0, -dims.y()));
         pb.close_figure();
-        os.fill(*brush, pb);
+        os.fill(*img_brush, pb);
     });
     display.begin_show();
 }

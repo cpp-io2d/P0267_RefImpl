@@ -74,6 +74,10 @@ struct Stylable {
     void set(tag::attribute::fill tag, tag::iri_fragment, IRI const & fragment, rgba_color val, tag::skip_icc_color = tag::skip_icc_color()) { set(tag, tag::iri_fragment{}, fragment); }
     void set(svgpp::tag::attribute::opacity, float val) { opacity = clamp(val, 0.f, 1.f); }
     void set(svgpp::tag::attribute::opacity, svgpp::tag::value::inherit) { /* style().opacity_ = parentStyle_.opacity_; */ }
+    void set(svgpp::tag::attribute::fill_opacity, float val) { opacity = clamp(val, 0.f, 1.f); }
+    void set(svgpp::tag::attribute::fill_opacity, svgpp::tag::value::inherit) { /* style().opacity_ = parentStyle_.opacity_; */ }
+    void set(svgpp::tag::attribute::stroke_opacity, float val) { opacity = clamp(val, 0.f, 1.f); }
+    void set(svgpp::tag::attribute::stroke_opacity, svgpp::tag::value::inherit) { /* style().opacity_ = parentStyle_.opacity_; */ }
     Paint stroke_paint = tag::value::none{};
     float stroke_width = 1.f;
     Paint fill_paint = tag::value::none{};
@@ -96,7 +100,7 @@ struct Canvas: Transformable, Stylable {
     void set_viewport(double viewport_x, double viewport_y, double viewport_width, double viewport_height) {
         if( !surface ) {
             surface = make_shared<image_surface>(format::argb32, document_.scale * viewport_width, document_.scale * viewport_height);
-            surface->clear();
+            surface->paint(brush{rgba_color::transparent_black});
         }
         length_factory_.set_viewport_size(viewport_width, viewport_height);
     }
@@ -126,25 +130,32 @@ struct ShapeContext: Canvas {
     void path_close_subpath() { pb.close_figure(); }
     void path_exit() {}
     void on_exit_element() {
-        auto rp = render_props{ antialias::best, matrix_2d::init_scale({document_.scale, document_.scale}) };
         pb.insert(begin(pb), figure_items::rel_matrix{trans_matrix});
+        if( opacity == 1.f ) {
+            draw_on_surface(*surface);
+        }
+        else {
+            image_surface layer{ surface->format(), surface->dimensions().x(), surface->dimensions().y() };
+            draw_on_surface(layer);
+            surface->mask(brush{move(layer)}, brush{rgba_color{0.f, 0.f, 0.f, opacity}});
+        }
+    }
+    void draw_on_surface(image_surface &target_surface) {
+        auto rp = render_props{ antialias::best, matrix_2d::init_scale({document_.scale, document_.scale}) };        
         if( auto color = get_if<rgba_color>(&fill_paint) ) {
-            auto effective_color = rgba_color{ color->r(), color->g(), color->b(), color->a() * opacity };
-            surface->fill(brush{effective_color}, pb, nullopt, rp);
+            target_surface.fill(brush{*color}, pb, nullopt, rp);
         }
         else if( auto name = get_if<string>(&fill_paint) ) {
             auto gr = document_.gradients.find(*name);
             if( gr != end(document_.gradients) ) {
                 auto bp = gr->second.second;
                 bp.brush_matrix( (bp.brush_matrix().inverse() * trans_matrix).inverse()  ); // assume userSpaceOnUse
-                surface->fill(gr->second.first, pb, bp, rp);
+                target_surface.fill(gr->second.first, pb, bp, rp);
             }
         }
         if( auto color = get_if<rgba_color>(&stroke_paint) ) {
-            auto effective_color = rgba_color{ color->r(), color->g(), color->b(), color->a() * opacity };
-            stroke_props sp{stroke_width};
-            surface->stroke(brush{effective_color}, pb, nullopt, sp, nullopt, rp);
-        }
+            target_surface.stroke(brush{*color}, pb, nullopt, stroke_props{stroke_width}, nullopt, rp);                                
+        }        
     }
     path_builder pb;
 };
@@ -367,7 +378,8 @@ tag::attribute::stroke,
 tag::attribute::stroke_width,
 tag::attribute::fill,
 tag::attribute::opacity,
-
+tag::attribute::fill_opacity,
+tag::attribute::stroke_opacity,
 boost::mpl::pair<tag::element::linearGradient, tag::attribute::gradientTransform>,
 boost::mpl::pair<tag::element::linearGradient, tag::attribute::x1>,
 boost::mpl::pair<tag::element::linearGradient, tag::attribute::y1>,
@@ -418,22 +430,7 @@ static optional<image_surface> loadSvg(xml_element_t xml_root_element, Document 
 
 void UseContext::on_exit_element()
 {
-    //    if (xml_element_t element = FindCurrentDocumentElementById(fragment_id_))
-    //    {
-    //        // TODO: Check for cyclic references
-    //        // TODO: Apply translate transform (x_, y_)
-    //        document_traversal_t::load_referenced_element<
-    //        referencing_element<tag::element::use_>,
-    //        expected_elements<traits::reusable_elements>,
-    //        processed_elements<
-    //        boost::mpl::insert<processed_elements_t, tag::element::symbol>::type
-    //        >
-    //        >::load(element, *this);
-    //    }
-    //    else
-    //        std::cerr << "Element referenced by 'use' not found\n";
 }
-
 
 optional<std::experimental::io2d::image_surface> RenderSVG( const string &data, float scale )
 {
