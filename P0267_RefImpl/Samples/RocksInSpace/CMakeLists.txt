@@ -30,8 +30,12 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 		Win32Win.cpp
 	)
 	set(EXECUTABLE_FLAGS WIN32)
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+	list(APPEND ROCKS_IN_SPACE_SRC
+		LinuxMain.cpp
+	)
 else()
-	message( "RocksInSpace doesn't have a frontend for this platform, skipping." )
+	message( "RocksInSpace doesn't have a frontend for this platform, thus skipping." )
 	return()
 endif()
 
