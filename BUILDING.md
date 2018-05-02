@@ -29,7 +29,7 @@ If, however, you want to have a multi-backend configuration of IO2D, this variab
 * IO2D_WITHOUT_SAMPLES  
 This variable can be defined to exclude sample code from the build process.
 Please note that some samples might be exculed from the build process depending on your environment.
-More specifically, the SVG example requieres Boost and RocksInSpace example supports only Windows and macOS.
+More specifically, the SVG example requires Boost.
 Pass any value, like "1" to skip this part. 
 * IO2D_WITHOUT_TESTS  
 This variable controls whether test suites will be included in the build process.
@@ -65,7 +65,7 @@ git clone --recurse-submodules https://github.com/ISOCPP-2D/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
-cmake -G "Visual Studio 15 2017 Win64" --config Debug "-DCMAKE_BUILD_TYPE=Debug" -DIO2D_DEFAULT=CAIRO_WIN32 -DIO2D_WITHOUT_SAMPLES=1 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows" ../.
+cmake -G "Visual Studio 15 2017 Win64" --config Debug "-DCMAKE_BUILD_TYPE=Debug" "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows" ../.
 io2d.sln
 ```
 
@@ -86,7 +86,7 @@ git clone --recurse-submodules https://github.com/ISOCPP-2D/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
-cmake -G "Unix Makefiles" --config Debug "-DCMAKE_BUILD_TYPE=Debug" -DIO2D_DEFAULT=CAIRO_XLIB -DIO2D_WITHOUT_SAMPLES=1 ../.
+cmake -G "Unix Makefiles" --config Debug "-DCMAKE_BUILD_TYPE=Debug" ../.
 make
 ```
 
@@ -109,7 +109,7 @@ git clone --recurse-submodules https://github.com/ISOCPP-2D/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
-cmake -G "Xcode" --config Debug "-DCMAKE_BUILD_TYPE=Debug" -DIO2D_DEFAULT=CAIRO_XLIB -DIO2D_WITHOUT_SAMPLES=1 ../.
+cmake -G "Xcode" --config Debug "-DCMAKE_BUILD_TYPE=Debug" ../.
 open io2d.xcodeproj
 ```
 
@@ -127,6 +127,6 @@ git clone --recurse-submodules https://github.com/ISOCPP-2D/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
-cmake -G "Xcode" --config Debug "-DCMAKE_BUILD_TYPE=Debug" -DIO2D_DEFAULT=COREGRAPHICS_MAC -DIO2D_WITHOUT_SAMPLES=1 ../.
+cmake -G "Xcode" --config Debug "-DCMAKE_BUILD_TYPE=Debug" -DIO2D_DEFAULT=COREGRAPHICS_MAC ../.
 open io2d.xcodeproj
 ```
