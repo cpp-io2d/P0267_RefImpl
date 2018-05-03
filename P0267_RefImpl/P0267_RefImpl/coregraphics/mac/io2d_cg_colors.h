@@ -9,7 +9,8 @@ CGColorSpaceRef _RGBColorSpace() noexcept;
 CGColorSpaceRef _GrayColorSpace() noexcept;
 CGColorSpaceRef _PatternColorSpace() noexcept;
 
-CGColorRef _ClearColor() noexcept;
+CGColorRef _ClearColor() noexcept;       // 0.0, 0.0, 0.0, 1.0
+CGColorRef _TransparentColor() noexcept; // 0.0, 0.0, 0.0, 0.0
     
 } // namespace _CoreGraphics
 } // inline namespace v1

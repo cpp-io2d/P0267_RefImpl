@@ -214,3 +214,36 @@ TEST_CASE("Properly intersects a solid brush with a repeated surface mask")
     img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(10, 10)});
     CHECK( ComparePNGExact(img, reference) == true );    
 }
+
+TEST_CASE("Properly intersects a solid brush with a reflected surface mask")
+{
+    auto reference = "mask_red_green_checkerboard_reflect_50x50.png";
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color::green});    
+    auto mp = mask_props{};
+    mp.wrap_mode(wrap_mode::reflect);
+    img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(10, 10)}, nullopt, mp);
+    CHECK( ComparePNGExact(img, reference) == true );    
+}
+
+TEST_CASE("Properly intersects a solid brush with a padded surface mask")
+{
+    auto reference = "mask_red_green_checkerboard_pad_50x50.png";
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color::green});    
+    auto mp = mask_props{};
+    mp.wrap_mode(wrap_mode::pad);
+    img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(10, 10)}, nullopt, mp);
+    CHECK( ComparePNGExact(img, reference) == true );    
+}
+
+TEST_CASE("Properly intersects a solid brush with a non-wrapped surface mask")
+{
+    auto reference = "mask_red_green_checkerboard_none_50x50.png";
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color::green});    
+    auto mp = mask_props{};
+    mp.wrap_mode(wrap_mode::none);
+    img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(10, 10)}, nullopt, mp);
+    CHECK( ComparePNGExact(img, reference) == true );    
+}

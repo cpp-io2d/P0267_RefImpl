@@ -8,6 +8,7 @@ namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphic
 // relies only on current clipping state of ctx
     
 void _DrawTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, wrap_mode wm, const matrix_2d &m);
+void _DrawTransparencyOutsideTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const matrix_2d &m);
     
 } // namespace _CoreGraphics
 } // inline namespace v1

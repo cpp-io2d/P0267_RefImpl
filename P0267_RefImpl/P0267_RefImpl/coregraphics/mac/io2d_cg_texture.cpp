@@ -209,6 +209,17 @@ static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &su
     CGContextSetFillColorWithColor(ctx, surface.pad->bottom_right.get());
     CGContextFillRect(ctx, CGRectMake(surface.width - eps, surface.height - eps, distant_far, distant_far));
 }
+
+void _DrawTransparencyOutsideTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const matrix_2d &m)
+{    
+    CGContextConcatCTM(ctx, _ToCG(m.inverse()));
+    CGContextAddRect(ctx, CGContextGetClipBoundingBox(ctx));    
+    CGContextAddRect(ctx, CGRectMake(0., 0., surface.width, surface.height));
+    CGContextEOClip(ctx);
+        
+    CGContextSetFillColorWithColor(ctx, _TransparentColor());
+    CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
+}
     
 } // namespace _CoreGraphics
 } // inline namespace v1

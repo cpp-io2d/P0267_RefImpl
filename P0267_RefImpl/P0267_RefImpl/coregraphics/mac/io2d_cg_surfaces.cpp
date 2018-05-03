@@ -238,7 +238,10 @@ void _Mask(CGContextRef ctx,
     CGContextConcatCTM(layer_ctx, _ToCG(rp.surface_matrix()));    
 
     CGContextSetBlendMode(layer_ctx, kCGBlendModeCopy);
-    PerformPaint(layer_ctx, b, bp);
+    {
+        _GStateGuard layer_state_guard{layer_ctx};        
+        PerformPaint(layer_ctx, b, bp);
+    }
 
     CGContextSetBlendMode(layer_ctx, kCGBlendModeDestinationIn);
     if( mb.type() == brush_type::solid_color ) {
@@ -255,10 +258,17 @@ void _Mask(CGContextRef ctx,
         _DrawRadialGradient(layer_ctx, radial_brush, mp.wrap_mode(), mp.mask_matrix());
     }
     else if( mb.type() == brush_type::surface ) {
-        const auto &surface_brush = std::get<_GS::brushes::_Surface>(*mb._Get_data().brush);        
-        _DrawTexture(layer_ctx, surface_brush, mp.filter(), mp.wrap_mode(), mp.mask_matrix());
-        // This approach DOES NOT cover the case when mp.wrap_mode() == none,
-        // it needs a speacial treatment. 
+        const auto &surface_brush = std::get<_GS::brushes::_Surface>(*mb._Get_data().brush);
+        if( mp.wrap_mode() == wrap_mode::none ) {
+            {
+                _GStateGuard layer_state_guard{layer_ctx};                
+                _DrawTexture(layer_ctx, surface_brush, mp.filter(), mp.wrap_mode(), mp.mask_matrix());                
+            }
+            _DrawTransparencyOutsideTexture(layer_ctx, surface_brush, mp.mask_matrix());            
+        }
+        else {
+            _DrawTexture(layer_ctx, surface_brush, mp.filter(), mp.wrap_mode(), mp.mask_matrix());
+        } 
     }
         
     CGContextDrawLayerAtPoint(ctx, clip_rc.origin, layer);

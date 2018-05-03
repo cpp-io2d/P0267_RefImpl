@@ -26,6 +26,12 @@ CGColorRef _ClearColor() noexcept
     return color;
 }
     
+CGColorRef _TransparentColor() noexcept
+{
+    static auto color = CGColorCreateGenericRGB(0.0, 0.0, 0.0, 0.0);
+    return color;
+}
+    
 } // namespace _CoreGraphics
 } // inline namespace v1
 } // std::experimental::io2d
