@@ -6,44 +6,41 @@ namespace {
         
 struct PatternContext {
     const _GS::brushes::_Surface &brush;
-    const basic_brush_props<_GS> &props;
-    PatternContext(const _GS::brushes::_Surface &b, const basic_brush_props<_GS> &bp):
-    brush{b}, props{bp}
-    {}
+    PatternContext(const _GS::brushes::_Surface &b):brush{b}{}
 };
-        
+
 }
     
-static void DrawSingleTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp);
-static void DrawRepeatedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp);
-static void DrawReflectedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp);
-static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp);
-    
-void _DrawTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp)
+static void DrawSingleTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m);
+static void DrawRepeatedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m);
+static void DrawReflectedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m);
+static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m);
+
+void _DrawTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, wrap_mode wm, const matrix_2d &m)    
 {
-    switch( bp.wrap_mode() ) {
+    switch( wm ) {
         case wrap_mode::none:
-            DrawSingleTexture(ctx, surface, bp);
+            DrawSingleTexture(ctx, surface, fi, m);
             break;
         case wrap_mode::repeat:
-            DrawRepeatedTexture(ctx, surface, bp);
+            DrawRepeatedTexture(ctx, surface, fi, m);
             break;
         case wrap_mode::reflect:
-            DrawReflectedTexture(ctx, surface, bp);
+            DrawReflectedTexture(ctx, surface, fi, m);
             break;
         case wrap_mode::pad:
-            DrawPaddedTexture(ctx, surface, bp);
+            DrawPaddedTexture(ctx, surface, fi, m);
             break;
         default:
             break;
     }
 }
 
-static void DrawSingleTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp)
+static void DrawSingleTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m)
 {
-    CGContextConcatCTM(ctx, _ToCG(bp.brush_matrix().inverse()) );
+    CGContextConcatCTM(ctx, _ToCG(m.inverse()) );
     CGContextConcatCTM(ctx, CGAffineTransform{ 1., 0., 0., -1., 0., double(surface.height) } );
-    CGContextSetInterpolationQuality(ctx, _ToCG(bp.filter()));
+    CGContextSetInterpolationQuality(ctx, _ToCG(fi));
     CGContextDrawImage(ctx, CGRectMake(0, 0, surface.width, surface.height), surface.image.get());
 }
 
@@ -53,14 +50,14 @@ static void DrawRepeatedPattern(void * info, CGContextRef ctx)
     auto rc = CGRectMake(0, 0, pattern_context.brush.width, pattern_context.brush.height);
     CGContextDrawImage(ctx, rc, pattern_context.brush.image.get());
 }
-    
-static void DrawRepeatedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp)
+
+static void DrawRepeatedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m)
 {
-    CGContextConcatCTM(ctx, _ToCG(bp.brush_matrix().inverse()) );
+    CGContextConcatCTM(ctx, _ToCG(m.inverse()) );
     CGContextConcatCTM(ctx, CGAffineTransform{ 1., 0., 0., -1., 0., double(surface.height) } );
 
     CGPatternCallbacks callbacks = {0, &DrawRepeatedPattern, nullptr};
-    PatternContext pattern_context{surface, bp};
+    PatternContext pattern_context{surface};
     
     auto pattern = CGPatternCreate((void*)&pattern_context,
                                    CGRectMake(0, 0, surface.width, surface.height),
@@ -75,7 +72,7 @@ static void DrawRepeatedTexture(CGContextRef ctx, const _GS::brushes::_Surface &
     constexpr double components[4] = {1., 1., 1., 1.};
     CGContextSetFillColorSpace(ctx, _PatternColorSpace());
     CGContextSetFillPattern(ctx, pattern, components);
-    CGContextSetInterpolationQuality(ctx, _ToCG(bp.filter()));
+    CGContextSetInterpolationQuality(ctx, _ToCG(fi));
     CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
 }
     
@@ -100,12 +97,12 @@ static void DrawReflectedPattern(void * info, CGContextRef ctx)
     CGContextDrawImage(ctx, rc, img);
 }
     
-static void DrawReflectedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp)
+static void DrawReflectedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m)
 {
-    CGContextConcatCTM(ctx, _ToCG(bp.brush_matrix().inverse()));
+    CGContextConcatCTM(ctx, _ToCG(m.inverse()));
     
     CGPatternCallbacks callbacks = {0, &DrawReflectedPattern, nullptr};
-    PatternContext pattern_context{surface, bp};
+    PatternContext pattern_context{surface};
     
     auto pattern = CGPatternCreate((void*)&pattern_context,
                                    CGRectMake(0, 0, surface.width * 2., surface.height * 2.),
@@ -120,7 +117,7 @@ static void DrawReflectedTexture(CGContextRef ctx, const _GS::brushes::_Surface 
     constexpr double components[4] = {1., 1., 1., 1.};
     CGContextSetFillColorSpace(ctx, _PatternColorSpace());
     CGContextSetFillPattern(ctx, pattern, components);
-    CGContextSetInterpolationQuality(ctx, _ToCG(bp.filter()));
+    CGContextSetInterpolationQuality(ctx, _ToCG(fi));
     CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
 }
 
@@ -177,7 +174,7 @@ static _GS::brushes::_Surface::_Pad BuildPad(CGImageRef image, CGContextRef orig
     return pad;
 }
 
-static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const basic_brush_props<_GS> &bp)
+static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m)
 {
     // TODO: need to calculate real extends instead of using this fake "far" approach. For some reason, it fails for small images.
 //    const auto distant_far = 12000.;
@@ -187,8 +184,8 @@ static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &su
     if( surface.pad == nullptr )
         surface.pad = make_unique<_GS::brushes::_Surface::_Pad>(BuildPad(surface.image.get(), surface.bitmap.get()));
 
-    CGContextSetInterpolationQuality(ctx, _ToCG(bp.filter()));
-    CGContextConcatCTM(ctx, _ToCG(bp.brush_matrix().inverse()) );
+    CGContextSetInterpolationQuality(ctx, _ToCG(fi));
+    CGContextConcatCTM(ctx, _ToCG(m.inverse()) );
 
     CGContextSaveGState(ctx);
     CGContextConcatCTM(ctx, { 1., 0., 0., -1., 0., double(surface.height) } );

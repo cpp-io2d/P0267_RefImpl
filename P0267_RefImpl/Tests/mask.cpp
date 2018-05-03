@@ -184,3 +184,33 @@ TEST_CASE("Properly intersects a radial brush with a radial gradient mask, clipp
     img.mask(b, mb, nullopt, mbp, nullopt, cl);
     CHECK( ComparePNGWithTolerance(img, reference, 0.03f, 1) == true );    
 }
+
+static image_surface MakeCheckerboardMask(int width, int height)
+{
+    image_surface s{format::argb32, width, height};
+    s.paint(brush{rgba_color::transparent_black});
+    auto b = brush{rgba_color::white}; 
+    for( auto y = 0; y < height; ++y )
+        for( auto x = 0; x < width; ++x )
+            if( (x + y) % 2 == 0 )
+                s.paint(b, nullopt, nullopt, clip_props{ bounding_box(x, y, 1, 1) });
+    return s; 
+}
+
+TEST_CASE("Properly intersects a solid brush with a surface mask")
+{
+    auto reference = "mask_red_green_checkerboard_50x50.png";
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color::green});    
+    img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(50, 50)});
+    CHECK( ComparePNGExact(img, reference) == true );    
+}
+
+TEST_CASE("Properly intersects a solid brush with a repeated surface mask")
+{
+    auto reference = "mask_red_green_checkerboard_50x50.png";
+    image_surface img{format::argb32, 50, 50};
+    img.paint(brush{rgba_color::green});    
+    img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(10, 10)});
+    CHECK( ComparePNGExact(img, reference) == true );    
+}

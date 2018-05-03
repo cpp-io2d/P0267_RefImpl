@@ -88,6 +88,7 @@ COPY_REF_RSC(
     mask_circles_intersection_50x50.png
     mask_circles_intersection_clipped_with_bb_50x50.png
     mask_circles_intersection_clipped_with_nc_figure_50x50.png
+    mask_red_green_checkerboard_50x50.png
 )
 
 if(MSVC)

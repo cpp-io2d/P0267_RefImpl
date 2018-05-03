@@ -218,7 +218,7 @@ static inline bool IsEmpty( const bounding_box &bb )
     return bb.width() < FLT_MIN || bb.height() < FLT_MIN;
 }
 
-void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient, const matrix_2d &m, wrap_mode wm)
+void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient, wrap_mode wm, const matrix_2d &m)
 {
     if( gradient.stops.empty() )
         return;
@@ -247,7 +247,7 @@ void _DrawLinearGradient(CGContextRef ctx, const _GS::brushes::_Linear &gradient
     CGContextDrawShading(ctx, shading);
 }
 
-void _DrawRadialGradient(CGContextRef ctx, const _GS::brushes::_Radial &gradient, const matrix_2d &m, wrap_mode wm)
+void _DrawRadialGradient(CGContextRef ctx, const _GS::brushes::_Radial &gradient, wrap_mode wm, const matrix_2d &m)
 {
     if( gradient.stops.empty() )
         return;
