@@ -41,7 +41,7 @@ The easiest solution is to download a fresh build of libc++ from [here](http://r
 Export appropriate CXX and LD flags to make clang use this version of the standard library (replace NEWPATH with a path of extracted archive contents):
 ```
 export CXXFLAGS="-nostdinc++ -isystemNEWPATH/include/c++/v1"
-export LDFLAGS="-LNEWPATH/clang/lib -Wl,-rpath,NEWPATH/lib"
+export LDFLAGS="-LNEWPATH/lib -Wl,-rpath,NEWPATH/lib"
 ```
 ## Building Steps
 
