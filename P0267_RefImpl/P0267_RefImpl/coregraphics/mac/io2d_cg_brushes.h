@@ -14,6 +14,7 @@ _GS::brushes::create_brush(const rgba_color& c) {
     
     _SolidColor solid_data;
     solid_data.color.reset(color);
+    solid_data.source = c;
     
     brush_data_type data;
     data.brush = std::make_shared<typename brush_data_type::brush_t>( ::std::move(solid_data) );

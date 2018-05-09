@@ -219,8 +219,6 @@ void _Mask(CGContextRef ctx,
            const basic_render_props<_GS>& rp,
            const basic_clip_props<_GS>& cl)
 {
-    // This is a preliminary and kinda brute-force implementation of the Mask operation, made mostly to serve as a proof-of-concept.
-    
     _GStateGuard state_guard{ctx};
     SetRenderProps(ctx, rp);
     SetClipProps(ctx, cl);
@@ -228,7 +226,16 @@ void _Mask(CGContextRef ctx,
     const auto clip_rc = CGContextGetClipBoundingBox(ctx);
     if( IsEmpty(clip_rc) )
         return;
-        
+    
+    if( mb.type() == brush_type::solid_color ) {
+        // when masking with a color - CGContextSetAlpha is enough to get a propert result 
+        const auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*mb._Get_data().brush);
+        CGContextSetAlpha(ctx, solid_color_brush.source.a());
+        PerformPaint(ctx, b, bp);        
+        return;
+    }
+    
+    // This is a preliminary and kinda brute-force implementation of a complex Mask operation, made mostly to serve as a proof-of-concept.
     auto layer = CGLayerCreateWithContext(ctx, clip_rc.size, nullptr);
     _AutoRelease layer_release{layer};
     
@@ -244,12 +251,7 @@ void _Mask(CGContextRef ctx,
     }
 
     CGContextSetBlendMode(layer_ctx, kCGBlendModeDestinationIn);
-    if( mb.type() == brush_type::solid_color ) {
-        const auto &solid_color_brush = std::get<_GS::brushes::_SolidColor>(*mb._Get_data().brush);
-        CGContextSetFillColorWithColor(layer_ctx, solid_color_brush.color.get());
-        CGContextFillRect(layer_ctx, CGContextGetClipBoundingBox(layer_ctx));
-    }
-    else if( mb.type() == brush_type::linear ) {
+    if( mb.type() == brush_type::linear ) {
         const auto &linear_brush = std::get<_GS::brushes::_Linear>(*mb._Get_data().brush);
         _DrawLinearGradient(layer_ctx, linear_brush, mp.wrap_mode(), mp.mask_matrix());
     }

@@ -209,6 +209,7 @@ struct brushes {
     struct _SolidColor {
         using color_t = remove_pointer_t<CGColorRef>;
         ::std::unique_ptr<color_t, decltype(&CGColorRelease)> color{ nullptr, &CGColorRelease };
+        rgba_color source;
     };
     struct _Linear {
         basic_point_2d<GraphicsMath> start;
@@ -605,7 +606,7 @@ struct surface_state_props {
                     static void paint(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
                     static void stroke(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_stroke_props<_GS>& sp, const basic_dashes<_GS>& d, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
                     static void fill(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
-//                    static void mask(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
+                    static void mask(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_brush<_GS>& mb, const basic_brush_props<_GS>& bp, const basic_mask_props<_GS>& mp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
 //
 //                    // display_surface common functions
                     static void draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_GS>&)>);

@@ -2,6 +2,7 @@
 #include <Cocoa/Cocoa.h>
 #include <iostream>
 
+static const auto g_WindowTitle = @"IO2D/CoreGraphics managed output surface"; 
 
 @interface _IO2DOutputView : NSView
 
@@ -62,6 +63,7 @@ _GS::surfaces::output_surface_data_type _GS::surfaces::create_output_surface(int
                                               styleMask:style
                                                 backing:NSBackingStoreBuffered
                                                   defer:false];
+    ctx->window.title = g_WindowTitle;
     ctx->output_view = [[_IO2DOutputView alloc] initWithFrame:ctx->window.contentView.bounds];
     ctx->output_view.data = ctx.get();
     ctx->window.contentView = ctx->output_view;
@@ -131,6 +133,11 @@ void _GS::surfaces::paint(output_surface_data_type& data, const basic_brush<_GS>
 void _GS::surfaces::fill(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl)
 {
     _Fill(data->draw_buffer.get(), b, ip, bp, rp, cl);
+}
+    
+void _GS::surfaces::mask(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_brush<_GS>& mb, const basic_brush_props<_GS>& bp, const basic_mask_props<_GS>& mp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl)
+{
+    _Mask(data->draw_buffer.get(), b, mb, bp, mp, rp, cl);
 }
     
 static void _NSAppBootstrap()
