@@ -225,7 +225,7 @@ namespace std::experimental::io2d {
 			return create_matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, val._X, val._Y);
 		}
 		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_scale(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
-			return create_matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, val._X, val._Y);
+			return create_matrix_2d(val._X, 0.0f, 0.0f, val._Y, 0.0f, 0.0f);
 		}
 		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_rotate(float radians) noexcept {
 			float sine = sin(radians);
