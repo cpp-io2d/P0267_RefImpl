@@ -9,7 +9,7 @@ namespace std {
 				// image_surface
 
 				template <class GraphicsSurfaces>
-				inline typename basic_image_surface<GraphicsSurfaces>::_Data_type& basic_image_surface<GraphicsSurfaces>::data() noexcept {
+				inline typename basic_image_surface<GraphicsSurfaces>::data_type& basic_image_surface<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 				template <class GraphicsSurfaces>
@@ -212,7 +212,7 @@ namespace std {
 				}
 
 				template <class GraphicsSurfaces>
-				inline typename basic_output_surface<GraphicsSurfaces>::_Data_type& basic_output_surface<GraphicsSurfaces>::data() noexcept {
+				inline typename basic_output_surface<GraphicsSurfaces>::data_type& basic_output_surface<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 

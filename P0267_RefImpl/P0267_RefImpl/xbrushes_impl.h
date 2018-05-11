@@ -29,7 +29,12 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_brush<GraphicsSurfaces>::_Data_type& basic_brush<GraphicsSurfaces>::data() const noexcept {
+		inline const typename basic_brush<GraphicsSurfaces>::data_type& basic_brush<GraphicsSurfaces>::data() const noexcept {
+			return _Data;
+		}
+
+		template<class GraphicsSurfaces>
+		inline typename basic_brush<GraphicsSurfaces>::data_type& basic_brush<GraphicsSurfaces>::data() noexcept {
 			return _Data;
 		}
 

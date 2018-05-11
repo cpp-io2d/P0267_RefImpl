@@ -70,7 +70,12 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces, class Allocator>
-		inline const typename basic_path_builder<GraphicsSurfaces, Allocator>::_Data_type& basic_path_builder<GraphicsSurfaces, Allocator>::data() const noexcept {
+		inline const typename basic_path_builder<GraphicsSurfaces, Allocator>::data_type& basic_path_builder<GraphicsSurfaces, Allocator>::data() const noexcept {
+			return _Data;
+		}
+
+		template<class GraphicsSurfaces, class Allocator>
+		inline typename basic_path_builder<GraphicsSurfaces, Allocator>::data_type& basic_path_builder<GraphicsSurfaces, Allocator>::data() noexcept {
 			return _Data;
 		}
 

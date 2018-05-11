@@ -4,7 +4,11 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		template<class GraphicsMath>
-		inline const typename basic_point_2d<GraphicsMath>::_Data_type& basic_point_2d<GraphicsMath>::data() const noexcept {
+		inline const typename basic_point_2d<GraphicsMath>::data_type& basic_point_2d<GraphicsMath>::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsMath>
+		inline typename basic_point_2d<GraphicsMath>::data_type& basic_point_2d<GraphicsMath>::data() noexcept {
 			return _Data;
 		}
 		template <class GraphicsMath>
@@ -168,7 +172,11 @@ namespace std::experimental::io2d {
 		//
 
 		template <class GraphicsMath>
-		inline const typename basic_matrix_2d<GraphicsMath>::_Data_type& basic_matrix_2d<GraphicsMath>::data() const noexcept {
+		inline const typename basic_matrix_2d<GraphicsMath>::data_type& basic_matrix_2d<GraphicsMath>::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsMath>
+		inline typename basic_matrix_2d<GraphicsMath>::data_type& basic_matrix_2d<GraphicsMath>::data() noexcept {
 			return _Data;
 		}
 		template <class GraphicsMath>
@@ -337,7 +345,11 @@ namespace std::experimental::io2d {
 
 		// basic_display_point
 		template <class GraphicsMath>
-		inline const typename basic_display_point<GraphicsMath>::_Data_type& basic_display_point<GraphicsMath>::data() const noexcept {
+		inline const typename basic_display_point<GraphicsMath>::data_type& basic_display_point<GraphicsMath>::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsMath>
+		inline typename basic_display_point<GraphicsMath>::data_type& basic_display_point<GraphicsMath>::data() noexcept {
 			return _Data;
 		}
 		template <class GraphicsMath>
@@ -417,7 +429,12 @@ namespace std::experimental::io2d {
 		// GraphicsMath
 
 		template<class GraphicsMath>
-		inline const typename basic_bounding_box<GraphicsMath>::_Data_type& basic_bounding_box<GraphicsMath>::data() const noexcept {
+		inline const typename basic_bounding_box<GraphicsMath>::data_type& basic_bounding_box<GraphicsMath>::data() const noexcept {
+			return _Data;
+		}
+
+		template<class GraphicsMath>
+		inline typename basic_bounding_box<GraphicsMath>::data_type& basic_bounding_box<GraphicsMath>::data() noexcept {
 			return _Data;
 		}
 
@@ -503,7 +520,11 @@ namespace std::experimental::io2d {
 		// basic_circle
 
 		template <class GraphicsMath>
-		inline const typename basic_circle<GraphicsMath>::_Data_type& basic_circle<GraphicsMath>::data() const noexcept {
+		inline const typename basic_circle<GraphicsMath>::data_type& basic_circle<GraphicsMath>::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsMath>
+		inline typename basic_circle<GraphicsMath>::data_type& basic_circle<GraphicsMath>::data() noexcept {
 			return _Data;
 		}
 		template <class GraphicsMath>

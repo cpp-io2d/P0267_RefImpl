@@ -14,12 +14,13 @@ namespace std::experimental::io2d {
 		template <class GraphicsSurfaces>
 		class basic_render_props {
 		public:
-			using _Data_type = typename GraphicsSurfaces::surface_state_props::render_props_data_type;
+			using data_type = typename GraphicsSurfaces::surface_state_props::render_props_data_type;
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 		private:
-			_Data_type _Data;
+			data_type _Data;
 		public:
-			const _Data_type& data() const noexcept;
+			const data_type& data() const noexcept;
+			data_type& data() noexcept;
 			basic_render_props() noexcept;
 			explicit basic_render_props(antialias a, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}, compositing_op co = compositing_op::over) noexcept;
 			basic_render_props(const basic_render_props& other);
@@ -38,11 +39,11 @@ namespace std::experimental::io2d {
 		template <class GraphicsSurfaces>
 		class basic_brush_props {
 		public:
-			using _Data_type = typename GraphicsSurfaces::surface_state_props::brush_props_data_type;
+			using data_type = typename GraphicsSurfaces::surface_state_props::brush_props_data_type;
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 
 		private:
-			_Data_type _Data;
+			data_type _Data;
 
 		public:
 			basic_brush_props(io2d::wrap_mode w = io2d::wrap_mode::none, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
@@ -64,12 +65,13 @@ namespace std::experimental::io2d {
 		template <class GraphicsSurfaces>
 		class basic_clip_props {
 		public:
-			using _Data_type = typename GraphicsSurfaces::surface_state_props::clip_props_data_type;
+			using data_type = typename GraphicsSurfaces::surface_state_props::clip_props_data_type;
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 		private:
-			_Data_type _Data;
+			data_type _Data;
 		public:
-			const _Data_type& data() const noexcept;
+			const data_type& data() const noexcept;
+			data_type& data() noexcept;
 
 			basic_clip_props() noexcept;
 			explicit basic_clip_props(const basic_bounding_box<graphics_math_type>& r, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
@@ -93,11 +95,12 @@ namespace std::experimental::io2d {
 		class basic_stroke_props {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::surface_state_props::stroke_props_data_type;
+			using data_type = typename GraphicsSurfaces::surface_state_props::stroke_props_data_type;
 		private:
-			_Data_type _Data;
+			data_type _Data;
 		public:
-			const _Data_type& data() const noexcept;
+			const data_type& data() const noexcept;
+			data_type& data() noexcept;
 			basic_stroke_props() noexcept;
 			explicit basic_stroke_props(float w, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
 			basic_stroke_props(const basic_stroke_props& other);
@@ -120,11 +123,12 @@ namespace std::experimental::io2d {
 		class basic_mask_props {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::surface_state_props::mask_props_data_type;
+			using data_type = typename GraphicsSurfaces::surface_state_props::mask_props_data_type;
 		private:
-			_Data_type _Data;
+			data_type _Data;
 		public:
-			const _Data_type& data() const noexcept;
+			const data_type& data() const noexcept;
+			data_type& data() noexcept;
 
 			basic_mask_props(io2d::wrap_mode w = io2d::wrap_mode::repeat, io2d::filter fi = io2d::filter::good, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
 			basic_mask_props(const basic_mask_props& other) noexcept;
@@ -143,11 +147,12 @@ namespace std::experimental::io2d {
 		template <class GraphicsSurfaces>
 		class basic_dashes {
 		public:
-			using _Data_type = typename GraphicsSurfaces::surface_state_props::dashes_data_type;
+			using data_type = typename GraphicsSurfaces::surface_state_props::dashes_data_type;
 		private:
-			_Data_type _Data;
+			data_type _Data;
 		public:
-			const _Data_type& data() const noexcept;
+			const data_type& data() const noexcept;
+			data_type& data() noexcept;
 			basic_dashes() noexcept;
 			template <class ForwardIterator>
 			basic_dashes(float offset, ForwardIterator first, ForwardIterator last);
@@ -163,13 +168,13 @@ namespace std::experimental::io2d {
 		class basic_image_surface {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::surfaces::image_surface_data_type;
+			using data_type = typename GraphicsSurfaces::surfaces::image_surface_data_type;
 
 		private:
-			_Data_type _Data;
+			data_type _Data;
 
 		public:
-			_Data_type& data() noexcept;
+			data_type& data() noexcept;
 			basic_image_surface(io2d::format fmt, int width, int height);
 #ifdef _Filesystem_support_test
 			basic_image_surface(filesystem::path f, image_file_format iff, io2d::format fmt);
@@ -216,13 +221,13 @@ namespace std::experimental::io2d {
 		class basic_output_surface {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using _Data_type = typename GraphicsSurfaces::surfaces::output_surface_data_type;
+			using data_type = typename GraphicsSurfaces::surfaces::output_surface_data_type;
 
 		private:
-			_Data_type _Data;
+			data_type _Data;
 
 		public:
-			_Data_type& data() noexcept;
+			data_type& data() noexcept;
 
 			// System manages event loop
 			basic_output_surface(int preferredWidth, int preferredHeight,

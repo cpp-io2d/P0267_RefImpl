@@ -6,7 +6,12 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::abs_new_figure::_Data_type& basic_figure_items<GraphicsSurfaces>::abs_new_figure::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::abs_new_figure::data_type& basic_figure_items<GraphicsSurfaces>::abs_new_figure::data() const noexcept {
+			return _Data;
+		}
+
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::abs_new_figure::data_type& basic_figure_items<GraphicsSurfaces>::abs_new_figure::data() noexcept {
 			return _Data;
 		}
 
@@ -61,7 +66,11 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::rel_new_figure::_Data_type& basic_figure_items<GraphicsSurfaces>::rel_new_figure::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::rel_new_figure::data_type& basic_figure_items<GraphicsSurfaces>::rel_new_figure::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::rel_new_figure::data_type& basic_figure_items<GraphicsSurfaces>::rel_new_figure::data() noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -107,7 +116,12 @@ namespace std::experimental::io2d {
 			return GraphicsSurfaces::paths::at(_Data);
 		}
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::close_figure::_Data_type& basic_figure_items<GraphicsSurfaces>::close_figure::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::close_figure::data_type& basic_figure_items<GraphicsSurfaces>::close_figure::data() const noexcept {
+			return _Data;
+		}
+
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::close_figure::data_type& basic_figure_items<GraphicsSurfaces>::close_figure::data() noexcept {
 			return _Data;
 		}
 
@@ -148,7 +162,12 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::abs_matrix::_Data_type& basic_figure_items<GraphicsSurfaces>::abs_matrix::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::abs_matrix::data_type& basic_figure_items<GraphicsSurfaces>::abs_matrix::data() const noexcept {
+			return _Data;
+		}
+
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::abs_matrix::data_type& basic_figure_items<GraphicsSurfaces>::abs_matrix::data() noexcept {
 			return _Data;
 		}
 
@@ -204,7 +223,12 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::rel_matrix::_Data_type& basic_figure_items<GraphicsSurfaces>::rel_matrix::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::rel_matrix::data_type& basic_figure_items<GraphicsSurfaces>::rel_matrix::data() const noexcept {
+			return _Data;
+		}
+
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::rel_matrix::data_type& basic_figure_items<GraphicsSurfaces>::rel_matrix::data() noexcept {
 			return _Data;
 		}
 
@@ -260,7 +284,11 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::revert_matrix::_Data_type& basic_figure_items<GraphicsSurfaces>::revert_matrix::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::revert_matrix::data_type& basic_figure_items<GraphicsSurfaces>::revert_matrix::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::revert_matrix::data_type& basic_figure_items<GraphicsSurfaces>::revert_matrix::data() noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -295,8 +323,12 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::abs_line::_Data_type& basic_figure_items<GraphicsSurfaces>::abs_line::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::abs_line::data_type& basic_figure_items<GraphicsSurfaces>::abs_line::data() const noexcept {
 			return _Data;
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::abs_line::data_type& basic_figure_items<GraphicsSurfaces>::abs_line::data() noexcept {
+			return _data;
 		}
 		template<class GraphicsSurfaces>
 		inline basic_figure_items<GraphicsSurfaces>::abs_line::abs_line() noexcept
@@ -342,7 +374,11 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::rel_line::_Data_type& std::experimental::io2d::v1::basic_figure_items<GraphicsSurfaces>::rel_line::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::rel_line::data_type& std::experimental::io2d::v1::basic_figure_items<GraphicsSurfaces>::rel_line::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::rel_line::data_type& basic_figure_items<GraphicsSurfaces>::rel_line::data() noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -389,7 +425,11 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve::_Data_type& basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve::data_type& basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve::data_type& basic_figure_items<GraphicsSurfaces>::abs_quadratic_curve::data() noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -444,7 +484,11 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve::_Data_type& basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve::data_type& basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve::data_type& basic_figure_items<GraphicsSurfaces>::rel_quadratic_curve::data() noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -499,7 +543,11 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::abs_cubic_curve::_Data_type& basic_figure_items<GraphicsSurfaces>::abs_cubic_curve::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::abs_cubic_curve::data_type& basic_figure_items<GraphicsSurfaces>::abs_cubic_curve::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::abs_cubic_curve::data_type& basic_figure_items<GraphicsSurfaces>::abs_cubic_curve::data() noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -562,7 +610,11 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::rel_cubic_curve::_Data_type& std::experimental::io2d::v1::basic_figure_items<GraphicsSurfaces>::rel_cubic_curve::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::rel_cubic_curve::data_type& std::experimental::io2d::v1::basic_figure_items<GraphicsSurfaces>::rel_cubic_curve::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::rel_cubic_curve::data_type& basic_figure_items<GraphicsSurfaces>::rel_cubic_curve::data() noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -625,7 +677,11 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_figure_items<GraphicsSurfaces>::arc::_Data_type& std::experimental::io2d::v1::basic_figure_items<GraphicsSurfaces>::arc::data() const noexcept {
+		inline const typename basic_figure_items<GraphicsSurfaces>::arc::data_type& std::experimental::io2d::v1::basic_figure_items<GraphicsSurfaces>::arc::data() const noexcept {
+			return _Data;
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_figure_items<GraphicsSurfaces>::arc::data_type& basic_figure_items<GraphicsSurfaces>::arc::data() noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -700,7 +756,12 @@ namespace std::experimental::io2d {
 		::std::vector<typename basic_figure_items<GraphicsSurfaces>::figure_item> _Interpret_path_items(const basic_path_builder<GraphicsSurfaces, Allocator>&);
 
 		template<class GraphicsSurfaces>
-		inline const typename basic_interpreted_path<GraphicsSurfaces>::_Data_type& basic_interpreted_path<GraphicsSurfaces>::data() const noexcept {
+		inline const typename basic_interpreted_path<GraphicsSurfaces>::data_type& basic_interpreted_path<GraphicsSurfaces>::data() const noexcept {
+			return _Data;
+		}
+
+		template<class GraphicsSurfaces>
+		inline typename basic_interpreted_path<GraphicsSurfaces>::data_type& basic_interpreted_path<GraphicsSurfaces>::data() noexcept {
 			return _Data;
 		}
 

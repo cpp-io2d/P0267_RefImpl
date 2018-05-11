@@ -57,11 +57,12 @@ namespace std {
 				class basic_brush {
 				public:
 					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-					using _Data_type = typename GraphicsSurfaces::brushes::brush_data_type;
+					using data_type = typename GraphicsSurfaces::brushes::brush_data_type;
 				private:
-					_Data_type _Data;
+					data_type _Data;
 				public:
-					const _Data_type& data() const noexcept;
+					const data_type& data() const noexcept;
+					data_type& data() noexcept;
 
 					explicit basic_brush(const rgba_color& c);
 
