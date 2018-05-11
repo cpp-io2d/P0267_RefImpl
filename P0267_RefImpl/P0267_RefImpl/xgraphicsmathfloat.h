@@ -82,21 +82,19 @@ namespace std {
 					static float m21(const matrix_2d_data_type& mtx) noexcept;
 
 					// \ref{\iotwod.\matrixtwod.staticfactories}, static factory functions:
-					static matrix_2d_data_type init_identity() noexcept;
+					static matrix_2d_data_type create_translate(const point_2d_data_type& value) noexcept;
 
-					static matrix_2d_data_type init_translate(const point_2d_data_type& value) noexcept;
+					static matrix_2d_data_type create_scale(const point_2d_data_type& value) noexcept;
 
-					static matrix_2d_data_type init_scale(const point_2d_data_type& value) noexcept;
+					static matrix_2d_data_type create_rotate(float radians) noexcept;
 
-					static matrix_2d_data_type init_rotate(float radians) noexcept;
+					static matrix_2d_data_type create_rotate(float radians, const point_2d_data_type& origin) noexcept;
 
-					static matrix_2d_data_type init_rotate(float radians, const point_2d_data_type& origin) noexcept;
+					static matrix_2d_data_type create_reflect(float radians) noexcept;
 
-					static matrix_2d_data_type init_reflect(float radians) noexcept;
+					static matrix_2d_data_type create_shear_x(float factor) noexcept;
 
-					static matrix_2d_data_type init_shear_x(float factor) noexcept;
-
-					static matrix_2d_data_type init_shear_y(float factor) noexcept;
+					static matrix_2d_data_type create_shear_y(float factor) noexcept;
 
 					// \ref{\iotwod.\matrixtwod.modifiers}, modifiers:
 					static void translate(matrix_2d_data_type& mtx, const point_2d_data_type& v) noexcept;

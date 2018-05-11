@@ -857,7 +857,7 @@ namespace std::experimental::io2d {
 				const basic_point_2d<GraphicsMath> rad = item.radius();
 				auto startAng = item.start_angle();
 				const auto origM = m;
-				m = basic_matrix_2d<GraphicsMath>::init_scale(rad);
+				m = basic_matrix_2d<GraphicsMath>::create_scale(rad);
 				auto centerOffset = (point_for_angle<GraphicsMath>(two_pi<float> -startAng) * rad);
 				centerOffset.y(-centerOffset.y());
 				auto ctr = currentPoint - centerOffset;

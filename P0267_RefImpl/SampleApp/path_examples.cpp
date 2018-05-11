@@ -116,7 +116,7 @@ namespace path_test {
 		imgSfc.paint(backBrush);
 
 		// Example code goes here.
-		const matrix_2d sclMtx = matrix_2d::init_scale({ 0.9F, 1.1F });// .rotate(half_pi<float>);// * matrix_2d::init_rotate(half_pi<float>);
+		const matrix_2d sclMtx = matrix_2d::create_scale({ 0.9F, 1.1F });// .rotate(half_pi<float>);// * matrix_2d::create_rotate(half_pi<float>);
 		const point_2d rad{ 50.0F, 50.0F };
 		//auto pt = sclMtx.inverse().transform_pt({ 85.0F, 100.0F }) +
 		//	point_for_angle(half_pi<float> / 2.0F, rad);
@@ -145,7 +145,7 @@ namespace path_test {
 		pb.rel_line({ 0.0F, -25.0F });
 		pb.close_figure();
 		imgSfc.fill(foreBrush, pb);
-		//pb.insert(pb.begin(), basic_figure_items<default_graphics_surfaces>::abs_matrix(matrix_2d::init_translate({ 80.0F, 0.0F })));
+		//pb.insert(pb.begin(), basic_figure_items<default_graphics_surfaces>::abs_matrix(matrix_2d::create_translate({ 80.0F, 0.0F })));
 		//pb.insert(pb.begin() + 2, figure_items::revert_matrix());
 		imgSfc.fill(foreBrush, pb);
 		// Example code ends.
@@ -165,9 +165,9 @@ namespace path_test {
 		imgSfc.paint(backBrush);
 
 		// Example code goes here.
-		auto scl = matrix_2d::init_scale({ 0.5F, 1.0F });
-		auto rot = matrix_2d::init_rotate(half_pi<float>);
-		auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
+		auto scl = matrix_2d::create_scale({ 0.5F, 1.0F });
+		auto rot = matrix_2d::create_rotate(half_pi<float>);
+		auto trn = matrix_2d::create_translate({ 20.0F, 20.0F });
 		pb.new_figure({ 10.0F, 150.0F });
 		pb.quadratic_curve({ 30.0F, 120.0F }, { 50.0F, 150.0F });
 
@@ -217,14 +217,14 @@ namespace path_test {
 		pb.new_figure(pt);
 		pb.arc({ 30.0F, 30.0F }, half_pi<float>, half_pi<float>);
 
-		auto rot = matrix_2d::init_rotate(half_pi<float> / 2.0F);
+		auto rot = matrix_2d::create_rotate(half_pi<float> / 2.0F);
 		pt.x(pt.x() + 50.0F);
 		pb.new_figure(pt);
 		pb.matrix(rot);
 		pb.arc({ 30.0F, 30.0F }, half_pi<float>, half_pi<float>);
 
 		pb.revert_matrix();
-		rot = matrix_2d::init_rotate(half_pi<float>);
+		rot = matrix_2d::create_rotate(half_pi<float>);
 		pt.x(pt.x() + 50.0F);
 		pb.new_figure(pt);
 		pb.matrix(rot.translate({ 20.0F, 10.0F }));
@@ -257,7 +257,7 @@ namespace path_test {
 		pb.close_figure();
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
 		imgSfc.fill(blueBrush, pb);
-		//pb.insert(pb.begin(), figure_items::abs_matrix(matrix_2d::init_translate({ 135.0F, 0.0F })));
+		//pb.insert(pb.begin(), figure_items::abs_matrix(matrix_2d::create_translate({ 135.0F, 0.0F })));
 		////pb.insert(pb.begin() + 2, figure_items::revert_matrix());
 		imgSfc.fill(blueBrush, pb);
 		imgSfc.stroke(foreBrush, pb, nullopt, ten);
@@ -278,9 +278,9 @@ namespace path_test {
 		imgSfc.paint(backBrush);
 
 		// Example code goes here.
-		auto scl = matrix_2d::init_scale({ 0.5F, 1.0F });
-		auto rot = matrix_2d::init_rotate(half_pi<float> / 2.0F);
-		//auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
+		auto scl = matrix_2d::create_scale({ 0.5F, 1.0F });
+		auto rot = matrix_2d::create_rotate(half_pi<float> / 2.0F);
+		//auto trn = matrix_2d::create_translate({ 20.0F, 20.0F });
 		pb.matrix(scl);
 		pb.new_figure({ 40.0F, 50.0F });
 		pb.line({ 80.0F, 50.0F });
@@ -313,9 +313,9 @@ namespace path_test {
 		imgSfc.paint(backBrush);
 
 		// Example code goes here.
-		auto scl = matrix_2d::init_scale({ 0.5F, 1.0F });
-		auto rot = matrix_2d::init_rotate(half_pi<float> / 2.0F);
-		//auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
+		auto scl = matrix_2d::create_scale({ 0.5F, 1.0F });
+		auto rot = matrix_2d::create_rotate(half_pi<float> / 2.0F);
+		//auto trn = matrix_2d::create_translate({ 20.0F, 20.0F });
 		pb.matrix(scl);
 		pb.new_figure({ 40.0F, 50.0F });
 		pb.line({ 80.0F, 50.0F });
@@ -348,9 +348,9 @@ namespace path_test {
 		imgSfc.paint(backBrush);
 
 		// Example code goes here.
-		auto scl = matrix_2d::init_scale({ 0.5F, 1.0F });
-		auto rot = matrix_2d::init_rotate(half_pi<float> / 2.0F);
-		//auto trn = matrix_2d::init_translate({ 20.0F, 20.0F });
+		auto scl = matrix_2d::create_scale({ 0.5F, 1.0F });
+		auto rot = matrix_2d::create_rotate(half_pi<float> / 2.0F);
+		//auto trn = matrix_2d::create_translate({ 20.0F, 20.0F });
 		pb.matrix(scl);
 		pb.new_figure({ 40.0F, 50.0F });
 		pb.line({ 80.0F, 50.0F });

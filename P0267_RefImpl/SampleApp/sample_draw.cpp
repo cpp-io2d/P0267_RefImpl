@@ -126,14 +126,14 @@ void test_image_load_save(output_surface& ds) {
 //	imgSfc.immediate().close_figure();
 //	imgSfc.fill_immediate(rgba_color::white());
 //
-//	ds.matrix(matrix_2d::init_translate({ 0.0F, 0.0F }));
-//	//ds.matrix(matrix_2d::init_translate({ 100.0F, 100.0F }));
+//	ds.matrix(matrix_2d::create_translate({ 0.0F, 0.0F }));
+//	//ds.matrix(matrix_2d::create_translate({ 100.0F, 100.0F }));
 //	ds.immediate().clear();
 //	ds.immediate().bounding_box({ 0.0F, 0.0F, 500.0F, 500.0F });
 //	ds.clip_immediate();
 //
-//	ds.matrix(matrix_2d::init_translate({ 100.0F, 100.0F }));
-//	//ds.matrix(matrix_2d::init_translate({ 0.0F, 0.0F }));
+//	ds.matrix(matrix_2d::create_translate({ 100.0F, 100.0F }));
+//	//ds.matrix(matrix_2d::create_translate({ 0.0F, 0.0F }));
 //	//ds.immediate().clear();
 //	//ds.immediate().bounding_box({ 0.0F, 0.0F, 500.0F, 500.0F });
 //	ds.paint(imgSfc);
@@ -155,7 +155,7 @@ void test_image_load_save(output_surface& ds) {
 //	ds.immediate().clear();
 //	ds.paint(rgba_color::red());
 //	ds.immediate().bounding_box({ 20.0F, 20.0F, static_cast<float>(ds.width()), static_cast<float>(ds.height()) });
-//	ds.fill_immediate(imgSfc, matrix_2d::init_translate({ -20.0F, -20.0F }), wrap_mode::none, filter::bilinear);
+//	ds.fill_immediate(imgSfc, matrix_2d::create_translate({ -20.0F, -20.0F }), wrap_mode::none, filter::bilinear);
 //}
 //
 //void test_mask(display_surface& ds) {
@@ -167,11 +167,11 @@ void test_image_load_save(output_surface& ds) {
 //	imgSfc.immediate().abs_line({ 250.0F,500.0F });
 //	imgSfc.immediate().close_figure();
 //	imgSfc.fill_immediate(rgba_color::white());
-//	//imgSfc.matrix(matrix_2d::init_translate({ -50.0F, 50.0F }));
-//	//imgSfc.matrix(matrix_2d::init_scale({ 0.5F, 1.5F }));
+//	//imgSfc.matrix(matrix_2d::create_translate({ -50.0F, 50.0F }));
+//	//imgSfc.matrix(matrix_2d::create_scale({ 0.5F, 1.5F }));
 //	//surface_brush_factory sbf(imgSfc);
 //	//brush br(sbf);
-//	//br.matrix(matrix_2d::init_translate({ -50.0F, -50.0F }).rotate(half_pi<float> * 0.25F));
+//	//br.matrix(matrix_2d::create_translate({ -50.0F, -50.0F }).rotate(half_pi<float> * 0.25F));
 //	//br.filter(filter::nearest);
 //	//br.wrap_mode(wrap_mode::none);
 //
@@ -188,9 +188,9 @@ void test_image_load_save(output_surface& ds) {
 //	ds.immediate().clear();
 //	ds.paint(rgba_color::red());
 //	ds.immediate().bounding_box({ 0.0F, 0.0F, static_cast<float>(ds.width()), static_cast<float>(ds.height())});
-//	//ds.matrix(matrix_2d::init_scale({ 0.5F, 1.5F }));
+//	//ds.matrix(matrix_2d::create_scale({ 0.5F, 1.5F }));
 //	//ds.mask_immediate(br, rgba_color::blue());
-//	ds.mask_immediate(imgSfc, rgba_color::blue(), matrix_2d::init_translate({ -50.0F, -50.0F }).rotate(half_pi<float> * 0.25F));
+//	ds.mask_immediate(imgSfc, rgba_color::blue(), matrix_2d::create_translate({ -50.0F, -50.0F }).rotate(half_pi<float> * 0.25F));
 //	//ds.fill_immediate(br);
 //	ds.restore();
 //}
@@ -207,10 +207,10 @@ void test_image_load_save(output_surface& ds) {
 //	imgSfc.immediate().abs_line({ 250.0F,500.0F });
 //	imgSfc.immediate().close_figure();
 //	imgSfc.fill_immediate(rgba_color::white());
-//	auto m = matrix_2d::init_scale({ 1.5F, 1.0F }).translate({ 20.0F, 20.0F });// .invert().translate({ -10.0F, -10.0F });
+//	auto m = matrix_2d::create_scale({ 1.5F, 1.0F }).translate({ 20.0F, 20.0F });// .invert().translate({ -10.0F, -10.0F });
 //	auto scsm = m;
 //	//auto ucsm = matrix_2d::init_identity();
-//	auto bcsm = matrix_2d::init_translate({ -10.0F, -10.0F });
+//	auto bcsm = matrix_2d::create_translate({ -10.0F, -10.0F });
 //	auto invScsm = scsm;
 //	invScsm.invert();
 //	auto invBcsm = bcsm;
@@ -224,7 +224,7 @@ void test_image_load_save(output_surface& ds) {
 //	//auto pt4 = point_2d{ -16.6666666666666F, -20.0F };
 //	//auto pt5 = point_2d{ 45.0F, 30.0F };
 //	ds.matrix(m);
-//	ds.paint(imgSfc, matrix_2d::init_translate({ -10.0F, -10.0F })/*init_identity()*//*init_scale({ 1.0F, 1.5F }).translate({ -20.0F, -20.0F })*/, wrap_mode::repeat, filter::nearest);
+//	ds.paint(imgSfc, matrix_2d::create_translate({ -10.0F, -10.0F })/*init_identity()*//*create_scale({ 1.0F, 1.5F }).translate({ -20.0F, -20.0F })*/, wrap_mode::repeat, filter::nearest);
 //	//ds.paint(rgba_color::red());
 //	//auto br = brush(solid_color_brush_factory(rgba_color::red()));
 //	//br.wrap_mode(wrap_mode::none);
@@ -238,10 +238,10 @@ void test_image_load_save(output_surface& ds) {
 //	//lbf.add_color_stop(1.0F, rgba_color::blue());
 //	//auto linBrush = brush(lbf);
 //	//linBrush.wrap_mode(wrap_mode::repeat);
-//	//linBrush.matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F));
+//	//linBrush.matrix(matrix_2d::create_rotate(half_pi<float> / 2.0F));
 //	//ds.immediate().bounding_box({ { 50.0F, 50.0F}, {500.0F, 500.0F} });
 //	//ds.clip_immediate();
-//	//ds.matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F));
+//	//ds.matrix(matrix_2d::create_rotate(half_pi<float> / 2.0F));
 //	//ds.brush(linBrush);
 //	//ds.paint();
 //
@@ -266,7 +266,7 @@ void test_stroke_rules(output_surface& ds) {
 	//ds.line_cap(line_cap::none);
 	//ds.line_join(line_join::miter_or_bevel);
 	//ds.immediate().arc({ ds.width() / 2.0F, ds.height() / 2.0F }, 200.0F, 0.0F, two_pi<float>);
-	//ds.matrix(matrix_2d::init_translate({ ds.width() / 2.0F, ds.height() / 2.0F }).rotate(half_pi<float> / 2.0F).scale({ 0.5F, 1.0F }).translate({ -ds.width() / 2.0F, -ds.height() / 2.0F }));
+	//ds.matrix(matrix_2d::create_translate({ ds.width() / 2.0F, ds.height() / 2.0F }).rotate(half_pi<float> / 2.0F).scale({ 0.5F, 1.0F }).translate({ -ds.width() / 2.0F, -ds.height() / 2.0F }));
 	//ds.dashes(nullvalue);
 
 	//ds.line_width(12.0F);
@@ -291,8 +291,8 @@ void test_stroke_rules(output_surface& ds) {
 	//ds.immediate().move_to({ 200.0F, 335.0F });
 	//ds.immediate().rel_line({ 0.0F, 200.0F });
 
-	//ds.matrix(matrix_2d::init_scale({ 0.5F, 1.0F }).rotate(half_pi<float> / 2.0F));
-	//ds.matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F).scale({ 0.5F, 1.0F }));
+	//ds.matrix(matrix_2d::create_scale({ 0.5F, 1.0F }).rotate(half_pi<float> / 2.0F));
+	//ds.matrix(matrix_2d::create_rotate(half_pi<float> / 2.0F).scale({ 0.5F, 1.0F }));
 	//ds.immediate().rel_move({ 20.0F, 0.0F });
 	//ds.immediate().rel_move({ 0.0F, 10.0F });
 	//ds.immediate().close_figure();
@@ -353,7 +353,7 @@ void test_path_functionality(output_surface& ds) {
 	//pf.arc_clockwise(circle{ { 300.0F, 300.0F }, 50.0F }, 0.0F, two_pi<float>);
 
 	//pf.new_figure({ 500.0F, 300.0F });
-	//pf.transform_matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F));
+	//pf.transform_matrix(matrix_2d::create_rotate(half_pi<float> / 2.0F));
 	//pf.rel_line({ 200.0F, 0.0F });
 	//pf.rel_line({ 0.0F, 100.0F });
 	//pf.rel_line({ -200.0F, 0.0F });
@@ -365,7 +365,7 @@ void test_path_functionality(output_surface& ds) {
 	pf.clear();
 
 	//pf.new_figure({ 200.0F, 200.0F });
-	////pf.transform_matrix(matrix_2d::init_rotate(half_pi<float> / 2.0F));
+	////pf.transform_matrix(matrix_2d::create_rotate(half_pi<float> / 2.0F));
 	//pf.ellipse({ { 200.0F, 200.0F },{ 80.0F, 40.0F } });
 	//pf.new_figure({ 400.0F, 200.0F });
 	//pf.rel_ellipse({ { 200.0F, 0.0F },{ 80.0F, 40.0F } });
@@ -391,14 +391,14 @@ void draw_radial_circles(output_surface& ds) {
 	//pf.bounding_box({ { 100.0F, 100.0F }, { 500.0F, 500.0F } });
 	pf.new_figure({ 100.0F, 100.0F });
 	pf.line({ 500.0F, 100.0F });
-	pf.matrix(matrix_2d::init_shear_x(0.25F));
+	pf.matrix(matrix_2d::create_shear_x(0.25F));
 	pf.line({ 500.0F, 500.0F });
 	pf.close_figure();
 	pf.matrix(matrix_2d());
 	pf.line({ 50.0F, 150.0F });
 	pf.new_figure({ 520.0F, 520.0F });
 	pf.line({ 600.0F, 600.0F });
-	pf.matrix(matrix_2d::init_scale({ 2.0F, 1.0F }));
+	pf.matrix(matrix_2d::create_scale({ 2.0F, 1.0F }));
 	//pf.arc_clockwise({ 300.0F, 700.0F }, 100.0F, three_pi_over_two<float>, two_pi<float>);
 	pf.matrix(matrix_2d());
 	pf.new_figure({ 520.0F, 10.0F });
@@ -432,17 +432,17 @@ void draw_radial_circles(output_surface& ds) {
 	p = interpreted_path(pf);
 	//ds.path_group(p);
 	ds.stroke(radialBrush, p);
-	//ds.matrix(matrix_2d::init_translate({ 0.0F, 310.0F }));
+	//ds.matrix(matrix_2d::create_translate({ 0.0F, 310.0F }));
 	//ds.path_group(p);
 	//ds.fill_rule(fill_rule::even_odd);
-	ds.stroke(radialBrush, p, brush_props{ wrap_mode::repeat, filter::nearest, fill_rule::even_odd }, stroke_props{ 10.0F }, nullopt, render_props{ antialias::good, matrix_2d::init_translate({0.0F, 310.0F}) });
+	ds.stroke(radialBrush, p, brush_props{ wrap_mode::repeat, filter::nearest, fill_rule::even_odd }, stroke_props{ 10.0F }, nullopt, render_props{ antialias::good, matrix_2d::create_translate({0.0F, 310.0F}) });
 
 	//render_ellipse(ds, { 200.0F, 600.0F }, 250.0F, 100.0F, rgba_color(0.0F, 1.0F, 1.0F, 1.0F));
 
 	//radialFactory.radial_circles({ 200.5F, 300.0F }, 0.0F, { 300.0F, 300.0F }, 100.0F);
 	//auto radialBrush = brush(radialFactory);
 	//radialBrush.wrap_mode(wrap_mode::repeat);
-	////radialBrush.matrix(matrix_2d::init_scale({ 2.0F, 2.0F }));
+	////radialBrush.matrix(matrix_2d::create_scale({ 2.0F, 2.0F }));
 	//ds.immediate().clear();
 	//ds.immediate().bounding_box({ { 100.0F, 100.0F }, { 500.0F, 500.0F } });
 	//ds.fill_immediate(radialBrush);
@@ -761,13 +761,13 @@ void draw_radial_circles(output_surface& ds) {
 //			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0F : (radius * 4.0F * (normalizedTime < 0.5F ? normalizedTime : 1.0F - normalizedTime)))
 //				* (i % 2 == 1 ? 1.0F : -1.0F));
 //			const auto center = point_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
-//			ds.immediate().abs_matrix(matrix_2d::init_scale({ 1.0F, 1.5F }) * matrix_2d::init_rotate(pi<float> / 4.0F) * matrix_2d::init_translate({ 0.0F, 50.0F }));
+//			ds.immediate().abs_matrix(matrix_2d::create_scale({ 1.0F, 1.5F }) * matrix_2d::create_rotate(pi<float> / 4.0F) * matrix_2d::create_translate({ 0.0F, 50.0F }));
 //			ds.immediate().set_origin(center);
 //			ds.immediate().arc_negative(center, radius - 3.0F, half_pi<float>, -half_pi<float>);
 //		}
 //		else {
 //			const point_2d center{ radius * i * 2.0F + radius + beginX, y };
-//			ds.immediate().abs_matrix(matrix_2d::init_scale({ 1.0F, 1.5F }) * matrix_2d::init_rotate(pi<float> / 4.0F) * matrix_2d::init_translate({ 0.0F, 50.0F }));
+//			ds.immediate().abs_matrix(matrix_2d::create_scale({ 1.0F, 1.5F }) * matrix_2d::create_rotate(pi<float> / 4.0F) * matrix_2d::create_translate({ 0.0F, 50.0F }));
 //			ds.immediate().set_origin(center);
 //			ds.immediate().arc_negative(center, radius - 3.0F, half_pi<float>, -half_pi<float>);
 //		}
@@ -777,7 +777,7 @@ void draw_radial_circles(output_surface& ds) {
 //
 //	ds.immediate().clear();
 //	ds.immediate().set_origin({ 250.0F, 450.0F });
-//	ds.immediate().abs_matrix(matrix_2d::init_shear_x(0.5F).scale({ 2.0F, 2.5F }));
+//	ds.immediate().abs_matrix(matrix_2d::create_shear_x(0.5F).scale({ 2.0F, 2.5F }));
 //	ds.immediate().bounding_box({ 200.0F, 400.0F, 100.0F, 100.0F });
 //	ds.line_width(3.0F);
 //	ds.stroke_immediate(rgba_color::red());
@@ -812,7 +812,7 @@ void draw_radial_circles(output_surface& ds) {
 //	//meshFactory.corner_color(2, rgba_color::blue());
 //	//meshFactory.end_patch();
 //	//auto meshBrush = brush(meshFactory);
-//	//meshBrush.matrix(matrix_2d::init_translate({ -200.0F, -400.0F }));
+//	//meshBrush.matrix(matrix_2d::create_translate({ -200.0F, -400.0F }));
 //	//ds.fill_immediate(meshBrush);
 //
 //	auto imgSfc = image_surface(format::argb32, 40, 40);
@@ -876,8 +876,8 @@ void draw_radial_circles(output_surface& ds) {
 //	
 //	auto origM = ds.matrix();
 //	
-//	//ds.matrix(matrix_2d::init_scale({ 1.0F, 0.5F }));
-//	font_resource_factory frf{ "Segoe UI", font_slant::normal, font_weight::normal, matrix_2d::init_scale({40.0F, 40.0F}) };//, font_options{}, matrix_2d::init_scale({ 1.0F, 1.5F }) };
+//	//ds.matrix(matrix_2d::create_scale({ 1.0F, 0.5F }));
+//	font_resource_factory frf{ "Segoe UI", font_slant::normal, font_weight::normal, matrix_2d::create_scale({40.0F, 40.0F}) };//, font_options{}, matrix_2d::create_scale({ 1.0F, 1.5F }) };
 //	ds.font_resource(experimental::io2d::font_resource{ frf });
 //	auto gr = ds.font_resource().make_glyph_run(fpsStr.str(), { static_cast<float>(ds.width()) - 400.0F, 50.0F });
 //	//vector<glyph_run::glyph>::size_type idx = 0;
@@ -950,13 +950,13 @@ void draw_radial_circles(output_surface& ds) {
 //			const auto yr = y - ((i2 == static_cast<int>(i) ? 0.0F : (radius * 4.0F * (normalizedTime < 0.5F ? normalizedTime : 1.0F - normalizedTime)))
 //				* (i % 2 == 1 ? 1.0F : -1.0F));
 //			const auto center = point_2d{ trunc((x2r - x1r) * adjustment + x1r), trunc(yr) };
-//			pf.abs_matrix(matrix_2d::init_scale({ 1.0F, 1.5F }) * matrix_2d::init_rotate(pi<float> / 4.0F) * matrix_2d::init_translate({ 0.0F, 50.0F }));
+//			pf.abs_matrix(matrix_2d::create_scale({ 1.0F, 1.5F }) * matrix_2d::create_rotate(pi<float> / 4.0F) * matrix_2d::create_translate({ 0.0F, 50.0F }));
 //			pf.set_origin(center);
 //			pf.arc_negative(center, radius - 3.0F, half_pi<float>, -half_pi<float>);
 //		}
 //		else {
 //			const point_2d center{ radius * i * 2.0F + radius + beginX, y };
-//			pf.abs_matrix(matrix_2d::init_scale({ 1.0F, 1.5F }) * matrix_2d::init_rotate(pi<float> / 4.0F));
+//			pf.abs_matrix(matrix_2d::create_scale({ 1.0F, 1.5F }) * matrix_2d::create_rotate(pi<float> / 4.0F));
 //			pf.set_origin(center);
 //			pf.arc_negative(center, radius - 3.0F, half_pi<float>, -half_pi<float>);
 //		}
@@ -969,7 +969,7 @@ void draw_radial_circles(output_surface& ds) {
 //
 //	pf.clear();
 //	pf.set_origin({ 250.0F, 450.0F });
-//	pf.abs_matrix(matrix_2d::init_shear_x(0.5F).scale({ 2.0F, 1.0F }));
+//	pf.abs_matrix(matrix_2d::create_shear_x(0.5F).scale({ 2.0F, 1.0F }));
 //	pf.bounding_box({ 200.0F, 400.0F, 100.0F, 100.0F });
 //	ds.path_group(path_group(pf));
 //	auto redBrush = brush(solid_color_brush_factory(rgba_color::red()));

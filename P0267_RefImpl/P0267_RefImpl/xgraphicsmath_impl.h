@@ -173,7 +173,7 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath>::basic_matrix_2d() noexcept
-			: _Data(GraphicsMath::init_identity()) {}
+			: _Data(GraphicsMath::create_matrix_2d()) {}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath>::basic_matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept
 			: _Data(GraphicsMath::init_values(v00, v01, v10, v11, v20, v21)) {
@@ -231,32 +231,32 @@ namespace std::experimental::io2d {
 			return GraphicsMath::m21(_Data);
 		}
 		template <class GraphicsMath>
-		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_translate(const basic_point_2d<GraphicsMath>& value) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_translate(value._Get_data()));
+		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_translate(const basic_point_2d<GraphicsMath>& value) noexcept {
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_translate(value._Get_data()));
 		}
 		template <class GraphicsMath>
-		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_scale(const basic_point_2d<GraphicsMath>& value) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_scale(value._Get_data()));
+		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_scale(const basic_point_2d<GraphicsMath>& value) noexcept {
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_scale(value._Get_data()));
 		}
 		template <class GraphicsMath>
-		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_rotate(float radians) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_rotate(radians));
+		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_rotate(float radians) noexcept {
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_rotate(radians));
 		}
 		template <class GraphicsMath>
-		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_rotate(radians, origin._Get_data()));
+		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept {
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_rotate(radians, origin._Get_data()));
 		}
 		template <class GraphicsMath>
-		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_reflect(float radians) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_reflect(radians));
+		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_reflect(float radians) noexcept {
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_reflect(radians));
 		}
 		template <class GraphicsMath>
-		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_shear_x(float factor) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_shear_x(factor));
+		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_shear_x(float factor) noexcept {
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_shear_x(factor));
 		}
 		template <class GraphicsMath>
-		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::init_shear_y(float factor) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::init_shear_y(factor));
+		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_shear_y(float factor) noexcept {
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_shear_y(factor));
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath>& basic_matrix_2d<GraphicsMath>::translate(const basic_point_2d<GraphicsMath>& val) noexcept {

@@ -44,13 +44,13 @@ int main() {
 	//testArc = figure_items::arc({ 30.0, 30.0 }, half_pi<float>, half_pi<float>);
 	//ctr = testArc.center(pt);
 	//endPt = testArc.end_pt(pt);
-	//auto rot = matrix_2d::init_rotate(half_pi<float> / 2.0);
+	//auto rot = matrix_2d::create_rotate(half_pi<float> / 2.0);
 	//pt.x(pt.x() + 50.0);
 	//testArc = figure_items::arc({ 30.0, 30.0 }, half_pi<float>, half_pi<float>);
 	//ctr = testArc.center(pt, rot);
 	//endPt = testArc.end_pt(pt, rot);
 
-	//rot = matrix_2d::init_rotate(half_pi<float>);
+	//rot = matrix_2d::create_rotate(half_pi<float>);
 	//pt.x(pt.x() + 50.0);
 	//testArc = figure_items::arc({ 30.0, 30.0 }, half_pi<float>, half_pi<float>);
 	//ctr = testArc.center(pt, rot);
@@ -199,7 +199,7 @@ int main() {
 	//	float locY = 140.0;
 	//	point_2d location{ beginLocX, locY };
 	//	pb.clear();
-	//	pb.abs_matrix(matrix_2d::init_translate({ 400.0, 400.0 }).rotate(to_radians(-45)).scale({ 0.5, 0.5 }));
+	//	pb.abs_matrix(matrix_2d::create_translate({ 400.0, 400.0 }).rotate(to_radians(-45)).scale({ 0.5, 0.5 }));
 	//	location = testArcClockwiseEndAngle(pb, location, false, { 60.0, 60.0 });
 	//
 	//	locY += 200;

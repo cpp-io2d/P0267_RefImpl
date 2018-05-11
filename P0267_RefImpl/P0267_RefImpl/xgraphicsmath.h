@@ -95,13 +95,13 @@ namespace std {
 					float m21() const noexcept;
 
 					// \ref{\iotwod.\matrixtwod.staticfactories}, static factory functions:
-					static basic_matrix_2d init_translate(const basic_point_2d<GraphicsMath>& val) noexcept;
-					static basic_matrix_2d init_scale(const basic_point_2d<GraphicsMath>& val) noexcept;
-					static basic_matrix_2d init_rotate(float radians) noexcept;
-					static basic_matrix_2d init_rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept;
-					static basic_matrix_2d init_reflect(float radians) noexcept;
-					static basic_matrix_2d init_shear_x(float factor) noexcept;
-					static basic_matrix_2d init_shear_y(float factor) noexcept;
+					static basic_matrix_2d create_translate(const basic_point_2d<GraphicsMath>& val) noexcept;
+					static basic_matrix_2d create_scale(const basic_point_2d<GraphicsMath>& val) noexcept;
+					static basic_matrix_2d create_rotate(float radians) noexcept;
+					static basic_matrix_2d create_rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept;
+					static basic_matrix_2d create_reflect(float radians) noexcept;
+					static basic_matrix_2d create_shear_x(float factor) noexcept;
+					static basic_matrix_2d create_shear_y(float factor) noexcept;
 
 					// \ref{\iotwod.\matrixtwod.modifiers}, modifiers:
 					basic_matrix_2d& translate(const basic_point_2d<GraphicsMath>& v) noexcept;

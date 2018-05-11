@@ -591,7 +591,7 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline basic_point_2d<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::paths::end_pt(const arc_data_type& data, const basic_point_2d<GraphicsMath>& cpt, const basic_matrix_2d<GraphicsMath>& m) noexcept {
 				auto lmtx = m;
-				auto tfrm = basic_matrix_2d<GraphicsMath>::init_rotate(data.startAngle + data.rotation);
+				auto tfrm = basic_matrix_2d<GraphicsMath>::create_rotate(data.startAngle + data.rotation);
 				lmtx.m20(0.0F); lmtx.m21(0.0F); // Eliminate translation.
 				auto pt = (data.radius * tfrm);
 				pt.y(-pt.y());
