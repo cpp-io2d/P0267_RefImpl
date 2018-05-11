@@ -9,7 +9,7 @@ namespace std {
 				// image_surface
 
 				template <class GraphicsSurfaces>
-				inline typename basic_image_surface<GraphicsSurfaces>::_Data_type& basic_image_surface<GraphicsSurfaces>::_Get_data() noexcept {
+				inline typename basic_image_surface<GraphicsSurfaces>::_Data_type& basic_image_surface<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 				template <class GraphicsSurfaces>
@@ -145,14 +145,14 @@ namespace std {
 				template<class GraphicsSurfaces>
 				inline basic_image_surface<GraphicsSurfaces> copy_image_surface(basic_image_surface<GraphicsSurfaces>& sfc) noexcept {
 					basic_image_surface<GraphicsSurfaces> retSfc(sfc.format(), sfc.dimensions().x(), sfc.dimensions().y());
-					auto srcSfc = cairo_surface_map_to_image(sfc._Get_data().surface.get(), nullptr);
-					auto destSfc = cairo_surface_map_to_image(retSfc._Get_data().surface.get(), nullptr);
+					auto srcSfc = cairo_surface_map_to_image(sfc.data().surface.get(), nullptr);
+					auto destSfc = cairo_surface_map_to_image(retSfc.data().surface.get(), nullptr);
 					auto srcSize = cairo_image_surface_get_height(srcSfc) * cairo_image_surface_get_stride(srcSfc);
 					auto srcData = cairo_image_surface_get_data(srcSfc);
 					auto destData = cairo_image_surface_get_data(destSfc);
 					memcpy(destData, srcData, srcSize);
-					cairo_surface_unmap_image(retSfc._Get_data().surface.get(), destSfc);
-					cairo_surface_unmap_image(sfc._Get_data().surface.get(), srcSfc);
+					cairo_surface_unmap_image(retSfc.data().surface.get(), destSfc);
+					cairo_surface_unmap_image(sfc.data().surface.get(), srcSfc);
 					return retSfc;
 				}
 
@@ -212,7 +212,7 @@ namespace std {
 				}
 
 				template <class GraphicsSurfaces>
-				inline typename basic_output_surface<GraphicsSurfaces>::_Data_type& basic_output_surface<GraphicsSurfaces>::_Get_data() noexcept {
+				inline typename basic_output_surface<GraphicsSurfaces>::_Data_type& basic_output_surface<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 
@@ -412,7 +412,7 @@ namespace std {
 				}
 
 				template <class GraphicsSurfaces>
-				inline typename basic_unmanaged_output_surface<GraphicsSurfaces>::data_type& basic_unmanaged_output_surface<GraphicsSurfaces>::_Get_data() noexcept {
+				inline typename basic_unmanaged_output_surface<GraphicsSurfaces>::data_type& basic_unmanaged_output_surface<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 

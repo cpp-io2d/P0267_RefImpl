@@ -4,7 +4,7 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		template<class GraphicsMath>
-		inline const typename basic_point_2d<GraphicsMath>::_Data_type& basic_point_2d<GraphicsMath>::_Get_data() const noexcept {
+		inline const typename basic_point_2d<GraphicsMath>::_Data_type& basic_point_2d<GraphicsMath>::data() const noexcept {
 			return _Data;
 		}
 		template <class GraphicsMath>
@@ -60,11 +60,11 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline bool operator==(const basic_point_2d<GraphicsMath>& lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return GraphicsMath::equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::equal(lhs.data(), rhs.data());
 		}
 		template <class GraphicsMath>
 		inline bool operator!=(const basic_point_2d<GraphicsMath>& lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return GraphicsMath::not_equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::not_equal(lhs.data(), rhs.data());
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator+(const basic_point_2d<GraphicsMath>& lhs) noexcept {
@@ -72,15 +72,15 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator+(const basic_point_2d<GraphicsMath>& lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::add(lhs._Get_data(), rhs._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::add(lhs.data(), rhs.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator+(const basic_point_2d<GraphicsMath>& lhs, float rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::add(lhs._Get_data(), rhs));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::add(lhs.data(), rhs));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator+(float lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::add(lhs, rhs._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::add(lhs, rhs.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath>& basic_point_2d<GraphicsMath>::operator+=(const basic_point_2d<GraphicsMath>& rhs) noexcept {
@@ -94,23 +94,23 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator-(const basic_point_2d<GraphicsMath>& lhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::negate(lhs._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::negate(lhs.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator-(const basic_point_2d<GraphicsMath>& lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::subtract(lhs._Get_data(), rhs._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::subtract(lhs.data(), rhs.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator-(const basic_point_2d<GraphicsMath>& lhs, float rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::subtract(lhs._Get_data(), rhs));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::subtract(lhs.data(), rhs));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator-(float lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::subtract(lhs, rhs._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::subtract(lhs, rhs.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath>& basic_point_2d<GraphicsMath>::operator-=(const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			_Data = GraphicsMath::subtract(_Data, rhs._Get_data());
+			_Data = GraphicsMath::subtract(_Data, rhs.data());
 			return *this;
 		}
 		template <class GraphicsMath>
@@ -125,20 +125,20 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath>& basic_point_2d<GraphicsMath>::operator*=(const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			_Data = GraphicsMath::multiply(_Data, rhs._Get_data());
+			_Data = GraphicsMath::multiply(_Data, rhs.data());
 			return *this;
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator*(const basic_point_2d<GraphicsMath>& lhs, float rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::multiply(lhs._Get_data(), rhs));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::multiply(lhs.data(), rhs));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator*(float lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::multiply(lhs, rhs._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::multiply(lhs, rhs.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator*(const basic_point_2d<GraphicsMath>& lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::multiply(lhs._Get_data(), rhs._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::multiply(lhs.data(), rhs.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath>& basic_point_2d<GraphicsMath>::operator/=(float rhs) noexcept {
@@ -147,20 +147,20 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath>& basic_point_2d<GraphicsMath>::operator/=(const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			_Data = GraphicsMath::divide(_Data, rhs._Get_data());
+			_Data = GraphicsMath::divide(_Data, rhs.data());
 			return *this;
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator/(const basic_point_2d<GraphicsMath>& lhs, float rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::divide(lhs._Get_data(), rhs));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::divide(lhs.data(), rhs));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator/(float lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::divide(lhs, rhs._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::divide(lhs, rhs.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator/(const basic_point_2d<GraphicsMath>& lhs, const basic_point_2d<GraphicsMath>& rhs) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::divide(lhs._Get_data(), rhs._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::divide(lhs.data(), rhs.data()));
 		}
 
 		//
@@ -168,7 +168,7 @@ namespace std::experimental::io2d {
 		//
 
 		template <class GraphicsMath>
-		inline const typename basic_matrix_2d<GraphicsMath>::_Data_type& basic_matrix_2d<GraphicsMath>::_Get_data() const noexcept {
+		inline const typename basic_matrix_2d<GraphicsMath>::_Data_type& basic_matrix_2d<GraphicsMath>::data() const noexcept {
 			return _Data;
 		}
 		template <class GraphicsMath>
@@ -232,11 +232,11 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_translate(const basic_point_2d<GraphicsMath>& value) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_translate(value._Get_data()));
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_translate(value.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_scale(const basic_point_2d<GraphicsMath>& value) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_scale(value._Get_data()));
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_scale(value.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_rotate(float radians) noexcept {
@@ -244,7 +244,7 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_rotate(radians, origin._Get_data()));
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::create_rotate(radians, origin.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::create_reflect(float radians) noexcept {
@@ -260,12 +260,12 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath>& basic_matrix_2d<GraphicsMath>::translate(const basic_point_2d<GraphicsMath>& val) noexcept {
-			GraphicsMath::translate(_Data, val._Get_data());
+			GraphicsMath::translate(_Data, val.data());
 			return *this;
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath>& basic_matrix_2d<GraphicsMath>::scale(const basic_point_2d<GraphicsMath>& val) noexcept {
-			GraphicsMath::scale(_Data, val._Get_data());
+			GraphicsMath::scale(_Data, val.data());
 			return *this;
 		}
 		template <class GraphicsMath>
@@ -275,7 +275,7 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath>& basic_matrix_2d<GraphicsMath>::rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept {
-			GraphicsMath::rotate(_Data, radians, origin._Get_data());
+			GraphicsMath::rotate(_Data, radians, origin.data());
 			return *this;
 		}
 		template <class GraphicsMath>
@@ -311,7 +311,7 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> basic_matrix_2d<GraphicsMath>::transform_pt(const basic_point_2d<GraphicsMath>& pt) const noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::transform_pt(_Data, pt._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::transform_pt(_Data, pt.data()));
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath>& basic_matrix_2d<GraphicsMath>::operator*=(const basic_matrix_2d<GraphicsMath>& rhs) noexcept {
@@ -320,24 +320,24 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline basic_matrix_2d<GraphicsMath> operator*(const basic_matrix_2d<GraphicsMath>& lhs, const basic_matrix_2d<GraphicsMath>& rhs) noexcept {
-			return basic_matrix_2d<GraphicsMath>(GraphicsMath::multiply(lhs._Get_data(), rhs._Get_data()));
+			return basic_matrix_2d<GraphicsMath>(GraphicsMath::multiply(lhs.data(), rhs.data()));
 		}
 		template <class GraphicsMath>
 		inline bool operator==(const basic_matrix_2d<GraphicsMath>& lhs, const basic_matrix_2d<GraphicsMath>& rhs) noexcept {
-			return GraphicsMath::equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::equal(lhs.data(), rhs.data());
 		}
 		template <class GraphicsMath>
 		inline bool operator!=(const basic_matrix_2d<GraphicsMath>& lhs, const basic_matrix_2d<GraphicsMath>& rhs) noexcept {
-			return GraphicsMath::not_equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::not_equal(lhs.data(), rhs.data());
 		}
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> operator*(const basic_point_2d<GraphicsMath>& pt, const basic_matrix_2d<GraphicsMath>& m) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::transform_pt(m._Get_data(), pt._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::transform_pt(m.data(), pt.data()));
 		}
 
 		// basic_display_point
 		template <class GraphicsMath>
-		inline const typename basic_display_point<GraphicsMath>::_Data_type& basic_display_point<GraphicsMath>::_Get_data() const noexcept {
+		inline const typename basic_display_point<GraphicsMath>::_Data_type& basic_display_point<GraphicsMath>::data() const noexcept {
 			return _Data;
 		}
 		template <class GraphicsMath>
@@ -370,11 +370,11 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline bool operator==(const basic_display_point<GraphicsMath>& lhs, const basic_display_point<GraphicsMath>& rhs) noexcept {
-			return GraphicsMath::equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::equal(lhs.data(), rhs.data());
 		}
 		template <class GraphicsMath>
 		inline bool operator!=(const basic_display_point<GraphicsMath>& lhs, const basic_display_point<GraphicsMath>& rhs) noexcept {
-			return GraphicsMath::not_equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::not_equal(lhs.data(), rhs.data());
 		}
 
 		//template <class GraphicsMath>
@@ -391,33 +391,33 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		basic_point_2d<GraphicsMath> point_for_angle(float ang, const basic_point_2d<GraphicsMath>& rad) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::point_for_angle(ang, rad._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::point_for_angle(ang, rad.data()));
 		}
 
 		template <class GraphicsMath>
 		float angle_for_point(const basic_point_2d<GraphicsMath>& ctr, const basic_point_2d<GraphicsMath>& pt) noexcept {
-			return GraphicsMath::angle_for_point(ctr._Get_data(), pt._Get_data());
+			return GraphicsMath::angle_for_point(ctr.data(), pt.data());
 		}
 
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> arc_start(const basic_point_2d<GraphicsMath>& ctr, float sang, const basic_point_2d<GraphicsMath>& rad, const basic_matrix_2d<GraphicsMath>& m) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::arc_start(ctr._Get_data(), sang, rad._Get_data(), m._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::arc_start(ctr.data(), sang, rad.data(), m.data()));
 		}
 
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> arc_center(const basic_point_2d<GraphicsMath>& cpt, float sang, const basic_point_2d<GraphicsMath>& rad, const basic_matrix_2d<GraphicsMath>& m) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::arc_center(cpt._Get_data(), sang, rad._Get_data(), m._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::arc_center(cpt.data(), sang, rad.data(), m.data()));
 		}
 
 		template <class GraphicsMath>
 		inline basic_point_2d<GraphicsMath> arc_end(const basic_point_2d<GraphicsMath>& cpt, float eang, const basic_point_2d<GraphicsMath>& rad, const basic_matrix_2d<GraphicsMath>& m) noexcept {
-			return basic_point_2d<GraphicsMath>(GraphicsMath::arc_end(cpt._Get_data(), eang, rad._Get_data(), m._Get_data()));
+			return basic_point_2d<GraphicsMath>(GraphicsMath::arc_end(cpt.data(), eang, rad.data(), m.data()));
 		}
 
 		// GraphicsMath
 
 		template<class GraphicsMath>
-		inline const typename basic_bounding_box<GraphicsMath>::_Data_type& basic_bounding_box<GraphicsMath>::_Get_data() const noexcept {
+		inline const typename basic_bounding_box<GraphicsMath>::_Data_type& basic_bounding_box<GraphicsMath>::data() const noexcept {
 			return _Data;
 		}
 
@@ -455,7 +455,7 @@ namespace std::experimental::io2d {
 		}
 		template <class GraphicsMath>
 		inline void basic_bounding_box<GraphicsMath>::bottom_right(const basic_point_2d<GraphicsMath>& value) noexcept {
-			GraphicsMath::bottom_right(_Data, value._Get_data());
+			GraphicsMath::bottom_right(_Data, value.data());
 		}
 
 		template <class GraphicsMath>
@@ -491,19 +491,19 @@ namespace std::experimental::io2d {
 		template <class GraphicsMath>
 		inline bool operator==(const basic_bounding_box<GraphicsMath>& lhs, const basic_bounding_box<GraphicsMath>& rhs)
 			noexcept {
-			return GraphicsMath::equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::equal(lhs.data(), rhs.data());
 		}
 		template <class GraphicsMath>
 		inline bool operator!=(const basic_bounding_box<GraphicsMath>& lhs, const basic_bounding_box<GraphicsMath>& rhs)
 			noexcept {
-			return GraphicsMath::not_equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::not_equal(lhs.data(), rhs.data());
 		}
 
 
 		// basic_circle
 
 		template <class GraphicsMath>
-		inline const typename basic_circle<GraphicsMath>::_Data_type& basic_circle<GraphicsMath>::_Get_data() const noexcept {
+		inline const typename basic_circle<GraphicsMath>::_Data_type& basic_circle<GraphicsMath>::data() const noexcept {
 			return _Data;
 		}
 		template <class GraphicsMath>
@@ -511,13 +511,13 @@ namespace std::experimental::io2d {
 			: _Data(GraphicsMath::create_circle()) {}
 		template <class GraphicsMath>
 		inline basic_circle<GraphicsMath>::basic_circle(const basic_point_2d<GraphicsMath>& ctr, float r) noexcept
-			: _Data(GraphicsMath::create_circle(ctr._Get_data(), r)) {}
+			: _Data(GraphicsMath::create_circle(ctr.data(), r)) {}
 		template <class GraphicsMath>
 		inline basic_circle<GraphicsMath>::basic_circle(const typename GraphicsMath::circle_data_type& val) noexcept
 			: _Data(val) {}
 		template <class GraphicsMath>
 		inline void basic_circle<GraphicsMath>::center(const basic_point_2d<GraphicsMath>& ctr) noexcept {
-			GraphicsMath::center(_Data, ctr._Get_data());
+			GraphicsMath::center(_Data, ctr.data());
 		}
 		template <class GraphicsMath>
 		inline void basic_circle<GraphicsMath>::radius(float r) noexcept {
@@ -535,11 +535,11 @@ namespace std::experimental::io2d {
 
 		template <class GraphicsMath>
 		inline bool operator==(const basic_circle<GraphicsMath>& lhs, const basic_circle<GraphicsMath>& rhs) noexcept {
-			return GraphicsMath::equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::equal(lhs.data(), rhs.data());
 		}
 		template <class GraphicsMath>
 		inline bool operator!=(const basic_circle<GraphicsMath>& lhs, const basic_circle<GraphicsMath>& rhs) noexcept {
-			return GraphicsMath::not_equal(lhs._Get_data(), rhs._Get_data());
+			return GraphicsMath::not_equal(lhs.data(), rhs.data());
 		}
 	}
 }

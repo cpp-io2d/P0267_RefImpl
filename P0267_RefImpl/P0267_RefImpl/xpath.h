@@ -54,7 +54,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						abs_new_figure();
 						explicit abs_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt);
@@ -73,7 +73,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						rel_new_figure() noexcept;
 						explicit rel_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
@@ -92,7 +92,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						close_figure() noexcept;
 						close_figure(const close_figure& other);
@@ -108,7 +108,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						abs_matrix() noexcept;
 						explicit abs_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
@@ -127,7 +127,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						rel_matrix() noexcept;
 						explicit rel_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
@@ -146,7 +146,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						revert_matrix() noexcept;
 						revert_matrix(const revert_matrix& other);
@@ -162,7 +162,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						abs_line() noexcept;
 						explicit abs_line(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
@@ -181,7 +181,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						rel_line() noexcept;
 						explicit rel_line(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
@@ -200,7 +200,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						abs_quadratic_curve() noexcept;
 						abs_quadratic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
@@ -221,7 +221,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						rel_quadratic_curve() noexcept;
 						rel_quadratic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
@@ -242,7 +242,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						abs_cubic_curve() noexcept;
 						abs_cubic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt1, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt2, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
@@ -265,7 +265,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						rel_cubic_curve() noexcept;
 						rel_cubic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt1, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt2, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
@@ -288,7 +288,7 @@ namespace std {
 					private:
 						_Data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const _Data_type& data() const noexcept;
 
 						arc() noexcept;
 						arc(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& rad, float rot, float sang) noexcept;
@@ -385,7 +385,7 @@ namespace std {
 				private:
 					_Data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const _Data_type& data() const noexcept;
 					using value_type = typename basic_figure_items<GraphicsSurfaces>::figure_item;
 					using allocator_type = Allocator;
 					using reference = value_type&;
@@ -519,7 +519,7 @@ namespace std {
 					_Data_type _Data;
 
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const _Data_type& data() const noexcept;
 					// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
 					basic_interpreted_path() noexcept;
 

@@ -1028,7 +1028,7 @@ namespace std::experimental::io2d {
 				_Set_render_props(context, rp);
 				_Set_clip_props(context, cl);
 				_Set_brush_props(context, bp, b);
-				cairo_set_source(context, b._Get_data().brush.get());
+				cairo_set_source(context, b.data().brush.get());
 				cairo_paint(context);
 			}
 			template<class GraphicsMath>
@@ -1038,9 +1038,9 @@ namespace std::experimental::io2d {
 				_Set_clip_props(context, cl);
 				_Set_brush_props(context, bp, b);
 				_Set_stroke_props(context, sp, sp.max_miter_limit(), d);
-				cairo_set_source(context, b._Get_data().brush.get());
+				cairo_set_source(context, b.data().brush.get());
 				cairo_new_path(context);
-				cairo_append_path(context, ip._Get_data().path.get());
+				cairo_append_path(context, ip.data().path.get());
 				cairo_stroke(context);
 			}
 			template<class GraphicsMath>
@@ -1049,9 +1049,9 @@ namespace std::experimental::io2d {
 				_Set_render_props(context, rp);
 				_Set_clip_props(context, cl);
 				_Set_brush_props(context, bp, b);
-				cairo_set_source(context, b._Get_data().brush.get());
+				cairo_set_source(context, b.data().brush.get());
 				cairo_new_path(context);
-				cairo_append_path(context, ip._Get_data().path.get());
+				cairo_append_path(context, ip.data().path.get());
 				cairo_fill(context);
 			}
 			template<class GraphicsMath>
@@ -1061,9 +1061,9 @@ namespace std::experimental::io2d {
 				_Set_clip_props(context, cl);
 				_Set_brush_props(context, bp, b);
 				_Set_mask_props(mp, mb);
-				cairo_set_source(context, b._Get_data().brush.get());
+				cairo_set_source(context, b.data().brush.get());
 				cairo_new_path(context);
-				cairo_mask(context, mb._Get_data().brush.get());
+				cairo_mask(context, mb.data().brush.get());
 			}
 		}
 	}

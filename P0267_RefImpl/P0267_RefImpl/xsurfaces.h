@@ -19,7 +19,7 @@ namespace std::experimental::io2d {
 		private:
 			_Data_type _Data;
 		public:
-			const _Data_type& _Get_data() const noexcept;
+			const _Data_type& data() const noexcept;
 			basic_render_props() noexcept;
 			explicit basic_render_props(antialias a, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}, compositing_op co = compositing_op::over) noexcept;
 			basic_render_props(const basic_render_props& other);
@@ -69,7 +69,7 @@ namespace std::experimental::io2d {
 		private:
 			_Data_type _Data;
 		public:
-			const _Data_type& _Get_data() const noexcept;
+			const _Data_type& data() const noexcept;
 
 			basic_clip_props() noexcept;
 			explicit basic_clip_props(const basic_bounding_box<graphics_math_type>& r, experimental::io2d::fill_rule fr = experimental::io2d::fill_rule::winding);
@@ -97,7 +97,7 @@ namespace std::experimental::io2d {
 		private:
 			_Data_type _Data;
 		public:
-			const _Data_type& _Get_data() const noexcept;
+			const _Data_type& data() const noexcept;
 			basic_stroke_props() noexcept;
 			explicit basic_stroke_props(float w, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
 			basic_stroke_props(const basic_stroke_props& other);
@@ -124,7 +124,7 @@ namespace std::experimental::io2d {
 		private:
 			_Data_type _Data;
 		public:
-			const _Data_type& _Get_data() const noexcept;
+			const _Data_type& data() const noexcept;
 
 			basic_mask_props(io2d::wrap_mode w = io2d::wrap_mode::repeat, io2d::filter fi = io2d::filter::good, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
 			basic_mask_props(const basic_mask_props& other) noexcept;
@@ -147,7 +147,7 @@ namespace std::experimental::io2d {
 		private:
 			_Data_type _Data;
 		public:
-			const _Data_type& _Get_data() const noexcept;
+			const _Data_type& data() const noexcept;
 			basic_dashes() noexcept;
 			template <class ForwardIterator>
 			basic_dashes(float offset, ForwardIterator first, ForwardIterator last);
@@ -169,7 +169,7 @@ namespace std::experimental::io2d {
 			_Data_type _Data;
 
 		public:
-			_Data_type& _Get_data() noexcept;
+			_Data_type& data() noexcept;
 			basic_image_surface(io2d::format fmt, int width, int height);
 #ifdef _Filesystem_support_test
 			basic_image_surface(filesystem::path f, image_file_format iff, io2d::format fmt);
@@ -222,7 +222,7 @@ namespace std::experimental::io2d {
 			_Data_type _Data;
 
 		public:
-			_Data_type& _Get_data() noexcept;
+			_Data_type& data() noexcept;
 
 			// System manages event loop
 			basic_output_surface(int preferredWidth, int preferredHeight,
@@ -303,7 +303,7 @@ namespace std::experimental::io2d {
 			data_type _Data;
 
 		public:
-			data_type& _Get_data() noexcept;
+			data_type& data() noexcept;
 
 			// Note: This is the only way to construct this type without bringing implementation details out of the GraphicsSurfaces backend. As such, users of this type need to directly invoke the appropriate GraphicsSurfaces::surfaces::create_unmanaged_output_surface(...) function and pass the result into this ctor.
 			basic_unmanaged_output_surface(data_type&& data) noexcept;

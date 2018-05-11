@@ -11,7 +11,7 @@ namespace std {
 				private:
 					_Data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const _Data_type& data() const noexcept;
 
 					// \ref{\iotwod.\pointtwod.cons}, constructors:
 					basic_point_2d() noexcept;
@@ -74,7 +74,7 @@ namespace std {
 				private:
 					_Data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const _Data_type& data() const noexcept;
 
 					basic_matrix_2d() noexcept;
 					basic_matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept;
@@ -138,7 +138,7 @@ namespace std {
 				private:
 					_Data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const _Data_type& data() const noexcept;
 
 					// \ref{\iotwod.\pointtwod.cons}, constructors:
 					basic_display_point() noexcept;
@@ -163,7 +163,7 @@ namespace std {
 				private:
 					_Data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const _Data_type& data() const noexcept;
 					basic_bounding_box() noexcept;
 					basic_bounding_box(float x, float y, float width, float height) noexcept;
 					basic_bounding_box(const basic_point_2d<GraphicsMath>& tl, const basic_point_2d<GraphicsMath>& br) noexcept;
@@ -195,7 +195,7 @@ namespace std {
 				private:
 					_Data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const _Data_type& data() const noexcept;
 					basic_circle() noexcept;
 					basic_circle(const basic_point_2d<GraphicsMath>& ctr, float rad) noexcept;
 					basic_circle(const typename GraphicsMath::circle_data_type& val) noexcept;

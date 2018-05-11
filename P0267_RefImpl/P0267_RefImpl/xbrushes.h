@@ -61,7 +61,7 @@ namespace std {
 				private:
 					_Data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const _Data_type& data() const noexcept;
 
 					explicit basic_brush(const rgba_color& c);
 

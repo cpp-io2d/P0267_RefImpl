@@ -71,7 +71,7 @@ namespace std::experimental::io2d {
 				using img_sfc_data_type = typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type;
 				brush_data_type data;
 				// The surface is dying and I want to steal some of its data, ergo const_cast.
-				img_sfc_data_type& imgData = const_cast<img_sfc_data_type&>(img._Get_data());
+				img_sfc_data_type& imgData = const_cast<img_sfc_data_type&>(img.data());
 				data.imageSurface = shared_ptr<cairo_surface_t>(imgData.surface.release(), &cairo_surface_destroy);
 				data.brush = shared_ptr<cairo_pattern_t>(cairo_pattern_create_for_surface(data.imageSurface.get()), &cairo_pattern_destroy);
 				data.brushType = brush_type::surface;

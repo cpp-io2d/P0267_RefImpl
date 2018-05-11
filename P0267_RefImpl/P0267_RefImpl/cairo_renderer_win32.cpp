@@ -47,7 +47,7 @@ namespace std::experimental::io2d {
 #endif
 					case WM_CREATE:
 					{
-						outputSfc->display_dimensions(outputSfc->_Get_data().data.display_dimensions);
+						outputSfc->display_dimensions(outputSfc->data().data.display_dimensions);
 						// Return 0 to allow the window to proceed in the creation process.
 						return lrZero;
 					} break;
@@ -65,7 +65,7 @@ namespace std::experimental::io2d {
 						if (!DestroyWindow(hwnd)) {
 							_Throw_system_error_for_GetLastError(GetLastError(), "Failed call to DestroyWindow when processing WM_CLOSE.");
 						}
-						outputSfc->_Get_data().data.hwnd = nullptr;
+						outputSfc->data().data.hwnd = nullptr;
 						return lrZero;
 					} break;
 
@@ -90,7 +90,7 @@ namespace std::experimental::io2d {
 					case WM_SIZE:
 					{
 						auto dimensions = basic_display_point<_Graphics_math_float_impl>(LOWORD(lParam), HIWORD(lParam));
-						auto& data = outputSfc->_Get_data();
+						auto& data = outputSfc->data();
 						if (data.data.display_dimensions != dimensions) {
 							data.data.display_dimensions = dimensions;
 
@@ -105,7 +105,7 @@ namespace std::experimental::io2d {
 
 					case WM_PAINT:
 					{
-						auto& displayDimensions = outputSfc->_Get_data().data.display_dimensions;
+						auto& displayDimensions = outputSfc->data().data.display_dimensions;
 						PAINTSTRUCT ps;
 						HDC hdc;
 						hdc = BeginPaint(hwnd, &ps);
@@ -118,8 +118,8 @@ namespace std::experimental::io2d {
 							break;
 						}
 
-						outputSfc->_Get_data().draw_callback(*outputSfc);
-						_Cairo_graphics_surfaces<_Graphics_math_float_impl>::surfaces::_Render_to_native_surface(outputSfc->_Get_data(), *outputSfc);
+						outputSfc->data().draw_callback(*outputSfc);
+						_Cairo_graphics_surfaces<_Graphics_math_float_impl>::surfaces::_Render_to_native_surface(outputSfc->data(), *outputSfc);
 
 						EndPaint(hwnd, &ps);
 					} break;

@@ -70,7 +70,7 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces, class Allocator>
-		inline const typename basic_path_builder<GraphicsSurfaces, Allocator>::_Data_type& basic_path_builder<GraphicsSurfaces, Allocator>::_Get_data() const noexcept {
+		inline const typename basic_path_builder<GraphicsSurfaces, Allocator>::_Data_type& basic_path_builder<GraphicsSurfaces, Allocator>::data() const noexcept {
 			return _Data;
 		}
 
@@ -372,8 +372,8 @@ namespace std::experimental::io2d {
 				return false;
 			}
 			//return equal(_Data.cbegin(), _Data.cend(), rhs._Data.cbegin(), rhs._Data.cend());
-			const auto& lhsData = lhs._Get_data();
-			const auto& rhsData = rhs._Get_data();
+			const auto& lhsData = lhs.data();
+			const auto& rhsData = rhs.data();
 			auto lhsEnd = lhsData.end();
 			auto rhsEnd = rhsData.end();
 			auto lhsIter = lhsData.begin();
