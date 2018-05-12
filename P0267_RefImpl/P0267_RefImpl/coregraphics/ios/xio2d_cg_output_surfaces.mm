@@ -1,4 +1,4 @@
-#include "io2d_cg_output_surfaces.h"
+#include "xio2d_cg_output_surfaces.h"
 #include <UIKit/UIKit.h>
 
 @interface _IO2DManagedAppDelegate : UIResponder <UIApplicationDelegate>

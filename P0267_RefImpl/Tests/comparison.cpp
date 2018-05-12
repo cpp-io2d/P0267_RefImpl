@@ -1,6 +1,7 @@
 #include "comparison.h"
 #include <optional>
 #include <fstream>
+#include <iostream>
 #include <vector>
 #include <array>
 #include <png.h>

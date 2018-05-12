@@ -1,7 +1,7 @@
 #ifndef _IO2D_CG_PATHS_FIGURES_H
 #define _IO2D_CG_PATHS_FIGURES_H
 
-#include "io2d_cg_main.h"
+#include "xio2d_cg_main.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
 

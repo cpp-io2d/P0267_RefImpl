@@ -638,11 +638,11 @@ struct surface_state_props {
     }
 }
 
-#include "io2d_cg_surfaces.h"
-#include "io2d_cg_brushes.h"
-#include "io2d_cg_paths.h"
-#include "io2d_cg_paths_figures.h"
-#include "io2d_cg_surface_state_props.h"
-#include "io2d_cg_output_surfaces.h"
+#include "xio2d_cg_surfaces.h"
+#include "xio2d_cg_brushes.h"
+#include "xio2d_cg_paths.h"
+#include "xio2d_cg_paths_figures.h"
+#include "xio2d_cg_surface_state_props.h"
+#include "xio2d_cg_output_surfaces.h"
 
 #endif // _IO2D_CG_MAIN_H_

@@ -1,10 +1,8 @@
 #ifndef _IO2D_CG_PATHS_H
 #define _IO2D_CG_PATHS_H
 
-#include <iostream>
-
-#include "io2d_cg_main.h"
-#include "io2d_cg_interop.h"
+#include "xio2d_cg_main.h"
+#include "xio2d_cg_interop.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
     

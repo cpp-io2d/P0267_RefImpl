@@ -1,8 +1,8 @@
-#ifndef _IO2D_COREGRAPHICS_MAC_H
-#define _IO2D_COREGRAPHICS_MAC_H
+#ifndef _IO2D_COREGRAPHICS_IOS_H
+#define _IO2D_COREGRAPHICS_IOS_H
 
 #include <xio2d.h>
-#include "../io2d_cg_main.h"
+#include "../xio2d_cg_main.h"
 
 namespace std::experimental::io2d {
     inline namespace v1 {
