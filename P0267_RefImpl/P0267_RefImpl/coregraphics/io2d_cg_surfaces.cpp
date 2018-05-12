@@ -1,5 +1,4 @@
 #include "io2d_cg_surfaces.h"
-#include <CoreServices/CoreServices.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <ImageIO/ImageIO.h>
 #include <fstream>
@@ -339,7 +338,7 @@ CGColorRef _CreateColorFromBitmapLocation(CGContextRef ctx, int x, int y)
     const auto green = pixel[2];
     const auto blue = pixel[3];
 
-    double components[4] = { double(red)/255., double(green)/255., double(blue)/255., double(alpha)/255. };
+    CGFloat components[4] = { double(red)/255., double(green)/255., double(blue)/255., double(alpha)/255. };
     return CGColorCreate(CGBitmapContextGetColorSpace(ctx), components);
 }
     
@@ -363,7 +362,7 @@ static void PerformPaint(CGContextRef ctx, const basic_brush<_GS>& b, const basi
         _DrawTexture(ctx, surface_brush, bp.filter(), bp.wrap_mode(), bp.brush_matrix());
     }        
 }
-    
+
 static bool IsEmpty(CGRect rc)
 {
     return rc.size.width < 0.5 || rc.size.height < 0.5;        

@@ -470,8 +470,11 @@ struct surface_state_props {
                         ::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
                     };
  */
+
                     struct _OutputSurfaceCocoa;
                     using output_surface_data_type = _OutputSurfaceCocoa*;
+                                        
+                    
                     //using output_surface_data_type = _Output_surface_win32_data;
 /*                    using unmanaged_output_surface_data_type = _Unmanaged_output_surface_win32_data;
 #elif defined(USE_XLIB)
@@ -523,7 +526,7 @@ struct surface_state_props {
                     template <class OutputDataType, class OutputSurfaceType>
                     static void _Render_to_native_surface(OutputDataType& osd, OutputSurfaceType& sfc);
  
-                    static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
+                    
                     // unmanaged_output_surface functions
  
                     static unmanaged_output_surface_data_type create_unmanaged_output_surface();
@@ -577,7 +580,7 @@ struct surface_state_props {
  */
  
                     // output_surface functions
-                    
+                    static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
 
                     static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_style rr, float fps);
                     static output_surface_data_type create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, error_code& ec, io2d::scaling scl, io2d::refresh_style rr, float fps) noexcept;
@@ -612,7 +615,7 @@ struct surface_state_props {
                     static void draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_GS>&)>);
                     static void size_change_callback(output_surface_data_type& data, function<void(basic_output_surface<_GS>&)>);
 //                    static void user_scaling_callback(output_surface_data_type& data, function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)>);
-//                    static void dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
+                    static void dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
 //                    static void scaling(output_surface_data_type& data, io2d::scaling val);
 //                    static void letterbox_brush(output_surface_data_type& data, const optional<basic_brush<_Graphics_surfaces_type>>& val, const optional<basic_brush_props<_Graphics_surfaces_type>>& bp) noexcept;
 //                    static void letterbox_brush_props(output_surface_data_type& data, const basic_brush_props<_Graphics_surfaces_type>& val);
@@ -621,7 +624,7 @@ struct surface_state_props {
 //
 //                    static io2d::format format(const output_surface_data_type& data) noexcept;
                     static basic_display_point<GraphicsMath> dimensions(const output_surface_data_type& data) noexcept;
-//                    static basic_display_point<GraphicsMath> display_dimensions(const output_surface_data_type& data) noexcept;
+                    static basic_display_point<GraphicsMath> display_dimensions(const output_surface_data_type& data) noexcept;
 //                    static io2d::scaling scaling(output_surface_data_type& data) noexcept;
 //                    static optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const output_surface_data_type& data) noexcept;
 //                    static basic_brush_props<_Graphics_surfaces_type> letterbox_brush_props(const output_surface_data_type& data) noexcept;

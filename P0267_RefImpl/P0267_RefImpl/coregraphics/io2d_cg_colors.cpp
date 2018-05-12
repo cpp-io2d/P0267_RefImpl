@@ -7,7 +7,7 @@ CGColorSpaceRef _RGBColorSpace() noexcept
     static const auto rgb = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
     return rgb;
 }
-    
+
 CGColorSpaceRef _GrayColorSpace() noexcept
 {
     static const auto gray = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
@@ -22,13 +22,15 @@ CGColorSpaceRef _PatternColorSpace() noexcept
     
 CGColorRef _ClearColor() noexcept
 {
-    static auto color = CGColorCreateGenericRGB(0.0, 0.0, 0.0, 1.0);
+    CGFloat components[] = {0.0, 0.0, 0.0, 1.0};
+    static auto color = CGColorCreate(_RGBColorSpace(), components );
     return color;
 }
     
 CGColorRef _TransparentColor() noexcept
 {
-    static auto color = CGColorCreateGenericRGB(0.0, 0.0, 0.0, 0.0);
+    CGFloat components[] = {0.0, 0.0, 0.0, 0.0};    
+    static auto color = CGColorCreate(_RGBColorSpace(), components);
     return color;
 }
     
