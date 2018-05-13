@@ -17,6 +17,7 @@ struct _GS::surfaces::_OutputSurfaceCocoa
 {    
     using context_t = remove_pointer_t<CGContextRef>;
     unique_ptr<context_t, decltype(&CGContextRelease)> draw_buffer{ nullptr, &CGContextRelease };
+    __weak _IO2ManagedView* output_view = nil;
     basic_display_point<GraphicsMath> buffer_size;
     function<void(basic_output_surface<_GS>&)> draw_callback;
     function<void(basic_output_surface<_GS>&)> size_change_callback;
@@ -136,7 +137,13 @@ void _GS::surfaces::mask(output_surface_data_type& data, const basic_brush<_GS>&
 
 basic_display_point<GraphicsMath> _GS::surfaces::display_dimensions(const output_surface_data_type& data) noexcept
 {
-    return max_display_dimensions();
+    if( data->output_view ) {
+        auto bounds = data->output_view.bounds;
+        return basic_display_point<GraphicsMath>{int(bounds.size.width), int(bounds.size.height)};
+    }
+    else {
+        return max_display_dimensions();        
+    }
 }
     
 basic_display_point<GraphicsMath> _GS::surfaces::max_display_dimensions() noexcept
@@ -216,6 +223,7 @@ static CADisplayLink *CreateDisplayLink(id target,
                                           @selector(redrawFired:),
                                           g_CurrentOutputSurface->refresh_style,
                                           g_CurrentOutputSurface->fps);
+        g_CurrentOutputSurface->output_view = self;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     }
     return self;
@@ -224,6 +232,16 @@ static CADisplayLink *CreateDisplayLink(id target,
 - (void) redrawFired:(CADisplayLink *)sender
 {
     [self setNeedsDisplay];
+}
+
+- (void) setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+    
+    auto managed_surface = g_CurrentOutputSurface;
+    assert(managed_surface);
+    if( managed_surface->size_change_callback )
+        managed_surface->size_change_callback(*managed_surface->frontend);
 }
 
 - (void)drawRect:(CGRect)rect {
