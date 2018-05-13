@@ -1,7 +1,7 @@
 #ifndef _IO2D_CG_SURFACE_STATE_PROPS_H_
 #define _IO2D_CG_SURFACE_STATE_PROPS_H_
 
-#include "io2d_cg_main.h"
+#include "xio2d_cg_main.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
 

@@ -22,3 +22,13 @@ endif()
 
 add_executable(cpuload ${CPULOAD_SRC})
 target_link_libraries(cpuload io2d)
+
+if( DEFINED IOS_PLATFORM )
+    # iOS requires special packaging, so we have to treat this target separately
+    set_target_properties(cpuload PROPERTIES MACOSX_BUNDLE YES)
+    set_target_properties(cpuload PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/iOS/Info.plist")
+    target_sources(cpuload PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/iOS/LaunchScreen.storyboard)
+    target_sources(cpuload PRIVATE iOS/libcxx_tmp_stubs.cpp)
+    set_target_properties(cpuload PROPERTIES RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/iOS/LaunchScreen.storyboard")
+    set_target_properties(cpuload PROPERTIES XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
+endif()

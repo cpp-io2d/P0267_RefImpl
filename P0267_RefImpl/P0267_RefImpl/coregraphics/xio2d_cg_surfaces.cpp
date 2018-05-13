@@ -1,12 +1,12 @@
-#include "io2d_cg_surfaces.h"
-#include <CoreServices/CoreServices.h>
+#include "xio2d_cg_surfaces.h"
+#include "TargetConditionals.h"
 #include <CoreFoundation/CoreFoundation.h>
 #include <ImageIO/ImageIO.h>
 #include <fstream>
-#include "io2d_cg_interop.h"
-#include "io2d_cg_gradient.h"
-#include "io2d_cg_colors.h"
-#include "io2d_cg_texture.h"
+#include "xio2d_cg_interop.h"
+#include "xio2d_cg_gradient.h"
+#include "xio2d_cg_colors.h"
+#include "xio2d_cg_texture.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
     
@@ -21,7 +21,11 @@ CGContextRef _CreateBitmap(io2d::format fmt, int width, int height) noexcept
 {
     switch (fmt) {
         case format::argb32:
+#if TARGET_OS_IOS
+            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageByteOrder32Little | kCGImageAlphaPremultipliedFirst | kCGImageAlphaFirst);
+#else
             return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaPremultipliedFirst);
+#endif            
         case format::rgb24:
             return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaNoneSkipFirst);
         case format::rgb30:
@@ -339,7 +343,7 @@ CGColorRef _CreateColorFromBitmapLocation(CGContextRef ctx, int x, int y)
     const auto green = pixel[2];
     const auto blue = pixel[3];
 
-    double components[4] = { double(red)/255., double(green)/255., double(blue)/255., double(alpha)/255. };
+    CGFloat components[4] = { double(red)/255., double(green)/255., double(blue)/255., double(alpha)/255. };
     return CGColorCreate(CGBitmapContextGetColorSpace(ctx), components);
 }
     
@@ -363,7 +367,7 @@ static void PerformPaint(CGContextRef ctx, const basic_brush<_GS>& b, const basi
         _DrawTexture(ctx, surface_brush, bp.filter(), bp.wrap_mode(), bp.brush_matrix());
     }        
 }
-    
+
 static bool IsEmpty(CGRect rc)
 {
     return rc.size.width < 0.5 || rc.size.height < 0.5;        

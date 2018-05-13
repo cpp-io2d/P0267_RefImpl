@@ -40,6 +40,7 @@ private:
     float m_TransitionPoint = 0.f;
     vector<CellState> m_Cells;
     vector<uint8_t> m_Counts;
+    interpreted_path m_CellFigure;    
 };
 
 GameOfLife::GameOfLife(int board_width, int board_height):
@@ -49,6 +50,17 @@ GameOfLife::GameOfLife(int board_width, int board_height):
     assert( board_width > 0 && board_height > 0 );
     m_Cells.resize(board_width * board_height, CellState::Off);
     m_Counts.resize(board_width * board_height);
+    m_CellFigure = [&]{
+        const auto cell_size = m_CellPxSize - 1.f;
+        auto pb = path_builder{};
+        pb.new_figure({1.f, 1.f});
+        pb.rel_line({cell_size, 0.f});
+        pb.rel_line({0.f, cell_size});
+        pb.rel_line({-cell_size, 0.f});
+        pb.rel_line({0.f, -cell_size});
+        pb.close_figure();
+        return interpreted_path{pb};        
+    }();  
 }
 
 void GameOfLife::Seed(int amount)
@@ -113,62 +125,82 @@ void GameOfLife::Display(output_surface &surface)
 
 void GameOfLife::DrawCells(output_surface &surface)
 {
+    auto beta = m_TransitionPoint;
+    auto gamma = 1.f - m_TransitionPoint;    
     const auto on_brush = brush{rgba_color::black};
-    const auto fading_brush = brush{rgba_color{0.f, 0.f, 0.f, 1.f - m_TransitionPoint}};
-    const auto emerging_brush = brush{rgba_color{0.f, 0.f, 0.f, m_TransitionPoint}};
-    
+    const auto fading_brush = brush{rgba_color{0.5f*beta, 0.5f*beta, 0.5f*beta}};
+    const auto emerging_brush = brush{rgba_color{0.5f*gamma, 0.5f*gamma, 0.5f*gamma}};
     const auto cell_size = m_CellPxSize - 1.f;
+        
     for( auto y = 0; y < m_BoardHeight; ++y )
         for( auto x = 0; x < m_BoardWidth; ++x ) {
             auto state = At(x, y);
+            auto rp = render_props{};
+            rp.compositing(compositing_op::source);
             if( state == CellState::On ) {
-                auto bb = bounding_box{m_CellPxSize * x + 1, m_CellPxSize * y + 1, cell_size, cell_size};
-                surface.paint(on_brush, nullopt, nullopt, clip_props{bb});
+                rp.surface_matrix(matrix_2d::init_translate({m_CellPxSize * x, m_CellPxSize * y}));
+                surface.fill(on_brush, m_CellFigure, nullopt, rp);
             }
             if( state == CellState::Fading ) {
-                auto sz = cell_size  * (1.f - m_TransitionPoint);
-                auto d = (cell_size - sz) / 2;
-                auto bb = bounding_box{m_CellPxSize * x + 1 + d, m_CellPxSize * y + 1 + d, sz, sz};
-                surface.paint(fading_brush, nullopt, nullopt, clip_props{bb});
+                rp.surface_matrix(matrix_2d::init_scale({gamma, gamma}) *
+                                  matrix_2d::init_translate({cell_size * beta / 2 , cell_size * beta / 2}) * 
+                                  matrix_2d::init_translate({m_CellPxSize * x, m_CellPxSize * y}));
+                surface.fill(fading_brush, m_CellFigure, nullopt, rp);
             }
             if( state == CellState::Emerging ) {
-                auto sz = cell_size * m_TransitionPoint;
-                auto d = (cell_size - sz) / 2;
-                auto bb = bounding_box{m_CellPxSize * x + 1 + d, m_CellPxSize * y + 1 + d, sz, sz};
-                surface.paint(emerging_brush, nullopt, nullopt, clip_props{bb});
+                rp.surface_matrix(matrix_2d::init_scale({beta, beta}) *
+                                  matrix_2d::init_translate({cell_size * gamma / 2 , cell_size * gamma / 2}) * 
+                                  matrix_2d::init_translate({m_CellPxSize * x, m_CellPxSize * y}));
+                surface.fill(emerging_brush, m_CellFigure, nullopt, rp);                
             }
         }
 }
 
 void GameOfLife::DrawGrid(output_surface &surface)
 {
-    surface.paint(brush{rgba_color::light_gray});
+    auto rp = render_props{};
+    rp.compositing(compositing_op::source);
+    surface.paint(brush{rgba_color::light_gray});    
     
     auto b = brush{rgba_color::gray};
     auto sp = stroke_props{1., line_cap::none};
     auto dp = dashes{ 1.f, {1.f, 1.f} };
+    
+    auto pb = path_builder{};
+    pb.new_figure({0.5f, 0.f});
+    pb.rel_line({0.f, m_BoardHeight * m_CellPxSize});
+    auto vert_line = interpreted_path{pb};
     for( auto i = 0; i < m_BoardWidth; ++i ) {
-        auto pb = path_builder{};
-        pb.new_figure({i*m_CellPxSize + 0.5f, 0.f});
-        pb.rel_line({0.f, m_BoardHeight * m_CellPxSize});
-        surface.stroke(b, pb, nullopt, sp, dp);
+        rp.surface_matrix(matrix_2d::init_translate({i*m_CellPxSize, 0.f}));
+        surface.stroke(b, vert_line, nullopt, sp, dp, rp);
     }
+    
+    pb.clear();
+    pb.new_figure({0.f, 0.5f});
+    pb.rel_line({m_BoardWidth*m_CellPxSize, 0.f});
+    auto hor_line = interpreted_path{pb};
     for( auto i = 0; i < m_BoardHeight; ++i ) {
-        auto pb = path_builder{};
-        pb.new_figure({0.f, i*m_CellPxSize + 0.5f});
-        pb.rel_line({m_BoardWidth*m_CellPxSize, 0.f});
-        surface.stroke(b, pb, nullopt, sp, dp);
+        rp.surface_matrix(matrix_2d::init_translate({0.f, i*m_CellPxSize}));
+        surface.stroke(b, hor_line, nullopt, sp, dp, rp);        
     }
 }
 
 int main(int argc, char **argv)
 {
-    auto game = GameOfLife{50, 50};
-    game.Seed(300);
-    auto display = output_surface{500, 500, format::argb32};
+    auto game = unique_ptr<GameOfLife>();    
+    auto display = output_surface{500, 500, format::argb32, scaling::none, refresh_style::fixed, 30.f};    
+    display.size_change_callback([&](output_surface& surface){
+        surface.dimensions(surface.display_dimensions());
+    });
     display.draw_callback([&](auto& surface) {
-        game.Tick();
-        game.Display(surface);
+        if( !game ) {
+            auto board_width = display.dimensions().x()/10;
+            auto board_height = display.dimensions().y()/10;
+            game = make_unique<GameOfLife>(board_width, board_height);    
+            game->Seed((board_width * board_height) / 8);            
+        }
+        game->Tick();
+        game->Display(surface);
     });
     display.begin_show();
 }
