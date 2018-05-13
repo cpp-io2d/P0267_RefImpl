@@ -31,6 +31,7 @@ private:
 void CPUMeter::Run()
 {
     auto display = output_surface{400, 400, format::argb32, scaling::letterbox, refresh_style::fixed, 30};
+    display.dimensions(display.display_dimensions());
     display.draw_callback([&](output_surface& surface){
         Update();
         Display(surface);
