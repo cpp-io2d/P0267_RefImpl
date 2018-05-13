@@ -26,6 +26,8 @@ set(IO2D_LIB_SRC
     ../xio2d_cg_colors.h
     ../xio2d_cg_texture.cpp
     ../xio2d_cg_texture.h
+	../xio2d_cg_fps_counter.cpp
+	../xio2d_cg_fps_counter.h
 )
 
 add_library(io2d_coregraphics_mac ${IO2D_LIB_SRC})

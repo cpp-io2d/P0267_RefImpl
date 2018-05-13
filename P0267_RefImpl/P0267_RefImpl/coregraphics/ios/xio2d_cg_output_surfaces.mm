@@ -1,4 +1,5 @@
 #include "xio2d_cg_output_surfaces.h"
+#include "../xio2d_cg_fps_counter.h"
 #include <UIKit/UIKit.h>
 
 @interface _IO2DManagedAppDelegate : UIResponder <UIApplicationDelegate>
@@ -26,6 +27,8 @@ struct _GS::surfaces::_OutputSurfaceCocoa
     io2d::format preferred_format;
     io2d::refresh_style refresh_style;
     float fps;
+    _FPSCounter fps_counter;
+    bool draw_fps = true;
 };
   
 static _GS::surfaces::_OutputSurfaceCocoa *g_CurrentOutputSurface = nullptr;
@@ -244,6 +247,14 @@ static CADisplayLink *CreateDisplayLink(id target,
         managed_surface->size_change_callback(*managed_surface->frontend);
 }
 
+- (void)drawFPS {
+    auto managed_surface = g_CurrentOutputSurface;
+    assert(managed_surface);    
+    auto str = [NSString stringWithFormat:@"FPS: %d", int(managed_surface->fps_counter.FPS())];
+    auto attr_str = [[NSAttributedString alloc] initWithString:str]; 
+    [attr_str drawAtPoint:CGPointMake(0, self.bounds.size.height - 15)];    
+}
+
 - (void)drawRect:(CGRect)rect {
     auto managed_surface = g_CurrentOutputSurface;
     assert(managed_surface);
@@ -264,6 +275,11 @@ static CADisplayLink *CreateDisplayLink(id target,
     auto rc = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
     CGContextSetBlendMode(ctx, kCGBlendModeCopy);    
     CGContextDrawImage(ctx, rc, image);
+    
+    if( managed_surface->draw_fps ) {    
+        managed_surface->fps_counter.CommitFrame();    
+        [self drawFPS];
+    }
 }
 
 @end
