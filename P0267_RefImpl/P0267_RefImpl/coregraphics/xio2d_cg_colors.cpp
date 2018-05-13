@@ -1,16 +1,25 @@
 #include "xio2d_cg_colors.h"
+#include "TargetConditionals.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
 
 CGColorSpaceRef _RGBColorSpace() noexcept
 {
+#if TARGET_OS_IOS
+    static const auto rgb = CGColorSpaceCreateDeviceRGB();
+#else
     static const auto rgb = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+#endif        
     return rgb;
 }
 
 CGColorSpaceRef _GrayColorSpace() noexcept
 {
+#if TARGET_OS_IOS
+    static const auto gray = CGColorSpaceCreateDeviceGray();
+#else 
     static const auto gray = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
+#endif
     return gray;
 }
 

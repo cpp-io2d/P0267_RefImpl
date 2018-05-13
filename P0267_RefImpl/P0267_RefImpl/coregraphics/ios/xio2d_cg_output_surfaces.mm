@@ -1,6 +1,7 @@
 #include "xio2d_cg_output_surfaces.h"
 #include "../xio2d_cg_fps_counter.h"
 #include <UIKit/UIKit.h>
+#include <iostream>
 
 @interface _IO2DManagedAppDelegate : UIResponder <UIApplicationDelegate>
 @property (strong, nonatomic) UIWindow *window;
@@ -255,6 +256,21 @@ static CADisplayLink *CreateDisplayLink(id target,
     [attr_str drawAtPoint:CGPointMake(0, self.bounds.size.height - 15)];    
 }
 
+static void CheckThatPixelLayoutIsTheSame( CGContextRef view, CGContextRef buffer )
+{
+    static bool checked_once = false;
+    if( checked_once )
+        return;
+    checked_once = true;    
+    auto view_bitmap = CGBitmapContextGetBitmapInfo(view);
+    auto buffer_bitmap = CGBitmapContextGetBitmapInfo(buffer); 
+    if( view_bitmap != buffer_bitmap )
+        std::cerr << "view and buffer have different pixel layouts: " 
+                  << view_bitmap << "(view) and "
+                  << buffer_bitmap << "(buffer)."
+                  << std::endl;
+}
+
 - (void)drawRect:(CGRect)rect {
     auto managed_surface = g_CurrentOutputSurface;
     assert(managed_surface);
@@ -267,7 +283,9 @@ static CADisplayLink *CreateDisplayLink(id target,
     
     managed_surface->draw_callback(*managed_surface->frontend);
     
-    auto ctx = UIGraphicsGetCurrentContext();    
+    auto ctx = UIGraphicsGetCurrentContext();
+    CheckThatPixelLayoutIsTheSame(ctx, managed_surface->draw_buffer.get());
+    
     auto image = CGBitmapContextCreateImage(managed_surface->draw_buffer.get());
     _AutoRelease release_image{image};
     
@@ -279,7 +297,7 @@ static CADisplayLink *CreateDisplayLink(id target,
     if( managed_surface->draw_fps ) {    
         managed_surface->fps_counter.CommitFrame();    
         [self drawFPS];
-    }
+    }    
 }
 
 @end

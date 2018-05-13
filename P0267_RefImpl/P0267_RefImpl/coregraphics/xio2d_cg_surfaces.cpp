@@ -1,4 +1,5 @@
 #include "xio2d_cg_surfaces.h"
+#include "TargetConditionals.h"
 #include <CoreFoundation/CoreFoundation.h>
 #include <ImageIO/ImageIO.h>
 #include <fstream>
@@ -20,7 +21,11 @@ CGContextRef _CreateBitmap(io2d::format fmt, int width, int height) noexcept
 {
     switch (fmt) {
         case format::argb32:
+#if TARGET_OS_IOS
+            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageByteOrder32Little | kCGImageAlphaPremultipliedFirst | kCGImageAlphaFirst);
+#else
             return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaPremultipliedFirst);
+#endif            
         case format::rgb24:
             return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaNoneSkipFirst);
         case format::rgb30:
