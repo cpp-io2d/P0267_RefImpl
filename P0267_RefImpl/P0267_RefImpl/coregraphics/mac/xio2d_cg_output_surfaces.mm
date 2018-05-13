@@ -94,6 +94,17 @@ basic_display_point<GraphicsMath> _GS::surfaces::dimensions(const output_surface
 {
     return data->buffer_size;
 }
+
+void _GS::surfaces::dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val)
+{
+    RebuildBackBuffer(*data, val);                
+}
+    
+basic_display_point<GraphicsMath> _GS::surfaces::display_dimensions(const output_surface_data_type& data) noexcept
+{
+    auto bounds = data->window.contentView.bounds;
+    return {int(bounds.size.width), int(bounds.size.height)};
+}
     
 void _GS::surfaces::draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_GS>&)> callback)
 {
