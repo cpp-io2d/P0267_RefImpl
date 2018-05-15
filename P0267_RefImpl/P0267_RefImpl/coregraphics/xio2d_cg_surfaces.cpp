@@ -24,7 +24,7 @@ CGContextRef _CreateBitmap(io2d::format fmt, int width, int height) noexcept
 #if TARGET_OS_IOS
             return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageByteOrder32Little | kCGImageAlphaPremultipliedFirst | kCGImageAlphaFirst);
 #else
-            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaPremultipliedFirst);
+            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageByteOrder32Little | kCGImageAlphaPremultipliedFirst);            
 #endif            
         case format::rgb24:
             return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaNoneSkipFirst);
@@ -330,7 +330,7 @@ CGColorRef _CreateColorFromBitmapLocation(CGContextRef ctx, int x, int y)
     const auto height = CGBitmapContextGetHeight(ctx);
     if( x < 0 || x >= width || y < 0 || y >= height )
         return nullptr;
-    
+    const auto bitmap_layout = CGBitmapContextGetBitmapInfo(ctx); 
     const auto stride = CGBitmapContextGetBytesPerRow(ctx);
     const auto bpp = CGBitmapContextGetBitsPerPixel(ctx);
     if( bpp != 32 )
@@ -338,10 +338,23 @@ CGColorRef _CreateColorFromBitmapLocation(CGContextRef ctx, int x, int y)
 
     const auto row = data + stride * y;
     const auto pixel = (const uint8_t*)(row + (bpp / 8) * x);
-    const auto alpha = pixel[0];
-    const auto red = pixel[1];
-    const auto green = pixel[2];
-    const auto blue = pixel[3];
+    
+    uint8_t alpha = 0;
+    uint8_t red = 0;
+    uint8_t green = 0;
+    uint8_t blue = 0;
+    if( (bitmap_layout & kCGImageByteOrderMask) == kCGImageByteOrder32Little ) {
+        alpha = pixel[3];
+        red = pixel[2];
+        green = pixel[1];
+        blue = pixel[0];
+    }
+    else {
+        alpha = pixel[0];
+        red = pixel[1];
+        green = pixel[2];
+        blue = pixel[3];
+    }
 
     CGFloat components[4] = { double(red)/255., double(green)/255., double(blue)/255., double(alpha)/255. };
     return CGColorCreate(CGBitmapContextGetColorSpace(ctx), components);

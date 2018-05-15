@@ -1,4 +1,5 @@
 #include "xio2d_cg_output_surfaces.h"
+#include "../xio2d_cg_fps_counter.h"
 #include <Cocoa/Cocoa.h>
 #include <iostream>
 
@@ -28,6 +29,8 @@ struct _GS::surfaces::_OutputSurfaceCocoa
     io2d::format preferred_format;
     io2d::refresh_style refresh_style;
     float fps;
+    bool show_fps = true;
+    _FPSCounter fps_counter;
 };
     
 static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, basic_display_point<GraphicsMath> new_dimensions );
@@ -212,6 +215,7 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
 {
     _NSAppBootstrap();
     data->frontend = &sfc;
+    [data->window center];
     [data->window makeKeyAndOrderFront:nil];
     
 
@@ -255,6 +259,69 @@ static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, basic
     context.draw_buffer.reset( _CreateBitmap(context.preferred_format, new_dimensions.x(), new_dimensions.y()) );
     context.buffer_size = new_dimensions;
 }
+
+    
+static void UpdateWindowTitle(_GS::surfaces::_OutputSurfaceCocoa &context)
+{
+    context.window.title = [NSString stringWithFormat:@"%@, FPS: %d",
+                            g_WindowTitle,
+                            int(context.fps_counter.FPS())];
+}    
+    
+static void CheckThatPixelLayoutIsTheSame( CGContextRef view, CGContextRef buffer )
+{
+    static bool checked_once = false;
+    if( checked_once )
+        return;
+    checked_once = true;
+    
+    auto view_bitmap = CGBitmapContextGetBitmapInfo(view);
+    auto buffer_bitmap = CGBitmapContextGetBitmapInfo(buffer); 
+    if( view_bitmap != buffer_bitmap )
+        std::cerr << "view and buffer have different pixel layouts: " 
+        << view_bitmap << "(view) and "
+        << buffer_bitmap << "(buffer)."
+        << std::endl;
+}
+
+static bool BitBltIfPossible( CGContextRef view, CGContextRef buffer, bool flip )
+{
+    const auto buffer_width = CGBitmapContextGetWidth(buffer);
+    if( buffer_width != CGBitmapContextGetWidth(view) )
+        return false;
+    
+    const auto buffer_height = CGBitmapContextGetHeight(buffer);
+    if( buffer_height != CGBitmapContextGetHeight(view) )
+        return false;
+    
+    if( CGBitmapContextGetBitmapInfo(buffer) != CGBitmapContextGetBitmapInfo(view) )
+        return false;
+    
+    const auto bytes_per_row = CGBitmapContextGetBytesPerRow(buffer);
+    if( bytes_per_row != CGBitmapContextGetBytesPerRow(view) )
+        return false;
+    
+    if( CGBitmapContextGetBitsPerPixel(buffer) != CGBitmapContextGetBitsPerPixel(view) )
+        return false;
+    
+    if( CGBitmapContextGetBitsPerComponent(buffer) != CGBitmapContextGetBitsPerComponent(view) )
+        return false;
+    
+    auto buffer_data = CGBitmapContextGetData(buffer);
+    auto view_data = CGBitmapContextGetData(view);
+    
+    if( flip ) {
+        for( int src_y = 0, dst_y = buffer_height - 1; src_y < buffer_height; ++src_y, --dst_y )
+            memcpy((uint8_t*)view_data + bytes_per_row * dst_y,
+                   (const uint8_t*)buffer_data + bytes_per_row * src_y,
+                   bytes_per_row);
+    }
+    else {
+        memcpy(view_data, buffer_data, bytes_per_row * buffer_height);        
+    }
+    
+    return true;
+}    
     
 } // namespace _CoreGraphics
 } // inline namespace v1
@@ -264,6 +331,14 @@ using namespace std::experimental::io2d;
 using namespace std::experimental::io2d::_CoreGraphics;
 
 @implementation _IO2DOutputView
+
+- (instancetype) initWithFrame:(NSRect)frameRect
+{
+    if( self = [super initWithFrame:frameRect] ) {
+        self.wantsLayer = true;
+    }
+    return self;
+}
 
 - (void)viewDidMoveToWindow
 {
@@ -291,8 +366,6 @@ using namespace std::experimental::io2d::_CoreGraphics;
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-//    auto was = std::chrono:: high_resolution_clock::now();
-    
     if( _data->auto_clear )
         _GS::surfaces::clear(_data);
     
@@ -303,20 +376,28 @@ using namespace std::experimental::io2d::_CoreGraphics;
     
     // this is a really naive and slow approach, need to switch to CGLayer for display surface drawing
     auto ctx = [[NSGraphicsContext currentContext] CGContext];
-    auto image = CGBitmapContextCreateImage(_data->draw_buffer.get());
-    _AutoRelease release_image{image};
-    
-    CGContextTranslateCTM(ctx, 0, CGImageGetHeight(image));
-    CGContextScaleCTM(ctx, 1.0, -1.0);
-    CGContextSetBlendMode(ctx, kCGBlendModeCopy);
-    
-    // TODO: proper scaling regarding current settings
-    auto rc = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
-    CGContextDrawImage(ctx, rc, image);
 
-//    auto now = std::chrono:: high_resolution_clock::now();
-//    auto interval = std::chrono::duration_cast<std::chrono::microseconds>(now - was).count();
-//    std::cout << "frame time: " << interval << "us" << std::endl;
+    CheckThatPixelLayoutIsTheSame(ctx, _data->draw_buffer.get());    
+    
+    auto did_blt = BitBltIfPossible(ctx, _data->draw_buffer.get(), true);
+    
+    if( !did_blt ) {
+            auto image = CGBitmapContextCreateImage(_data->draw_buffer.get());
+            _AutoRelease release_image{image};
+            
+            CGContextTranslateCTM(ctx, 0, CGImageGetHeight(image));
+            CGContextScaleCTM(ctx, 1.0, -1.0);
+            CGContextSetBlendMode(ctx, kCGBlendModeCopy);
+            
+            // TODO: proper scaling regarding current settings
+            auto rc = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
+            CGContextDrawImage(ctx, rc, image);
+    }
+        
+    if( _data->show_fps ) {
+        _data->fps_counter.CommitFrame();
+        UpdateWindowTitle(*_data);
+    }
 }
 
 - (BOOL)acceptsFirstResponder
