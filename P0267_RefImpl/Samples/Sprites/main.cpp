@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
         auto should_remove = [&](const Cat &cat){ return !IsVisible(cat, image_size, surface.dimensions()); };
         cats.erase(remove_if(begin(cats), end(cats), should_remove), end(cats));
         while( cats.size() < cats_target )
-            cats.emplace_back(SpawnCat(surface.dimensions()));
+            cats.insert(begin(cats), SpawnCat(surface.dimensions()));
         
         surface.paint(brush{rgba_color::dark_gray});
         const auto now = high_resolution_clock::now();
