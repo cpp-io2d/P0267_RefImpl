@@ -154,13 +154,15 @@ int main() {
     auto display = output_surface{500, 500, format::argb32, scaling::none};    
     
     vector<Cat> cats;
-    const auto cats_target = 15;
+    //const auto cats_target = 15;
+	const auto cats_target = 3;
 
     auto draw_frame = [&](output_surface &surface){
-        auto should_remove = [&](const Cat &cat){ return not IsVisible(cat, image_size, display.dimensions()); };
+		cout << "!!" << endl;
+        auto should_remove = [&](const Cat &cat){ return !IsVisible(cat, image_size, surface.dimensions()); };
         cats.erase(remove_if(begin(cats), end(cats), should_remove), end(cats));
         while( cats.size() < cats_target )
-            cats.emplace_back(SpawnCat(display.dimensions()));
+            cats.emplace_back(SpawnCat(surface.dimensions()));
         
         surface.paint(brush{rgba_color::dark_gray});
         const auto now = high_resolution_clock::now();
@@ -170,8 +172,8 @@ int main() {
         }
     };
     display.draw_callback(draw_frame);    
-    display.size_change_callback([&](output_surface& surface){
-        surface.dimensions(surface.display_dimensions());
-    });    
+    //display.size_change_callback([&](output_surface& surface){
+    //    surface.dimensions(surface.display_dimensions());
+    //});    
     display.begin_show();    
 }
