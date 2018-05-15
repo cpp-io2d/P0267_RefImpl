@@ -57,8 +57,10 @@ _GS::surfaces::create_image_surface(const filesystem::path &p, image_file_format
 _GS::surfaces::create_image_surface(const string &p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
 #endif
     auto context = _LoadBitmap(p, iff, fmt, ec);
-    if( !context )
+    if( !context ) {
+        ec = make_error_code(errc::no_such_file_or_directory);
         return {};
+    }
 
     auto width = (int)CGBitmapContextGetWidth(context);
     auto height = (int)CGBitmapContextGetHeight(context);

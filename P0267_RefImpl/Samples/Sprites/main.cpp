@@ -132,7 +132,7 @@ void Animate(Cat &cat, milliseconds time)
 Cat SpawnCat( display_point output_size )
 {
     static auto random_engine = default_random_engine{random_device{}()};
-    auto animators_distribution = uniform_int_distribution<int>(0, g_Animators.size() - 1);
+    auto animators_distribution = uniform_int_distribution<int>(0, int(g_Animators.size()) - 1);
     auto vertical_distribution = uniform_int_distribution<int>(0, output_size.y() - 1);
     auto ver_speed_distribution = uniform_int_distribution<int>(-30, 30);
     auto hor_speed_distribution = uniform_int_distribution<int>(20, 80);
@@ -146,19 +146,26 @@ Cat SpawnCat( display_point output_size )
     return cat;
 }
 
-int main() {
-    
-    auto image = image_surface{"cat.jpg", image_file_format::jpeg, format::argb32};
+int main(int argc, char *argv[]) {    
+    auto image = [&]{
+        try {
+            return image_surface{"cat.jpg", image_file_format::jpeg, format::argb32};            
+        }
+        catch(...) {
+            // We're on some weird system like iOS. To avoid bringing Cocoa stuff here, lets instead use a small hack:              
+            auto path = string{argv[0]};
+            path = path.substr(0, path.length() - "sprites"s.length()) + "cat.jpg"; 
+            return image_surface{path, image_file_format::jpeg, format::argb32};
+        }
+    }();
     const auto image_size = image.dimensions();
     const auto cat_brush = brush{move(image)};
     auto display = output_surface{500, 500, format::argb32, scaling::none};    
     
     vector<Cat> cats;
-    //const auto cats_target = 15;
-	const auto cats_target = 3;
+    const auto cats_target = 15;
 
     auto draw_frame = [&](output_surface &surface){
-		cout << "!!" << endl;
         auto should_remove = [&](const Cat &cat){ return !IsVisible(cat, image_size, surface.dimensions()); };
         cats.erase(remove_if(begin(cats), end(cats), should_remove), end(cats));
         while( cats.size() < cats_target )
@@ -172,8 +179,8 @@ int main() {
         }
     };
     display.draw_callback(draw_frame);    
-    //display.size_change_callback([&](output_surface& surface){
-    //    surface.dimensions(surface.display_dimensions());
-    //});    
+    display.size_change_callback([&](output_surface& surface){
+        surface.dimensions(surface.display_dimensions());
+    });    
     display.begin_show();    
 }

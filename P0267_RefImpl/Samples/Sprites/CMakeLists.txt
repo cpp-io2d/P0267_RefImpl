@@ -11,3 +11,18 @@ add_custom_command( TARGET sprites POST_BUILD
 if(MSVC)
 	set_target_properties(sprites PROPERTIES  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)")
 endif()
+
+if( DEFINED IOS_PLATFORM )
+    # iOS requires special packaging, so we have to treat this target separately
+    set_target_properties(sprites PROPERTIES MACOSX_BUNDLE YES)
+    set_target_properties(sprites PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/iOS/Info.plist")
+    target_sources(sprites PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/iOS/LaunchScreen.storyboard)
+    target_sources(sprites PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cat.jpg)
+    target_sources(sprites PRIVATE iOS/libcxx_tmp_stubs.cpp)
+    set(SPRITES_RESOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/iOS/LaunchScreen.storyboard"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cat.jpg"
+    )
+    set_target_properties(sprites PROPERTIES RESOURCE "${SPRITES_RESOURCES}")
+    set_target_properties(sprites PROPERTIES XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
+endif()
