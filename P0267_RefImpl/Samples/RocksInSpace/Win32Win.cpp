@@ -123,7 +123,7 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 			throw_system_error_for_GetLastError(GetLastError(), "Failed call to DestroyWindow when processing WM_CLOSE.");
 		}
 		m_hwnd = nullptr;
-		m_outputSfc._Get_data()->data.hwnd = m_hwnd;
+		m_outputSfc.data()->data.hwnd = m_hwnd;
 		return lrZero;
 	} break;
 
@@ -161,7 +161,7 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 			GetClientRect(hwnd, &clientRect);
 			int width = clientRect.right - clientRect.left;
 			int height = clientRect.bottom - clientRect.top;
-			const auto& data = *m_outputSfc._Get_data();
+			const auto& data = *m_outputSfc.data();
 			if (width != data.data.display_dimensions.x() || height != data.data.display_dimensions.y()) {
 				//if (width != m_outputSfc.display_dimensions().x() || height != m_outputSfc.display_dimensions().y()) {
 				// If there is a size mismatch we skip painting and resize the window instead.
@@ -261,7 +261,7 @@ int rocks_in_space::Win32Win::Run()
 			GetClientRect(m_hwnd, &clientRect);
 			int width = clientRect.right - clientRect.left;
 			int height = clientRect.bottom - clientRect.top;
-			const auto& data = *m_outputSfc._Get_data();
+			const auto& data = *m_outputSfc.data();
 			if (width != data.data.display_dimensions.x() || height != data.data.display_dimensions.y())
 				//if (width != m_outputSfc.display_dimensions().x() || height != m_outputSfc.display_dimensions().y())
 			{

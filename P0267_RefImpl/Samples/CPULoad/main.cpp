@@ -73,7 +73,7 @@ void CPUMeter::DrawHorizontalGridLines(output_surface& surface) const
         
     for( auto cpu = 0; cpu < cpus; ++cpu ) {
         auto rp = render_props{};
-        rp.surface_matrix(matrix_2d::init_translate({0.f, floorf((cpu+1)*height_per_cpu) + 0.5f}));
+        rp.surface_matrix(matrix_2d::create_translate({0.f, floorf((cpu+1)*height_per_cpu) + 0.5f}));
         surface.stroke(m_HorizontalLinesBrush, ip, nullopt, m_GridStrokeProps, nullopt, rp);
     }
 }
@@ -87,7 +87,7 @@ void CPUMeter::DrawVerticalGridLines(output_surface& surface) const
         
     for( auto x = surface.dimensions().x() - 1; x >= 0; x -= 10 ) {
         auto rp = render_props{};
-        rp.surface_matrix(matrix_2d::init_translate({x + 0.5f, 0}));
+        rp.surface_matrix(matrix_2d::create_translate({x + 0.5f, 0}));
         surface.stroke(m_VerticalLinesBrush, ip, nullopt, m_GridStrokeProps, m_VerticalLinesDashes, rp);
     }    
 }

@@ -66,7 +66,7 @@ inline void Add(_PathInterperationContext &ctx, const basic_figure_items<_GS>::a
     const auto clockwise = (rot < 0.0F) ? true : false;
     const auto rad = figure.radius();
     auto startAng = figure.start_angle();
-    const auto m = basic_matrix_2d<GraphicsMath>::init_scale(rad);
+    const auto m = basic_matrix_2d<GraphicsMath>::create_scale(rad);
     
     auto centerOffset = (point_for_angle<GraphicsMath>(two_pi<float> -startAng) * rad);
     centerOffset.y(-centerOffset.y());

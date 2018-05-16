@@ -15,7 +15,7 @@ namespace std::experimental::io2d {
 				assert(display != nullptr && xev != nullptr && arg != nullptr);
 				auto sfc = reinterpret_cast<output_surface*>(arg);
 				// If the display_surface window is invalid, we will never get a match so return False.
-				if (sfc->_Get_data()->data.wndw == None) {
+				if (sfc->data()->data.wndw == None) {
 					return False;
 				}
 				// Need to check for ExposureMask xevs, StructureNotifyMask xevs, and unmaskable xevs.
@@ -23,94 +23,94 @@ namespace std::experimental::io2d {
 				// ExposureMask xevs:
 				case Expose:
 				{
-					if (xev->xexpose.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xexpose.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				// StructureNotifyMask xevs:
 				case CirculateNotify:
 				{
-					if (xev->xcirculate.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xcirculate.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case ConfigureNotify:
 				{
-					if (xev->xconfigure.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xconfigure.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case DestroyNotify:
 				{
-					if (xev->xdestroywindow.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xdestroywindow.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case GravityNotify:
 				{
-					if (xev->xgravity.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xgravity.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case MapNotify:
 				{
-					if (xev->xmap.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xmap.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case ReparentNotify:
 				{
-					if (xev->xreparent.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xreparent.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case UnmapNotify:
 				{
-					if (xev->xunmap.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xunmap.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				// Might get them even though unrequested xevs (see http://www.x.org/releases/X11R7.7/doc/libX11/libX11/libX11.html#Event_Masks ):
 				case GraphicsExpose:
 				{
-					if (xev->xgraphicsexpose.drawable == static_cast<Drawable>(sfc->_Get_data()->data.wndw)) {
+					if (xev->xgraphicsexpose.drawable == static_cast<Drawable>(sfc->data()->data.wndw)) {
 						return True;
 					}
 				} break;
 				case NoExpose:
 				{
-					if (xev->xnoexpose.drawable == static_cast<Drawable>(sfc->_Get_data()->data.wndw)) {
+					if (xev->xnoexpose.drawable == static_cast<Drawable>(sfc->data()->data.wndw)) {
 						return True;
 					}
 				} break;
 				// Unmasked xevs
 				case ClientMessage:
 				{
-					if (xev->xclient.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xclient.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case MappingNotify:
 				{
-					if (xev->xmapping.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xmapping.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case SelectionClear:
 				{
-					if (xev->xselectionclear.window == sfc->_Get_data()->data.wndw) {
+					if (xev->xselectionclear.window == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case SelectionNotify:
 				{
-					if (xev->xselection.requestor == sfc->_Get_data()->data.wndw) {
+					if (xev->xselection.requestor == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;
 				case SelectionRequest:
 				{
-					if (xev->xselectionrequest.owner == sfc->_Get_data()->data.wndw) {
+					if (xev->xselectionrequest.owner == sfc->data()->data.wndw) {
 						return True;
 					}
 				} break;

@@ -21,7 +21,7 @@ namespace std {
 						using _Graphics_surfaces_type = _Cairo_graphics_surfaces;
 
 						struct additional_image_file_formats {
-							const static int _Base = 1000;
+							const static int _Base = 10000;
 							const static image_file_format bmp = static_cast<image_file_format>(_Base + 0);
 							const static image_file_format tga = static_cast<image_file_format>(_Base + 1);
 							const static image_file_format dib = static_cast<image_file_format>(_Base + 2);
@@ -35,9 +35,14 @@ namespace std {
 							const static image_file_format xpm = static_cast<image_file_format>(_Base + 11);
 
 							struct read_only {
-								const static int _Base = 2000;
+								const static int _Base = 20000;
 								const static image_file_format xcf = static_cast<image_file_format>(_Base + 0);
 								const static image_file_format ico = static_cast<image_file_format>(_Base + 1);
+							};
+
+							struct write_only {
+								const static int _Base = 30000;
+								// None
 							};
 						};
 

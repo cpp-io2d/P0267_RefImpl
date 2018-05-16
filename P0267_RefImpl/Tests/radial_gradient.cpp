@@ -32,7 +32,7 @@ TEST_CASE("IO2D properly draws a radial gradient")
                         {gradient_stop{0.0f, rgba_color::aquamarine},
                          gradient_stop{0.5f, rgba_color::dark_magenta},
                          gradient_stop{1.0f, rgba_color::lime}}};
-        auto m = matrix_2d::init_translate({-50.f, -100.f});
+        auto m = matrix_2d::create_translate({-50.f, -100.f});
         auto pb = path_builder{};
         pb.new_figure({0.f, 0.f});
         pb.rel_line({300.f, 0.f});

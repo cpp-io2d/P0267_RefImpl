@@ -22,12 +22,12 @@ struct Cat
 
 matrix_2d Transformation(const Cat &cat, display_point image_dimenstions)
 {
-    return matrix_2d::init_translate({-image_dimenstions.x()/2.f, -image_dimenstions.y()/2.f}) *
-           matrix_2d::init_scale(cat.scale) *
-           matrix_2d::init_shear_x(cat.shear_x) *
-           matrix_2d::init_shear_y(cat.shear_y) *
-           matrix_2d::init_rotate(cat.rotation) *    
-           matrix_2d::init_translate(cat.position);        
+    return matrix_2d::create_translate({-image_dimenstions.x()/2.f, -image_dimenstions.y()/2.f}) *
+           matrix_2d::create_scale(cat.scale) *
+           matrix_2d::create_shear_x(cat.shear_x) *
+           matrix_2d::create_shear_y(cat.shear_y) *
+           matrix_2d::create_rotate(cat.rotation) *    
+           matrix_2d::create_translate(cat.position);        
 }
 
 bool IsVisible(const Cat &cat, display_point image_dimenstions, display_point output_dimensions)

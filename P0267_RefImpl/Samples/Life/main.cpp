@@ -138,19 +138,19 @@ void GameOfLife::DrawCells(output_surface &surface)
             auto rp = render_props{};
             rp.compositing(compositing_op::source);
             if( state == CellState::On ) {
-                rp.surface_matrix(matrix_2d::init_translate({m_CellPxSize * x, m_CellPxSize * y}));
+                rp.surface_matrix(matrix_2d::create_translate({m_CellPxSize * x, m_CellPxSize * y}));
                 surface.fill(on_brush, m_CellFigure, nullopt, rp);
             }
             if( state == CellState::Fading ) {
-                rp.surface_matrix(matrix_2d::init_scale({gamma, gamma}) *
-                                  matrix_2d::init_translate({cell_size * beta / 2 , cell_size * beta / 2}) * 
-                                  matrix_2d::init_translate({m_CellPxSize * x, m_CellPxSize * y}));
+                rp.surface_matrix(matrix_2d::create_scale({gamma, gamma}) *
+                                  matrix_2d::create_translate({cell_size * beta / 2 , cell_size * beta / 2}) * 
+                                  matrix_2d::create_translate({m_CellPxSize * x, m_CellPxSize * y}));
                 surface.fill(fading_brush, m_CellFigure, nullopt, rp);
             }
             if( state == CellState::Emerging ) {
-                rp.surface_matrix(matrix_2d::init_scale({beta, beta}) *
-                                  matrix_2d::init_translate({cell_size * gamma / 2 , cell_size * gamma / 2}) * 
-                                  matrix_2d::init_translate({m_CellPxSize * x, m_CellPxSize * y}));
+                rp.surface_matrix(matrix_2d::create_scale({beta, beta}) *
+                                  matrix_2d::create_translate({cell_size * gamma / 2 , cell_size * gamma / 2}) * 
+                                  matrix_2d::create_translate({m_CellPxSize * x, m_CellPxSize * y}));
                 surface.fill(emerging_brush, m_CellFigure, nullopt, rp);                
             }
         }
@@ -171,7 +171,7 @@ void GameOfLife::DrawGrid(output_surface &surface)
     pb.rel_line({0.f, m_BoardHeight * m_CellPxSize});
     auto vert_line = interpreted_path{pb};
     for( auto i = 0; i < m_BoardWidth; ++i ) {
-        rp.surface_matrix(matrix_2d::init_translate({i*m_CellPxSize, 0.f}));
+        rp.surface_matrix(matrix_2d::create_translate({i*m_CellPxSize, 0.f}));
         surface.stroke(b, vert_line, nullopt, sp, dp, rp);
     }
     
@@ -180,7 +180,7 @@ void GameOfLife::DrawGrid(output_surface &surface)
     pb.rel_line({m_BoardWidth*m_CellPxSize, 0.f});
     auto hor_line = interpreted_path{pb};
     for( auto i = 0; i < m_BoardHeight; ++i ) {
-        rp.surface_matrix(matrix_2d::init_translate({0.f, i*m_CellPxSize}));
+        rp.surface_matrix(matrix_2d::create_translate({0.f, i*m_CellPxSize}));
         surface.stroke(b, hor_line, nullopt, sp, dp, rp);        
     }
 }

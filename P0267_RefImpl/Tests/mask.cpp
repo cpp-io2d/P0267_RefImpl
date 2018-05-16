@@ -87,19 +87,19 @@ TEST_CASE("Properly blends a solid brush with a linear gradient mask using clip 
     auto cl = clip_props{};    
     
     cl = clip_props{bounding_box{5, 5, 10, 10}};
-    mp.mask_matrix(matrix_2d::init_translate({5, 5}));
+    mp.mask_matrix(matrix_2d::create_translate({5, 5}));
     img.mask(b, mb, nullopt, mp, nullopt, cl);    
 
     cl = clip_props{bounding_box{20, 5, 10, 10}};
-    mp.mask_matrix(matrix_2d::init_translate({20, 5}) * matrix_2d::init_rotate(-pi<float>/2));
+    mp.mask_matrix(matrix_2d::create_translate({20, 5}) * matrix_2d::create_rotate(-pi<float>/2));
     img.mask(b, mb, nullopt, mp, nullopt, cl);    
     
     cl = clip_props{bounding_box{5, 20, 10, 10}};
-    mp.mask_matrix(matrix_2d::init_translate({5, 20}) * matrix_2d::init_rotate(pi<float>/2));
+    mp.mask_matrix(matrix_2d::create_translate({5, 20}) * matrix_2d::create_rotate(pi<float>/2));
     img.mask(b, mb, nullopt, mp, nullopt, cl);    
     
     cl = clip_props{bounding_box{20, 20, 10, 10}};
-    mp.mask_matrix(matrix_2d::init_translate({20, 20}) * matrix_2d::init_rotate(pi<float>));
+    mp.mask_matrix(matrix_2d::create_translate({20, 20}) * matrix_2d::create_rotate(pi<float>));
     img.mask(b, mb, nullopt, mp, nullopt, cl);    
         
     CHECK( ComparePNGWithTolerance(img, reference, 0.05f) == true );

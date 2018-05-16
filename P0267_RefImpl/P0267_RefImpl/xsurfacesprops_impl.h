@@ -22,7 +22,12 @@ namespace std {
 		namespace io2d {
 			inline namespace v1 {
 				template <class GraphicsSurfaces>
-				inline const typename basic_render_props<GraphicsSurfaces>::_Data_type& basic_render_props<GraphicsSurfaces>::_Get_data() const noexcept {
+				inline const typename basic_render_props<GraphicsSurfaces>::data_type& basic_render_props<GraphicsSurfaces>::data() const noexcept {
+					return _Data;
+				}
+
+				template<class GraphicsSurfaces>
+				inline typename basic_render_props<GraphicsSurfaces>::data_type& basic_render_props<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 
@@ -181,7 +186,11 @@ namespace std {
 
 				// clip_props
 				template <class GraphicsSurfaces>
-				inline const typename basic_clip_props<GraphicsSurfaces>::_Data_type& basic_clip_props<GraphicsSurfaces>::_Get_data() const noexcept {
+				inline const typename basic_clip_props<GraphicsSurfaces>::data_type& basic_clip_props<GraphicsSurfaces>::data() const noexcept {
+					return _Data;
+				}
+				template<class GraphicsSurfaces>
+				inline typename basic_clip_props<GraphicsSurfaces>::data_type& basic_clip_props<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 				template <class GraphicsSurfaces>
@@ -263,7 +272,11 @@ namespace std {
 
 				// stroke props
 				template <class GraphicsSurfaces>
-				inline const typename basic_stroke_props<GraphicsSurfaces>::_Data_type& basic_stroke_props<GraphicsSurfaces>::_Get_data() const noexcept {
+				inline const typename basic_stroke_props<GraphicsSurfaces>::data_type& basic_stroke_props<GraphicsSurfaces>::data() const noexcept {
+					return _Data;
+				}
+				template<class GraphicsSurfaces>
+				inline typename basic_stroke_props<GraphicsSurfaces>::data_type& basic_stroke_props<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 				template <class GraphicsSurfaces>
@@ -349,7 +362,12 @@ namespace std {
 
 				// Mask props
 				template<class GraphicsSurfaces>
-				inline const typename basic_mask_props<GraphicsSurfaces>::_Data_type& basic_mask_props<GraphicsSurfaces>::_Get_data() const noexcept {
+				inline const typename basic_mask_props<GraphicsSurfaces>::data_type& basic_mask_props<GraphicsSurfaces>::data() const noexcept {
+					return _Data;
+				}
+
+				template<class GraphicsSurfaces>
+				inline typename basic_mask_props<GraphicsSurfaces>::data_type& basic_mask_props<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 
@@ -419,7 +437,12 @@ namespace std {
 
 				// dashes
 				template<class GraphicsSurfaces>
-				inline const typename basic_dashes<GraphicsSurfaces>::_Data_type& basic_dashes<GraphicsSurfaces>::_Get_data() const noexcept {
+				inline const typename basic_dashes<GraphicsSurfaces>::data_type& basic_dashes<GraphicsSurfaces>::data() const noexcept {
+					return _Data;
+				}
+
+				template<class GraphicsSurfaces>
+				inline typename basic_dashes<GraphicsSurfaces>::data_type& basic_dashes<GraphicsSurfaces>::data() noexcept {
 					return _Data;
 				}
 

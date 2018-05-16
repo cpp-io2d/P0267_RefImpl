@@ -22,12 +22,12 @@ TEST_CASE("Properly draws with a non-wrapped surface brush")
     rp.antialiasing(antialias::none);
 
     vector<matrix_2d> mats;
-    mats.emplace_back(matrix_2d::init_translate({-2.f, -2.f}) * matrix_2d::init_rotate(pi<float>/2) * matrix_2d::init_translate({2.f, 2.f}) * matrix_2d::init_scale({2.f, 4.f}));
-    mats.emplace_back(matrix_2d::init_translate({0.f, 16.f}));
-    mats.emplace_back(matrix_2d::init_translate({-2.f, -2.f}) * matrix_2d::init_rotate(pi<float>/2) * matrix_2d::init_translate({2.f, 2.f}) * matrix_2d::init_translate({4.f, 16.f}));
-    mats.emplace_back(matrix_2d::init_translate({-2.f, -2.f}) * matrix_2d::init_rotate(pi<float>/2) * matrix_2d::init_translate({2.f, 2.f}) * matrix_2d::init_scale({3.f, 1.f}) * matrix_2d::init_translate({8.f, 16.f}));
-    mats.emplace_back(matrix_2d::init_scale({3.f, 1.f}) * matrix_2d::init_translate({8.f, 12.f}));
-    mats.emplace_back(matrix_2d::init_scale({3.f, 3.f}) * matrix_2d::init_translate({8.f, 0.f}));
+    mats.emplace_back(matrix_2d::create_translate({-2.f, -2.f}) * matrix_2d::create_rotate(pi<float>/2) * matrix_2d::create_translate({2.f, 2.f}) * matrix_2d::create_scale({2.f, 4.f}));
+    mats.emplace_back(matrix_2d::create_translate({0.f, 16.f}));
+    mats.emplace_back(matrix_2d::create_translate({-2.f, -2.f}) * matrix_2d::create_rotate(pi<float>/2) * matrix_2d::create_translate({2.f, 2.f}) * matrix_2d::create_translate({4.f, 16.f}));
+    mats.emplace_back(matrix_2d::create_translate({-2.f, -2.f}) * matrix_2d::create_rotate(pi<float>/2) * matrix_2d::create_translate({2.f, 2.f}) * matrix_2d::create_scale({3.f, 1.f}) * matrix_2d::create_translate({8.f, 16.f}));
+    mats.emplace_back(matrix_2d::create_scale({3.f, 1.f}) * matrix_2d::create_translate({8.f, 12.f}));
+    mats.emplace_back(matrix_2d::create_scale({3.f, 3.f}) * matrix_2d::create_translate({8.f, 0.f}));
 
     for( auto &m: mats ) {
         bp.brush_matrix(m.inverse());
@@ -53,15 +53,15 @@ TEST_CASE("Properly draws with a repeateded surface brush")
         img.paint(b, bp, rp);
     }
     SECTION("Translate") {
-        bp.brush_matrix( matrix_2d::init_translate({-16.f, -16.f}) );
+        bp.brush_matrix( matrix_2d::create_translate({-16.f, -16.f}) );
         img.paint(b, bp, rp);
     }
     SECTION("Translate by 2 px") {
-        bp.brush_matrix( matrix_2d::init_translate({-2.f, -2.f}) );
+        bp.brush_matrix( matrix_2d::create_translate({-2.f, -2.f}) );
         img.paint(b, bp, rp);
     }
     SECTION("Rotated 180 degrees") {
-        auto m = matrix_2d::init_translate({-2.f, -2.f}) * matrix_2d::init_rotate(pi<float>) * matrix_2d::init_translate({2.f, 2.f});
+        auto m = matrix_2d::create_translate({-2.f, -2.f}) * matrix_2d::create_rotate(pi<float>) * matrix_2d::create_translate({2.f, 2.f});
         bp.brush_matrix(m.inverse());
         img.paint(b, bp, rp);
     }
@@ -82,14 +82,14 @@ TEST_CASE("Properly draws with a repeateded scaled surface brush")
     rp.antialiasing(antialias::none);
     
     SECTION("Just scale") {
-        bp.brush_matrix( matrix_2d::init_scale({2.f, 2.f}).inverse() );
+        bp.brush_matrix( matrix_2d::create_scale({2.f, 2.f}).inverse() );
     }
     SECTION("Scale and translate") {
-        auto m = matrix_2d::init_scale({2.f, 2.f}) * matrix_2d::init_translate({8.f, 8.f});
+        auto m = matrix_2d::create_scale({2.f, 2.f}) * matrix_2d::create_translate({8.f, 8.f});
         bp.brush_matrix( m.inverse() );
     }
     SECTION("Scale, translate and 180 degree rotate") {
-        auto m = matrix_2d::init_scale({2.f, 2.f}) * matrix_2d::init_translate({8.f, 8.f}) * matrix_2d::init_rotate(pi<float>);
+        auto m = matrix_2d::create_scale({2.f, 2.f}) * matrix_2d::create_translate({8.f, 8.f}) * matrix_2d::create_rotate(pi<float>);
         bp.brush_matrix( m.inverse() );
     }
     img.paint(b, bp, rp);
@@ -110,14 +110,14 @@ TEST_CASE("Properly draws with a repeateded non-uniformely scaled surface brush"
     rp.antialiasing(antialias::none);
     
     SECTION("Just scale") {
-        bp.brush_matrix( matrix_2d::init_scale({3.f, 2.f}).inverse() );
+        bp.brush_matrix( matrix_2d::create_scale({3.f, 2.f}).inverse() );
     }
     SECTION("Scale and translate") {
-        auto m = matrix_2d::init_scale({3.f, 2.f}) * matrix_2d::init_translate({12.f, 8.f});
+        auto m = matrix_2d::create_scale({3.f, 2.f}) * matrix_2d::create_translate({12.f, 8.f});
         bp.brush_matrix( m.inverse() );
     }
     SECTION("Scale, translate and 180 degree rotate") {
-        auto m = matrix_2d::init_scale({3.f, 2.f}) * matrix_2d::init_translate({12.f, 8.f}) * matrix_2d::init_rotate(pi<float>);
+        auto m = matrix_2d::create_scale({3.f, 2.f}) * matrix_2d::create_translate({12.f, 8.f}) * matrix_2d::create_rotate(pi<float>);
         bp.brush_matrix( m.inverse() );
     }
     img.paint(b, bp, rp);
@@ -140,10 +140,10 @@ TEST_CASE("Properly draws with a repeateded sheared surface brush")
     rp.antialiasing(antialias::none);
 
     SECTION("Shear right") {
-        bp.brush_matrix( matrix_2d::init_shear_x(1.f).inverse() );
+        bp.brush_matrix( matrix_2d::create_shear_x(1.f).inverse() );
     }
     SECTION("Shear left") {
-        bp.brush_matrix( (matrix_2d::init_shear_x(-1.f) * matrix_2d::init_translate({-1.f, 0.f}) ).inverse() );
+        bp.brush_matrix( (matrix_2d::create_shear_x(-1.f) * matrix_2d::create_translate({-1.f, 0.f}) ).inverse() );
     }
     img.paint(b, bp, rp);
     
@@ -165,10 +165,10 @@ TEST_CASE("Properly draws with a reflected surface brush")
     SECTION("No transforms") {
     }
     SECTION("Translate") {
-        bp.brush_matrix( matrix_2d::init_translate({-16.f, -16.f}) );
+        bp.brush_matrix( matrix_2d::create_translate({-16.f, -16.f}) );
     }
     SECTION("Rotated 180 degrees") {
-        auto m = matrix_2d::init_translate({-2.f, -2.f}) * matrix_2d::init_rotate(pi<float>) * matrix_2d::init_translate({2.f, 2.f});
+        auto m = matrix_2d::create_translate({-2.f, -2.f}) * matrix_2d::create_rotate(pi<float>) * matrix_2d::create_translate({2.f, 2.f});
         bp.brush_matrix(m.inverse());
     }
     img.paint(b, bp, rp);
@@ -190,18 +190,18 @@ TEST_CASE("Properly draws with a reflected scaled surface brush")
     rp.antialiasing(antialias::none);
 
     SECTION("Just scale") {
-        bp.brush_matrix( matrix_2d::init_scale({2.f, 2.f}).inverse() );
+        bp.brush_matrix( matrix_2d::create_scale({2.f, 2.f}).inverse() );
     }
     SECTION("Scale and translate") {
-        auto m = matrix_2d::init_scale({2.f, 2.f}) * matrix_2d::init_translate({8.f, 8.f});
+        auto m = matrix_2d::create_scale({2.f, 2.f}) * matrix_2d::create_translate({8.f, 8.f});
         bp.brush_matrix(m.inverse());
     }
     SECTION("Scale, translate and rotated 180 degrees") {
-        auto m = matrix_2d::init_translate({-2.f, -2.f}) *
-                 matrix_2d::init_rotate(pi<float>) *
-                 matrix_2d::init_translate({2.f, 2.f}) *
-                 matrix_2d::init_scale({2.f, 2.f}) *
-                 matrix_2d::init_translate({8.f, 8.f});
+        auto m = matrix_2d::create_translate({-2.f, -2.f}) *
+                 matrix_2d::create_rotate(pi<float>) *
+                 matrix_2d::create_translate({2.f, 2.f}) *
+                 matrix_2d::create_scale({2.f, 2.f}) *
+                 matrix_2d::create_translate({8.f, 8.f});
         bp.brush_matrix(m.inverse());
     }
     
@@ -224,18 +224,18 @@ TEST_CASE("Properly draws with a reflected non-uniformely scaled surface brush")
     rp.antialiasing(antialias::none);
     
     SECTION("Just scale") {
-        bp.brush_matrix( matrix_2d::init_scale({3.f, 2.f}).inverse() );
+        bp.brush_matrix( matrix_2d::create_scale({3.f, 2.f}).inverse() );
     }
     SECTION("Scale and translate") {
-        auto m = matrix_2d::init_scale({3.f, 2.f}) * matrix_2d::init_translate({12.f, 8.f});
+        auto m = matrix_2d::create_scale({3.f, 2.f}) * matrix_2d::create_translate({12.f, 8.f});
         bp.brush_matrix(m.inverse());
     }
     SECTION("Scale, translate and rotated 180 degrees") {
-        auto m = matrix_2d::init_translate({-2.f, -2.f}) *
-                 matrix_2d::init_rotate(pi<float>) *
-                 matrix_2d::init_translate({2.f, 2.f}) *
-                 matrix_2d::init_scale({3.f, 2.f}) *
-                 matrix_2d::init_translate({12.f, 8.f});
+        auto m = matrix_2d::create_translate({-2.f, -2.f}) *
+                 matrix_2d::create_rotate(pi<float>) *
+                 matrix_2d::create_translate({2.f, 2.f}) *
+                 matrix_2d::create_scale({3.f, 2.f}) *
+                 matrix_2d::create_translate({12.f, 8.f});
         bp.brush_matrix(m.inverse());
     }
 
@@ -258,13 +258,13 @@ TEST_CASE("Properly draws with a padded surface brush")
     rp.antialiasing(antialias::none);
     
     SECTION("Just translate") {
-        bp.brush_matrix( matrix_2d::init_translate({-8.f, -8.f}) );
+        bp.brush_matrix( matrix_2d::create_translate({-8.f, -8.f}) );
     }
     SECTION("Rotate 180 degrees and translate") {
-        auto m = matrix_2d::init_translate({-2.f, -2.f}) *
-                 matrix_2d::init_rotate(pi<float>) *
-                 matrix_2d::init_translate({2.f, 2.f}) *
-                 matrix_2d::init_translate({8.f, 8.f});
+        auto m = matrix_2d::create_translate({-2.f, -2.f}) *
+                 matrix_2d::create_rotate(pi<float>) *
+                 matrix_2d::create_translate({2.f, 2.f}) *
+                 matrix_2d::create_translate({8.f, 8.f});
         bp.brush_matrix( m.inverse() );
     }
 

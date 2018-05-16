@@ -37,7 +37,7 @@ TEST_CASE("IO2D properly strokes a rectangle")
 
     SECTION("Draw via rel_lines with a translate matrix") {
         auto pb = path_builder{};
-        pb.matrix(matrix_2d::init_translate({50.f, 50.f}));
+        pb.matrix(matrix_2d::create_translate({50.f, 50.f}));
         pb.new_figure({0.f, 0.f});
         pb.rel_line({200.f, 0.f});
         pb.rel_line({0.f, 100.f});
@@ -49,7 +49,7 @@ TEST_CASE("IO2D properly strokes a rectangle")
     
     SECTION("Draw via rel_lines with a scale matrix") {
         auto pb = path_builder{};
-        pb.matrix(matrix_2d::init_scale({0.5f, 2.0f}));
+        pb.matrix(matrix_2d::create_scale({0.5f, 2.0f}));
         pb.new_figure({100.f, 25.f});
         pb.rel_line({400.f, 0.f});
         pb.rel_line({0.f, 50.f});
@@ -61,7 +61,7 @@ TEST_CASE("IO2D properly strokes a rectangle")
 
     SECTION("Draw via abs_lines with a scale matrix") {
         auto pb = path_builder{};
-        pb.matrix(matrix_2d::init_scale({0.5f, 2.0f}));
+        pb.matrix(matrix_2d::create_scale({0.5f, 2.0f}));
         pb.new_figure({100.f, 25.f});
         pb.line({500.f, 25.f});
         pb.line({500.f, 75.f});
@@ -73,8 +73,8 @@ TEST_CASE("IO2D properly strokes a rectangle")
 
     SECTION("Draw via abs_lines with a scale+translate matrix") {
         auto pb = path_builder{};
-        pb.rel_matrix(matrix_2d::init_translate({50.0f, 50.0f}));
-        pb.rel_matrix(matrix_2d::init_scale({2.0f, 2.0f}));
+        pb.rel_matrix(matrix_2d::create_translate({50.0f, 50.0f}));
+        pb.rel_matrix(matrix_2d::create_scale({2.0f, 2.0f}));
         pb.new_figure({0.f, 0.f});
         pb.line({100.f, 0.f});
         pb.line({100.f, 50.f});

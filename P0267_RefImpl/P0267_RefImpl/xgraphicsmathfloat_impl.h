@@ -218,58 +218,55 @@ namespace std::experimental::io2d {
 		inline float _Graphics_math_float_impl::m21(const matrix_2d_data_type& mtx) noexcept {
 			return mtx.m21;
 		}
-		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_identity() noexcept {
-			return create_matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-		}
-		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_translate(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
+		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::create_translate(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
 			return create_matrix_2d(1.0f, 0.0f, 0.0f, 1.0f, val._X, val._Y);
 		}
-        inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_scale(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
-            return create_matrix_2d(val._X, 0.0f, 0.0f, val._Y, 0.0f , 0.0f);
-        }
-		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_rotate(float radians) noexcept {
+		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::create_scale(const typename _Graphics_math_float_impl::point_2d_data_type& val) noexcept {
+			return create_matrix_2d(val._X, 0.0f, 0.0f, val._Y, 0.0f, 0.0f);
+		}
+		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::create_rotate(float radians) noexcept {
 			float sine = sin(radians);
 			float cosine = cos(radians);
 			sine = _Round_floating_point_to_zero(sine);
 			cosine = _Round_floating_point_to_zero(cosine);
 			return create_matrix_2d(cosine, -sine, sine, cosine, 0.0f, 0.0f);
 		}
-		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_rotate(float radians, const typename _Graphics_math_float_impl::point_2d_data_type& origin) noexcept {
-            return multiply(multiply(init_translate(negate(origin)), init_rotate(radians)), init_translate(origin));
+		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::create_rotate(float radians, const typename _Graphics_math_float_impl::point_2d_data_type& origin) noexcept {
+            return multiply(multiply(create_translate(negate(origin)), create_rotate(radians)), create_translate(origin));
 		}
-		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_reflect(float radians) noexcept {
+		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::create_reflect(float radians) noexcept {
 			auto sine = sin(radians * 2.0f);
 			auto cosine = cos(radians * 2.0f);
 			sine = _Round_floating_point_to_zero(sine);
 			cosine = _Round_floating_point_to_zero(cosine);
 			return create_matrix_2d(cosine, sine, sine, -cosine, 0.0f, 0.0f);
 		}
-		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_shear_x(float factor) noexcept {
+		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::create_shear_x(float factor) noexcept {
 			return create_matrix_2d(1.0f, 0.0f, factor, 1.0f, 0.0f, 0.0f);
 		}
-		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::init_shear_y(float factor) noexcept {
+		inline typename _Graphics_math_float_impl::matrix_2d_data_type _Graphics_math_float_impl::create_shear_y(float factor) noexcept {
 			return create_matrix_2d(1.0f, factor, 0.0f, 1.0f, 0.0f, 0.0f);
 		}
 		inline void _Graphics_math_float_impl::translate(matrix_2d_data_type& mtx, const _Graphics_math_float_impl::point_2d_data_type& v) noexcept {
-			mtx = multiply(mtx, init_translate(v));
+			mtx = multiply(mtx, create_translate(v));
 		}
 		inline void _Graphics_math_float_impl::scale(matrix_2d_data_type& mtx, const point_2d_data_type& scl) noexcept {
-			mtx = multiply(mtx, init_scale(scl));
+			mtx = multiply(mtx, create_scale(scl));
 		}
 		inline void _Graphics_math_float_impl::rotate(matrix_2d_data_type& mtx, float radians) noexcept {
-			mtx = multiply(mtx, init_rotate(radians));
+			mtx = multiply(mtx, create_rotate(radians));
 		}
 		inline void _Graphics_math_float_impl::rotate(matrix_2d_data_type& mtx, float radians, const point_2d_data_type& origin) noexcept {
-			mtx = multiply(mtx, init_rotate(radians, origin));
+			mtx = multiply(mtx, create_rotate(radians, origin));
 		}
 		inline void _Graphics_math_float_impl::reflect(matrix_2d_data_type& mtx, float radians) noexcept {
-			mtx = multiply(mtx, init_reflect(radians));
+			mtx = multiply(mtx, create_reflect(radians));
 		}
 		inline void _Graphics_math_float_impl::shear_x(matrix_2d_data_type& mtx, float factor) noexcept {
-			mtx = multiply(mtx, init_shear_x(factor));
+			mtx = multiply(mtx, create_shear_x(factor));
 		}
 		inline void _Graphics_math_float_impl::shear_y(matrix_2d_data_type& mtx, float factor) noexcept {
-			mtx = multiply(mtx, init_shear_y(factor));
+			mtx = multiply(mtx, create_shear_y(factor));
 		}
 		inline bool _Is_finite_check(float val) noexcept {
 			float infinity = ::std::numeric_limits<float>::infinity();
@@ -440,7 +437,7 @@ namespace std::experimental::io2d {
 		}
 		inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::point_for_angle(float ang, float mgn) noexcept {
 			auto v = create_point_2d(mgn, 0.0f);
-			auto m = init_rotate(ang);
+			auto m = create_rotate(ang);
 			auto result = transform_pt(m, v);
 			result._X = _Round_floating_point_to_zero(result._Y);
 			result._Y = _Round_floating_point_to_zero(result._Y);
@@ -448,7 +445,7 @@ namespace std::experimental::io2d {
 		}
 		inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::point_for_angle(float ang, const point_2d_data_type& rad) noexcept {
 			auto v = create_point_2d(1.0f, 0.0f);
-			auto m = init_rotate(ang);
+			auto m = create_rotate(ang);
 			auto result = transform_pt(m, v);
 			result = multiply(result, rad);
 			result._X = _Round_floating_point_to_zero(result._X);
@@ -484,7 +481,7 @@ namespace std::experimental::io2d {
 		}
 		inline typename _Graphics_math_float_impl::point_2d_data_type _Graphics_math_float_impl::arc_end(const point_2d_data_type& cpt, float eang, const point_2d_data_type& rad, const matrix_2d_data_type& m) noexcept {
 			auto lmtx = m;
-			auto tfrm = init_rotate(eang);
+			auto tfrm = create_rotate(eang);
 			lmtx.m20 = 0.0f; lmtx.m21 = 0.0f; // Eliminate translation.
 			auto pt = transform_pt(tfrm, rad);
 			pt._Y = -pt._Y;

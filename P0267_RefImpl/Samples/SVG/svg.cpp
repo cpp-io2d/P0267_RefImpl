@@ -141,7 +141,7 @@ struct ShapeContext: Canvas {
         }
     }
     void draw_on_surface(image_surface &target_surface) {
-        auto rp = render_props{ antialias::best, matrix_2d::init_scale({document_.scale, document_.scale}) };        
+        auto rp = render_props{ antialias::best, matrix_2d::create_scale({document_.scale, document_.scale}) };        
         if( auto color = get_if<rgba_color>(&fill_paint) ) {
             target_surface.fill(brush{*color}, pb, nullopt, rp);
         }

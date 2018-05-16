@@ -50,11 +50,12 @@ namespace std {
 
 					class abs_new_figure {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::abs_new_figure_data_type;
+						using data_type = typename GraphicsSurfaces::paths::abs_new_figure_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						abs_new_figure();
 						explicit abs_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt);
@@ -69,11 +70,12 @@ namespace std {
 
 					class rel_new_figure {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::rel_new_figure_data_type;
+						using data_type = typename GraphicsSurfaces::paths::rel_new_figure_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						rel_new_figure() noexcept;
 						explicit rel_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
@@ -88,11 +90,12 @@ namespace std {
 
 					class close_figure {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::close_figure_data_type;
+						using data_type = typename GraphicsSurfaces::paths::close_figure_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						close_figure() noexcept;
 						close_figure(const close_figure& other);
@@ -104,11 +107,12 @@ namespace std {
 
 					class abs_matrix {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::abs_matrix_data_type;
+						using data_type = typename GraphicsSurfaces::paths::abs_matrix_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						abs_matrix() noexcept;
 						explicit abs_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
@@ -123,11 +127,12 @@ namespace std {
 
 					class rel_matrix {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::rel_matrix_data_type;
+						using data_type = typename GraphicsSurfaces::paths::rel_matrix_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						rel_matrix() noexcept;
 						explicit rel_matrix(const basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type>& m) noexcept;
@@ -142,11 +147,12 @@ namespace std {
 
 					class revert_matrix {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::revert_matrix_data_type;
+						using data_type = typename GraphicsSurfaces::paths::revert_matrix_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						revert_matrix() noexcept;
 						revert_matrix(const revert_matrix& other);
@@ -158,11 +164,12 @@ namespace std {
 
 					class abs_line {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::abs_line_data_type;
+						using data_type = typename GraphicsSurfaces::paths::abs_line_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						abs_line() noexcept;
 						explicit abs_line(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
@@ -177,11 +184,12 @@ namespace std {
 
 					class rel_line {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::rel_line_data_type;
+						using data_type = typename GraphicsSurfaces::paths::rel_line_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						rel_line() noexcept;
 						explicit rel_line(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
@@ -196,11 +204,12 @@ namespace std {
 
 					class abs_quadratic_curve {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::abs_quadratic_curve_data_type;
+						using data_type = typename GraphicsSurfaces::paths::abs_quadratic_curve_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						abs_quadratic_curve() noexcept;
 						abs_quadratic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
@@ -217,11 +226,12 @@ namespace std {
 
 					class rel_quadratic_curve {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::rel_quadratic_curve_data_type;
+						using data_type = typename GraphicsSurfaces::paths::rel_quadratic_curve_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						rel_quadratic_curve() noexcept;
 						rel_quadratic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
@@ -238,11 +248,12 @@ namespace std {
 
 					class abs_cubic_curve {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::abs_cubic_curve_data_type;
+						using data_type = typename GraphicsSurfaces::paths::abs_cubic_curve_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						abs_cubic_curve() noexcept;
 						abs_cubic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt1, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt2, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
@@ -261,11 +272,12 @@ namespace std {
 
 					class rel_cubic_curve {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::rel_cubic_curve_data_type;
+						using data_type = typename GraphicsSurfaces::paths::rel_cubic_curve_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						rel_cubic_curve() noexcept;
 						rel_cubic_curve(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt1, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& cpt2, const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& ept) noexcept;
@@ -284,11 +296,12 @@ namespace std {
 
 					class arc {
 					public:
-						using _Data_type = typename GraphicsSurfaces::paths::arc_data_type;
+						using data_type = typename GraphicsSurfaces::paths::arc_data_type;
 					private:
-						_Data_type _Data;
+						data_type _Data;
 					public:
-						const _Data_type& _Get_data() const noexcept;
+						const data_type& data() const noexcept;
+						data_type& data() noexcept;
 
 						arc() noexcept;
 						arc(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& rad, float rot, float sang) noexcept;
@@ -380,12 +393,13 @@ namespace std {
 				template <class GraphicsSurfaces, class Allocator = ::std::allocator<typename basic_figure_items<GraphicsSurfaces>::figure_item>>
 				class basic_path_builder {
 				public:
-					using _Data_type = ::std::vector<typename basic_figure_items<GraphicsSurfaces>::figure_item, Allocator>;
+					using data_type = ::std::vector<typename basic_figure_items<GraphicsSurfaces>::figure_item, Allocator>;
 					//using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 				private:
-					_Data_type _Data;
+					data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const data_type& data() const noexcept;
+					data_type& data() noexcept;
 					using value_type = typename basic_figure_items<GraphicsSurfaces>::figure_item;
 					using allocator_type = Allocator;
 					using reference = value_type&;
@@ -513,13 +527,14 @@ namespace std {
 				template <class GraphicsSurfaces>
 				class basic_interpreted_path {
 				public:
-					using _Data_type = typename GraphicsSurfaces::paths::interpreted_path_data_type;
+					using data_type = typename GraphicsSurfaces::paths::interpreted_path_data_type;
 
 				private:
-					_Data_type _Data;
+					data_type _Data;
 
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const data_type& data() const noexcept;
+					data_type& data() noexcept;
 					// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
 					basic_interpreted_path() noexcept;
 

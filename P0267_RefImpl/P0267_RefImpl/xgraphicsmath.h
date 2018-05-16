@@ -7,11 +7,12 @@ namespace std {
 				template <class GraphicsMath>
 				class basic_point_2d {
 				public:
-					using _Data_type = typename GraphicsMath::point_2d_data_type;
+					using data_type = typename GraphicsMath::point_2d_data_type;
 				private:
-					_Data_type _Data;
+					data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const data_type& data() const noexcept;
+					data_type& data() noexcept;
 
 					// \ref{\iotwod.\pointtwod.cons}, constructors:
 					basic_point_2d() noexcept;
@@ -70,11 +71,12 @@ namespace std {
 				template <class GraphicsMath>
 				class basic_matrix_2d {
 				public:
-					using _Data_type = typename GraphicsMath::matrix_2d_data_type;
+					using data_type = typename GraphicsMath::matrix_2d_data_type;
 				private:
-					_Data_type _Data;
+					data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const data_type& data() const noexcept;
+					data_type& data() noexcept;
 
 					basic_matrix_2d() noexcept;
 					basic_matrix_2d(float v00, float v01, float v10, float v11, float v20, float v21) noexcept;
@@ -95,13 +97,13 @@ namespace std {
 					float m21() const noexcept;
 
 					// \ref{\iotwod.\matrixtwod.staticfactories}, static factory functions:
-					static basic_matrix_2d init_translate(const basic_point_2d<GraphicsMath>& val) noexcept;
-					static basic_matrix_2d init_scale(const basic_point_2d<GraphicsMath>& val) noexcept;
-					static basic_matrix_2d init_rotate(float radians) noexcept;
-					static basic_matrix_2d init_rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept;
-					static basic_matrix_2d init_reflect(float radians) noexcept;
-					static basic_matrix_2d init_shear_x(float factor) noexcept;
-					static basic_matrix_2d init_shear_y(float factor) noexcept;
+					static basic_matrix_2d create_translate(const basic_point_2d<GraphicsMath>& val) noexcept;
+					static basic_matrix_2d create_scale(const basic_point_2d<GraphicsMath>& val) noexcept;
+					static basic_matrix_2d create_rotate(float radians) noexcept;
+					static basic_matrix_2d create_rotate(float radians, const basic_point_2d<GraphicsMath>& origin) noexcept;
+					static basic_matrix_2d create_reflect(float radians) noexcept;
+					static basic_matrix_2d create_shear_x(float factor) noexcept;
+					static basic_matrix_2d create_shear_y(float factor) noexcept;
 
 					// \ref{\iotwod.\matrixtwod.modifiers}, modifiers:
 					basic_matrix_2d& translate(const basic_point_2d<GraphicsMath>& v) noexcept;
@@ -134,11 +136,12 @@ namespace std {
 				template <class GraphicsMath>
 				class basic_display_point {
 				public:
-					using _Data_type = typename GraphicsMath::display_point_data_type;
+					using data_type = typename GraphicsMath::display_point_data_type;
 				private:
-					_Data_type _Data;
+					data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const data_type& data() const noexcept;
+					data_type& data() noexcept;
 
 					// \ref{\iotwod.\pointtwod.cons}, constructors:
 					basic_display_point() noexcept;
@@ -159,11 +162,12 @@ namespace std {
 				template <class GraphicsMath>
 				class basic_bounding_box {
 				public:
-					using _Data_type = typename GraphicsMath::bounding_box_data_type;
+					using data_type = typename GraphicsMath::bounding_box_data_type;
 				private:
-					_Data_type _Data;
+					data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const data_type& data() const noexcept;
+					data_type& data() noexcept;
 					basic_bounding_box() noexcept;
 					basic_bounding_box(float x, float y, float width, float height) noexcept;
 					basic_bounding_box(const basic_point_2d<GraphicsMath>& tl, const basic_point_2d<GraphicsMath>& br) noexcept;
@@ -191,11 +195,13 @@ namespace std {
 
 				template <class GraphicsMath>
 				class basic_circle {
-					using _Data_type = typename GraphicsMath::circle_data_type;
+					using data_type = typename GraphicsMath::circle_data_type;
 				private:
-					_Data_type _Data;
+					data_type _Data;
 				public:
-					const _Data_type& _Get_data() const noexcept;
+					const data_type& data() const noexcept;
+					data_type& data() noexcept;
+
 					basic_circle() noexcept;
 					basic_circle(const basic_point_2d<GraphicsMath>& ctr, float rad) noexcept;
 					basic_circle(const typename GraphicsMath::circle_data_type& val) noexcept;

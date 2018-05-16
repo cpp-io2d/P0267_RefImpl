@@ -27,7 +27,7 @@ _GS::brushes::create_brush(const rgba_color& c) {
             
 inline _GS::brushes::brush_data_type
 _GS::brushes::create_brush(basic_image_surface<_GS>&& img) {
-    auto &source_data = img._Get_data();
+    auto &source_data = img.data();
     
     _Surface surface_data;
     surface_data.bitmap = ::std::move(source_data.context);
