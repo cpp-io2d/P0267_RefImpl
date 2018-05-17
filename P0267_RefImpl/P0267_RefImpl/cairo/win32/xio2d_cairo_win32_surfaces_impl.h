@@ -164,7 +164,7 @@ namespace std::experimental::io2d {
                                 cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
                             }
                             else {
-                                auto pttn = data._Letterbox_brush.value()._Get_data().brush.get();
+                                auto pttn = data._Letterbox_brush.value().data().brush.get();
                                 if (data._Letterbox_brush_props == nullopt) {
                                     cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
                                     cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
@@ -214,7 +214,7 @@ namespace std::experimental::io2d {
                                 //cairo_paint(_Native_context.get());
                             }
                             else {
-                                auto pttn = data._Letterbox_brush.value()._Get_data().brush.get();
+                                auto pttn = data._Letterbox_brush.value().data().brush.get();
                                 if (data._Letterbox_brush_props == nullopt) {
                                     cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
                                     cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
@@ -264,7 +264,7 @@ namespace std::experimental::io2d {
                             cairo_paint(displayContext);
                         }
                         else {
-                            auto pttn = data._Letterbox_brush.value()._Get_data().brush.get();
+                            auto pttn = data._Letterbox_brush.value().data().brush.get();
                             if (data._Letterbox_brush_props == nullopt) {
                                 cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
                                 cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);

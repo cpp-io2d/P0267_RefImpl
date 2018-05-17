@@ -58,6 +58,10 @@ path_builder ImagePath( display_point image_dimenstions, matrix_2d mat )
 
 void Draw(const Cat &cat, const brush &image, display_point image_dimenstions, output_surface& surface)
 {
+	const auto min_scale = 0.01f;
+	if ( abs(cat.scale.x()) < min_scale || abs(cat.scale.y()) < min_scale )
+		return;
+
     auto mat = Transformation(cat, image_dimenstions);
     
     auto rp = render_props{};

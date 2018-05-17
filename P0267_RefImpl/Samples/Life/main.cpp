@@ -131,6 +131,7 @@ void GameOfLife::DrawCells(output_surface &surface)
     const auto fading_brush = brush{rgba_color{0.5f*beta, 0.5f*beta, 0.5f*beta}};
     const auto emerging_brush = brush{rgba_color{0.5f*gamma, 0.5f*gamma, 0.5f*gamma}};
     const auto cell_size = m_CellPxSize - 1.f;
+	const auto min_scale = 0.01f;
         
     for( auto y = 0; y < m_BoardHeight; ++y )
         for( auto x = 0; x < m_BoardWidth; ++x ) {
@@ -141,13 +142,13 @@ void GameOfLife::DrawCells(output_surface &surface)
                 rp.surface_matrix(matrix_2d::create_translate({m_CellPxSize * x, m_CellPxSize * y}));
                 surface.fill(on_brush, m_CellFigure, nullopt, rp);
             }
-            if( state == CellState::Fading ) {
+            if( state == CellState::Fading  && gamma >= min_scale) {
                 rp.surface_matrix(matrix_2d::create_scale({gamma, gamma}) *
                                   matrix_2d::create_translate({cell_size * beta / 2 , cell_size * beta / 2}) * 
                                   matrix_2d::create_translate({m_CellPxSize * x, m_CellPxSize * y}));
                 surface.fill(fading_brush, m_CellFigure, nullopt, rp);
             }
-            if( state == CellState::Emerging ) {
+            if( state == CellState::Emerging && beta >= min_scale ) {
                 rp.surface_matrix(matrix_2d::create_scale({beta, beta}) *
                                   matrix_2d::create_translate({cell_size * gamma / 2 , cell_size * gamma / 2}) * 
                                   matrix_2d::create_translate({m_CellPxSize * x, m_CellPxSize * y}));
