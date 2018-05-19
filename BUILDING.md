@@ -8,6 +8,7 @@ This IO2D implementation supports the following platforms out of the box:
 * Cairo/Win32: Windows
 * Cairo/Xlib: Linux, macOS
 * CoreGraphics/Mac: macOS
+* CoreGraphics/iOS: iOS
 
 ## General Notes
 
@@ -15,10 +16,11 @@ This IO2D implementation supports the following platforms out of the box:
 IO2D employs CMake as a build system. The following variables control the configuration process:
 * IO2D_DEFAULT  
 Controls a selection of default backend which is used when non-template symbols from std::experimental::io2d, like "brush" or "surface", are referenced.
-There're 3 backends in this RefImpl:
+There're 4 backends in this RefImpl:
   * CAIRO_WIN32
   * CAIRO_XLIB
   * COREGRAPHICS_MAC
+  * COREGRAPHICS_IOS  
 
   If no default backend was defined, the build script will try to automatically set an appropriate Cairo backend based on the host environment.  
   
@@ -61,7 +63,7 @@ Both Win32 and x64 builds are supported and being tested.
 Example of CMake execution (assuming that vcpkg was installed in c:/tools):
 ```
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-git clone --recurse-submodules https://github.com/ISOCPP-2D/P0267_RefImpl
+git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
@@ -82,7 +84,7 @@ Installation steps:
 Example of CMake execution:
 ```
 export CXX=g++-7
-git clone --recurse-submodules https://github.com/ISOCPP-2D/P0267_RefImpl
+git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
@@ -105,7 +107,7 @@ Installation steps:
 ```
 export CXXFLAGS="$CXXFLAGS -isystem/opt/X11/include -isystem/opt/local/include -isystem/usr/local/include"
 export LDFLAGS="$LDFLAGS -L/opt/X11/lib -L/opt/local/lib -L/usr/local/lib"
-git clone --recurse-submodules https://github.com/ISOCPP-2D/P0267_RefImpl
+git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
@@ -123,10 +125,30 @@ Installation steps:
 
 Example of CMake execution:
 ```
-git clone --recurse-submodules https://github.com/ISOCPP-2D/P0267_RefImpl
+git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
 cmake -G "Xcode" --config Debug "-DCMAKE_BUILD_TYPE=Debug" -DIO2D_DEFAULT=COREGRAPHICS_MAC ../.
+open io2d.xcodeproj
+```
+
+### CoreGraphics/iOS on iOS
+Since CMake doesn't support iOS out of the box, some additional configuration is required. To simplify the configuration process, an external toolchain can be specified. This one was used during the delopment: https://github.com/leetal/ios-cmake, but nothing stops from getting another one or configuring the build environment manually. The only requirement for the iOS toolchain is to set the IOS_PLATFORM variable during configuration. In the sample script below, you need to change PathToModernLibCXX to a valid path to libc++ installation (see above). To deploy on a physical device, the IOS_PLATFORM variable must be changed from SIMULATOR64 to OS.
+
+Installation steps:
+1. Setup a modern libc++ version as described above.
+2. Install Brew: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+3. Install cmake: brew install cmake
+
+Example of CMake execution:
+```
+git clone https://github.com/leetal/ios-cmake
+ex -sc '1i|set( CXX_FLAGS "-nostdinc++ -IPathToModernLibCXX/include/c++/v1" )' -cx ios-cmake/ios.toolchain.cmake
+git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
+cd P0267_RefImpl
+mkdir Debug
+cd Debug
+cmake -G "Xcode" --config Debug "-DCMAKE_BUILD_TYPE=Debug" -DIO2D_DEFAULT=COREGRAPHICS_IOS -DIO2D_WITHOUT_TESTS=1 -DIOS_PLATFORM=SIMULATOR64 -DCMAKE_TOOLCHAIN_FILE=../../ios-cmake/ios.toolchain.cmake ../.
 open io2d.xcodeproj
 ```
