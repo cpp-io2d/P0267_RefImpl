@@ -80,6 +80,7 @@ COPY_REF_RSC(
     surface_brush_reflect_2x_scale_20x20.png
     surface_brush_reflect_non_uniform_scale_20x20.png
     surface_brush_pad_translate_20x20.png
+    surface_brush_samples_outside_non_padded_10x10.png
     mask_green_to_red_blending_50x50.png
     mask_green_to_red_blending_clipped_with_rect_50x50.png
     mask_green_to_red_blending_clipped_with_rects_and_rotated_35x35.png

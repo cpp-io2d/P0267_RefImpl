@@ -273,6 +273,28 @@ TEST_CASE("Properly draws with a padded surface brush")
     CHECK( ComparePNGExact(img, reference) == true );
 }
 
+TEST_CASE("IO2D extends a non-papped surface brush with transparent_black")
+{
+    auto reference = "surface_brush_samples_outside_non_padded_10x10.png";    
+    
+    image_surface img{format::argb32, 10, 10};
+    auto b = brush{ DrawCheckerboard4x4() };
+    img.paint(brush{rgba_color::red});
+    
+    auto bp = brush_props{};
+    bp.wrap_mode(wrap_mode::none);
+    bp.filter(filter::nearest);
+    bp.brush_matrix(matrix_2d::create_translate({3, 3}).inverse());
+    
+    auto rp = render_props{};
+    rp.antialiasing(antialias::none);
+    rp.compositing(compositing_op::source);
+    
+    img.paint(b, bp, rp);
+    
+    CHECK( ComparePNGExact(img, reference) == true );
+}
+
 /**
  * Draws the following pattern:
  * BWBW
@@ -293,4 +315,3 @@ static image_surface DrawCheckerboard4x4()
     
     return img;
 }
-
