@@ -126,8 +126,6 @@ namespace std::experimental::io2d {
 					return CAIRO_OPERATOR_OUT;
 				case ::std::experimental::io2d::compositing_op::atop:
 					return CAIRO_OPERATOR_ATOP;
-				case ::std::experimental::io2d::compositing_op::dest:
-					return CAIRO_OPERATOR_DEST;
 				case ::std::experimental::io2d::compositing_op::dest_over:
 					return CAIRO_OPERATOR_DEST_OVER;
 				case ::std::experimental::io2d::compositing_op::dest_in:
@@ -193,7 +191,7 @@ namespace std::experimental::io2d {
 				case CAIRO_OPERATOR_ATOP:
 					return ::std::experimental::io2d::compositing_op::atop;
 				case CAIRO_OPERATOR_DEST:
-					return ::std::experimental::io2d::compositing_op::dest;
+					throw ::std::runtime_error("CAIRO_OPERATOR_DEST is a no-op and is thus unsupported.");
 				case CAIRO_OPERATOR_DEST_OVER:
 					return ::std::experimental::io2d::compositing_op::dest_over;
 				case CAIRO_OPERATOR_DEST_IN:

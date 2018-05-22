@@ -64,7 +64,6 @@ inline constexpr CGBlendMode _ToCG(compositing_op op) noexcept
         case compositing_op::in:                return kCGBlendModeSourceIn;
         case compositing_op::out:               return kCGBlendModeSourceOut;
         case compositing_op::atop:              return kCGBlendModeSourceAtop;
-        case compositing_op::dest:              return kCGBlendModeNormal; // not supported by CoreGraphics!
         case compositing_op::dest_over:         return kCGBlendModeDestinationOver;
         case compositing_op::dest_in:           return kCGBlendModeDestinationIn;
         case compositing_op::dest_out:          return kCGBlendModeDestinationOut;
