@@ -43,9 +43,9 @@ hsl_luminosity  |   yes   |   +       |     +         |
 ===================================================================================================
 [0] there's no such operator in CoreGraphics.
 [1] there's no such operator in CoreGraphics.
-[2] color_dodge in CoreGraphics is kCGBlendModeColorDodge and it apparently follows another formula, which is not specified in Apple's docs.
-[3] color_burn in CoreGraphics is kCGBlendModeColorBurn and it apparently follows another formula, which is not specified in Apple's docs.
-[4] soft_light in CoreGraphics is kCGBlendModeSoftLight and it apparently follows another formula, which is not specified in Apple's docs.
+[2] color_dodge in CoreGraphics is kCGBlendModeColorDodge and it apparently follows another formula, which is not specified in Apple's docs. See ColorDodge() for details.
+[3] color_burn in CoreGraphics is kCGBlendModeColorBurn and it apparently follows another formula, which is not specified in Apple's docs. See ColorBurn() for details.
+[4] soft_light in CoreGraphics is kCGBlendModeSoftLight and it apparently follows another formula, which is not specified in Apple's docs. See SoftLight() for details.
  
 */
 
@@ -217,7 +217,10 @@ static rgba_color ColorDodge( const rgba_color& a, const rgba_color& b ) noexcep
     auto f = [](float a, float b){
         if( b <= numeric_limits<float>::min() )
             return 0.f;
+        // Cairo-compatible version:
         return a < 1.f ? min(1.f, b / (1.f - a)) : 1.f;
+        // CoreGraphics-compatible version:
+        // return a < 1.f ? b / (1.f - a) : numeric_limits<float>::max();        
     };
     return ComplexBlend(a, b, f);
 }
@@ -226,8 +229,11 @@ static rgba_color ColorBurn( const rgba_color& a, const rgba_color& b ) noexcept
 {
     auto f = [](float a, float b){
         if( 1.f - b <= numeric_limits<float>::min() )
-            return 1.f;
+            return 1.f;        
+        // Cairo-compatible version:
         return a > numeric_limits<float>::min() ? 1.f - min(1.f, (1.f - b) / a) : 0.f;
+        // CoreGraphics-compatible version:
+        // return a > numeric_limits<float>::min() ? 1.f - (1.f - b) / a : numeric_limits<float>::lowest();        
     };
     return ComplexBlend(a, b, f);
 }
@@ -244,6 +250,7 @@ static rgba_color HardLight( const rgba_color& a, const rgba_color& b ) noexcept
 static rgba_color SoftLight( const rgba_color& a, const rgba_color& b ) noexcept
 {
     auto f = [](float a, float b){
+        // Cairo-compatible version:        
         if( a <= 0.5 ) {
             return b - (1.f - 2.f * a) * b * (1.f - b);
         }
@@ -252,7 +259,9 @@ static rgba_color SoftLight( const rgba_color& a, const rgba_color& b ) noexcept
                 return b + (2.f * a - 1.f) * (((16.f * b - 12.f) * b + 4.f) * b - b);
             else
                 return b + (2.f * a - 1.f) * (sqrt(b) - b);
-        }
+        }        
+        // CoreGraphics-compatible version:
+        // return (1.f - 2.f * a) * b * b + 2.f * a * b;     
     };
     return ComplexBlend(a, b, f);
 }
@@ -811,5 +820,51 @@ TEST_CASE("IO2D properly blends colors using compositing_op::hsl_luminosity")
         img.paint(brush{get<0>(t)}, nullopt, rp);
         INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
         CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);
+    }
+}
+
+// These 3 test cases are hid out due to differences in color blending in different backends. 
+TEST_CASE("IO2D properly blends colors using compositing_op::color_dodge", "[!hide][!mayfail]")
+{
+    auto op = compositing_op::color_dodge;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);            
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::color_burn", "[!hide][!mayfail]")
+{
+    auto op = compositing_op::color_burn;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);            
+    }
+}
+
+TEST_CASE("IO2D properly blends colors using compositing_op::soft_light", "[!hide][!mayfail]")
+{
+    auto op = compositing_op::soft_light;
+    auto rp = render_props{};
+    rp.compositing(op);
+    auto colors = BuildRefData( BlendFunction(rp.compositing()) );
+    for( auto &t: colors ) {
+        auto img = image_surface{format::argb32, 1, 1};
+        img.paint(brush{get<1>(t)});
+        img.paint(brush{get<0>(t)}, nullopt, rp);
+        INFO("A: " << get<0>(t) << ", B: " << get<1>(t) << ", C: " << get<2>(t) );
+        CHECK( CheckPNGColorWithTolerance(img, 0, 0, get<2>(t), 0.05f) == true);            
     }
 }
