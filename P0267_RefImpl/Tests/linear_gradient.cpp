@@ -68,7 +68,7 @@ TEST_CASE("IO2D properly draws a linear gradient")
         image.paint(b);
     }
     
-    CHECK( ComparePNGWithTolerance(image, reference, 0.01f) == true );
+    CHECK( CompareWithPNGImage(image, reference, 0.01f) == true );
 }
 
 TEST_CASE("IO2D properly handles wrapping modes for linear gradients")
@@ -100,7 +100,7 @@ TEST_CASE("IO2D properly handles wrapping modes for linear gradients")
 
     // there's a significat difference in color interpolation between Cairo backend and CoreGraphics backend.
     // need to invesitage it.
-    CHECK( ComparePNGWithTolerance(image, reference, 0.08f) == true );
+    CHECK( CompareWithPNGImage(image, reference, 0.08f) == true );
 }
 
 TEST_CASE("IO2D linear gradient fills an entire non-convex figure")
@@ -133,7 +133,7 @@ TEST_CASE("IO2D linear gradient fills an entire non-convex figure")
     
     image.fill(b, pb, brush_props{wrap_mode::reflect}, rp);
     
-    CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 1) == true );
+    CHECK( CompareWithPNGImage(image, reference, 0.05f, 1) == true );
 }
 
 TEST_CASE("IO2D linear gradient properly strokes an open figure")
@@ -159,5 +159,5 @@ TEST_CASE("IO2D linear gradient properly strokes an open figure")
     auto sp = stroke_props{10., line_cap::square, line_join::round};
     image.stroke(b, build({20.f, 100.f}), bp, sp, nullopt, rp);
     
-    CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 2) == true );
+    CHECK( CompareWithPNGImage(image, reference, 0.05f, 2) == true );
 }

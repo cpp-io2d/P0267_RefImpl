@@ -12,7 +12,7 @@ TEST_CASE("IO2D properly paints background")
     auto image = image_surface{format::argb32, 300, 200};
     SECTION("Proper color with paint()") {
         image.paint( brush{rgba_color::red} );
-        CHECK( ComparePNGExact(image, reference) == true );
+        CHECK( CompareWithPNGImage(image, reference) == true );
     }
     SECTION("Draw via fill()") {
         auto pb = path_builder{};
@@ -23,10 +23,10 @@ TEST_CASE("IO2D properly paints background")
         pb.rel_line({0.f, -200.f});
         pb.close_figure();
         image.fill( brush{rgba_color::red}, pb);
-        CHECK( ComparePNGExact(image, reference) == true );
+        CHECK( CompareWithPNGImage(image, reference) == true );
     }
     SECTION("Invalid color") {
         image.paint( brush{rgba_color::blue} );
-        CHECK( ComparePNGExact(image, reference) == false );
+        CHECK( CompareWithPNGImage(image, reference) == false );
     }
 }

@@ -22,6 +22,7 @@ add_executable(tests
     blending.cpp
 	comparison.h
    	comparison.cpp
+    image_io.cpp
 )
 
 target_link_libraries(tests io2d Catch)
@@ -93,6 +94,9 @@ COPY_REF_RSC(
     mask_red_green_checkerboard_reflect_50x50.png
     mask_red_green_checkerboard_pad_50x50.png
     mask_red_green_checkerboard_none_50x50.png
+    image_500x375.png
+    image_500x375.jpg
+    image_500x375.tiff
 )
 
 if(MSVC)

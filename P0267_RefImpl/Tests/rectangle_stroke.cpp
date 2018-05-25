@@ -176,5 +176,5 @@ TEST_CASE("IO2D properly strokes a rectangle")
         image.stroke(b, pb);
     }
 
-    CHECK( ComparePNGExact(image, reference) == true );
+    CHECK( CompareWithPNGImage(image, reference) == true );
 }

@@ -51,7 +51,7 @@ TEST_CASE("IO2D properly draws a radial gradient")
         image.paint(b, brush_props{wrap_mode::none});
     }
     
-    CHECK( ComparePNGWithTolerance(image, reference, 0.02f, 2) == true );
+    CHECK( CompareWithPNGImage(image, reference, 0.02f, 2) == true );
 }
 
 TEST_CASE("IO2D properly draws a radial gradient with a reflected pattern")
@@ -78,7 +78,7 @@ TEST_CASE("IO2D properly draws a radial gradient with a reflected pattern")
         image.paint(b, brush_props{wrap_mode::reflect});
     }
     
-    CHECK( ComparePNGWithTolerance(image, reference, 0.02f, 2) == true );
+    CHECK( CompareWithPNGImage(image, reference, 0.02f, 2) == true );
 }
 
 TEST_CASE("IO2D properly handles wrap modes for radial gradients")
@@ -106,7 +106,7 @@ TEST_CASE("IO2D properly handles wrap modes for radial gradients")
     image.fill(b, sector({0.f, 100.f, 300.f, 50.f}), brush_props{wrap_mode::reflect});
     image.fill(b, sector({0.f, 150.f, 300.f, 50.f}), brush_props{wrap_mode::pad});
 
-    CHECK( ComparePNGWithTolerance(image, reference, 0.02f, 2) == true );
+    CHECK( CompareWithPNGImage(image, reference, 0.02f, 2) == true );
 }
 
 TEST_CASE("Radial gradient fills an entire non-convex figure")
@@ -140,7 +140,7 @@ TEST_CASE("Radial gradient fills an entire non-convex figure")
     
     image.fill(b, pb, brush_props{wrap_mode::reflect}, rp);
 
-    CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 1) == true );
+    CHECK( CompareWithPNGImage(image, reference, 0.05f, 1) == true );
 }
 
 TEST_CASE("Radial gradient properly strokes an open figure")
@@ -168,5 +168,5 @@ TEST_CASE("Radial gradient properly strokes an open figure")
     auto sp = stroke_props{10., line_cap::square, line_join::round};
     image.stroke(b, build({20.f, 100.f}), bp, sp, nullopt, rp);
         
-    CHECK( ComparePNGWithTolerance(image, reference, 0.05f, 2) == true );
+    CHECK( CompareWithPNGImage(image, reference, 0.05f, 2) == true );
 }

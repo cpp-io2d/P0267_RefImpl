@@ -114,6 +114,7 @@ void _Clear(CGContextRef ctx, CGColorRef with_color, CGRect in_rect)
 {
     CGContextSaveGState(ctx);
     CGContextSetFillColorWithColor(ctx, with_color);
+    CGContextSetBlendMode(ctx, kCGBlendModeCopy);    
     CGContextFillRect(ctx, in_rect);
     CGContextRestoreGState(ctx);
 }
@@ -385,6 +386,63 @@ static bool IsEmpty(CGRect rc)
 {
     return rc.size.width < 0.5 || rc.size.height < 0.5;        
 }
+
+static _Interchange_buffer::alpha_mode InterchangeBufferAlphaFromBitmapInfo(CGBitmapInfo info)
+{
+    switch( info & kCGBitmapAlphaInfoMask ) {
+        case kCGImageAlphaNone:
+        case kCGImageAlphaNoneSkipLast:
+        case kCGImageAlphaNoneSkipFirst:
+            return _Interchange_buffer::alpha_mode::ignore;
+        case kCGImageAlphaPremultipliedLast:
+        case kCGImageAlphaPremultipliedFirst:
+            return _Interchange_buffer::alpha_mode::premultiplied;
+        case kCGImageAlphaLast:
+        case kCGImageAlphaFirst:
+        case kCGImageAlphaOnly:
+        default:
+            return _Interchange_buffer::alpha_mode::straight;
+    }
+}
+
+_Interchange_buffer _CopyToInterchangeBuffer(CGContextRef ctx, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha)
+{
+    const auto data = (const byte*)CGBitmapContextGetData(ctx);
+    if( !data )
+        throw make_error_code(errc::invalid_argument);
+    
+    const auto width = CGBitmapContextGetWidth(ctx);
+    const auto height = CGBitmapContextGetHeight(ctx);
+    const auto bitmap_info = CGBitmapContextGetBitmapInfo(ctx); 
+    const auto stride = CGBitmapContextGetBytesPerRow(ctx);
+    const auto bpp = CGBitmapContextGetBitsPerPixel(ctx);
+    const auto bpc = CGBitmapContextGetBitsPerComponent(ctx);
+    
+    if( bpp == 32 && bpc == 8 ) {
+        const bool little_order = (bitmap_info & kCGImageByteOrderMask) == kCGImageByteOrder32Little;
+        const bool alpha_first = (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaFirst ||
+                                 (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaPremultipliedFirst ||
+                                 (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaNoneSkipFirst;
+        
+        auto src_layout = _Interchange_buffer::pixel_layout::r8g8b8a8;        
+        if( little_order && !alpha_first )
+            src_layout = _Interchange_buffer::pixel_layout::a8b8g8r8;
+        else if( little_order && alpha_first )
+            src_layout = _Interchange_buffer::pixel_layout::b8g8r8a8; 
+        else if( !little_order && !alpha_first )
+            src_layout = _Interchange_buffer::pixel_layout::a8r8g8b8;
+        else 
+            src_layout = _Interchange_buffer::pixel_layout::r8g8b8a8;
+
+        const auto src_alpha = InterchangeBufferAlphaFromBitmapInfo(bitmap_info);       
+
+        return _Interchange_buffer{layout, alpha, data, src_layout, src_alpha, int(width), int(height), int(stride) };        
+    }
+    else {
+        throw make_error_code(errc::not_supported);
+    }
+}
+    
 
 } // namespace _CoreGraphics
 } // inline namespace v1

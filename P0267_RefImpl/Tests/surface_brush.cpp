@@ -34,7 +34,7 @@ TEST_CASE("Properly draws with a non-wrapped surface brush")
         img.paint(b, bp, rp);
     }
 
-    CHECK( ComparePNGExact(img, reference) == true );
+    CHECK( CompareWithPNGImage(img, reference) == true );
 }
 
 TEST_CASE("Properly draws with a repeateded surface brush")
@@ -66,7 +66,7 @@ TEST_CASE("Properly draws with a repeateded surface brush")
         img.paint(b, bp, rp);
     }
 
-    CHECK( ComparePNGExact(img, reference) == true );
+    CHECK( CompareWithPNGImage(img, reference) == true );
 }
 
 TEST_CASE("Properly draws with a repeateded scaled surface brush")
@@ -94,7 +94,7 @@ TEST_CASE("Properly draws with a repeateded scaled surface brush")
     }
     img.paint(b, bp, rp);
 
-    CHECK( ComparePNGExact(img, reference) == true );
+    CHECK( CompareWithPNGImage(img, reference) == true );
 }
 
 TEST_CASE("Properly draws with a repeateded non-uniformely scaled surface brush")
@@ -122,7 +122,7 @@ TEST_CASE("Properly draws with a repeateded non-uniformely scaled surface brush"
     }
     img.paint(b, bp, rp);
     
-    CHECK( ComparePNGExact(img, reference) == true );
+    CHECK( CompareWithPNGImage(img, reference) == true );
 }
 
 // Not actually sure how eligible this test is.
@@ -147,7 +147,7 @@ TEST_CASE("Properly draws with a repeateded sheared surface brush")
     }
     img.paint(b, bp, rp);
     
-    CHECK( ComparePNGWithTolerance(img, reference, 0.0f, 1) == true );
+    CHECK( CompareWithPNGImage(img, reference, 0.0f, 1) == true );
 }
 
 TEST_CASE("Properly draws with a reflected surface brush")
@@ -173,7 +173,7 @@ TEST_CASE("Properly draws with a reflected surface brush")
     }
     img.paint(b, bp, rp);
     
-    CHECK( ComparePNGExact(img, reference) == true );
+    CHECK( CompareWithPNGImage(img, reference) == true );
 }
 
 TEST_CASE("Properly draws with a reflected scaled surface brush")
@@ -207,7 +207,7 @@ TEST_CASE("Properly draws with a reflected scaled surface brush")
     
     img.paint(b, bp, rp);
     
-    CHECK( ComparePNGExact(img, reference) == true );
+    CHECK( CompareWithPNGImage(img, reference) == true );
 }
 
 TEST_CASE("Properly draws with a reflected non-uniformely scaled surface brush")
@@ -241,7 +241,7 @@ TEST_CASE("Properly draws with a reflected non-uniformely scaled surface brush")
 
     img.paint(b, bp, rp);
     
-    CHECK( ComparePNGExact(img, reference) == true );
+    CHECK( CompareWithPNGImage(img, reference) == true );
 }
 
 TEST_CASE("Properly draws with a padded surface brush")
@@ -270,7 +270,7 @@ TEST_CASE("Properly draws with a padded surface brush")
 
     img.paint(b, bp, rp);
     
-    CHECK( ComparePNGExact(img, reference) == true );
+    CHECK( CompareWithPNGImage(img, reference) == true );
 }
 
 TEST_CASE("IO2D extends a non-papped surface brush with transparent_black")
@@ -292,7 +292,7 @@ TEST_CASE("IO2D extends a non-papped surface brush with transparent_black")
     
     img.paint(b, bp, rp);
     
-    CHECK( ComparePNGExact(img, reference) == true );
+    CHECK( CompareWithPNGImage(img, reference) == true );
 }
 
 /**

@@ -21,5 +21,5 @@ TEST_CASE("IO2D strokes with a proper width")
         image.stroke(b, pb, nullopt, sp);
     }
 
-    CHECK( ComparePNGExact(image, reference) == true );
+    CHECK( CompareWithPNGImage(image, reference) == true );
 }

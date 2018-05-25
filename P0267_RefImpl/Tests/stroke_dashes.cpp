@@ -38,5 +38,5 @@ TEST_CASE("IO2D strokes with proper dashes")
         }
     }
     
-    CHECK( ComparePNGExact(image, reference) == true );
+    CHECK( CompareWithPNGImage(image, reference) == true );
 }
