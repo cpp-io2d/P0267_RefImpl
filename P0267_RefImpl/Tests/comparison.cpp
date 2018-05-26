@@ -266,6 +266,19 @@ static bool CompareExact( const _Interchange_buffer &buff1, const _Interchange_b
     return buff1 == buff2;
 }
 
+static bool Compare(const _Interchange_buffer& first,
+                    const _Interchange_buffer& second,
+                    float intensity_tolerance,
+                    int spatial_tolerance)
+{
+    if( intensity_tolerance == 0.f && spatial_tolerance == 0 )
+        return CompareExact(first, second);
+    else if( spatial_tolerance == 0 )
+        return CompareWithIntensityTolerance(first, second, intensity_tolerance);        
+    else 
+        return CompareWithIntensityAndSpatialTolerance(first, second, intensity_tolerance, spatial_tolerance);    
+}
+
 bool CompareWithPNGImage(image_surface &image,
                          const std::string &path_to_reference_image,
                          float intensity_tolerance,
@@ -286,12 +299,30 @@ bool CompareWithPNGImage(image_surface &image,
         return false;
     }
     
-    if( intensity_tolerance == 0.f && spatial_tolerance == 0 )
-        return CompareExact(*img1, *img2);
-    else if( spatial_tolerance == 0 )
-        return CompareWithIntensityTolerance(*img1, *img2, intensity_tolerance);        
-    else 
-        return CompareWithIntensityAndSpatialTolerance(*img1, *img2, intensity_tolerance, spatial_tolerance);
+    return Compare(*img1, *img2, intensity_tolerance, spatial_tolerance);
+}
+
+bool CompareImages(std::experimental::io2d::image_surface &first,
+                   std::experimental::io2d::image_surface &second,
+                   float intensity_tolerance,
+                   int spatial_tolerance)
+{
+    assert( intensity_tolerance >= 0. && intensity_tolerance <= 1.f );
+    assert( spatial_tolerance >= 0 && spatial_tolerance <= 10 );
+    
+    auto img1 = ToInterchangeBuffer(first);
+    if( !img1 ) {
+        cerr << "Failed to read image_surface data." << endl;
+        return false;
+    }
+    
+    auto img2 = ToInterchangeBuffer(second);
+    if( !img2 ) {
+        cerr << "Failed to read image_surface data." << endl;
+        return false;
+    }
+    
+    return Compare(*img1, *img2, intensity_tolerance, spatial_tolerance);
 }
 
 bool CompareImageColor(std::experimental::io2d::image_surface &image,

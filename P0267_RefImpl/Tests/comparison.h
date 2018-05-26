@@ -13,3 +13,8 @@ bool CompareWithPNGImage(std::experimental::io2d::image_surface &image,
                          const std::string &path_to_reference_image,
                          float intensity_tolerance = 0.f,
                          int spatial_tolerance = 0);
+
+bool CompareImages(std::experimental::io2d::image_surface &first,
+                   std::experimental::io2d::image_surface &second,
+                   float intensity_tolerance = 0.f,
+                   int spatial_tolerance = 0);
