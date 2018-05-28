@@ -893,7 +893,7 @@ namespace std::experimental::io2d {
 				auto width = data.dimensions.x();
 				auto height = data.dimensions.y();
 				auto pixelDataUP = _Convert_and_create_pixel_array_from_map_pixels<unsigned char>(data.format, mapData, width, height, mapStride);
-				::std::unique_ptr<Image, decltype(&DestroyImage)> image(ConstituteImage(static_cast<unsigned long>(width), static_cast<unsigned long>(height), "BGRA", /* ShortPixel*/CharPixel, pixelDataUP.get(), &exInfo), &DestroyImage);
+				::std::unique_ptr<Image, decltype(&DestroyImage)> image(ConstituteImage(static_cast<unsigned long>(width), static_cast<unsigned long>(height), "BGRA", CharPixel, pixelDataUP.get(), &exInfo), &DestroyImage);
 				if (image == nullptr) {
 					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
 					DestroyExceptionInfo(&exInfo);
@@ -1068,6 +1068,34 @@ namespace std::experimental::io2d {
 				cairo_new_path(context);
 				cairo_mask(context, mb.data().brush.get());
 			}
+            template<class GraphicsMath>
+            inline _Interchange_buffer _Cairo_graphics_surfaces<GraphicsMath>::surfaces::_Copy_to_interchange_buffer(image_surface_data_type& data, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha) {
+                auto fmt = data.format;
+                auto map = cairo_surface_map_to_image(data.surface.get(), nullptr);
+                auto stride = cairo_image_surface_get_stride(map);
+                auto pixels = cairo_image_surface_get_data(map);
+                auto width = data.dimensions.x();
+                auto height = data.dimensions.y();
+                auto src_layout = _Interchange_buffer::pixel_layout::r8g8b8a8;
+                auto src_alpha = _Interchange_buffer::alpha_mode::ignore;
+                switch( fmt ) {
+                    case format::argb32:
+                        src_layout = _Interchange_buffer::pixel_layout::b8g8r8a8;
+                        src_alpha = _Interchange_buffer::alpha_mode::premultiplied;
+                        break;
+                    case format::rgb16_565:
+                        src_layout = _Interchange_buffer::pixel_layout::b5g6r5;
+                        src_alpha = _Interchange_buffer::alpha_mode::ignore;
+                        break;
+                    case format::a8:
+                        src_layout = _Interchange_buffer::pixel_layout::a8;
+                        src_alpha = _Interchange_buffer::alpha_mode::straight;
+                        break;
+                    default:
+                        throw make_error_code(errc::not_supported);
+                };                
+                return _Interchange_buffer{layout, alpha, (const byte*)pixels, src_layout, src_alpha, int(width), int(height), int(stride) };    
+            }
 		}
 	}
 }

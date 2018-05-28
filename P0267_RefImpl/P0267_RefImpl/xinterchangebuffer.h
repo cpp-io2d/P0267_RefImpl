@@ -3,8 +3,6 @@
 
 #include <cstddef>
 #include <memory>
-#include <assert.h>
-#include <system_error>
 
 namespace std::experimental::io2d { inline namespace v1 {
  
@@ -12,13 +10,24 @@ class _Interchange_buffer
 {
 public:
     enum pixel_layout {
+        // 32 bits per pixel
         b8g8r8a8,
         a8r8g8b8,
         r8g8b8a8,
-        a8b8g8r8
+        a8b8g8r8,
+        
+        // 16 bit per pixel
+        r5g6b5,
+        b5g6r5,
+        r5g5b5a1,
+        a1r5g5b5,
+        b5g5r5a1,
+        a1b5g5r5,
+        
+        // 8 bits per pixel
+        a8
+        
         // TODO:
-        // 656 - yes
-        // 8 - yes
         // 888 - maybe?
     };
     

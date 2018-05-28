@@ -1,6 +1,7 @@
 #include "xinterchangebuffer.h"
 #include <array>
 #include <cmath>
+#include <assert.h>
 
 namespace std::experimental::io2d { inline namespace v1 {
 
@@ -12,6 +13,15 @@ static int BytesPerPixel(_Interchange_buffer::pixel_layout layout)
         case _Interchange_buffer::pixel_layout::r8g8b8a8:
         case _Interchange_buffer::pixel_layout::a8b8g8r8:            
             return 4;
+        case _Interchange_buffer::pixel_layout::r5g6b5:
+        case _Interchange_buffer::pixel_layout::b5g6r5:
+        case _Interchange_buffer::pixel_layout::r5g5b5a1:
+        case _Interchange_buffer::pixel_layout::a1r5g5b5:
+        case _Interchange_buffer::pixel_layout::b5g5r5a1:
+        case _Interchange_buffer::pixel_layout::a1b5g5r5:
+            return 2;
+        case _Interchange_buffer::pixel_layout::a8:
+            return 1;
         default:
             assert(0);
     }
@@ -36,11 +46,13 @@ static std::array<float, 4> ExtractFloatRGBA(const std::byte *source,
                                              _Interchange_buffer::pixel_layout layout,
                                              _Interchange_buffer::alpha_mode alpha_mode) noexcept
 {
+    // following calculations assume little-endian architecture.
+    
     float r = 1.f, g = 1.f, b = 1.f, a = 1.f;
     
     switch (layout) {
         case _Interchange_buffer::pixel_layout::b8g8r8a8: {
-            const uint8_t *p = (const uint8_t *)source;  
+            auto p = (const uint8_t *)source;  
             r = float(p[2])/255.f;
             g = float(p[1])/255.f;
             b = float(p[0])/255.f;
@@ -48,7 +60,7 @@ static std::array<float, 4> ExtractFloatRGBA(const std::byte *source,
             break;
         }   
         case _Interchange_buffer::pixel_layout::a8r8g8b8: {
-            const uint8_t *p = (const uint8_t *)source;  
+            auto p = (const uint8_t *)source;  
             r = float(p[1])/255.f;
             g = float(p[2])/255.f;
             b = float(p[3])/255.f;
@@ -56,7 +68,7 @@ static std::array<float, 4> ExtractFloatRGBA(const std::byte *source,
             break;
         }
         case _Interchange_buffer::pixel_layout::r8g8b8a8: {
-            const uint8_t *p = (const uint8_t *)source;  
+            auto p = (const uint8_t *)source;  
             r = float(p[0])/255.f;
             g = float(p[1])/255.f;
             b = float(p[2])/255.f;
@@ -64,13 +76,91 @@ static std::array<float, 4> ExtractFloatRGBA(const std::byte *source,
             break;
         }
         case _Interchange_buffer::pixel_layout::a8b8g8r8: {
-            const uint8_t *p = (const uint8_t *)source;  
+            auto p = (const uint8_t *)source;  
             r = float(p[3])/255.f;
             g = float(p[2])/255.f;
             b = float(p[1])/255.f;
             a = float(p[0])/255.f;
             break;
         }
+        case _Interchange_buffer::pixel_layout::r5g6b5: {
+            auto p = *(const uint16_t *)source;
+            const auto red_mask = uint16_t(31 << 0);
+            const auto green_mask = uint16_t(63 << 5);
+            const auto blue_mask = uint16_t(31 << 11);
+            r = float((p & red_mask) >> 0)/31.f;
+            g = float((p & green_mask) >> 5)/63.f;
+            b = float((p & blue_mask) >> 11)/31.f;
+            a = 1.f;
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::b5g6r5: {
+            auto p = *(const uint16_t *)source;
+            const auto red_mask = uint16_t(31 << 11);
+            const auto green_mask = uint16_t(63 << 5);
+            const auto blue_mask = uint16_t(31 << 0);
+            r = float((p & red_mask) >> 11)/31.f;
+            g = float((p & green_mask) >> 5)/63.f;
+            b = float((p & blue_mask) >> 0)/31.f;
+            a = 1.f;
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::r5g5b5a1: {
+            auto p = *(const uint16_t *)source;
+            const auto red_mask = uint16_t(31 << 0);
+            const auto green_mask = uint16_t(31 << 5);
+            const auto blue_mask = uint16_t(31 << 10);
+            const auto alpha_mask = uint16_t(1 << 15);
+            r = float((p & red_mask) >> 0)/31.f;
+            g = float((p & green_mask) >> 5)/31.f;
+            b = float((p & blue_mask) >> 10)/31.f;
+            a = (p & alpha_mask) != 0 ? 1.f : 0.f;
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::b5g5r5a1: {
+            auto p = *(const uint16_t *)source;
+            const auto red_mask = uint16_t(31 << 10);
+            const auto green_mask = uint16_t(31 << 5);
+            const auto blue_mask = uint16_t(31 << 0);
+            const auto alpha_mask = uint16_t(1 << 15);
+            r = float((p & red_mask) >> 10)/31.f;
+            g = float((p & green_mask) >> 5)/31.f;
+            b = float((p & blue_mask) >> 0)/31.f;
+            a = (p & alpha_mask) != 0 ? 1.f : 0.f;
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::a1r5g5b5: {
+            auto p = *(const uint16_t *)source;
+            const auto red_mask = uint16_t(31 << 1);
+            const auto green_mask = uint16_t(31 << 6);
+            const auto blue_mask = uint16_t(31 << 11);
+            const auto alpha_mask = uint16_t(1 << 0);
+            r = float((p & red_mask) >> 1)/31.f;
+            g = float((p & green_mask) >> 6)/31.f;
+            b = float((p & blue_mask) >> 11)/31.f;
+            a = (p & alpha_mask) != 0 ? 1.f : 0.f;
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::a1b5g5r5: {
+            auto p = *(const uint16_t *)source;
+            const auto red_mask = uint16_t(31 << 11);
+            const auto green_mask = uint16_t(31 << 6);
+            const auto blue_mask = uint16_t(31 << 1);
+            const auto alpha_mask = uint16_t(1 << 0);
+            r = float((p & red_mask) >> 11)/31.f;
+            g = float((p & green_mask) >> 6)/31.f;
+            b = float((p & blue_mask) >> 1)/31.f;
+            a = (p & alpha_mask) != 0 ? 1.f : 0.f;
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::a8: {
+            auto p = *(const uint8_t *)source;
+            r = 1.f;
+            g = 1.f;
+            b = 1.f;
+            a = float(p)/255.f;
+            break;
+        }    
         default: assert(0);
     }
     
@@ -97,6 +187,8 @@ static void WriteFloatRGBA(std::array<float, 4> rgba,
                            _Interchange_buffer::pixel_layout layout,
                            _Interchange_buffer::alpha_mode alpha_mode)
 {
+    // following calculations assume little-endian architecture.
+    
     switch (alpha_mode) {
         case _Interchange_buffer::alpha_mode::ignore:
             rgba[3] = 1.f;
@@ -114,37 +206,88 @@ static void WriteFloatRGBA(std::array<float, 4> rgba,
         
     switch (layout) {
         case _Interchange_buffer::pixel_layout::b8g8r8a8: {
-            uint8_t *p = (uint8_t *)target;
-            p[2] = uint8_t(rgba[0] * 255.f);
-            p[1] = uint8_t(rgba[1] * 255.f);
-            p[0] = uint8_t(rgba[2] * 255.f);
-            p[3] = uint8_t(rgba[3] * 255.f);
+            auto p = (uint8_t *)target;
+            p[2] = uint8_t(rgba[0] * 255.f + 0.5f);
+            p[1] = uint8_t(rgba[1] * 255.f + 0.5f);
+            p[0] = uint8_t(rgba[2] * 255.f + 0.5f);
+            p[3] = uint8_t(rgba[3] * 255.f + 0.5f);
             break;
         }   
         case _Interchange_buffer::pixel_layout::a8r8g8b8: {
-            uint8_t *p = (uint8_t *)target;
-            p[1] = uint8_t(rgba[0] * 255.f);
-            p[2] = uint8_t(rgba[1] * 255.f);
-            p[3] = uint8_t(rgba[2] * 255.f);
-            p[0] = uint8_t(rgba[3] * 255.f);
+            auto p = (uint8_t *)target;
+            p[1] = uint8_t(rgba[0] * 255.f + 0.5f);
+            p[2] = uint8_t(rgba[1] * 255.f + 0.5f);
+            p[3] = uint8_t(rgba[2] * 255.f + 0.5f);
+            p[0] = uint8_t(rgba[3] * 255.f + 0.5f);
             break;            
         }
         case _Interchange_buffer::pixel_layout::r8g8b8a8: {
-            uint8_t *p = (uint8_t *)target;
-            p[0] = uint8_t(rgba[0] * 255.f);
-            p[1] = uint8_t(rgba[1] * 255.f);
-            p[2] = uint8_t(rgba[2] * 255.f);
-            p[3] = uint8_t(rgba[3] * 255.f);
+            auto p = (uint8_t *)target;
+            p[0] = uint8_t(rgba[0] * 255.f + 0.5f);
+            p[1] = uint8_t(rgba[1] * 255.f + 0.5f);
+            p[2] = uint8_t(rgba[2] * 255.f + 0.5f);
+            p[3] = uint8_t(rgba[3] * 255.f + 0.5f);
             break;              
         }
         case _Interchange_buffer::pixel_layout::a8b8g8r8: {
-            uint8_t *p = (uint8_t *)target;
-            p[3] = uint8_t(rgba[0] * 255.f);
-            p[2] = uint8_t(rgba[1] * 255.f);
-            p[1] = uint8_t(rgba[2] * 255.f);
-            p[0] = uint8_t(rgba[3] * 255.f);
+            auto p = (uint8_t *)target;
+            p[3] = uint8_t(rgba[0] * 255.f + 0.5f);
+            p[2] = uint8_t(rgba[1] * 255.f + 0.5f);
+            p[1] = uint8_t(rgba[2] * 255.f + 0.5f);
+            p[0] = uint8_t(rgba[3] * 255.f + 0.5f);
             break;                
         }
+        case _Interchange_buffer::pixel_layout::r5g6b5: {
+            auto &p = *(uint16_t *)target;
+            p = (uint16_t(rgba[0] * 31.f + 0.5f) << 0) |
+                (uint16_t(rgba[1] * 63.f + 0.5f) << 5) |
+                (uint16_t(rgba[2] * 31.f + 0.5f) << 11);
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::b5g6r5: {
+            auto &p = *(uint16_t *)target;            
+            p = (uint16_t(rgba[0] * 31.f + 0.5f) << 11)|
+                (uint16_t(rgba[1] * 63.f + 0.5f) << 5) |
+                (uint16_t(rgba[2] * 31.f + 0.5f) << 0) ;
+            break;            
+        }
+        case _Interchange_buffer::pixel_layout::r5g5b5a1: {
+            auto &p = *(uint16_t *)target;            
+            p = (uint16_t(rgba[0] * 31.f + 0.5f) << 0) |
+                (uint16_t(rgba[1] * 31.f + 0.5f) << 5) |
+                (uint16_t(rgba[2] * 31.f + 0.5f) << 10)|
+                (uint16_t(rgba[3]        + 0.5f) << 15);            
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::b5g5r5a1: {
+            auto &p = *(uint16_t *)target;
+            p = (uint16_t(rgba[0] * 31.f + 0.5f) << 10)|
+                (uint16_t(rgba[1] * 31.f + 0.5f) << 5) |
+                (uint16_t(rgba[2] * 31.f + 0.5f) << 0) |
+                (uint16_t(rgba[3]        + 0.5f) << 15);
+            break;
+        }        
+        case _Interchange_buffer::pixel_layout::a1r5g5b5: {
+            auto &p = *(uint16_t *)target;            
+            p = (uint16_t(rgba[0] * 31.f + 0.5f) << 1) |
+                (uint16_t(rgba[1] * 31.f + 0.5f) << 6) |
+                (uint16_t(rgba[2] * 31.f + 0.5f) << 11)|
+                (uint16_t(rgba[3]        + 0.5f) << 0) ;            
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::a1b5g5r5: {
+            auto &p = *(uint16_t *)target;
+            p = (uint16_t(rgba[0] * 31.f + 0.5f) << 11)|
+                (uint16_t(rgba[1] * 31.f + 0.5f) << 6) |
+                (uint16_t(rgba[2] * 31.f + 0.5f) << 1) |
+                (uint16_t(rgba[3]        + 0.5f) << 0) ;
+            break;
+        }
+        case _Interchange_buffer::pixel_layout::a8: {
+            auto &p = *(uint8_t *)target;
+            p = uint8_t(rgba[3] * 255.f + 0.5f);
+            break;
+        }            
         default: assert(0);
     }        
 }
