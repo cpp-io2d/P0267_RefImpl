@@ -7,3 +7,6 @@
 [submodule "P0267_RefImpl/Tests/Catch2"]
 	path = P0267_RefImpl/Tests/Catch2
 	url = https://github.com/catchorg/Catch2
+[submodule "P0267_RefImpl/Samples/Maps/external/pugixml"]
+	path = P0267_RefImpl/Samples/Maps/external/pugixml
+	url = https://github.com/zeux/pugixml
