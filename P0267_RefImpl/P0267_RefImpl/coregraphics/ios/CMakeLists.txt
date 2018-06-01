@@ -28,6 +28,8 @@ set(IO2D_LIB_SRC
 	../xio2d_cg_texture.h
 	../xio2d_cg_fps_counter.cpp
 	../xio2d_cg_fps_counter.h
+    ../xio2d_cg_display.cpp
+    ../xio2d_cg_display.h
 )
 
 add_library(io2d_coregraphics_ios ${IO2D_LIB_SRC})

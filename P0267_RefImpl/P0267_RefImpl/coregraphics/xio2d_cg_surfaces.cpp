@@ -10,6 +10,8 @@
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
     
+bool _GS::_Enable_HiDPI = true;    
+    
 static void SetStrokeProps( CGContextRef ctx, const basic_stroke_props<_GS>& sp ) noexcept;
 static void SetDashProps( CGContextRef ctx, const basic_dashes<_GS>& d ) noexcept;
 static void SetRenderProps( CGContextRef ctx, const basic_render_props<_GS>& rp ) noexcept;

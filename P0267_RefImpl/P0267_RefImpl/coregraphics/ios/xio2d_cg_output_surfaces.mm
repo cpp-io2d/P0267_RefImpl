@@ -1,5 +1,6 @@
 #include "xio2d_cg_output_surfaces.h"
 #include "../xio2d_cg_fps_counter.h"
+#include "../xio2d_cg_display.h"
 #include <UIKit/UIKit.h>
 #include <iostream>
 
@@ -24,9 +25,11 @@ struct _GS::surfaces::_OutputSurfaceCocoa
     function<void(basic_output_surface<_GS>&)> draw_callback;
     function<void(basic_output_surface<_GS>&)> size_change_callback;
     basic_output_surface<_GS> *frontend;
+    double content_scaling_factor = 1.f;
     bool auto_clear = false;
     io2d::format preferred_format;
     io2d::refresh_style refresh_style;
+    io2d::scaling scaling;
     float fps;
     _FPSCounter fps_counter;
     bool draw_fps = true;
@@ -65,6 +68,7 @@ _GS::surfaces::output_surface_data_type _GS::surfaces::create_output_surface(int
     ctx->preferred_format = preferredFormat;
     ctx->refresh_style = rr;
     ctx->fps = fps;
+    ctx->scaling = scl;
     RebuildBackBuffer(*ctx, {preferredWidth, preferredHeight});
     
     return ctx.release();
@@ -168,8 +172,36 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
     
 static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, basic_display_point<GraphicsMath> new_dimensions )
 {
-    context.draw_buffer.reset( _CreateBitmap(context.preferred_format, new_dimensions.x(), new_dimensions.y()) );
+    auto sf = _GS::_Enable_HiDPI ? context.content_scaling_factor : 1.;
+    context.draw_buffer.reset( _CreateBitmap(context.preferred_format,
+                                             new_dimensions.x() * sf,
+                                             new_dimensions.y() * sf) );
+    CGContextConcatCTM(context.draw_buffer.get(), CGAffineTransform{ sf, 0., 0., sf, 0., 0. } );
+    CGContextSetAllowsAntialiasing(context.draw_buffer.get(), true);        
     context.buffer_size = new_dimensions;
+}
+    
+static void ShowBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, CGContextRef target)
+{
+    auto back_buffer = context.draw_buffer.get();
+    
+    _CheckOnceThatPixelLayoutIsTheSame(target, back_buffer);
+
+    // we can bypass any scaling if the back buffer and the display buffer have 
+    // exactly the same size and pixel layout
+    if( _BitBltIfPossible(target, back_buffer, true) )
+        return;
+    
+    auto bb_sz = CGSizeMake(context.buffer_size.x(), context.buffer_size.y());
+    auto db_sz = CGSizeMake(CGBitmapContextGetWidth(target) / context.content_scaling_factor,
+                            CGBitmapContextGetHeight(target) / context.content_scaling_factor);
+    auto target_rect = _ScaledBackBufferRect(bb_sz, db_sz, context.scaling);
+    
+    auto image = CGBitmapContextCreateImage(back_buffer);
+    _AutoRelease release_image{image};
+    
+    CGContextSetBlendMode(target, kCGBlendModeCopy);    
+    CGContextDrawImage(target, target_rect, image);
 }
     
 } // namespace _CoreGraphics
@@ -182,6 +214,8 @@ using namespace std::experimental::io2d::_CoreGraphics;
 @implementation _IO2DManagedAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    assert( g_CurrentOutputSurface );
+    g_CurrentOutputSurface->content_scaling_factor = UIScreen.mainScreen.scale; 
     self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
     self.window.rootViewController = [[_IO2DManagedViewController alloc] init];
     [self.window makeKeyAndVisible];
@@ -256,21 +290,6 @@ static CADisplayLink *CreateDisplayLink(id target,
     [attr_str drawAtPoint:CGPointMake(0, self.bounds.size.height - 15)];    
 }
 
-static void CheckThatPixelLayoutIsTheSame( CGContextRef view, CGContextRef buffer )
-{
-    static bool checked_once = false;
-    if( checked_once )
-        return;
-    checked_once = true;    
-    auto view_bitmap = CGBitmapContextGetBitmapInfo(view);
-    auto buffer_bitmap = CGBitmapContextGetBitmapInfo(buffer); 
-    if( view_bitmap != buffer_bitmap )
-        std::cerr << "view and buffer have different pixel layouts: " 
-                  << view_bitmap << "(view) and "
-                  << buffer_bitmap << "(buffer)."
-                  << std::endl;
-}
-
 - (void)drawRect:(CGRect)rect {
     auto managed_surface = g_CurrentOutputSurface;
     assert(managed_surface);
@@ -282,18 +301,9 @@ static void CheckThatPixelLayoutIsTheSame( CGContextRef view, CGContextRef buffe
         return;
     
     managed_surface->draw_callback(*managed_surface->frontend);
-    
-    auto ctx = UIGraphicsGetCurrentContext();
-    CheckThatPixelLayoutIsTheSame(ctx, managed_surface->draw_buffer.get());
-    
-    auto image = CGBitmapContextCreateImage(managed_surface->draw_buffer.get());
-    _AutoRelease release_image{image};
-    
-    // TODO: proper scaling and background filling regarding current settings
-    auto rc = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
-    CGContextSetBlendMode(ctx, kCGBlendModeCopy);    
-    CGContextDrawImage(ctx, rc, image);
-    
+
+    ShowBackBuffer(*managed_surface, UIGraphicsGetCurrentContext());
+
     if( managed_surface->draw_fps ) {    
         managed_surface->fps_counter.CommitFrame();    
         [self drawFPS];

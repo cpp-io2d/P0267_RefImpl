@@ -14,7 +14,9 @@ using circle = basic_circle<GraphicsMath>;
     
 struct _GS {
 
-using graphics_math_type = GraphicsMath;
+    using graphics_math_type = GraphicsMath;
+    
+    static bool _Enable_HiDPI; 
     
 struct paths {
     struct _AbsNewFigure {

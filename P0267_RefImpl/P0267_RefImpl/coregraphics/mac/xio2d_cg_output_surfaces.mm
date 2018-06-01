@@ -1,5 +1,6 @@
 #include "xio2d_cg_output_surfaces.h"
 #include "../xio2d_cg_fps_counter.h"
+#include "../xio2d_cg_display.h"
 #include <Cocoa/Cocoa.h>
 #include <iostream>
 
@@ -19,7 +20,7 @@ struct _GS::surfaces::_OutputSurfaceCocoa
     
     NSWindow *window = nullptr;
     unique_ptr<context_t, decltype(&CGContextRelease)> draw_buffer{ nullptr, &CGContextRelease };
-    basic_display_point<GraphicsMath> buffer_size;
+    basic_display_point<GraphicsMath> buffer_size; // logic units, not pixels. to get pixel amount - multiply it by content_scaling_factor or query by CGBitmapContextGetWidth()
     _IO2DOutputView *output_view = nullptr;
     function<void(basic_output_surface<_GS>&)> draw_callback;
     function<void(basic_output_surface<_GS>&)> size_change_callback;
@@ -291,9 +292,12 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
 static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context,
                               basic_display_point<GraphicsMath> new_dimensions )
 {
+    auto sf = _GS::_Enable_HiDPI ? context.content_scaling_factor : 1.;
     context.draw_buffer.reset( _CreateBitmap(context.preferred_format,
-                                             new_dimensions.x(),
-                                             new_dimensions.y()) );
+                                             new_dimensions.x() * sf,
+                                             new_dimensions.y() * sf) );
+    CGContextConcatCTM(context.draw_buffer.get(), CGAffineTransform{ sf, 0., 0., sf, 0., 0. } );
+    CGContextSetAllowsAntialiasing(context.draw_buffer.get(), true);    
     context.buffer_size = new_dimensions;
 }
 
@@ -304,120 +308,21 @@ static void UpdateWindowTitle(_GS::surfaces::_OutputSurfaceCocoa &context)
                             int(context.fps_counter.FPS())];
 }    
     
-static void CheckThatPixelLayoutIsTheSame( CGContextRef view, CGContextRef buffer )
-{
-    static bool checked_once = false;
-    if( checked_once )
-        return;
-    checked_once = true;
-    
-    auto view_bitmap = CGBitmapContextGetBitmapInfo(view);
-    auto buffer_bitmap = CGBitmapContextGetBitmapInfo(buffer); 
-    if( view_bitmap != buffer_bitmap )
-        std::cerr << "display buffer and back buffer have different pixel layouts: " 
-        << view_bitmap << "(display buffer) and "
-        << buffer_bitmap << "(back buffer)."
-        << std::endl;
-}
-
-static bool BitBltIfPossible( CGContextRef view, CGContextRef buffer, bool flip )
-{
-    const auto buffer_width = CGBitmapContextGetWidth(buffer);
-    if( buffer_width != CGBitmapContextGetWidth(view) )
-        return false;
-    
-    const auto buffer_height = CGBitmapContextGetHeight(buffer);
-    if( buffer_height != CGBitmapContextGetHeight(view) )
-        return false;
-    
-    if( CGBitmapContextGetBitmapInfo(buffer) != CGBitmapContextGetBitmapInfo(view) )
-        return false;
-    
-    const auto bytes_per_row = CGBitmapContextGetBytesPerRow(buffer);
-    if( bytes_per_row != CGBitmapContextGetBytesPerRow(view) )
-        return false;
-    
-    if( CGBitmapContextGetBitsPerPixel(buffer) != CGBitmapContextGetBitsPerPixel(view) )
-        return false;
-    
-    if( CGBitmapContextGetBitsPerComponent(buffer) != CGBitmapContextGetBitsPerComponent(view) )
-        return false;
-    
-    auto buffer_data = CGBitmapContextGetData(buffer);
-    auto view_data = CGBitmapContextGetData(view);
-    
-    if( flip ) {
-        for( int src_y = 0, dst_y = buffer_height - 1; src_y < buffer_height; ++src_y, --dst_y )
-            memcpy((uint8_t*)view_data + bytes_per_row * dst_y,
-                   (const uint8_t*)buffer_data + bytes_per_row * src_y,
-                   bytes_per_row);
-    }
-    else {
-        memcpy(view_data, buffer_data, bytes_per_row * buffer_height);        
-    }
-    
-    return true;
-}   
-
-static CGRect ScaledBackBufferRect(CGSize back_buffer_size, CGSize display_buffer_size, scaling sc)
-{
-    assert(back_buffer_size.width >= 1. && back_buffer_size.height >= 1. &&
-           display_buffer_size.width >= 1. && display_buffer_size.height >= 1. );
-    
-    switch (sc) {
-        case scaling::none:
-            return CGRectMake(0., 0., back_buffer_size.width, back_buffer_size.height);
-        case scaling::fill_exact:
-            return CGRectMake(0., 0., display_buffer_size.width, display_buffer_size.height);
-        case scaling::letterbox:
-        case scaling::uniform: {
-            auto sx = display_buffer_size.width / back_buffer_size.width;
-            auto sy = display_buffer_size.height / back_buffer_size.height;
-            if( sx < sy )
-                return CGRectMake(0,
-                                  (display_buffer_size.height - back_buffer_size.height*sx)/2,
-                                  display_buffer_size.width,
-                                  back_buffer_size.height*sx);
-            else
-                return CGRectMake((display_buffer_size.width - back_buffer_size.width*sy)/2,
-                                  0,
-                                  back_buffer_size.width*sy,
-                                  display_buffer_size.height);
-        }
-        case scaling::fill_uniform: {
-            auto sx = display_buffer_size.width / back_buffer_size.width;
-            auto sy = display_buffer_size.height / back_buffer_size.height;
-            if( sx > sy )
-                return CGRectMake(0,
-                                  (display_buffer_size.height - back_buffer_size.height*sx)/2,
-                                  display_buffer_size.width,
-                                  back_buffer_size.height*sx);
-            else
-                return CGRectMake((display_buffer_size.width - back_buffer_size.width*sy)/2,
-                                  0,
-                                  back_buffer_size.width*sy,
-                                  display_buffer_size.height);
-        }
-        default:
-            assert(0);
-    }
-}    
-
 static void ShowBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, CGContextRef target)
 {
     auto back_buffer = context.draw_buffer.get();
     
-    CheckThatPixelLayoutIsTheSame(target, back_buffer);
+    _CheckOnceThatPixelLayoutIsTheSame(target, back_buffer);
 
     // we can bypass any scaling if the back buffer and the display buffer have 
     // exactly the same size and pixel layout
-    if( BitBltIfPossible(target, back_buffer, true) )
+    if( _BitBltIfPossible(target, back_buffer, true) )
         return;
     
     auto bb_sz = CGSizeMake(context.buffer_size.x(), context.buffer_size.y());
     auto db_sz = CGSizeMake(CGBitmapContextGetWidth(target) / context.content_scaling_factor,
                             CGBitmapContextGetHeight(target) / context.content_scaling_factor);
-    auto target_rect = ScaledBackBufferRect(bb_sz, db_sz, context.scaling);
+    auto target_rect = _ScaledBackBufferRect(bb_sz, db_sz, context.scaling);
     
     auto image = CGBitmapContextCreateImage(back_buffer);
     _AutoRelease release_image{image};

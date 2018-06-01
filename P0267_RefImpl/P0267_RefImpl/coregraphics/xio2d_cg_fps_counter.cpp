@@ -1,7 +1,5 @@
 #include "xio2d_cg_fps_counter.h"
 
-//#include <iostream>
-
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
 
 _FPSCounter::_FPSCounter( std::chrono::high_resolution_clock::duration report_interval):
@@ -19,13 +17,8 @@ void _FPSCounter::CommitFrame()
         m_FPS = m_Frames / seconds_in_interval;
         m_Frames = 0.f;
         m_LastFlush = now;
-        
-        
-//        std::cout << m_FPS << std::endl;
     }
 }
-    
-//    float FPS() const noexcept { return m_Frames; }
     
 } // namespace _CoreGraphics
 } // inline namespace v1
