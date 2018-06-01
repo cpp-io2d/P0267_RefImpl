@@ -24,6 +24,7 @@ struct _GS::surfaces::_OutputSurfaceCocoa
     function<void(basic_output_surface<_GS>&)> draw_callback;
     function<void(basic_output_surface<_GS>&)> size_change_callback;
     basic_output_surface<_GS> *frontend;
+    double content_scaling_factor = 1.f; 
 
     bool auto_clear = false;
     io2d::format preferred_format;
@@ -36,7 +37,6 @@ struct _GS::surfaces::_OutputSurfaceCocoa
 };
     
 static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, basic_display_point<GraphicsMath> new_dimensions );
-static void ShowBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, CGContextRef target);
 
 _GS::surfaces::output_surface_data_type _GS::surfaces::create_output_surface(int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl, io2d::refresh_style rr, float fps)
 {
@@ -73,6 +73,7 @@ _GS::surfaces::output_surface_data_type _GS::surfaces::create_output_surface(int
     ctx->output_view = [[_IO2DOutputView alloc] initWithFrame:ctx->window.contentView.bounds];
     ctx->output_view.data = ctx.get();
     ctx->window.contentView = ctx->output_view;
+    ctx->content_scaling_factor = ctx->output_view.layer.contentsScale;    
     ctx->preferred_format = preferredFormat;
     ctx->refresh_style = rr;
     ctx->desired_fps = fps;
@@ -414,7 +415,8 @@ static void ShowBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, CGContex
         return;
     
     auto bb_sz = CGSizeMake(context.buffer_size.x(), context.buffer_size.y());
-    auto db_sz = CGSizeMake(CGBitmapContextGetWidth(target), CGBitmapContextGetHeight(target));
+    auto db_sz = CGSizeMake(CGBitmapContextGetWidth(target) / context.content_scaling_factor,
+                            CGBitmapContextGetHeight(target) / context.content_scaling_factor);
     auto target_rect = ScaledBackBufferRect(bb_sz, db_sz, context.scaling);
     
     auto image = CGBitmapContextCreateImage(back_buffer);
