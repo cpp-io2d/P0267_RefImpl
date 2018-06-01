@@ -62,6 +62,7 @@ COPY_REF_RSC(
     red_background_300x200.png
     stroked_rectangle_300x200.png
     stroke_widths_300x200.png
+    stroke_scaled_width_80x20.png
     dash_pattern_two_one_300x200.png
     linear_gradient_aquamarine_dark_magenta_lime_300x200.png
     linear_gradient_wrapping_modes_300x200.png
