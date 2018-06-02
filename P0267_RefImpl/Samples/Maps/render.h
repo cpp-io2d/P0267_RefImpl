@@ -16,17 +16,19 @@ private:
     void BuildRoadReps();
     void BuildLanduseBrushes();
     
-    void DrawBuildings(io2d::output_surface &surface);
-    void DrawHighways(io2d::output_surface &surface);
-    void DrawRailways(io2d::output_surface &surface);
-    void DrawLeisure(io2d::output_surface &surface);
-    void DrawWater(io2d::output_surface &surface);
-    void DrawLanduses(io2d::output_surface &surface);    
-    io2d::interpreted_path PathFromWay(io2d::output_surface &surface, const Model::Way &way);
-    io2d::interpreted_path PathFromMP(io2d::output_surface &surface, const Model::Multipolygon &mp);
+    void DrawBuildings(io2d::output_surface &surface) const;
+    void DrawHighways(io2d::output_surface &surface) const;
+    void DrawRailways(io2d::output_surface &surface) const;
+    void DrawLeisure(io2d::output_surface &surface) const;
+    void DrawWater(io2d::output_surface &surface) const;
+    void DrawLanduses(io2d::output_surface &surface) const;
+    io2d::interpreted_path PathFromWay(const Model::Way &way) const;
+    io2d::interpreted_path PathFromMP(const Model::Multipolygon &mp) const;
     
     const Model &m_Model;
     float m_Scale = 1.f;
+    float m_PixelsInMeter = 1.f;
+    io2d::matrix_2d m_Matrix;
     
     io2d::brush m_BackgroundFillBrush{ io2d::rgba_color{238, 235, 227} };
     
@@ -46,9 +48,6 @@ private:
     
     struct RoadRep {
         io2d::brush brush{io2d::rgba_color::black};
-        io2d::brush_props brush_props{};
-        io2d::stroke_props stroke_props{};
-        std::optional<io2d::brush> outline_brush{};
         io2d::dashes dashes{};
         float metric_width = 1.f;
     };

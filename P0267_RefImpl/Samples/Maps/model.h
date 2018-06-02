@@ -18,8 +18,8 @@ public:
     };
     
     struct Road {
-        enum Type { Invalid, Motorway,  Trunk, Primary, Secondary, Tertiary,
-            Residential, Service, Unclassified, Footway };
+        enum Type { Invalid, Unclassified, Service, Residential,
+            Tertiary, Secondary, Primary, Trunk, Motorway, Footway };
         int way;
         Type type;
     };
@@ -60,6 +60,7 @@ public:
 private:
     void AdjustCoordinates();
     void BuildRings( Multipolygon &mp );
+    void LoadData(const std::vector<std::byte> &xml);
     
     std::vector<Node> m_Nodes;
     std::vector<Way> m_Ways;

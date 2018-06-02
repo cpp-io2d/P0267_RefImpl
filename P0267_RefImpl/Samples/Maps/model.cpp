@@ -35,20 +35,33 @@ static Model::Landuse::Type String2LanduseType(std::string_view type)
 
 Model::Model( const std::vector<std::byte> &xml )
 {
+    LoadData(xml);
+
+    AdjustCoordinates();
+
+    std::sort(m_Roads.begin(), m_Roads.end(), [](const auto &_1st, const auto &_2nd){
+        return (int)_1st.type < (int)_2nd.type; 
+    });
+}
+
+void Model::LoadData(const std::vector<std::byte> &xml)
+{
     using namespace pugi;
     
     xml_document doc;
     if( !doc.load_buffer(xml.data(), xml.size()) )
         throw std::logic_error("failed to parse the xml file");
     
-    for( const auto &b: doc.select_nodes("/osm/bounds") ) {
-        auto node = b.node();
+    if( auto bounds = doc.select_nodes("/osm/bounds"); !bounds.empty() ) {
+        auto node = bounds.first().node();
         m_MinLat = atof(node.attribute("minlat").as_string());
         m_MaxLat = atof(node.attribute("maxlat").as_string());
         m_MinLon = atof(node.attribute("minlon").as_string());
         m_MaxLon = atof(node.attribute("maxlon").as_string());
     }
-    
+    else 
+        throw std::logic_error("map's bounds are not defined");
+
     std::unordered_map<std::string, int> node_id_to_num;
     for( const auto &node: doc.select_nodes("/osm/node") ) {
         node_id_to_num[node.node().attribute("id").as_string()] = (int)m_Nodes.size();
@@ -151,7 +164,6 @@ Model::Model( const std::vector<std::byte> &xml )
             }
         }
     }
-    AdjustCoordinates();
 }
 
 void Model::AdjustCoordinates()
