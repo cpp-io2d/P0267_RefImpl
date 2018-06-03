@@ -256,3 +256,5 @@ P0267_RefImpl/dll_Release
 *.db
 *.db-shm
 *.db-wal
+/P0267_RefImpl/SampleApp
+/CMakeSettings.json
