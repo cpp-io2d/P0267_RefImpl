@@ -1,5 +1,6 @@
 #include "xio2d_cg_output_surfaces.h"
 #include "../xio2d_cg_fps_counter.h"
+#include "../xio2d_cg_display.h"
 #include <Cocoa/Cocoa.h>
 #include <iostream>
 
@@ -19,18 +20,21 @@ struct _GS::surfaces::_OutputSurfaceCocoa
     
     NSWindow *window = nullptr;
     unique_ptr<context_t, decltype(&CGContextRelease)> draw_buffer{ nullptr, &CGContextRelease };
-    basic_display_point<GraphicsMath> buffer_size;
+    basic_display_point<GraphicsMath> buffer_size; // logic units, not pixels. to get pixel amount - multiply it by content_scaling_factor or query by CGBitmapContextGetWidth()
     _IO2DOutputView *output_view = nullptr;
     function<void(basic_output_surface<_GS>&)> draw_callback;
     function<void(basic_output_surface<_GS>&)> size_change_callback;
     basic_output_surface<_GS> *frontend;
+    double content_scaling_factor = 1.f; 
 
     bool auto_clear = false;
     io2d::format preferred_format;
     io2d::refresh_style refresh_style;
-    float fps;
+    io2d::scaling scaling;
+    float desired_fps = 30.f;
     bool show_fps = true;
     _FPSCounter fps_counter;
+    bool end_show = false;
 };
     
 static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, basic_display_point<GraphicsMath> new_dimensions );
@@ -70,9 +74,11 @@ _GS::surfaces::output_surface_data_type _GS::surfaces::create_output_surface(int
     ctx->output_view = [[_IO2DOutputView alloc] initWithFrame:ctx->window.contentView.bounds];
     ctx->output_view.data = ctx.get();
     ctx->window.contentView = ctx->output_view;
+    ctx->content_scaling_factor = ctx->output_view.layer.contentsScale;    
     ctx->preferred_format = preferredFormat;
     ctx->refresh_style = rr;
-    ctx->fps = fps;
+    ctx->desired_fps = fps;
+    ctx->scaling = scl;
     RebuildBackBuffer(*ctx, {preferredWidth, preferredHeight});
     
     return ctx.release();
@@ -107,6 +113,34 @@ basic_display_point<GraphicsMath> _GS::surfaces::display_dimensions(const output
 {
     auto bounds = data->window.contentView.bounds;
     return {int(bounds.size.width), int(bounds.size.height)};
+}
+    
+io2d::scaling _GS::surfaces::scaling(output_surface_data_type& data) noexcept
+{
+    return data->scaling;
+}
+    
+void _GS::surfaces::scaling(output_surface_data_type& data, io2d::scaling val) noexcept
+{
+    data->scaling = val;
+}
+    
+io2d::refresh_style _GS::surfaces::refresh_style(const output_surface_data_type& data) noexcept
+{
+    return data->refresh_style;
+}
+    
+float _GS::surfaces::desired_frame_rate(const output_surface_data_type& data) noexcept
+{
+    return data->desired_fps;
+}
+    
+void _GS::surfaces::flush(output_surface_data_type& data) { /* no-op */ }
+void _GS::surfaces::flush(output_surface_data_type& data, error_code& ec) noexcept { /* no-op */ }
+ 
+void _GS::surfaces::end_show(output_surface_data_type& data)
+{
+    data->end_show = true;
 }
     
 void _GS::surfaces::draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_GS>&)> callback)
@@ -217,15 +251,16 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
     data->frontend = &sfc;
     [data->window center];
     [data->window makeKeyAndOrderFront:nil];
+    data->end_show = false;
     
-
     if( data->refresh_style == refresh_style::fixed ) {
-        auto fixed_timer = [NSTimer scheduledTimerWithTimeInterval:1. / data->fps
+        assert( data->desired_fps > 0 );
+        auto fixed_timer = [NSTimer scheduledTimerWithTimeInterval:1. / data->desired_fps
                                                            repeats:true
                                                              block:^(NSTimer*){
                                                                  _FireDisplay(data);
                                                              }];
-        while( true ) {
+        while( data->end_show == false ) {
             @autoreleasepool {
                 auto event = _NextEvent();
                 if( event == nil )
@@ -237,7 +272,7 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
     }
     else if( data->refresh_style == refresh_style::as_fast_as_possible ) {
         FakeEvent::Enqueue();
-        while( true ) {
+        while( data->end_show == false ) {
             @autoreleasepool {
                 auto event = _NextEvent();
                 if( event == nil )
@@ -254,13 +289,18 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
     return 0;
 }
     
-static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, basic_display_point<GraphicsMath> new_dimensions )
+static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context,
+                              basic_display_point<GraphicsMath> new_dimensions )
 {
-    context.draw_buffer.reset( _CreateBitmap(context.preferred_format, new_dimensions.x(), new_dimensions.y()) );
+    auto sf = _GS::_Enable_HiDPI ? context.content_scaling_factor : 1.;
+    context.draw_buffer.reset( _CreateBitmap(context.preferred_format,
+                                             new_dimensions.x() * sf,
+                                             new_dimensions.y() * sf) );
+    CGContextConcatCTM(context.draw_buffer.get(), CGAffineTransform{ sf, 0., 0., sf, 0., 0. } );
+    CGContextSetAllowsAntialiasing(context.draw_buffer.get(), true);    
     context.buffer_size = new_dimensions;
 }
 
-    
 static void UpdateWindowTitle(_GS::surfaces::_OutputSurfaceCocoa &context)
 {
     context.window.title = [NSString stringWithFormat:@"%@, FPS: %d",
@@ -268,60 +308,30 @@ static void UpdateWindowTitle(_GS::surfaces::_OutputSurfaceCocoa &context)
                             int(context.fps_counter.FPS())];
 }    
     
-static void CheckThatPixelLayoutIsTheSame( CGContextRef view, CGContextRef buffer )
+static void ShowBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, CGContextRef target)
 {
-    static bool checked_once = false;
-    if( checked_once )
-        return;
-    checked_once = true;
+    auto back_buffer = context.draw_buffer.get();
     
-    auto view_bitmap = CGBitmapContextGetBitmapInfo(view);
-    auto buffer_bitmap = CGBitmapContextGetBitmapInfo(buffer); 
-    if( view_bitmap != buffer_bitmap )
-        std::cerr << "view and buffer have different pixel layouts: " 
-        << view_bitmap << "(view) and "
-        << buffer_bitmap << "(buffer)."
-        << std::endl;
-}
+    _CheckOnceThatPixelLayoutIsTheSame(target, back_buffer);
 
-static bool BitBltIfPossible( CGContextRef view, CGContextRef buffer, bool flip )
-{
-    const auto buffer_width = CGBitmapContextGetWidth(buffer);
-    if( buffer_width != CGBitmapContextGetWidth(view) )
-        return false;
+    // we can bypass any scaling if the back buffer and the display buffer have 
+    // exactly the same size and pixel layout
+    if( _BitBltIfPossible(target, back_buffer, true) )
+        return;
     
-    const auto buffer_height = CGBitmapContextGetHeight(buffer);
-    if( buffer_height != CGBitmapContextGetHeight(view) )
-        return false;
+    auto bb_sz = CGSizeMake(context.buffer_size.x(), context.buffer_size.y());
+    auto db_sz = CGSizeMake(CGBitmapContextGetWidth(target) / context.content_scaling_factor,
+                            CGBitmapContextGetHeight(target) / context.content_scaling_factor);
+    auto target_rect = _ScaledBackBufferRect(bb_sz, db_sz, context.scaling);
     
-    if( CGBitmapContextGetBitmapInfo(buffer) != CGBitmapContextGetBitmapInfo(view) )
-        return false;
+    auto image = CGBitmapContextCreateImage(back_buffer);
+    _AutoRelease release_image{image};
     
-    const auto bytes_per_row = CGBitmapContextGetBytesPerRow(buffer);
-    if( bytes_per_row != CGBitmapContextGetBytesPerRow(view) )
-        return false;
-    
-    if( CGBitmapContextGetBitsPerPixel(buffer) != CGBitmapContextGetBitsPerPixel(view) )
-        return false;
-    
-    if( CGBitmapContextGetBitsPerComponent(buffer) != CGBitmapContextGetBitsPerComponent(view) )
-        return false;
-    
-    auto buffer_data = CGBitmapContextGetData(buffer);
-    auto view_data = CGBitmapContextGetData(view);
-    
-    if( flip ) {
-        for( int src_y = 0, dst_y = buffer_height - 1; src_y < buffer_height; ++src_y, --dst_y )
-            memcpy((uint8_t*)view_data + bytes_per_row * dst_y,
-                   (const uint8_t*)buffer_data + bytes_per_row * src_y,
-                   bytes_per_row);
-    }
-    else {
-        memcpy(view_data, buffer_data, bytes_per_row * buffer_height);        
-    }
-    
-    return true;
-}    
+    CGContextSetBlendMode(target, kCGBlendModeCopy);    
+    CGContextTranslateCTM(target, 0, db_sz.height);    
+    CGContextScaleCTM(target, 1.0, -1.0);
+    CGContextDrawImage(target, target_rect, image);
+}
     
 } // namespace _CoreGraphics
 } // inline namespace v1
@@ -358,8 +368,6 @@ using namespace std::experimental::io2d::_CoreGraphics;
 
 - (void)frameDidChange
 {
-    auto dimensions = basic_display_point<GraphicsMath>(self.bounds.size.width, self.bounds.size.height);
-    RebuildBackBuffer(*_data, dimensions);
     if( _data->size_change_callback )
         _data->size_change_callback(*_data->frontend);
 }
@@ -374,26 +382,8 @@ using namespace std::experimental::io2d::_CoreGraphics;
         
     _data->draw_callback(*_data->frontend);
     
-    // this is a really naive and slow approach, need to switch to CGLayer for display surface drawing
-    auto ctx = [[NSGraphicsContext currentContext] CGContext];
-
-    CheckThatPixelLayoutIsTheSame(ctx, _data->draw_buffer.get());    
+    ShowBackBuffer(*_data, NSGraphicsContext.currentContext.CGContext);
     
-    auto did_blt = BitBltIfPossible(ctx, _data->draw_buffer.get(), true);
-    
-    if( !did_blt ) {
-            auto image = CGBitmapContextCreateImage(_data->draw_buffer.get());
-            _AutoRelease release_image{image};
-            
-            CGContextTranslateCTM(ctx, 0, CGImageGetHeight(image));
-            CGContextScaleCTM(ctx, 1.0, -1.0);
-            CGContextSetBlendMode(ctx, kCGBlendModeCopy);
-            
-            // TODO: proper scaling regarding current settings
-            auto rc = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
-            CGContextDrawImage(ctx, rc, image);
-    }
-        
     if( _data->show_fps ) {
         _data->fps_counter.CommitFrame();
         UpdateWindowTitle(*_data);

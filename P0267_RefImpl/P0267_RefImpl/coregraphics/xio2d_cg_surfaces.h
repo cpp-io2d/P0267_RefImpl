@@ -16,6 +16,7 @@ void _Stroke(CGContextRef ctx, const basic_brush<_GS>& b, const basic_interprete
 void _Paint(CGContextRef ctx, const basic_brush<_GS>& b, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
 void _Fill(CGContextRef ctx, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);
 void _Mask(CGContextRef ctx, const basic_brush<_GS>& b, const basic_brush<_GS>& mb, const basic_brush_props<_GS>& bp, const basic_mask_props<_GS>& mp, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl);    
+_Interchange_buffer _CopyToInterchangeBuffer(CGContextRef ctx, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha);    
     
 inline basic_display_point<GraphicsMath> _GS::surfaces::max_dimensions() noexcept {
     return basic_display_point<GraphicsMath>(16384, 16384);
@@ -155,6 +156,12 @@ _GS::surfaces::mask(image_surface_data_type& data, const basic_brush<_GS>& b, co
     _Mask(data.context.get(), b, mb, bp, mp, rp, cl);
 }
 
+inline _Interchange_buffer
+_GS::surfaces::_Copy_to_interchange_buffer(image_surface_data_type& data, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha)
+{
+    return _CopyToInterchangeBuffer(data.context.get(), layout, alpha);
+}    
+    
 } // namespace _CoreGraphics
 } // inline namespace v1
 } // std::experimental::io2d

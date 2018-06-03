@@ -46,6 +46,8 @@ add_library(io2d
 	xpathbuilder_impl.h
 	xsurfaces_impl.h
 	xsurfacesprops_impl.h
+    xinterchangebuffer.cpp
+    xinterchangebuffer.h
 )
 
 target_include_directories(io2d PUBLIC

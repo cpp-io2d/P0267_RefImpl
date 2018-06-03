@@ -13,43 +13,43 @@ TEST_CASE("Properly blends a solid brush with a solid mask")
     
     SECTION("M=1.0, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.}}, brush{rgba_color{0., 0., 0., 1.0}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 1.0), 0.01f) == true);
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(1., 1., 1., 1.0), 0.01f) == true);
     }
     SECTION("M=1.0, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.5}}, brush{rgba_color{0., 0., 0., 1.0}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.5), 0.01f) == true);
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(1., 1., 1., 0.5), 0.01f) == true);
     }    
     SECTION("M=0.9, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.}}, brush{rgba_color{0., 0., 0., 0.9}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.9), 0.01f) == true);
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(1., 1., 1., 0.9), 0.01f) == true);
     }
     SECTION("M=0.9, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.5}}, brush{rgba_color{0., 0., 0., 0.9}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.45), 0.01f) == true);        
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(1., 1., 1., 0.45), 0.01f) == true);        
     }
     SECTION("M=0.5, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.0}}, brush{rgba_color{0., 0., 0., 0.5}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.5), 0.01f) == true);
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(1., 1., 1., 0.5), 0.01f) == true);
     }
     SECTION("M=0.5, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.7}}, brush{rgba_color{0., 0., 0., 0.5}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.35), 0.01f) == true);
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(1., 1., 1., 0.35), 0.01f) == true);
     }
     SECTION("M=0.1, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.}}, brush{rgba_color{0., 0., 0., 0.1}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.1), 0.01f) == true);
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(1., 1., 1., 0.1), 0.01f) == true);
     }    
     SECTION("M=0.1, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.5}}, brush{rgba_color{0., 0., 0., 0.1}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(1., 1., 1., 0.05), 0.01f) == true);
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(1., 1., 1., 0.05), 0.01f) == true);
     }    
     SECTION("M=0.0, S=1.0") {
         img.mask(brush{rgba_color{1., 1., 1., 1.}}, brush{rgba_color{0., 0., 0., 0.0}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(0., 0., 0., 0.0), 0.01f) == true);
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(0., 0., 0., 0.0), 0.01f) == true);
     }
     SECTION("M=0.0, S=0.5") {
         img.mask(brush{rgba_color{1., 1., 1., 0.5}}, brush{rgba_color{0., 0., 0., 0.0}} );
-        CHECK( CheckPNGColorWithTolerance(img, 0, 0, rgba_color(0., 0., 0., 0.0), 0.01f) == true);
+        CHECK( CompareImageColor(img, 0, 0, rgba_color(0., 0., 0., 0.0), 0.01f) == true);
     }
 }
 
@@ -61,7 +61,7 @@ TEST_CASE("Properly blends a solid brush with a linear gradient mask")
     auto b = brush{rgba_color{1., 0., 0., 1.}};
     auto mb = brush{point_2d{0, 0}, point_2d{0, 50}, {{0., rgba_color{0., 0., 0., 0.}}, {1., rgba_color{0., 0., 0., 1.}}}};    
     img.mask(b, mb);    
-    CHECK( ComparePNGWithTolerance(img, reference, 0.02f) == true );
+    CHECK( CompareWithPNGImage(img, reference, 0.02f) == true );
 }
 
 TEST_CASE("Properly blends a solid brush with a linear gradient mask using a clip region")
@@ -73,7 +73,7 @@ TEST_CASE("Properly blends a solid brush with a linear gradient mask using a cli
     auto mb = brush{point_2d{0, 0}, point_2d{0, 50}, {{0., rgba_color{0., 0., 0., 0.}}, {1., rgba_color{0., 0., 0., 1.}}}};
     auto cl = clip_props{bounding_box{10, 10, 30, 30}};
     img.mask(b, mb, nullopt, nullopt, nullopt, cl);    
-    CHECK( ComparePNGWithTolerance(img, reference, 0.02f) == true );
+    CHECK( CompareWithPNGImage(img, reference, 0.02f) == true );
 }
 
 TEST_CASE("Properly blends a solid brush with a linear gradient mask using clip regions and mask transformations")
@@ -102,7 +102,7 @@ TEST_CASE("Properly blends a solid brush with a linear gradient mask using clip 
     mp.mask_matrix(matrix_2d::create_translate({20, 20}) * matrix_2d::create_rotate(pi<float>));
     img.mask(b, mb, nullopt, mp, nullopt, cl);    
         
-    CHECK( ComparePNGWithTolerance(img, reference, 0.05f) == true );
+    CHECK( CompareWithPNGImage(img, reference, 0.05f) == true );
 }
 
 TEST_CASE("Properly blends a solid brush with a radial gradient mask using a clip region")
@@ -120,7 +120,7 @@ TEST_CASE("Properly blends a solid brush with a radial gradient mask using a cli
     pb.close_figure();
     auto cl = clip_props{pb};    
     img.mask(b, mb, nullopt, nullopt, nullopt, cl);        
-    CHECK( ComparePNGWithTolerance(img, reference, 0.02f) == true );
+    CHECK( CompareWithPNGImage(img, reference, 0.02f) == true );
 }
 
 TEST_CASE("Properly blends a radial brush with a linear gradient mask")
@@ -131,7 +131,7 @@ TEST_CASE("Properly blends a radial brush with a linear gradient mask")
     auto b = brush{ circle(point_2d{25, 25}, 24), circle(point_2d{25, 25}, 0), {{0., rgba_color{1., 0., 0., 1.}}, {1., rgba_color{0., 0., 1., 1.}}}};
     auto mb = brush{point_2d{0, 0}, point_2d{0, 50}, {{0., rgba_color{0., 0., 0., 0.}}, {1., rgba_color{0., 0., 0., 1.}}}};    
     img.mask(b, mb);    
-    CHECK( ComparePNGWithTolerance(img, reference, 0.02f, 1) == true );    
+    CHECK( CompareWithPNGImage(img, reference, 0.02f, 1) == true );    
 }
 
 TEST_CASE("Properly intersects a radial brush with a radial gradient mask")
@@ -144,7 +144,7 @@ TEST_CASE("Properly intersects a radial brush with a radial gradient mask")
     auto mbp = mask_props{};
     mbp.wrap_mode(wrap_mode::none);
     img.mask(b, mb, nullopt, mbp);
-    CHECK( ComparePNGWithTolerance(img, reference, 0.02f, 1) == true );    
+    CHECK( CompareWithPNGImage(img, reference, 0.02f, 1) == true );    
 }
 
 TEST_CASE("Properly intersects a radial brush with a radial gradient mask, clipped with a bounding box")
@@ -158,7 +158,7 @@ TEST_CASE("Properly intersects a radial brush with a radial gradient mask, clipp
     mbp.wrap_mode(wrap_mode::none);
     auto cl = clip_props{ bounding_box(10., 10., 30., 20.) };    
     img.mask(b, mb, nullopt, mbp, nullopt, cl);
-    CHECK( ComparePNGWithTolerance(img, reference, 0.02f, 1) == true );    
+    CHECK( CompareWithPNGImage(img, reference, 0.02f, 1) == true );    
 }
 
 TEST_CASE("Properly intersects a radial brush with a radial gradient mask, clipped with a non-convex figure")
@@ -182,7 +182,7 @@ TEST_CASE("Properly intersects a radial brush with a radial gradient mask, clipp
     auto cl = clip_props{ pb };    
     
     img.mask(b, mb, nullopt, mbp, nullopt, cl);
-    CHECK( ComparePNGWithTolerance(img, reference, 0.03f, 1) == true );    
+    CHECK( CompareWithPNGImage(img, reference, 0.03f, 1) == true );    
 }
 
 static image_surface MakeCheckerboardMask(int width, int height)
@@ -203,7 +203,7 @@ TEST_CASE("Properly intersects a solid brush with a surface mask")
     image_surface img{format::argb32, 50, 50};
     img.paint(brush{rgba_color::green});    
     img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(50, 50)});
-    CHECK( ComparePNGExact(img, reference) == true );    
+    CHECK( CompareWithPNGImage(img, reference) == true );    
 }
 
 TEST_CASE("Properly intersects a solid brush with a repeated surface mask")
@@ -212,7 +212,7 @@ TEST_CASE("Properly intersects a solid brush with a repeated surface mask")
     image_surface img{format::argb32, 50, 50};
     img.paint(brush{rgba_color::green});    
     img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(10, 10)});
-    CHECK( ComparePNGExact(img, reference) == true );    
+    CHECK( CompareWithPNGImage(img, reference) == true );    
 }
 
 TEST_CASE("Properly intersects a solid brush with a reflected surface mask")
@@ -223,7 +223,7 @@ TEST_CASE("Properly intersects a solid brush with a reflected surface mask")
     auto mp = mask_props{};
     mp.wrap_mode(wrap_mode::reflect);
     img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(10, 10)}, nullopt, mp);
-    CHECK( ComparePNGExact(img, reference) == true );    
+    CHECK( CompareWithPNGImage(img, reference) == true );    
 }
 
 TEST_CASE("Properly intersects a solid brush with a padded surface mask")
@@ -234,7 +234,7 @@ TEST_CASE("Properly intersects a solid brush with a padded surface mask")
     auto mp = mask_props{};
     mp.wrap_mode(wrap_mode::pad);
     img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(10, 10)}, nullopt, mp);
-    CHECK( ComparePNGExact(img, reference) == true );    
+    CHECK( CompareWithPNGImage(img, reference) == true );    
 }
 
 TEST_CASE("Properly intersects a solid brush with a non-wrapped surface mask")
@@ -245,5 +245,5 @@ TEST_CASE("Properly intersects a solid brush with a non-wrapped surface mask")
     auto mp = mask_props{};
     mp.wrap_mode(wrap_mode::none);
     img.mask(brush{rgba_color::red}, brush{MakeCheckerboardMask(10, 10)}, nullopt, mp);
-    CHECK( ComparePNGExact(img, reference) == true );    
+    CHECK( CompareWithPNGImage(img, reference) == true );    
 }

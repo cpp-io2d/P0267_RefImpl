@@ -142,5 +142,6 @@ namespace std {
 #include "xpathbuilder_impl.h"
 #include "xsurfaces_impl.h"
 #include "xsurfacesprops_impl.h"
+#include "xinterchangebuffer.h"
 
 #endif // _XIO2D_H_

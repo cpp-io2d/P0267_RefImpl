@@ -22,6 +22,7 @@ add_executable(tests
     blending.cpp
 	comparison.h
    	comparison.cpp
+    image_io.cpp
 )
 
 target_link_libraries(tests io2d Catch)
@@ -61,6 +62,7 @@ COPY_REF_RSC(
     red_background_300x200.png
     stroked_rectangle_300x200.png
     stroke_widths_300x200.png
+    stroke_scaled_width_80x20.png
     dash_pattern_two_one_300x200.png
     linear_gradient_aquamarine_dark_magenta_lime_300x200.png
     linear_gradient_wrapping_modes_300x200.png
@@ -93,6 +95,9 @@ COPY_REF_RSC(
     mask_red_green_checkerboard_reflect_50x50.png
     mask_red_green_checkerboard_pad_50x50.png
     mask_red_green_checkerboard_none_50x50.png
+    image_500x375.png
+    image_500x375.jpg
+    image_500x375.tiff
 )
 
 if(MSVC)
