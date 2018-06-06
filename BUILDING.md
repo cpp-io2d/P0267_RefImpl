@@ -16,9 +16,10 @@ This IO2D implementation supports the following platforms out of the box:
 IO2D employs CMake as a build system. The following variables control the configuration process:
 * IO2D_DEFAULT  
 Controls a selection of default backend which is used when non-template symbols from std::experimental::io2d, like "brush" or "surface", are referenced.
-There're 4 backends in this RefImpl:
+There're 5 backends in this RefImpl:
   * CAIRO_WIN32
   * CAIRO_XLIB
+  * CAIRO_SDL2
   * COREGRAPHICS_MAC
   * COREGRAPHICS_IOS  
 
