@@ -40,7 +40,7 @@ public:
     struct Water : Multipolygon {};
     
     struct Landuse : Multipolygon {
-        enum Type { Invalid, Commercial, Construction, Grass, Industrial, Railway, Residential };
+        enum Type { Invalid, Commercial, Construction, Grass, Forest, Industrial, Railway, Residential };
         Type type;
     };
     

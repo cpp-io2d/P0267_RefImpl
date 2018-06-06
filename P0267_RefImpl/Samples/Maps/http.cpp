@@ -35,7 +35,8 @@ static std::vector<std::byte> Download( const char *host, const char *port, cons
     http::write(stream, req);
 
     boost::beast::flat_buffer buffer;
-    http::response<http::dynamic_body> res;
+    http::response_parser<http::dynamic_body> res;    
+    res.body_limit(std::numeric_limits<std::uint64_t>::max());
     http::read(stream, buffer, res);
     
     boost::system::error_code ec;
@@ -46,7 +47,7 @@ static std::vector<std::byte> Download( const char *host, const char *port, cons
         throw boost::system::system_error{ec};
 
     std::stringstream ss;
-    ss << res;
+    ss << res.get();
     
     std::vector<std::byte> bytes;
     bytes.assign((const std::byte*)ss.str().data(),

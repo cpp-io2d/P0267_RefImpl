@@ -12,6 +12,7 @@ static Model::Road::Type String2RoadType(std::string_view type)
     if( type == "secondary" )       return Model::Road::Secondary;    
     if( type == "tertiary" )        return Model::Road::Tertiary;
     if( type == "residential" )     return Model::Road::Residential;
+    if( type == "living_street" )   return Model::Road::Residential;    
     if( type == "service" )         return Model::Road::Service;
     if( type == "unclassified" )    return Model::Road::Unclassified;
     if( type == "footway" )         return Model::Road::Footway;
@@ -27,6 +28,7 @@ static Model::Landuse::Type String2LanduseType(std::string_view type)
     if( type == "commercial" )      return Model::Landuse::Commercial;
     if( type == "construction" )    return Model::Landuse::Construction;
     if( type == "grass" )           return Model::Landuse::Grass;
+    if( type == "forest" )          return Model::Landuse::Forest;
     if( type == "industrial" )      return Model::Landuse::Industrial;
     if( type == "railway" )         return Model::Landuse::Railway;
     if( type == "residential" )     return Model::Landuse::Residential;    
@@ -110,6 +112,10 @@ void Model::LoadData(const std::vector<std::byte> &xml)
                     m_Leisures.emplace_back();
                     m_Leisures.back().outer = {way_num};
                 }
+                else if( category == "natural" && type == "water" ) {
+                    m_Waters.emplace_back();
+                    m_Waters.back().outer = {way_num};
+                }
                 else if( category == "landuse" ) {
                     if( auto landuse_type = String2LanduseType(type); landuse_type != Landuse::Invalid ) {
                         m_Landuses.emplace_back();
@@ -151,6 +157,7 @@ void Model::LoadData(const std::vector<std::byte> &xml)
                 }
                 if( category == "natural" && type == "water" ) {
                     commit( m_Waters.emplace_back() );
+                    BuildRings(m_Waters.back());
                     break;
                 }
                 if( category == "landuse" ) {
@@ -169,10 +176,10 @@ void Model::LoadData(const std::vector<std::byte> &xml)
 void Model::AdjustCoordinates()
 {    
     const auto pi = 3.14159265358979323846264338327950288;
-    const auto deg_to_rad = pi / 360;
+    const auto deg_to_rad = 2. * pi / 360.;
     const auto earth_radius = 6378137.;
-    const auto lat2ym = [&](double lat) { return log(tan(lat * deg_to_rad +  pi/4)) / 2 * earth_radius; };
-    const auto lon2xm = [&](double lon) { return lon * deg_to_rad * earth_radius; };     
+    const auto lat2ym = [&](double lat) { return log(tan(lat * deg_to_rad / 2 +  pi/4)) / 2 * earth_radius; };
+    const auto lon2xm = [&](double lon) { return lon * deg_to_rad / 2 * earth_radius; };     
     const auto dx = lon2xm(m_MaxLon) - lon2xm(m_MinLon);
     const auto dy = lat2ym(m_MaxLat) - lat2ym(m_MinLat);
     const auto min_y = lat2ym(m_MinLat);
