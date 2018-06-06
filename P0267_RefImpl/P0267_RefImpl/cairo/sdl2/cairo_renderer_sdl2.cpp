@@ -8,118 +8,140 @@ namespace std::experimental::io2d {
 	inline namespace v1 {
 		namespace _Cairo {
 
-		using boo = _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>;
-		using biff = _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::output_surface_data_type;
-		using bam = basic_output_surface<boo>;
+			using boo = _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>;
+			using biff = _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::output_surface_data_type;
+			using bam = basic_output_surface<boo>;
 
-		template <> template <>
-		void _Cairo_graphics_surfaces <_Graphics_math_float_impl>::surfaces::_Render_to_native_surface <
-			_Cairo::_Cairo_graphics_surfaces <_Graphics_math_float_impl>::surfaces::_Output_surface_data*,
-			basic_output_surface <_Cairo::_Cairo_graphics_surfaces <_Graphics_math_float_impl>>
-		>
-		(
-			_Cairo::_Cairo_graphics_surfaces <_Graphics_math_float_impl>::surfaces::_Output_surface_data * & osdp,
-			basic_output_surface <_Cairo::_Cairo_graphics_surfaces <_Graphics_math_float_impl>> & sfc
-		)
-		{
-			auto& osd = *osdp;
-			const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
-			auto& data = osd.data;
-			double displayWidth = static_cast<double>(data.display_dimensions.x());
-			double displayHeight = static_cast<double>(data.display_dimensions.y());
-			double backBufferWidth = static_cast<double>(data.back_buffer.dimensions.x());
-			double backBufferHeight = static_cast<double>(data.back_buffer.dimensions.y());
-			auto backBufferSfc = data.back_buffer.surface.get();
-			auto displaySfc = data.display_surface.get();
-			auto displayContext = data.display_context.get();
-			cairo_surface_flush(backBufferSfc);
-			cairo_set_operator(displayContext, CAIRO_OPERATOR_SOURCE);
-			if (osd.user_scaling_callback != nullptr) {
-				bool letterbox = false;
-				auto userRect = osd.user_scaling_callback(sfc, letterbox);
-				if (letterbox) {
-					if (data._Letterbox_brush == nullopt) {
-						cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
-						cairo_paint(displayContext);
-					}
-					else {
-						auto pttn = data._Letterbox_brush.value().data().brush.get();
-						if (data._Letterbox_brush_props == nullopt) {
-							cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
-							cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
-							cairo_matrix_t cPttnMatrix;
-							cairo_matrix_init_identity(&cPttnMatrix);
-							cairo_pattern_set_matrix(pttn, &cPttnMatrix);
-							cairo_set_source(displayContext, pttn);
+			template <> template <>
+			void _Cairo_graphics_surfaces <_Graphics_math_float_impl>::surfaces::_Render_to_native_surface <
+				_Cairo::_Cairo_graphics_surfaces <_Graphics_math_float_impl>::surfaces::_Output_surface_data*,
+				basic_output_surface <_Cairo::_Cairo_graphics_surfaces <_Graphics_math_float_impl>>
+			>
+			(
+				_Cairo::_Cairo_graphics_surfaces <_Graphics_math_float_impl>::surfaces::_Output_surface_data * & osdp,
+				basic_output_surface <_Cairo::_Cairo_graphics_surfaces <_Graphics_math_float_impl>> & sfc
+			)
+			{
+				auto& osd = *osdp;
+				const cairo_filter_t cairoFilter = CAIRO_FILTER_GOOD;
+				auto& data = osd.data;
+				double displayWidth = static_cast<double>(data.display_dimensions.x());
+				double displayHeight = static_cast<double>(data.display_dimensions.y());
+				double backBufferWidth = static_cast<double>(data.back_buffer.dimensions.x());
+				double backBufferHeight = static_cast<double>(data.back_buffer.dimensions.y());
+				auto backBufferSfc = data.back_buffer.surface.get();
+				auto displaySfc = data.display_surface.get();
+				auto displayContext = data.display_context.get();
+				cairo_surface_flush(backBufferSfc);
+				cairo_set_operator(displayContext, CAIRO_OPERATOR_SOURCE);
+				if (osd.user_scaling_callback != nullptr) {
+					bool letterbox = false;
+					auto userRect = osd.user_scaling_callback(sfc, letterbox);
+					if (letterbox) {
+						if (data._Letterbox_brush == nullopt) {
+							cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
 							cairo_paint(displayContext);
 						}
 						else {
-							const basic_brush_props<_Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>>& props = data._Letterbox_brush_props.value();
-							cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
-							cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
-							cairo_matrix_t cPttnMatrix;
-							const auto& m = props.brush_matrix();
-							cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
-							cairo_pattern_set_matrix(pttn, &cPttnMatrix);
-							cairo_set_source(displayContext, pttn);
-							cairo_paint(displayContext);
-						}
-					}
-				}
-				cairo_matrix_t ctm;
-				cairo_matrix_init_scale(&ctm, 1.0 / displayWidth / static_cast<double>(userRect.width()), 1.0 / displayHeight / static_cast<double>(userRect.height()));
-				cairo_matrix_translate(&ctm, -static_cast<double>(userRect.x()), -static_cast<double>(userRect.y()));
-				unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
-				auto patPtr = pat.get();
-				cairo_pattern_set_matrix(patPtr, &ctm);
-				cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
-				cairo_pattern_set_filter(patPtr, cairoFilter);
-				cairo_set_source(displayContext, patPtr);
-				cairo_paint(displayContext);
-			}
-			else {
-				
-				// Calculate the destRect values.
-				switch (data.scl) {
-					case std::experimental::io2d::scaling::letterbox:
-					{
-						_Render_for_scaling_uniform_or_letterbox(osd);
-					} break;
-					case std::experimental::io2d::scaling::uniform:
-					{
-						_Render_for_scaling_uniform_or_letterbox(osd);
-					} break;
-					
-					case std::experimental::io2d::scaling::fill_uniform:
-					{
-						// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
-						if (backBufferWidth == displayWidth && backBufferHeight == displayHeight) {
-							cairo_set_source_surface(displayContext, backBufferSfc, 0.0, 0.0);
-							cairo_paint(displayContext);
-						}
-						else {
-							auto widthRatio = displayWidth / backBufferWidth;
-							auto heightRatio = displayHeight / backBufferHeight;
-							if (widthRatio < heightRatio) {
-								cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
-								cairo_paint(displayContext);
-								cairo_matrix_t ctm;
-								cairo_matrix_init_scale(&ctm, 1.0 / heightRatio, 1.0 / heightRatio);
-								cairo_matrix_translate(&ctm, trunc(abs((displayWidth - (backBufferWidth * heightRatio)) / 2.0)), 0.0);
-								unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
-								auto patPtr = pat.get();
-								cairo_pattern_set_matrix(patPtr, &ctm);
-								cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
-								cairo_pattern_set_filter(patPtr, cairoFilter);
-								cairo_set_source(displayContext, patPtr);
+							auto pttn = data._Letterbox_brush.value().data().brush.get();
+							if (data._Letterbox_brush_props == nullopt) {
+								cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);
+								cairo_pattern_set_filter(pttn, CAIRO_FILTER_GOOD);
+								cairo_matrix_t cPttnMatrix;
+								cairo_matrix_init_identity(&cPttnMatrix);
+								cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+								cairo_set_source(displayContext, pttn);
 								cairo_paint(displayContext);
 							}
 							else {
-								cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+								const basic_brush_props<_Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>>& props = data._Letterbox_brush_props.value();
+								cairo_pattern_set_extend(pttn, _Extend_to_cairo_extend_t(props.wrap_mode()));
+								cairo_pattern_set_filter(pttn, _Filter_to_cairo_filter_t(props.filter()));
+								cairo_matrix_t cPttnMatrix;
+								const auto& m = props.brush_matrix();
+								cairo_matrix_init(&cPttnMatrix, m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+								cairo_pattern_set_matrix(pttn, &cPttnMatrix);
+								cairo_set_source(displayContext, pttn);
 								cairo_paint(displayContext);
+							}
+						}
+					}
+					cairo_matrix_t ctm;
+					cairo_matrix_init_scale(&ctm, 1.0 / displayWidth / static_cast<double>(userRect.width()), 1.0 / displayHeight / static_cast<double>(userRect.height()));
+					cairo_matrix_translate(&ctm, -static_cast<double>(userRect.x()), -static_cast<double>(userRect.y()));
+					unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
+					auto patPtr = pat.get();
+					cairo_pattern_set_matrix(patPtr, &ctm);
+					cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
+					cairo_pattern_set_filter(patPtr, cairoFilter);
+					cairo_set_source(displayContext, patPtr);
+					cairo_paint(displayContext);
+				}
+				else {
+					
+					// Calculate the destRect values.
+					switch (data.scl) {
+						case std::experimental::io2d::scaling::letterbox:
+						{
+							_Render_for_scaling_uniform_or_letterbox(osd);
+						} break;
+						case std::experimental::io2d::scaling::uniform:
+						{
+							_Render_for_scaling_uniform_or_letterbox(osd);
+						} break;
+						
+						case std::experimental::io2d::scaling::fill_uniform:
+						{
+							// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
+							if (backBufferWidth == displayWidth && backBufferHeight == displayHeight) {
+								cairo_set_source_surface(displayContext, backBufferSfc, 0.0, 0.0);
+								cairo_paint(displayContext);
+							}
+							else {
+								auto widthRatio = displayWidth / backBufferWidth;
+								auto heightRatio = displayHeight / backBufferHeight;
+								if (widthRatio < heightRatio) {
+									cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+									cairo_paint(displayContext);
+									cairo_matrix_t ctm;
+									cairo_matrix_init_scale(&ctm, 1.0 / heightRatio, 1.0 / heightRatio);
+									cairo_matrix_translate(&ctm, trunc(abs((displayWidth - (backBufferWidth * heightRatio)) / 2.0)), 0.0);
+									unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
+									auto patPtr = pat.get();
+									cairo_pattern_set_matrix(patPtr, &ctm);
+									cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
+									cairo_pattern_set_filter(patPtr, cairoFilter);
+									cairo_set_source(displayContext, patPtr);
+									cairo_paint(displayContext);
+								}
+								else {
+									cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+									cairo_paint(displayContext);
+									cairo_matrix_t ctm;
+									cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / widthRatio);
+									cairo_matrix_translate(&ctm, 0.0, trunc(abs((displayHeight - (backBufferHeight * widthRatio)) / 2.0)));
+									unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
+									auto patPtr = pat.get();
+									cairo_pattern_set_matrix(patPtr, &ctm);
+									cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
+									cairo_pattern_set_filter(patPtr, cairoFilter);
+									cairo_set_source(displayContext, patPtr);
+									cairo_paint(displayContext);
+								}
+							}
+						} break;
+						case std::experimental::io2d::scaling::fill_exact:
+						{
+							// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
+							if (backBufferWidth == displayWidth && backBufferHeight == displayHeight) {
+								cairo_set_source_surface(displayContext, backBufferSfc, 0.0, 0.0);
+								cairo_paint(displayContext);
+							}
+							else {
+								auto widthRatio = displayWidth / backBufferWidth;
+								auto heightRatio = displayHeight / backBufferHeight;
 								cairo_matrix_t ctm;
-								cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / widthRatio);
-								cairo_matrix_translate(&ctm, 0.0, trunc(abs((displayHeight - (backBufferHeight * widthRatio)) / 2.0)));
+								cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / heightRatio);
 								unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
 								auto patPtr = pat.get();
 								cairo_pattern_set_matrix(patPtr, &ctm);
@@ -128,88 +150,72 @@ namespace std::experimental::io2d {
 								cairo_set_source(displayContext, patPtr);
 								cairo_paint(displayContext);
 							}
-						}
-					} break;
-					case std::experimental::io2d::scaling::fill_exact:
-					{
-						// Maintain aspect ratio and center, but overflow if needed rather than letterboxing.
-						if (backBufferWidth == displayWidth && backBufferHeight == displayHeight) {
+						} break;
+						case std::experimental::io2d::scaling::none:
+						{
 							cairo_set_source_surface(displayContext, backBufferSfc, 0.0, 0.0);
 							cairo_paint(displayContext);
-						}
-						else {
-							auto widthRatio = displayWidth / backBufferWidth;
-							auto heightRatio = displayHeight / backBufferHeight;
-							cairo_matrix_t ctm;
-							cairo_matrix_init_scale(&ctm, 1.0 / widthRatio, 1.0 / heightRatio);
-							unique_ptr<cairo_pattern_t, decltype(&cairo_pattern_destroy)> pat(cairo_pattern_create_for_surface(backBufferSfc), &cairo_pattern_destroy);
-							auto patPtr = pat.get();
-							cairo_pattern_set_matrix(patPtr, &ctm);
-							cairo_pattern_set_extend(patPtr, CAIRO_EXTEND_NONE);
-							cairo_pattern_set_filter(patPtr, cairoFilter);
-							cairo_set_source(displayContext, patPtr);
-							cairo_paint(displayContext);
-						}
-					} break;
-					case std::experimental::io2d::scaling::none:
-					{
-						cairo_set_source_surface(displayContext, backBufferSfc, 0.0, 0.0);
-						cairo_paint(displayContext);
-					} break;
-					default:
-					{
-						assert("Unexpected _Scaling value." && false);
-					} break;
+						} break;
+						default:
+						{
+							assert("Unexpected _Scaling value." && false);
+						} break;
+					}
 				}
+				
+				//     cairo_restore(_Native_context.get());
+				// This call to cairo_surface_flush is needed for Win32 surfaces to update.
+				cairo_surface_flush(displaySfc);
+				cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
+
+				SDL_SetRenderDrawColor(data.renderer, 0, 0, 0, 255);
+				SDL_RenderClear(data.renderer);
+
+				// Copy Cairo canvas to SDL2 texture
+				unsigned char * src = cairo_image_surface_get_data(displaySfc);
+				// std::vector<uint32_t> srcV;
+				// srcV.resize((int)backBufferWidth * (int)backBufferHeight, 0xff00ff00);
+				// unsigned char * src = (unsigned char *) &srcV[0];
+
+				const int pitch = (int)backBufferWidth * 4;    // '4' == 4 bytes per pixel
+				SDL_UpdateTexture(data.texture, nullptr, src, pitch);
+				SDL_RenderCopy(data.renderer, data.texture, nullptr, nullptr);
+
+				// Present latest image
+				SDL_RenderPresent(data.renderer);
 			}
-			
-			//     cairo_restore(_Native_context.get());
-			// This call to cairo_surface_flush is needed for Win32 surfaces to update.
-			cairo_surface_flush(displaySfc);
-			cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
 
-			SDL_SetRenderDrawColor(data.renderer, 0, 0, 0, 255);
-			SDL_RenderClear(data.renderer);
-
-			// Copy Cairo canvas to SDL2 texture
-			unsigned char * src = cairo_image_surface_get_data(displaySfc);
-			// std::vector<uint32_t> srcV;
-			// srcV.resize((int)backBufferWidth * (int)backBufferHeight, 0xff00ff00);
-			// unsigned char * src = (unsigned char *) &srcV[0];
-
-			const int pitch = (int)backBufferWidth * 4;    // '4' == 4 bytes per pixel
-			SDL_UpdateTexture(data.texture, nullptr, src, pitch);
-			SDL_RenderCopy(data.renderer, data.texture, nullptr, nullptr);
-
-			// Present latest image
-			SDL_RenderPresent(data.renderer);
-		}
-
-		template <>
-		bool _Is_active<std::experimental::io2d::v1::_Graphics_math_float_impl>(_Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::_Display_surface_data_type& data) noexcept
-		{
-			if (SDL_QuitRequested()) {
-				return false;
+			template <>
+			bool _Is_active<std::experimental::io2d::v1::_Graphics_math_float_impl>(_Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::_Display_surface_data_type& data) noexcept
+			{
+				if (SDL_QuitRequested()) {
+					return false;
+				}
+				if (data.window == nullptr || data.renderer == nullptr) {
+					return false;
+				}
+				return true;
 			}
-			if (data.window == nullptr || data.renderer == nullptr) {
-				return false;
-			}
-			return true;
-		}
 
-		template <>
-		int _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::begin_show(biff& osd, bam* instance, bam& sfc)
-		{
-			_Display_surface_data_type &data = osd->data;
+			template <>
+			int _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::begin_show(biff& osd, bam* instance, bam& sfc)
+			{
+				_Display_surface_data_type &data = osd->data;
 
-			//
-			// Let SDL create:
-			//  1. a window
-			//  2. an SDL renderer, which will be used to help draw Cairo-rendered content to the desired display(s)
-			//
+				//
+				// Let SDL create:
+				//  1. a window
+				//  2. an SDL renderer, which will be used to help draw Cairo-rendered content to the desired display(s)
+				//
 
 #if __LINUX__
+				// HACK: work around a bug in SDL2 + OpenGL + Vagrant + Ubuntu 18.04 + X11 via macOS'/X11,
+				// whereby apps will crash/terminate upon trying to initialize SDL.  This crash occurs
+				// when trying to detect OpenGL-related resources.
 				SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "0");
+				const Uint32 renderer_flags = SDL_RENDERER_SOFTWARE;
+#else
+				const Uint32 renderer_flags = 0;
 #endif
 
 				if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -232,7 +238,7 @@ namespace std::experimental::io2d {
 				data.renderer = SDL_CreateRenderer(
 					data.window,
 					-1,
-					SDL_RENDERER_SOFTWARE
+					renderer_flags
 				);
 				// printf("data.renderer: %p\n", data.renderer);
 				if (!data.renderer) {
@@ -288,7 +294,7 @@ namespace std::experimental::io2d {
 				data.elapsed_draw_time = 0.0F;
 				return 0;
 			}
-     
+		
 
 			int _handle_sdl2_event(void *userdata, SDL_Event *event) {
 				switch (event->type) {
