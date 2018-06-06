@@ -44,6 +44,7 @@ void RunWindowed( const string &path_in ) {
     
     output_surface display{ 640, 480, format::argb32, scaling::letterbox, refresh_style::fixed, 30.0f };
     display.size_change_callback([&](output_surface& os) {
+        display.dimensions(display.display_dimensions());        
         build(os.dimensions().x(), os.dimensions().y());
     });
     display.draw_callback([&](output_surface& os) {

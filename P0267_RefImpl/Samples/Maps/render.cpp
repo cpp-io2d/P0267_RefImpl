@@ -21,9 +21,9 @@ void Render::Display( io2d::output_surface &surface )
                io2d::matrix_2d::create_translate({0.f, (float)surface.dimensions().y()});
     
     surface.paint(m_BackgroundFillBrush);        
-    DrawWater(surface);
     DrawLanduses(surface);
     DrawLeisure(surface);
+    DrawWater(surface);    
     DrawRailways(surface);
     DrawHighways(surface);    
     DrawBuildings(surface);    
@@ -79,8 +79,8 @@ void Render::DrawRailways(io2d::output_surface &surface) const
     for( auto &railway: m_Model.Railways() ) {
         auto &way = ways[railway.way];
         auto path = PathFromWay(way);
-        surface.stroke(m_RailwayStrokeBrush, path, std::nullopt, io2d::stroke_props{3.f * m_PixelsInMeter});
-        surface.stroke(m_RailwayDashBrush, path, std::nullopt, io2d::stroke_props{2.f * m_PixelsInMeter}, m_RailwayDashes);
+        surface.stroke(m_RailwayStrokeBrush, path, std::nullopt, io2d::stroke_props{m_RailwayOuterWidth * m_PixelsInMeter});
+        surface.stroke(m_RailwayDashBrush, path, std::nullopt, io2d::stroke_props{m_RailwayInnerWidth * m_PixelsInMeter}, m_RailwayDashes);
     }
 }
 
@@ -142,6 +142,7 @@ void Render::BuildLanduseBrushes()
     m_LanduseBrushes.insert_or_assign(Model::Landuse::Commercial, io2d::brush{io2d::rgba_color{233, 195, 196}});
     m_LanduseBrushes.insert_or_assign(Model::Landuse::Construction, io2d::brush{io2d::rgba_color{187, 188, 165}});
     m_LanduseBrushes.insert_or_assign(Model::Landuse::Grass, io2d::brush{io2d::rgba_color{197, 236, 148}});
+    m_LanduseBrushes.insert_or_assign(Model::Landuse::Forest, io2d::brush{io2d::rgba_color{158, 201, 141}});    
     m_LanduseBrushes.insert_or_assign(Model::Landuse::Industrial, io2d::brush{io2d::rgba_color{223, 197, 220}});
     m_LanduseBrushes.insert_or_assign(Model::Landuse::Railway, io2d::brush{io2d::rgba_color{223, 197, 220}});
     m_LanduseBrushes.insert_or_assign(Model::Landuse::Residential, io2d::brush{io2d::rgba_color{209, 209, 209}});

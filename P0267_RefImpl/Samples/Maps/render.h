@@ -44,7 +44,9 @@ private:
         
     io2d::brush m_RailwayStrokeBrush{ io2d::rgba_color{93,93,93} };
     io2d::brush m_RailwayDashBrush{ io2d::rgba_color::white };
-    io2d::dashes m_RailwayDashes{0.f, {3.f, 3.f}};    
+    io2d::dashes m_RailwayDashes{0.f, {3.f, 3.f}};
+    float m_RailwayOuterWidth = 3.f;
+    float m_RailwayInnerWidth = 2.f;
     
     struct RoadRep {
         io2d::brush brush{io2d::rgba_color::black};
