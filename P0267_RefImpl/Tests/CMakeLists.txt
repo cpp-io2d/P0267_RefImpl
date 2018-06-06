@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.0.0)
 project(io2d CXX)
 set(CMAKE_CXX_STANDARD 17)
 
-set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Catch2/single_include)
-add_library(Catch INTERFACE)
-target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
-
+#set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Catch2/single_include)
+#add_library(Catch INTERFACE)
+#target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
+find_package(catch2 REQUIRED)
 
 add_executable(tests
 	main.cpp

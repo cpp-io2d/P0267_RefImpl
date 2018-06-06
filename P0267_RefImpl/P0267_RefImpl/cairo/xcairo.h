@@ -438,27 +438,27 @@ namespace std {
 							static void stroke(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 							static void fill(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 							static void mask(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
-                            static _Interchange_buffer _Copy_to_interchange_buffer(image_surface_data_type& data, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha);
+							static _Interchange_buffer _Copy_to_interchange_buffer(image_surface_data_type& data, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha);
 
 							// display surfaces
-                            struct _Display_surface_data_type;
-                            struct _Output_surface_data;
-                            struct _Unmanaged_output_surface_data;
-                            using output_surface_data_type = _Output_surface_data*;
-                            using unmanaged_output_surface_data_type = _Unmanaged_output_surface_data*;
-                            
+							struct _Display_surface_data_type;
+							struct _Output_surface_data;
+							struct _Unmanaged_output_surface_data;
+							using output_surface_data_type = _Output_surface_data*;
+							using unmanaged_output_surface_data_type = _Unmanaged_output_surface_data*;
+
 							template <class OutputDataType, class OutputSurfaceType>
 							static void _Render_to_native_surface(OutputDataType& osd, OutputSurfaceType& sfc);
 
 							static basic_display_point<GraphicsMath> max_display_dimensions() noexcept;
 							// unmanaged_output_surface functions
 
-                            
-                            struct _UnmanagedSurfaceContext;
-                            using unmanaged_surface_context_type = _UnmanagedSurfaceContext;
-                            
+
+							struct _UnmanagedSurfaceContext;
+							using unmanaged_surface_context_type = _UnmanagedSurfaceContext;
+
 							static unmanaged_output_surface_data_type create_unmanaged_output_surface();
-                            static unmanaged_output_surface_data_type create_unmanaged_output_surface(unmanaged_surface_context_type &context, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
+							static unmanaged_output_surface_data_type create_unmanaged_output_surface(unmanaged_surface_context_type &context, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl);
 							static unmanaged_output_surface_data_type move_unmanaged_output_surface(unmanaged_output_surface_data_type&& data) noexcept;
 							static void destroy(unmanaged_output_surface_data_type& data) noexcept;
 
@@ -551,6 +551,10 @@ namespace std {
 							static basic_brush_props<_Graphics_surfaces_type> letterbox_brush_props(const output_surface_data_type& data) noexcept;
 							static bool auto_clear(const output_surface_data_type& data) noexcept;
 							static bool redraw_required(const output_surface_data_type& data) noexcept;
+							
+							static basic_image_surface<_Graphics_surfaces_type> copy_surface(basic_image_surface<_Graphics_surfaces_type>& sfc) noexcept;
+							static basic_image_surface<_Graphics_surfaces_type> copy_surface(basic_output_surface<_Graphics_surfaces_type>& sfc) noexcept;
+							// Note: basic_unmanaged_output_surface intentionally not provided. 
 						};
 					};
 				}

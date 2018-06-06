@@ -189,11 +189,11 @@ static image_surface MakeCheckerboardMask(int width, int height)
 {
     image_surface s{format::argb32, width, height};
     s.paint(brush{rgba_color::transparent_black});
-    auto b = brush{rgba_color::white}; 
+    auto b = brush{rgba_color::white};
     for( auto y = 0; y < height; ++y )
         for( auto x = 0; x < width; ++x )
             if( (x + y) % 2 == 0 )
-                s.paint(b, nullopt, nullopt, clip_props{ bounding_box(x, y, 1, 1) });
+                s.paint(b, nullopt, nullopt, clip_props{ bounding_box(static_cast<float>(x), static_cast<float>(y), 1.0f, 1.0f) });
     return s; 
 }
 
