@@ -20,12 +20,13 @@ struct _GS::surfaces::_OutputSurfaceCocoa
     
     NSWindow *window = nullptr;
     unique_ptr<context_t, decltype(&CGContextRelease)> draw_buffer{ nullptr, &CGContextRelease };
-    basic_display_point<GraphicsMath> buffer_size; // logic units, not pixels. to get pixel amount - multiply it by content_scaling_factor or query by CGBitmapContextGetWidth()
+    basic_display_point<GraphicsMath> back_buffer_logic_size;
+    basic_display_point<GraphicsMath> back_buffer_pixel_size;
     _IO2DOutputView *output_view = nullptr;
     function<void(basic_output_surface<_GS>&)> draw_callback;
     function<void(basic_output_surface<_GS>&)> size_change_callback;
     basic_output_surface<_GS> *frontend;
-    double content_scaling_factor = 1.f; 
+    double target_window_scaling_factor = 1.f; 
 
     bool auto_clear = false;
     io2d::format preferred_format;
@@ -74,7 +75,7 @@ _GS::surfaces::output_surface_data_type _GS::surfaces::create_output_surface(int
     ctx->output_view = [[_IO2DOutputView alloc] initWithFrame:ctx->window.contentView.bounds];
     ctx->output_view.data = ctx.get();
     ctx->window.contentView = ctx->output_view;
-    ctx->content_scaling_factor = ctx->output_view.layer.contentsScale;    
+    ctx->target_window_scaling_factor = ctx->window.backingScaleFactor;
     ctx->preferred_format = preferredFormat;
     ctx->refresh_style = rr;
     ctx->desired_fps = fps;
@@ -101,7 +102,7 @@ void _GS::surfaces::destroy(output_surface_data_type& data) noexcept
     
 basic_display_point<GraphicsMath> _GS::surfaces::dimensions(const output_surface_data_type& data) noexcept
 {
-    return data->buffer_size;
+    return data->back_buffer_logic_size;
 }
 
 void _GS::surfaces::dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val)
@@ -165,7 +166,7 @@ void _GS::surfaces::auto_clear(output_surface_data_type& data, bool val) noexcep
     
 void _GS::surfaces::clear(output_surface_data_type& data)
 {
-    _Clear( data->draw_buffer.get(), _ClearColor(), CGRectMake(0, 0, data->buffer_size.x(), data->buffer_size.y()) );
+    _Clear( data->draw_buffer.get(), _ClearColor(), CGRectMake(0, 0, data->back_buffer_logic_size.x(), data->back_buffer_logic_size.y()) );
 }
     
 void _GS::surfaces::stroke(output_surface_data_type& data, const basic_brush<_GS>& b, const basic_interpreted_path<_GS>& ip, const basic_brush_props<_GS>& bp, const basic_stroke_props<_GS>& sp, const basic_dashes<_GS>& d, const basic_render_props<_GS>& rp, const basic_clip_props<_GS>& cl)
@@ -292,13 +293,15 @@ int _GS::surfaces::begin_show(output_surface_data_type& data, basic_output_surfa
 static void RebuildBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context,
                               basic_display_point<GraphicsMath> new_dimensions )
 {
-    auto sf = _GS::_Enable_HiDPI ? context.content_scaling_factor : 1.;
+    auto sf = _GS::_Enable_HiDPI ? context.target_window_scaling_factor : 1.;
     context.draw_buffer.reset( _CreateBitmap(context.preferred_format,
                                              new_dimensions.x() * sf,
                                              new_dimensions.y() * sf) );
     CGContextConcatCTM(context.draw_buffer.get(), CGAffineTransform{ sf, 0., 0., sf, 0., 0. } );
     CGContextSetAllowsAntialiasing(context.draw_buffer.get(), true);    
-    context.buffer_size = new_dimensions;
+    context.back_buffer_logic_size = new_dimensions;
+    context.back_buffer_pixel_size = basic_display_point<GraphicsMath>(int(new_dimensions.x() * sf),
+                                                                       int(new_dimensions.y() * sf));
 }
 
 static void UpdateWindowTitle(_GS::surfaces::_OutputSurfaceCocoa &context)
@@ -319,9 +322,10 @@ static void ShowBackBuffer(_GS::surfaces::_OutputSurfaceCocoa &context, CGContex
     if( _BitBltIfPossible(target, back_buffer, true) )
         return;
     
-    auto bb_sz = CGSizeMake(context.buffer_size.x(), context.buffer_size.y());
-    auto db_sz = CGSizeMake(CGBitmapContextGetWidth(target) / context.content_scaling_factor,
-                            CGBitmapContextGetHeight(target) / context.content_scaling_factor);
+    // we operate with a logic coordinates here, not with pixels.
+    auto bb_sz = CGSizeMake(context.back_buffer_logic_size.x(), context.back_buffer_logic_size.y());
+    auto db_sz = CGSizeMake(CGBitmapContextGetWidth(target) / context.target_window_scaling_factor,
+                            CGBitmapContextGetHeight(target) / context.target_window_scaling_factor);
     auto target_rect = _ScaledBackBufferRect(bb_sz, db_sz, context.scaling);
     
     auto image = CGBitmapContextCreateImage(back_buffer);
@@ -370,6 +374,16 @@ using namespace std::experimental::io2d::_CoreGraphics;
 {
     if( _data->size_change_callback )
         _data->size_change_callback(*_data->frontend);
+}
+
+- (void)viewDidChangeBackingProperties
+{
+    [super viewDidChangeBackingProperties];    
+    
+    _data->target_window_scaling_factor = self.window.backingScaleFactor;
+
+    if( _data->size_change_callback )
+        _data->size_change_callback(*_data->frontend);    
 }
 
 - (void)drawRect:(NSRect)dirtyRect
