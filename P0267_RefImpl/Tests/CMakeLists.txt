@@ -23,6 +23,7 @@ add_executable(tests
 	comparison.h
    	comparison.cpp
     image_io.cpp
+    image_format.cpp
 )
 
 target_link_libraries(tests io2d Catch)

@@ -452,18 +452,6 @@ static vector<Triplet> BuildRefData(function<rgba_color(const rgba_color&, const
     return colors;
 }
 
-// TODO: move it into IO2D itself?
-namespace std::experimental::io2d {
-static std::ostream& operator<<(std::ostream& stream, const rgba_color& color) {
-    stream << "{";
-    stream << to_string(static_cast<int>(color.r() * 255.f)) << ",";
-    stream << to_string(static_cast<int>(color.g() * 255.f)) << ",";
-    stream << to_string(static_cast<int>(color.b() * 255.f)) << ",";
-    stream << to_string(static_cast<int>(color.a() * 255.f)) << "}";
-    return stream;
-}
-}
-
 static void clear(image_surface &s)
 {
     static const auto b = brush{rgba_color::transparent_black};    

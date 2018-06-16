@@ -247,14 +247,10 @@ namespace std::experimental::io2d {
 					return CAIRO_FORMAT_INVALID;
 				case ::std::experimental::io2d::format::argb32:
 					return CAIRO_FORMAT_ARGB32;
-				case ::std::experimental::io2d::format::rgb24:
+				case ::std::experimental::io2d::format::xrgb32:
 					return CAIRO_FORMAT_RGB24;
 				case ::std::experimental::io2d::format::a8:
 					return CAIRO_FORMAT_A8;
-				case ::std::experimental::io2d::format::rgb16_565:
-					return CAIRO_FORMAT_RGB16_565;
-				case ::std::experimental::io2d::format::rgb30:
-					return CAIRO_FORMAT_RGB30;
 				default:
 					throw ::std::runtime_error("Unknown format value.");
 				}
@@ -267,13 +263,9 @@ namespace std::experimental::io2d {
 				case CAIRO_FORMAT_ARGB32:
 					return ::std::experimental::io2d::format::argb32;
 				case CAIRO_FORMAT_RGB24:
-					return ::std::experimental::io2d::format::rgb24;
+					return ::std::experimental::io2d::format::xrgb32;
 				case CAIRO_FORMAT_A8:
 					return ::std::experimental::io2d::format::a8;
-				case CAIRO_FORMAT_RGB16_565:
-					return ::std::experimental::io2d::format::rgb16_565;
-				case CAIRO_FORMAT_RGB30:
-					return ::std::experimental::io2d::format::rgb30;
 				case CAIRO_FORMAT_A1:
 					// intentional fallthrough
 				default:
