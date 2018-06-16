@@ -155,9 +155,9 @@ static std::array<float, 4> ExtractFloatRGBA(const std::byte *source,
         }
         case _Interchange_buffer::pixel_layout::a8: {
             auto p = *(const uint8_t *)source;
-            r = 1.f;
-            g = 1.f;
-            b = 1.f;
+            r = 0.f;
+            g = 0.f;
+            b = 0.f;
             a = float(p)/255.f;
             break;
         }    

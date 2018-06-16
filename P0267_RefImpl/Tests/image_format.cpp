@@ -13,7 +13,7 @@ static rgba_color ConvertToAlphaless(rgba_color c)
 
 static rgba_color ConvertToAlphaonly(rgba_color c)
 {
-    return { 1.f, 1.f, 1.f, c.a() };
+    return { 0.f, 0.f, 0.f, c.a() };
 }
 
 TEST_CASE("IO2D backend can create an image_surface with ARGB32 format")
@@ -72,7 +72,7 @@ TEST_CASE("XRGB32 image_surface handles colors with transparency as premultiplie
     CHECK( CompareImageColor(img, 0, 0, ConvertToAlphaless(color), 0.03) == true );
 }
 
-TEST_CASE("XRGB32 image_surfaces are handled as their alpha values are 1.0s")
+TEST_CASE("XRGB32 image_surfaces are handled as their alpha values are 1.0")
 {
     auto img_brush = image_surface{format::xrgb32, 1, 1};
     auto color = rgba_color{75, 150, 225};
@@ -85,11 +85,6 @@ TEST_CASE("XRGB32 image_surfaces are handled as their alpha values are 1.0s")
     CHECK( CompareImageColor(img, 0, 0, color, 0.03) == true );    
 }
 
-TEST_CASE("A8 image_surfaces use only alpha channel of colors")
-{
-    auto img = image_surface{format::a8, 1, 1};
-    rgba_color color;
-    
 #define ITERATE_OVER_COLORS\
     SECTION("black color, black alpha") {\
         color = rgba_color{0, 0, 0, 0};\
@@ -119,6 +114,11 @@ TEST_CASE("A8 image_surfaces use only alpha channel of colors")
         color = rgba_color{255, 255, 255, 255};\
     }
 
+TEST_CASE("A8 image_surfaces use only alpha channel of colors")
+{
+    auto img = image_surface{format::a8, 1, 1};
+    rgba_color color;
+    
     SECTION("Painting via solid color") {
         ITERATE_OVER_COLORS;
         img.paint(brush{color});        
@@ -135,5 +135,19 @@ TEST_CASE("A8 image_surfaces use only alpha channel of colors")
         img.paint(brush{move(brush_img)});
     }    
     
+    CHECK( CompareImageColor(img, 0, 0, ConvertToAlphaonly(color), 0.03) == true );    
+}
+
+TEST_CASE("A8 image_surfaces are handled as their color values are 0.0")
+{
+    rgba_color color;
+    ITERATE_OVER_COLORS;
+    
+    auto brush_img = image_surface{format::a8, 1, 1};
+    brush_img.paint(brush{color});
+    
+    auto img = image_surface{format::argb32, 1, 1};
+    img.paint(brush{move(brush_img)});
+
     CHECK( CompareImageColor(img, 0, 0, ConvertToAlphaonly(color), 0.03) == true );    
 }
