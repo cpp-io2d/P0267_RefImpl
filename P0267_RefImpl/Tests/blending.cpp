@@ -472,6 +472,27 @@ static void clear(image_surface &s)
     s.paint(b, nullopt, rp);
 }
 
+[[maybe_unused]] static image_surface build_blend_map_256x256(compositing_op op)
+{
+    image_surface img{format::argb32, 256, 256};
+    for( int x = 0; x < 256; ++x )
+        for( int y = 0; y < 256; ++y ) {
+            auto background = brush{rgba_color(x, x, x)};            
+            auto foreground = brush{rgba_color(y, y, y)};
+            auto cl = clip_props( bounding_box(float(x), float(255-y), 1.f, 1.f) );
+            
+            render_props rp;
+            
+            rp.compositing(compositing_op::source);
+            img.paint(background, nullopt, rp, cl);
+            
+            rp.compositing(op);            
+            img.paint(foreground, nullopt, rp, cl);            
+        }
+    
+    return img;
+}
+
 TEST_CASE("IO2D properly blends colors using compositing_op::over")
 {
     auto op = compositing_op::over;
