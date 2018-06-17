@@ -7,6 +7,7 @@
 #include "xio2d_cg_gradient.h"
 #include "xio2d_cg_colors.h"
 #include "xio2d_cg_texture.h"
+#include "xio2d_cg_tmplayer.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
     
@@ -239,12 +240,10 @@ void _Mask(CGContextRef ctx,
     }
     
     // This is a preliminary and kinda brute-force implementation of a complex Mask operation, made mostly to serve as a proof-of-concept.
-    auto layer = CGLayerCreateWithContext(ctx, clip_rc.size, nullptr);
-    _AutoRelease layer_release{layer};
+    auto layer = _TmpLayer{ctx, clip_rc};
+    auto layer_ctx = layer.GetContext();
     
-    auto layer_ctx = CGLayerGetContext(layer);
     CGContextSetShouldAntialias(layer_ctx, rp.antialiasing() != antialias::none);    
-    CGContextTranslateCTM(layer_ctx, -clip_rc.origin.x, -clip_rc.origin.y);
     CGContextConcatCTM(layer_ctx, _ToCG(rp.surface_matrix()));    
 
     CGContextSetBlendMode(layer_ctx, kCGBlendModeCopy);
@@ -275,8 +274,6 @@ void _Mask(CGContextRef ctx,
             _DrawTexture(layer_ctx, surface_brush, mp.filter(), mp.wrap_mode(), mp.mask_matrix());
         } 
     }
-        
-    CGContextDrawLayerAtPoint(ctx, clip_rc.origin, layer);
 }
 
 static void SetClipProps( CGContextRef ctx, const basic_clip_props<_GS>& cp ) noexcept {

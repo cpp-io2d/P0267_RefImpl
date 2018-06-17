@@ -129,12 +129,12 @@ static _GS::brushes::_Surface::_Pad BuildPad(CGImageRef image, CGContextRef orig
 {
     _GS::brushes::_Surface::_Pad pad;
  
-    auto image_info = CGImageGetBitmapInfo(image);
-    auto image_width = CGImageGetWidth(image);
-    auto image_height = CGImageGetHeight(image);
+    auto image_info = CGBitmapContextGetBitmapInfo(orig_ctx);
+    auto image_width = CGBitmapContextGetWidth(orig_ctx);
+    auto image_height = CGBitmapContextGetHeight(orig_ctx);
     auto image_rc = CGRectMake(0, 0, image_width, image_height);
-    auto image_bpc = CGImageGetBitsPerComponent(image);
-    auto image_cs = CGImageGetColorSpace(image);
+    auto image_bpc = CGBitmapContextGetBitsPerComponent(orig_ctx);
+    auto image_cs = CGBitmapContextGetColorSpace(orig_ctx);
     
     { // bottom
         auto ctx = CGBitmapContextCreate(nullptr, image_width, 1, image_bpc, 0, image_cs, image_info);

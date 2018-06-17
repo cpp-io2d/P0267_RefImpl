@@ -30,6 +30,8 @@ set(IO2D_LIB_SRC
 	../xio2d_cg_fps_counter.h
     ../xio2d_cg_display.cpp
     ../xio2d_cg_display.h
+    ../xio2d_cg_tmplayer.cpp
+    ../xio2d_cg_tmplayer.h
 )
 
 add_library(io2d_coregraphics_mac ${IO2D_LIB_SRC})
