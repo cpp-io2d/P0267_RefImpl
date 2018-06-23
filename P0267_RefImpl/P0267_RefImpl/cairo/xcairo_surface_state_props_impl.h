@@ -11,7 +11,10 @@
 #include <sstream>
 #include <iomanip>
 
+#if !defined(__EMSCRIPTEN__)
 #include <magick/api.h>
+#endif
+
 #include <system_error>
 #include <cstring>
 #include <chrono>

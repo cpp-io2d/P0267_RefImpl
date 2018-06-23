@@ -2,15 +2,43 @@
 #include "xcairo.h"
 #include "xio2d_cairo_sdl2_main.h"
 #include "xgraphicsmathfloat.h"
-#include <mutex>
+
+#if __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
+
+#if ! SDL_VERSION_ATLEAST(2, 0, 0)
+#error "io2d's SDL module must be compiled with SDL 2.x or higher, but SDL 1.x was detected"
+#endif
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		namespace _Cairo {
+			using _Output_surface_datadata = _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::output_surface_data_type;
+			using _Output_surface = basic_output_surface<_Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>>;
 
-			using boo = _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>;
-			using biff = _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::output_surface_data_type;
-			using bam = basic_output_surface<boo>;
+			template <>
+			void _Create_display_surface_and_context<std::experimental::io2d::v1::_Graphics_math_float_impl>(_Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::_Display_surface_data_type& data)
+			{
+                data.display_surface = ::std::move(::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(CAIRO_FORMAT_ARGB32, data.display_dimensions.x(), data.display_dimensions.y()), &cairo_surface_destroy));
+                auto sfc = data.display_surface.get();
+                _Throw_if_failed_cairo_status_t(cairo_surface_status(sfc));
+                data.display_context = ::std::move(::std::unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(sfc), &cairo_destroy));
+                _Throw_if_failed_cairo_status_t(cairo_status(data.display_context.get()));
+
+                if (data.texture) {
+                    SDL_DestroyTexture(data.texture);
+                    data.texture = nullptr;
+                }
+                if (data.renderer) {
+                    int w = data.back_buffer.dimensions.x();
+                    int h = data.back_buffer.dimensions.y();
+                    data.texture = SDL_CreateTexture(data.renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w, h);
+					if (!data.texture) {
+						throw ::std::system_error(::std::make_error_code(::std::errc::io_error), SDL_GetError());
+					}
+                }
+            }
 
 			template <> template <>
 			void _Cairo_graphics_surfaces <_Graphics_math_float_impl>::surfaces::_Render_to_native_surface <
@@ -169,17 +197,20 @@ namespace std::experimental::io2d {
 				cairo_set_source_rgb(displayContext, 0.0, 0.0, 0.0);
 
 				SDL_SetRenderDrawColor(data.renderer, 0, 0, 0, 255);
-				SDL_RenderClear(data.renderer);
+				if (SDL_RenderClear(data.renderer) != 0) {
+					throw ::std::system_error(::std::make_error_code(::std::errc::io_error), SDL_GetError());
+				}
 
 				// Copy Cairo canvas to SDL2 texture
 				unsigned char * src = cairo_image_surface_get_data(displaySfc);
-				// std::vector<uint32_t> srcV;
-				// srcV.resize((int)backBufferWidth * (int)backBufferHeight, 0xff00ff00);
-				// unsigned char * src = (unsigned char *) &srcV[0];
-
+				// TODO(dludwig@pobox.com): compute the pitch, given  
 				const int pitch = (int)backBufferWidth * 4;    // '4' == 4 bytes per pixel
-				SDL_UpdateTexture(data.texture, nullptr, src, pitch);
-				SDL_RenderCopy(data.renderer, data.texture, nullptr, nullptr);
+				if (SDL_UpdateTexture(data.texture, nullptr, src, pitch) != 0) {
+					throw ::std::system_error(::std::make_error_code(::std::errc::io_error), SDL_GetError());
+				}
+				if (SDL_RenderCopy(data.renderer, data.texture, nullptr, nullptr) != 0) {
+					throw ::std::system_error(::std::make_error_code(::std::errc::io_error), SDL_GetError());
+				}
 
 				// Present latest image
 				SDL_RenderPresent(data.renderer);
@@ -198,7 +229,50 @@ namespace std::experimental::io2d {
 			}
 
 			template <>
-			int _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::begin_show(biff& osd, bam* instance, bam& sfc)
+			void _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::_Tick_show(_Output_surface_datadata& osd, _Output_surface* instance, _Output_surface& sfc)
+			{
+				_Display_surface_data_type &data = osd->data;
+
+				SDL_Event ev;
+				while (SDL_PollEvent(&ev)) {}
+
+				bool redraw = true;
+				if (data.rr == io2d::refresh_style::as_needed) {
+					redraw = data.redraw_required;
+					data.redraw_required = false;
+				}
+
+				const auto desiredElapsed = 1'000'000'000.0F / data.refresh_fps;
+				if (data.rr == io2d::refresh_style::fixed) {
+					redraw = data.elapsed_draw_time >= desiredElapsed;
+				}
+				if (redraw) {
+					if (osd->draw_callback) {
+						osd->draw_callback(sfc);
+					}
+					_Render_to_native_surface(osd, sfc);
+					if (data.rr == experimental::io2d::refresh_style::fixed) {
+						while (data.elapsed_draw_time >= desiredElapsed) {
+							data.elapsed_draw_time -= desiredElapsed;
+						}
+					}
+					else {
+						data.elapsed_draw_time = 0.0F;
+					}
+				}
+			}
+
+			template <>
+			void _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::_Tick_emscripten(void * userdata)
+			{
+				_Output_surface * instance = (_Output_surface *) userdata;
+				_Output_surface & sfc = *instance;
+				_Output_surface_datadata & osd = instance->_Data;
+				_Tick_show(osd, instance, sfc);
+			}
+
+			template <>
+			int _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::begin_show(_Output_surface_datadata& osd, _Output_surface* instance, _Output_surface& sfc)
 			{
 				_Display_surface_data_type &data = osd->data;
 
@@ -208,7 +282,7 @@ namespace std::experimental::io2d {
 				//  2. an SDL renderer, which will be used to help draw Cairo-rendered content to the desired display(s)
 				//
 
-#if __LINUX__
+#if 0 //__LINUX__
 				// HACK: work around a bug in SDL2 + OpenGL + Vagrant + Ubuntu 18.04 + X11 via macOS'/X11,
 				// whereby apps will crash/terminate upon trying to initialize SDL.  This crash occurs
 				// when trying to detect OpenGL-related resources.
@@ -219,7 +293,7 @@ namespace std::experimental::io2d {
 #endif
 
 				if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-					throw system_error(make_error_code(std::errc::io_error), "Failed call to SDL_Init.");
+					throw ::std::system_error(::std::make_error_code(::std::errc::io_error), SDL_GetError());
 				}
 
 				data.window = SDL_CreateWindow(
@@ -230,19 +304,18 @@ namespace std::experimental::io2d {
 					data.display_dimensions.y(),
 					SDL_WINDOW_SHOWN
 				);
-				// printf("data.window: %p\n", data.window);
 				if (!data.window) {
-					throw system_error(make_error_code(std::errc::io_error), "Failed call to SDL_CreateWindow.");
+					throw ::std::system_error(::std::make_error_code(::std::errc::io_error), SDL_GetError());
 				}
 
+				// TODO(dludwig@pobox.com): Fix errors logged by Emscripten in SDL_CreateRenderer (regarding sigaction + emscripten_set_main_loop_timing)
 				data.renderer = SDL_CreateRenderer(
 					data.window,
 					-1,
 					renderer_flags
 				);
-				// printf("data.renderer: %p\n", data.renderer);
 				if (!data.renderer) {
-					throw system_error(make_error_code(std::errc::io_error), "Failed call to SDL_CreateRenderer.");
+					throw ::std::system_error(::std::make_error_code(::std::errc::io_error), SDL_GetError());
 				}
 
 				_Create_display_surface_and_context<std::experimental::io2d::v1::_Graphics_math_float_impl>(data);
@@ -256,45 +329,19 @@ namespace std::experimental::io2d {
 
 				data.redraw_required = true;
 
-				// printf("entering loop\n");
-				while (_Is_active<std::experimental::io2d::v1::_Graphics_math_float_impl>(data))
-				{
-					SDL_Event ev;
-					while (SDL_PollEvent(&ev)) {}
-
-					bool redraw = true;
-					if (data.rr == io2d::refresh_style::as_needed) {
-						redraw = data.redraw_required;
-						data.redraw_required = false;
-					}
-
-					const auto desiredElapsed = 1'000'000'000.0F / data.refresh_fps;
-					if (data.rr == io2d::refresh_style::fixed) {
-						// desiredElapsed is the amount of time, in nanoseconds, that must have passed before we should redraw.
-						redraw = data.elapsed_draw_time >= desiredElapsed;
-					}
-					if (redraw) {
-						// Run user draw function:
-						// printf("draw!\n");
-						osd->draw_callback(sfc);
-						_Render_to_native_surface(osd, sfc);
-						if (data.rr == experimental::io2d::refresh_style::fixed) {
-							while (data.elapsed_draw_time >= desiredElapsed) {
-								data.elapsed_draw_time -= desiredElapsed;
-							}
-						}
-						else {
-							data.elapsed_draw_time = 0.0F;
-						}
-					}
+#ifdef __EMSCRIPTEN__
+				emscripten_set_main_loop_arg(&_Tick_emscripten, instance, 0, 1);
+#else
+				while (_Is_active<std::experimental::io2d::v1::_Graphics_math_float_impl>(data)) {
+					_Tick_show(osd, instance, sfc);
 
 					// Try to delay by a negligible amount of time.  On some platforms, this can help with responsiveness.
 					SDL_Delay(0);
 				}
 				data.elapsed_draw_time = 0.0F;
+#endif
 				return 0;
 			}
-		
 
 			int _handle_sdl2_event(void *userdata, SDL_Event *event) {
 				switch (event->type) {

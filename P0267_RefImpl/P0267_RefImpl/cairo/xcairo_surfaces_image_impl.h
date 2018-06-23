@@ -18,10 +18,13 @@ namespace std::experimental::io2d {
 				return data;
 			}
 
+#if !defined(__EMSCRIPTEN__)
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch-enum"
 #endif
+
 			inline ::std::error_code _Graphics_magic_exception_type_to_error_code(ExceptionInfo* exInfo) {
 				ExceptionType code = exInfo->severity;
 				::std::error_code ec;
@@ -317,6 +320,7 @@ namespace std::experimental::io2d {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
+#endif	// __EMSCRIPTEN__
 
 			inline void _Convert_and_set_pixel_to_io2d_format(io2d::format fmt, unsigned char* mapData, int i, int j, int mapStride, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
 				switch (fmt) {
@@ -577,7 +581,9 @@ namespace std::experimental::io2d {
 				}
 				return data;
 			}
-			template<class GraphicsMath>
+
+#if !defined(__EMSCRIPTEN__) 
+			template <class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_image_surface(::std::string p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
 				_Init_graphics_magic();
 				if (iff == image_file_format::unknown) {
@@ -663,6 +669,7 @@ namespace std::experimental::io2d {
 				ec.clear();
 				return data;
 			}
+#endif	// __EMSCRIPTEN__
 #endif
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::move_image_surface(image_surface_data_type&& data) noexcept {
@@ -877,6 +884,8 @@ namespace std::experimental::io2d {
 					throw ::std::system_error(ec);
 				}
 			}
+
+#if !defined(__EMSCRIPTEN__)
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::save(image_surface_data_type& data, ::std::string p, image_file_format iff, error_code& ec) noexcept {
 				_Init_graphics_magic();
@@ -980,6 +989,7 @@ namespace std::experimental::io2d {
 				ec.clear();
 				return;
 			}
+#endif	// __EMSCRIPTEN__
 #endif
 			template<class GraphicsMath>
 			inline io2d::format _Cairo_graphics_surfaces<GraphicsMath>::surfaces::format(const image_surface_data_type& data) noexcept {

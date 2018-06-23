@@ -223,7 +223,7 @@ namespace std::experimental::io2d {
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
 			using data_type = typename GraphicsSurfaces::surfaces::output_surface_data_type;
 
-		private:
+		//private:  // DavidL: I made this public on 2018-Jun-19, in order to (hackishly) make it accessible to Emscripten's main-loop callback
 			data_type _Data;
 
 		public:

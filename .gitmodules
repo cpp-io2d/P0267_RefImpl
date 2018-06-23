@@ -7,3 +7,10 @@
 [submodule "P0267_RefImpl/Tests/Catch2"]
 	path = P0267_RefImpl/Tests/Catch2
 	url = https://github.com/catchorg/Catch2
+[submodule "P0267_RefImpl/P0267_RefImpl/cairo/sdl2/external/cairo"]
+	path = P0267_RefImpl/P0267_RefImpl/cairo/sdl2/external/cairo
+	url = git://anongit.freedesktop.org/cairo
+[submodule "P0267_RefImpl/P0267_RefImpl/cairo/sdl2/external/pixman"]
+	path = P0267_RefImpl/P0267_RefImpl/cairo/sdl2/external/pixman
+	url = git://anongit.freedesktop.org/pixman
+	branch = 0.34

@@ -5,29 +5,9 @@
 namespace std::experimental::io2d {
     inline namespace v1 {
         namespace _Cairo {
-            
-            template <class GraphicsMath>
-            inline void _Create_display_surface_and_context(typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::_Display_surface_data_type& data) {
-                data.display_surface = ::std::move(::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(CAIRO_FORMAT_ARGB32, data.display_dimensions.x(), data.display_dimensions.y()), &cairo_surface_destroy));
-                auto sfc = data.display_surface.get();
-                _Throw_if_failed_cairo_status_t(cairo_surface_status(sfc));
-                data.display_context = ::std::move(::std::unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(sfc), &cairo_destroy));
-                _Throw_if_failed_cairo_status_t(cairo_status(data.display_context.get()));
 
-                if (data.texture) {
-                    SDL_DestroyTexture(data.texture);
-                    data.texture = nullptr;
-                }
-                if (data.renderer) {
-                    data.texture = SDL_CreateTexture(data.renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, data.back_buffer.dimensions.x(), data.back_buffer.dimensions.y());
-                    // printf("data.texture: %p, w:%d, h:%d\n",
-                    //     data.texture,
-                    //     (int) data.back_buffer.dimensions.x(),
-                    //     (int) data.back_buffer.dimensions.y()
-                    // );
-                    // TODO: throw something if SDL_CreateTexture fails
-                }
-            }
+            template <class GraphicsMath>
+            void _Create_display_surface_and_context(typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::_Display_surface_data_type& data);
             
             template <class GraphicsSurfaces>
             inline void _Ds_clear(typename GraphicsSurfaces::surfaces::_Display_surface_data_type& data) {

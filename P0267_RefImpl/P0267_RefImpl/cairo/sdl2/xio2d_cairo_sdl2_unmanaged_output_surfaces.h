@@ -18,7 +18,7 @@ namespace std::experimental::io2d {
 
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::unmanaged_output_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_unmanaged_output_surface(_UnmanagedSurfaceContext &context, int preferredWidth, int preferredHeight, io2d::format preferredFormat, io2d::scaling scl) {
-				throw system_error(std::errc::not_supported, "SDL2 port doesn't yet support unmanaged surfaces");
+				throw ::std::system_error(::std::make_error_code(::std::errc::not_supported), "io2d/SDL2 port doesn't support unmanaged surfaces, as of yet");
 				return create_unmanaged_output_surface();
 			}
 
