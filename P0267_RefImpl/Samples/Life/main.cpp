@@ -186,22 +186,27 @@ void GameOfLife::DrawGrid(output_surface &surface)
     }
 }
 
+auto & display() {
+    static auto display = output_surface{500, 500, format::argb32, scaling::none, refresh_style::fixed, 30.f};    
+    return display;
+}
+
+static auto game = unique_ptr<GameOfLife>();    
+
 int main(int argc, char **argv)
 {
-    auto game = unique_ptr<GameOfLife>();    
-    auto display = output_surface{500, 500, format::argb32, scaling::none, refresh_style::fixed, 30.f};    
-    display.size_change_callback([&](output_surface& surface){
+    display().size_change_callback([&](output_surface& surface){
         surface.dimensions(surface.display_dimensions());
     });
-    display.draw_callback([&](auto& surface) {
+    display().draw_callback([&](auto& surface) {
         if( !game ) {
-            auto board_width = display.dimensions().x()/10;
-            auto board_height = display.dimensions().y()/10;
+            auto board_width = display().dimensions().x()/10;
+            auto board_height = display().dimensions().y()/10;
             game = make_unique<GameOfLife>(board_width, board_height);    
             game->Seed((board_width * board_height) / 8);            
         }
         game->Tick();
         game->Display(surface);
     });
-    display.begin_show();
+    display().begin_show();
 }

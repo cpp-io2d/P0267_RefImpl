@@ -4,7 +4,7 @@
 using namespace std::experimental::io2d;
 
 static output_surface & display() {
-    static auto surface = output_surface {512, 512, format::argb32, scaling::none, refresh_style::as_needed, 30.f};
+    static auto surface = output_surface {512, 512, format::argb32, scaling::none, refresh_style::fixed, 30.f};
     return surface;
 }
 

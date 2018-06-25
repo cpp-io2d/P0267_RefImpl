@@ -14,3 +14,7 @@ if( DEFINED IOS_PLATFORM )
     set_target_properties(life PROPERTIES RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/iOS/LaunchScreen.storyboard")
     set_target_properties(life PROPERTIES XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
 endif()
+
+if(EMSCRIPTEN)
+	set(CMAKE_EXECUTABLE_SUFFIX ".html")
+endif()
