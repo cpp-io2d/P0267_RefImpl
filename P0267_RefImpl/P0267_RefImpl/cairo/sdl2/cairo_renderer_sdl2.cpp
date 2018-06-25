@@ -244,7 +244,12 @@ namespace std::experimental::io2d {
 
 				const auto desiredElapsed = 1'000'000'000.0F / data.refresh_fps;
 				if (data.rr == io2d::refresh_style::fixed) {
-					redraw = data.elapsed_draw_time >= desiredElapsed;
+					if constexpr (__EMSCRIPTEN__) {
+						// TODO(dludwig@pobox.com): consider redeclaring the above 'if __EMSCRIPTEN__' to 'if use_external_runloop'
+						redraw = true;
+					} else {
+						redraw = data.elapsed_draw_time >= desiredElapsed;
+					}
 				}
 				if (redraw) {
 					if (osd->draw_callback) {
@@ -330,7 +335,20 @@ namespace std::experimental::io2d {
 				data.redraw_required = true;
 
 #ifdef __EMSCRIPTEN__
-				emscripten_set_main_loop_arg(&_Tick_emscripten, instance, 0, 1);
+				int fps_for_emscripten = 0;
+				switch (data.rr) {
+					case io2d::refresh_style::as_needed:
+						// TODO(dludwig@pobox.com): if refresh rate == as_needed', then pass what to emscripten_set_main_loop* ?
+						fps_for_emscripten = 0;
+						break;
+					case io2d::refresh_style::as_fast_as_possible:
+						fps_for_emscripten = 0;
+						break;
+					case io2d::refresh_style::fixed:
+						fps_for_emscripten = data.refresh_fps;
+						break;
+				}
+				emscripten_set_main_loop_arg(&_Tick_emscripten, instance, fps_for_emscripten, 1);
 #else
 				while (_Is_active<std::experimental::io2d::v1::_Graphics_math_float_impl>(data)) {
 					_Tick_show(osd, instance, sfc);
