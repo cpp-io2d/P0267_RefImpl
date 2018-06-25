@@ -6,7 +6,7 @@ if(EMSCRIPTEN)
 endif()
 
 # add_subdirectory(DrawCPP)
-# add_subdirectory(RocksInSpace)
+add_subdirectory(RocksInSpace)
 # add_subdirectory(SVG)
 add_subdirectory(Life)
 # add_subdirectory(CPULoad)

@@ -34,8 +34,12 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
 	list(APPEND ROCKS_IN_SPACE_SRC
 		LinuxMain.cpp
 	)
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten" )
+	list(APPEND ROCKS_IN_SPACE_SRC
+		SDL2Main.cpp
+	)
 else()
-	message( "RocksInSpace doesn't have a frontend for this platform, thus skipping." )
+	message( "RocksInSpace doesn't have a frontend for this platform (${CMAKE_SYSTEM_NAME}), thus skipping." )
 	return()
 endif()
 
