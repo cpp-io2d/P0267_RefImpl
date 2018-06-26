@@ -27,10 +27,11 @@ std::array<rocks_in_space::physics, 2> rocks_in_space::physics::divide(std::mt19
 	return{ { physics(m_position, pol_to_car({r1, theta1})), physics(m_position, pol_to_car({r2, theta2})) } };
 }
 
-void rocks_in_space::controllable_physics::update(float seconds)
+void rocks_in_space::controllable_physics::update(float spin, float thrust, float seconds)
 {
-	m_physics.update(seconds, m_acceleration);
-	m_acceleration = { 0,0 };
+    m_orientation += spin * seconds;
+    auto acceleration = pol_to_car(polar_2d{ thrust, m_orientation });
+	m_physics.update(seconds, acceleration);
 }
 
 std::pair<rocks_in_space::path_buffer, float> rocks_in_space::path_from_prototype(const path_buffer& path, float s)

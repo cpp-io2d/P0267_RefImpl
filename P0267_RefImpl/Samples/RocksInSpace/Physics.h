@@ -48,20 +48,16 @@ namespace rocks_in_space
 	class controllable_physics
 	{
 	public:
-					controllable_physics(const physics& phy, const acc& acc, float ori);
-		void		reset(const physics& phy, const acc& acc, float ori);
-		void		update(float seconds);
-		void		apply_thrust(float t);
-		void		apply_spin(float spin);
+					controllable_physics(const physics& phy, float ori);
+		void		reset(const physics& phy, float ori);
+		void		update(float spin, float thrust, float seconds);
 
 		const pos&	position() const;
 		const vel&	velocity() const;
-		const acc&	acceleration() const;
 		float		orientation() const;
 
 	private:
 		physics		m_physics;
-		acc			m_acceleration;
 		float		m_orientation;
 	};
 
@@ -89,27 +85,15 @@ inline const rocks_in_space::vel& rocks_in_space::physics::velocity() const
 	return m_velocity;
 }
 
-inline rocks_in_space::controllable_physics::controllable_physics(const physics& phy, const acc& acc, float ori)
+inline rocks_in_space::controllable_physics::controllable_physics(const physics& phy, float ori)
 	: m_physics(phy)
-	, m_acceleration(acc)
 	, m_orientation(ori)
 {}
 
-inline void rocks_in_space::controllable_physics::reset(const physics& phy, const acc& acc, float ori)
+inline void rocks_in_space::controllable_physics::reset(const physics& phy, float ori)
 {
 	m_physics = phy;
-	m_acceleration = acc;
 	m_orientation = ori;
-}
-
-inline void	rocks_in_space::controllable_physics::apply_thrust(float t)
-{
-	m_acceleration = pol_to_car(polar_2d{ t, m_orientation });
-}
-
-inline void	rocks_in_space::controllable_physics::apply_spin(float spin)
-{
-	m_orientation += spin;
 }
 
 inline const rocks_in_space::pos& rocks_in_space::controllable_physics::position() const
@@ -120,11 +104,6 @@ inline const rocks_in_space::pos& rocks_in_space::controllable_physics::position
 inline const rocks_in_space::vel& rocks_in_space::controllable_physics::velocity() const
 {
 	return m_physics.velocity();
-}
-
-inline const rocks_in_space::acc& rocks_in_space::controllable_physics::acceleration() const
-{
-	return m_acceleration;
 }
 
 inline float rocks_in_space::controllable_physics::orientation() const
