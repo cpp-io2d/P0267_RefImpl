@@ -26,6 +26,7 @@ add_executable(maps
     http.cpp
     http.h
 )
+
 target_link_libraries(maps
     io2d
     pugixml
@@ -36,3 +37,8 @@ target_include_directories(maps SYSTEM
     PRIVATE ${Boost_INCLUDE_DIRS}
     PRIVATE ${OPENSSL_INCLUDE_DIR}
 )
+
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+    target_link_libraries(maps pthread)
+endif()
+
