@@ -48,10 +48,11 @@ static std::vector<std::byte> Download( const char *host, const char *port, cons
 
     std::stringstream ss;
     ss << res.get();
+	const auto chars = ss.str();
     
     std::vector<std::byte> bytes;
-    bytes.assign((const std::byte*)ss.str().data(),
-                 (const std::byte*)ss.str().data() + ss.str().length() );    
+	bytes.assign((const std::byte*)chars.data(),
+			     (const std::byte*)chars.data() + chars.length());
     
     return bytes;
 }
