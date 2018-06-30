@@ -4,7 +4,7 @@
 #define _XCAIRO_
 
 #include <cairo.h>
-#include <xio2d.h>
+#include "xio2d.h"
 
 namespace std {
 	namespace experimental {

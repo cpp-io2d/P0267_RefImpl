@@ -9,6 +9,14 @@ if( NOT Boost_FOUND )
 	return()
 endif()
 
+if( MSVC )
+	if( CMAKE_CXX_COMPILER MATCHES ".*/Hostx86/x86/cl.exe" OR 
+            CMAKE_CXX_COMPILER MATCHES ".*/Hostx86/x64/cl.exe")
+		message( "Skipping the SVG example since 32-bit cl.exe cannot be used to compile it" )
+		return()		
+	endif()
+endif()
+
 add_executable(svg
 	main.cpp
 	svg.h

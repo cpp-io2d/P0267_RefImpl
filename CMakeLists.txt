@@ -20,10 +20,10 @@ endif()
 
 # Setup default installation subpaths, if they were not defined outside
 if(NOT DEFINED CMAKE_INSTALL_BINDIR)
-    set(CMAKE_INSTALL_LIBDIR bin)
+    set(CMAKE_INSTALL_BINDIR bin)
 endif()
 if(NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
-    set(CMAKE_INSTALL_LIBDIR include/io2d)
+    set(CMAKE_INSTALL_INCLUDEDIR include/io2d)
 endif()
 if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
     set(CMAKE_INSTALL_LIBDIR lib)

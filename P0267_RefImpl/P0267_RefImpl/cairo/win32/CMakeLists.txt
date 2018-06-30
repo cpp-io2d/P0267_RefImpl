@@ -63,6 +63,19 @@ if(MSVC)
 	target_link_libraries(io2d_cairo_win32 debug ${CAIRO_LIB_DEBUG} optimized ${CAIRO_LIB_RELEASE})
 endif()
  
-#install(TARGETS io2d
-#	ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/lib
-#)
+# installation
+install(
+    TARGETS io2d_cairo_win32
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+file(
+    GLOB IO2D_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../*.h"
+)
+install(
+    FILES ${IO2D_HEADERS}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
