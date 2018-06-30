@@ -48,3 +48,20 @@ target_link_libraries(io2d_coregraphics_mac "-framework CoreServices")
 target_link_libraries(io2d_coregraphics_mac "-framework CoreFoundation")
 target_link_libraries(io2d_coregraphics_mac "-framework ImageIO")
 target_link_libraries(io2d_coregraphics_mac "-framework CoreGraphics")
+
+# installation
+install(
+    TARGETS io2d_coregraphics_mac
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+file(
+    GLOB IO2D_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../*.h"
+)
+install(
+    FILES ${IO2D_HEADERS}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)

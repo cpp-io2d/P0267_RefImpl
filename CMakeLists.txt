@@ -1,7 +1,4 @@
 cmake_minimum_required(VERSION 3.0.0)
-#set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_CURRENT_LIST_DIR}/CompilerOptions.cmake")
-#message(STATUS "C compiler: ${CMAKE_C_COMPILER}")
-#message(STATUS "CXX compiler: ${CMAKE_CXX_COMPILER}")
 
 project(io2d CXX)
 if( MSVC )
@@ -19,6 +16,19 @@ if( MSVC )
 #else()
 #	message(STATUS "Not MSVC")
 endif()
+
+
+# Setup default installation subpaths, if they were not defined outside
+if(NOT DEFINED CMAKE_INSTALL_BINDIR)
+    set(CMAKE_INSTALL_LIBDIR bin)
+endif()
+if(NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
+    set(CMAKE_INSTALL_LIBDIR include/io2d)
+endif()
+if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+    set(CMAKE_INSTALL_LIBDIR lib)
+endif()
+
 
 add_subdirectory(P0267_RefImpl/P0267_RefImpl)
 

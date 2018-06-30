@@ -88,3 +88,19 @@ foreach(backend ${IO2D_ENABLED})
 	add_subdirectory(${BACKEND_PATH})
 	target_link_libraries(io2d ${BACKEND_LIBRARY})
 endforeach(backend)
+
+# installation
+install(
+    TARGETS io2d
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+file(
+    GLOB IO2D_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+install(
+    FILES ${IO2D_HEADERS}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)

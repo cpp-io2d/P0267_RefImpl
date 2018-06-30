@@ -1,7 +1,7 @@
 #ifndef _IO2D_CG_MAIN_H_
 #define _IO2D_CG_MAIN_H_
 
-#include <xio2d.h>
+#include "xio2d.h"
 #include <CoreGraphics/CoreGraphics.h>
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
