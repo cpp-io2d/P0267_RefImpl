@@ -7,6 +7,12 @@ add_executable(draw_cpp main.cpp)
 
 target_link_libraries(draw_cpp io2d)
 
-install(TARGETS draw_cpp
-	RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/samples
-)
+set(RSC_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/texture.jpg)
+set(RSC_TARGET $<TARGET_FILE_DIR:draw_cpp>/texture.jpg)
+
+add_custom_command( TARGET draw_cpp POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}" "${RSC_TARGET}")
+
+if(MSVC)
+    set_target_properties(draw_cpp PROPERTIES  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)")
+endif()
