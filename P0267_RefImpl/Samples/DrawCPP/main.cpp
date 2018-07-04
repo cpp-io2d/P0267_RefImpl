@@ -45,7 +45,7 @@ void DrawCPP()
     img.save("cpp.png", image_file_format::png);
 }
 
-int main(int argc, const char * argv[]) {
+int main(int /*argc*/, const char** /*argv*/) {
 	DrawCPP();
     return 0;
 }

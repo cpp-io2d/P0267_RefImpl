@@ -44,7 +44,7 @@ TEST_CASE("ARGB32 image_surface preserves all ARGB color information")
     rp.compositing(compositing_op::source);
     img.paint(brush{color}, nullopt, rp);
     
-    CHECK( CompareImageColor(img, 0, 0, color, 0.03) == true );
+    CHECK( CompareImageColor(img, 0, 0, color, 0.03f) == true );
 }
 
 TEST_CASE("XRGB32 image_surface handles colors with transparency as premultiplied with dropped alpha")
@@ -69,10 +69,10 @@ TEST_CASE("XRGB32 image_surface handles colors with transparency as premultiplie
         img.paint(brush{move(brush_img)}, nullopt, rp);
     }
     
-    CHECK( CompareImageColor(img, 0, 0, ConvertToAlphaless(color), 0.03) == true );
+    CHECK( CompareImageColor(img, 0, 0, ConvertToAlphaless(color), 0.03f) == true );
 }
 
-TEST_CASE("XRGB32 image_surfaces are handled as their alpha values are 1.0")
+TEST_CASE("XRGB32 image_surfaces are handled as their alpha values are 1.0f")
 {
     auto img_brush = image_surface{format::xrgb32, 1, 1};
     auto color = rgba_color{75, 150, 225};
@@ -82,7 +82,7 @@ TEST_CASE("XRGB32 image_surfaces are handled as their alpha values are 1.0")
     auto img = image_surface{format::argb32, 1, 1};
     img.paint(b);    
     
-    CHECK( CompareImageColor(img, 0, 0, color, 0.03) == true );    
+    CHECK( CompareImageColor(img, 0, 0, color, 0.03f) == true );    
 }
 
 #define ITERATE_OVER_COLORS\
@@ -135,10 +135,10 @@ TEST_CASE("A8 image_surfaces use only alpha channel of colors")
         img.paint(brush{move(brush_img)});
     }    
     
-    CHECK( CompareImageColor(img, 0, 0, ConvertToAlphaonly(color), 0.03) == true );    
+    CHECK( CompareImageColor(img, 0, 0, ConvertToAlphaonly(color), 0.03f) == true );    
 }
 
-TEST_CASE("A8 image_surfaces are handled as their color values are 0.0")
+TEST_CASE("A8 image_surfaces are handled as their color values are 0.0f")
 {
     rgba_color color;
     ITERATE_OVER_COLORS;
@@ -149,5 +149,5 @@ TEST_CASE("A8 image_surfaces are handled as their color values are 0.0")
     auto img = image_surface{format::argb32, 1, 1};
     img.paint(brush{move(brush_img)});
 
-    CHECK( CompareImageColor(img, 0, 0, ConvertToAlphaonly(color), 0.03) == true );    
+    CHECK( CompareImageColor(img, 0, 0, ConvertToAlphaonly(color), 0.03f) == true );    
 }

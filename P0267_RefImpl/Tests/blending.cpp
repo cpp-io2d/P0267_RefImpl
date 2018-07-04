@@ -53,7 +53,7 @@ namespace Blend {
 // zero alpha processing does not match the mathetical model in some operators,
 // which is coherent between Cairo and CoreGraphics.
     
-static rgba_color Clear( const rgba_color& a, const rgba_color& b ) noexcept
+static rgba_color Clear( const rgba_color& /*a*/, const rgba_color& /*b*/ ) noexcept
 {
     return rgba_color::transparent_black;
 }
@@ -70,7 +70,7 @@ static rgba_color Over( const rgba_color& a, const rgba_color& b ) noexcept
     return {rr, rg, rb, ra};
 }
     
-static rgba_color Source( const rgba_color& a, const rgba_color& b ) noexcept
+static rgba_color Source( const rgba_color& a, const rgba_color& /*b*/ ) noexcept
 {
     if( a.a() <= numeric_limits<float>::min() )
         return rgba_color::transparent_black;

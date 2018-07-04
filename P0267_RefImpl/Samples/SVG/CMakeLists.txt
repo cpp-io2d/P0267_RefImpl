@@ -26,7 +26,7 @@ add_executable(svg
 )
 
 if(MSVC)
-	target_compile_options(svg PUBLIC /bigobj)
+	target_compile_options(svg PUBLIC /bigobj /D_SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING /wd4459 /wd4702)
 endif()
 
 target_link_libraries(svg io2d)

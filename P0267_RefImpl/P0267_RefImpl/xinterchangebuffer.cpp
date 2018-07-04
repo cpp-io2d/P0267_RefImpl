@@ -34,7 +34,7 @@ static int DefaultStride(int width, _Interchange_buffer::pixel_layout layout)
     return BytesPerPixel(layout) * width;
 }
 
-static void Copy( std::byte *target, int target_stride, const std::byte *source, int width, int height, int source_stride )
+static void Copy( std::byte *target, int target_stride, const std::byte *source, int /*width*/, int height, int source_stride )
 {
     if( target_stride == source_stride )
         std::copy( source, source + source_stride * height, target );

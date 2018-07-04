@@ -19,7 +19,7 @@ static optional<image_surface> Render( const string& svg, float scale = 1.f ) {
     try {
         return RenderSVG(svg, scale);
     }
-    catch (exception const & e) {
+    catch (const exception& /*e*/) {
         return nullopt;
     }
 }
@@ -50,11 +50,11 @@ void RunWindowed( const string &path_in ) {
     display.draw_callback([&](output_surface& os) {
         os.paint(brush{rgba_color::white});
         path_builder pb;
-        pb.new_figure({0, 0});
-        pb.rel_line(point_2d(dims.x(), 0));
-        pb.rel_line(point_2d(0, dims.y()));
-        pb.rel_line(point_2d(-dims.x(), 0));
-        pb.rel_line(point_2d(0, -dims.y()));
+        pb.new_figure({0.0f, 0.0f});
+        pb.rel_line(point_2d(static_cast<float>(dims.x()), 0.0f));
+        pb.rel_line(point_2d(0.0f, static_cast<float>(dims.y())));
+        pb.rel_line(point_2d(static_cast<float>(-dims.x()), 0.0f));
+        pb.rel_line(point_2d(0.0f, static_cast<float>(-dims.y())));
         pb.close_figure();
         os.fill(*img_brush, pb);
     });

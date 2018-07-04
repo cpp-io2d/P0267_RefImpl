@@ -42,3 +42,6 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
     target_link_libraries(maps pthread)
 endif()
 
+if(MSVC)
+	target_compile_options(maps PUBLIC /D_SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING /wd4459)
+endif()

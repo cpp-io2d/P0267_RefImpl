@@ -41,13 +41,13 @@ rocks_in_space::ship_update rocks_in_space::ship::update(float seconds)
 	case ship_state::active:
 	{
         auto spin_val = do_anti_clockwise() ? spin_left
-                      : (do_clockwise() ? spin_right : 0.0);
-        auto thrust_val = do_thrust() ? thrust : 0.0;
+                      : (do_clockwise() ? spin_right : 0.0f);
+        auto thrust_val = do_thrust() ? thrust : 0.0f;
 		m_physics.update(spin_val, thrust_val, seconds);
 
 		std::transform( std::begin(ship_vb), std::next(std::begin(ship_vb), ship_shape.m_count), std::begin(m_path.m_vertices), [&](const auto & v_in)
 		{
-			return rotate(v_in, m_physics.orientation(), { 0.0, 0.0 });
+			return rotate(v_in, m_physics.orientation(), { 0.0f, 0.0f });
 		});
 		return{ do_fire(), m_physics.position(), m_physics.orientation(), m_path };
 	}

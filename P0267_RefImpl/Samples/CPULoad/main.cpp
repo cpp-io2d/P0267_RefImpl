@@ -120,7 +120,7 @@ void CPUMeter::DrawGraphs(output_surface& surface) const
     }        
 }
 
-int main(int argc, char **argv)
+int main(int /*argc*/, char** /*argv*/)
 {
     CPUMeter meter;
     meter.Run();

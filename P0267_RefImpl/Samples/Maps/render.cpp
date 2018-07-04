@@ -15,10 +15,10 @@ Render::Render( const Model &model ):
 
 void Render::Display( io2d::output_surface &surface )
 {
-    m_Scale = (float)std::min(surface.dimensions().x(), surface.dimensions().y());    
-    m_PixelsInMeter = m_Scale / m_Model.MetricScale(); 
+    m_Scale = static_cast<float>(std::min(surface.dimensions().x(), surface.dimensions().y()));    
+    m_PixelsInMeter = static_cast<float>(m_Scale / m_Model.MetricScale()); 
     m_Matrix = io2d::matrix_2d::create_scale({m_Scale, -m_Scale}) *
-               io2d::matrix_2d::create_translate({0.f, (float)surface.dimensions().y()});
+               io2d::matrix_2d::create_translate({0.f, static_cast<float>(surface.dimensions().y())});
     
     surface.paint(m_BackgroundFillBrush);        
     DrawLanduses(surface);
@@ -187,5 +187,5 @@ static io2d::dashes RoadDashes(Model::Road::Type type)
 
 static io2d::point_2d ToPoint2D( const Model::Node &node ) noexcept
 {
-    return io2d::point_2d(node.x, node.y);
+    return io2d::point_2d(static_cast<float>(node.x), static_cast<float>(node.y));
 }

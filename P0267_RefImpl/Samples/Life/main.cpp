@@ -186,7 +186,7 @@ void GameOfLife::DrawGrid(output_surface &surface)
     }
 }
 
-int main(int argc, char **argv)
+int main(int /*argc*/, char** /*argv*/)
 {
     auto game = unique_ptr<GameOfLife>();    
     auto display = output_surface{500, 500, format::argb32, scaling::none, refresh_style::fixed, 30.f};    
