@@ -19,6 +19,7 @@ namespace std {
 					struct _Cairo_graphics_surfaces {
 						using graphics_math_type = GraphicsMath;
 						using _Graphics_surfaces_type = _Cairo_graphics_surfaces;
+						using graphics_surfaces_type = _Cairo_graphics_surfaces;
 
 						struct additional_image_file_formats {
 							const static int _Base = 10000;
@@ -230,6 +231,8 @@ namespace std {
 							using interpreted_path_data_type = _Interpreted_path_data;
 
 							static interpreted_path_data_type create_interpreted_path() noexcept;
+							static interpreted_path_data_type create_interpreted_path(const basic_bounding_box<graphics_math_type>& bb);
+							static interpreted_path_data_type create_interpreted_path(initializer_list<typename basic_figure_items<graphics_surfaces_type>::figure_item> il);
 							template <class ForwardIterator>
 							static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
 							static interpreted_path_data_type copy_interpreted_path(const interpreted_path_data_type&);

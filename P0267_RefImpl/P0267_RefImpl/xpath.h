@@ -527,6 +527,8 @@ namespace std {
 				template <class GraphicsSurfaces>
 				class basic_interpreted_path {
 				public:
+					using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
+
 					using data_type = typename GraphicsSurfaces::paths::interpreted_path_data_type;
 
 				private:
@@ -537,6 +539,8 @@ namespace std {
 					data_type& data() noexcept;
 					// Note: Can default construct. It will just be empty. To be useful it would need to be assigned to.
 					basic_interpreted_path() noexcept;
+
+					basic_interpreted_path(const basic_bounding_box<graphics_math_type>& bb);
 
 					template <class Allocator>
 					explicit basic_interpreted_path(const basic_path_builder<GraphicsSurfaces, Allocator>& pb);

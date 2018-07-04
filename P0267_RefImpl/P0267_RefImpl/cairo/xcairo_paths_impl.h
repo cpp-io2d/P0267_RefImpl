@@ -395,6 +395,17 @@ namespace std::experimental::io2d {
 				result.path = nullptr;
 				return result;
 			}
+			template <class GraphicsMath>
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::create_interpreted_path(const basic_bounding_box<GraphicsMath>& bb) {
+				using figureItem = typename basic_figure_items<graphics_surfaces_type>::figure_item;
+				//auto bbPath =
+				return create_interpreted_path({ figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::abs_new_figure>, bb.top_left()), figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::rel_line>, basic_point_2d<GraphicsMath>(bb.width(), 0.0f)), figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::rel_line>, basic_point_2d<GraphicsMath>(0.0f, bb.height())), figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::rel_line>, basic_point_2d<GraphicsMath>(-bb.width(), 0.0f)), figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::close_figure>) });
+				//return create_interpreted_path(begin(bbPath), end(bbPath));
+			}
+			template <class GraphicsMath>
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::create_interpreted_path(initializer_list<typename basic_figure_items<graphics_surfaces_type>::figure_item> il) {
+				return create_interpreted_path(begin(il), end(il));
+			}
 			template<class GraphicsMath>
 			template<class ForwardIterator>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::create_interpreted_path(ForwardIterator first, ForwardIterator last) {

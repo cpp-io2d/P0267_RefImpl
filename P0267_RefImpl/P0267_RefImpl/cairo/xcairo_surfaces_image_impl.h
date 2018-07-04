@@ -518,6 +518,7 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_image_surface(::std::string p, image_file_format iff, io2d::format fmt) {
 				::std::error_code ec;
+				ec.clear();
 				auto data = move(create_image_surface(p, iff, fmt, ec));
 				if (ec) {
 					throw ::std::system_error(ec);

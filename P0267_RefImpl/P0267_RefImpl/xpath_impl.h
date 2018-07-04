@@ -771,6 +771,10 @@ namespace std::experimental::io2d {
 			: _Data(GraphicsSurfaces::paths::create_interpreted_path()) { }
 
 		template <class GraphicsSurfaces>
+		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const basic_bounding_box<graphics_math_type>& bb)
+			: _Data (GraphicsSurfaces::paths::create_interpreted_path(bb)) { }
+
+		template <class GraphicsSurfaces>
 		template <class Allocator>
 		inline basic_interpreted_path<GraphicsSurfaces>::basic_interpreted_path(const basic_path_builder<GraphicsSurfaces, Allocator>& pb)
 			: _Data(GraphicsSurfaces::paths::create_interpreted_path(begin(pb), end(pb))) { }
