@@ -37,6 +37,7 @@ namespace std::experimental::io2d {
 				float refresh_fps = 30.0f;
 				bool redraw_required = false;
 				float elapsed_draw_time = 0.0f;
+				std::chrono::time_point<std::chrono::steady_clock> previous_time;
 			};
 			
 			template<class GraphicsMath>

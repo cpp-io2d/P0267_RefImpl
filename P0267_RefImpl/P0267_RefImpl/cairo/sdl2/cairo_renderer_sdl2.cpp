@@ -233,6 +233,11 @@ namespace std::experimental::io2d {
 			{
 				_Display_surface_data_type &data = osd->data;
 
+				auto currentTime = ::std::chrono::steady_clock::now();
+				auto elapsedTimeIncrement = static_cast<float>(::std::chrono::duration_cast<::std::chrono::nanoseconds>(currentTime - data.previous_time).count());
+				data.elapsed_draw_time += elapsedTimeIncrement;
+				data.previous_time = currentTime;
+
 				SDL_Event ev;
 				while (SDL_PollEvent(&ev)) {}
 
@@ -244,12 +249,12 @@ namespace std::experimental::io2d {
 
 				const auto desiredElapsed = 1'000'000'000.0F / data.refresh_fps;
 				if (data.rr == io2d::refresh_style::fixed) {
-					if constexpr (__EMSCRIPTEN__) {
+                    #if __EMSCRIPTEN__
 						// TODO(dludwig@pobox.com): consider redeclaring the above 'if __EMSCRIPTEN__' to 'if use_external_runloop'
 						redraw = true;
-					} else {
+                    #else
 						redraw = data.elapsed_draw_time >= desiredElapsed;
-					}
+                    #endif
 				}
 				if (redraw) {
 					if (osd->draw_callback) {
@@ -331,6 +336,7 @@ namespace std::experimental::io2d {
 				data.back_buffer = ::std::move(create_image_surface(data.back_buffer.format, data.back_buffer.dimensions.x(), data.back_buffer.dimensions.y()));
 
 				data.elapsed_draw_time = 0.0f;
+				data.previous_time = decltype(data.previous_time)();	// reset to epoch
 
 				data.redraw_required = true;
 
