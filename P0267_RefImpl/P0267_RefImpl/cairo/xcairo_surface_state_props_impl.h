@@ -11,7 +11,7 @@
 #include <sstream>
 #include <iomanip>
 
-#if !defined(__EMSCRIPTEN__)
+#ifdef _IO2D_Has_Magick
 #include <magick/api.h>
 #endif
 

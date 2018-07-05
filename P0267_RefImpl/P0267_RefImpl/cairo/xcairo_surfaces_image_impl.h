@@ -18,7 +18,7 @@ namespace std::experimental::io2d {
 				return data;
 			}
 
-#if !defined(__EMSCRIPTEN__)
+#ifdef _IO2D_Has_Magick
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -320,7 +320,7 @@ namespace std::experimental::io2d {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-#endif	// __EMSCRIPTEN__
+#endif	// _IO2D_Has_Magick
 
 			inline void _Convert_and_set_pixel_to_io2d_format(io2d::format fmt, unsigned char* mapData, int i, int j, int mapStride, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
 				switch (fmt) {
@@ -582,7 +582,7 @@ namespace std::experimental::io2d {
 				return data;
 			}
 
-#if !defined(__EMSCRIPTEN__) 
+#ifdef _IO2D_Has_Magick
 			template <class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_image_surface(::std::string p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept {
 				_Init_graphics_magic();
@@ -669,7 +669,7 @@ namespace std::experimental::io2d {
 				ec.clear();
 				return data;
 			}
-#endif	// __EMSCRIPTEN__
+#endif	// _IO2D_Has_Magick
 #endif
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::move_image_surface(image_surface_data_type&& data) noexcept {
@@ -885,7 +885,7 @@ namespace std::experimental::io2d {
 				}
 			}
 
-#if !defined(__EMSCRIPTEN__)
+#ifdef _IO2D_Has_Magick
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::save(image_surface_data_type& data, ::std::string p, image_file_format iff, error_code& ec) noexcept {
 				_Init_graphics_magic();
@@ -989,7 +989,7 @@ namespace std::experimental::io2d {
 				ec.clear();
 				return;
 			}
-#endif	// __EMSCRIPTEN__
+#endif	// _IO2D_Has_Magick
 #endif
 			template<class GraphicsMath>
 			inline io2d::format _Cairo_graphics_surfaces<GraphicsMath>::surfaces::format(const image_surface_data_type& data) noexcept {

@@ -34,6 +34,10 @@
     }
 #endif
 
+#if __has_include(<magick/api.h>)
+    #define _IO2D_Has_Magick
+#endif
+
 #if defined BUILD_IO2D_API_DLL 
 #define _IO2D_API __declspec(dllexport)
 #elif defined USE_IO2D_API_DLL

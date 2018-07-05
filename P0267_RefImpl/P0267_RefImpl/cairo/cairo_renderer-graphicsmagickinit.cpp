@@ -2,7 +2,7 @@
 #include "xcairo.h"
 #include <mutex>
 
-#if !defined(__EMSCRIPTEN__)
+#ifdef _IO2D_Has_Magick
 
 #include <magick/api.h>
 
@@ -21,4 +21,4 @@ namespace std::experimental::io2d {
 	}
 }
 
-#endif // __EMSCRIPTEN__
+#endif // _IO2D_Has_Magick
