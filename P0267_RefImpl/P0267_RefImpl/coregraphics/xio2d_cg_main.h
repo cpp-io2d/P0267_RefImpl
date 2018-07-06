@@ -15,6 +15,7 @@ using circle = basic_circle<GraphicsMath>;
 struct _GS {
 
     using graphics_math_type = GraphicsMath;
+    using graphics_surfaces_type = _GS;    
     
     static bool _Enable_HiDPI; 
     
@@ -201,6 +202,8 @@ struct paths {
     static interpreted_path_data_type create_interpreted_path() noexcept;
     template <class ForwardIterator>
     static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
+    static interpreted_path_data_type create_interpreted_path(const bounding_box& bb);
+    static interpreted_path_data_type create_interpreted_path(initializer_list<typename basic_figure_items<graphics_surfaces_type>::figure_item> il);    
     static interpreted_path_data_type copy_interpreted_path(const interpreted_path_data_type&) noexcept;
     static interpreted_path_data_type move_interpreted_path(interpreted_path_data_type&&) noexcept;
     static void destroy(interpreted_path_data_type&) noexcept;
