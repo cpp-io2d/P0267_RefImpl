@@ -3,6 +3,7 @@ project(io2d CXX)
 
 if(EMSCRIPTEN)
 	set(CMAKE_EXECUTABLE_SUFFIX ".html")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/emscripten_template_page.html" )
 endif()
 
 # add_subdirectory(DrawCPP)
