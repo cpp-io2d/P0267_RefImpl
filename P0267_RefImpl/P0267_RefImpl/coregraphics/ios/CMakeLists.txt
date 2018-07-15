@@ -18,9 +18,9 @@ target_compile_features(io2d_coregraphics_ios PUBLIC cxx_std_17)
 
 target_link_libraries(io2d_coregraphics_ios PUBLIC io2d_coregraphics)
 
-target_link_libraries(io2d_coregraphics_ios "-framework UIKit")
-target_link_libraries(io2d_coregraphics_ios "-framework Foundation")
-target_link_libraries(io2d_coregraphics_ios "-framework QuartzCore")
+target_link_libraries(io2d_coregraphics_ios PUBLIC "-framework UIKit")
+target_link_libraries(io2d_coregraphics_ios PUBLIC "-framework Foundation")
+target_link_libraries(io2d_coregraphics_ios PUBLIC "-framework QuartzCore")
 
 install(
 	TARGETS io2d_coregraphics_ios EXPORT io2d_targets

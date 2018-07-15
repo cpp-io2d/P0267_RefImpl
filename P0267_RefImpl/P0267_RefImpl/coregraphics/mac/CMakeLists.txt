@@ -18,9 +18,9 @@ target_compile_features(io2d_coregraphics_mac PUBLIC cxx_std_17)
 
 target_link_libraries(io2d_coregraphics_mac PUBLIC io2d_coregraphics)
 
-target_link_libraries(io2d_coregraphics_mac "-framework Cocoa")
-target_link_libraries(io2d_coregraphics_mac "-framework AppKit")
-target_link_libraries(io2d_coregraphics_mac "-framework CoreServices")
+target_link_libraries(io2d_coregraphics_mac PUBLIC "-framework Cocoa")
+target_link_libraries(io2d_coregraphics_mac PUBLIC "-framework AppKit")
+target_link_libraries(io2d_coregraphics_mac PUBLIC "-framework CoreServices")
 
 install(
 	TARGETS io2d_coregraphics_mac EXPORT io2d_targets

@@ -37,9 +37,9 @@ target_compile_features(io2d_coregraphics PUBLIC cxx_std_17)
 
 target_link_libraries(io2d_coregraphics PUBLIC io2d_core)
 
-target_link_libraries(io2d_coregraphics "-framework CoreFoundation")
-target_link_libraries(io2d_coregraphics "-framework ImageIO")
-target_link_libraries(io2d_coregraphics "-framework CoreGraphics")
+target_link_libraries(io2d_coregraphics PUBLIC "-framework CoreFoundation")
+target_link_libraries(io2d_coregraphics PUBLIC "-framework ImageIO")
+target_link_libraries(io2d_coregraphics PUBLIC "-framework CoreGraphics")
 
 install(
 	TARGETS io2d_coregraphics EXPORT io2d_targets
