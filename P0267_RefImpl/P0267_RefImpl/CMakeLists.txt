@@ -1,6 +1,5 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.8)
 project(io2d CXX)
-set(CMAKE_CXX_STANDARD 17)
 
 # If there's no default backend we try to set it automatically
 if( NOT DEFINED IO2D_DEFAULT )
@@ -24,7 +23,11 @@ if( NOT DEFINED IO2D_ENABLED )
 	set(IO2D_ENABLED ${IO2D_DEFAULT})
 endif()
 
-add_library(io2d
+# Core library
+# io2d_core contains backend-independent files. It is used by backends. You
+# shouldn't directly link to this library.
+
+add_library(io2d_core
 	rgba_color.cpp
 	xio2d.h
 	xbrushes.h
@@ -50,24 +53,53 @@ add_library(io2d
     xinterchangebuffer.h
 )
 
-target_include_directories(io2d PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
+target_include_directories(io2d_core PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
+target_compile_features(io2d_core PUBLIC cxx_std_17)
+
+install(
+	TARGETS io2d_core EXPORT io2d_targets
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+file(
+	GLOB IO2D_CORE_HEADERS
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+
+install(
+	FILES ${IO2D_CORE_HEADERS}
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+# User facing library
+# io2d is a user facing interface library that depends on all enabled backends
+# Usually, you want to link only to this library.
+
+add_library(io2d INTERFACE)
 
 # function that maps a backend name into it's path and library name
 function(GET_BACKEND_INFO backend_name)
 	if( ${backend_name} STREQUAL "COREGRAPHICS_MAC" )
-		set(BACKEND_PATH coregraphics/mac PARENT_SCOPE)
+		set(BACKEND_PATH1 coregraphics PARENT_SCOPE)
+		set(BACKEND_PATH2 coregraphics/mac PARENT_SCOPE)
 		set(BACKEND_LIBRARY io2d_coregraphics_mac PARENT_SCOPE)
 	elseif( ${backend_name} STREQUAL "COREGRAPHICS_IOS" )
-		set(BACKEND_PATH coregraphics/ios PARENT_SCOPE)
+		set(BACKEND_PATH1 coregraphics PARENT_SCOPE)
+		set(BACKEND_PATH2 coregraphics/ios PARENT_SCOPE)
 		set(BACKEND_LIBRARY io2d_coregraphics_ios PARENT_SCOPE)
 	elseif( ${backend_name} STREQUAL "CAIRO_XLIB" )
-		set(BACKEND_PATH cairo/xlib PARENT_SCOPE)
+		set(BACKEND_PATH1 cairo PARENT_SCOPE)
+		set(BACKEND_PATH2 cairo/xlib PARENT_SCOPE)
 		set(BACKEND_LIBRARY io2d_cairo_xlib PARENT_SCOPE)
 	elseif( ${backend_name} STREQUAL "CAIRO_WIN32" )
-		set(BACKEND_PATH cairo/win32 PARENT_SCOPE)
+		set(BACKEND_PATH1 cairo PARENT_SCOPE)
+		set(BACKEND_PATH2 cairo/win32 PARENT_SCOPE)
 		set(BACKEND_LIBRARY io2d_cairo_win32 PARENT_SCOPE)
 	else()
 		message( FATAL_ERROR "GET_BACKEND_INFO: unknown backend name" )
@@ -77,31 +109,18 @@ endfunction(GET_BACKEND_INFO)
 # fetch info about the default backend
 GET_BACKEND_INFO(${IO2D_DEFAULT})
 
-# add a search path depending on a default backend setting
-target_include_directories(io2d PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/${BACKEND_PATH}
-)
-
 # add backends themselves
 foreach(backend ${IO2D_ENABLED})
 	GET_BACKEND_INFO(${backend})
-	add_subdirectory(${BACKEND_PATH})
-	target_link_libraries(io2d ${BACKEND_LIBRARY})
+	add_subdirectory(${BACKEND_PATH1})
+	add_subdirectory(${BACKEND_PATH2})
+	target_link_libraries(io2d INTERFACE ${BACKEND_LIBRARY})
 endforeach(backend)
 
-# installation
-install(
-    TARGETS io2d
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-file(
-    GLOB IO2D_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
-)
+install(TARGETS io2d EXPORT io2d_targets)
 
-install(
-    FILES ${IO2D_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+install(EXPORT io2d_targets
+	FILE io2dConfig.cmake
+	NAMESPACE io2d::
+	DESTINATION lib/cmake/io2d
 )

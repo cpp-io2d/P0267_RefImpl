@@ -1,4 +1,3 @@
-#include "io2d.h"
 #include "xcairo.h"
 #include <mutex>
 #include <magick/api.h>
