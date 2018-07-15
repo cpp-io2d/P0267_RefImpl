@@ -41,9 +41,9 @@ if(MSVC)
 	find_library(ICONV_LIB libiconv)
 	find_library(CHARSET_LIB libcharset)
 
-	target_link_libraries(io2d_cairo_win32 ${PIXMAN_LIB} ${FREETYPE_LIB} ${FONTCONFIG_LIB} ${BZ_LIB} ${JPEG_LIB} ${TIFF_LIB} ${EXPAT_LIB} ${LZMA_LIB} ${ICONV_LIB} ${CHARSET_LIB})
-	target_link_libraries(io2d_cairo_win32 debug ${PNG_LIB_DEBUG} optimized ${PNG_LIB_RELEASE})
-	target_link_libraries(io2d_cairo_win32 debug ${ZLIB_LIB_DEBUG} optimized ${ZLIB_LIB_RELEASE})
+	target_link_libraries(io2d_cairo_win32 PUBLIC ${PIXMAN_LIB} ${FREETYPE_LIB} ${FONTCONFIG_LIB} ${BZ_LIB} ${JPEG_LIB} ${TIFF_LIB} ${EXPAT_LIB} ${LZMA_LIB} ${ICONV_LIB} ${CHARSET_LIB})
+	target_link_libraries(io2d_cairo_win32 PUBLIC debug ${PNG_LIB_DEBUG} optimized ${PNG_LIB_RELEASE})
+	target_link_libraries(io2d_cairo_win32 PUBLIC debug ${ZLIB_LIB_DEBUG} optimized ${ZLIB_LIB_RELEASE})
 endif()
  
 install(
