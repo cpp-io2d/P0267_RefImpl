@@ -22,6 +22,33 @@ namespace std::experimental::io2d {
 		namespace _Cairo {
 			// cairo_interpreted_path
             
+            enum class _Path_data_abs_new_figure {};
+            constexpr static _Path_data_abs_new_figure _Path_data_abs_new_figure_val = {};
+            enum class _Path_data_rel_new_figure {};
+            constexpr static _Path_data_rel_new_figure _Path_data_rel_new_figure_val = {};
+            enum class _Path_data_close_path {};
+            constexpr static _Path_data_close_path _Path_data_close_path_val = {};
+            enum class _Path_data_abs_matrix {};
+            constexpr static _Path_data_abs_matrix _Path_data_abs_matrix_val = {};
+            enum class _Path_data_rel_matrix {};
+            constexpr static _Path_data_rel_matrix _Path_data_rel_matrix_val = {};
+            enum class _Path_data_revert_matrix {};
+            constexpr static _Path_data_revert_matrix _Path_data_revert_matrix_val = {};
+            enum class _Path_data_abs_cubic_curve {};
+            constexpr static _Path_data_abs_cubic_curve _Path_data_abs_cubic_curve_val = {};
+            enum class _Path_data_abs_line {};
+            constexpr static _Path_data_abs_line _Path_data_abs_line_val = {};
+            enum class _Path_data_abs_quadratic_curve {};
+            constexpr static _Path_data_abs_quadratic_curve _Path_data_abs_quadratic_curve_val = {};
+            enum class _Path_data_arc {};
+            constexpr static _Path_data_arc _Path_data_arc_val = {};
+            enum class _Path_data_rel_cubic_curve {};
+            constexpr static _Path_data_rel_cubic_curve _Path_data_rel_cubic_curve_val = {};
+            enum class _Path_data_rel_line {};
+            constexpr static _Path_data_rel_line _Path_data_rel_line_val = {};
+            enum class _Path_data_rel_quadratic_curve {};
+            constexpr static _Path_data_rel_quadratic_curve _Path_data_rel_quadratic_curve_val = {};            
+            
             template <class GraphicsSurfaces, class _TItem>
             struct _Path_item_interpret_visitor {
                 constexpr static float twoThirds = 2.0F / 3.0F;

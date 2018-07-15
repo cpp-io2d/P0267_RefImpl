@@ -24,6 +24,7 @@ add_executable(tests
    	comparison.cpp
     image_io.cpp
     image_format.cpp
+    frontend_semantics.cpp
 )
 
 target_link_libraries(tests io2d Catch)
