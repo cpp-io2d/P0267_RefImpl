@@ -28,9 +28,6 @@ matrix:
     - os: osx
       compiler: clang
       osx_image: xcode9.1
-      brew_packages:
-        - libpng
-        - graphicsmagick
       before_script:
         - mkdir build
         - cd build
@@ -43,6 +40,7 @@ matrix:
         - ./macports-ci install
         - PATH="/opt/local/bin:$PATH"
         - sudo port -N -k install cairo +x11
+        - brew install graphicsmagick
 
       script:
         - export CXXFLAGS="-nostdinc++ -isystem$TRAVIS_BUILD_DIR/build/clang/include/c++/v1 -isystem/opt/X11/include -isystem/opt/local/include -isystem/usr/local/include"
