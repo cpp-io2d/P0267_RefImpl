@@ -1,3 +1,9 @@
+Note
+====
+
+In the meantime the original reference implentation referenced below has gain CMake support, and should be preferred to this fork. See more at: [https://github.com/cpp-io2d/P0267_RefImpl](https://github.com/cpp-io2d/P0267_RefImpl)
+
+
 P0267R0: A Proposal to Add 2D Graphics Rendering and Display to C++. Reference Implementation
 =============
 
