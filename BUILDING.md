@@ -63,7 +63,7 @@ Both Win32 and x64 builds are supported and being tested.
 Example of CMake execution (assuming that vcpkg was installed in c:/tools):
 ```
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
+git clone --recurse-submodules https://github.com/cpp-io2d/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
@@ -84,7 +84,7 @@ Installation steps:
 Example of CMake execution:
 ```
 export CXX=g++-7
-git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
+git clone --recurse-submodules https://github.com/cpp-io2d/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
@@ -107,7 +107,7 @@ Installation steps:
 ```
 export CXXFLAGS="$CXXFLAGS -isystem/opt/X11/include -isystem/opt/local/include -isystem/usr/local/include"
 export LDFLAGS="$LDFLAGS -L/opt/X11/lib -L/opt/local/lib -L/usr/local/lib"
-git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
+git clone --recurse-submodules https://github.com/cpp-io2d/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
@@ -125,7 +125,7 @@ Installation steps:
 
 Example of CMake execution:
 ```
-git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
+git clone --recurse-submodules https://github.com/cpp-io2d/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
@@ -145,7 +145,7 @@ Example of CMake execution:
 ```
 git clone https://github.com/leetal/ios-cmake
 ex -sc '1i|set( CXX_FLAGS "-nostdinc++ -IPathToModernLibCXX/include/c++/v1" )' -cx ios-cmake/ios.toolchain.cmake
-git clone --recurse-submodules https://github.com/mikebmcl/P0267_RefImpl
+git clone --recurse-submodules https://github.com/cpp-io2d/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
