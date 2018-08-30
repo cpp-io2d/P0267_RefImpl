@@ -26,8 +26,7 @@ target_link_libraries(io2d_cairo PUBLIC io2d_core)
 if(MSVC)
 	find_path(CAIRO_INCLUDE_DIR cairo.h)
 	find_path(GRAPHICSMAGICK_INCLUDE_DIR magick/api.h)
-	find_library(CAIRO_LIB_DEBUG cairod)
-	find_library(CAIRO_LIB_RELEASE cairo)
+	find_library(CAIRO_LIB cairo)
 	find_library(GRAPHICSMAGICK_LIB graphicsmagick)
 elseif(APPLE)
 	find_path(CAIRO_INCLUDE_DIR cairo-xlib.h PATH_SUFFIXES cairo)
@@ -45,11 +44,7 @@ target_include_directories(io2d_cairo SYSTEM PUBLIC ${CAIRO_INCLUDE_DIR} ${GRAPH
 
 target_link_libraries(io2d_cairo PUBLIC ${GRAPHICSMAGICK_LIB})
 
-if(MSVC)
-	target_link_libraries(io2d_cairo PUBLIC debug ${CAIRO_LIB_DEBUG} optimized ${CAIRO_LIB_RELEASE})
-else()
-	target_link_libraries(io2d_cairo PUBLIC ${CAIRO_LIB})
-endif()
+target_link_libraries(io2d_cairo PUBLIC ${CAIRO_LIB})
 
 install(
 	TARGETS io2d_cairo EXPORT io2d_targets
