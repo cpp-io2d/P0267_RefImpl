@@ -46,7 +46,12 @@ target_include_directories(io2d_cairo SYSTEM PUBLIC ${CAIRO_INCLUDE_DIR} ${GRAPH
 target_link_libraries(io2d_cairo PUBLIC ${GRAPHICSMAGICK_LIB})
 
 if(MSVC)
-	target_link_libraries(io2d_cairo PUBLIC debug ${CAIRO_LIB_DEBUG} optimized ${CAIRO_LIB_RELEASE})
+	if(CAIRO_LIB_DEBUG STREQUAL "CAIRO_LIB_DEBUG-NOTFOUND")
+		message(STATUS "io2d: Can't find Debug build of Cairo. Will try to use Release build, instead.")
+		target_link_libraries(io2d_cairo PUBLIC ${CAIRO_LIB_RELEASE})
+	else()
+		target_link_libraries(io2d_cairo PUBLIC debug ${CAIRO_LIB_DEBUG} optimized ${CAIRO_LIB_RELEASE})
+	endif()
 else()
 	target_link_libraries(io2d_cairo PUBLIC ${CAIRO_LIB})
 endif()
