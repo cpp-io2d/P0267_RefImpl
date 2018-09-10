@@ -21,6 +21,10 @@ For GNU/Linux platforms, it currently requires a non-ancient version of GNU auto
 
 For OS X, I have tested it on High Sierra using X11 and MacPorts (with the relevant dependencies).
 
+Namespace
+-------------
+The implementation lives in the std::experimental namespace. As per 15.5.4.2.1 of the C++ standard: "Unless otherwise specified, the behavior of a C++ program is undefined if it adds declarations or definitions to namespace std or to a namespace within namespace std." Proceed at your own risk!
+
 Feedback
 -------------
 If you have found a bug in the reference implementation or have a suggestion for improving P0267 please read the following. Note that any contributions must comply with the ISO patent and copyright policy, an overview of which is available in the ISO document [Participating in International Standardization](http://www.iso.org/iso/joining_in_2012.pdf).
