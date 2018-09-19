@@ -1,12 +1,12 @@
-[submodule "P0267_RefImpl/Samples/SVG/external/svgpp"]
-	path = P0267_RefImpl/Samples/SVG/external/svgpp
+[submodule "P0267_RefImpl/Samples/svg/external/svgpp"]
+	path = P0267_RefImpl/Samples/svg/external/svgpp
 	url = https://github.com/svgpp/svgpp
-[submodule "P0267_RefImpl/Samples/SVG/external/rapidxml_ns"]
-	path = P0267_RefImpl/Samples/SVG/external/rapidxml_ns
+[submodule "P0267_RefImpl/Samples/svg/external/rapidxml_ns"]
+	path = P0267_RefImpl/Samples/svg/external/rapidxml_ns
 	url = https://github.com/svgpp/rapidxml_ns
 [submodule "P0267_RefImpl/Tests/Catch2"]
 	path = P0267_RefImpl/Tests/Catch2
 	url = https://github.com/catchorg/Catch2
-[submodule "P0267_RefImpl/Samples/Maps/external/pugixml"]
-	path = P0267_RefImpl/Samples/Maps/external/pugixml
+[submodule "P0267_RefImpl/Samples/maps/external/pugixml"]
+	path = P0267_RefImpl/Samples/maps/external/pugixml
 	url = https://github.com/zeux/pugixml
