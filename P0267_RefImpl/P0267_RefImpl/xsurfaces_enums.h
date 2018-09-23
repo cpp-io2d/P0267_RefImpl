@@ -63,10 +63,8 @@ namespace std {
 				enum class format {
 					invalid,
 					argb32,
-					rgb24,
+					xrgb32,
 					a8,
-					rgb16_565,
-					rgb30
 				};
 
 				enum class scaling {

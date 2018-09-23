@@ -1,7 +1,7 @@
 #ifndef _IO2D_CG_MAIN_H_
 #define _IO2D_CG_MAIN_H_
 
-#include <xio2d.h>
+#include "xio2d.h"
 #include <CoreGraphics/CoreGraphics.h>
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
@@ -14,7 +14,10 @@ using circle = basic_circle<GraphicsMath>;
     
 struct _GS {
 
-using graphics_math_type = GraphicsMath;
+    using graphics_math_type = GraphicsMath;
+    using graphics_surfaces_type = _GS;    
+    
+    static bool _Enable_HiDPI; 
     
 struct paths {
     struct _AbsNewFigure {
@@ -199,6 +202,8 @@ struct paths {
     static interpreted_path_data_type create_interpreted_path() noexcept;
     template <class ForwardIterator>
     static interpreted_path_data_type create_interpreted_path(ForwardIterator first, ForwardIterator last);
+    static interpreted_path_data_type create_interpreted_path(const bounding_box& bb);
+    static interpreted_path_data_type create_interpreted_path(initializer_list<typename basic_figure_items<graphics_surfaces_type>::figure_item> il);    
     static interpreted_path_data_type copy_interpreted_path(const interpreted_path_data_type&) noexcept;
     static interpreted_path_data_type move_interpreted_path(interpreted_path_data_type&&) noexcept;
     static void destroy(interpreted_path_data_type&) noexcept;
@@ -465,6 +470,6 @@ struct surfaces {
 #include "xio2d_cg_paths.h"
 #include "xio2d_cg_paths_figures.h"
 #include "xio2d_cg_surface_state_props.h"
-#include "xio2d_cg_output_surfaces.h"
+//#include "xio2d_cg_output_surfaces.h"
 
 #endif // _IO2D_CG_MAIN_H_

@@ -215,9 +215,6 @@ namespace std::experimental::io2d {
 		};
 
 		template <class GraphicsSurfaces>
-		basic_image_surface<GraphicsSurfaces> copy_image_surface(basic_image_surface<GraphicsSurfaces>& sfc) noexcept;
-
-		template <class GraphicsSurfaces>
 		class basic_output_surface {
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
@@ -366,5 +363,15 @@ namespace std::experimental::io2d {
 			optional<basic_brush_props<GraphicsSurfaces>> letterbox_brush_props() const noexcept;
 			bool auto_clear() const noexcept;
 		};
+
+		template <class GraphicsSurfaces>
+		basic_image_surface<GraphicsSurfaces> copy_surface(basic_image_surface<GraphicsSurfaces>& sfc) noexcept;
+
+		template <class GraphicsSurfaces>
+		basic_image_surface<GraphicsSurfaces> copy_surface(basic_output_surface<GraphicsSurfaces>& sfc) noexcept;
+
+		template <class GraphicsSurfaces>
+		basic_image_surface<GraphicsSurfaces> copy_surface(basic_unmanaged_output_surface<GraphicsSurfaces>& sfc) noexcept;
+
 	}
 }

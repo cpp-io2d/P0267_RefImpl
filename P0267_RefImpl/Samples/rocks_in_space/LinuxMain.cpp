@@ -29,7 +29,7 @@ void RunAsteroids()
     display.begin_show();
 }
 
-int main(int argc, const char * argv[])
+int main(int /*argc*/, const char** /*argv*/)
 {
     RunAsteroids();
     return 0;

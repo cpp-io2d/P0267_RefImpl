@@ -40,23 +40,14 @@ rocks_in_space::ship_update rocks_in_space::ship::update(float seconds)
 	}
 	case ship_state::active:
 	{
-		if (do_anti_clockwise())
-		{
-			m_physics.apply_spin(spin_left * seconds);
-		}
-		if (do_clockwise())
-		{
-			m_physics.apply_spin(spin_right * seconds);
-		}
-		if (do_thrust())
-		{
-			m_physics.apply_thrust(thrust * seconds);
-		}
-		m_physics.update(seconds);
+        auto spin_val = do_anti_clockwise() ? spin_left
+                      : (do_clockwise() ? spin_right : 0.0f);
+        auto thrust_val = do_thrust() ? thrust : 0.0f;
+		m_physics.update(spin_val, thrust_val, seconds);
 
 		std::transform( std::begin(ship_vb), std::next(std::begin(ship_vb), ship_shape.m_count), std::begin(m_path.m_vertices), [&](const auto & v_in)
 		{
-			return rotate(v_in, m_physics.orientation(), { 0.0, 0.0 });
+			return rotate(v_in, m_physics.orientation(), { 0.0f, 0.0f });
 		});
 		return{ do_fire(), m_physics.position(), m_physics.orientation(), m_path };
 	}
@@ -65,7 +56,7 @@ rocks_in_space::ship_update rocks_in_space::ship::update(float seconds)
 		auto now = std::chrono::steady_clock::now();
 		if (std::chrono::duration_cast<std::chrono::seconds>(now - m_state_change).count() > destruct_period)
 		{
-			m_physics.reset(physics{ point_2d{ playing_field_width / 2, playing_field_height / 2 },{ point_2d{ 0, 0 } } }, point_2d{ 0.0f, 0.0f }, 0.0f);
+			m_physics.reset(physics{ point_2d{ playing_field_width / 2, playing_field_height / 2 },{ point_2d{ 0, 0 } } }, 0.0f);
 			m_state = ship_state::waiting;
 			m_state_change = now;
 		}

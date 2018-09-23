@@ -193,7 +193,7 @@ auto & display() {
 
 static auto game = unique_ptr<GameOfLife>();    
 
-int main(int argc, char **argv)
+int main(int /*argc*/, char** /*argv*/)
 {
     display().size_change_callback([&](output_surface& surface){
         surface.dimensions(surface.display_dimensions());

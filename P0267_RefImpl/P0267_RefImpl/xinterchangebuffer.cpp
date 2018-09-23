@@ -34,7 +34,7 @@ static int DefaultStride(int width, _Interchange_buffer::pixel_layout layout)
     return BytesPerPixel(layout) * width;
 }
 
-static void Copy( std::byte *target, int target_stride, const std::byte *source, int width, int height, int source_stride )
+static void Copy( std::byte *target, int target_stride, const std::byte *source, int /*width*/, int height, int source_stride )
 {
     if( target_stride == source_stride )
         std::copy( source, source + source_stride * height, target );
@@ -155,9 +155,9 @@ static std::array<float, 4> ExtractFloatRGBA(const std::byte *source,
         }
         case _Interchange_buffer::pixel_layout::a8: {
             auto p = *(const uint8_t *)source;
-            r = 1.f;
-            g = 1.f;
-            b = 1.f;
+            r = 0.f;
+            g = 0.f;
+            b = 0.f;
             a = float(p)/255.f;
             break;
         }    

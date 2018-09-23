@@ -336,7 +336,7 @@ namespace std::experimental::io2d {
 					mapData[index + 2] = red;
 					mapData[index + 3] = alpha;
 				} break;
-				case std::experimental::io2d::v1::format::rgb24:
+				case std::experimental::io2d::v1::format::xrgb32:
 				{
 					const auto index = i * mapStride + j * 4;
 					mapData[index + 0] = blue;
@@ -348,26 +348,6 @@ namespace std::experimental::io2d {
 				{
 					const auto index = i * mapStride + j;
 					mapData[index + 0] = alpha;
-				} break;
-				case std::experimental::io2d::v1::format::rgb16_565:
-				{
-					const auto index = i * mapStride + j * 2;
-					blue = static_cast<unsigned char>(blue / 255.0F * 31.0F + 0.5F);
-					green = static_cast<unsigned char>(green / 255.0F * 63.0F + 0.5F);
-					red = static_cast<unsigned char>(red / 255.0F * 31.0F + 0.5F);
-					mapData[index + 0] = static_cast<unsigned char>(((blue & 0b00011111)) | ((green & 0b00000111) << 5));
-					mapData[index + 1] = static_cast<unsigned char>(((green & 0b00111000) >> 3) | ((red & 0b00011111) << 3));
-				} break;
-				case std::experimental::io2d::v1::format::rgb30:
-				{
-					const auto index = i * mapStride + j * 4;
-					const unsigned short blueTen = static_cast<unsigned short>(blue / 255.0f * 0b1111111111);
-					const unsigned short greenTen = static_cast<unsigned short>(green / 255.0f * 0b1111111111);
-					const unsigned short redTen = static_cast<unsigned short>(red / 255.0f * 0b1111111111);
-					mapData[index + 0] = static_cast<unsigned char>(blueTen & 0b11111111);
-					mapData[index + 1] = static_cast<unsigned char>(((blueTen & 0b1100000000) >> 8) | ((greenTen & 0b111111) << 2));
-					mapData[index + 2] = static_cast<unsigned char>(((greenTen & 0b1111000000) >> 6) | ((redTen & 0b1111) << 4));
-					mapData[index + 3] = static_cast<unsigned char>(((redTen & 0b1111110000) >> 4) | (0 << 6));
 				} break;
 				default:
 				{
@@ -405,7 +385,7 @@ namespace std::experimental::io2d {
 						}
 					}
 				} break;
-				case std::experimental::io2d::v1::format::rgb24:
+				case std::experimental::io2d::v1::format::xrgb32:
 				{
 					for (int i = 0; i < h; i++) {
 						for (int j = 0; j < w; j++) {
@@ -430,39 +410,6 @@ namespace std::experimental::io2d {
 							pixel[ppIndex + 1] = pixVal;
 							pixel[ppIndex + 2] = pixVal;
 							pixel[ppIndex + 3] = pixVal;
-						}
-					}
-				} break;
-				case std::experimental::io2d::v1::format::rgb16_565:
-				{
-					for (int i = 0; i < h; i++) {
-						for (int j = 0; j < w; j++) {
-							const auto ppIndex = i * w * 4 + j * 4;
-							const auto mapIndex = i * mapStride + j * 2;
-							pixel[ppIndex + 0] = static_cast<result_type>(((mapData[mapIndex + 0] & 0b11111) / static_cast<float>(0b11111)) * maxChannelSize);
-							pixel[ppIndex + 1] = static_cast<result_type>((((mapData[mapIndex + 0] & 0b11100000) >> 5) | ((mapData[mapIndex + 1] & 0b111) << 3)) / static_cast<float>(0b111111) * maxChannelSize);
-							pixel[ppIndex + 2] = static_cast<result_type>((((mapData[mapIndex + 1] & 0b11111000) >> 3) / static_cast<float>(0b11111)) * maxChannelSize);
-							pixel[ppIndex + 3] = static_cast<result_type>(maxChannelSize);
-						}
-					}
-				} break;
-				case std::experimental::io2d::v1::format::rgb30:
-				{
-					for (int i = 0; i < h; i++) {
-						for (int j = 0; j < w; j++) {
-							const auto ppIndex = i * w * 4 + j * 4;
-							const auto mapIndex = i * mapStride + j * 4;
-							const auto tenBitsAsFloat = static_cast<float>(0b1111111111);
-
-							const auto map0 = static_cast<unsigned short>(mapData[mapIndex + 0]);
-							const auto map1 = static_cast<unsigned short>(mapData[mapIndex + 1]);
-							const auto map2 = static_cast<unsigned short>(mapData[mapIndex + 2]);
-							const auto map3 = static_cast<unsigned short>(mapData[mapIndex + 3]);
-
-							pixel[ppIndex + 0] = static_cast<result_type>(((map0 & 0b11111111) | ((map1 & 0b11) << 8)) / tenBitsAsFloat * maxChannelSize);
-							pixel[ppIndex + 1] = static_cast<result_type>((((map1 & 0b11111100) >> 2) | ((map2 & 0b1111) << 6)) / tenBitsAsFloat * maxChannelSize);
-							pixel[ppIndex + 2] = static_cast<result_type>((((map2 & 0b11110000) >> 4) | ((map3 & 0b111111) << 4)) / tenBitsAsFloat * maxChannelSize);
-							pixel[ppIndex + 3] = static_cast<result_type>(maxChannelSize);
 						}
 					}
 				} break;
@@ -575,6 +522,7 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_image_surface(::std::string p, image_file_format iff, io2d::format fmt) {
 				::std::error_code ec;
+				ec.clear();
 				auto data = move(create_image_surface(p, iff, fmt, ec));
 				if (ec) {
 					throw ::std::system_error(ec);
@@ -1093,8 +1041,8 @@ namespace std::experimental::io2d {
                         src_layout = _Interchange_buffer::pixel_layout::b8g8r8a8;
                         src_alpha = _Interchange_buffer::alpha_mode::premultiplied;
                         break;
-                    case format::rgb16_565:
-                        src_layout = _Interchange_buffer::pixel_layout::b5g6r5;
+                    case format::xrgb32:
+                        src_layout = _Interchange_buffer::pixel_layout::b8g8r8a8;
                         src_alpha = _Interchange_buffer::alpha_mode::ignore;
                         break;
                     case format::a8:

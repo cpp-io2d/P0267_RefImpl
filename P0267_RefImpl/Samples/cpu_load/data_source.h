@@ -19,10 +19,10 @@ public:
 private:
     void Consume(const std::vector<float> &loads);
     static void Smooth(std::deque<float> &data);
-    
-    int m_MaxSamples;
+	using sample_t = std::deque<float>;
+    typename sample_t::size_type m_MaxSamples;
     int m_Cores;
-    std::vector<std::deque<float>> m_Samples;
+    std::vector<sample_t> m_Samples;
     std::chrono::milliseconds m_FetchInterval;
     std::chrono::high_resolution_clock::time_point m_LastFetched;    
 };

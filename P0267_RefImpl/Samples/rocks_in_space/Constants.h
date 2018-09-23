@@ -20,7 +20,7 @@ namespace rocks_in_space
 
 	constexpr auto spin_left{ std::experimental::io2d::tau<float> };
 	constexpr auto spin_right{ -std::experimental::io2d::tau<float> };
-	constexpr auto thrust{ 90000.0F };
+	constexpr auto thrust{ 150.0F };
 	constexpr auto max_ship_speed{ 300.0F };
 
 	constexpr auto missile_speed{ 250.0F };

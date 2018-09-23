@@ -34,6 +34,10 @@ TEST_CASE("IO2D properly strokes a rectangle")
         pb.close_figure();
         image.stroke(b, pb);
     }
+    
+    SECTION("Draw via bounding box") {
+        image.stroke(b, interpreted_path(bounding_box{50.f, 50.f, 200.f, 100.f}));
+    }
 
     SECTION("Draw via rel_lines with a translate matrix") {
         auto pb = path_builder{};

@@ -117,19 +117,12 @@ namespace std {
 
 				template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
 				inline constexpr rgba_color& rgba_color::operator*=(T rhs) noexcept {
-					r(::std::min(r() * rhs / 255.0F, 1.0F));
-					g(::std::min(g() * rhs / 255.0F, 1.0F));
-					b(::std::min(b() * rhs / 255.0F, 1.0F));
-					a(::std::min(a() * rhs / 255.0F, 1.0F));
-					return *this;
-				}
+                    return *this = (*this * rhs);
+                }
+                
 				template <class U, ::std::enable_if_t<::std::is_floating_point_v<U>, _Color_is_floating>>
 				inline constexpr rgba_color& rgba_color::operator*=(U rhs) noexcept {
-					r(::std::min(r() * rhs, 1.0F));
-					g(::std::min(g() * rhs, 1.0F));
-					b(::std::min(b() * rhs, 1.0F));
-					a(::std::min(a() * rhs, 1.0F));
-					return *this;
+                    return *this = (*this * rhs); 
 				}
 
 				inline constexpr bool operator==(const rgba_color& lhs, const rgba_color& rhs) noexcept {
@@ -141,46 +134,28 @@ namespace std {
 
 				template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
 				inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) noexcept {
-					rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
+                    auto m = ::std::max(::std::min(static_cast<float>(rhs), 1.0F), 0.0F);
 					return{
-						::std::min(lhs.r() * rhs, 1.0F),
-						::std::min(lhs.g() * rhs, 1.0F),
-						::std::min(lhs.b() * rhs, 1.0F),
-						::std::min(lhs.a() * rhs, 1.0F)
+                        ::std::min(lhs.r() * m, 1.0F),
+                        ::std::min(lhs.g() * m, 1.0F),
+                        ::std::min(lhs.b() * m, 1.0F),
+                        ::std::min(lhs.a() * m, 1.0F)
 					};
 				}
 
 				template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
 				inline constexpr rgba_color operator*(const rgba_color& lhs, T rhs) noexcept {
-					rhs = ::std::max(::std::min(rhs, 1.0F), 0.0F);
-					return{
-						::std::min(lhs.r() * rhs / 255.0F, 1.0F),
-						::std::min(lhs.g() * rhs / 255.0F, 1.0F),
-						::std::min(lhs.b() * rhs / 255.0F, 1.0F),
-						::std::min(lhs.a() * rhs / 255.0F, 1.0F)
-					};
+                    return lhs * (rhs / 255.0F);
 				}
 
 				template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _Color_is_floating>>
 				inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) noexcept {
-					lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
-					return{
-						::std::min(lhs * rhs.r(), 1.0F),
-						::std::min(lhs * rhs.g(), 1.0F),
-						::std::min(lhs * rhs.b(), 1.0F),
-						::std::min(lhs * rhs.a(), 1.0F)
-					};
+                    return rhs * lhs;
 				}
 
 				template <class T, ::std::enable_if_t<::std::is_integral_v<T>, _Color_is_integral>>
 				inline constexpr rgba_color operator*(T lhs, const rgba_color& rhs) noexcept {
-					lhs = ::std::max(::std::min(lhs, 1.0F), 0.0F);
-					return{
-						::std::min(lhs / 255.0F * rhs.r(), 1.0F),
-						::std::min(lhs / 255.0F * rhs.g(), 1.0F),
-						::std::min(lhs / 255.0F * rhs.b(), 1.0F),
-						::std::min(lhs / 255.0F * rhs.a(), 1.0F)
-					};
+                    return rhs * lhs;
 				}
 
 				inline rgba_color rgba_from_HSL(float hue, float saturation, float luminescence) noexcept

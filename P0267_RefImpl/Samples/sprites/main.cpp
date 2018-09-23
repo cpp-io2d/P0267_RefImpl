@@ -44,7 +44,7 @@ bool IsVisible(const Cat &cat, display_point image_dimenstions, display_point ou
            inside(point_2d{(float)image_dimenstions.x(), (float)image_dimenstions.y()} * mat);
 }
 
-path_builder ImagePath( display_point image_dimenstions, matrix_2d mat )
+path_builder ImagePath( display_point image_dimenstions, matrix_2d /*mat*/ )
 {
     auto pb = path_builder{};
     pb.new_figure({0.f, 0.f});
@@ -150,7 +150,7 @@ Cat SpawnCat( display_point output_size )
     return cat;
 }
 
-int main(int argc, char *argv[]) {    
+int main(int /*argc*/, char *argv[]) {    
     auto image = [&]{
         try {
             return image_surface{"cat.jpg", image_file_format::jpeg, format::argb32};            

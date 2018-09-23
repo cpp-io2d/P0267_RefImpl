@@ -13,7 +13,6 @@ rocks_in_space::game::game()
 	//, m_lives{ 0 }
 	, m_ship(controllable_physics{
 	physics{ point_2d{ playing_field_width / 2, playing_field_height / 2 },{ point_2d{ 0, 0 } } },
-	point_2d{ 0.0f, 0.0f },
 	0.0f })
 	//, m_ship_missile_count{ 0 }
 	, m_next_ship_missile(0)

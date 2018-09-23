@@ -7,8 +7,11 @@
 #include "xio2d_cg_gradient.h"
 #include "xio2d_cg_colors.h"
 #include "xio2d_cg_texture.h"
+#include "xio2d_cg_tmplayer.h"
 
 namespace std::experimental::io2d { inline namespace v1 { namespace _CoreGraphics {
+    
+bool _GS::_Enable_HiDPI = true;    
     
 static void SetStrokeProps( CGContextRef ctx, const basic_stroke_props<_GS>& sp ) noexcept;
 static void SetDashProps( CGContextRef ctx, const basic_dashes<_GS>& d ) noexcept;
@@ -26,14 +29,10 @@ CGContextRef _CreateBitmap(io2d::format fmt, int width, int height) noexcept
 #else
             return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageByteOrder32Little | kCGImageAlphaPremultipliedFirst);            
 #endif            
-        case format::rgb24:
-            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaNoneSkipFirst);
-        case format::rgb30:
-            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageAlphaNoneSkipFirst);
+        case format::xrgb32:
+            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _RGBColorSpace(), kCGImageByteOrder32Little | kCGImageAlphaNoneSkipFirst);
         case format::a8:
-            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _GrayColorSpace(), kCGImageAlphaOnly);
-        case format::rgb16_565:
-            return CGBitmapContextCreate(nullptr, width, height, 5, 0, _RGBColorSpace(), kCGImageAlphaNoneSkipFirst);
+            return CGBitmapContextCreate(nullptr, width, height, 8, 0, _GrayColorSpace(), kCGImageAlphaOnly);            
         default:
             return nullptr;
     }
@@ -241,12 +240,10 @@ void _Mask(CGContextRef ctx,
     }
     
     // This is a preliminary and kinda brute-force implementation of a complex Mask operation, made mostly to serve as a proof-of-concept.
-    auto layer = CGLayerCreateWithContext(ctx, clip_rc.size, nullptr);
-    _AutoRelease layer_release{layer};
+    auto layer = _TmpLayer{ctx, clip_rc};
+    auto layer_ctx = layer.GetContext();
     
-    auto layer_ctx = CGLayerGetContext(layer);
     CGContextSetShouldAntialias(layer_ctx, rp.antialiasing() != antialias::none);    
-    CGContextTranslateCTM(layer_ctx, -clip_rc.origin.x, -clip_rc.origin.y);
     CGContextConcatCTM(layer_ctx, _ToCG(rp.surface_matrix()));    
 
     CGContextSetBlendMode(layer_ctx, kCGBlendModeCopy);
@@ -277,8 +274,6 @@ void _Mask(CGContextRef ctx,
             _DrawTexture(layer_ctx, surface_brush, mp.filter(), mp.wrap_mode(), mp.mask_matrix());
         } 
     }
-        
-    CGContextDrawLayerAtPoint(ctx, clip_rc.origin, layer);
 }
 
 static void SetClipProps( CGContextRef ctx, const basic_clip_props<_GS>& cp ) noexcept {
@@ -420,6 +415,10 @@ _Interchange_buffer _CopyToInterchangeBuffer(CGContextRef ctx, _Interchange_buff
     
     if( bpp == 32 && bpc == 8 ) {
         const bool little_order = (bitmap_info & kCGImageByteOrderMask) == kCGImageByteOrder32Little;
+        const bool has_alpha = (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaPremultipliedLast ||
+                               (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaPremultipliedFirst ||
+                               (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaLast ||
+                               (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaFirst;        
         const bool alpha_first = (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaFirst ||
                                  (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaPremultipliedFirst ||
                                  (bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaNoneSkipFirst;
@@ -432,11 +431,16 @@ _Interchange_buffer _CopyToInterchangeBuffer(CGContextRef ctx, _Interchange_buff
         else if( !little_order && !alpha_first )
             src_layout = _Interchange_buffer::pixel_layout::a8r8g8b8;
         else 
-            src_layout = _Interchange_buffer::pixel_layout::r8g8b8a8;
+            src_layout = _Interchange_buffer::pixel_layout::a8r8g8b8;            
 
-        const auto src_alpha = InterchangeBufferAlphaFromBitmapInfo(bitmap_info);       
+        const auto src_alpha = has_alpha ? 
+            InterchangeBufferAlphaFromBitmapInfo(bitmap_info) :
+            _Interchange_buffer::alpha_mode::ignore;
 
-        return _Interchange_buffer{layout, alpha, data, src_layout, src_alpha, int(width), int(height), int(stride) };        
+        return _Interchange_buffer{layout, alpha, data, src_layout, src_alpha, int(width), int(height), int(stride) };
+    }
+    else if( bpp == 8 && bpc == 8 ) {
+        return _Interchange_buffer{layout, alpha, data, _Interchange_buffer::pixel_layout::a8, _Interchange_buffer::alpha_mode::straight, int(width), int(height), int(stride) };        
     }
     else {
         throw make_error_code(errc::not_supported);

@@ -15,12 +15,14 @@ struct _PathInterperationContext {
     void Insert( const basic_figure_items<_GS>::figure_item &figure );
 };
 
-inline _GS::paths::interpreted_path_data_type _GS::paths::create_interpreted_path() noexcept {
+inline _GS::paths::interpreted_path_data_type
+_GS::paths::create_interpreted_path() noexcept {
     return {};
 }
 
 template <class ForwardIterator>
-inline _GS::paths::interpreted_path_data_type _GS::paths::create_interpreted_path(ForwardIterator first, ForwardIterator last) {
+inline _GS::paths::interpreted_path_data_type
+_GS::paths::create_interpreted_path(ForwardIterator first, ForwardIterator last) {
     _PathInterperationContext context;
     for(; first != last; ++first )
         context.Insert( *first );    
@@ -28,7 +30,28 @@ inline _GS::paths::interpreted_path_data_type _GS::paths::create_interpreted_pat
     data.path = shared_ptr<typename interpreted_path_data_type::path_t>(context.path, CGPathRelease);
     return data;
 }
+    
+inline _GS::paths::interpreted_path_data_type
+_GS::paths::create_interpreted_path(const bounding_box& bb) {
+    using bf = basic_figure_items<graphics_surfaces_type>;
+    using fi = typename bf::figure_item;
+    initializer_list<fi> il = {
+        fi(bf::abs_new_figure(bb.top_left())),
+        fi(bf::rel_line({bb.width(), 0})),
+        fi(bf::rel_line({0, bb.height()})),
+        fi(bf::rel_line({-bb.width(), 0})),
+        fi(bf::rel_line({0, -bb.height()})),
+        fi(bf::close_figure{})
+    };
+    return create_interpreted_path(il);
+}
 
+inline _GS::paths::interpreted_path_data_type
+_GS::paths::create_interpreted_path(initializer_list<typename basic_figure_items<graphics_surfaces_type>::figure_item> il)
+{
+    return create_interpreted_path(begin(il), end(il));
+}    
+    
 inline _GS::paths::interpreted_path_data_type
 _GS::paths::copy_interpreted_path(const interpreted_path_data_type& data) noexcept {
     return data;

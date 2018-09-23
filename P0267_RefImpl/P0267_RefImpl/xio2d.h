@@ -103,22 +103,22 @@ namespace std {
 				enum class _To_degrees_sfinae {};
 				constexpr static _To_degrees_sfinae _To_degrees_sfinae_val = {};
 
-				template <class T, ::std::enable_if_t<::std::is_arithmetic_v<T>, _To_radians_sfinae> = _To_radians_sfinae_val>
-				constexpr float to_radians(T deg) noexcept {
-					auto angle = static_cast<float>(deg) / 360.0F * two_pi<float>;
-					float oneThousandthOfADegreeInRads = pi<float> / 180'000.0F;
-					if (((angle > 0.0F) && (angle < oneThousandthOfADegreeInRads)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegreeInRads))) {
-						return (angle < 0.0F) ? -0.0F : 0.0F;
+				template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _To_radians_sfinae> = _To_radians_sfinae_val>
+				constexpr T degrees_to_radians(T deg) noexcept {
+					auto angle = deg / static_cast<T>(360.0L) * two_pi<T>;
+					T oneThousandthOfADegreeInRads = pi<T> / static_cast<T>(180'000.0L);
+					if (((angle > static_cast<T>(0.0L)) && (angle < oneThousandthOfADegreeInRads)) || ((angle < static_cast<T>(0.0L)) && (-angle < oneThousandthOfADegreeInRads))) {
+						return (angle < static_cast<T>(0.0L)) ? static_cast<T>(-0.0L) : static_cast<T>(0.0L);
 					}
 					return angle;
 				}
 
-				template <class T, ::std::enable_if_t<::std::is_arithmetic_v<T>, _To_degrees_sfinae> = _To_degrees_sfinae_val>
-				constexpr float to_degrees(T rad) noexcept {
+				template <class T, ::std::enable_if_t<::std::is_floating_point_v<T>, _To_degrees_sfinae> = _To_degrees_sfinae_val>
+				constexpr T radians_to_degrees(T rad) noexcept {
 					auto angle = static_cast<float>(rad) / two_pi<float> * 360.0F;
-					float oneThousandthOfADegree = 0.001F;
-					if (((angle > 0.0F) && (angle < oneThousandthOfADegree)) || ((angle < 0.0F) && (-angle < oneThousandthOfADegree))) {
-						return (angle < 0.0F) ? -0.0F : 0.0F;
+					T oneThousandthOfADegree = static_cast<T>(0.001L);
+					if (((angle > static_cast<T>(0.0L)) && (angle < oneThousandthOfADegree)) || ((angle < static_cast<T>(0.0L)) && (-angle < oneThousandthOfADegree))) {
+						return (angle < static_cast<T>(0.0L)) ? -static_cast<T>(0.0L) : static_cast<T>(0.0L);
 					}
 					return angle;
 				}

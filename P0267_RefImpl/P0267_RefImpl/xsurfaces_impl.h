@@ -143,17 +143,18 @@ namespace std {
 				}
 
 				template<class GraphicsSurfaces>
-				inline basic_image_surface<GraphicsSurfaces> copy_image_surface(basic_image_surface<GraphicsSurfaces>& sfc) noexcept {
-					basic_image_surface<GraphicsSurfaces> retSfc(sfc.format(), sfc.dimensions().x(), sfc.dimensions().y());
-					auto srcSfc = cairo_surface_map_to_image(sfc.data().surface.get(), nullptr);
-					auto destSfc = cairo_surface_map_to_image(retSfc.data().surface.get(), nullptr);
-					auto srcSize = cairo_image_surface_get_height(srcSfc) * cairo_image_surface_get_stride(srcSfc);
-					auto srcData = cairo_image_surface_get_data(srcSfc);
-					auto destData = cairo_image_surface_get_data(destSfc);
-					memcpy(destData, srcData, srcSize);
-					cairo_surface_unmap_image(retSfc.data().surface.get(), destSfc);
-					cairo_surface_unmap_image(sfc.data().surface.get(), srcSfc);
-					return retSfc;
+				inline basic_image_surface<GraphicsSurfaces> copy_surface(basic_image_surface<GraphicsSurfaces>& sfc) noexcept {
+					return GraphicsSurfaces::surfaces::copy_surface(sfc);
+				}
+
+				template<class GraphicsSurfaces>
+				inline basic_image_surface<GraphicsSurfaces> copy_surface(basic_output_surface<GraphicsSurfaces>& sfc) noexcept {
+					return GraphicsSurfaces::surfaces::copy_surface(sfc);
+				}
+
+				template<class GraphicsSurfaces>
+				inline basic_image_surface<GraphicsSurfaces> copy_surface(basic_unmanaged_output_surface<GraphicsSurfaces>& sfc) noexcept {
+					return GraphicsSurfaces::surfaces::copy_surface(sfc);
 				}
 
 				// output surface

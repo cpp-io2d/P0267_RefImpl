@@ -99,6 +99,33 @@ namespace std::experimental::io2d {
 				return basic_display_point<GraphicsMath>(16384, 16384); // This takes up 1 GB of RAM, you probably don't want to do this. 2048x2048 is the max size for hardware that meets 9_1 specs (i.e. quite low powered or really old). Probably much more reasonable.
 			}
 
+			template <class GraphicsMath>
+			inline basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::copy_surface(basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) noexcept {
+				basic_image_surface<_Cairo_graphics_surfaces> retSfc(sfc.format(), sfc.dimensions().x(), sfc.dimensions().y());
+				auto srcSfc = cairo_surface_map_to_image(sfc.data().surface.get(), nullptr);
+				auto destSfc = cairo_surface_map_to_image(retSfc.data().surface.get(), nullptr);
+				auto srcSize = cairo_image_surface_get_height(srcSfc) * cairo_image_surface_get_stride(srcSfc);
+				auto srcData = cairo_image_surface_get_data(srcSfc);
+				auto destData = cairo_image_surface_get_data(destSfc);
+				memcpy(destData, srcData, srcSize);
+				cairo_surface_unmap_image(retSfc.data().surface.get(), destSfc);
+				cairo_surface_unmap_image(sfc.data().surface.get(), srcSfc);
+				return retSfc;
+			}
+
+			template <class GraphicsMath>
+			inline basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::copy_surface(basic_output_surface<_Cairo_graphics_surfaces>& sfc) noexcept {
+				basic_image_surface<_Cairo_graphics_surfaces> retSfc(sfc.format(), sfc.dimensions().x(), sfc.dimensions().y());
+				auto srcSfc = cairo_surface_map_to_image(sfc.data().surface.get(), nullptr);
+				auto destSfc = cairo_surface_map_to_image(retSfc.data().surface.get(), nullptr);
+				auto srcSize = cairo_image_surface_get_height(srcSfc) * cairo_image_surface_get_stride(srcSfc);
+				auto srcData = cairo_image_surface_get_data(srcSfc);
+				auto destData = cairo_image_surface_get_data(destSfc);
+				memcpy(destData, srcData, srcSize);
+				cairo_surface_unmap_image(retSfc.data().surface.get(), destSfc);
+				cairo_surface_unmap_image(sfc.data().surface.get(), srcSfc);
+				return retSfc;
+			}
 		}
 	}
 }

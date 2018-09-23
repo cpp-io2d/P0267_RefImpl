@@ -393,6 +393,11 @@ namespace std::experimental::io2d {
 			}
 			return true;
 		}
+        
+        template <class GraphicsSurfaces, class Allocator>
+        inline bool operator!=(const basic_path_builder<GraphicsSurfaces, Allocator>& lhs, const basic_path_builder<GraphicsSurfaces, Allocator>& rhs) noexcept {
+            return !(lhs == rhs);
+        }
 
 		template<class GraphicsSurfaces, class Allocator>
 		inline void swap(basic_path_builder<GraphicsSurfaces, Allocator>& lhs, basic_path_builder<GraphicsSurfaces, Allocator>& rhs) noexcept(noexcept(lhs.swap(rhs))) {

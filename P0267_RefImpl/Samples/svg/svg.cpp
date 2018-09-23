@@ -38,40 +38,40 @@ struct Stylable {
     void set(tag::attribute::stroke, tag::value::currentColor) { stroke_paint = tag::value::currentColor(); }
     void set(tag::attribute::stroke, rgba_color color, tag::skip_icc_color = tag::skip_icc_color()) { stroke_paint = color; }
     template<class IRI>
-    void set(tag::attribute::stroke tag, IRI const & iri) { throw std::runtime_error("Non-local references aren't supported"); }
+    void set(tag::attribute::stroke /*tag*/, IRI const & /*iri*/) { throw std::runtime_error("Non-local references aren't supported"); }
     template<class IRI>
     void set(tag::attribute::stroke tag, tag::iri_fragment, IRI const & fragment) { stroke_paint = string(begin(fragment), end(fragment)); }
     template<class IRI>
     void set(tag::attribute::stroke tag, IRI const &, tag::value::none val) { set(tag, val); }
     template<class IRI>
-    void set(tag::attribute::stroke tag, tag::iri_fragment, IRI const & fragment, tag::value::none val) { set(tag, tag::iri_fragment{}, fragment); }
+    void set(tag::attribute::stroke tag, tag::iri_fragment, IRI const & fragment, tag::value::none /*val*/) { set(tag, tag::iri_fragment{}, fragment); }
     template<class IRI>
     void set(tag::attribute::stroke tag, IRI const &, tag::value::currentColor val) { set(tag, val); }
     template<class IRI>
-    void set(tag::attribute::stroke tag, tag::iri_fragment, IRI const & fragment, tag::value::currentColor val) { set(tag, tag::iri_fragment{}, fragment); }
+    void set(tag::attribute::stroke tag, tag::iri_fragment, IRI const & fragment, tag::value::currentColor /*val*/) { set(tag, tag::iri_fragment{}, fragment); }
     template<class IRI>
     void set(tag::attribute::stroke tag, IRI const &, rgba_color val, tag::skip_icc_color = tag::skip_icc_color()) { set(tag, val); }
     template<class IRI>
-    void set(tag::attribute::stroke tag, tag::iri_fragment, IRI const & fragment, rgba_color val, tag::skip_icc_color = tag::skip_icc_color()) { set(tag, tag::iri_fragment{}, fragment); }
+    void set(tag::attribute::stroke tag, tag::iri_fragment, IRI const & fragment, rgba_color /*val*/, tag::skip_icc_color = tag::skip_icc_color()) { set(tag, tag::iri_fragment{}, fragment); }
     void set(tag::attribute::fill, tag::value::none) { fill_paint = tag::value::none(); }
     void set(tag::attribute::fill, tag::value::currentColor) { fill_paint = tag::value::currentColor(); }
     void set(tag::attribute::fill, rgba_color color, tag::skip_icc_color = tag::skip_icc_color()) { fill_paint = color; }
     template<class IRI>
-    void set(tag::attribute::fill tag, IRI const & iri) { throw std::runtime_error("Non-local references aren't supported"); }
+    void set(tag::attribute::fill /*tag*/, IRI const & /*iri*/) { throw std::runtime_error("Non-local references aren't supported"); }
     template<class IRI>
-    void set(tag::attribute::fill tag, tag::iri_fragment, IRI const & fragment) { fill_paint = string(begin(fragment), end(fragment)); }
+    void set(tag::attribute::fill /*tag*/, tag::iri_fragment, IRI const & fragment) { fill_paint = string(begin(fragment), end(fragment)); }
     template<class IRI>
     void set(tag::attribute::fill tag, IRI const &, tag::value::none val) { set(tag, val); }
     template<class IRI>
-    void set(tag::attribute::fill tag, tag::iri_fragment, IRI const & fragment, tag::value::none val) { set(tag, tag::iri_fragment{}, fragment); }
+    void set(tag::attribute::fill tag, tag::iri_fragment, IRI const & fragment, tag::value::none /*val*/) { set(tag, tag::iri_fragment{}, fragment); }
     template<class IRI>
     void set(tag::attribute::fill tag, IRI const &, tag::value::currentColor val) { set(tag, val); }
     template<class IRI>
-    void set(tag::attribute::fill tag, tag::iri_fragment, IRI const & fragment, tag::value::currentColor val) { set(tag, tag::iri_fragment{}, fragment); }
+    void set(tag::attribute::fill tag, tag::iri_fragment, IRI const & fragment, tag::value::currentColor /*val*/) { set(tag, tag::iri_fragment{}, fragment); }
     template<class IRI>
     void set(tag::attribute::fill tag, IRI const &, rgba_color val, tag::skip_icc_color = tag::skip_icc_color()) { set(tag, val); }
     template<class IRI>
-    void set(tag::attribute::fill tag, tag::iri_fragment, IRI const & fragment, rgba_color val, tag::skip_icc_color = tag::skip_icc_color()) { set(tag, tag::iri_fragment{}, fragment); }
+    void set(tag::attribute::fill tag, tag::iri_fragment, IRI const & fragment, rgba_color /*val*/, tag::skip_icc_color = tag::skip_icc_color()) { set(tag, tag::iri_fragment{}, fragment); }
     void set(svgpp::tag::attribute::opacity, float val) { opacity = clamp(val, 0.f, 1.f); }
     void set(svgpp::tag::attribute::opacity, svgpp::tag::value::inherit) { /* style().opacity_ = parentStyle_.opacity_; */ }
     void set(svgpp::tag::attribute::fill_opacity, float val) { opacity = clamp(val, 0.f, 1.f); }
@@ -97,7 +97,7 @@ struct Canvas: Transformable, Stylable {
     
     void on_exit_element() {}
     
-    void set_viewport(double viewport_x, double viewport_y, double viewport_width, double viewport_height) {
+    void set_viewport(double /*viewport_x*/, double /*viewport_y*/, double viewport_width, double viewport_height) {
         if( !surface ) {
             surface = make_shared<image_surface>(format::argb32, document_.scale * viewport_width, document_.scale * viewport_height);
             surface->paint(brush{rgba_color::transparent_black});
@@ -177,7 +177,7 @@ public:
     { fragment_id_.assign(boost::begin(fragment), boost::end(fragment)); }
     
     template<class IRI>
-    void set(tag::attribute::xlink::href, IRI const & fragment)
+    void set(tag::attribute::xlink::href, IRI const & /*fragment*/)
     { std::cerr << "External references aren't supported\n"; }
     
     void set(tag::attribute::x, double val)

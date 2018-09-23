@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 project(io2d CXX)
 set(CMAKE_CXX_STANDARD 17)
@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Catch2/single_include)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
-
+#find_package(catch2 REQUIRED)
 
 add_executable(tests
 	main.cpp
@@ -23,6 +23,8 @@ add_executable(tests
 	comparison.h
    	comparison.cpp
     image_io.cpp
+    image_format.cpp
+    frontend_semantics.cpp
 )
 
 target_link_libraries(tests io2d Catch)
@@ -50,54 +52,8 @@ endif()
 set(RSC_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Reference)
 set(RSC_TARGET $<TARGET_FILE_DIR:tests>)
 
-function(COPY_REF_RSC)
-	foreach(arg IN LISTS ARGN)
-		add_custom_command( TARGET tests POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy "${RSC_SOURCE}/${arg}" "${RSC_TARGET}/${arg}"
-		)
-	endforeach()
-endfunction()
-
-COPY_REF_RSC(
-    red_background_300x200.png
-    stroked_rectangle_300x200.png
-    stroke_widths_300x200.png
-    dash_pattern_two_one_300x200.png
-    linear_gradient_aquamarine_dark_magenta_lime_300x200.png
-    linear_gradient_wrapping_modes_300x200.png
-    linear_gradient_non_convex_300x200.png
-    linear_gradient_curve_stroke_300x200.png
-    radial_gradient_aquamarine_dark_magenta_lime_300x200.png
-    radial_gradient_aquamarine_dark_magenta_lime_reflect_300x200.png
-    radial_gradient_wrapping_modes_300x200.png
-    radial_gradient_non_convex_300x200.png
-    radial_gradient_curve_stroke_300x200.png
-    surface_brush_no_wrapping_20x20.png
-    surface_brush_repeat_no_transform_20x20.png
-    surface_brush_repeat_2x_scale_20x20.png
-    surface_brush_repeat_non_uniform_scale_20x20.png
-    surface_brush_repeat_x_shear_20x20.png
-    surface_brush_reflect_no_transform_20x20.png
-    surface_brush_reflect_2x_scale_20x20.png
-    surface_brush_reflect_non_uniform_scale_20x20.png
-    surface_brush_pad_translate_20x20.png
-    surface_brush_samples_outside_non_padded_10x10.png
-    mask_green_to_red_blending_50x50.png
-    mask_green_to_red_blending_clipped_with_rect_50x50.png
-    mask_green_to_red_blending_clipped_with_rects_and_rotated_35x35.png
-    mask_green_to_red_radial_blending_clipped_with_triangle_50x50.png
-    mask_radial_gradient_with_linear_gradient_50x50.png
-    mask_circles_intersection_50x50.png
-    mask_circles_intersection_clipped_with_bb_50x50.png
-    mask_circles_intersection_clipped_with_nc_figure_50x50.png
-    mask_red_green_checkerboard_50x50.png
-    mask_red_green_checkerboard_reflect_50x50.png
-    mask_red_green_checkerboard_pad_50x50.png
-    mask_red_green_checkerboard_none_50x50.png
-    image_500x375.png
-    image_500x375.jpg
-    image_500x375.tiff
-)
+add_custom_command( TARGET tests POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory "${RSC_SOURCE}" "${RSC_TARGET}")
 
 if(MSVC)
 	set_target_properties(tests PROPERTIES  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)")

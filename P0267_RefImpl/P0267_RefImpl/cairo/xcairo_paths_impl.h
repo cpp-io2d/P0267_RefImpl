@@ -25,6 +25,33 @@ namespace std::experimental::io2d {
 		namespace _Cairo {
 			// cairo_interpreted_path
             
+            enum class _Path_data_abs_new_figure {};
+            constexpr static _Path_data_abs_new_figure _Path_data_abs_new_figure_val = {};
+            enum class _Path_data_rel_new_figure {};
+            constexpr static _Path_data_rel_new_figure _Path_data_rel_new_figure_val = {};
+            enum class _Path_data_close_path {};
+            constexpr static _Path_data_close_path _Path_data_close_path_val = {};
+            enum class _Path_data_abs_matrix {};
+            constexpr static _Path_data_abs_matrix _Path_data_abs_matrix_val = {};
+            enum class _Path_data_rel_matrix {};
+            constexpr static _Path_data_rel_matrix _Path_data_rel_matrix_val = {};
+            enum class _Path_data_revert_matrix {};
+            constexpr static _Path_data_revert_matrix _Path_data_revert_matrix_val = {};
+            enum class _Path_data_abs_cubic_curve {};
+            constexpr static _Path_data_abs_cubic_curve _Path_data_abs_cubic_curve_val = {};
+            enum class _Path_data_abs_line {};
+            constexpr static _Path_data_abs_line _Path_data_abs_line_val = {};
+            enum class _Path_data_abs_quadratic_curve {};
+            constexpr static _Path_data_abs_quadratic_curve _Path_data_abs_quadratic_curve_val = {};
+            enum class _Path_data_arc {};
+            constexpr static _Path_data_arc _Path_data_arc_val = {};
+            enum class _Path_data_rel_cubic_curve {};
+            constexpr static _Path_data_rel_cubic_curve _Path_data_rel_cubic_curve_val = {};
+            enum class _Path_data_rel_line {};
+            constexpr static _Path_data_rel_line _Path_data_rel_line_val = {};
+            enum class _Path_data_rel_quadratic_curve {};
+            constexpr static _Path_data_rel_quadratic_curve _Path_data_rel_quadratic_curve_val = {};            
+            
             template <class GraphicsSurfaces, class _TItem>
             struct _Path_item_interpret_visitor {
                 constexpr static float twoThirds = 2.0F / 3.0F;
@@ -397,6 +424,17 @@ namespace std::experimental::io2d {
 				interpreted_path_data_type result;
 				result.path = nullptr;
 				return result;
+			}
+			template <class GraphicsMath>
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::create_interpreted_path(const basic_bounding_box<GraphicsMath>& bb) {
+				using figureItem = typename basic_figure_items<graphics_surfaces_type>::figure_item;
+				//auto bbPath =
+				return create_interpreted_path({ figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::abs_new_figure>, bb.top_left()), figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::rel_line>, basic_point_2d<GraphicsMath>(bb.width(), 0.0f)), figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::rel_line>, basic_point_2d<GraphicsMath>(0.0f, bb.height())), figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::rel_line>, basic_point_2d<GraphicsMath>(-bb.width(), 0.0f)), figureItem(in_place_type<typename basic_figure_items<graphics_surfaces_type>::close_figure>) });
+				//return create_interpreted_path(begin(bbPath), end(bbPath));
+			}
+			template <class GraphicsMath>
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::paths::interpreted_path_data_type _Cairo_graphics_surfaces<GraphicsMath>::paths::create_interpreted_path(initializer_list<typename basic_figure_items<graphics_surfaces_type>::figure_item> il) {
+				return create_interpreted_path(begin(il), end(il));
 			}
 			template<class GraphicsMath>
 			template<class ForwardIterator>
