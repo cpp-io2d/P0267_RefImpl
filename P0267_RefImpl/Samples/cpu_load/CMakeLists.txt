@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.0.0)
 set(CMAKE_CXX_STANDARD 17)
+
+if(EMSCRIPTEN)
+	message("Skipping the cpu_load example due to lack of Emscripten support")
+	return()
+endif()
+
+
 project(cpuload)
 
 set(CPULOAD_SRC

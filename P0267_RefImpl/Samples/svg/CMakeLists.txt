@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(io2d CXX)
 
+if(EMSCRIPTEN)
+	message("Skipping the svg example due to lack of Emscripten support")
+	return()
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(Boost QUIET)

@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0)
 set(CMAKE_CXX_STANDARD 17)
+
+if(EMSCRIPTEN)
+	message("Skipping the sprites example due to lack of Emscripten support")
+	return()
+endif()
+
 project(sprites)
 add_executable(sprites main.cpp)
 target_link_libraries(sprites io2d)
