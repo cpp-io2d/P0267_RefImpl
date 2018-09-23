@@ -16,8 +16,12 @@ endif()
 
 add_subdirectory(external/pugixml)
 
-project(maps)
-add_executable(maps
+# Use the CMakeLists.txt's parent-directory-name for the project's id/name
+get_filename_component(PROJECT_ID ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+string(REPLACE " " "_" PROJECT_ID ${PROJECT_ID})
+project(${PROJECT_ID})
+
+add_executable(${PROJECT_ID}
     main.cpp
     model.cpp
     model.h
@@ -27,21 +31,21 @@ add_executable(maps
     http.h
 )
 
-target_link_libraries(maps
+target_link_libraries(${PROJECT_ID}
     io2d
     pugixml
     ${Boost_LIBRARIES}
     ${OPENSSL_LIBRARIES}
 )
-target_include_directories(maps SYSTEM
+target_include_directories(${PROJECT_ID} SYSTEM
     PRIVATE ${Boost_INCLUDE_DIRS}
     PRIVATE ${OPENSSL_INCLUDE_DIR}
 )
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
-    target_link_libraries(maps pthread)
+    target_link_libraries(${PROJECT_ID} pthread)
 endif()
 
 if(MSVC)
-	target_compile_options(maps PUBLIC /D_SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING /wd4459)
+	target_compile_options(${PROJECT_ID} PUBLIC /D_SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING /wd4459)
 endif()

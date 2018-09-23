@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(io2d CXX)
-
 set(CMAKE_CXX_STANDARD 17)
+
+# Use the CMakeLists.txt's parent-directory-name for the project's id/name
+get_filename_component(PROJECT_ID ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+string(REPLACE " " "_" PROJECT_ID ${PROJECT_ID})
+project(${PROJECT_ID})
 
 set(ROCKS_IN_SPACE_SRC 
 	Asteroid.h
@@ -39,15 +42,15 @@ else()
 	return()
 endif()
 
-add_executable(rocks_in_space ${EXECUTABLE_FLAGS} ${ROCKS_IN_SPACE_SRC})
+add_executable(${PROJECT_ID} ${EXECUTABLE_FLAGS} ${ROCKS_IN_SPACE_SRC})
 
-target_link_libraries(rocks_in_space io2d)
+target_link_libraries(${PROJECT_ID} io2d)
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-	target_link_libraries(rocks_in_space "-framework CoreFoundation")
-	target_link_libraries(rocks_in_space "-framework CoreGraphics")
+	target_link_libraries(${PROJECT_ID} "-framework CoreFoundation")
+	target_link_libraries(${PROJECT_ID} "-framework CoreGraphics")
 endif()
 
-install(TARGETS rocks_in_space
+install(TARGETS ${PROJECT_ID}
 	RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/samples
 )
