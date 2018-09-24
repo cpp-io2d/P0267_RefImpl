@@ -4,6 +4,9 @@
 cd "$(dirname "$0")"
 SCRIPT_NAME="$(basename "${0}")"
 
+# Init other script-internal vars
+MAKE_FLAGS=""
+
 # Parse command line args
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -12,14 +15,19 @@ while [ $# -gt 0 ]; do
             cat << EOF
 Usage: ${SCRIPT_NAME} [options]
 
-    -d      | --debug       Build Debug, rather than Release
+    -d | -D | --debug       Build Debug, rather than Release
+    -v |      --verbose     Show verbose output
     -h | -? | --help        Show script's help text
 
 EOF
             exit 0
             ;;
 
-        -d|--debug)
+        -v|--verbose)
+            MAKE_FLAGS="${MAKE_FLAGS} VERBOSE=1"
+            ;;
+
+        -d|-D|--debug)
             CMAKE_BUILD_TYPE=Debug
             ;;
 
@@ -41,6 +49,6 @@ OUTPUT_DIR="${CMAKE_BUILD_TYPE}"
 mkdir -p "${OUTPUT_DIR}" || true
 pushd "${OUTPUT_DIR}"
 emcmake cmake -G "Unix Makefiles" --config "${CMAKE_BUILD_TYPE}" "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DIO2D_DEFAULT=CAIRO_SDL2 ../.
-make
+make ${MAKE_FLAGS}
 # make VERBOSE=1
 popd
