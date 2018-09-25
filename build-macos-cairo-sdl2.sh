@@ -8,7 +8,6 @@ SCRIPT_NAME="$(basename "${0}")"
 while [ $# -gt 0 ]; do
     case "$1" in
         -\?|-h|--help)
-            echo "what?"
             cat << EOF
 Usage: ${SCRIPT_NAME} [options]
 
