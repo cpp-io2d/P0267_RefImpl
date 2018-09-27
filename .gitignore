@@ -258,3 +258,4 @@ P0267_RefImpl/dll_Release
 *.db-wal
 /P0267_RefImpl/SampleApp
 /CMakeSettings.json
+.vscode
