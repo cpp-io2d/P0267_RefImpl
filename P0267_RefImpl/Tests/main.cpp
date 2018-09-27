@@ -1,8 +1,15 @@
 
+#include <cerrno>
+#include <cstring>
 #include <exception>
-#include <filesystem>
 #include <iostream>
 #include <system_error>
+
+#if __has_include(<filesystem>)
+	#include <filesystem>
+#elif __has_include(<unistd.h>)
+	#include <unistd.h>
+#endif
 
 #define CATCH_CONFIG_RUNNER
 #include "catch.hpp"
@@ -19,6 +26,7 @@ int main(int argc, char* argv[])
 	// For now, set the app's CWD (Current Working Directory) to where the
 	// app's executable is, presuming this info is available.
 	if (argc >= 1 && argv[0] != nullptr) {
+#if __has_include(<filesystem>)
 		try {
 			using namespace std::filesystem;
 			current_path(path(argv[0]).parent_path());
@@ -29,6 +37,20 @@ int main(int argc, char* argv[])
 				"\"\n";
 			return 1;	// Return a non-zero integer to indicate failure
 		}
+#elif __has_include(<unistd.h>)
+		std::string p = argv[0];
+		const auto last_path_sep = p.find_last_of('/');
+		if (last_path_sep != std::string::npos && last_path_sep > 0) {
+			p = p.substr(0, last_path_sep);
+			if (chdir(p.c_str()) != 0) {
+				std::cerr <<
+					"ERROR: Unable to set CWD via chdir(). strerror(errno)=\"" <<
+					strerror(errno) <<
+					"\"\n";
+				return 1; // Return a non-zero integer to indicate failure
+			}
+		}
+#endif
 	}
 
 	return Catch::Session().run(argc, argv);
