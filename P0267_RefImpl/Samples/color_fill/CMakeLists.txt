@@ -1,12 +1,10 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(io2d CXX)
-
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(color_fill main.cpp)
+# Use the CMakeLists.txt's parent-directory-name for the project's id/name
+get_filename_component(PROJECT_ID ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+string(REPLACE " " "_" PROJECT_ID ${PROJECT_ID})
+project(${PROJECT_ID})
 
-target_link_libraries(color_fill io2d)
-
-install(TARGETS color_fill
-	RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/samples
-)
+add_executable(${PROJECT_ID} main.cpp)
+target_link_libraries(${PROJECT_ID} io2d)
