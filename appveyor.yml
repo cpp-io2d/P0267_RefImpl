@@ -20,6 +20,17 @@ configuration:
   - Debug
 
 before_build:
+  # Make sure vcpkg itself is in a reasonably known and up-to-date state.
+  # Appveyor provides its own copy of vcpkg, which is not necessarily in
+  # a known state.  This did led to at least one bug: documented in
+  # https://github.com/cpp-io2d/P0267_RefImpl/issues/86 .
+  - pushd c:\tools\vcpkg
+  - git fetch
+  - git checkout 7881abfc29c916330e868118b29606cb32c51b16
+  - bootstrap-vcpkg.bat
+  - popd
+
+  # Perform io2d's CMake configuration
   - mkdir %CONFIGURATION%
   - cd %CONFIGURATION%
   - cmake -G "%GENERATOR%" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%TRIPLET%" ../.
