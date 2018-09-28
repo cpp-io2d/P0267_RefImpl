@@ -13,8 +13,22 @@ environment:
 
 install:
   - git submodule update --init --recursive
-  - vcpkg install cairo:%TRIPLET%
-  - vcpkg install graphicsmagick:%TRIPLET%
+  - where vcpkg
+  - vcpkg list
+  - cd c:\tools\vcpkg
+  - powershell "git branch -r -v"
+  - powershell "git log -n 5"
+  - git fetch
+  - powershell "git branch -r -v"
+  - powershell "git log -n 5"
+  - git checkout 7881abfc29c916330e868118b29606cb32c51b16
+  - powershell "git branch -r -v"
+  - powershell "git log -n 5"
+  - bootstrap-vcpkg.bat
+  # - powershell ls -r c:\tools\vcpkg
+  # - powershell ls -r C:\projects\p0267-refimpl
+  # - vcpkg install cairo:%TRIPLET%
+  # - vcpkg install graphicsmagick:%TRIPLET%
  
 configuration:
   - Debug
@@ -22,10 +36,12 @@ configuration:
 before_build:
   - mkdir %CONFIGURATION%
   - cd %CONFIGURATION%
-  - cmake -G "%GENERATOR%" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%TRIPLET%" ../.
+  # - cmake -G "%GENERATOR%" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%TRIPLET%" ../.
 
 build_script:
-  - msbuild io2d.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  # - msbuild io2d.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - echo build_script
 
 test_script:
-  - ctest -V -C %CONFIGURATION%
+  # - ctest -V -C %CONFIGURATION%
+  - echo test_script
