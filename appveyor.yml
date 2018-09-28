@@ -12,14 +12,6 @@ environment:
           PLATFORM: Win32
 
 install:
-  - git submodule update --init --recursive
-  - vcpkg install cairo:%TRIPLET%
-  - vcpkg install graphicsmagick:%TRIPLET%
- 
-configuration:
-  - Debug
-
-before_build:
   # Make sure vcpkg itself is in a reasonably known and up-to-date state.
   # Appveyor provides its own copy of vcpkg, which is not necessarily in
   # a known state.  This did led to at least one bug: documented in
@@ -30,7 +22,17 @@ before_build:
   - bootstrap-vcpkg.bat
   - popd
 
-  # Perform io2d's CMake configuration
+  # Make sure io2d's submodules get downloaded
+  - git submodule update --init --recursive
+
+  # Install dependencies via vcpkg
+  - vcpkg install cairo:%TRIPLET%
+  - vcpkg install graphicsmagick:%TRIPLET%
+
+configuration:
+  - Debug
+
+before_build:
   - mkdir %CONFIGURATION%
   - cd %CONFIGURATION%
   - cmake -G "%GENERATOR%" --config %CONFIGURATION% "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" -DIO2D_DEFAULT=CAIRO_WIN32 "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%TRIPLET%" ../.
