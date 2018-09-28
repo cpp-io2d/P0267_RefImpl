@@ -16,6 +16,7 @@ install:
   - where vcpkg
   - vcpkg list
   - set
+  - powershell "cd c:\tools\vcpkg; git log -n 5"
   - powershell ls -r c:\tools\vcpkg
   - powershell ls -r C:\projects\p0267-refimpl
   # - vcpkg install cairo:%TRIPLET%
