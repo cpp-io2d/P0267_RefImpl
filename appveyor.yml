@@ -21,10 +21,11 @@ install:
   - git checkout 7881abfc29c916330e868118b29606cb32c51b16
   - bootstrap-vcpkg.bat
   - popd
-
+  - echo 1
   # Make sure io2d's submodules get downloaded
+  - echo 2
   - git submodule update --init --recursive
-
+  - echo 3
   # Install dependencies via vcpkg
   - vcpkg install cairo:%TRIPLET%
   - vcpkg install graphicsmagick:%TRIPLET%
