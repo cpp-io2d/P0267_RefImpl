@@ -15,8 +15,16 @@ install:
   - git submodule update --init --recursive
   - where vcpkg
   - vcpkg list
-  - powershell "cd c:\tools\vcpkg; git branch -r -v"
-  - powershell "cd c:\tools\vcpkg; git log -n 5"
+  - cd c:\tools\vcpkg
+  - powershell "git branch -r -v"
+  - powershell "git log -n 5"
+  - git fetch
+  - powershell "git branch -r -v"
+  - powershell "git log -n 5"
+  - git checkout 7881abfc29c916330e868118b29606cb32c51b16
+  - powershell "git branch -r -v"
+  - powershell "git log -n 5"
+  - bootstrap-vcpkg.bat
   # - powershell ls -r c:\tools\vcpkg
   # - powershell ls -r C:\projects\p0267-refimpl
   # - vcpkg install cairo:%TRIPLET%
