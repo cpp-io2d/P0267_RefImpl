@@ -16,18 +16,16 @@ install:
   # Appveyor provides its own copy of vcpkg, which is not necessarily in
   # a known state.  This did led to at least one bug: documented in
   # https://github.com/cpp-io2d/P0267_RefImpl/issues/86 .
-  - set OLD_DIR=%cd%
+  - set PREV_DIR=%cd%
   - cd c:\tools\vcpkg
   - git fetch
   - git checkout 7881abfc29c916330e868118b29606cb32c51b16
   - bootstrap-vcpkg.bat
-  - echo 0
-  - cd %OLD_DIR%
-  - echo 1
+  #
   # Make sure io2d's submodules get downloaded
-  - echo 2
+  - cd %PREV_DIR%
   - git submodule update --init --recursive
-  - echo 3
+  #
   # Install dependencies via vcpkg
   - vcpkg install cairo:%TRIPLET%
   - vcpkg install graphicsmagick:%TRIPLET%
