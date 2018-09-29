@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <iostream>
 #include <io2d.h>
 
@@ -5,12 +6,14 @@ using namespace std;
 using namespace std::experimental;
 using namespace std::experimental::io2d;
 
-void DrawCPP()
+std::filesystem::path input_data_dir;   // Where to load input files/data from; set on app launch
+
+template <typename Surface>
+void DrawCPP(Surface & img)
 {
-    auto img = image_surface{format::argb32, 300, 200};
     img.clear();
 
-    auto surface_brush = brush{ image_surface{"texture.jpg", image_file_format::jpeg, format::argb32 } };
+    auto surface_brush = brush{ image_surface{(input_data_dir / "texture.jpg").string().c_str(), image_file_format::jpeg, format::argb32 } };
     auto shadow_brush = brush{ rgba_color(0.5, 0.5, 0.5, 0.6) };
     auto shadow_render = render_props{};
     shadow_render.surface_matrix(matrix_2d::create_translate({ -2.0, -2.0f }));
@@ -41,11 +44,41 @@ void DrawCPP()
     pb.insert(pb.begin(), figure_items::rel_matrix(matrix_2d::create_translate({ 80.0f, 0.0f })));
     img.fill(shadow_brush, pb);
     img.fill(surface_brush, pb, nullopt, shadow_render);
-    
-    img.save("cpp.png", image_file_format::png);
 }
 
-int main(int /*argc*/, const char** /*argv*/) {
-	DrawCPP();
+int main(int argc, const char** argv) {
+    if (argc >= 1) {
+        input_data_dir = std::filesystem::path(argv[0]).remove_filename();
+    }
+    std::filesystem::path output_file;
+    if (argc >= 2) {
+        if (argv[1][0] == '-') {
+            std::cerr
+                << "Usage: " << std::filesystem::path(argv[0]).filename().u8string() << " [output png file]\n"
+                << "\n"
+                << "  If the 'output png file' is left unspecified, then the output will be\n"
+                << "  displayed in a window.\n"
+                << "\n";
+            return 1;
+        } else {
+            output_file = argv[1];
+        }
+    }
+
+    if (!output_file.empty()) {
+        auto img = image_surface{format::argb32, 300, 200};
+        DrawCPP(img);
+        img.save(output_file.u8string(), image_file_format::png);
+    } else {
+        auto img = output_surface{300, 200, format::argb32, scaling::none, refresh_style::as_needed, 30.f};
+        img.size_change_callback([&](output_surface &surface) {
+            surface.dimensions(surface.display_dimensions());
+        });
+        img.draw_callback([&](auto &surface) {
+            DrawCPP(surface);
+        });
+        img.begin_show();
+    }
+
     return 0;
 }
