@@ -16,11 +16,13 @@ install:
   # Appveyor provides its own copy of vcpkg, which is not necessarily in
   # a known state.  This did led to at least one bug: documented in
   # https://github.com/cpp-io2d/P0267_RefImpl/issues/86 .
-  - pushd c:\tools\vcpkg
+  - set OLD_DIR=%cd%
+  - cd c:\tools\vcpkg
   - git fetch
   - git checkout 7881abfc29c916330e868118b29606cb32c51b16
   - bootstrap-vcpkg.bat
-  - popd
+  - echo 0
+  - cd %OLD_DIR%
   - echo 1
   # Make sure io2d's submodules get downloaded
   - echo 2
