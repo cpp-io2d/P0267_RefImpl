@@ -9,6 +9,15 @@ project(${PROJECT_ID})
 add_executable(${PROJECT_ID} main.cpp)
 target_link_libraries(${PROJECT_ID} io2d)
 
+# If std::filesystem is not available, use boost::filesystem
+include(CheckIncludeFileCXX)
+CHECK_INCLUDE_FILE_CXX(filesystem STD_FILESYSTEM_INCLUDED)
+if (NOT STD_FILESYSTEM_INCLUDED)
+    find_package(Boost REQUIRED COMPONENTS system filesystem)
+    target_include_directories(${PROJECT_ID} PRIVATE ${Boost_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_ID} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+endif()
+
 add_custom_command( TARGET ${PROJECT_ID} POST_BUILD
  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/cat.jpg" "$<TARGET_FILE_DIR:${PROJECT_ID}>/cat.jpg"
 )

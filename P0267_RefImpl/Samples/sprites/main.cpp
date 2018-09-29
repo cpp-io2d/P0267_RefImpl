@@ -1,7 +1,16 @@
 #include <io2d.h>
 #include <random>
 #include <iostream>
-#include <filesystem>
+
+#if __has_include(<filesystem>)
+    #include <filesystem>
+    namespace fs = std::filesystem;
+#elif __has_include(<boost/filesystem.hpp>)
+    #include <boost/filesystem.hpp>
+    namespace fs = boost::filesystem;
+#else
+    #error "Cannot find either std::filesystem or boost::filesystem"
+#endif
 
 using namespace std;
 using namespace std::chrono;
@@ -156,7 +165,7 @@ int main(int argc, char *argv[]) {
         // Set the running app's Current Working Directory to that which
         // contains the executable.  This is rather than, for example, the
         // directory from which the app was launched from.
-        std::filesystem::current_path(std::filesystem::path(argv[0]).remove_filename());
+        fs::current_path(fs::path(argv[0]).remove_filename());
     }
 
     auto image = image_surface{"cat.jpg", image_file_format::jpeg, format::argb32};

@@ -1,12 +1,21 @@
-#include <filesystem>
 #include <iostream>
 #include <io2d.h>
+
+#if __has_include(<filesystem>)
+    #include <filesystem>
+    namespace fs = std::filesystem;
+#elif __has_include(<boost/filesystem.hpp>)
+    #include <boost/filesystem.hpp>
+    namespace fs = boost::filesystem;
+#else
+    #error "Cannot find either std::filesystem or boost::filesystem"
+#endif
 
 using namespace std;
 using namespace std::experimental;
 using namespace std::experimental::io2d;
 
-std::filesystem::path input_data_dir;   // Where to load input files/data from; set on app launch
+fs::path input_data_dir;   // Where to load input files/data from; set on app launch
 
 template <typename Surface>
 void DrawCPP(Surface & img)
@@ -48,13 +57,13 @@ void DrawCPP(Surface & img)
 
 int main(int argc, const char** argv) {
     if (argc >= 1) {
-        input_data_dir = std::filesystem::path(argv[0]).remove_filename();
+        input_data_dir = fs::path(argv[0]).remove_filename();
     }
-    std::filesystem::path output_file;
+    fs::path output_file;
     if (argc >= 2) {
         if (argv[1][0] == '-') {
             std::cerr
-                << "Usage: " << std::filesystem::path(argv[0]).filename().u8string() << " [output png file]\n"
+                << "Usage: " << fs::path(argv[0]).filename().string() << " [output png file]\n"
                 << "\n"
                 << "  If the 'output png file' is left unspecified, then the output will be\n"
                 << "  displayed in a window.\n"
@@ -68,7 +77,7 @@ int main(int argc, const char** argv) {
     if (!output_file.empty()) {
         auto img = image_surface{format::argb32, 300, 200};
         DrawCPP(img);
-        img.save(output_file.u8string(), image_file_format::png);
+        img.save(output_file.string(), image_file_format::png);
     } else {
         auto img = output_surface{300, 200, format::argb32, scaling::none, refresh_style::as_needed, 30.f};
         img.size_change_callback([&](output_surface &surface) {
