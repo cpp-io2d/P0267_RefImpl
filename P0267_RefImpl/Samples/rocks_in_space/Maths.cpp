@@ -20,8 +20,8 @@ float rocks_in_space::minimum_distance_from_line_segment(point_2d e1, point_2d e
 rocks_in_space::point_2d rocks_in_space::rotate(const point_2d& point, float theta, const point_2d& origin)
 {
 	const auto translation = point - origin;
-	const auto s = sin(theta);
-	const auto c = cos(theta);
+	const auto s = std::sin(theta);
+	const auto c = std::cos(theta);
 
 	return point_2d{ translation.x() * c - translation.y() * s, translation.x() * s + translation.y() * c } + origin;
 }

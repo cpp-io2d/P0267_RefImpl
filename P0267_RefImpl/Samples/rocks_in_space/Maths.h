@@ -61,12 +61,12 @@ inline float rocks_in_space::polar_2d::theta() const
 
 inline rocks_in_space::point_2d rocks_in_space::pol_to_car(const polar_2d& p)
 {
-	return{ p.r() * cos(p.theta()), p.r() * sin(p.theta()) };
+	return{ p.r() * std::cos(p.theta()), p.r() * std::sin(p.theta()) };
 }
 
 inline rocks_in_space::polar_2d rocks_in_space::car_to_pol(const point_2d& v)
 {
-	return{ v.magnitude(), atan2(v.y(), v.x()) };
+	return{ v.magnitude(), std::atan2(v.y(), v.x()) };
 }
 
 inline rocks_in_space::stadium::stadium(point_2d c1, point_2d c2, float radius)
