@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.8)
 
 project(io2d CXX)
 
+find_package(Cairo REQUIRED)
+
 add_library(io2d_cairo
 	cairo_renderer-graphicsmagickinit.cpp
 	xcairo.h
