@@ -21,11 +21,6 @@ get_filename_component(PROJECT_ID ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 string(REPLACE " " "_" PROJECT_ID ${PROJECT_ID})
 project(${PROJECT_ID})
 
-if(EMSCRIPTEN)
-	message("Skipping the maps example due to lack of Emscripten support")
-	return()
-endif()
-
 add_executable(${PROJECT_ID}
     main.cpp
     model.cpp

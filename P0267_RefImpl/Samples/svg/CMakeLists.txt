@@ -6,11 +6,6 @@ get_filename_component(PROJECT_ID ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 string(REPLACE " " "_" PROJECT_ID ${PROJECT_ID})
 project(${PROJECT_ID})
 
-if(EMSCRIPTEN)
-	message("Skipping the svg example due to lack of Emscripten support")
-	return()
-endif()
-
 find_package(Boost QUIET)
 if( NOT Boost_FOUND )
 	message( "Skipping the SVG example since Boost was not found" )
