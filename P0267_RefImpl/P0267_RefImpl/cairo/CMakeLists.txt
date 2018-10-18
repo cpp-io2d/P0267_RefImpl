@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.8)
 
 project(io2d CXX)
 
+find_package(Cairo REQUIRED)
+
 add_library(io2d_cairo
 	cairo_renderer-graphicsmagickinit.cpp
 	xcairo.h
@@ -21,40 +23,23 @@ target_include_directories(io2d_cairo PUBLIC
 
 target_compile_features(io2d_cairo PUBLIC cxx_std_17)
 
-target_link_libraries(io2d_cairo PUBLIC io2d_core)
+target_link_libraries(io2d_cairo PUBLIC io2d_core Cairo::Cairo)
 
 if(MSVC)
-	find_path(CAIRO_INCLUDE_DIR cairo.h)
 	find_path(GRAPHICSMAGICK_INCLUDE_DIR magick/api.h)
-	find_library(CAIRO_LIB_DEBUG cairod)
-	find_library(CAIRO_LIB_RELEASE cairo)
 	find_library(GRAPHICSMAGICK_LIB graphicsmagick)
 elseif(APPLE)
-	find_path(CAIRO_INCLUDE_DIR cairo-xlib.h PATH_SUFFIXES cairo)
 	find_path(GRAPHICSMAGICK_INCLUDE_DIR magick/api.h PATH_SUFFIXES GraphicsMagick)
-	find_library(CAIRO_LIB cairo)
 	find_library(GRAPHICSMAGICK_LIB GraphicsMagick)
 else() # Linux
-	find_path(CAIRO_INCLUDE_DIR cairo-xlib.h PATH_SUFFIXES cairo)
 	find_path(GRAPHICSMAGICK_INCLUDE_DIR magick/api.h PATH_SUFFIXES GraphicsMagick)
-	find_library(CAIRO_LIB cairo)
 	find_library(GRAPHICSMAGICK_LIB GraphicsMagick)
 endif()
 
-target_include_directories(io2d_cairo SYSTEM PUBLIC ${CAIRO_INCLUDE_DIR} ${GRAPHICSMAGICK_INCLUDE_DIR})
+target_include_directories(io2d_cairo SYSTEM PUBLIC ${GRAPHICSMAGICK_INCLUDE_DIR})
 
 target_link_libraries(io2d_cairo PUBLIC ${GRAPHICSMAGICK_LIB})
 
-if(MSVC)
-	if(CAIRO_LIB_DEBUG STREQUAL "CAIRO_LIB_DEBUG-NOTFOUND")
-		message(STATUS "io2d: Can't find Debug build of Cairo. Will try to use Release build, instead.")
-		target_link_libraries(io2d_cairo PUBLIC ${CAIRO_LIB_RELEASE})
-	else()
-		target_link_libraries(io2d_cairo PUBLIC debug ${CAIRO_LIB_DEBUG} optimized ${CAIRO_LIB_RELEASE})
-	endif()
-else()
-	target_link_libraries(io2d_cairo PUBLIC ${CAIRO_LIB})
-endif()
 
 install(
 	TARGETS io2d_cairo EXPORT io2d_targets
