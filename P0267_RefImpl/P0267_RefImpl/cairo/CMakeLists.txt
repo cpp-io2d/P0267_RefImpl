@@ -23,7 +23,7 @@ target_include_directories(io2d_cairo PUBLIC
 
 target_compile_features(io2d_cairo PUBLIC cxx_std_17)
 
-target_link_libraries(io2d_cairo PUBLIC io2d_core)
+target_link_libraries(io2d_cairo PUBLIC io2d_core Cairo::Cairo)
 
 if(MSVC)
 	find_path(GRAPHICSMAGICK_INCLUDE_DIR magick/api.h)
@@ -36,9 +36,9 @@ else() # Linux
 	find_library(GRAPHICSMAGICK_LIB GraphicsMagick)
 endif()
 
-target_include_directories(io2d_cairo SYSTEM PUBLIC ${CAIRO_INCLUDE_DIRS} ${GRAPHICSMAGICK_INCLUDE_DIR})
+target_include_directories(io2d_cairo SYSTEM PUBLIC ${GRAPHICSMAGICK_INCLUDE_DIR})
 
-target_link_libraries(io2d_cairo PUBLIC ${CAIRO_LIBRARIES} ${GRAPHICSMAGICK_LIB})
+target_link_libraries(io2d_cairo PUBLIC ${GRAPHICSMAGICK_LIB})
 
 
 install(
