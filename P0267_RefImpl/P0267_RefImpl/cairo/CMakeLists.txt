@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.8)
 project(io2d CXX)
 
 find_package(Cairo REQUIRED)
+find_package(GraphicsMagick REQUIRED)
 
 add_library(io2d_cairo
 	cairo_renderer-graphicsmagickinit.cpp
@@ -23,23 +24,7 @@ target_include_directories(io2d_cairo PUBLIC
 
 target_compile_features(io2d_cairo PUBLIC cxx_std_17)
 
-target_link_libraries(io2d_cairo PUBLIC io2d_core Cairo::Cairo)
-
-if(MSVC)
-	find_path(GRAPHICSMAGICK_INCLUDE_DIR magick/api.h)
-	find_library(GRAPHICSMAGICK_LIB graphicsmagick)
-elseif(APPLE)
-	find_path(GRAPHICSMAGICK_INCLUDE_DIR magick/api.h PATH_SUFFIXES GraphicsMagick)
-	find_library(GRAPHICSMAGICK_LIB GraphicsMagick)
-else() # Linux
-	find_path(GRAPHICSMAGICK_INCLUDE_DIR magick/api.h PATH_SUFFIXES GraphicsMagick)
-	find_library(GRAPHICSMAGICK_LIB GraphicsMagick)
-endif()
-
-target_include_directories(io2d_cairo SYSTEM PUBLIC ${GRAPHICSMAGICK_INCLUDE_DIR})
-
-target_link_libraries(io2d_cairo PUBLIC ${GRAPHICSMAGICK_LIB})
-
+target_link_libraries(io2d_cairo PUBLIC io2d_core Cairo::Cairo GraphicsMagick::GraphicsMagick)
 
 install(
 	TARGETS io2d_cairo EXPORT io2d_targets
