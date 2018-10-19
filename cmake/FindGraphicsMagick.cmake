@@ -10,14 +10,20 @@
 #   - GRAPHICSMAGICK_FOUND
 #
 
+# Use pkg-config, if available, to help find the library
+find_package(PkgConfig)
+pkg_check_modules(PC_GRAPHICSMAGICK GraphicsMagick)
+
 # Find the header(s)
 find_path(GRAPHICSMAGICK_INCLUDE_DIRS
     NAMES magick/api.h
+    HINTS ${PC_GRAPHICSMAGICK_INCLUDE_DIRS}
 )
 
 # Find the pre-compiled binary.  For Windows + MSVC, this will be its .lib file.
 find_library(GRAPHICSMAGICK_LIBRARIES
     GraphicsMagick
+    HINTS ${PC_GRAPHICSMAGICK_LIBRARY_DIRS}
 )
 
 # Search for base path of installation
@@ -26,7 +32,7 @@ if (GRAPHICSMAGICK_INCLUDE_DIRS)
     while(TRUE)
         get_filename_component(_TMP_PATH_PART ${_TMP_PATH} NAME)
         string(TOLOWER ${_TMP_PATH_PART} _TMP_PATH_PART)
-        if (${_TMP_PATH_PART} STREQUAL "include")
+        if (${_TMP_PATH_PART} STREQUAL "graphicsmagick" OR ${_TMP_PATH_PART} STREQUAL "include")
             get_filename_component(_TMP_PATH ${_TMP_PATH} DIRECTORY)
             continue()
         endif()
