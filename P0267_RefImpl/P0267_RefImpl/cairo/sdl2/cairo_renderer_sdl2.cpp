@@ -3,10 +3,6 @@
 #include "xio2d_cairo_sdl2_main.h"
 #include "xgraphicsmathfloat.h"
 
-#if __EMSCRIPTEN__
-#include <emscripten/emscripten.h>
-#endif
-
 #if ! SDL_VERSION_ATLEAST(2, 0, 0)
 #error "io2d's SDL module must be compiled with SDL 2.x or higher, but SDL 1.x was detected"
 #endif
@@ -229,59 +225,6 @@ namespace std::experimental::io2d {
 			}
 
 			template <>
-			void _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::_Tick_show(_Output_surface_datadata& osd, _Output_surface* instance, _Output_surface& sfc)
-			{
-				_Display_surface_data_type &data = osd->data;
-
-				auto currentTime = ::std::chrono::steady_clock::now();
-				auto elapsedTimeIncrement = static_cast<float>(::std::chrono::duration_cast<::std::chrono::nanoseconds>(currentTime - data.previous_time).count());
-				data.elapsed_draw_time += elapsedTimeIncrement;
-				data.previous_time = currentTime;
-
-				SDL_Event ev;
-				while (SDL_PollEvent(&ev)) {}
-
-				bool redraw = true;
-				if (data.rr == io2d::refresh_style::as_needed) {
-					redraw = data.redraw_required;
-					data.redraw_required = false;
-				}
-
-				const auto desiredElapsed = 1'000'000'000.0F / data.refresh_fps;
-				if (data.rr == io2d::refresh_style::fixed) {
-                    #if __EMSCRIPTEN__
-						// TODO(dludwig@pobox.com): consider redeclaring the above 'if __EMSCRIPTEN__' to 'if use_external_runloop'
-						redraw = true;
-                    #else
-						redraw = data.elapsed_draw_time >= desiredElapsed;
-                    #endif
-				}
-				if (redraw) {
-					if (osd->draw_callback) {
-						osd->draw_callback(sfc);
-					}
-					_Render_to_native_surface(osd, sfc);
-					if (data.rr == experimental::io2d::refresh_style::fixed) {
-						while (data.elapsed_draw_time >= desiredElapsed) {
-							data.elapsed_draw_time -= desiredElapsed;
-						}
-					}
-					else {
-						data.elapsed_draw_time = 0.0F;
-					}
-				}
-			}
-
-			template <>
-			void _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::_Tick_emscripten(void * userdata)
-			{
-				_Output_surface * instance = (_Output_surface *) userdata;
-				_Output_surface & sfc = *instance;
-				_Output_surface_datadata & osd = instance->data();
-				_Tick_show(osd, instance, sfc);
-			}
-
-			template <>
 			int _Cairo_graphics_surfaces<std::experimental::io2d::v1::_Graphics_math_float_impl>::surfaces::begin_show(_Output_surface_datadata& osd, _Output_surface* instance, _Output_surface& sfc)
 			{
 				_Display_surface_data_type &data = osd->data;
@@ -340,30 +283,44 @@ namespace std::experimental::io2d {
 
 				data.redraw_required = true;
 
-#ifdef __EMSCRIPTEN__
-				int fps_for_emscripten = 0;
-				switch (data.rr) {
-					case io2d::refresh_style::as_needed:
-						// TODO(dludwig@pobox.com): if refresh rate == as_needed', then pass what to emscripten_set_main_loop* ?
-						fps_for_emscripten = 0;
-						break;
-					case io2d::refresh_style::as_fast_as_possible:
-						fps_for_emscripten = 0;
-						break;
-					case io2d::refresh_style::fixed:
-						fps_for_emscripten = data.refresh_fps;
-						break;
-				}
-				emscripten_set_main_loop_arg(&_Tick_emscripten, instance, fps_for_emscripten, 1);
-#else
 				while (_Is_active<std::experimental::io2d::v1::_Graphics_math_float_impl>(data)) {
-					_Tick_show(osd, instance, sfc);
+					auto currentTime = ::std::chrono::steady_clock::now();
+					auto elapsedTimeIncrement = static_cast<float>(::std::chrono::duration_cast<::std::chrono::nanoseconds>(currentTime - data.previous_time).count());
+					data.elapsed_draw_time += elapsedTimeIncrement;
+					data.previous_time = currentTime;
+
+					SDL_Event ev;
+					while (SDL_PollEvent(&ev)) {}
+
+					bool redraw = true;
+					if (data.rr == io2d::refresh_style::as_needed) {
+						redraw = data.redraw_required;
+						data.redraw_required = false;
+					}
+
+					const auto desiredElapsed = 1'000'000'000.0F / data.refresh_fps;
+					if (data.rr == io2d::refresh_style::fixed) {
+						redraw = data.elapsed_draw_time >= desiredElapsed;
+					}
+					if (redraw) {
+						if (osd->draw_callback) {
+							osd->draw_callback(sfc);
+						}
+						_Render_to_native_surface(osd, sfc);
+						if (data.rr == experimental::io2d::refresh_style::fixed) {
+							while (data.elapsed_draw_time >= desiredElapsed) {
+								data.elapsed_draw_time -= desiredElapsed;
+							}
+						}
+						else {
+							data.elapsed_draw_time = 0.0F;
+						}
+					}
 
 					// Try to delay by a negligible amount of time.  On some platforms, this can help with responsiveness.
 					SDL_Delay(0);
 				}
 				data.elapsed_draw_time = 0.0F;
-#endif
 				return 0;
 			}
 
