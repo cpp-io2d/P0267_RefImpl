@@ -277,7 +277,7 @@ namespace std::experimental::io2d {
 			{
 				_Output_surface * instance = (_Output_surface *) userdata;
 				_Output_surface & sfc = *instance;
-				_Output_surface_datadata & osd = instance->_Data;
+				_Output_surface_datadata & osd = instance->data();
 				_Tick_show(osd, instance, sfc);
 			}
 
