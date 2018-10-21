@@ -10,10 +10,3 @@
 [submodule "P0267_RefImpl/Samples/maps/external/pugixml"]
 	path = P0267_RefImpl/Samples/maps/external/pugixml
 	url = https://github.com/zeux/pugixml
-[submodule "P0267_RefImpl/P0267_RefImpl/cairo/sdl2/external/cairo"]
-	path = P0267_RefImpl/P0267_RefImpl/cairo/sdl2/external/cairo
-	url = git://anongit.freedesktop.org/cairo
-[submodule "P0267_RefImpl/P0267_RefImpl/cairo/sdl2/external/pixman"]
-	path = P0267_RefImpl/P0267_RefImpl/cairo/sdl2/external/pixman
-	url = git://anongit.freedesktop.org/pixman
-	branch = 0.34
