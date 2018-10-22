@@ -11,7 +11,10 @@
 #include <sstream>
 #include <iomanip>
 
+#ifdef _IO2D_Has_Magick
 #include <magick/api.h>
+#endif
+
 #include <system_error>
 #include <cstring>
 #include <chrono>

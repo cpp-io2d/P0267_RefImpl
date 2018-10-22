@@ -33,12 +33,16 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 		Win32Win.cpp
 	)
 	set(EXECUTABLE_FLAGS WIN32)
+elseif( ${IO2D_DEFAULT} MATCHES "CAIRO_SDL2" )
+	list(APPEND ROCKS_IN_SPACE_SRC
+		SDL2Main.cpp
+	)
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
 	list(APPEND ROCKS_IN_SPACE_SRC
 		LinuxMain.cpp
 	)
 else()
-	message( "RocksInSpace doesn't have a frontend for this platform, thus skipping." )
+	message( "RocksInSpace doesn't have a frontend for this platform (${CMAKE_SYSTEM_NAME}), thus skipping." )
 	return()
 endif()
 

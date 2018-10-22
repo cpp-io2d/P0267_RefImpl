@@ -515,7 +515,7 @@ namespace std {
 							static void destroy(output_surface_data_type& data) noexcept;
 
 							static int begin_show(output_surface_data_type& data, basic_output_surface<_Graphics_surfaces_type>* instance, basic_output_surface<_Graphics_surfaces_type>& sfc);
-							static void end_show(output_surface_data_type& data);
+							static void end_show(output_surface_data_type &data);
 							static void refresh_style(output_surface_data_type& data, io2d::refresh_style val);
 							static void desired_frame_rate(output_surface_data_type& data, float val);
 							static void display_dimensions(output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
