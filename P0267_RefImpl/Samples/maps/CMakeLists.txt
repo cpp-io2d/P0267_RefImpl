@@ -6,8 +6,9 @@ get_filename_component(TOP_DIR ${PROJ_DIR} DIRECTORY)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${TOP_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 17)
 
-
-set(PROJECT_ID maps)
+# Use the CMakeLists.txt's parent-directory-name for the project's id/name
+get_filename_component(PROJECT_ID ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+string(REPLACE " " "_" PROJECT_ID ${PROJECT_ID})
 project(${PROJECT_ID})
 
 find_package(Boost 1.67.0 QUIET COMPONENTS system date_time)
@@ -29,10 +30,6 @@ endif()
 
 add_subdirectory(external/pugixml)
 
-# Use the CMakeLists.txt's parent-directory-name for the project's id/name
-#get_filename_component(PROJECT_ID ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-#string(REPLACE " " "_" PROJECT_ID ${PROJECT_ID})
-#project(${PROJECT_ID})
 
 add_executable(${PROJECT_ID}
     main.cpp
