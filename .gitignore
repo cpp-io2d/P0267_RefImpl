@@ -30,6 +30,15 @@ local.properties
 
 
 #################
+## CLion
+#################
+
+# Ignore default IDE generated folders
+.idea/
+cmake-build-*/
+
+
+#################
 ## Visual Studio
 #################
 
