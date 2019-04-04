@@ -3,6 +3,11 @@ TO DO
 
 The process of completing a TS is fraught with unexpected labours. Before we can consider offering a TS, several tasks remain.
 
+Update to R9
+-------------
+
+Modify the implementation to conform to the upcoming R9 release of P0267.
+
 Separate the handler from the display surface
 -------------
 
@@ -26,7 +31,7 @@ Text cannot be overlooked. An earlier version did include text rendering, but th
 Sample programs
 -------------
 
-There are two sample programs currently: an incomplete version of Asteroids and a test program which writes images to files. More sample programs will be needed to demonstrate the API.
+There are several sample programs currently: an incomplete version of Asteroids, a test program which writes images to files, and more. More sample programs will be needed to demonstrate the API.
 
 Additional renderers
 -------------
