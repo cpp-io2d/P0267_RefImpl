@@ -14,27 +14,27 @@ This IO2D implementation supports the following platforms out of the box:
 
 ### Build process
 IO2D employs CMake as a build system. The following variables control the configuration process:
-* IO2D_DEFAULT  
+* IO2D_DEFAULT
 Controls a selection of default backend which is used when non-template symbols from std::experimental::io2d, like "brush" or "surface", are referenced.
 There're 5 backends in this RefImpl:
   * CAIRO_WIN32
   * CAIRO_XLIB
   * CAIRO_SDL2
   * COREGRAPHICS_MAC
-  * COREGRAPHICS_IOS  
+  * COREGRAPHICS_IOS
 
-  If no default backend was defined, the build script will try to automatically set an appropriate Cairo backend based on the host environment.  
+  If no default backend was defined, the build script will try to automatically set an appropriate Cairo backend based on the host environment.
   
-* IO2D_ENABLED  
+* IO2D_ENABLED
 Specifies a list of enabled backends, which means a set of backends included in the build process.
 By default, a value of IO2D_DEFAULT is used, so this variable can be left undefined.
 If, however, you want to have a multi-backend configuration of IO2D, this variable has to contain a valid list, for instance: "COREGRAPHICS_MAC;CAIRO_XLIB". 
-* IO2D_WITHOUT_SAMPLES  
+* IO2D_WITHOUT_SAMPLES
 This variable can be defined to exclude sample code from the build process.
 Please note that some samples might be exculed from the build process depending on your environment.
 More specifically, the SVG example requires Boost.
 Pass any value, like "1" to skip this part. 
-* IO2D_WITHOUT_TESTS  
+* IO2D_WITHOUT_TESTS
 This variable controls whether test suites will be included in the build process.
 Pass any value, like "1" to skip this part.
 
@@ -58,7 +58,7 @@ Installation steps:
 5. Install cairo for x64 with the command ".\vcpkg.exe install cairo --triplet x64-windows"
 6. Install graphicsmagick for win32 with the command ".\vcpkg.exe install graphicsmagick"
 7. Install graphicsmagick for x64 with the command ".\vcpkg.exe install graphicsmagick --triplet x64-windows"
-8. Inspect which packages have been installed with the command ".\vcpkg.exe list"   
+8. Inspect which packages have been installed with the command ".\vcpkg.exe list"
 Both Win32 and x64 builds are supported and being tested.
 
 Example of CMake execution (assuming that vcpkg was installed in c:/tools):
@@ -76,21 +76,21 @@ io2d.sln
 CMake script expects cairo and graphicsmagick to be installed. libpng is required in order to run tests.
 These installation steps assume APT package manager on Ubuntu Linux.
 Installation steps:
-1. Refresh apt: sudo apt-get update
-2. Install GCC: sudo apt-get install g++-7 build-essential
-3. Install Cairo: sudo apt-get install libcairo2-dev
-4. Install graphicsmagick: sudo apt-get install libgraphicsmagick1-dev
-5. Install libpng: sudo apt-get install libpng-dev
+1. Refresh apt: `sudo apt update`
+2. Install GCC: `sudo apt install build-essential`
+3. Install CMake: `sudo apt install cmake`
+3. Install Cairo: `sudo apt install libcairo2-dev`
+4. Install graphicsmagick: `sudo apt install libgraphicsmagick1-dev`
+5. Install libpng: `sudo apt install libpng-dev`
 
 Example of CMake execution:
 ```
-export CXX=g++-7
 git clone --recurse-submodules https://github.com/cpp-io2d/P0267_RefImpl
 cd P0267_RefImpl
 mkdir Debug
 cd Debug
-cmake -G "Unix Makefiles" --config Debug "-DCMAKE_BUILD_TYPE=Debug" ../.
-make
+cmake --config Debug "-DCMAKE_BUILD_TYPE=Debug" ..
+cmake --build .
 ```
 
 ### Cairo/Xlib on macOS
