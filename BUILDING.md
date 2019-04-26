@@ -79,9 +79,9 @@ Installation steps:
 1. Refresh apt: `sudo apt update`
 2. Install GCC: `sudo apt install build-essential`
 3. Install CMake: `sudo apt install cmake`
-3. Install Cairo: `sudo apt install libcairo2-dev`
-4. Install graphicsmagick: `sudo apt install libgraphicsmagick1-dev`
-5. Install libpng: `sudo apt install libpng-dev`
+4. Install Cairo: `sudo apt install libcairo2-dev`
+5. Install graphicsmagick: `sudo apt install libgraphicsmagick1-dev`
+6. Install libpng: `sudo apt install libpng-dev`
 
 Example of CMake execution:
 ```
