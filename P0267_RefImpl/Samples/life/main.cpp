@@ -81,9 +81,9 @@ void GameOfLife::CountNeighbours()
     pair<int, int> dirs[] = { {1,0}, {1,1}, {0,1}, {-1,1}, {-1,0}, {-1,-1}, {0,-1}, {1,-1} };
     for( auto y = 0; y < m_BoardHeight; ++y )
         for( auto x = 0; x < m_BoardWidth; ++x )
-            m_Counts[y*m_BoardWidth + x] = accumulate(begin(dirs), end(dirs), 0, [&](auto a, auto b){
+            m_Counts[y*m_BoardWidth + x] = static_cast<uint8_t>(accumulate(begin(dirs), end(dirs), 0, [&](auto a, auto b){
                 return at(x + b.first, y + b.second) ? a + 1 : a;
-            });
+            }));
 }
 
 void GameOfLife::SweepIntermediates()

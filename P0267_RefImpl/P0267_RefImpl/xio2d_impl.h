@@ -18,10 +18,7 @@
 #include <initializer_list>
 #include <cmath>
 #include <utility>
-
-//#ifdef _Filesystem_support_test
-//#include <filesystem>
-//#endif
+#include <filesystem>
 
 #include "xsurfaces.h"
 #include "xpath.h"

@@ -3,7 +3,7 @@
 
 using namespace std::experimental::io2d;
 
-int main(int argc, const char *argv[]) {
+int main(/*int argc, const char *argv[]*/) {
     auto display = output_surface {512, 512, format::argb32, scaling::none, refresh_style::fixed, 30.f};
     display.size_change_callback([&](output_surface &surface) {
         surface.dimensions(surface.display_dimensions());
