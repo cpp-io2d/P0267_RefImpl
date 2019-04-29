@@ -31,8 +31,8 @@ namespace std {
 						const data_type& data() const noexcept;
 						data_type& data() noexcept;
 
-						abs_new_figure();
-						explicit abs_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt);
+						abs_new_figure() noexcept;
+						explicit abs_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept;
 						abs_new_figure(const abs_new_figure& other);
 						abs_new_figure& operator=(const abs_new_figure& other);
 						abs_new_figure(abs_new_figure&& other) noexcept;
