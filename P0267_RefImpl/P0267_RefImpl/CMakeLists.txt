@@ -41,6 +41,8 @@ add_library(io2d_core
 	xsurfaces_enums.h
 	xsurfaces.h
 	xtext.h
+	xtext_enums.h
+	xtext_impl.h
 	xbrushes_impl.h
 	xgraphicsmath_impl.h
 	xgraphicsmathfloat_impl.h
@@ -48,6 +50,7 @@ add_library(io2d_core
 	xpath_impl.h
 	xpathbuilder_impl.h
 	xsurfaces_impl.h
+	xcommandlist_impl.h
 	xsurfacesprops_impl.h
     xinterchangebuffer.cpp
     xinterchangebuffer.h

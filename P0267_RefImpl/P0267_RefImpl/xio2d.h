@@ -137,7 +137,9 @@ namespace std {
 #include "xpath.h"
 #include "xsurfaces_enums.h"
 #include "xsurfaces.h"
+#include "xtext_enums.h"
 #include "xtext.h"
+#include "xtext_impl.h"
 #include "xbrushes_impl.h"
 #include "xgraphicsmath_impl.h"
 #include "xgraphicsmathfloat_impl.h"
@@ -146,6 +148,8 @@ namespace std {
 #include "xpathbuilder_impl.h"
 #include "xsurfaces_impl.h"
 #include "xsurfacesprops_impl.h"
+#include "xcommandlist_impl.h"
+#include "xcommandlistbuilder_impl.h"
 #include "xinterchangebuffer.h"
 
 #endif // _XIO2D_H_

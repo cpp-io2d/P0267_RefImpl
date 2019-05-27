@@ -19,7 +19,7 @@ struct Document {
 struct Transformable {
     Transformable() {}
     Transformable(Transformable const & src):trans_matrix{src.trans_matrix} {}
-    void transform_matrix(const boost::array<double, 6> & m) { trans_matrix = matrix_2d(m[0], m[1], m[2], m[3], m[4], m[5]) * trans_matrix; }
+    void transform_matrix(const boost::array<double, 6> & m) { trans_matrix = matrix_2d(static_cast<float>(m[0]), static_cast<float>(m[1]), static_cast<float>(m[2]), static_cast<float>(m[3]), static_cast<float>(m[4]), static_cast<float>(m[5])) * trans_matrix; }
     matrix_2d trans_matrix;
 };
 
@@ -99,14 +99,14 @@ struct Canvas: Transformable, Stylable {
     
     void set_viewport(double /*viewport_x*/, double /*viewport_y*/, double viewport_width, double viewport_height) {
         if( !surface ) {
-            surface = make_shared<image_surface>(format::argb32, document_.scale * viewport_width, document_.scale * viewport_height);
+            surface = make_shared<image_surface>(format::argb32, document_.scale * static_cast<float>(viewport_width), document_.scale * static_cast<float>(viewport_height));
             surface->paint(brush{rgba_color::transparent_black});
         }
-        length_factory_.set_viewport_size(viewport_width, viewport_height);
+        length_factory_.set_viewport_size(static_cast<float>(viewport_width), static_cast<float>(viewport_height));
     }
     
     void set_viewbox_size(double viewbox_width, double viewbox_height) {
-        length_factory_.set_viewport_size(viewbox_width, viewbox_height);
+        length_factory_.set_viewport_size(static_cast<float>(viewbox_width), static_cast<float>(viewbox_height));
     }
     
     void disable_rendering() {}
@@ -223,7 +223,7 @@ struct LinearGradientContext : Canvas {
         document_.gradients.insert({name, make_pair(move(b), move(bp))});
     }
     void transform_matrix(const boost::array<double, 6> & matrix) {
-        trans_matrix = matrix_2d(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+        trans_matrix = matrix_2d(static_cast<float>(matrix[0]), static_cast<float>(matrix[1]), static_cast<float>(matrix[2]), static_cast<float>(matrix[3]), static_cast<float>(matrix[4]), static_cast<float>(matrix[5]));
     }
     using Canvas::set;
     template<class Range>

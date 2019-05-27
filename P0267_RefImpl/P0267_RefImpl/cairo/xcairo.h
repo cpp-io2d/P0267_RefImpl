@@ -412,22 +412,13 @@ namespace std {
 							using image_surface_data_type = _Image_surface_data;
 
 							static image_surface_data_type create_image_surface(io2d::format fmt, int width, int height);
-#if defined(_Filesystem_support_test)
 							static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt);
 							static image_surface_data_type create_image_surface(filesystem::path p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
-#else
-							static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, io2d::format fmt);
-							static image_surface_data_type create_image_surface(::std::string p, image_file_format iff, io2d::format fmt, ::std::error_code& ec) noexcept;
-#endif
 							static image_surface_data_type move_image_surface(image_surface_data_type&& data) noexcept;
 							static void destroy(image_surface_data_type& data) noexcept;
-#if defined(_Filesystem_support_test)
 							static void save(image_surface_data_type& data, filesystem::path p, image_file_format iff);
 							static void save(image_surface_data_type& data, filesystem::path p, image_file_format iff, error_code& ec) noexcept;
-#else
-							static void save(image_surface_data_type& data, ::std::string p, image_file_format iff);
-							static void save(image_surface_data_type& data, ::std::string p, image_file_format iff, error_code& ec) noexcept;
-#endif
+
 							static io2d::format format(const image_surface_data_type& data) noexcept;
 							static basic_display_point<GraphicsMath> dimensions(const image_surface_data_type& data) noexcept;
 							static void clear(image_surface_data_type& data);

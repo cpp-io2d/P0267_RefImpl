@@ -16,12 +16,12 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline basic_figure_items<GraphicsSurfaces>::abs_new_figure::abs_new_figure()
+		inline basic_figure_items<GraphicsSurfaces>::abs_new_figure::abs_new_figure() noexcept
 			: _Data(GraphicsSurfaces::paths::create_abs_new_figure()) {
 		}
 
 		template<class GraphicsSurfaces>
-		inline basic_figure_items<GraphicsSurfaces>::abs_new_figure::abs_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt)
+		inline basic_figure_items<GraphicsSurfaces>::abs_new_figure::abs_new_figure(const basic_point_2d<typename GraphicsSurfaces::graphics_math_type>& pt) noexcept
 			: _Data(GraphicsSurfaces::paths::create_abs_new_figure(pt)) {
 		}
 
@@ -884,7 +884,7 @@ namespace std::experimental::io2d {
         }
 
 		template <class GraphicsSurfaces, class Allocator>
-		::std::vector<typename basic_figure_items<GraphicsSurfaces>::figure_item> _Interpret_path_items(const basic_path_builder<GraphicsSurfaces, Allocator>&);
+		::std::vector<typename basic_figure_items<GraphicsSurfaces>::figure_item> _Interpret_path_items(const basic_path_builder<GraphicsSurfaces, Allocator>& pf);
 
 		template<class GraphicsSurfaces>
 		inline const typename basic_interpreted_path<GraphicsSurfaces>::data_type& basic_interpreted_path<GraphicsSurfaces>::data() const noexcept {
