@@ -95,6 +95,14 @@ namespace std::experimental::io2d {
 			_Data.emplace_back(in_place_type<typename basic_commands<GraphicsSurfaces>::stroke>, sfc, b, ip, bp, sp, d, rp, cl);
 		}
 		template<class GraphicsSurfaces, class Allocator>
+		inline void basic_command_list_builder<GraphicsSurfaces, Allocator>::stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept {
+			stroke(b, ::std::begin(pb), ::std::end(pb), bp, sp, d, rp, cl);
+		}
+		template<class GraphicsSurfaces, class Allocator>
+		inline void basic_command_list_builder<GraphicsSurfaces, Allocator>::stroke(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept {
+			stroke(sfc, b, ::std::begin(pb), ::std::end(pb), bp, sp, d, rp, cl);
+		}
+		template<class GraphicsSurfaces, class Allocator>
 		template<class InputIterator>
 		inline void io2d::v1::basic_command_list_builder<GraphicsSurfaces, Allocator>::stroke(const basic_brush<GraphicsSurfaces>& b, InputIterator first, InputIterator last, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept {
 			_Data.emplace_back(in_place_type<typename basic_commands<GraphicsSurfaces>::stroke>, b, first, last, bp, sp, d, rp, cl);
@@ -111,6 +119,14 @@ namespace std::experimental::io2d {
 		template<class GraphicsSurfaces, class Allocator>
 		inline void basic_command_list_builder<GraphicsSurfaces, Allocator>::fill(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept {
 			_Data.emplace_back(in_place_type<typename basic_commands<GraphicsSurfaces>::fill>, sfc, b, ip, bp, rp, cl);
+		}
+		template<class GraphicsSurfaces, class Allocator>
+		inline void basic_command_list_builder<GraphicsSurfaces, Allocator>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept {
+			fill(b, ::std::begin(pb), ::std::end(pb), bp, rp, cl);
+		}
+		template<class GraphicsSurfaces, class Allocator>
+		inline void basic_command_list_builder<GraphicsSurfaces, Allocator>::fill(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept {
+			fill(sfc, b, ::std::begin(pb), ::std::end(pb), bp, rp, cl);
 		}
 		template<class GraphicsSurfaces, class Allocator>
 		template<class InputIterator>
@@ -148,7 +164,7 @@ namespace std::experimental::io2d {
 		}
 		template<class GraphicsSurfaces, class Allocator>
 		inline basic_command_list_builder<GraphicsSurfaces, Allocator>::basic_command_list_builder() noexcept(noexcept(Allocator()))
-			: basic_command_list_builder(Allocator) { }
+			: basic_command_list_builder(Allocator()) { }
 		template<class GraphicsSurfaces, class Allocator>
 		inline basic_command_list_builder<GraphicsSurfaces, Allocator>::basic_command_list_builder(const Allocator& a) noexcept
 			: _Data(a) {

@@ -15,7 +15,7 @@ namespace std::experimental::io2d {
 			const data_type& data() const noexcept;
 			data_type& data() noexcept;
 
-			basic_text_props(float scl = 1.0f, float pointsize = -1.0f, bool kern = true, bool hint = font_hinting::default_hinting, font_antialias aa = font_antialias::antialias, font_stretching stretch = font_stretching::normal, bool strike_through = false, font_extras extras = font_extras::none) noexcept;
+			basic_text_props(float scl = 1.0f, float pointsize = -1.0f, bool kern = true, font_hinting hint = font_hinting::default_hinting, font_antialias aa = font_antialias::antialias, font_stretching stretch = font_stretching::normal, bool strike_through = false, font_extras extras = font_extras::none) noexcept;
 
 			void kerning(bool k) noexcept;
 			bool kerning() const noexcept;

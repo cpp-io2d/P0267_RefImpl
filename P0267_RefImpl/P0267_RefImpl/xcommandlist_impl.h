@@ -1,6 +1,7 @@
 #pragma once
 
 #include "xsurfaces.h"
+#include "xpath.h"
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
@@ -108,7 +109,7 @@ namespace std::experimental::io2d {
 			GraphicsSurfaces::surfaces::surface(_Data, sfc);
 		}
 		template<class GraphicsSurfaces>
-		inline const optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>& basic_commands<GraphicsSurfaces>::paint::surface() const noexcept {
+		inline const optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> basic_commands<GraphicsSurfaces>::paint::surface() const noexcept {
 			return GraphicsSurfaces::surfaces::surface(_Data);
 		}
 		template<class GraphicsSurfaces>
@@ -178,12 +179,12 @@ namespace std::experimental::io2d {
 		template<class GraphicsSurfaces>
 		template<class InputIterator>
 		inline io2d::v1::basic_commands<GraphicsSurfaces>::stroke::stroke(const basic_brush<GraphicsSurfaces>& b, InputIterator first, InputIterator last, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept
-			: _Data(GraphicsSurfaces::surfaces::template create_stroke<InputIterator>(b, first, last, bp.value_or(basic_brush_props<GraphicsSurfaces>()), sp.value_or(basic_stroke_props<GraphicsSurfaces>()), d.value_or(basic_dashes<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()))) {
+			: _Data(GraphicsSurfaces::surfaces::create_stroke(b, basic_interpreted_path<GraphicsSurfaces>(first, last), bp.value_or(basic_brush_props<GraphicsSurfaces>()), sp.value_or(basic_stroke_props<GraphicsSurfaces>()), d.value_or(basic_dashes<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()))) {
 		}
 		template<class GraphicsSurfaces>
 		template<class InputIterator>
 		inline basic_commands<GraphicsSurfaces>::stroke::stroke(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_brush<GraphicsSurfaces>& b, InputIterator first, InputIterator last, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept
-			: _Data(GraphicsSurfaces::surfaces::template create_stroke<InputIterator>(sfc, b, first, last, bp.value_or(basic_brush_props<GraphicsSurfaces>()), sp.value_or(basic_stroke_props<GraphicsSurfaces>()), d.value_or(basic_dashes<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()))) {
+			: _Data(GraphicsSurfaces::surfaces::create_stroke(sfc, b, basic_interpreted_path<GraphicsSurfaces>(first, last), bp.value_or(basic_brush_props<GraphicsSurfaces>()), sp.value_or(basic_stroke_props<GraphicsSurfaces>()), d.value_or(basic_dashes<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()))) {
 		}
 		template<class GraphicsSurfaces>
 		inline void basic_commands<GraphicsSurfaces>::stroke::brush(const basic_brush<GraphicsSurfaces>& b) noexcept {
@@ -211,7 +212,7 @@ namespace std::experimental::io2d {
 			GraphicsSurfaces::surfaces::stroke_props(_Data, sp);
 		}
 		template<class GraphicsSurfaces>
-		inline const basic_stroke_props<GraphicsSurfaces>& basic_commands<GraphicsSurfaces>::stroke::stroke_props() const noexcept {
+		inline optional<basic_stroke_props<GraphicsSurfaces>> basic_commands<GraphicsSurfaces>::stroke::stroke_props() const noexcept {
 			return GraphicsSurfaces::surfaces::stroke_props(_Data);
 		}
 		template<class GraphicsSurfaces>
@@ -273,12 +274,12 @@ namespace std::experimental::io2d {
 		template<class GraphicsSurfaces>
 		template<class InputIterator>
 		inline basic_commands<GraphicsSurfaces>::fill::fill(const basic_brush<GraphicsSurfaces>& b, InputIterator first, InputIterator last, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept
-			: _Data(GraphicsSurfaces::surfaces::template create_fill<InputIterator>(b, first, last, bp.value_or(basic_brush_props<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()))) {
+			: _Data(GraphicsSurfaces::surfaces::create_fill(b, basic_interpreted_path<GraphicsSurfaces>(first, last), bp.value_or(basic_brush_props<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()))) {
 		}
 		template<class GraphicsSurfaces>
 		template<class InputIterator>
 		inline basic_commands<GraphicsSurfaces>::fill::fill(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_brush<GraphicsSurfaces>& b, InputIterator first, InputIterator last, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) noexcept
-			: _Data(GraphicsSurfaces::surfaces::template create_fill(sfc, b, first, last, bp.value_or(basic_brush_props<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()))) {
+			: _Data(GraphicsSurfaces::surfaces::create_fill(sfc, b, basic_interpreted_path<GraphicsSurfaces>(first, last), bp.value_or(basic_brush_props<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()))) {
 		}
 		template<class GraphicsSurfaces>
 		inline void basic_commands<GraphicsSurfaces>::fill::brush(const basic_brush<GraphicsSurfaces>& b) noexcept {
@@ -295,7 +296,7 @@ namespace std::experimental::io2d {
 		template<class GraphicsSurfaces>
 		template<class InputIterator>
 		inline void basic_commands<GraphicsSurfaces>::fill::path(InputIterator first, InputIterator last) noexcept {
-			GraphicsSurfaces::surfaces::template path<InputIterator>(_Data, first, last);
+			GraphicsSurfaces::surfaces::path(_Data, basic_interpreted_path<GraphicsSurfaces>(first, last));
 		}
 		template<class GraphicsSurfaces>
 		inline const basic_interpreted_path<GraphicsSurfaces>& basic_commands<GraphicsSurfaces>::fill::path() const noexcept {
@@ -374,12 +375,12 @@ namespace std::experimental::io2d {
 			return GraphicsSurfaces::surfaces::brush_props(_Data);
 		}
 		template<class GraphicsSurfaces>
-		inline void basic_commands<GraphicsSurfaces>::mask::mask_brush_props(optional<basic_brush_props<GraphicsSurfaces>> mbp) noexcept {
-			GraphicsSurfaces::surfaces::mask_brush_props(_Data, mbp);
+		inline void basic_commands<GraphicsSurfaces>::mask::mask_props(optional<basic_mask_props<GraphicsSurfaces>> mp) noexcept {
+			GraphicsSurfaces::surfaces::mask_props(_Data, mp);
 		}
 		template<class GraphicsSurfaces>
-		inline optional<basic_brush_props<GraphicsSurfaces>> basic_commands<GraphicsSurfaces>::mask::mask_brush_props() const noexcept {
-			return GraphicsSurfaces::surfaces::mask_brush_props(_Data);
+		inline optional<basic_mask_props<GraphicsSurfaces>> basic_commands<GraphicsSurfaces>::mask::mask_props() const noexcept {
+			return GraphicsSurfaces::surfaces::mask_props(_Data);
 		}
 		template<class GraphicsSurfaces>
 		inline void basic_commands<GraphicsSurfaces>::mask::render_props(const optional<basic_render_props<GraphicsSurfaces>>& rp) noexcept {
@@ -474,6 +475,22 @@ namespace std::experimental::io2d {
 			return GraphicsSurfaces::surfaces::text_props(_Data);
 		}
 		template<class GraphicsSurfaces>
+		inline void basic_commands<GraphicsSurfaces>::draw_text::stroke_props(const optional<basic_stroke_props<GraphicsSurfaces>>& sp) noexcept {
+			GraphicsSurfaces::surfaces::stroke_props(_Data, sp);
+		}
+		template<class GraphicsSurfaces>
+		inline optional<basic_stroke_props<GraphicsSurfaces>> basic_commands<GraphicsSurfaces>::draw_text::stroke_props() const noexcept {
+			return GraphicsSurfaces::surfaces::stroke_props(_Data);
+		}
+		template<class GraphicsSurfaces>
+		inline void basic_commands<GraphicsSurfaces>::draw_text::dashes(const optional<basic_dashes<GraphicsSurfaces>>& d) noexcept {
+			GraphicsSurfaces::surfaces::dashes(_Data);
+		}
+		template<class GraphicsSurfaces>
+		inline optional<basic_dashes<GraphicsSurfaces>> basic_commands<GraphicsSurfaces>::draw_text::dashes() const noexcept {
+			return GraphicsSurfaces::surfaces::dashes(_Data);
+		}
+		template<class GraphicsSurfaces>
 		inline void basic_commands<GraphicsSurfaces>::draw_text::brush_props(const optional<basic_brush_props<GraphicsSurfaces>>& bp) noexcept {
 			GraphicsSurfaces::surfaces::brush_props(_Data, bp);
 		}
@@ -496,6 +513,61 @@ namespace std::experimental::io2d {
 		template<class GraphicsSurfaces>
 		inline optional<basic_clip_props<GraphicsSurfaces>> basic_commands<GraphicsSurfaces>::draw_text::clip_props() const noexcept {
 			return GraphicsSurfaces::surfaces::clip_props(_Data);
+		}
+
+		// run_function
+		template<class GraphicsSurfaces>
+		inline const typename basic_commands<GraphicsSurfaces>::run_function::data_type& basic_commands<GraphicsSurfaces>::run_function::data() const noexcept {
+			return GraphicsSurfaces::surfaces::surface(_Data);
+		}
+		template<class GraphicsSurfaces>
+		inline typename basic_commands<GraphicsSurfaces>::run_function::data_type& basic_commands<GraphicsSurfaces>::run_function::data() noexcept {
+			return _Data;
+		}
+
+		template<class GraphicsSurfaces>
+		inline basic_commands<GraphicsSurfaces>::run_function::run_function(const function<void(basic_image_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>& fn, void* user_data, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept
+			: _Data(GraphicsSurfaces::surfaces::create_run_function(fn, user_data, sfc)) {
+		}
+		template<class GraphicsSurfaces>
+		inline basic_commands<GraphicsSurfaces>::run_function::run_function(const function<void(basic_output_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>& fn, void* user_data, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept
+			: _Data(GraphicsSurfaces::surfaces::create_run_function(fn, user_data, sfc)) {
+		}
+		template<class GraphicsSurfaces>
+		inline basic_commands<GraphicsSurfaces>::run_function::run_function(const function<void(basic_unmanaged_output_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>& fn, void* user_data, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept
+			: _Data(GraphicsSurfaces::surfaces::create_run_function(fn, user_data, sfc)) {
+		}
+		template<class GraphicsSurfaces>
+		inline void basic_commands<GraphicsSurfaces>::run_function::surface(const optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>& sfc) noexcept {
+			GraphicsSurfaces::surfaces::surface(_Data, sfc);
+		}
+		template<class GraphicsSurfaces>
+		inline optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> basic_commands<GraphicsSurfaces>::run_function::surface() const noexcept {
+			return GraphicsSurfaces::surfaces::surface(_Data);
+		}
+		template<class GraphicsSurfaces>
+		inline void basic_commands<GraphicsSurfaces>::run_function::func(const function<void(basic_image_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>& fn) noexcept {
+			GraphicsSurfaces::surfaces::func(_Data, fn);
+		}
+		template<class GraphicsSurfaces>
+		inline void basic_commands<GraphicsSurfaces>::run_function::func(const function<void(basic_output_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>& fn) noexcept {
+			GraphicsSurfaces::surfaces::func(_Data, fn);
+		}
+		template<class GraphicsSurfaces>
+		inline void basic_commands<GraphicsSurfaces>::run_function::func(const function<void(basic_unmanaged_output_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>& fn) noexcept {
+			GraphicsSurfaces::surfaces::func(_Data, fn);
+		}
+		template<class GraphicsSurfaces>
+		inline const variant<function<void(basic_image_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>, function<void(basic_output_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>, function<void(basic_unmanaged_output_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>>& basic_commands<GraphicsSurfaces>::run_function::func() const noexcept {
+			return GraphicsSurfaces::surfaces::func(_Data);
+		}
+		template<class GraphicsSurfaces>
+		inline void basic_commands<GraphicsSurfaces>::run_function::user_data(void* ud) noexcept {
+			GraphicsSurfaces::surfaces::user_data(_Data, ud);
+		}
+		template<class GraphicsSurfaces>
+		inline void* basic_commands<GraphicsSurfaces>::run_function::user_data() const noexcept {
+			return GraphicsSurfaces::surfaces::user_data(_Data);
 		}
 	}
 }

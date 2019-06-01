@@ -98,11 +98,6 @@ namespace std {
 				inline void basic_image_surface<GraphicsSurfaces>::paint(const basic_brush<GraphicsSurfaces>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
 					GraphicsSurfaces::surfaces::paint(_Data, b, (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
-				template<class GraphicsSurfaces>
-				template<class InputIterator>
-				inline void basic_image_surface<GraphicsSurfaces>::command_list(InputIterator first, InputIterator last) {
-					GraphicsSurfaces::surfaces::command_list(_Data, first, last);
-				}
 				template <class GraphicsSurfaces>
 				template <class Allocator>
 				inline void basic_image_surface<GraphicsSurfaces>::stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
@@ -134,6 +129,19 @@ namespace std {
 				template<class GraphicsSurfaces>
 				inline void basic_image_surface<GraphicsSurfaces>::draw_text(const basic_bounding_box<graphics_math_type>& bb, const basic_brush<GraphicsSurfaces>& b, const basic_font<GraphicsSurfaces>& font, const string& text, const optional<basic_text_props<GraphicsSurfaces>>& tp, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_stroke_props<GraphicsSurfaces>>& sp, const optional<basic_dashes<GraphicsSurfaces>>& d, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
 					GraphicsSurfaces::surfaces::draw_text(_Data, bb, b, font, text, tp.value_or(basic_text_props<GraphicsSurfaces>()), bp.value_or(basic_brush_props<GraphicsSurfaces>()), sp.value_or(basic_stroke_props<GraphicsSurfaces>()), d.value_or(basic_dashes<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()));
+				}
+
+				template<class GraphicsSurfaces>
+				template<class InputIterator>
+				inline void basic_image_surface<GraphicsSurfaces>::run_command_list(InputIterator first, InputIterator last) {
+					GraphicsSurfaces::surfaces::template run_command_list(_Data, *this, first, last);
+				}
+
+				template<class GraphicsSurfaces>
+				template <class Allocator>
+				inline void basic_image_surface<GraphicsSurfaces>::run_command_list(const basic_command_list_builder<GraphicsSurfaces, Allocator>& cmd)
+				{
+					return run_command_list(::std::begin(cmd), ::std::end(cmd));
 				}
 
 				template<class GraphicsSurfaces>
@@ -260,7 +268,7 @@ namespace std {
 				template<class GraphicsSurfaces>
 				template<class InputIterator>
 				inline void basic_output_surface<GraphicsSurfaces>::command_list(InputIterator first, InputIterator last) {
-					GraphicsSurfaces::surfaces::template command_list<InputIterator>(_Data, first, last);
+					GraphicsSurfaces::surfaces::template command_list<InputIterator>(_Data, *this, first, last);
 				}
 				template <class GraphicsSurfaces>
 				inline void basic_output_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
@@ -472,11 +480,6 @@ namespace std {
 				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
 					GraphicsSurfaces::surfaces::fill(_Data, b, basic_interpreted_path<GraphicsSurfaces>(pb), (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
 				}
-				template<class GraphicsSurfaces>
-				template<class InputIterator>
-				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::command_list(InputIterator first, InputIterator last) {
-					GraphicsSurfaces::surfaces::template command_list<InputIterator>(_Data, first, last);
-				}
 				template <class GraphicsSurfaces>
 				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::fill(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
 					GraphicsSurfaces::surfaces::fill(_Data, b, ip, (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));
@@ -496,6 +499,11 @@ namespace std {
 					GraphicsSurfaces::surfaces::draw_text(_Data, bb, b, font, text, tp.value_or(basic_text_props<GraphicsSurfaces>()), bp.value_or(basic_brush_props<GraphicsSurfaces>()), sp.value_or(basic_stroke_props<GraphicsSurfaces>()), d.value_or(basic_dashes<GraphicsSurfaces>()), rp.value_or(basic_render_props<GraphicsSurfaces>()), cl.value_or(basic_clip_props<GraphicsSurfaces>()));
 				}
 
+				template<class GraphicsSurfaces>
+				template<class InputIterator>
+				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::command_list(InputIterator first, InputIterator last) {
+					GraphicsSurfaces::surfaces::template command_list<InputIterator>(_Data, *this, first, last);
+				}
 				template <class GraphicsSurfaces>
 				inline void basic_unmanaged_output_surface<GraphicsSurfaces>::draw_callback(const function<void(basic_unmanaged_output_surface& sfc)>& fn) {
 					GraphicsSurfaces::surfaces::draw_callback(_Data, fn);

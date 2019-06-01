@@ -126,6 +126,350 @@ namespace std::experimental::io2d {
 				cairo_surface_unmap_image(sfc.data().surface.get(), srcSfc);
 				return retSfc;
 			}
+
+			// image surface command list
+
+			template <class GraphicsSurfaces, class TItem>
+			struct _Command_list_image_surface_visitor {
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::clear>, int> = 0>
+				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().clear();
+					}
+					else {
+						sfc.clear();
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
+				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().flush();
+					}
+					else {
+						sfc.flush();
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
+				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						if (item.extents()) {
+							item.surface().value().get().mark_dirty(item.extents().value());
+						}
+						else {
+							item.surface().value().get().mark_dirty();
+						}
+					}
+					else {
+						if (item.extents()) {
+							sfc.mark_dirty(item.extents().value());
+						}
+						else {
+							sfc.mark_dirty();
+						}
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::paint>, int> = 0>
+				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().paint(item.brush(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.paint(item.brush(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::stroke>, int> = 0>
+				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().stroke(item.brush(), item.path(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.stroke(item.brush(), item.path(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::fill>, int> = 0>
+				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().fill(item.brush(), item.path(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.fill(item.brush(), item.path(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mask>, int> = 0>
+				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().mask(item.brush(), item.mask_brush(), item.brush_props(), item.mask_props(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.mask(item.brush(), item.mask_brush(), item.brush_props(), item.mask_props(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::draw_text>, int> = 0>
+				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (::std::holds_alternative<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location())) {
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> pt = ::std::get<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location());
+						if (item.surface()) {
+							item.surface().value().get().draw_text(pt, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+						else {
+							sfc.draw_text(pt, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+					}
+					else {
+						basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> bb = ::std::get<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>(item.location());
+						if (item.surface()) {
+							item.surface().value().get().draw_text(bb, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+						else {
+							sfc.draw_text(bb, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::run_function>, int> = 0>
+				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+					(::std::get<function<void(basic_image_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>>(item.func()))(sfc, item.surface(), item.user_data());
+				}
+			};
+
+			template <class GraphicsMath, class InputIterator>
+			inline void _Process_command_list_image_surface(basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc, InputIterator first, InputIterator last) {
+				for (auto val = first; val != last; val++) {
+					::std::visit([&sfc](auto&& item) {
+						using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
+						_Command_list_image_surface_visitor<_Cairo_graphics_surfaces<GraphicsMath>, T>::template interpret<T>(item, sfc);
+						}, *val);
+				}
+			}
+
+
+
+			// output surface command list
+
+			template <class GraphicsSurfaces, class TItem>
+			struct _Command_list_output_surface_visitor {
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::clear>, int> = 0>
+				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().clear();
+					}
+					else {
+						sfc.clear();
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
+				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().flush();
+					}
+					else {
+						sfc.flush();
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
+				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						if (item.extents()) {
+							item.surface().value().get().mark_dirty(item.extents().value());
+						}
+						else {
+							item.surface().value().get().mark_dirty();
+						}
+					}
+					else {
+						if (item.extents()) {
+							sfc.mark_dirty(item.extents().value());
+						}
+						else {
+							sfc.mark_dirty();
+						}
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::paint>, int> = 0>
+				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().paint(item.brush(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.paint(item.brush(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::stroke>, int> = 0>
+				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().stroke(item.brush(), item.path(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.stroke(item.brush(), item.path(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::fill>, int> = 0>
+				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().fill(item.brush(), item.path(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.fill(item.brush(), item.path(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mask>, int> = 0>
+				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().mask(item.brush(), item.mask_brush(), item.brush_props(), item.mask_props(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.mask(item.brush(), item.mask_brush(), item.brush_props(), item.mask_props(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::draw_text>, int> = 0>
+				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (::std::holds_alternative<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location())) {
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> pt = ::std::get<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location());
+						if (item.surface()) {
+							item.surface().value().get().draw_text(pt, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+						else {
+							sfc.draw_text(pt, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+					}
+					else {
+						basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> bb = ::std::get<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>(item.location());
+						if (item.surface()) {
+							item.surface().value().get().draw_text(bb, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+						else {
+							sfc.draw_text(bb, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::run_function>, int> = 0>
+				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					(::std::get<function<void(basic_output_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>>(item.func()))(sfc, item.surface(), item.user_data());
+				}
+			};
+
+			template <class GraphicsMath, class InputIterator>
+			inline void _Process_command_list_output_surface(basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc, InputIterator first, InputIterator last) {
+				for (auto val = first; val != last; val++) {
+					::std::visit([&sfc](auto&& item) {
+						using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
+						_Command_list_output_surface_visitor<_Cairo_graphics_surfaces<GraphicsMath>, T>::template interpret<T>(item, sfc);
+						}, *val);
+				}
+			}
+
+			// unmanaged surface command list
+
+			template <class GraphicsSurfaces, class TItem>
+			struct _Command_list_unmanaged_output_surface_visitor {
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::clear>, int> = 0>
+				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().clear();
+					}
+					else {
+						sfc.clear();
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
+				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().flush();
+					}
+					else {
+						sfc.flush();
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
+				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						if (item.extents()) {
+							item.surface().value().get().mark_dirty(item.extents().value());
+						}
+						else {
+							item.surface().value().get().mark_dirty();
+						}
+					}
+					else {
+						if (item.extents()) {
+							sfc.mark_dirty(item.extents().value());
+						}
+						else {
+							sfc.mark_dirty();
+						}
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::paint>, int> = 0>
+				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().paint(item.brush(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.paint(item.brush(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::stroke>, int> = 0>
+				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().stroke(item.brush(), item.path(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.stroke(item.brush(), item.path(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::fill>, int> = 0>
+				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().fill(item.brush(), item.path(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.fill(item.brush(), item.path(), item.brush_props(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mask>, int> = 0>
+				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (item.surface()) {
+						item.surface().value().get().mask(item.brush(), item.mask_brush(), item.brush_props(), item.mask_props(), item.render_props(), item.clip_props());
+					}
+					else {
+						sfc.mask(item.brush(), item.mask_brush(), item.brush_props(), item.mask_props(), item.render_props(), item.clip_props());
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::draw_text>, int> = 0>
+				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					if (::std::holds_alternative<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location())) {
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> pt = ::std::get<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location());
+						if (item.surface()) {
+							item.surface().value().get().draw_text(pt, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+						else {
+							sfc.draw_text(pt, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+					}
+					else {
+						basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> bb = ::std::get<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>(item.location());
+						if (item.surface()) {
+							item.surface().value().get().draw_text(bb, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+						else {
+							sfc.draw_text(bb, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
+						}
+					}
+				}
+				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::run_function>, int> = 0>
+				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+					(::std::get<function<void(basic_unmanaged_output_surface<GraphicsSurfaces>&, optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>>, void*)>>(item.func()))(sfc, item.surface(), item.user_data());
+				}
+			};
+
+			template <class GraphicsMath, class InputIterator>
+			inline void _Process_command_list_unmanaged_output_surface(basic_unmanaged_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc, InputIterator first, InputIterator last) {
+				for (auto val = first; val != last; val++) {
+					::std::visit([&sfc](auto&& item) {
+						using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
+						_Command_list_output_surface_visitor<_Cairo_graphics_surfaces<GraphicsMath>, T>::template interpret<T>(item, sfc);
+						}, *val);
+				}
+			}
 		}
 	}
 }

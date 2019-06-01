@@ -38,6 +38,8 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			struct _Cairo_graphics_surfaces<GraphicsMath>::surfaces::_Output_surface_data {
 				_Display_surface_data_type data;
+				::std::vector<typename basic_commands<typename _Cairo_graphics_surfaces<GraphicsMath>::graphics_surfaces_type>::command_item> commands;
+				::std::vector<typename basic_commands<typename _Cairo_graphics_surfaces<GraphicsMath>::graphics_surfaces_type>::command_item> old_commands;
 				::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> draw_callback;
 				::std::function<void(basic_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
 				::std::function<basic_bounding_box<GraphicsMath>(const basic_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
@@ -46,6 +48,7 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			struct _Cairo_graphics_surfaces<GraphicsMath>::surfaces::_Unmanaged_output_surface_data {
 				_Display_surface_data_type data;
+				::std::vector<typename basic_commands<typename _Cairo_graphics_surfaces<GraphicsMath>::graphics_surfaces_type>::command_item> commands;
 				::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
 				::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
 				::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;
@@ -239,7 +242,13 @@ namespace std::experimental::io2d {
 							}
 							if (redraw) {
 								// Run user draw function:
-								osd->draw_callback(sfc);
+								if (osd->draw_callback != nullptr) {
+									osd->draw_callback(sfc);
+								}
+								_Process_command_list_output_surface(sfc, begin(osd->commands), end(osd->commands));
+								if (osd->old_commands.empty() == false) {
+									osd->old_commands.clear();
+								}
 								_Render_to_native_surface(osd, sfc);
 #ifdef _IO2D_WIN32FRAMERATE
 								elapsedNanoseconds.pop_front();
@@ -435,6 +444,16 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mask(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
 				_Ds_mask<_Cairo_graphics_surfaces<GraphicsMath>>(data->data, b, mb, bp, mp, rp, cl);
+			}
+			template<class GraphicsMath>
+			template<class InputIterator>
+			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::command_list(output_surface_data_type& data, basic_output_surface<graphics_surfaces_type>& sfc, InputIterator first, InputIterator last) {
+				// This prevents iterator invalidation such that the command list can be changed within the command list using run_function. It can only be changed once though.
+				if (data->old_commands.empty() == false) {
+					throw ::std::logic_error("Attempted to change the command list more than once during command list processing.");
+				}
+				data->old_commands.insert(data->commands.end(), first, last);
+				::std::swap(data->commands, data->old_commands);
 			}
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::draw_callback(output_surface_data_type& data, function<void(basic_output_surface<_Graphics_surfaces_type>&)> fn) {

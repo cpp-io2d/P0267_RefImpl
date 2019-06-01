@@ -184,7 +184,7 @@ namespace std::experimental::io2d {
 		}
         
         template<class GraphicsSurfaces>
-        inline bool basic_figure_items<GraphicsSurfaces>::close_figure::operator==(const close_figure& rhs) const noexcept {
+        inline bool basic_figure_items<GraphicsSurfaces>::close_figure::operator==(const close_figure& /*rhs*/) const noexcept {
             return true;
         }
         
@@ -375,7 +375,7 @@ namespace std::experimental::io2d {
 		}
         
         template<class GraphicsSurfaces>
-        inline bool basic_figure_items<GraphicsSurfaces>::revert_matrix::operator==(const revert_matrix& rhs) const noexcept {
+        inline bool basic_figure_items<GraphicsSurfaces>::revert_matrix::operator==(const revert_matrix& /*rhs*/) const noexcept {
             return true;
         }
         

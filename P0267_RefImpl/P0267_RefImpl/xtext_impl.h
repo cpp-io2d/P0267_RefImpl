@@ -15,7 +15,7 @@ namespace std {
 					return _Data;
 				}
 				template<class GraphicsSurfaces>
-				inline basic_text_props<GraphicsSurfaces>::basic_text_props(float scl, float pointsize, bool kern, bool hint, font_antialias aa, font_stretching stretch, bool strike_through, font_extras extras) noexcept : _Data(scl, pointsize, kern, hint, aa, stretch, strike_through, extras) {
+				inline basic_text_props<GraphicsSurfaces>::basic_text_props(float scl, float pointsize, bool kern, font_hinting hint, font_antialias aa, font_stretching stretch, bool strike_through, font_extras extras) noexcept : _Data(GraphicsSurfaces::text::create_text_props(scl, pointsize, kern, hint, aa, stretch, strike_through, extras)) {
 				}
 				template<class GraphicsSurfaces>
 				inline void basic_text_props<GraphicsSurfaces>::kerning(bool k) noexcept {

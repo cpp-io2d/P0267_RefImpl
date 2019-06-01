@@ -9,11 +9,13 @@ add_library(io2d_cairo
 	cairo_renderer-graphicsmagickinit.cpp
 	xcairo.h
 	xcairo_brushes_impl.h
+	xcairo_command_list_impl.h
 	xcairo_helpers.h
 	xcairo_paths_impl.h
 	xcairo_surfaces_image_impl.h
 	xcairo_surfaces_impl.h
 	xcairo_surface_state_props_impl.h
+	xcairo_text_impl.h
 	xio2d_cairo_main.h
 )
 
