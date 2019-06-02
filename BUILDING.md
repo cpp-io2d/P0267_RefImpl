@@ -54,10 +54,10 @@ Installation steps:
 1. Clone the github repository at https://github.com/Microsoft/vcpkg.
 2. Follow the instructions in the "Quick Start" section of https://github.com/Microsoft/vcpkg/blob/master/README.md to install and integrate vcpkg.
 3. Open a powershell window and navigate to the vcpkg repository.
-4. Install cairo for win32 with the command ".\vcpkg.exe install cairo"
-5. Install cairo for x64 with the command ".\vcpkg.exe install cairo --triplet x64-windows"
-6. Install graphicsmagick for win32 with the command ".\vcpkg.exe install graphicsmagick"
-7. Install graphicsmagick for x64 with the command ".\vcpkg.exe install graphicsmagick --triplet x64-windows"
+4. Install cairo with the command ".\vcpkg.exe install cairo:x86-windows cairo:x64-windows"
+5. Install graphicsmagick with the command ".\vcpkg.exe install graphicsmagick:x86-windows graphicsmagick:x64-windows"
+6. Install Pango with the command ".\vcpkg.exe install pango:x86-windows pango:x64-windows"
+7. Optionally install the static versions of those libraries using the suffix ":x86-windows-static" and ":x64-windows-static"
 8. Inspect which packages have been installed with the command ".\vcpkg.exe list"   
 Both Win32 and x64 builds are supported and being tested.
 
@@ -81,6 +81,7 @@ Installation steps:
 3. Install Cairo: sudo apt-get install libcairo2-dev
 4. Install graphicsmagick: sudo apt-get install libgraphicsmagick1-dev
 5. Install libpng: sudo apt-get install libpng-dev
+6. Install Pango: sudo apt-get install libpango1.0-dev
 
 Example of CMake execution:
 ```
@@ -115,6 +116,7 @@ cd Debug
 cmake -G "Xcode" --config Debug "-DCMAKE_BUILD_TYPE=Debug" ../.
 open io2d.xcodeproj
 ```
+Note: The above instructions do not include Pango installation instructions. We intend to include these when text rendering support is available, if not before then.
 
 ### CoreGraphics/Mac on macOS
 CMake script expects libpng to be installed if tests are required.

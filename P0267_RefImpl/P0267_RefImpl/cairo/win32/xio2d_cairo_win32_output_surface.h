@@ -49,6 +49,7 @@ namespace std::experimental::io2d {
 			struct _Cairo_graphics_surfaces<GraphicsMath>::surfaces::_Unmanaged_output_surface_data {
 				_Display_surface_data_type data;
 				::std::vector<typename basic_commands<typename _Cairo_graphics_surfaces<GraphicsMath>::graphics_surfaces_type>::command_item> commands;
+				::std::vector<typename basic_commands<typename _Cairo_graphics_surfaces<GraphicsMath>::graphics_surfaces_type>::command_item> old_commands;
 				::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> draw_callback;
 				::std::function<void(basic_unmanaged_output_surface<_Graphics_surfaces_type>&)> size_change_callback;
 				::std::function<basic_bounding_box<GraphicsMath>(const basic_unmanaged_output_surface<_Graphics_surfaces_type>&, bool&)> user_scaling_callback;

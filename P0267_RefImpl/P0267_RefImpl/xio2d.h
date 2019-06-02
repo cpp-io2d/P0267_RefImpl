@@ -129,6 +129,7 @@ namespace std {
 
 #include "xbrushes.h"
 #include "xcolor.h"
+#include "xcommandlist.h"
 #include "xdiagnostics.h"
 #include "xgraphicsmath.h"
 #include "xgraphicsmathfloat.h"

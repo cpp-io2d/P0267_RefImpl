@@ -32,6 +32,7 @@ add_library(io2d_core
 	xio2d.h
 	xbrushes.h
 	xcolor.h
+	xcommandlist.h
 	xdiagnostics.h
 	xgraphicsmath.h
 	xgraphicsmathfloat.h
