@@ -6,6 +6,7 @@
 #include "xgraphicsmath.h"
 #include <filesystem>
 #include <initializer_list>
+#include <future>
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
@@ -162,8 +163,8 @@ namespace std::experimental::io2d {
 			~basic_dashes() noexcept;
 		};
 
-		template <class GraphicsSurfaces, class Allocator>
-		class basic_command_list_builder;
+		//template <class GraphicsSurfaces, class Allocator>
+		//class basic_command_list_builder;
 
 		template <class GraphicsSurfaces>
 		class basic_image_surface {
@@ -206,10 +207,10 @@ namespace std::experimental::io2d {
 			void mask(const basic_brush<GraphicsSurfaces>& b, const basic_brush<GraphicsSurfaces>& mb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_mask_props<GraphicsSurfaces>>& mp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
 			void draw_text(const basic_point_2d<graphics_math_type>& pt, const basic_brush<GraphicsSurfaces>& b, const basic_font<GraphicsSurfaces>& font, const string& text, const optional<basic_text_props<GraphicsSurfaces>>& tp = nullopt, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<basic_dashes<GraphicsSurfaces>>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
 			void draw_text(const basic_bounding_box<graphics_math_type>& bb, const basic_brush<GraphicsSurfaces>& b, const basic_font<GraphicsSurfaces>& font, const string& text, const optional<basic_text_props<GraphicsSurfaces>>& tp = nullopt, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<basic_dashes<GraphicsSurfaces>>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
-			template <class Allocator>
-			void run_command_list(const basic_command_list_builder<GraphicsSurfaces, Allocator>& cmd);
+			//template <class Allocator>
+			//void run_command_list(const basic_command_list_builder<GraphicsSurfaces, Allocator>& cmd);
 			template <class InputIterator>
-			void run_command_list(InputIterator first, InputIterator last);
+			::std::future<void> command_list(InputIterator first, InputIterator last);
 		};
 
 		template <class GraphicsSurfaces>

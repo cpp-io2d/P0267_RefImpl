@@ -17,13 +17,13 @@ namespace std::experimental::io2d {
     inline namespace v1 {
         using default_graphics_math = _Graphics_math_float_impl;
         using default_graphics_surfaces = _Cairo::_Cairo_graphics_surfaces<default_graphics_math>;
-        
+		using commands = basic_commands<default_graphics_surfaces>;
         using bounding_box = basic_bounding_box<default_graphics_math>;
         using brush = basic_brush<default_graphics_surfaces>;
         using brush_props = basic_brush_props<default_graphics_surfaces>;
         using circle = basic_circle<default_graphics_math>;
         using clip_props = basic_clip_props<default_graphics_surfaces>;
-		using command_list_builder = basic_command_list_builder<default_graphics_surfaces>;
+		//using command_list_builder = basic_command_list_builder<default_graphics_surfaces>;
         using dashes = basic_dashes<default_graphics_surfaces>;
         using display_point = basic_display_point<default_graphics_math>;
         using figure_items = basic_figure_items<default_graphics_surfaces>;

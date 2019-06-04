@@ -909,8 +909,8 @@ namespace std::experimental::io2d {
 			}
 			template<class GraphicsMath>
 			template<class InputIterator>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::run_command_list(image_surface_data_type& /*data*/, basic_image_surface<graphics_surfaces_type>& sfc, InputIterator first, InputIterator last) {
-				_Process_command_list_image_surface(sfc, first, last);
+			inline ::std::future<void> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::command_list(image_surface_data_type& /*data*/, basic_image_surface<graphics_surfaces_type>& sfc, InputIterator first, InputIterator last) {
+				return _Process_command_list_image_surface(sfc, first, last);
 			}
             template<class GraphicsMath>
             inline _Interchange_buffer _Cairo_graphics_surfaces<GraphicsMath>::surfaces::_Copy_to_interchange_buffer(image_surface_data_type& data, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha) {

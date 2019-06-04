@@ -20,8 +20,9 @@
 #include <initializer_list>
 #include <cmath>
 #include <chrono>
+#include <future>
 
-#define __cpp_lib_experimental_io2d 201710
+#define __cpp_lib_experimental_io2d 201906
 
 #if __has_include(<filesystem>)
     #define _IO2D_Has_Filesystem

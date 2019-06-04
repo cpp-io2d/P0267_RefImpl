@@ -434,7 +434,7 @@ namespace std::experimental::io2d {
 					static void draw_text(image_surface_data_type& data, const basic_point_2d<GraphicsMath>& pt, const basic_brush<graphics_surfaces_type>& b, const basic_font<graphics_surfaces_type>& font, const string& text, const basic_text_props<graphics_surfaces_type>& tp, const basic_brush_props<graphics_surfaces_type>& bp, const basic_stroke_props<graphics_surfaces_type>& sp, const basic_dashes<graphics_surfaces_type>& d, const basic_render_props<graphics_surfaces_type>& rp, const basic_clip_props<graphics_surfaces_type>& cl);
 					static void draw_text(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& bb, const basic_brush<graphics_surfaces_type>& b, const basic_font<graphics_surfaces_type>& font, const string& text, const basic_text_props<graphics_surfaces_type>& tp, const basic_brush_props<graphics_surfaces_type>& bp, const basic_stroke_props<graphics_surfaces_type>& sp, const basic_dashes<graphics_surfaces_type>& d, const basic_render_props<graphics_surfaces_type>& rp, const basic_clip_props<graphics_surfaces_type>& cl);
 					template <class InputIterator>
-					static void run_command_list(image_surface_data_type& data, basic_image_surface<graphics_surfaces_type>& sfc, InputIterator first, InputIterator last);
+					static ::std::future<void> command_list(image_surface_data_type& data, basic_image_surface<graphics_surfaces_type>& sfc, InputIterator first, InputIterator last);
 					static _Interchange_buffer _Copy_to_interchange_buffer(image_surface_data_type& data, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha);
 
 					// display surfaces
@@ -497,7 +497,7 @@ namespace std::experimental::io2d {
 					static basic_display_point<GraphicsMath> dimensions(const unmanaged_output_surface_data_type& data) noexcept;
 					static basic_display_point<GraphicsMath> display_dimensions(const unmanaged_output_surface_data_type& data) noexcept;
 					static io2d::scaling scaling(unmanaged_output_surface_data_type& data) noexcept;
-					static optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const unmanaged_output_surface_data_type& data) noexcept;
+					static ::std::optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const unmanaged_output_surface_data_type& data) noexcept;
 					static basic_brush_props<_Graphics_surfaces_type> letterbox_brush_props(const unmanaged_output_surface_data_type& data) noexcept;
 					static bool auto_clear(const unmanaged_output_surface_data_type& data) noexcept;
 					static bool redraw_required(const unmanaged_output_surface_data_type& data) noexcept;
@@ -552,7 +552,7 @@ namespace std::experimental::io2d {
 					static basic_display_point<GraphicsMath> dimensions(const output_surface_data_type& data) noexcept;
 					static basic_display_point<GraphicsMath> display_dimensions(const output_surface_data_type& data) noexcept;
 					static io2d::scaling scaling(output_surface_data_type& data) noexcept;
-					static optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const output_surface_data_type& data) noexcept;
+					static ::std::optional<basic_brush<_Graphics_surfaces_type>> letterbox_brush(const output_surface_data_type& data) noexcept;
 					static basic_brush_props<_Graphics_surfaces_type> letterbox_brush_props(const output_surface_data_type& data) noexcept;
 					static bool auto_clear(const output_surface_data_type& data) noexcept;
 					static bool redraw_required(const output_surface_data_type& data) noexcept;
@@ -565,7 +565,7 @@ namespace std::experimental::io2d {
 
 					// clear
 					struct _Clear_data {
-						::std::optional <::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
+						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
 					};
 
 					using clear_data_type = _Clear_data;
@@ -577,7 +577,7 @@ namespace std::experimental::io2d {
 
 					// flush
 					struct _Flush_data {
-						::std::optional <::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
+						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
 					};
 
 					using flush_data_type = _Flush_data;
@@ -589,282 +589,209 @@ namespace std::experimental::io2d {
 
 					// mark_dirty
 					struct _Mark_dirty_data {
-						::std::optional <::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
-						::std::optional<basic_bounding_box<graphics_math_type>> ext;
+						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
+						::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext;
 					};
 
 					using mark_dirty_data_type = _Mark_dirty_data;
 
 					static mark_dirty_data_type create_mark_dirty() noexcept;
 					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept;
-					static mark_dirty_data_type create_mark_dirty(const basic_bounding_box<graphics_math_type>& ext) noexcept;
-					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, const basic_bounding_box<graphics_math_type>& ext) noexcept;
+					static mark_dirty_data_type create_mark_dirty(::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
+					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
 					static void surface(mark_dirty_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
 					static ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const mark_dirty_data_type& data) noexcept;
-					static void extents(mark_dirty_data_type& data, const ::std::optional<basic_bounding_box<graphics_math_type>>& ext) noexcept;
-					static ::std::optional<basic_bounding_box<graphics_math_type>> extents(const mark_dirty_data_type& data) noexcept;
+					static void extents(mark_dirty_data_type& data, ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
+					static ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> extents(const mark_dirty_data_type& data) noexcept;
 
 					// paint
 					struct _Paint_data {
-						::std::optional <::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
-						basic_brush<graphics_surfaces_type> b;
-						::std::optional<basic_brush_props<graphics_surfaces_type>> bp;
-						::std::optional<basic_render_props<graphics_surfaces_type>> rp;
-						::std::optional<basic_clip_props<graphics_surfaces_type>> cl;
+						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
+						::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b;
+						::std::reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp;
+						::std::reference_wrapper<basic_render_props<graphics_surfaces_type>> rp;
+						::std::reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl;
 					};
 
 					using paint_data_type = _Paint_data;
 
-					static paint_data_type create_paint(const basic_brush<graphics_surfaces_type>& b, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static paint_data_type create_paint(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, const basic_brush<graphics_surfaces_type>& b, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
+					static paint_data_type create_paint(::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static paint_data_type create_paint(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
 
 					static void surface(paint_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
 					static ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const paint_data_type& data) noexcept;
-					static void brush(paint_data_type& data, const basic_brush<graphics_surfaces_type>& b) noexcept;
-					static const basic_brush<graphics_surfaces_type>& brush(const paint_data_type& data) noexcept;
-					static void brush_props(paint_data_type& data, const optional<basic_brush_props<graphics_surfaces_type>>& bp) noexcept;
-					static const ::std::optional<basic_brush_props<graphics_surfaces_type>> brush_props(const paint_data_type& data) noexcept;
-					static void render_props(paint_data_type& data, const optional<basic_render_props<graphics_surfaces_type>>& rp) noexcept;
-					static const ::std::optional<basic_render_props<graphics_surfaces_type>> render_props(const paint_data_type& data) noexcept;
-					static void clip_props(paint_data_type& data, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static const optional<basic_clip_props<graphics_surfaces_type>> clip_props(const paint_data_type& data) noexcept;
+					static void brush(paint_data_type& data, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b) noexcept;
+					static ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> brush(const paint_data_type& data) noexcept;
+					static void brush_props(paint_data_type& data, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp) noexcept;
+					static ::std::reference_wrapper<basic_brush_props<graphics_surfaces_type>> brush_props(const paint_data_type& data) noexcept;
+					static void render_props(paint_data_type& data, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp) noexcept;
+					static ::std::reference_wrapper<basic_render_props<graphics_surfaces_type>> render_props(const paint_data_type& data) noexcept;
+					static void clip_props(paint_data_type& data, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static ::std::reference_wrapper<basic_clip_props<graphics_surfaces_type>> clip_props(const paint_data_type& data) noexcept;
 
 					// stroke
 					struct _Stroke_data {
-						//_Stroke_data(::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc, const basic_brush<graphics_surfaces_type>& b, const basic_interpreted_path<graphics_surfaces_type>& ip, const ::std::optional<basic_brush_props<graphics_surfaces_type>>& bp, const ::std::optional<basic_stroke_props<graphics_surfaces_type>>& sp, const ::std::optional<basic_dashes<graphics_surfaces_type>>& d, const ::std::optional<basic_render_props<graphics_surfaces_type>>& rp, const ::std::optional<basic_clip_props<graphics_surfaces_type>>& cl) {
-						//	this->sfc = sfc;
-						//	this->b = b;
-						//	this->ip = ip;
-						//	this->bp = bp;
-						//	this->sp = sp;
-						//	this->d = d;
-						//	this->rp = rp;
-						//	this->cl = cl;
-						//}
-						//_Stroke_data(const _Stroke_data& other) = default;
-						//_Stroke_data& operator=(const _Stroke_data& other) = default;
-						//_Stroke_data(_Stroke_data&& other) noexcept = default;
-						//_Stroke_data& operator=(_Stroke_data&& other) noexcept = default;
-
-						::std::optional <::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
-						::std::optional<basic_brush<graphics_surfaces_type>> b;
-						::std::optional<basic_interpreted_path<graphics_surfaces_type>> ip;
-						::std::optional<basic_brush_props<graphics_surfaces_type>> bp;
-						::std::optional<basic_stroke_props<graphics_surfaces_type>> sp;
-						::std::optional<basic_dashes<graphics_surfaces_type>> d;
-						::std::optional<basic_render_props<graphics_surfaces_type>> rp;
-						::std::optional<basic_clip_props<graphics_surfaces_type>> cl;
+						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
+						::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b;
+						::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> ip;
+						::std::reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp;
+						::std::reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp;
+						::std::reference_wrapper<basic_dashes<graphics_surfaces_type>> d;
+						::std::reference_wrapper<basic_render_props<graphics_surfaces_type>> rp;
+						::std::reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl;
 					};
 
 					using stroke_data_type = _Stroke_data;
 
-					static stroke_data_type create_stroke(const basic_brush<graphics_surfaces_type>& b, const basic_interpreted_path<graphics_surfaces_type>& ip, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_stroke_props<graphics_surfaces_type>>& sp, const optional<basic_dashes<graphics_surfaces_type>>& d, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static stroke_data_type create_stroke(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, const basic_brush<graphics_surfaces_type>& b, const basic_interpreted_path<graphics_surfaces_type>& ip, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_stroke_props<graphics_surfaces_type>>& sp, const optional<basic_dashes<graphics_surfaces_type>>& d, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
+					static stroke_data_type create_stroke(::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> ip, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp, reference_wrapper<basic_dashes<graphics_surfaces_type>> d, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static stroke_data_type create_stroke(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> ip, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp, reference_wrapper<basic_dashes<graphics_surfaces_type>> d, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
 
-					static void surface(stroke_data_type& data, const optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
+					static void surface(stroke_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
 					static optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const stroke_data_type& data) noexcept;
 
-					static void brush(stroke_data_type& data, const basic_brush<graphics_surfaces_type>& b) noexcept;
-					static const basic_brush<graphics_surfaces_type>& brush(const stroke_data_type& data) noexcept;
-					static void path(stroke_data_type& data, const basic_interpreted_path<graphics_surfaces_type>& ip) noexcept;
-					static const basic_interpreted_path<graphics_surfaces_type>& path(const stroke_data_type& data) noexcept;
-					static void stroke_props(stroke_data_type& data, const basic_stroke_props<graphics_surfaces_type>& sp) noexcept;
-					static optional<basic_stroke_props<graphics_surfaces_type>> stroke_props(const stroke_data_type& data) noexcept;
-					static void dashes(stroke_data_type& data, const optional<basic_dashes<graphics_surfaces_type>>& d) noexcept;
-					static optional<basic_dashes<graphics_surfaces_type>> dashes(const stroke_data_type& data) noexcept;
-					static void brush_props(stroke_data_type& data, const optional<basic_brush_props<graphics_surfaces_type>>& bp) noexcept;
-					static optional<basic_brush_props<graphics_surfaces_type>> brush_props(const stroke_data_type& data) noexcept;
-					static void render_props(stroke_data_type& data, const optional<basic_render_props<graphics_surfaces_type>>& rp) noexcept;
-					static optional<basic_render_props<graphics_surfaces_type>> render_props(const stroke_data_type& data) noexcept;
-					static void clip_props(stroke_data_type& data, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static optional<basic_clip_props<graphics_surfaces_type>> clip_props(const stroke_data_type& data) noexcept;
+					static void brush(stroke_data_type& data, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b) noexcept;
+					static ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> brush(const stroke_data_type& data) noexcept;
+					static void path(stroke_data_type& data, ::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> ip) noexcept;
+					static ::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> path(const stroke_data_type& data) noexcept;
+					static void stroke_props(stroke_data_type& data, ::std::reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp) noexcept;
+					static ::std::reference_wrapper<basic_stroke_props<graphics_surfaces_type>> stroke_props(const stroke_data_type& data) noexcept;
+					static void dashes(stroke_data_type& data, reference_wrapper<basic_dashes<graphics_surfaces_type>> d) noexcept;
+					static ::std::reference_wrapper<basic_dashes<graphics_surfaces_type>> dashes(const stroke_data_type& data) noexcept;
+					static void brush_props(stroke_data_type& data, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp) noexcept;
+					static ::std::reference_wrapper<basic_brush_props<graphics_surfaces_type>> brush_props(const stroke_data_type& data) noexcept;
+					static void render_props(stroke_data_type& data, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp) noexcept;
+					static ::std::reference_wrapper<basic_render_props<graphics_surfaces_type>> render_props(const stroke_data_type& data) noexcept;
+					static void clip_props(stroke_data_type& data, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static ::std::reference_wrapper<basic_clip_props<graphics_surfaces_type>> clip_props(const stroke_data_type& data) noexcept;
 
 					// fill
 					struct _Fill_data {
-						//_Fill_data(::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc, const basic_brush<graphics_surfaces_type>& b, const basic_interpreted_path<graphics_surfaces_type>& ip, const ::std::optional<basic_brush_props<graphics_surfaces_type>>& bp, const ::std::optional<basic_render_props<graphics_surfaces_type>>& rp, const ::std::optional<basic_clip_props<graphics_surfaces_type>>& cl) {
-						//	this->sfc = sfc;
-						//	this->b = b;
-						//	this->ip = ip;
-						//	this->bp = bp;
-						//	this->rp = rp;
-						//	this->cl = cl;
-						//}
-						//_Fill_data(const _Fill_data& other) = default;
-						//_Fill_data& operator=(const _Fill_data& other) = default;
-						//_Fill_data(_Fill_data&& other) noexcept = default;
-						//_Fill_data& operator=(_Fill_data&& other) noexcept = default;
-
 						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
-						::std::optional<basic_brush<graphics_surfaces_type>> b;
-						::std::optional<basic_interpreted_path<graphics_surfaces_type>> ip;
-						::std::optional<basic_brush_props<graphics_surfaces_type>> bp;
-						::std::optional<basic_render_props<graphics_surfaces_type>> rp;
-						::std::optional<basic_clip_props<graphics_surfaces_type>> cl;
+						::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b;
+						::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> ip;
+						::std::reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp;
+						::std::reference_wrapper<basic_render_props<graphics_surfaces_type>> rp;
+						::std::reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl;
 					};
 
 					using fill_data_type = _Fill_data;
 
-					static fill_data_type create_fill(const basic_brush<graphics_surfaces_type>& b, const basic_interpreted_path<graphics_surfaces_type>& ip, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static fill_data_type create_fill(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, const basic_brush<graphics_surfaces_type>& b, const basic_interpreted_path<graphics_surfaces_type>& ip, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
+					static fill_data_type create_fill(::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> ip, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static fill_data_type create_fill(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> ip, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
 
-					static void surface(fill_data_type& data, const optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
+					static void surface(fill_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
 					static optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const fill_data_type& data) noexcept;
 
-					static void brush(fill_data_type& data, const basic_brush<graphics_surfaces_type>& b) noexcept;
-					static const basic_brush<graphics_surfaces_type>& brush(const fill_data_type& data) noexcept;
-					static void path(fill_data_type& data, const basic_interpreted_path<graphics_surfaces_type>& ip) noexcept;
-					static const basic_interpreted_path<graphics_surfaces_type>& path(const fill_data_type& data) noexcept;
-					static void brush_props(fill_data_type& data, const optional<basic_brush_props<graphics_surfaces_type>>& bp) noexcept;
-					static optional<basic_brush_props<graphics_surfaces_type>> brush_props(const fill_data_type& data) noexcept;
-					static void render_props(fill_data_type& data, const optional<basic_render_props<graphics_surfaces_type>>& rp) noexcept;
-					static optional<basic_render_props<graphics_surfaces_type>> render_props(const fill_data_type& data) noexcept;
-					static void clip_props(fill_data_type& data, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static optional<basic_clip_props<graphics_surfaces_type>> clip_props(const fill_data_type& data) noexcept;
+					static void brush(fill_data_type& data, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b) noexcept;
+					static ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> brush(const fill_data_type& data) noexcept;
+					static void path(fill_data_type& data, ::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> ip) noexcept;
+					static ::std::reference_wrapper<basic_interpreted_path<graphics_surfaces_type>> path(const fill_data_type& data) noexcept;
+					static void brush_props(fill_data_type& data, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp) noexcept;
+					static ::std::reference_wrapper<basic_brush_props<graphics_surfaces_type>> brush_props(const fill_data_type& data) noexcept;
+					static void render_props(fill_data_type& data, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp) noexcept;
+					static ::std::reference_wrapper<basic_render_props<graphics_surfaces_type>> render_props(const fill_data_type& data) noexcept;
+					static void clip_props(fill_data_type& data, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static ::std::reference_wrapper<basic_clip_props<graphics_surfaces_type>> clip_props(const fill_data_type& data) noexcept;
 
 					// mask
 					struct _Mask_data {
-						//_Mask_data(::std::optional <::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc, const basic_brush<graphics_surfaces_type>& b, const basic_brush<graphics_surfaces_type>& mb, const ::std::optional<basic_brush_props<graphics_surfaces_type>> bp, const ::std::optional<basic_mask_props<graphics_surfaces_type>>& mp, const ::std::optional<basic_render_props<graphics_surfaces_type>>& rp, const ::std::optional<basic_clip_props<graphics_surfaces_type>>& cl) {
-						//	this->sfc = sfc;
-						//	this->b = b;
-						//	this->mb = mb;
-						//	this->bp = bp;
-						//	this->mp = mp;
-						//	this->rp = rp;
-						//	this->cl = cl;
-						//}
-						//_Mask_data(const _Mask_data& other) = default;
-						//_Mask_data& operator=(const _Mask_data& other) = default;
-						//_Mask_data(_Mask_data&& other) noexcept = default;
-						//_Mask_data& operator=(_Mask_data&& other) noexcept = default;
-
 						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
-						::std::optional<basic_brush<graphics_surfaces_type>> b;
-						::std::optional<basic_brush<graphics_surfaces_type>> mb;
-						::std::optional<basic_brush_props<graphics_surfaces_type>> bp;
-						::std::optional<basic_mask_props<graphics_surfaces_type>> mp;
-						::std::optional<basic_render_props<graphics_surfaces_type>> rp;
-						::std::optional<basic_clip_props<graphics_surfaces_type>> cl;
+						::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b;
+						::std::reference_wrapper<basic_brush<graphics_surfaces_type>> mb;
+						::std::reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp;
+						::std::reference_wrapper<basic_mask_props<graphics_surfaces_type>> mp;
+						::std::reference_wrapper<basic_render_props<graphics_surfaces_type>> rp;
+						::std::reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl;
 					};
 
 					using mask_data_type = _Mask_data;
 
-					static mask_data_type create_mask(const basic_brush<graphics_surfaces_type>& b, const basic_brush<graphics_surfaces_type>& mb, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_mask_props<graphics_surfaces_type>>& mp, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static mask_data_type create_mask(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, const basic_brush<graphics_surfaces_type>& b, const basic_brush<graphics_surfaces_type>& mb, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_mask_props<graphics_surfaces_type>>& mp, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
+					static mask_data_type create_mask(::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> mb, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_mask_props<graphics_surfaces_type>> mp, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static mask_data_type create_mask(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> mb, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_mask_props<graphics_surfaces_type>> mp, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
 
-					static void surface(mask_data_type& data, const optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
+					static void surface(mask_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
 					static optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const mask_data_type& data) noexcept;
 
-					static void brush(mask_data_type& data, const basic_brush<graphics_surfaces_type>& b) noexcept;
-					static const basic_brush<graphics_surfaces_type>& brush(const mask_data_type& data) noexcept;
-					static void mask_brush(mask_data_type& data, const basic_brush<graphics_surfaces_type>& mb) noexcept;
-					static const basic_brush<graphics_surfaces_type>& mask_brush(const mask_data_type& data) noexcept;
-					static void brush_props(mask_data_type& data, const optional<basic_brush_props<graphics_surfaces_type>>& bp) noexcept;
-					static optional<basic_brush_props<graphics_surfaces_type>> brush_props(const mask_data_type& data) noexcept;
-					static void mask_props(mask_data_type& data, const optional<basic_mask_props<graphics_surfaces_type>>& mp) noexcept;
-					static optional<basic_mask_props<graphics_surfaces_type>> mask_props(const mask_data_type& data) noexcept;
-					static void render_props(mask_data_type& data, const optional<basic_render_props<graphics_surfaces_type>>& rp) noexcept;
-					static optional<basic_render_props<graphics_surfaces_type>> render_props(const mask_data_type& data) noexcept;
-					static void clip_props(mask_data_type& data, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static optional<basic_clip_props<graphics_surfaces_type>> clip_props(const mask_data_type& data) noexcept;
+					static void brush(mask_data_type& data, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b) noexcept;
+					static ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> brush(const mask_data_type& data) noexcept;
+					static void mask_brush(mask_data_type& data, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> mb) noexcept;
+					static ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> mask_brush(const mask_data_type& data) noexcept;
+					static void brush_props(mask_data_type& data, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp) noexcept;
+					static ::std::reference_wrapper<basic_brush_props<graphics_surfaces_type>> brush_props(const mask_data_type& data) noexcept;
+					static void mask_props(mask_data_type& data, reference_wrapper<basic_mask_props<graphics_surfaces_type>> mp) noexcept;
+					static ::std::reference_wrapper<basic_mask_props<graphics_surfaces_type>> mask_props(const mask_data_type& data) noexcept;
+					static void render_props(mask_data_type& data, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp) noexcept;
+					static ::std::reference_wrapper<basic_render_props<graphics_surfaces_type>> render_props(const mask_data_type& data) noexcept;
+					static void clip_props(mask_data_type& data, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static ::std::reference_wrapper<basic_clip_props<graphics_surfaces_type>> clip_props(const mask_data_type& data) noexcept;
 
 					// draw_text
 					struct _Draw_text_data {
-						//_Draw_text_data(::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc, const basic_point_2d<graphics_math_type> pt, const basic_brush<graphics_surfaces_type>& b, const basic_font<graphics_surfaces_type>& f, const ::std::string& text, const ::std::optional<basic_text_props<graphics_surfaces_type>>& tp, const ::std::optional<basic_brush_props<graphics_surfaces_type>>& bp, const ::std::optional<basic_stroke_props<graphics_surfaces_type>>& sp, const ::std::optional<basic_dashes<graphics_surfaces_type>>& d, const ::std::optional<basic_render_props<graphics_surfaces_type>>& rp, const ::std::optional<basic_clip_props<graphics_surfaces_type>>& cl) {
-						//	this->sfc = sfc;
-						//	this->loc = pt;
-						//	this->b = b;
-						//	this->f = f;
-						//	this->text = text;
-						//	this->tp = tp;
-						//	this->bp = bp;
-						//	this->sp = sp;
-						//	this->d = d;
-						//	this->rp = rp;
-						//	this->cl = cl;
-						//}
-						//_Draw_text_data(::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc, basic_bounding_box< graphics_math_type> bb, basic_brush<graphics_surfaces_type> b, basic_font<graphics_surfaces_type> f, ::std::string text, ::std::optional<basic_text_props<graphics_surfaces_type>> tp, ::std::optional<basic_brush_props<graphics_surfaces_type>> bp, ::std::optional<basic_stroke_props<graphics_surfaces_type>> sp, ::std::optional<basic_dashes<graphics_surfaces_type>> d, ::std::optional<basic_render_props<graphics_surfaces_type>> rp, ::std::optional<basic_clip_props<graphics_surfaces_type>> cl) noexcept {
-						//	this->sfc = sfc;
-						//	this->loc = bb;
-						//	this->b = b;
-						//	this->f = f;
-						//	this->text = text;
-						//	this->tp = tp;
-						//	this->bp = bp;
-						//	this->sp = sp;
-						//	this->d = d;
-						//	this->rp = rp;
-						//	this->cl = cl;
-						//}
-						//_Draw_text_data(const _Draw_text_data& other) = default;
-						//_Draw_text_data& operator=(const _Draw_text_data& other) = default;
-						//_Draw_text_data(_Draw_text_data&& other) noexcept = default;
-						//_Draw_text_data& operator=(_Draw_text_data&& other) noexcept = default;
-
 						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
-						::std::variant<basic_point_2d<graphics_math_type>, basic_bounding_box<graphics_math_type>> loc;
-						::std::optional<basic_brush<graphics_surfaces_type>> b;
-						::std::optional<basic_font<graphics_surfaces_type>> f;
-						::std::string text;
-						::std::optional<basic_text_props<graphics_surfaces_type>> tp;
-						::std::optional<basic_brush_props<graphics_surfaces_type>> bp;
-						::std::optional<basic_stroke_props<graphics_surfaces_type>> sp;
-						::std::optional<basic_dashes<graphics_surfaces_type>> d;
-						::std::optional<basic_render_props<graphics_surfaces_type>> rp;
-						::std::optional<basic_clip_props<graphics_surfaces_type>> cl;
+						::std::variant<::std::reference_wrapper<basic_point_2d<graphics_math_type>>, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> loc;
+						::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b;
+						::std::reference_wrapper<basic_font<graphics_surfaces_type>> f;
+						::std::reference_wrapper<::std::string> text;
+						::std::reference_wrapper<basic_text_props<graphics_surfaces_type>> tp;
+						::std::reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp;
+						::std::reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp;
+						::std::reference_wrapper<basic_dashes<graphics_surfaces_type>> d;
+						::std::reference_wrapper<basic_render_props<graphics_surfaces_type>> rp;
+						::std::reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl;
 					};
 
 					using draw_text_data_type = _Draw_text_data;
 
-					static draw_text_data_type create_draw_text(const basic_point_2d<graphics_math_type>& pt, const basic_brush<graphics_surfaces_type>& b, const basic_font<graphics_surfaces_type>& f, const string& text, const optional<basic_text_props<graphics_surfaces_type>>& tp, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_stroke_props<graphics_surfaces_type>>& sp, const optional<basic_dashes<graphics_surfaces_type>>& d, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static draw_text_data_type create_draw_text(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, const basic_point_2d<graphics_math_type>& pt, const basic_brush<graphics_surfaces_type>& b, const basic_font<graphics_surfaces_type>& f, const string& text, const optional<basic_text_props<graphics_surfaces_type>>& tp, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_stroke_props<graphics_surfaces_type>>& sp, const optional<basic_dashes<graphics_surfaces_type>>& d, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static draw_text_data_type create_draw_text(const basic_bounding_box<graphics_math_type>& bb, const basic_brush<graphics_surfaces_type>& b, const basic_font<graphics_surfaces_type>& f, const string& text, const optional<basic_text_props<graphics_surfaces_type>>& tp, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_stroke_props<graphics_surfaces_type>>& sp, const optional<basic_dashes<graphics_surfaces_type>>& d, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static draw_text_data_type create_draw_text(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, const basic_bounding_box<graphics_math_type>& bb, const basic_brush<graphics_surfaces_type>& b, const basic_font<graphics_surfaces_type>& f, const string& text, const optional<basic_text_props<graphics_surfaces_type>>& tp, const optional<basic_brush_props<graphics_surfaces_type>>& bp, const optional<basic_stroke_props<graphics_surfaces_type>>& sp, const optional<basic_dashes<graphics_surfaces_type>>& d, const optional<basic_render_props<graphics_surfaces_type>>& rp, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
+					static draw_text_data_type create_draw_text(::std::reference_wrapper<basic_point_2d<graphics_math_type>> pt, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_font<graphics_surfaces_type>> f, ::std::reference_wrapper<string> text, reference_wrapper<basic_text_props<graphics_surfaces_type>> tp, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp, reference_wrapper<basic_dashes<graphics_surfaces_type>> d, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static draw_text_data_type create_draw_text(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_point_2d<graphics_math_type>> pt, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_font<graphics_surfaces_type>> f, ::std::reference_wrapper<string> text, reference_wrapper<basic_text_props<graphics_surfaces_type>> tp, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp, reference_wrapper<basic_dashes<graphics_surfaces_type>> d, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static draw_text_data_type create_draw_text(::std::reference_wrapper<basic_bounding_box<graphics_math_type>> bb, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_font<graphics_surfaces_type>> f, ::std::reference_wrapper<string> text, reference_wrapper<basic_text_props<graphics_surfaces_type>> tp, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp, reference_wrapper<basic_dashes<graphics_surfaces_type>> d, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static draw_text_data_type create_draw_text(reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>> bb, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b, ::std::reference_wrapper<basic_font<graphics_surfaces_type>> f, ::std::reference_wrapper<string> text, reference_wrapper<basic_text_props<graphics_surfaces_type>> tp, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp, reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp, reference_wrapper<basic_dashes<graphics_surfaces_type>> d, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
 
-					static void surface(draw_text_data_type& data, const optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
+					static void surface(draw_text_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
 					static optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const draw_text_data_type& data) noexcept;
 
-					static void location(draw_text_data_type& data, const basic_point_2d<graphics_math_type>& pt) noexcept;
-					static void location(draw_text_data_type& data, const basic_bounding_box<graphics_math_type>& bb) noexcept;
-					static ::std::variant<basic_point_2d<graphics_math_type>, basic_bounding_box<graphics_math_type>> location(const draw_text_data_type& data) noexcept;
-					static void brush(draw_text_data_type& data, const basic_brush<graphics_surfaces_type>& b) noexcept;
-					static const basic_brush<graphics_surfaces_type>& brush(const draw_text_data_type& data) noexcept;
-					static void font(draw_text_data_type& data, const basic_font<graphics_surfaces_type>& f) noexcept;
-					static const basic_font<graphics_surfaces_type>& font(const draw_text_data_type& data) noexcept;
-					static void text(draw_text_data_type& data, const string& te) noexcept;
-					static const string& text(const draw_text_data_type& data) noexcept;
-					static void text_props(draw_text_data_type& data, const optional<basic_text_props<graphics_surfaces_type>>& tp) noexcept;
-					static const optional<basic_text_props<graphics_surfaces_type>>& text_props(const draw_text_data_type& data) noexcept;
-					static void brush_props(draw_text_data_type& data, const optional<basic_brush_props<graphics_surfaces_type>>& bp) noexcept;
-					static const optional<basic_brush_props<graphics_surfaces_type>>& brush_props(const draw_text_data_type& data) noexcept;
-					static void stroke_props(draw_text_data_type& data, const optional<basic_stroke_props<graphics_surfaces_type>>& sp) noexcept;
-					static const optional<basic_stroke_props<graphics_surfaces_type>>& stroke_props(const draw_text_data_type& data) noexcept;
-					static void dashes(draw_text_data_type& data, const optional<basic_dashes<graphics_surfaces_type>>& d) noexcept;
-					static const optional<basic_dashes<graphics_surfaces_type>>& dashes(const draw_text_data_type& data) noexcept;
-					static void render_props(draw_text_data_type& data, const optional<basic_render_props<graphics_surfaces_type>>& rp) noexcept;
-					static const optional<basic_render_props<graphics_surfaces_type>>& render_props(const draw_text_data_type& data) noexcept;
-					static void clip_props(draw_text_data_type& data, const optional<basic_clip_props<graphics_surfaces_type>>& cl) noexcept;
-					static const optional<basic_clip_props<graphics_surfaces_type>>& clip_props(const draw_text_data_type& data) noexcept;
+					static void location(draw_text_data_type& data, ::std::reference_wrapper<basic_point_2d<graphics_math_type>> pt) noexcept;
+					static void location(draw_text_data_type& data, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>> bb) noexcept;
+					static ::std::variant<::std::reference_wrapper<basic_point_2d<graphics_math_type>>, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> location(const draw_text_data_type& data) noexcept;
+					static void brush(draw_text_data_type& data, ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> b) noexcept;
+					static ::std::reference_wrapper<basic_brush<graphics_surfaces_type>> brush(const draw_text_data_type& data) noexcept;
+					static void font(draw_text_data_type& data, ::std::reference_wrapper<basic_font<graphics_surfaces_type>> f) noexcept;
+					static ::std::reference_wrapper<basic_font<graphics_surfaces_type>> font(const draw_text_data_type& data) noexcept;
+					static void text(draw_text_data_type& data, ::std::reference_wrapper<string> te) noexcept;
+					static ::std::reference_wrapper<string> text(const draw_text_data_type& data) noexcept;
+					static void text_props(draw_text_data_type& data, reference_wrapper<basic_text_props<graphics_surfaces_type>> tp) noexcept;
+					static reference_wrapper<basic_text_props<graphics_surfaces_type>> text_props(const draw_text_data_type& data) noexcept;
+					static void brush_props(draw_text_data_type& data, reference_wrapper<basic_brush_props<graphics_surfaces_type>> bp) noexcept;
+					static reference_wrapper<basic_brush_props<graphics_surfaces_type>> brush_props(const draw_text_data_type& data) noexcept;
+					static void stroke_props(draw_text_data_type& data, reference_wrapper<basic_stroke_props<graphics_surfaces_type>> sp) noexcept;
+					static reference_wrapper<basic_stroke_props<graphics_surfaces_type>> stroke_props(const draw_text_data_type& data) noexcept;
+					static void dashes(draw_text_data_type& data, reference_wrapper<basic_dashes<graphics_surfaces_type>> d) noexcept;
+					static reference_wrapper<basic_dashes<graphics_surfaces_type>> dashes(const draw_text_data_type& data) noexcept;
+					static void render_props(draw_text_data_type& data, reference_wrapper<basic_render_props<graphics_surfaces_type>> rp) noexcept;
+					static reference_wrapper<basic_render_props<graphics_surfaces_type>> render_props(const draw_text_data_type& data) noexcept;
+					static void clip_props(draw_text_data_type& data, reference_wrapper<basic_clip_props<graphics_surfaces_type>> cl) noexcept;
+					static reference_wrapper<basic_clip_props<graphics_surfaces_type>> clip_props(const draw_text_data_type& data) noexcept;
 
 					// run_function
 					struct _Run_function_data {
 						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
-						::std::variant<::std::function<void(basic_image_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void *)>, ::std::function<void(basic_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void *)>, ::std::function<void(basic_unmanaged_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void *)>> func;
+						::std::variant<::std::function<void(basic_image_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>, ::std::function<void(basic_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>, ::std::function<void(basic_unmanaged_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>> func;
 						void* user_data;
 					};
-					
+
 					using run_function_data_type = _Run_function_data;
 
 					static run_function_data_type create_run_function(const ::std::function<void(basic_image_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>& fn, void* user_data, optional< reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc) noexcept;
 					static run_function_data_type create_run_function(const ::std::function<void(basic_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>& fn, void* user_data, optional< reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc) noexcept;
 					static run_function_data_type create_run_function(const ::std::function<void(basic_unmanaged_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>& fn, void* user_data, optional< reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc) noexcept;
 
-					static void surface(run_function_data_type& data, const optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
+					static void surface(run_function_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
 					static optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const run_function_data_type& data) noexcept;
 
 					static void func(run_function_data_type& data, const ::std::function<void(basic_image_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>& fn) noexcept;
 					static void func(run_function_data_type& data, const ::std::function<void(basic_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>& fn) noexcept;
 					static void func(run_function_data_type& data, const ::std::function<void(basic_unmanaged_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>& fn) noexcept;
-					static const variant<function<void(basic_image_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>, function<void(basic_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>,  void*)>, function<void(basic_unmanaged_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>>& func(const run_function_data_type& data) noexcept;
+					static const variant<function<void(basic_image_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>, function<void(basic_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>, function<void(basic_unmanaged_output_surface<graphics_surfaces_type>&, optional<reference_wrapper<basic_image_surface<graphics_surfaces_type>>>, void*)>>& func(const run_function_data_type& data) noexcept;
 
 					static void user_data(run_function_data_type& data, void* user_data);
 					static void* user_data(const run_function_data_type& data);

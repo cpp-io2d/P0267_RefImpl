@@ -133,16 +133,16 @@ namespace std {
 
 				template<class GraphicsSurfaces>
 				template<class InputIterator>
-				inline void basic_image_surface<GraphicsSurfaces>::run_command_list(InputIterator first, InputIterator last) {
-					GraphicsSurfaces::surfaces::template run_command_list(_Data, *this, first, last);
+				inline ::std::future<void> basic_image_surface<GraphicsSurfaces>::command_list(InputIterator first, InputIterator last) {
+					return GraphicsSurfaces::surfaces::template command_list(_Data, *this, first, last);
 				}
 
-				template<class GraphicsSurfaces>
-				template <class Allocator>
-				inline void basic_image_surface<GraphicsSurfaces>::run_command_list(const basic_command_list_builder<GraphicsSurfaces, Allocator>& cmd)
-				{
-					return run_command_list(::std::begin(cmd), ::std::end(cmd));
-				}
+				//template<class GraphicsSurfaces>
+				//template <class Allocator>
+				//inline void basic_image_surface<GraphicsSurfaces>::run_command_list(const basic_command_list_builder<GraphicsSurfaces, Allocator>& cmd)
+				//{
+				//	return run_command_list(::std::begin(cmd), ::std::end(cmd));
+				//}
 
 				template<class GraphicsSurfaces>
 				inline basic_image_surface<GraphicsSurfaces> copy_surface(basic_image_surface<GraphicsSurfaces>& sfc) noexcept {
