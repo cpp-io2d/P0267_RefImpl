@@ -597,8 +597,8 @@ namespace std::experimental::io2d {
 
 					static mark_dirty_data_type create_mark_dirty() noexcept;
 					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept;
-					static mark_dirty_data_type create_mark_dirty(::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
-					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
+					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
+					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
 					static void surface(mark_dirty_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
 					static ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const mark_dirty_data_type& data) noexcept;
 					static void extents(mark_dirty_data_type& data, ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;

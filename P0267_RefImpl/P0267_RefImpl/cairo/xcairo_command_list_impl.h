@@ -55,13 +55,13 @@ namespace std::experimental::io2d {
 				return result;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept {
 				mark_dirty_data_type result;
 				result.ext = ext;
 				return result;
 			}
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept {
 				mark_dirty_data_type result;
 				result.sfc = sfc;
 				result.ext = ext;

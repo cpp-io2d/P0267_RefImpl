@@ -81,11 +81,11 @@ namespace std::experimental::io2d {
 			: _Data(GraphicsSurfaces::surfaces::create_mark_dirty(sfc)) {
 		}
 		template<class GraphicsSurfaces>
-		inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept
+		inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept
 			: _Data(GraphicsSurfaces::surfaces::create_mark_dirty(ext)) {
 		}
 		template<class GraphicsSurfaces>
-		inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept
+		inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept
 			: _Data(GraphicsSurfaces::surfaces::create_mark_dirty(sfc, ext)) {
 		}
 		template<class GraphicsSurfaces>

@@ -59,8 +59,8 @@ namespace std::experimental::io2d {
 
 				mark_dirty() noexcept;
 				mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc) noexcept;
-				mark_dirty(optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
-				mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
+				mark_dirty(reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
+				mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
 
 				void extents(optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
 				optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> extents() const noexcept;
