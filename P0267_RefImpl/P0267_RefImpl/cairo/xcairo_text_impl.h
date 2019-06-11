@@ -46,16 +46,17 @@ namespace std::experimental::io2d {
 
 			// text_props
 			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::text::text_props_data_type _Cairo_graphics_surfaces<GraphicsMath>::text::create_text_props(float scl, float pointsize, bool kern, font_hinting hint, font_antialias aa, font_stretching stretch, bool strike_through, font_extras extras) noexcept {
+			inline typename _Cairo_graphics_surfaces<GraphicsMath>::text::text_props_data_type _Cairo_graphics_surfaces<GraphicsMath>::text::create_text_props(float scl, font_size_units fsu, float fontsize, bool kern, font_hinting hint, font_antialias aa, font_stretching stretch, bool strike_through, font_line fl) noexcept {
 				text_props_data_type result;
 				result.scl = scl;
-				result.pointsize = pointsize;
+				result.fsu = fsu;
+				result.fontsize = fontsize;
 				result.kern = kern;
 				result.hint = hint;
 				result.aa = aa;
 				result.stretch = stretch;
 				result.strike_through = strike_through;
-				result.extras = extras;
+				result.fl = fl;
 				return result;
 			}
 		}

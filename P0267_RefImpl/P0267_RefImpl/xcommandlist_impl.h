@@ -2,11 +2,12 @@
 
 #include "xsurfaces.h"
 #include "xpath.h"
+#include "xcommandlist.h"
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		template<class GraphicsSurfaces>
-		inline reference_wrapper<typename basic_commands<GraphicsSurfaces>::clear::data_type> basic_commands<GraphicsSurfaces>::clear::data() const noexcept {
+		inline const typename basic_commands<GraphicsSurfaces>::clear::data_type& basic_commands<GraphicsSurfaces>::clear::data() const noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -31,7 +32,7 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline reference_wrapper<typename basic_commands<GraphicsSurfaces>::flush::data_type> basic_commands<GraphicsSurfaces>::flush::data() const noexcept {
+		inline const typename basic_commands<GraphicsSurfaces>::flush::data_type& basic_commands<GraphicsSurfaces>::flush::data() const noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -56,7 +57,7 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline reference_wrapper<typename basic_commands<GraphicsSurfaces>::mark_dirty::data_type> basic_commands<GraphicsSurfaces>::mark_dirty::data() const noexcept {
+		inline const typename basic_commands<GraphicsSurfaces>::mark_dirty::data_type& basic_commands<GraphicsSurfaces>::mark_dirty::data() const noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -97,7 +98,7 @@ namespace std::experimental::io2d {
 		}
 
 		template<class GraphicsSurfaces>
-		inline reference_wrapper<typename basic_commands<GraphicsSurfaces>::paint::data_type> basic_commands<GraphicsSurfaces>::paint::data() const noexcept {
+		inline const typename basic_commands<GraphicsSurfaces>::paint::data_type& basic_commands<GraphicsSurfaces>::paint::data() const noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -153,7 +154,7 @@ namespace std::experimental::io2d {
 			return GraphicsSurfaces::surfaces::clip_props(_Data);
 		}
 		template<class GraphicsSurfaces>
-		inline reference_wrapper<typename basic_commands<GraphicsSurfaces>::stroke::data_type> basic_commands<GraphicsSurfaces>::stroke::data() const noexcept {
+		inline const typename basic_commands<GraphicsSurfaces>::stroke::data_type& basic_commands<GraphicsSurfaces>::stroke::data() const noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -187,11 +188,6 @@ namespace std::experimental::io2d {
 		template<class GraphicsSurfaces>
 		inline void basic_commands<GraphicsSurfaces>::stroke::path(reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> p) noexcept {
 			GraphicsSurfaces::surfaces::path(_Data, p);
-		}
-		template<class GraphicsSurfaces>
-		template<class InputIterator>
-		inline void basic_commands<GraphicsSurfaces>::stroke::path(InputIterator first, InputIterator last) noexcept {
-			GraphicsSurfaces::surfaces::template path<InputIterator>(_Data, first, last);
 		}
 		template<class GraphicsSurfaces>
 		inline reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> basic_commands<GraphicsSurfaces>::stroke::path() const noexcept {
@@ -238,7 +234,7 @@ namespace std::experimental::io2d {
 			return GraphicsSurfaces::surfaces::clip_props(_Data);
 		}
 		template<class GraphicsSurfaces>
-		inline reference_wrapper<typename basic_commands<GraphicsSurfaces>::fill::data_type> basic_commands<GraphicsSurfaces>::fill::data() const noexcept {
+		inline const typename basic_commands<GraphicsSurfaces>::fill::data_type& basic_commands<GraphicsSurfaces>::fill::data() const noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -274,11 +270,6 @@ namespace std::experimental::io2d {
 			GraphicsSurfaces::surfaces::path(_Data, p);
 		}
 		template<class GraphicsSurfaces>
-		template<class InputIterator>
-		inline void basic_commands<GraphicsSurfaces>::fill::path(InputIterator first, InputIterator last) noexcept {
-			GraphicsSurfaces::surfaces::path(_Data, basic_interpreted_path<GraphicsSurfaces>(first, last));
-		}
-		template<class GraphicsSurfaces>
 		inline reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> basic_commands<GraphicsSurfaces>::fill::path() const noexcept {
 			return GraphicsSurfaces::surfaces::path(_Data);
 		}
@@ -307,7 +298,7 @@ namespace std::experimental::io2d {
 			return GraphicsSurfaces::surfaces::clip_props(_Data);
 		}
 		template<class GraphicsSurfaces>
-		inline reference_wrapper<typename basic_commands<GraphicsSurfaces>::mask::data_type> basic_commands<GraphicsSurfaces>::mask::data() const noexcept {
+		inline const typename basic_commands<GraphicsSurfaces>::mask::data_type& basic_commands<GraphicsSurfaces>::mask::data() const noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>
@@ -379,7 +370,7 @@ namespace std::experimental::io2d {
 			return GraphicsSurfaces::surfaces::clip_props(_Data);
 		}
 		template<class GraphicsSurfaces>
-		inline reference_wrapper<typename basic_commands<GraphicsSurfaces>::draw_text::data_type> basic_commands<GraphicsSurfaces>::draw_text::data() const noexcept {
+		inline const typename basic_commands<GraphicsSurfaces>::draw_text::data_type& basic_commands<GraphicsSurfaces>::draw_text::data() const noexcept {
 			return _Data;
 		}
 		template<class GraphicsSurfaces>

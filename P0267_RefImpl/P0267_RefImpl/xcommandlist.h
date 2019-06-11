@@ -18,7 +18,7 @@ namespace std::experimental::io2d {
 			private:
 				data_type _Data;
 			public:
-				reference_wrapper<data_type> data() const noexcept;
+				const data_type& data() const noexcept;
 				data_type& data() noexcept;
 
 				clear() noexcept;
@@ -35,7 +35,7 @@ namespace std::experimental::io2d {
 			private:
 				data_type _Data;
 			public:
-				reference_wrapper<data_type> data() const noexcept;
+				const data_type& data() const noexcept;
 				data_type& data() noexcept;
 
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
@@ -51,7 +51,7 @@ namespace std::experimental::io2d {
 			private:
 				data_type _Data;
 			public:
-				reference_wrapper<data_type> data() const noexcept;
+				const data_type& data() const noexcept;
 				data_type& data() noexcept;
 
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
@@ -72,7 +72,7 @@ namespace std::experimental::io2d {
 			private:
 				data_type _Data;
 			public:
-				reference_wrapper<data_type> data() const noexcept;
+				const data_type& data() const noexcept;
 				data_type& data() noexcept;
 
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
@@ -101,7 +101,7 @@ namespace std::experimental::io2d {
 			private:
 				data_type _Data;
 			public:
-				reference_wrapper<data_type> data() const noexcept;
+				const data_type& data() const noexcept;
 				data_type& data() noexcept;
 
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
@@ -114,8 +114,6 @@ namespace std::experimental::io2d {
 				// Not returning optional since this must always exist.
 				reference_wrapper<basic_brush<GraphicsSurfaces>> brush() const noexcept;
 				void path(reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> p) noexcept;
-				template <class InputIterator>
-				void path(InputIterator first, InputIterator last) noexcept;
 				reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> path() const noexcept;
 				void brush_props(reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp) noexcept;
 				reference_wrapper<basic_brush_props<GraphicsSurfaces>> brush_props() const noexcept;
@@ -134,7 +132,7 @@ namespace std::experimental::io2d {
 			private:
 				data_type _Data;
 			public:
-				reference_wrapper<data_type> data() const noexcept;
+				const data_type& data() const noexcept;
 				data_type& data() noexcept;
 
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
@@ -147,8 +145,6 @@ namespace std::experimental::io2d {
 				// Not returning optional since this must always exist.
 				reference_wrapper<basic_brush<GraphicsSurfaces>> brush() const noexcept;
 				void path(reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> p) noexcept;
-				template <class InputIterator>
-				void path(InputIterator first, InputIterator last) noexcept;
 				reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> path() const noexcept;
 				void brush_props(reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp) noexcept;
 				reference_wrapper<basic_brush_props<GraphicsSurfaces>> brush_props() const noexcept;
@@ -163,7 +159,7 @@ namespace std::experimental::io2d {
 			private:
 				data_type _Data;
 			public:
-				reference_wrapper<data_type> data() const noexcept;
+				const data_type& data() const noexcept;
 				data_type& data() noexcept;
 
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
@@ -191,15 +187,13 @@ namespace std::experimental::io2d {
 				reference_wrapper<basic_clip_props<GraphicsSurfaces>> clip_props() const noexcept;
 			};
 
-			// void draw_text(reference_wrapper<basic_point_2d<graphics_math_type>> pt, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_font<GraphicsSurfaces>> font, reference_wrapper<string> text, reference_wrapper<basic_text_props<GraphicsSurfaces>> tp, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp, reference_wrapper<basic_dashes<GraphicsSurfaces>> d, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl);
-			// void draw_text(reference_wrapper<basic_bounding_box<graphics_math_type>> bb, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_font<GraphicsSurfaces>> font, reference_wrapper<string> text, reference_wrapper<basic_text_props<GraphicsSurfaces>> tp, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp, reference_wrapper<basic_dashes<GraphicsSurfaces>> d, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl);
 			class draw_text {
 			public:
 				using data_type = typename GraphicsSurfaces::surfaces::draw_text_data_type;
 			private:
 				data_type _Data;
 			public:
-				reference_wrapper<data_type> data() const noexcept;
+				const data_type& data() const noexcept;
 				data_type& data() noexcept;
 
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
@@ -266,6 +260,34 @@ namespace std::experimental::io2d {
 			using command_item = variant<clear, flush, mark_dirty, paint, stroke, fill, mask, draw_text, run_function>;
 		};
 
+		template <class GraphicsSurfaces>
+		class basic_interpreted_command_list
+		{
+		public:
+			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
+			using data_type = typename GraphicsSurfaces::surfaces::interpreted_command_list_data_type;
+		private:
+			data_type _Data;
+
+		public:
+			const data_type& data() const noexcept;
+			data_type& data() noexcept;
+
+			basic_interpreted_command_list() noexcept;
+			
+			template <class InputIterator>
+			basic_interpreted_command_list(InputIterator first, InputIterator last);
+
+			explicit basic_interpreted_command_list(initializer_list<typename basic_commands<GraphicsSurfaces>::command_item> il);
+
+			basic_interpreted_command_list(const basic_interpreted_command_list& other);
+			basic_interpreted_command_list& operator=(const basic_interpreted_command_list& other);
+			basic_interpreted_command_list(basic_interpreted_command_list&& other) noexcept;
+			basic_interpreted_command_list& operator=(basic_interpreted_command_list&& other) noexcept;
+
+			~basic_interpreted_command_list() noexcept;
+
+		};
 		//template <class GraphicsSurfaces, class Allocator = ::std::allocator<typename basic_commands<GraphicsSurfaces>::command_item>>
 		//class basic_command_list_builder {
 		//public:

@@ -807,18 +807,21 @@ namespace std::experimental::io2d {
 
 					struct _Text_props_data {
 						float scl;
-						float pointsize;
+						font_size_units fsu;
+						float fontsize;
 						bool kern;
 						font_hinting hint;
 						font_antialias aa;
 						font_stretching stretch;
 						bool strike_through;
-						font_extras extras;
+						font_line fl;
 					};
 
 					using text_props_data_type = _Text_props_data;
 
-					static text_props_data_type create_text_props(float scl, float pointsize, bool kern, font_hinting hint, font_antialias aa, font_stretching stretch, bool strike_through, font_extras extras) noexcept;
+					static text_props_data_type create_text_props(float scl, font_size_units fsu, float fontsize, bool kern, font_hinting hint, font_antialias aa, font_stretching stretch, bool strike_through, font_line fl) noexcept;
+
+
 				};
 			};
 		}

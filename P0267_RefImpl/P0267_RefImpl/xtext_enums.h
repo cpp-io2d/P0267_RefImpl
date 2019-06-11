@@ -4,6 +4,10 @@ namespace std {
 	namespace experimental {
 		namespace io2d {
 			inline namespace v1 {
+				enum class font_size_units {
+					points,
+					pixels
+				};
 				enum class font_weight {
 					thin,
 					extra_light,
@@ -52,7 +56,7 @@ namespace std {
 					initial
 				};
 
-				enum class font_extras {
+				enum class font_line {
 					none,
 					underline,
 					overline
