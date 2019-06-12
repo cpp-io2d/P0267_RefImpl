@@ -78,21 +78,20 @@ namespace std::experimental::io2d {
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
 				optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
 
-				paint(reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				paint(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
+				paint(const basic_brush<GraphicsSurfaces>& b, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
+				paint(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_brush<GraphicsSurfaces>& b, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
 
-				void brush(reference_wrapper<basic_brush<GraphicsSurfaces>> b) noexcept;
-				// Not returning optional since this must always exist.
-				reference_wrapper<basic_brush<GraphicsSurfaces>> brush() const noexcept;
+				void brush(const basic_brush<GraphicsSurfaces>& b) noexcept;
+				basic_brush<GraphicsSurfaces> brush() const noexcept;
 
-				void brush_props(reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp) noexcept;
-				reference_wrapper<basic_brush_props<GraphicsSurfaces>> brush_props() const noexcept;
+				void brush_props(const basic_brush_props<GraphicsSurfaces>& bp) noexcept;
+				basic_brush_props<GraphicsSurfaces> brush_props() const noexcept;
 
-				void render_props(reference_wrapper<basic_render_props<GraphicsSurfaces>> rp) noexcept;
-				reference_wrapper<basic_render_props<GraphicsSurfaces>> render_props() const noexcept;
+				void render_props(const basic_render_props<GraphicsSurfaces>& rp) noexcept;
+				basic_render_props<GraphicsSurfaces> render_props() const noexcept;
 
-				void clip_props(reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				reference_wrapper<basic_clip_props<GraphicsSurfaces>> clip_props() const noexcept;
+				void clip_props(const basic_clip_props<GraphicsSurfaces>& cl) noexcept;
+				basic_clip_props<GraphicsSurfaces> clip_props() const noexcept;
 			};
 
 			class stroke {
@@ -107,24 +106,23 @@ namespace std::experimental::io2d {
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
 				optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
 
-				stroke(reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> ip, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp, reference_wrapper<basic_dashes<GraphicsSurfaces>> d, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				stroke(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> ip, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp, reference_wrapper<basic_dashes<GraphicsSurfaces>> d, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
+				stroke(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_stroke_props<GraphicsSurfaces>& sp = basic_stroke_props<GraphicsSurfaces>{}, const basic_dashes<GraphicsSurfaces>& d = basic_dashes<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
+				stroke(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_stroke_props<GraphicsSurfaces>& sp = basic_stroke_props<GraphicsSurfaces>{}, const basic_dashes<GraphicsSurfaces>& d = basic_dashes<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
 
-				void brush(reference_wrapper<basic_brush<GraphicsSurfaces>> b) noexcept;
-				// Not returning optional since this must always exist.
-				reference_wrapper<basic_brush<GraphicsSurfaces>> brush() const noexcept;
-				void path(reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> p) noexcept;
-				reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> path() const noexcept;
-				void brush_props(reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp) noexcept;
-				reference_wrapper<basic_brush_props<GraphicsSurfaces>> brush_props() const noexcept;
-				void stroke_props(reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp) noexcept;
-				reference_wrapper<basic_stroke_props<GraphicsSurfaces>> stroke_props() const noexcept;
-				void dashes(reference_wrapper<basic_dashes<GraphicsSurfaces>> d) noexcept;
-				reference_wrapper<basic_dashes<GraphicsSurfaces>> dashes() const noexcept;
-				void render_props(reference_wrapper<basic_render_props<GraphicsSurfaces>> rp) noexcept;
-				reference_wrapper<basic_render_props<GraphicsSurfaces>> render_props() const noexcept;
-				void clip_props(reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				reference_wrapper<basic_clip_props<GraphicsSurfaces>> clip_props() const noexcept;
+				void brush(const basic_brush<GraphicsSurfaces>& b) noexcept;
+				basic_brush<GraphicsSurfaces> brush() const noexcept;
+				void path(const basic_interpreted_path<GraphicsSurfaces>& p) noexcept;
+				basic_interpreted_path<GraphicsSurfaces> path() const noexcept;
+				void brush_props(const basic_brush_props<GraphicsSurfaces>& bp) noexcept;
+				basic_brush_props<GraphicsSurfaces> brush_props() const noexcept;
+				void stroke_props(const basic_stroke_props<GraphicsSurfaces>& sp) noexcept;
+				basic_stroke_props<GraphicsSurfaces> stroke_props() const noexcept;
+				void dashes(const basic_dashes<GraphicsSurfaces>& d) noexcept;
+				basic_dashes<GraphicsSurfaces> dashes() const noexcept;
+				void render_props(const basic_render_props<GraphicsSurfaces>& rp) noexcept;
+				basic_render_props<GraphicsSurfaces> render_props() const noexcept;
+				void clip_props(const basic_clip_props<GraphicsSurfaces>& cl) noexcept;
+				basic_clip_props<GraphicsSurfaces> clip_props() const noexcept;
 			};
 			class fill {
 			public:
@@ -138,20 +136,19 @@ namespace std::experimental::io2d {
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
 				optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
 
-				fill(reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> ip, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				fill(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> ip, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
+				fill(const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
+				fill(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_brush<GraphicsSurfaces>& b, const basic_interpreted_path<GraphicsSurfaces>& ip, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
 
-				void brush(reference_wrapper<basic_brush<GraphicsSurfaces>> b) noexcept;
-				// Not returning optional since this must always exist.
-				reference_wrapper<basic_brush<GraphicsSurfaces>> brush() const noexcept;
-				void path(reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> p) noexcept;
-				reference_wrapper<basic_interpreted_path<GraphicsSurfaces>> path() const noexcept;
-				void brush_props(reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp) noexcept;
-				reference_wrapper<basic_brush_props<GraphicsSurfaces>> brush_props() const noexcept;
-				void render_props(reference_wrapper<basic_render_props<GraphicsSurfaces>> rp) noexcept;
-				reference_wrapper<basic_render_props<GraphicsSurfaces>> render_props() const noexcept;
-				void clip_props(reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				reference_wrapper<basic_clip_props<GraphicsSurfaces>> clip_props() const noexcept;
+				void brush(const basic_brush<GraphicsSurfaces>& b) noexcept;
+				basic_brush<GraphicsSurfaces> brush() const noexcept;
+				void path(const basic_interpreted_path<GraphicsSurfaces>& p) noexcept;
+				basic_interpreted_path<GraphicsSurfaces> path() const noexcept;
+				void brush_props(const basic_brush_props<GraphicsSurfaces>& bp) noexcept;
+				basic_brush_props<GraphicsSurfaces> brush_props() const noexcept;
+				void render_props(const basic_render_props<GraphicsSurfaces>& rp) noexcept;
+				basic_render_props<GraphicsSurfaces> render_props() const noexcept;
+				void clip_props(const basic_clip_props<GraphicsSurfaces>& cl) noexcept;
+				basic_clip_props<GraphicsSurfaces> clip_props() const noexcept;
 			};
 			class mask {
 			public:
@@ -165,26 +162,26 @@ namespace std::experimental::io2d {
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
 				optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
 
-				mask(reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_brush<GraphicsSurfaces>> mb, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_mask_props<GraphicsSurfaces>> mp, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				mask(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_brush<GraphicsSurfaces>> mb, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_mask_props<GraphicsSurfaces>> mp, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
+				mask(const basic_brush<GraphicsSurfaces>& b, const basic_brush<GraphicsSurfaces>& mb, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_mask_props<GraphicsSurfaces>& mp = basic_mask_props<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_mask_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
+				mask(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_brush<GraphicsSurfaces>& b, const basic_brush<GraphicsSurfaces>& mb, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_mask_props<GraphicsSurfaces>& mp = basic_mask_props<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_mask_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
 
-				void brush(basic_brush<GraphicsSurfaces>& b) noexcept;
-				reference_wrapper<basic_brush<GraphicsSurfaces>> brush() const noexcept;
+				void brush(const basic_brush<GraphicsSurfaces>& b) noexcept;
+				basic_brush<GraphicsSurfaces> brush() const noexcept;
 
 				void mask_brush(basic_brush<GraphicsSurfaces>& mb) noexcept;
-				reference_wrapper<basic_brush<GraphicsSurfaces>> mask_brush() const noexcept;
+				basic_brush<GraphicsSurfaces> mask_brush() const noexcept;
 
-				void brush_props(reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp) noexcept;
-				reference_wrapper<basic_brush_props<GraphicsSurfaces>> brush_props() const noexcept;
+				void brush_props(const basic_brush_props<GraphicsSurfaces>& bp) noexcept;
+				basic_brush_props<GraphicsSurfaces> brush_props() const noexcept;
 
-				void mask_props(reference_wrapper<basic_mask_props<GraphicsSurfaces>> mp) noexcept;
-				reference_wrapper<basic_mask_props<GraphicsSurfaces>> mask_props() const noexcept;
+				void mask_props(const basic_mask_props<GraphicsSurfaces>& mp) noexcept;
+				basic_mask_props<GraphicsSurfaces> mask_props() const noexcept;
 
-				void render_props(reference_wrapper<basic_render_props<GraphicsSurfaces>> rp) noexcept;
-				reference_wrapper<basic_render_props<GraphicsSurfaces>> render_props() const noexcept;
+				void render_props(const basic_render_props<GraphicsSurfaces>& rp) noexcept;
+				basic_render_props<GraphicsSurfaces> render_props() const noexcept;
 
-				void clip_props(reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				reference_wrapper<basic_clip_props<GraphicsSurfaces>> clip_props() const noexcept;
+				void clip_props(const basic_clip_props<GraphicsSurfaces>& cl) noexcept;
+				basic_clip_props<GraphicsSurfaces> clip_props() const noexcept;
 			};
 
 			class draw_text {
@@ -199,32 +196,32 @@ namespace std::experimental::io2d {
 				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
 				optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
 
-				draw_text(reference_wrapper<basic_point_2d<graphics_math_type>> pt, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_font<GraphicsSurfaces>> font, reference_wrapper<string> text, reference_wrapper<basic_text_props<GraphicsSurfaces>> tp, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp, reference_wrapper<basic_dashes<GraphicsSurfaces>> d, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				draw_text(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_point_2d<graphics_math_type>> pt, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_font<GraphicsSurfaces>> font, reference_wrapper<string> text, reference_wrapper<basic_text_props<GraphicsSurfaces>> tp, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp, reference_wrapper<basic_dashes<GraphicsSurfaces>> d, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				draw_text(reference_wrapper<basic_bounding_box<graphics_math_type>> bb, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_font<GraphicsSurfaces>> font, reference_wrapper<string> text, reference_wrapper<basic_text_props<GraphicsSurfaces>> tp, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp, reference_wrapper<basic_dashes<GraphicsSurfaces>> d, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				draw_text(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_bounding_box<graphics_math_type>> bb, reference_wrapper<basic_brush<GraphicsSurfaces>> b, reference_wrapper<basic_font<GraphicsSurfaces>> font, reference_wrapper<string> text, reference_wrapper<basic_text_props<GraphicsSurfaces>> tp, reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp, reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp, reference_wrapper<basic_dashes<GraphicsSurfaces>> d, reference_wrapper<basic_render_props<GraphicsSurfaces>> rp, reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
+				draw_text(const basic_point_2d<graphics_math_type>& pt, const basic_brush<GraphicsSurfaces>& b, const basic_font<GraphicsSurfaces>& font, string text, const basic_text_props<GraphicsSurfaces>& tp = basic_text_props<GraphicsSurfaces>{}, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_stroke_props<GraphicsSurfaces>& sp = basic_stroke_props<GraphicsSurfaces>{}, const basic_dashes<GraphicsSurfaces>& d = basic_dashes<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
+				draw_text(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_point_2d<graphics_math_type>& pt, const basic_brush<GraphicsSurfaces>& b, const basic_font<GraphicsSurfaces>& font, string text, const basic_text_props<GraphicsSurfaces>& tp = basic_text_props<GraphicsSurfaces>{}, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_stroke_props<GraphicsSurfaces>& sp = basic_stroke_props<GraphicsSurfaces>{}, const basic_dashes<GraphicsSurfaces>& d = basic_dashes<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
+				draw_text(const basic_bounding_box<graphics_math_type>& bb, const basic_brush<GraphicsSurfaces>& b, const basic_font<GraphicsSurfaces>& font, string text, const basic_text_props<GraphicsSurfaces>& tp = basic_text_props<GraphicsSurfaces>{}, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_stroke_props<GraphicsSurfaces>& sp = basic_stroke_props<GraphicsSurfaces>{}, const basic_dashes<GraphicsSurfaces>& d = basic_dashes<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
+				draw_text(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, const basic_bounding_box<graphics_math_type>& bb, const basic_brush<GraphicsSurfaces>& b, const basic_font<GraphicsSurfaces>& font, string text, const basic_text_props<GraphicsSurfaces>& tp = basic_text_props<GraphicsSurfaces>{}, const basic_brush_props<GraphicsSurfaces>& bp = basic_brush_props<GraphicsSurfaces>{}, const basic_stroke_props<GraphicsSurfaces>& sp = basic_stroke_props<GraphicsSurfaces>{}, const basic_dashes<GraphicsSurfaces>& d = basic_dashes<GraphicsSurfaces>{}, const basic_render_props<GraphicsSurfaces>& rp = basic_render_props<GraphicsSurfaces>{}, const basic_clip_props<GraphicsSurfaces>& cl = basic_clip_props<GraphicsSurfaces>{}) noexcept;
 
-				void location(reference_wrapper<basic_point_2d<graphics_math_type>> pt) noexcept;
-				void location(reference_wrapper<basic_bounding_box<graphics_math_type>> bb) noexcept;
-				variant<reference_wrapper<basic_point_2d<graphics_math_type>>, reference_wrapper<basic_bounding_box<graphics_math_type>>> location() const noexcept;
-				void brush(reference_wrapper<basic_brush<GraphicsSurfaces>> b) noexcept;
-				reference_wrapper<basic_brush<GraphicsSurfaces>> brush() const noexcept;
-				void font(reference_wrapper<basic_font<GraphicsSurfaces>> f) noexcept;
-				reference_wrapper<basic_font<GraphicsSurfaces>> font() const noexcept;
-				void text(reference_wrapper<string> t) noexcept;
-				reference_wrapper<string> text() const noexcept;
-				void text_props(reference_wrapper<basic_text_props<GraphicsSurfaces>> tp) noexcept;
-				reference_wrapper<basic_text_props<GraphicsSurfaces>> text_props() const noexcept;
-				void stroke_props(reference_wrapper<basic_stroke_props<GraphicsSurfaces>> sp) noexcept;
-				reference_wrapper<basic_stroke_props<GraphicsSurfaces>> stroke_props() const noexcept;
-				void dashes(reference_wrapper<basic_dashes<GraphicsSurfaces>> d) noexcept;
-				reference_wrapper<basic_dashes<GraphicsSurfaces>> dashes() const noexcept;
-				void brush_props(reference_wrapper<basic_brush_props<GraphicsSurfaces>> bp) noexcept;
-				reference_wrapper<basic_brush_props<GraphicsSurfaces>> brush_props() const noexcept;
-				void render_props(reference_wrapper<basic_render_props<GraphicsSurfaces>> rp) noexcept;
-				reference_wrapper<basic_render_props<GraphicsSurfaces>> render_props() const noexcept;
-				void clip_props(reference_wrapper<basic_clip_props<GraphicsSurfaces>> cl) noexcept;
-				reference_wrapper<basic_clip_props<GraphicsSurfaces>> clip_props() const noexcept;
+				void location(const basic_point_2d<graphics_math_type>& pt) noexcept;
+				void location(const basic_bounding_box<graphics_math_type>& bb) noexcept;
+				variant<basic_point_2d<graphics_math_type>, basic_bounding_box<graphics_math_type>> location() const noexcept;
+				void brush(const basic_brush<GraphicsSurfaces>& b) noexcept;
+				basic_brush<GraphicsSurfaces> brush() const noexcept;
+				void font(const basic_font<GraphicsSurfaces>& f) noexcept;
+				basic_font<GraphicsSurfaces> font() const noexcept;
+				void text(string t) noexcept;
+				string text() const noexcept;
+				void text_props(const basic_text_props<GraphicsSurfaces>& tp) noexcept;
+				basic_text_props<GraphicsSurfaces> text_props() const noexcept;
+				void brush_props(const basic_brush_props<GraphicsSurfaces>& bp) noexcept;
+				basic_brush_props<GraphicsSurfaces> brush_props() const noexcept;
+				void stroke_props(const basic_stroke_props<GraphicsSurfaces>& sp) noexcept;
+				basic_stroke_props<GraphicsSurfaces> stroke_props() const noexcept;
+				void dashes(const basic_dashes<GraphicsSurfaces>& d) noexcept;
+				basic_dashes<GraphicsSurfaces> dashes() const noexcept;
+				void render_props(const basic_render_props<GraphicsSurfaces>& rp) noexcept;
+				basic_render_props<GraphicsSurfaces> render_props() const noexcept;
+				void clip_props(const basic_clip_props<GraphicsSurfaces>& cl) noexcept;
+				basic_clip_props<GraphicsSurfaces> clip_props() const noexcept;
 			};
 
 			// Allows the user to run additional functions such as when the user knows the backend and wishes to modify it in ways not otherwise supported by a different command.

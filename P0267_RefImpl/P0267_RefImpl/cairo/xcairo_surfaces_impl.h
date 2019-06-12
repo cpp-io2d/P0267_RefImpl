@@ -206,8 +206,8 @@ namespace std::experimental::io2d {
 				}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::draw_text>, int> = 0>
 				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
-					if (::std::holds_alternative< ::std::reference_wrapper<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>>(item.location())) {
-						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> pt = ::std::get<::std::reference_wrapper<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>>(item.location());
+					if (::std::holds_alternative<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location())) {
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> pt = ::std::get<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location());
 						if (item.surface()) {
 							item.surface().value().get().draw_text(pt, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
 						}
@@ -216,7 +216,7 @@ namespace std::experimental::io2d {
 						}
 					}
 					else {
-						basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> bb = ::std::get<::std::reference_wrapper<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>>(item.location());
+						basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> bb = ::std::get<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>(item.location());
 						if (item.surface()) {
 							item.surface().value().get().draw_text(bb, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
 						}
@@ -330,8 +330,8 @@ namespace std::experimental::io2d {
 				}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::draw_text>, int> = 0>
 				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
-					if (::std::holds_alternative<::std::reference_wrapper<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>>(item.location())) {
-						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> pt = ::std::get<::std::reference_wrapper<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>>(item.location());
+					if (::std::holds_alternative<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location())) {
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> pt = ::std::get<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location());
 						if (item.surface()) {
 							item.surface().value().get().draw_text(pt, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
 						}
@@ -340,7 +340,7 @@ namespace std::experimental::io2d {
 						}
 					}
 					else {
-						basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> bb = ::std::get<::std::reference_wrapper<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>>(item.location());
+						basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> bb = ::std::get<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>(item.location());
 						if (item.surface()) {
 							item.surface().value().get().draw_text(bb, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
 						}
@@ -444,8 +444,8 @@ namespace std::experimental::io2d {
 				}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::draw_text>, int> = 0>
 				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
-					if (::std::holds_alternative<::std::reference_wrapper<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>>(item.location())) {
-						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> pt = ::std::get<::std::reference_wrapper<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>>(item.location());
+					if (::std::holds_alternative<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location())) {
+						basic_point_2d<typename GraphicsSurfaces::graphics_math_type> pt = ::std::get<basic_point_2d<typename GraphicsSurfaces::graphics_math_type>>(item.location());
 						if (item.surface()) {
 							item.surface().value().get().draw_text(pt, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
 						}
@@ -454,7 +454,7 @@ namespace std::experimental::io2d {
 						}
 					}
 					else {
-						basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> bb = ::std::get<::std::reference_wrapper<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>>(item.location());
+						basic_bounding_box<typename GraphicsSurfaces::graphics_math_type> bb = ::std::get<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>(item.location());
 						if (item.surface()) {
 							item.surface().value().get().draw_text(bb, item.brush(), item.font(), item.text(), item.text_props(), item.brush_props(), item.stroke_props(), item.dashes(), item.render_props(), item.clip_props());
 						}
