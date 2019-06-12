@@ -575,34 +575,34 @@ namespace std::experimental::io2d {
 					static void surface(clear_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
 					static ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const clear_data_type& data) noexcept;
 
-					// flush
-					struct _Flush_data {
-						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
-					};
+					//// flush
+					//struct _Flush_data {
+					//	::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
+					//};
 
-					using flush_data_type = _Flush_data;
+					//using flush_data_type = _Flush_data;
 
-					static flush_data_type create_flush() noexcept;
-					static flush_data_type create_flush(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept;
-					static void surface(flush_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
-					static ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const flush_data_type& data) noexcept;
+					//static flush_data_type create_flush() noexcept;
+					//static flush_data_type create_flush(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept;
+					//static void surface(flush_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
+					//static ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const flush_data_type& data) noexcept;
 
-					// mark_dirty
-					struct _Mark_dirty_data {
-						::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
-						::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext;
-					};
+					//// mark_dirty
+					//struct _Mark_dirty_data {
+					//	::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> sfc;
+					//	::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext;
+					//};
 
-					using mark_dirty_data_type = _Mark_dirty_data;
+					//using mark_dirty_data_type = _Mark_dirty_data;
 
-					static mark_dirty_data_type create_mark_dirty() noexcept;
-					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept;
-					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
-					static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
-					static void surface(mark_dirty_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
-					static ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const mark_dirty_data_type& data) noexcept;
-					static void extents(mark_dirty_data_type& data, ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
-					static ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> extents(const mark_dirty_data_type& data) noexcept;
+					//static mark_dirty_data_type create_mark_dirty() noexcept;
+					//static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept;
+					//static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
+					//static mark_dirty_data_type create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
+					//static void surface(mark_dirty_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept;
+					//static ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>> surface(const mark_dirty_data_type& data) noexcept;
+					//static void extents(mark_dirty_data_type& data, ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
+					//static ::std::optional<::std::reference_wrapper<basic_bounding_box<graphics_math_type>>> extents(const mark_dirty_data_type& data) noexcept;
 
 					// paint
 					struct _Paint_data {

@@ -140,34 +140,34 @@ namespace std::experimental::io2d {
 						sfc.clear();
 					}
 				}
-				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
-				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
-					if (item.surface()) {
-						item.surface().value().get().flush();
-					}
-					else {
-						sfc.flush();
-					}
-				}
-				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
-				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
-					if (item.surface()) {
-						if (item.extents()) {
-							item.surface().value().get().mark_dirty(item.extents().value());
-						}
-						else {
-							item.surface().value().get().mark_dirty();
-						}
-					}
-					else {
-						if (item.extents()) {
-							sfc.mark_dirty(item.extents().value());
-						}
-						else {
-							sfc.mark_dirty();
-						}
-					}
-				}
+				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
+				//static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+				//	if (item.surface()) {
+				//		item.surface().value().get().flush();
+				//	}
+				//	else {
+				//		sfc.flush();
+				//	}
+				//}
+				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
+				//static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
+				//	if (item.surface()) {
+				//		if (item.extents()) {
+				//			item.surface().value().get().mark_dirty(item.extents().value());
+				//		}
+				//		else {
+				//			item.surface().value().get().mark_dirty();
+				//		}
+				//	}
+				//	else {
+				//		if (item.extents()) {
+				//			sfc.mark_dirty(item.extents().value());
+				//		}
+				//		else {
+				//			sfc.mark_dirty();
+				//		}
+				//	}
+				//}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::paint>, int> = 0>
 				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
 					if (item.surface()) {
@@ -264,34 +264,34 @@ namespace std::experimental::io2d {
 						sfc.clear();
 					}
 				}
-				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
-				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
-					if (item.surface()) {
-						item.surface().value().get().flush();
-					}
-					else {
-						sfc.flush();
-					}
-				}
-				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
-				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
-					if (item.surface()) {
-						if (item.extents()) {
-							item.surface().value().get().mark_dirty(item.extents().value());
-						}
-						else {
-							item.surface().value().get().mark_dirty();
-						}
-					}
-					else {
-						if (item.extents()) {
-							sfc.mark_dirty(item.extents().value());
-						}
-						else {
-							sfc.mark_dirty();
-						}
-					}
-				}
+				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
+				//static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+				//	if (item.surface()) {
+				//		item.surface().value().get().flush();
+				//	}
+				//	else {
+				//		sfc.flush();
+				//	}
+				//}
+				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
+				//static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
+				//	if (item.surface()) {
+				//		if (item.extents()) {
+				//			item.surface().value().get().mark_dirty(item.extents().value());
+				//		}
+				//		else {
+				//			item.surface().value().get().mark_dirty();
+				//		}
+				//	}
+				//	else {
+				//		if (item.extents()) {
+				//			sfc.mark_dirty(item.extents().value());
+				//		}
+				//		else {
+				//			sfc.mark_dirty();
+				//		}
+				//	}
+				//}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::paint>, int> = 0>
 				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
 					if (item.surface()) {
@@ -378,34 +378,34 @@ namespace std::experimental::io2d {
 						sfc.clear();
 					}
 				}
-				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
-				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
-					if (item.surface()) {
-						item.surface().value().get().flush();
-					}
-					else {
-						sfc.flush();
-					}
-				}
-				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
-				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
-					if (item.surface()) {
-						if (item.extents()) {
-							item.surface().value().get().mark_dirty(item.extents().value());
-						}
-						else {
-							item.surface().value().get().mark_dirty();
-						}
-					}
-					else {
-						if (item.extents()) {
-							sfc.mark_dirty(item.extents().value());
-						}
-						else {
-							sfc.mark_dirty();
-						}
-					}
-				}
+				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
+				//static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+				//	if (item.surface()) {
+				//		item.surface().value().get().flush();
+				//	}
+				//	else {
+				//		sfc.flush();
+				//	}
+				//}
+				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
+				//static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
+				//	if (item.surface()) {
+				//		if (item.extents()) {
+				//			item.surface().value().get().mark_dirty(item.extents().value());
+				//		}
+				//		else {
+				//			item.surface().value().get().mark_dirty();
+				//		}
+				//	}
+				//	else {
+				//		if (item.extents()) {
+				//			sfc.mark_dirty(item.extents().value());
+				//		}
+				//		else {
+				//			sfc.mark_dirty();
+				//		}
+				//	}
+				//}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::paint>, int> = 0>
 				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
 					if (item.surface()) {

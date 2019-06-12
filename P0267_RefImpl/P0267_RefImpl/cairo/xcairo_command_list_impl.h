@@ -28,61 +28,61 @@ namespace std::experimental::io2d {
 			inline ::std::optional<::std::reference_wrapper<basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>>>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::surface(const clear_data_type& data) noexcept {
 				return data.sfc;
 			}
-			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::flush_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_flush() noexcept {
-				return flush_data_type{ nullopt };
-			}
-			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::flush_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_flush(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept {
-				return flush_data_type{ sfc };
-			}
-			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::surface(flush_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept {
-				data.sfc = sfc;
-			}
-			template<class GraphicsMath>
-			inline ::std::optional<::std::reference_wrapper<basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>>>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::surface(const flush_data_type& data) noexcept {
-				return data.sfc;
-			}
-			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty() noexcept {
-				return mark_dirty_data_type{};
-			}
-			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept {
-				mark_dirty_data_type result;
-				result.sfc = sfc;
-				return result;
-			}
-			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept {
-				mark_dirty_data_type result;
-				result.ext = ext;
-				return result;
-			}
-			template<class GraphicsMath>
-			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept {
-				mark_dirty_data_type result;
-				result.sfc = sfc;
-				result.ext = ext;
-				return result;
-			}
-			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::surface(mark_dirty_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept {
-				data.sfc = sfc;
-			}
-			template<class GraphicsMath>
-			inline ::std::optional<::std::reference_wrapper<basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>>>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::surface(const mark_dirty_data_type& data) noexcept {
-				return data.sfc;
-			}
-			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::extents(mark_dirty_data_type& data, const ::std::optional<::std::reference_wrapper<basic_bounding_box<GraphicsMath>>> ext) noexcept {
-				data.ext = ext;
-			}
-			template<class GraphicsMath>
-			inline ::std::optional<::std::reference_wrapper<basic_bounding_box<GraphicsMath>>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::extents(const mark_dirty_data_type& data) noexcept {
-				return data.ext;
-			}
+			//template<class GraphicsMath>
+			//inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::flush_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_flush() noexcept {
+			//	return flush_data_type{ nullopt };
+			//}
+			//template<class GraphicsMath>
+			//inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::flush_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_flush(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept {
+			//	return flush_data_type{ sfc };
+			//}
+			//template<class GraphicsMath>
+			//inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::surface(flush_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept {
+			//	data.sfc = sfc;
+			//}
+			//template<class GraphicsMath>
+			//inline ::std::optional<::std::reference_wrapper<basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>>>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::surface(const flush_data_type& data) noexcept {
+			//	return data.sfc;
+			//}
+			//template<class GraphicsMath>
+			//inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty() noexcept {
+			//	return mark_dirty_data_type{};
+			//}
+			//template<class GraphicsMath>
+			//inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc) noexcept {
+			//	mark_dirty_data_type result;
+			//	result.sfc = sfc;
+			//	return result;
+			//}
+			//template<class GraphicsMath>
+			//inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept {
+			//	mark_dirty_data_type result;
+			//	result.ext = ext;
+			//	return result;
+			//}
+			//template<class GraphicsMath>
+			//inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_mark_dirty(::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>> sfc, ::std::reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept {
+			//	mark_dirty_data_type result;
+			//	result.sfc = sfc;
+			//	result.ext = ext;
+			//	return result;
+			//}
+			//template<class GraphicsMath>
+			//inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::surface(mark_dirty_data_type& data, const ::std::optional<::std::reference_wrapper<basic_image_surface<graphics_surfaces_type>>>& sfc) noexcept {
+			//	data.sfc = sfc;
+			//}
+			//template<class GraphicsMath>
+			//inline ::std::optional<::std::reference_wrapper<basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>>>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::surface(const mark_dirty_data_type& data) noexcept {
+			//	return data.sfc;
+			//}
+			//template<class GraphicsMath>
+			//inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::extents(mark_dirty_data_type& data, const ::std::optional<::std::reference_wrapper<basic_bounding_box<GraphicsMath>>> ext) noexcept {
+			//	data.ext = ext;
+			//}
+			//template<class GraphicsMath>
+			//inline ::std::optional<::std::reference_wrapper<basic_bounding_box<GraphicsMath>>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::extents(const mark_dirty_data_type& data) noexcept {
+			//	return data.ext;
+			//}
 			template<class GraphicsMath>
 			inline typename _Cairo_graphics_surfaces<GraphicsMath>::surfaces::paint_data_type _Cairo_graphics_surfaces<GraphicsMath>::surfaces::create_paint(::std::reference_wrapper<basic_brush<_Cairo_graphics_surfaces<GraphicsMath>>> b, ::std::reference_wrapper<basic_brush_props<_Cairo_graphics_surfaces<GraphicsMath>>> bp, ::std::reference_wrapper<basic_render_props<_Cairo_graphics_surfaces<GraphicsMath>>> rp, ::std::reference_wrapper<basic_clip_props<_Cairo_graphics_surfaces<GraphicsMath>>> cl) noexcept {
 				return paint_data_type{ nullopt, b, bp, rp, cl };
