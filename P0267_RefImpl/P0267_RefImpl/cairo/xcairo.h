@@ -421,12 +421,12 @@ namespace std::experimental::io2d {
 					static basic_display_point<GraphicsMath> dimensions(const image_surface_data_type& data) noexcept;
 
 					static void clear(image_surface_data_type& data);
-					static void flush(image_surface_data_type& data);
-					static void flush(image_surface_data_type& data, error_code& ec) noexcept;
-					static void mark_dirty(image_surface_data_type& data);
-					static void mark_dirty(image_surface_data_type& data, error_code& ec) noexcept;
-					static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
-					static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
+					//static void flush(image_surface_data_type& data);
+					//static void flush(image_surface_data_type& data, error_code& ec) noexcept;
+					//static void mark_dirty(image_surface_data_type& data);
+					//static void mark_dirty(image_surface_data_type& data, error_code& ec) noexcept;
+					//static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
+					//static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 					static void paint(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 					static void stroke(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 					static void fill(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
@@ -468,12 +468,12 @@ namespace std::experimental::io2d {
 					static basic_bounding_box<GraphicsMath> invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush);
 					static void display_dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
 
-					static void flush(unmanaged_output_surface_data_type& data);
-					static void flush(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
-					static void mark_dirty(unmanaged_output_surface_data_type& data);
-					static void mark_dirty(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
-					static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
-					static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
+					//static void flush(unmanaged_output_surface_data_type& data);
+					//static void flush(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
+					//static void mark_dirty(unmanaged_output_surface_data_type& data);
+					//static void mark_dirty(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
+					//static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
+					//static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 					static void clear(unmanaged_output_surface_data_type& data);
 					static void paint(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 					static void stroke(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
@@ -521,12 +521,12 @@ namespace std::experimental::io2d {
 					static float desired_frame_rate(const output_surface_data_type& data) noexcept;
 
 					// rendering functions
-					static void flush(output_surface_data_type& data);
-					static void flush(output_surface_data_type& data, error_code& ec) noexcept;
-					static void mark_dirty(output_surface_data_type& data);
-					static void mark_dirty(output_surface_data_type& data, error_code& ec) noexcept;
-					static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
-					static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
+					//static void flush(output_surface_data_type& data);
+					//static void flush(output_surface_data_type& data, error_code& ec) noexcept;
+					//static void mark_dirty(output_surface_data_type& data);
+					//static void mark_dirty(output_surface_data_type& data, error_code& ec) noexcept;
+					//static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
+					//static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 					static void clear(output_surface_data_type& data);
 					static void paint(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 					static void stroke(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);

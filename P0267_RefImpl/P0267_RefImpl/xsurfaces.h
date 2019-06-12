@@ -191,12 +191,12 @@ namespace std::experimental::io2d {
 			basic_display_point<graphics_math_type> dimensions() const noexcept;
 
 			void clear();
-			void flush();
-			void flush(error_code& ec) noexcept;
-			void mark_dirty();
-			void mark_dirty(error_code& ec) noexcept;
-			void mark_dirty(const basic_bounding_box<graphics_math_type>& extents);
-			void mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept;
+			//void flush();
+			//void flush(error_code& ec) noexcept;
+			//void mark_dirty();
+			//void mark_dirty(error_code& ec) noexcept;
+			//void mark_dirty(const basic_bounding_box<graphics_math_type>& extents);
+			//void mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept;
 			void paint(const basic_brush<GraphicsSurfaces>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
 			template <class Allocator>
 			void stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<basic_dashes<GraphicsSurfaces>>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
@@ -255,12 +255,12 @@ namespace std::experimental::io2d {
 
 			// rendering functions
 			void clear();
-			void flush();
-			void flush(error_code& ec) noexcept;
-			void mark_dirty();
-			void mark_dirty(error_code& ec) noexcept;
-			void mark_dirty(const basic_bounding_box<graphics_math_type>& extents);
-			void mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept;
+			//void flush();
+			//void flush(error_code& ec) noexcept;
+			//void mark_dirty();
+			//void mark_dirty(error_code& ec) noexcept;
+			//void mark_dirty(const basic_bounding_box<graphics_math_type>& extents);
+			//void mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept;
 			void paint(const basic_brush<GraphicsSurfaces>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
 			template <class Allocator>
 			void stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<basic_dashes<GraphicsSurfaces>>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
@@ -329,12 +329,12 @@ namespace std::experimental::io2d {
 
 			// rendering functions
 			void clear();
-			void flush();
-			void flush(error_code& ec) noexcept;
-			void mark_dirty();
-			void mark_dirty(error_code& ec) noexcept;
-			void mark_dirty(const basic_bounding_box<graphics_math_type>& extents);
-			void mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept;
+			//void flush();
+			//void flush(error_code& ec) noexcept;
+			//void mark_dirty();
+			//void mark_dirty(error_code& ec) noexcept;
+			//void mark_dirty(const basic_bounding_box<graphics_math_type>& extents);
+			//void mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept;
 			void paint(const basic_brush<GraphicsSurfaces>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
 			template <class Allocator>
 			void stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<basic_dashes<GraphicsSurfaces>>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);

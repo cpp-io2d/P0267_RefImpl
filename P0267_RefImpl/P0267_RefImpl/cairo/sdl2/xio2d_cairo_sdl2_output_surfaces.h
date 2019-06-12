@@ -197,33 +197,33 @@ namespace std::experimental::io2d {
 				return data->data.refresh_fps;
 			}
 
-			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::flush(output_surface_data_type& data) {
-				cairo_surface_flush(data->data.back_buffer.surface.get());
-			}
-			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::flush(output_surface_data_type& data, error_code& ec) noexcept {
-				cairo_surface_flush(data->data.back_buffer.surface.get());
-				ec.clear();
-			}
-			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty(output_surface_data_type& data) {
-				cairo_surface_mark_dirty(data->data.back_buffer.surface.get());
-			}
-			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty(output_surface_data_type& data, error_code& ec) noexcept {
-				cairo_surface_mark_dirty(data->data.back_buffer.surface.get());
-				ec.clear();
-			}
-			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents) {
-				cairo_surface_mark_dirty_rectangle(data->data.back_buffer.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
-			}
-			template<class GraphicsMath>
-			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept {
-				cairo_surface_mark_dirty_rectangle(data->data.back_buffer.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
-				ec.clear();
-			}
+			//template<class GraphicsMath>
+			//inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::flush(output_surface_data_type& data) {
+			//	cairo_surface_flush(data->data.back_buffer.surface.get());
+			//}
+			//template<class GraphicsMath>
+			//inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::flush(output_surface_data_type& data, error_code& ec) noexcept {
+			//	cairo_surface_flush(data->data.back_buffer.surface.get());
+			//	ec.clear();
+			//}
+			//template<class GraphicsMath>
+			//inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty(output_surface_data_type& data) {
+			//	cairo_surface_mark_dirty(data->data.back_buffer.surface.get());
+			//}
+			//template<class GraphicsMath>
+			//inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty(output_surface_data_type& data, error_code& ec) noexcept {
+			//	cairo_surface_mark_dirty(data->data.back_buffer.surface.get());
+			//	ec.clear();
+			//}
+			//template<class GraphicsMath>
+			//inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents) {
+			//	cairo_surface_mark_dirty_rectangle(data->data.back_buffer.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+			//}
+			//template<class GraphicsMath>
+			//inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept {
+			//	cairo_surface_mark_dirty_rectangle(data->data.back_buffer.surface.get(), _Float_to_int(extents.x()), _Float_to_int(extents.y()), _Float_to_int(extents.width()), _Float_to_int(extents.height()));
+			//	ec.clear();
+			//}
 
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::clear(output_surface_data_type& data) {
