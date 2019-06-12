@@ -29,42 +29,42 @@ namespace std::experimental::io2d {
 				optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
 			};
 
-			class flush {
-			public:
-				using data_type = typename GraphicsSurfaces::surfaces::flush_data_type;
-			private:
-				data_type _Data;
-			public:
-				const data_type& data() const noexcept;
-				data_type& data() noexcept;
+			//class flush {
+			//public:
+			//	using data_type = typename GraphicsSurfaces::surfaces::flush_data_type;
+			//private:
+			//	data_type _Data;
+			//public:
+			//	const data_type& data() const noexcept;
+			//	data_type& data() noexcept;
 
-				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
-				optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
+			//	void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
+			//	optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
 
-				flush() noexcept;
-				flush(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc) noexcept;
-			};
+			//	flush() noexcept;
+			//	flush(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc) noexcept;
+			//};
 
-			class mark_dirty {
-			public:
-				using data_type = typename GraphicsSurfaces::surfaces::mark_dirty_data_type;
-			private:
-				data_type _Data;
-			public:
-				const data_type& data() const noexcept;
-				data_type& data() noexcept;
+			//class mark_dirty {
+			//public:
+			//	using data_type = typename GraphicsSurfaces::surfaces::mark_dirty_data_type;
+			//private:
+			//	data_type _Data;
+			//public:
+			//	const data_type& data() const noexcept;
+			//	data_type& data() noexcept;
 
-				void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
-				optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
+			//	void surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept;
+			//	optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> surface() const noexcept;
 
-				mark_dirty() noexcept;
-				mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc) noexcept;
-				mark_dirty(reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
-				mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
+			//	mark_dirty() noexcept;
+			//	mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc) noexcept;
+			//	mark_dirty(reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
+			//	mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept;
 
-				void extents(optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
-				optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> extents() const noexcept;
-			};
+			//	void extents(optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept;
+			//	optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> extents() const noexcept;
+			//};
 
 			class paint {
 			public:
@@ -257,7 +257,7 @@ namespace std::experimental::io2d {
 				void* user_data() const noexcept;
 			};
 
-			using command_item = variant<clear, flush, mark_dirty, paint, stroke, fill, mask, draw_text, run_function>;
+			using command_item = variant<clear, paint, stroke, fill, mask, draw_text, run_function>;
 		};
 
 		template <class GraphicsSurfaces>

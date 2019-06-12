@@ -31,71 +31,71 @@ namespace std::experimental::io2d {
 			return GraphicsSurfaces::surfaces::surface(_Data);
 		}
 
-		template<class GraphicsSurfaces>
-		inline const typename basic_commands<GraphicsSurfaces>::flush::data_type& basic_commands<GraphicsSurfaces>::flush::data() const noexcept {
-			return _Data;
-		}
-		template<class GraphicsSurfaces>
-		inline typename basic_commands<GraphicsSurfaces>::flush::data_type& basic_commands<GraphicsSurfaces>::flush::data() noexcept {
-			return _Data;
-		}
-		template<class GraphicsSurfaces>
-		inline void basic_commands<GraphicsSurfaces>::flush::surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept {
-			GraphicsSurfaces::surfaces::surface(_Data, sfc);
-		}
-		template<class GraphicsSurfaces>
-		inline optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> basic_commands<GraphicsSurfaces>::flush::surface() const noexcept {
-			return GraphicsSurfaces::surfaces::surface(_Data);
-		}
-		template<class GraphicsSurfaces>
-		inline basic_commands<GraphicsSurfaces>::flush::flush() noexcept
-			: _Data(GraphicsSurfaces::surfaces::create_flush()) {
-		}
-		template<class GraphicsSurfaces>
-		inline basic_commands<GraphicsSurfaces>::flush::flush(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc) noexcept
-			: _Data(GraphicsSurfaces::surfaces::create_flush(sfc)) {
-		}
+		//template<class GraphicsSurfaces>
+		//inline const typename basic_commands<GraphicsSurfaces>::flush::data_type& basic_commands<GraphicsSurfaces>::flush::data() const noexcept {
+		//	return _Data;
+		//}
+		//template<class GraphicsSurfaces>
+		//inline typename basic_commands<GraphicsSurfaces>::flush::data_type& basic_commands<GraphicsSurfaces>::flush::data() noexcept {
+		//	return _Data;
+		//}
+		//template<class GraphicsSurfaces>
+		//inline void basic_commands<GraphicsSurfaces>::flush::surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept {
+		//	GraphicsSurfaces::surfaces::surface(_Data, sfc);
+		//}
+		//template<class GraphicsSurfaces>
+		//inline optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> basic_commands<GraphicsSurfaces>::flush::surface() const noexcept {
+		//	return GraphicsSurfaces::surfaces::surface(_Data);
+		//}
+		//template<class GraphicsSurfaces>
+		//inline basic_commands<GraphicsSurfaces>::flush::flush() noexcept
+		//	: _Data(GraphicsSurfaces::surfaces::create_flush()) {
+		//}
+		//template<class GraphicsSurfaces>
+		//inline basic_commands<GraphicsSurfaces>::flush::flush(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc) noexcept
+		//	: _Data(GraphicsSurfaces::surfaces::create_flush(sfc)) {
+		//}
 
-		template<class GraphicsSurfaces>
-		inline const typename basic_commands<GraphicsSurfaces>::mark_dirty::data_type& basic_commands<GraphicsSurfaces>::mark_dirty::data() const noexcept {
-			return _Data;
-		}
-		template<class GraphicsSurfaces>
-		inline typename basic_commands<GraphicsSurfaces>::mark_dirty::data_type& basic_commands<GraphicsSurfaces>::mark_dirty::data() noexcept {
-			return _Data;
-		}
-		template<class GraphicsSurfaces>
-		inline void basic_commands<GraphicsSurfaces>::mark_dirty::surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept {
-			GraphicsSurfaces::surfaces::surface(_Data, sfc);
-		}
-		template<class GraphicsSurfaces>
-		inline optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> basic_commands<GraphicsSurfaces>::mark_dirty::surface() const noexcept {
-			return GraphicsSurfaces::surfaces::surface(_Data);
-		}
-		template<class GraphicsSurfaces>
-		inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty() noexcept
-			: _Data(GraphicsSurfaces::surfaces::create_mark_dirty()) {
-		}
-		template<class GraphicsSurfaces>
-		inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc) noexcept
-			: _Data(GraphicsSurfaces::surfaces::create_mark_dirty(sfc)) {
-		}
-		template<class GraphicsSurfaces>
-		inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept
-			: _Data(GraphicsSurfaces::surfaces::create_mark_dirty(ext)) {
-		}
-		template<class GraphicsSurfaces>
-		inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept
-			: _Data(GraphicsSurfaces::surfaces::create_mark_dirty(sfc, ext)) {
-		}
-		template<class GraphicsSurfaces>
-		inline void basic_commands<GraphicsSurfaces>::mark_dirty::extents(optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept {
-			GraphicsSurfaces::surfaces::extents(_Data, ext);
-		}
-		template<class GraphicsSurfaces>
-		inline optional<reference_wrapper<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>> basic_commands<GraphicsSurfaces>::mark_dirty::extents() const noexcept {
-			return GraphicsSurfaces::surfaces::extents(_Data);
-		}
+		//template<class GraphicsSurfaces>
+		//inline const typename basic_commands<GraphicsSurfaces>::mark_dirty::data_type& basic_commands<GraphicsSurfaces>::mark_dirty::data() const noexcept {
+		//	return _Data;
+		//}
+		//template<class GraphicsSurfaces>
+		//inline typename basic_commands<GraphicsSurfaces>::mark_dirty::data_type& basic_commands<GraphicsSurfaces>::mark_dirty::data() noexcept {
+		//	return _Data;
+		//}
+		//template<class GraphicsSurfaces>
+		//inline void basic_commands<GraphicsSurfaces>::mark_dirty::surface(optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> sfc) noexcept {
+		//	GraphicsSurfaces::surfaces::surface(_Data, sfc);
+		//}
+		//template<class GraphicsSurfaces>
+		//inline optional<reference_wrapper<basic_image_surface<GraphicsSurfaces>>> basic_commands<GraphicsSurfaces>::mark_dirty::surface() const noexcept {
+		//	return GraphicsSurfaces::surfaces::surface(_Data);
+		//}
+		//template<class GraphicsSurfaces>
+		//inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty() noexcept
+		//	: _Data(GraphicsSurfaces::surfaces::create_mark_dirty()) {
+		//}
+		//template<class GraphicsSurfaces>
+		//inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc) noexcept
+		//	: _Data(GraphicsSurfaces::surfaces::create_mark_dirty(sfc)) {
+		//}
+		//template<class GraphicsSurfaces>
+		//inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept
+		//	: _Data(GraphicsSurfaces::surfaces::create_mark_dirty(ext)) {
+		//}
+		//template<class GraphicsSurfaces>
+		//inline basic_commands<GraphicsSurfaces>::mark_dirty::mark_dirty(reference_wrapper<basic_image_surface<GraphicsSurfaces>> sfc, reference_wrapper<basic_bounding_box<graphics_math_type>> ext) noexcept
+		//	: _Data(GraphicsSurfaces::surfaces::create_mark_dirty(sfc, ext)) {
+		//}
+		//template<class GraphicsSurfaces>
+		//inline void basic_commands<GraphicsSurfaces>::mark_dirty::extents(optional<reference_wrapper<basic_bounding_box<graphics_math_type>>> ext) noexcept {
+		//	GraphicsSurfaces::surfaces::extents(_Data, ext);
+		//}
+		//template<class GraphicsSurfaces>
+		//inline optional<reference_wrapper<basic_bounding_box<typename GraphicsSurfaces::graphics_math_type>>> basic_commands<GraphicsSurfaces>::mark_dirty::extents() const noexcept {
+		//	return GraphicsSurfaces::surfaces::extents(_Data);
+		//}
 
 		template<class GraphicsSurfaces>
 		inline const typename basic_commands<GraphicsSurfaces>::paint::data_type& basic_commands<GraphicsSurfaces>::paint::data() const noexcept {
