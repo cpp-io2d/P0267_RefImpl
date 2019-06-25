@@ -405,6 +405,7 @@ namespace std::experimental::io2d {
 						::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> context{ nullptr, &cairo_destroy };
 						basic_display_point<GraphicsMath> dimensions;
 						io2d::format format;
+						unsigned int ppi = 96;
 					};
 
 					using image_surface_data_type = _Image_surface_data;
@@ -419,14 +420,10 @@ namespace std::experimental::io2d {
 
 					static io2d::format format(const image_surface_data_type& data) noexcept;
 					static basic_display_point<GraphicsMath> dimensions(const image_surface_data_type& data) noexcept;
+					static void ppi(image_surface_data_type& data, unsigned int val) noexcept;
+					static unsigned int ppi(const image_surface_data_type& data) noexcept;
 
 					static void clear(image_surface_data_type& data);
-					//static void flush(image_surface_data_type& data);
-					//static void flush(image_surface_data_type& data, error_code& ec) noexcept;
-					//static void mark_dirty(image_surface_data_type& data);
-					//static void mark_dirty(image_surface_data_type& data, error_code& ec) noexcept;
-					//static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
-					//static void mark_dirty(image_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 					static void paint(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 					static void stroke(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 					static void fill(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
@@ -810,7 +807,6 @@ namespace std::experimental::io2d {
 						font_size_units fsu;
 						float fontsize;
 						bool kern;
-						font_hinting hint;
 						font_antialias aa;
 						font_stretching stretch;
 						bool strike_through;
@@ -819,7 +815,7 @@ namespace std::experimental::io2d {
 
 					using text_props_data_type = _Text_props_data;
 
-					static text_props_data_type create_text_props(float scl, font_size_units fsu, float fontsize, bool kern, font_hinting hint, font_antialias aa, font_stretching stretch, bool strike_through, font_line fl) noexcept;
+					static text_props_data_type create_text_props(float scl, font_size_units fsu, float fontsize, bool kern, font_antialias aa, font_stretching stretch, bool strike_through, font_line fl) noexcept;
 
 
 				};

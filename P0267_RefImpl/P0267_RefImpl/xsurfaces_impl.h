@@ -66,34 +66,20 @@ namespace std {
 					return GraphicsSurfaces::surfaces::dimensions(_Data);
 				}
 
+				template<class GraphicsSurfaces>
+				inline void basic_image_surface<GraphicsSurfaces>::ppi(unsigned int val) noexcept {
+					GraphicsSurfaces::surfaces::ppi(_Data, val);
+				}
+
+				template<class GraphicsSurfaces>
+				inline unsigned int basic_image_surface<GraphicsSurfaces>::ppi() const noexcept {
+					return GraphicsSurfaces::surfaces::ppi(_Data);
+				}
+
 				template <class GraphicsSurfaces>
 				inline void basic_image_surface<GraphicsSurfaces>::clear() {
 					GraphicsSurfaces::surfaces::clear(_Data);
 				}
-				//template <class GraphicsSurfaces>
-				//inline void basic_image_surface<GraphicsSurfaces>::flush() {
-				//	GraphicsSurfaces::surfaces::flush(_Data);
-				//}
-				//template <class GraphicsSurfaces>
-				//inline void basic_image_surface<GraphicsSurfaces>::flush(error_code& ec) noexcept {
-				//	GraphicsSurfaces::surfaces::flush(_Data, ec);
-				//}
-				//template <class GraphicsSurfaces>
-				//inline void basic_image_surface<GraphicsSurfaces>::mark_dirty() {
-				//	GraphicsSurfaces::surfaces::mark_dirty(_Data);
-				//}
-				//template <class GraphicsSurfaces>
-				//inline void basic_image_surface<GraphicsSurfaces>::mark_dirty(error_code& ec) noexcept {
-				//	GraphicsSurfaces::surfaces::mark_dirty(_Data, ec);
-				//}
-				//template <class GraphicsSurfaces>
-				//inline void basic_image_surface<GraphicsSurfaces>::mark_dirty(const basic_bounding_box<graphics_math_type>& extents) {
-				//	GraphicsSurfaces::surfaces::mark_dirty(_Data, extents);
-				//}
-				//template <class GraphicsSurfaces>
-				//inline void basic_image_surface<GraphicsSurfaces>::mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept {
-				//	GraphicsSurfaces::surfaces::mark_dirty(_Data, extents, ec);
-				//}
 				template <class GraphicsSurfaces>
 				inline void basic_image_surface<GraphicsSurfaces>::paint(const basic_brush<GraphicsSurfaces>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp, const optional<basic_render_props<GraphicsSurfaces>>& rp, const optional<basic_clip_props<GraphicsSurfaces>>& cl) {
 					GraphicsSurfaces::surfaces::paint(_Data, b, (bp == nullopt ? basic_brush_props<GraphicsSurfaces>() : bp.value()), (rp == nullopt ? basic_render_props<GraphicsSurfaces>() : rp.value()), (cl == nullopt ? basic_clip_props<GraphicsSurfaces>() : cl.value()));

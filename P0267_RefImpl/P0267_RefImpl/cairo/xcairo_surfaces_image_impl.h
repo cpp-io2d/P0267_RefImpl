@@ -1,6 +1,8 @@
+#include "xcairo.h"
 #pragma once
 #include "xcairo_surfaces_impl.h"
 #include "xcairo_helpers.h"
+#include "xcairo.h"
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
@@ -827,6 +829,14 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline basic_display_point<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::dimensions(const image_surface_data_type& data) noexcept {
 				return data.dimensions;
+			}
+			template<class GraphicsMath>
+			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::ppi(image_surface_data_type& data, unsigned int val) noexcept {
+				data.ppi = val;
+			}
+			template<class GraphicsMath>
+			inline unsigned int _Cairo_graphics_surfaces<GraphicsMath>::surfaces::ppi(const image_surface_data_type& data) noexcept {
+				return data.ppi;
 			}
 			template<class GraphicsMath>
 			inline void _Cairo_graphics_surfaces<GraphicsMath>::surfaces::clear(image_surface_data_type& data) {

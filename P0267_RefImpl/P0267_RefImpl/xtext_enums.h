@@ -21,45 +21,44 @@ namespace std {
 				};
 
 				enum class font_capitalization {
-					mixed_case,
-					default_capitalization = mixed_case,
-					upper,
-					lower,
+					//mixed_case,
+					//default_capitalization = mixed_case,
+					//upper,
+					//lower,
+					normal,
 					small_caps,
-					first_character
+					//first_character
 				};
 
-				enum class font_hinting {
-					default_hinting,
-					none,
-					vertical,
-					full
-				};
+				//enum class font_hinting {
+				//	default_hinting,
+				//	none,
+				//	vertical,
+				//	full
+				//};
 
 				enum class font_stretching {
-					ultra_condensed,
+					ultra_condensed = 1,
 					extra_condensed,
 					condensed,
 					semi_condensed,
-					normal,
+					medium,
+					normal = medium,
 					semi_expanded,
 					expanded,
 					extra_expanded,
-					ultra_expanded,
-					initial
+					ultra_expanded
 				};
 
 				enum class font_style {
 					normal,
 					italic,
-					oblique,
-					initial
+					oblique
 				};
 
 				enum class font_line {
 					none,
-					underline,
-					overline
+					underline
 				};
 
 				enum class font_antialias {
@@ -69,6 +68,14 @@ namespace std {
 					subpixel, // use subpixel antialiasing if available, otherwise none
 					prefer_gray, // prefer gray antialiasing if available, otherwise use subpixel if available, none if neither are available
 					prefer_subpixel // prefer subpixel antialiasing if available, otherwise use gray if available, none if neither are available
+				};
+
+				enum class generic_font_names {
+					serif,
+					sans_serif,
+					cursive,
+					fantasy,
+					monospace
 				};
 			}
 		}

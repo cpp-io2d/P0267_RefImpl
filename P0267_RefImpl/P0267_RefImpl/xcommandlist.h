@@ -258,31 +258,31 @@ namespace std::experimental::io2d {
 		};
 
 		template <class GraphicsSurfaces>
-		class basic_interpreted_command_list
+		class basic_command_list
 		{
 		public:
 			using graphics_math_type = typename GraphicsSurfaces::graphics_math_type;
-			using data_type = typename GraphicsSurfaces::surfaces::interpreted_command_list_data_type;
+			using data_type = typename GraphicsSurfaces::surfaces::command_list_data_type;
 		private:
 			data_type _Data;
 
 		public:
 			const data_type& data() const noexcept;
-			data_type& data() noexcept;
+			//data_type& data() noexcept;
 
-			basic_interpreted_command_list() noexcept;
+			basic_command_list() noexcept;
 			
 			template <class InputIterator>
-			basic_interpreted_command_list(InputIterator first, InputIterator last);
+			basic_command_list(InputIterator first, InputIterator last);
 
-			explicit basic_interpreted_command_list(initializer_list<typename basic_commands<GraphicsSurfaces>::command_item> il);
+			explicit basic_command_list(initializer_list<typename basic_commands<GraphicsSurfaces>::command_item> il);
 
-			basic_interpreted_command_list(const basic_interpreted_command_list& other);
-			basic_interpreted_command_list& operator=(const basic_interpreted_command_list& other);
-			basic_interpreted_command_list(basic_interpreted_command_list&& other) noexcept;
-			basic_interpreted_command_list& operator=(basic_interpreted_command_list&& other) noexcept;
+			basic_command_list(const basic_command_list& other);
+			basic_command_list& operator=(const basic_command_list& other);
+			basic_command_list(basic_command_list&& other) noexcept;
+			basic_command_list& operator=(basic_command_list&& other) noexcept;
 
-			~basic_interpreted_command_list() noexcept;
+			~basic_command_list() noexcept;
 
 		};
 		//template <class GraphicsSurfaces, class Allocator = ::std::allocator<typename basic_commands<GraphicsSurfaces>::command_item>>

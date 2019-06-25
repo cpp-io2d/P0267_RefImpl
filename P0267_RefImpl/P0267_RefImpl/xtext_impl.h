@@ -15,7 +15,7 @@ namespace std {
 					return _Data;
 				}
 				template<class GraphicsSurfaces>
-				inline basic_text_props<GraphicsSurfaces>::basic_text_props(float scl, font_size_units fsu, float fontsize, bool kern, font_hinting hint, font_antialias aa, font_stretching stretch, bool strike_through, font_line fl) noexcept : _Data(GraphicsSurfaces::text::create_text_props(scl, fsu, fontsize, kern, hint, aa, stretch, strike_through, fl)) {
+				inline basic_text_props<GraphicsSurfaces>::basic_text_props(float scl, font_size_units fsu, float fontsize, bool kern, font_antialias aa, font_stretching stretch, bool strike_through, font_line fl) noexcept : _Data(GraphicsSurfaces::text::create_text_props(scl, fsu, fontsize, kern, aa, stretch, strike_through, fl)) {
 				}
 				template<class GraphicsSurfaces>
 				inline void basic_text_props<GraphicsSurfaces>::kerning(bool k) noexcept {
@@ -25,14 +25,14 @@ namespace std {
 				inline bool basic_text_props<GraphicsSurfaces>::kerning() const noexcept {
 					return GraphicsSurfaces::text::kerning(_Data);
 				}
-				template<class GraphicsSurfaces>
-				inline void basic_text_props<GraphicsSurfaces>::hinting(font_hinting fh) noexcept {
-					GraphicsSurfaces::text::hinting(_Data, fh);
-				}
-				template<class GraphicsSurfaces>
-				inline font_hinting basic_text_props<GraphicsSurfaces>::hinting() const noexcept {
-					return GraphicsSurfaces::text::hinting(_Data);
-				}
+				//template<class GraphicsSurfaces>
+				//inline void basic_text_props<GraphicsSurfaces>::hinting(font_hinting fh) noexcept {
+				//	GraphicsSurfaces::text::hinting(_Data, fh);
+				//}
+				//template<class GraphicsSurfaces>
+				//inline font_hinting basic_text_props<GraphicsSurfaces>::hinting() const noexcept {
+				//	return GraphicsSurfaces::text::hinting(_Data);
+				//}
 				template<class GraphicsSurfaces>
 				inline void basic_text_props<GraphicsSurfaces>::antialiasing(font_antialias aa) noexcept {
 					GraphicsSurfaces::text::antialiasing(_Data, aa);
@@ -103,6 +103,11 @@ namespace std {
 				inline font_size_units basic_text_props<GraphicsSurfaces>::size_units() const noexcept {
 					return GraphicsSurfaces::text::size_units(_Data);
 				}
+
+				//
+				// basic_font
+				//
+				
 				template<class GraphicsSurfaces>
 				inline const typename basic_font<GraphicsSurfaces>::data_type& basic_font<GraphicsSurfaces>::data() const noexcept {
 					return _Data;
@@ -112,10 +117,10 @@ namespace std {
 					return _Data;
 				}
 				template<class GraphicsSurfaces>
-				inline basic_font<GraphicsSurfaces>::basic_font(string name, font_size_units fsu, float size, io2d::font_weight fw, font_style fs) : _Data(name, fsu, size, fw, fs) {
+				inline basic_font<GraphicsSurfaces>::basic_font(string name, font_size_units fsu, float size, io2d::font_weight fw, font_style fs, bool merging) : _Data(name, fsu, size, fw, fs, merging) {
 				}
 				template<class GraphicsSurfaces>
-				inline basic_font<GraphicsSurfaces>::basic_font(::std::filesystem::path file, font_size_units fsu, float size, io2d::font_weight fw, font_style fs) : _Data(file, fsu, size, fw, fs) {
+				inline basic_font<GraphicsSurfaces>::basic_font(::std::filesystem::path file, font_size_units fsu, float size, io2d::font_weight fw, font_style fs, bool merging) : _Data(file, fsu, size, fw, fs, merging) {
 				}
 				template<class GraphicsSurfaces>
 				inline void basic_font<GraphicsSurfaces>::font_size(font_size_units fsu, float size) noexcept {
@@ -129,18 +134,18 @@ namespace std {
 				inline font_size_units basic_font<GraphicsSurfaces>::size_units() const noexcept {
 					return GraphicsSurfaces::text::size_units(_Data);
 				}
-				template<class GraphicsSurfaces>
-				inline void basic_font<GraphicsSurfaces>::weight(io2d::font_weight fw) noexcept {
-					GraphicsSurfaces::text::weight(_Data, fw);
-				}
+				//template<class GraphicsSurfaces>
+				//inline void basic_font<GraphicsSurfaces>::weight(io2d::font_weight fw) noexcept {
+				//	GraphicsSurfaces::text::weight(_Data, fw);
+				//}
 				template<class GraphicsSurfaces>
 				inline font_weight basic_font<GraphicsSurfaces>::weight() const noexcept {
 					return GraphicsSurfaces::text::weight(_Data);
 				}
-				template<class GraphicsSurfaces>
-				inline void basic_font<GraphicsSurfaces>::style(font_style fs) noexcept {
-					GraphicsSurfaces::text::style(_Data, fs);
-				}
+				//template<class GraphicsSurfaces>
+				//inline void basic_font<GraphicsSurfaces>::style(font_style fs) noexcept {
+				//	GraphicsSurfaces::text::style(_Data, fs);
+				//}
 				template<class GraphicsSurfaces>
 				inline font_style basic_font<GraphicsSurfaces>::style() const noexcept {
 					return GraphicsSurfaces::text::style(_Data);

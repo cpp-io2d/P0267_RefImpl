@@ -189,7 +189,8 @@ namespace std::experimental::io2d {
 			static basic_display_point<graphics_math_type> max_dimensions() noexcept;
 			io2d::format format() const noexcept;
 			basic_display_point<graphics_math_type> dimensions() const noexcept;
-
+			void ppi(unsigned int val) noexcept;
+			unsigned int ppi() const noexcept;
 			void clear();
 			//void flush();
 			//void flush(error_code& ec) noexcept;
@@ -253,14 +254,10 @@ namespace std::experimental::io2d {
 			int begin_show();
 			void end_show();
 
+			int ppi() const noexcept;
+
 			// rendering functions
 			void clear();
-			//void flush();
-			//void flush(error_code& ec) noexcept;
-			//void mark_dirty();
-			//void mark_dirty(error_code& ec) noexcept;
-			//void mark_dirty(const basic_bounding_box<graphics_math_type>& extents);
-			//void mark_dirty(const basic_bounding_box<graphics_math_type>& extents, error_code& ec) noexcept;
 			void paint(const basic_brush<GraphicsSurfaces>& b, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
 			template <class Allocator>
 			void stroke(const basic_brush<GraphicsSurfaces>& b, const basic_path_builder<GraphicsSurfaces, Allocator>& pb, const optional<basic_brush_props<GraphicsSurfaces>>& bp = nullopt, const optional<basic_stroke_props<GraphicsSurfaces>>& sp = nullopt, const optional<basic_dashes<GraphicsSurfaces>>& d = nullopt, const optional<basic_render_props<GraphicsSurfaces>>& rp = nullopt, const optional<basic_clip_props<GraphicsSurfaces>>& cl = nullopt);
@@ -276,6 +273,7 @@ namespace std::experimental::io2d {
 			template <class InputIterator>
 			void command_list(InputIterator first, InputIterator last); // If a draw_callback exists, it will run before the command list is processed.
 			void draw_callback(const function<void(basic_output_surface& sfc)>& fn);
+			void ppi_change_callback(const function<void(basic_output_surface& sfc, void* user_data)>);
 			void size_change_callback(const function<void(basic_output_surface& sfc)>& fn);
 			void dimensions(basic_display_point<graphics_math_type> dp);
 			void dimensions(basic_display_point<graphics_math_type> dp, error_code& ec) noexcept;
