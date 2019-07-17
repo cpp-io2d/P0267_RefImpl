@@ -242,6 +242,9 @@ namespace std::experimental::io2d {
 								redraw = data.elapsed_draw_time >= desiredElapsed;
 							}
 							if (redraw) {
+								if (osd->data.auto_clear) {
+									sfc->clear();
+								}
 								// Run user draw function:
 								if (osd->draw_callback != nullptr) {
 									osd->draw_callback(sfc);

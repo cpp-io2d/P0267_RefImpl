@@ -1,132 +1,152 @@
 #pragma once
 
-#include "xcairo_helpers.h"
-#include "xsystemheaders.h"
+#include "xqt_headers.h"
 #include <cassert>
-#if defined(_WIN32) || defined(_WIN64)
-#include <cairo-win32.h>
-#endif
 #include "xpath.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-
-#ifdef _IO2D_Has_Magick
-#include <magick/api.h>
-#endif
-
 #include <system_error>
 #include <cstring>
 #include <chrono>
+#include "xqt_helpers.h"
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
-		namespace _Cairo {
+		namespace _Qt_io2d {
 			// Helpers to set state when rendering
 
 			template <class GraphicsMath>
-			inline void _Set_render_props(cairo_t* context, const basic_render_props<_Cairo_graphics_surfaces<GraphicsMath>>& r) {
+			inline void _Set_render_props(QPainter& painter, const basic_render_props<_Qt_graphics_surfaces<GraphicsMath>>& r) {
 				const auto& props = r;
 				const auto m = props.surface_matrix();
-				cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-				cairo_set_antialias(context, _Antialias_to_cairo_antialias_t(props.antialiasing()));
-				cairo_set_matrix(context, &cm);
-				cairo_set_operator(context, _Compositing_operator_to_cairo_operator_t(props.compositing()));
+				QTransform qtm = QTransform(m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21());
+				painter.setWorldTransform(qtm);
+				// Clear all render hint flags; antialias::best uses all render hint flags that are used in _Antialias_to_qpainter_renderhints so this clears all of them.
+				painter.setRenderHints(_Antialias_to_qpainter_renderhints(antialias::best), false);
+				if (props.antialiasing() != antialias::none) {
+					// Set appropriate render hint flags. If the request was for antialias::none then the render hint flags state is already correct because of the previous clearing of all flags.
+					painter.setRenderHints(_Antialias_to_qpainter_renderhints(props.antialiasing()), true);
+				}
+				// Note: Not all compositing operators are supported; specifically, saturate and the hsl_* operators are not supported in Qt. Will need to explore how to handle them later. saturate should probably be eliminated from the proposal, but the hsl_* are needed for proper PDF support so they are a harder issue. Might need to do them manually. Ugh.
+				painter.setCompositionMode(_Compositing_operator_to_qpainter_compositionmode(props.compositing()));
 			}
 
 			template <class GraphicsMath>
-			inline void _Set_clip_props(cairo_t* context, const basic_clip_props<_Cairo_graphics_surfaces<GraphicsMath>>& c) {
-				cairo_reset_clip(context);
+			inline void _Set_clip_props(QPainter& painter, const basic_clip_props<_Qt_graphics_surfaces<GraphicsMath>>& c) {
 				const auto& props = c.data();
-				if (props.clip.has_value()) {
-					cairo_fill_rule_t fr = cairo_get_fill_rule(context);
-					cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fr));
-					cairo_new_path(context);
+				if (props.boxclip.has_value()) {
+					auto boxclip = props.boxclip.value();
+					painter.setClipRect(static_cast<int>(boxclip.x()), static_cast<int>(boxclip.y()), static_cast<int>(boxclip.width()), static_cast<int>(boxclip.height()));
+					//cairo_fill_rule_t fr = cairo_get_fill_rule(context);
+					//cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fr));
+					//cairo_new_path(context);
 
-					cairo_append_path(context, props.clip.value().data().path.get());
-					cairo_clip(context);
-					// Restore saved state
-					cairo_set_fill_rule(context, fr);
+					//cairo_append_path(context, props.clip.value().data().path.get());
+					//cairo_clip(context);
+					//// Restore saved state
+					//cairo_set_fill_rule(context, fr);
+				}
+				else {
+					if (props.pathclip.has_value()) {
+						auto path = QPainterPath(*(props.pathclip.value().data().path));
+						//auto fillrule = path.fillRule();
+						path.setFillRule(_Fill_rule_to_qt_fillrule(props.fr));
+						painter.setClipPath(path);
+						//path.setFillRule(fillrule);
+					}
+					else {
+						painter.setClipping(false);
+					}
 				}
 			}
 
 			template <class GraphicsMath>
-			inline void _Set_stroke_props(cairo_t* context, const basic_stroke_props<_Cairo_graphics_surfaces<GraphicsMath>>& s, float miterMax, const basic_dashes<_Cairo_graphics_surfaces<GraphicsMath>>& ds) {
+			inline void _Set_stroke_props(QPainter& painter, const basic_brush<_Qt_graphics_surfaces<GraphicsMath>>& b, const basic_stroke_props<_Qt_graphics_surfaces<GraphicsMath>>& s, float miterMax, const basic_dashes<_Qt_graphics_surfaces<GraphicsMath>>& ds) {
 				const auto& props = s.data();
-				cairo_set_line_width(context, props._Line_width);
-				cairo_set_line_cap(context, _Line_cap_to_cairo_line_cap_t(props._Line_cap));
-				cairo_set_line_join(context, _Line_join_to_cairo_line_join_t(props._Line_join));
-				cairo_set_miter_limit(context, ::std::min<float>(miterMax, props._Miter_limit));
-
-				const auto& d = ds.data();
-				const auto& dFloatVal = d.pattern;
-				vector<double> dashAsDouble(dFloatVal.size());
-				for (const auto& val : dFloatVal) {
-					dashAsDouble.push_back(static_cast<double>(val));
+				QPen pen = QPen(*(b.data().brush), props._Line_width, (ds.data().pattern.empty() ? Qt::SolidLine : Qt::CustomDashLine), _Line_cap_to_qt_pencapstyle(props._Line_cap), _Line_join_to_qt_penjoinstyle(props._Line_join));
+				if (props._Line_join == line_join::miter) {
+					pen.setMiterLimit(::std::min<float>(miterMax, props._Miter_limit));
 				}
-				cairo_set_dash(context, dashAsDouble.data(), _Container_size_to_int(dashAsDouble), static_cast<double>(d.offset));
-				if (cairo_status(context) == CAIRO_STATUS_INVALID_DASH) {
-					_Throw_if_failed_cairo_status_t(CAIRO_STATUS_INVALID_DASH);
+				if (pen.style() == Qt::CustomDashLine) {
+					const auto& d = ds.data();
+					//const auto& dPattern = d.pattern;
+					pen.setDashOffset(d.offset);
+					QVector<qreal> dashPattern;
+					for (const auto& val : d.pattern) {
+						dashPattern.push_back(val);
+					}
+					pen.setDashPattern(dashPattern);
 				}
+				pen.setBrush(*(b.data().brush));
+				painter.setPen(pen);
 			}
 
 			template <class GraphicsMath>
-			inline void _Set_brush_props(cairo_t* context, const basic_brush_props<_Cairo_graphics_surfaces<GraphicsMath>>& bp, const basic_brush<_Cairo_graphics_surfaces<GraphicsMath>>& b) {
+			inline void _Set_brush_props(QBrush& brush, const basic_brush_props<_Qt_graphics_surfaces<GraphicsMath>>& bp) {
 				const auto& props = bp;
-				auto p = b.data().brush.get();
-				cairo_pattern_set_extend(p, _Extend_to_cairo_extend_t(props.wrap_mode()));
-				cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
+				// TODO: For now, wrap_mode and filter are both ignored; need to fix this. Our filter converter in xqt_helpers.h only works when we know in advance the size the QBrush's underlying QImage will be scaled to such that we can pull the QImage out, scale it with the appropriate filter, then use brush.setTextureImage to replace the original. Maybe this can be done by checking the matrix to see if it does scaling and if so we'll scale it ourselves and then zero out the matrix's scaling? wrap_mode will probably have to be done manually along the lines of how it's done in the coregraphics backend.
 				const auto& m = props.brush_matrix();
-				cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-				cairo_pattern_set_matrix(p, &cm);
-				cairo_set_fill_rule(context, _Fill_rule_to_cairo_fill_rule_t(props.fill_rule()));
+				QMatrix matrix{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+				brush.setMatrix(matrix);
+				//if (brush.style() == Qt::TexturePattern) {
+				//	auto brushImage = brush.textureImage();
+				//	brushImage.
 				//}
 			}
 
 			template <class GraphicsSurfaces>
 			inline void _Set_mask_props(const basic_mask_props<GraphicsSurfaces>& mp, const basic_brush<GraphicsSurfaces>& b) {
-				const auto& props = mp;
-				auto p = b.data().brush.get();
-				cairo_pattern_set_extend(p, _Extend_to_cairo_extend_t(props.wrap_mode()));
-				cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
-				const auto& m = props.mask_matrix();
-				cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-				cairo_pattern_set_matrix(p, &cm);
+				// TODO: Qt doesn't have a direct mask function so it'll need to be implemented using an additional "working space" image_surface that we can use to draw the mask image/brush (alpha only, all other channels zeroed out) then draw the image to that using probably the dest_over or dest_atop compositing_op, then draw the result to the original surface using over. Need to fiddle around with it to get the right operators.
+
+				//const auto& props = mp;
+				//auto p = b.data().brush.get();
+				//cairo_pattern_set_extend(p, _Extend_to_cairo_extend_t(props.wrap_mode()));
+				//cairo_pattern_set_filter(p, _Filter_to_cairo_filter_t(props.filter()));
+				//const auto& m = props.mask_matrix();
+				//cairo_matrix_t cm{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
+				//cairo_pattern_set_matrix(p, &cm);
 			}
 
 			template<class GraphicsMath>
-			inline basic_display_point<GraphicsMath> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::max_dimensions() noexcept {
+			inline basic_display_point<GraphicsMath> _Qt_graphics_surfaces<GraphicsMath>::surfaces::max_dimensions() noexcept {
 				return basic_display_point<GraphicsMath>(16384, 16384); // This takes up 1 GB of RAM, you probably don't want to do this. 2048x2048 is the max size for hardware that meets 9_1 specs (i.e. quite low powered or really old). Probably much more reasonable.
 			}
 
+			// TODO: Once these copy_surface functions are done, the rest should be fine as-is since it's just command lists calling io2d API functions on surfaces.
 			template <class GraphicsMath>
-			inline basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::copy_surface(basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc) noexcept {
-				basic_image_surface<_Cairo_graphics_surfaces> retSfc(sfc.format(), sfc.dimensions().x(), sfc.dimensions().y());
+			inline basic_image_surface<_Qt_graphics_surfaces<GraphicsMath>> _Qt_graphics_surfaces<GraphicsMath>::surfaces::copy_surface(basic_image_surface<_Qt_graphics_surfaces<GraphicsMath>>& sfc) noexcept {
+
+				basic_image_surface<_Qt_graphics_surfaces> retSfc(sfc.format(), sfc.dimensions().x(), sfc.dimensions().y());
 				retSfc.data().ppi = sfc.data().ppi;
-				auto srcSfc = cairo_surface_map_to_image(sfc.data().surface.get(), nullptr);
-				auto destSfc = cairo_surface_map_to_image(retSfc.data().surface.get(), nullptr);
-				auto srcSize = cairo_image_surface_get_height(srcSfc) * cairo_image_surface_get_stride(srcSfc);
-				auto srcData = cairo_image_surface_get_data(srcSfc);
-				auto destData = cairo_image_surface_get_data(destSfc);
-				memcpy(destData, srcData, srcSize);
-				cairo_surface_unmap_image(retSfc.data().surface.get(), destSfc);
-				cairo_surface_unmap_image(sfc.data().surface.get(), srcSfc);
+				retSfc.data().surface = sfc.data().surface.copy();
+				//auto srcSfc = cairo_surface_map_to_image(sfc.data().surface.get(), nullptr);
+				//auto destSfc = cairo_surface_map_to_image(retSfc.data().surface.get(), nullptr);
+				//auto srcSize = cairo_image_surface_get_height(srcSfc) * cairo_image_surface_get_stride(srcSfc);
+				//auto srcData = cairo_image_surface_get_data(srcSfc);
+				//auto destData = cairo_image_surface_get_data(destSfc);
+				//memcpy(destData, srcData, srcSize);
+				//cairo_surface_unmap_image(retSfc.data().surface.get(), destSfc);
+				//cairo_surface_unmap_image(sfc.data().surface.get(), srcSfc);
 				return retSfc;
 			}
 
 			template <class GraphicsMath>
-			inline basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>> _Cairo_graphics_surfaces<GraphicsMath>::surfaces::copy_surface(basic_output_surface<_Cairo_graphics_surfaces>& sfc) noexcept {
-				basic_image_surface<_Cairo_graphics_surfaces> retSfc(sfc.format(), sfc.dimensions().x(), sfc.dimensions().y());
-				retSfc.data().ppi = sfc.data().ppi;
-				auto srcSfc = cairo_surface_map_to_image(sfc.data().surface.get(), nullptr);
-				auto destSfc = cairo_surface_map_to_image(retSfc.data().surface.get(), nullptr);
-				auto srcSize = cairo_image_surface_get_height(srcSfc) * cairo_image_surface_get_stride(srcSfc);
-				auto srcData = cairo_image_surface_get_data(srcSfc);
-				auto destData = cairo_image_surface_get_data(destSfc);
-				memcpy(destData, srcData, srcSize);
-				cairo_surface_unmap_image(retSfc.data().surface.get(), destSfc);
-				cairo_surface_unmap_image(sfc.data().surface.get(), srcSfc);
-				return retSfc;
+			inline basic_image_surface<_Qt_graphics_surfaces<GraphicsMath>> _Qt_graphics_surfaces<GraphicsMath>::surfaces::copy_surface(basic_output_surface<_Qt_graphics_surfaces>& sfc) noexcept {
+				// TODO: implement this once output_surface is implemented.
+				throw ::std::runtime_error("Not yet implemented.");
+
+				//basic_image_surface<_Qt_graphics_surfaces> retSfc(sfc.format(), sfc.dimensions().x(), sfc.dimensions().y());
+				//retSfc.data().ppi = sfc.data().ppi;
+				//auto srcSfc = cairo_surface_map_to_image(sfc.data().surface.get(), nullptr);
+				//auto destSfc = cairo_surface_map_to_image(retSfc.data().surface.get(), nullptr);
+				//auto srcSize = cairo_image_surface_get_height(srcSfc) * cairo_image_surface_get_stride(srcSfc);
+				//auto srcData = cairo_image_surface_get_data(srcSfc);
+				//auto destData = cairo_image_surface_get_data(destSfc);
+				//memcpy(destData, srcData, srcSize);
+				//cairo_surface_unmap_image(retSfc.data().surface.get(), destSfc);
+				//cairo_surface_unmap_image(sfc.data().surface.get(), srcSfc);
+				//return retSfc;
 			}
 
 			// image surface command list
@@ -142,34 +162,6 @@ namespace std::experimental::io2d {
 						sfc.clear();
 					}
 				}
-				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
-				//static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
-				//	if (item.surface()) {
-				//		item.surface().value().get().flush();
-				//	}
-				//	else {
-				//		sfc.flush();
-				//	}
-				//}
-				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
-				//static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
-				//	if (item.surface()) {
-				//		if (item.extents()) {
-				//			item.surface().value().get().mark_dirty(item.extents().value());
-				//		}
-				//		else {
-				//			item.surface().value().get().mark_dirty();
-				//		}
-				//	}
-				//	else {
-				//		if (item.extents()) {
-				//			sfc.mark_dirty(item.extents().value());
-				//		}
-				//		else {
-				//			sfc.mark_dirty();
-				//		}
-				//	}
-				//}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::paint>, int> = 0>
 				static void interpret(const T & item, basic_image_surface<GraphicsSurfaces> & sfc) noexcept {
 					if (item.surface()) {
@@ -234,7 +226,7 @@ namespace std::experimental::io2d {
 			};
 
 			template <class GraphicsMath, class InputIterator>
-			inline ::std::future<void> _Process_command_list_image_surface(basic_image_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc, InputIterator first, InputIterator last) {
+			inline ::std::future<void> _Process_command_list_image_surface(basic_image_surface<_Qt_graphics_surfaces<GraphicsMath>>& sfc, InputIterator first, InputIterator last) {
 				::std::promise<void> temp_prms;
 				auto ftr = temp_prms.get_future();
 
@@ -242,7 +234,7 @@ namespace std::experimental::io2d {
 					for (auto val = first; val != last; val++) {
 						::std::visit([&sfc](auto&& item) {
 							using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-							_Command_list_image_surface_visitor<_Cairo_graphics_surfaces<GraphicsMath>, T>::template interpret<T>(item, sfc);
+							_Command_list_image_surface_visitor<_Qt_graphics_surfaces<GraphicsMath>, T>::template interpret<T>(item, sfc);
 							}, *val);
 					}
 					prms.set_value();
@@ -266,34 +258,6 @@ namespace std::experimental::io2d {
 						sfc.clear();
 					}
 				}
-				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
-				//static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
-				//	if (item.surface()) {
-				//		item.surface().value().get().flush();
-				//	}
-				//	else {
-				//		sfc.flush();
-				//	}
-				//}
-				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
-				//static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
-				//	if (item.surface()) {
-				//		if (item.extents()) {
-				//			item.surface().value().get().mark_dirty(item.extents().value());
-				//		}
-				//		else {
-				//			item.surface().value().get().mark_dirty();
-				//		}
-				//	}
-				//	else {
-				//		if (item.extents()) {
-				//			sfc.mark_dirty(item.extents().value());
-				//		}
-				//		else {
-				//			sfc.mark_dirty();
-				//		}
-				//	}
-				//}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::paint>, int> = 0>
 				static void interpret(const T & item, basic_output_surface<GraphicsSurfaces> & sfc) noexcept {
 					if (item.surface()) {
@@ -358,11 +322,11 @@ namespace std::experimental::io2d {
 			};
 
 			template <class GraphicsMath, class InputIterator>
-			inline void _Process_command_list_output_surface(basic_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc, InputIterator first, InputIterator last) {
+			inline void _Process_command_list_output_surface(basic_output_surface<_Qt_graphics_surfaces<GraphicsMath>>& sfc, InputIterator first, InputIterator last) {
 				for (auto val = first; val != last; val++) {
 					::std::visit([&sfc](auto&& item) {
 						using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-						_Command_list_output_surface_visitor<_Cairo_graphics_surfaces<GraphicsMath>, T>::template interpret<T>(item, sfc);
+						_Command_list_output_surface_visitor<_Qt_graphics_surfaces<GraphicsMath>, T>::template interpret<T>(item, sfc);
 						}, *val);
 				}
 			}
@@ -380,34 +344,6 @@ namespace std::experimental::io2d {
 						sfc.clear();
 					}
 				}
-				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::flush>, int> = 0>
-				//static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
-				//	if (item.surface()) {
-				//		item.surface().value().get().flush();
-				//	}
-				//	else {
-				//		sfc.flush();
-				//	}
-				//}
-				//template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::mark_dirty>, int> = 0>
-				//static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
-				//	if (item.surface()) {
-				//		if (item.extents()) {
-				//			item.surface().value().get().mark_dirty(item.extents().value());
-				//		}
-				//		else {
-				//			item.surface().value().get().mark_dirty();
-				//		}
-				//	}
-				//	else {
-				//		if (item.extents()) {
-				//			sfc.mark_dirty(item.extents().value());
-				//		}
-				//		else {
-				//			sfc.mark_dirty();
-				//		}
-				//	}
-				//}
 				template <class T, ::std::enable_if_t<::std::is_same_v<T, typename basic_commands<GraphicsSurfaces>::paint>, int> = 0>
 				static void interpret(const T & item, basic_unmanaged_output_surface<GraphicsSurfaces> & sfc) noexcept {
 					if (item.surface()) {
@@ -472,11 +408,11 @@ namespace std::experimental::io2d {
 			};
 
 			template <class GraphicsMath, class InputIterator>
-			inline void _Process_command_list_unmanaged_output_surface(basic_unmanaged_output_surface<_Cairo_graphics_surfaces<GraphicsMath>>& sfc, InputIterator first, InputIterator last) {
+			inline void _Process_command_list_unmanaged_output_surface(basic_unmanaged_output_surface<_Qt_graphics_surfaces<GraphicsMath>>& sfc, InputIterator first, InputIterator last) {
 				for (auto val = first; val != last; val++) {
 					::std::visit([&sfc](auto&& item) {
 						using T = ::std::remove_cv_t<::std::remove_reference_t<decltype(item)>>;
-						_Command_list_output_surface_visitor<_Cairo_graphics_surfaces<GraphicsMath>, T>::template interpret<T>(item, sfc);
+						_Command_list_output_surface_visitor<_Qt_graphics_surfaces<GraphicsMath>, T>::template interpret<T>(item, sfc);
 						}, *val);
 				}
 			}
@@ -484,4 +420,4 @@ namespace std::experimental::io2d {
 	}
 }
 
-#include "xcairo_surfaces_image_impl.h"
+#include "xqt_surfaces_image_impl.h"

@@ -24,8 +24,8 @@ namespace std::experimental::io2d {
 			void stretching(font_stretching fs) noexcept;
 			void strike_through(bool st) noexcept;
 			void line(font_line fa) noexcept;
-			void letter_spacing(float s) noexcept;
-			void word_spacing(float s) noexcept;
+			//void letter_spacing(float s) noexcept;
+			//void word_spacing(float s) noexcept;
 
 			float scale() const noexcept;
 			float font_size() const noexcept;
@@ -35,8 +35,8 @@ namespace std::experimental::io2d {
 			font_stretching stretching() const noexcept;
 			bool strike_through() const noexcept;
 			font_line line() const noexcept;
-			float letter_spacing() const noexcept;
-			float word_spacing() const noexcept;
+			//float letter_spacing() const noexcept;
+			//float word_spacing() const noexcept;
 		};
 
 		template <class GraphicsSurfaces>
@@ -49,7 +49,7 @@ namespace std::experimental::io2d {
 			const data_type& data() const noexcept;
 			data_type& data() noexcept;
 
-			basic_font(string family, font_size_units fsu, float size, font_weight fw = font_weight::normal, font_style fs = font_style::normal, bool merging = true);
+			basic_font(string family, font_size_units fsu, float size, generic_font_names gfn, font_weight fw = font_weight::normal, font_style fs = font_style::normal, bool merging = true);
 			basic_font(::std::filesystem::path file, font_size_units fsu, float size, font_weight fw = font_weight::normal, font_style fs = font_style::normal, bool merging = true);
 			basic_font(generic_font_names gfn, font_size_units fsu, float size, font_weight fw = font_weight::normal, font_style fs = font_style::normal);
 

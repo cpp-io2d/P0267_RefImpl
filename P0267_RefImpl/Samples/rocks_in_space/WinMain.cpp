@@ -15,7 +15,7 @@ void rocks_in_space::get_key_states()
 	press() = { GetKeyState(anti_clockwise_key) < 0, GetKeyState(clockwise_key) < 0, GetKeyState(thrust_key) < 0, GetKeyState(fire_key) < 0, GetKeyState(hyperspace_key) < 0 };
 }
 
-#define USER_WINDOW
+//#define USER_WINDOW
 
 #if defined(USER_WINDOW)
 

@@ -1,6 +1,9 @@
 #include "Win32Win.h"
 #include <mutex>
 #include <system_error>
+#include <stdexcept>
+
+#define QT_BACKEND
 
 namespace
 {
@@ -73,6 +76,7 @@ void rocks_in_space::Win32Win::OnWmCreate(HWND hwnd)
 			throw_system_error_for_GetLastError(lastError, "Failed call to SetWindowLongPtrW(HWND, int, LONG_PTR) in cairo_display_surface::cairo_display_surface(int, int, format, int, int, scaling)");
 		}
 	}
+#ifndef QT_BACKEND
 	m_hwnd = hwnd;
 	m_hdc = GetDC(m_hwnd);
 	default_graphics_surfaces::surfaces::unmanaged_surface_context_type unmanaged_context;
@@ -83,16 +87,16 @@ void rocks_in_space::Win32Win::OnWmCreate(HWND hwnd)
 	m_outputSfc.display_dimensions(display_point{ m_w, m_h });
 	m_outputSfc.draw_callback([&](std::experimental::io2d::unmanaged_output_surface& uos) { m_game.update<std::experimental::io2d::unmanaged_output_surface>(uos); });
 	m_canDraw = true;
+#else
+	throw ::std::logic_error("Qt backend does not currently support unmanaged_output_surface.");
+#endif
 }
 
 LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	const static auto lrZero = static_cast<LRESULT>(0);
+#ifndef QT_BACKEND
 	switch (msg) {
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunreachable-code-break"
-#endif
 	case WM_CREATE:
 	{
 		m_hdc = GetDC(m_hwnd);
@@ -107,13 +111,6 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 		// Return 0 to allow the window to proceed in the creation process.
 		return lrZero;
 	} break;
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunreachable-code-break"
-#endif
 	case WM_CLOSE:
 	{
 		m_canDraw = false;
@@ -126,15 +123,6 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 		m_outputSfc.data()->data.hwnd = m_hwnd;
 		return lrZero;
 	} break;
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunreachable-code-break"
-#endif
 	case WM_DESTROY:
 	{
 		m_canDraw = false;
@@ -142,10 +130,6 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 		PostQuitMessage(0);
 		return lrZero;
 	} break;
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
 	case WM_SIZE:
 	{
 		m_outputSfc.display_dimensions(display_point(LOWORD(lParam), HIWORD(lParam)));
@@ -181,7 +165,9 @@ LRESULT CALLBACK rocks_in_space::Win32Win::WindowProc(HWND hwnd, UINT msg, WPARA
 	} break;
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
-
+#else
+	throw ::std::logic_error("Qt backend does not currently support unmanaged_output_surface.");
+#endif
 }
 
 rocks_in_space::Win32Win::Win32Win(HINSTANCE hinst, int w, int h, format fmt, scaling scl)

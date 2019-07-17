@@ -1,23 +1,23 @@
 #pragma once
 
-#ifndef _XCAIRO_
-#define _XCAIRO_
+#ifndef _XQT_
+#define _XQT_
 
-#include <cairo.h>
 #include "xio2d.h"
+#include "xqt_headers.h"
 
 namespace std::experimental::io2d {
 	inline namespace v1 {
-		namespace _Cairo {
-			_IO2D_API void _Init_graphics_magic();
+		namespace _Qt_io2d {
+			//_IO2D_API void _Init_graphics_magic();
 
-			constexpr const wchar_t* _Refimpl_window_class_name = L"_P0267RefImplCairoRenderer_FF2B4C8D-0AB8-4343-AA02-6D0857E9FA21";
+			constexpr const wchar_t* _Refimpl_window_class_name = L"_P0267RefImplQtRenderer_FF2B4C8D-0AB8-4343-AA02-6D0857E9FA21";
 
 			template <class GraphicsMath>
-			struct _Cairo_graphics_surfaces {
+			struct _Qt_graphics_surfaces {
 				using graphics_math_type = GraphicsMath;
-				using _Graphics_surfaces_type = _Cairo_graphics_surfaces;
-				using graphics_surfaces_type = _Cairo_graphics_surfaces;
+				using _Graphics_surfaces_type = _Qt_graphics_surfaces;
+				using graphics_surfaces_type = _Qt_graphics_surfaces;
 
 				struct additional_image_file_formats {
 					const static int _Base = 10000;
@@ -224,7 +224,7 @@ namespace std::experimental::io2d {
 					// interpreted_path
 
 					struct _Interpreted_path_data {
-						::std::shared_ptr<cairo_path_t> path;
+						::std::shared_ptr<QPainterPath> path;
 					};
 					using interpreted_path_data_type = _Interpreted_path_data;
 
@@ -243,8 +243,7 @@ namespace std::experimental::io2d {
 
 				struct brushes {
 					struct _Brush_data {
-						::std::shared_ptr<cairo_surface_t> imageSurface;
-						::std::shared_ptr<cairo_pattern_t> brush;
+						::std::shared_ptr<QBrush> brush;
 						brush_type brushType;
 					};
 					using brush_data_type = _Brush_data;
@@ -310,7 +309,8 @@ namespace std::experimental::io2d {
 
 					// clip_props
 					struct _Clip_props_data {
-						optional<basic_interpreted_path<_Graphics_surfaces_type>> clip;
+						optional<basic_interpreted_path<_Graphics_surfaces_type>> pathclip;
+						optional<basic_bounding_box<GraphicsMath>> boxclip;
 						io2d::fill_rule fr;
 					};
 
@@ -401,8 +401,9 @@ namespace std::experimental::io2d {
 					static basic_display_point<GraphicsMath> max_dimensions() noexcept;
 
 					struct _Image_surface_data {
-						::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> surface{ nullptr, &cairo_surface_destroy };
-						::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> context{ nullptr, &cairo_destroy };
+						//::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> surface{ nullptr, &cairo_surface_destroy };
+						//::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> context{ nullptr, &cairo_destroy };
+						QImage surface;
 						basic_display_point<GraphicsMath> dimensions;
 						io2d::format format;
 						unsigned int ppi = 96;
@@ -465,12 +466,6 @@ namespace std::experimental::io2d {
 					static basic_bounding_box<GraphicsMath> invoke_user_scaling_callback(unmanaged_output_surface_data_type& data, basic_unmanaged_output_surface<_Graphics_surfaces_type>& sfc, bool& useLetterboxBrush);
 					static void display_dimensions(unmanaged_output_surface_data_type& data, const basic_display_point<GraphicsMath>& val);
 
-					//static void flush(unmanaged_output_surface_data_type& data);
-					//static void flush(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
-					//static void mark_dirty(unmanaged_output_surface_data_type& data);
-					//static void mark_dirty(unmanaged_output_surface_data_type& data, error_code& ec) noexcept;
-					//static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
-					//static void mark_dirty(unmanaged_output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 					static void clear(unmanaged_output_surface_data_type& data);
 					static void paint(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 					static void stroke(unmanaged_output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
@@ -518,12 +513,6 @@ namespace std::experimental::io2d {
 					static float desired_frame_rate(const output_surface_data_type& data) noexcept;
 
 					// rendering functions
-					//static void flush(output_surface_data_type& data);
-					//static void flush(output_surface_data_type& data, error_code& ec) noexcept;
-					//static void mark_dirty(output_surface_data_type& data);
-					//static void mark_dirty(output_surface_data_type& data, error_code& ec) noexcept;
-					//static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents);
-					//static void mark_dirty(output_surface_data_type& data, const basic_bounding_box<GraphicsMath>& extents, error_code& ec) noexcept;
 					static void clear(output_surface_data_type& data);
 					static void paint(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
 					static void stroke(output_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl);
@@ -768,15 +757,35 @@ namespace std::experimental::io2d {
 
 				struct text {
 					struct _Font_data {
-
+						QFont font;
+						string family;
+						font_size_units fsu;
+						float fontsize;
+						font_weight fw;
+						font_style fs;
+						bool merging = true;
 					};
 
 					using font_data_type = _Font_data;
 
+					static font_data_type create_font(string name, font_size_units fsu, float size, generic_font_names gfn, io2d::font_weight fw, font_style fs, bool merging);
+					static font_data_type create_font(::std::filesystem::path file, font_size_units fsu, float size, io2d::font_weight fw, font_style fs, bool merging);
+					static font_data_type create_font(generic_font_names gfn, font_size_units fsu, float size, font_weight fw, font_style fs);
+					static void font_size(font_data_type& data, font_size_units fsu, float size);
+					static void merging(font_data_type& data, bool m);
+					static float font_size(const font_data_type& data);
+					static ::std::string family(const font_data_type& data);
+					static font_size_units size_units(const font_data_type& data);
+					static font_weight weight(const font_data_type& data);
+					static font_style style(const font_data_type& data);
+					static bool merging(const font_data_type& data);
+
+					// text_props
+
 					struct _Text_props_data {
-						float scl;
+						float scale;
 						font_size_units fsu;
-						float fontsize;
+						float fontsize = -1.0f;
 						bool kern;
 						font_antialias aa;
 						font_stretching stretch;
@@ -787,20 +796,63 @@ namespace std::experimental::io2d {
 					using text_props_data_type = _Text_props_data;
 
 					static text_props_data_type create_text_props(float scl, font_size_units fsu, float fontsize, bool kern, font_antialias aa, font_stretching stretch, bool strike_through, font_line fl) noexcept;
+					static void scale(text_props_data_type& data, float scl) noexcept;
+					static void font_size(text_props_data_type& data, font_size_units fsu, float sz) noexcept; // This will override the font's point size unless it's set of a value less than or equal to 0.0f. Default value is -1.0f.
+					static void kerning(text_props_data_type& data, bool k) noexcept;
+					static void antialiasing(text_props_data_type& data, font_antialias aa) noexcept;
+					static void stretching(text_props_data_type& data, font_stretching fs) noexcept;
+					static void strike_through(text_props_data_type& data, bool st) noexcept;
+					static void line(text_props_data_type& data, font_line fl) noexcept;
 
+					static float scale(const text_props_data_type& data) noexcept;
+					static float font_size(const text_props_data_type& data) noexcept;
+					static font_size_units size_units(const text_props_data_type& data) noexcept;
+					static bool kerning(const text_props_data_type& data) noexcept;
+					static font_antialias antialiasing(const text_props_data_type& data) noexcept;
+					static font_stretching stretching(const text_props_data_type& data) noexcept;
+					static bool strike_through(const text_props_data_type& data) noexcept;
+					static font_line line(const text_props_data_type& data) noexcept;
+				};
 
+				class _Qt_io2d_raster_window : public QWindow {
+					//Q_OBJECT
+					::std::unique_ptr<QBackingStore> _Backing_store;
+					// Note: we do not own _Osd. It is owned by a data type that destroys an instantiation of this class template 
+					typename _Qt_graphics_surfaces<GraphicsMath>::surfaces::_Output_surface_data* _Osd;
+					::std::reference_wrapper<basic_output_surface<_Qt_graphics_surfaces<GraphicsMath>>> _Sfc;
+					std::chrono::time_point<std::chrono::steady_clock> _Last_redraw_time;
+				public:
+					_Qt_io2d_raster_window(QWindow* parent, typename _Qt_graphics_surfaces<GraphicsMath>::surfaces::output_surface_data_type& osd, basic_output_surface<_Qt_graphics_surfaces<GraphicsMath>>& sfc);
+					//void surface(basic_output_surface<_Qt_graphics_surfaces<GraphicsMath>>& sfc);
+					int begin_show();
+					void render();
+					void end_show();
+					void resize_back_buffer(const basic_display_point<GraphicsMath>& val);
+					void refresh_style(io2d::refresh_style val);
+					void desired_frame_rate(float val);
+					void display_dimensions(const basic_display_point<GraphicsMath>& val);
+					io2d::refresh_style refresh_style() noexcept;
+					float desired_frame_rate() noexcept;
+					QBackingStore* backing_store() noexcept;
+				protected:
+					bool event(QEvent* ev) override;
+
+					void timerEvent(QTimerEvent* ev) override;
+					void showEvent(QShowEvent* ev) override;
+					void resizeEvent(QResizeEvent* ev) override;
+					void exposeEvent(QExposeEvent* ev) override;
 				};
 			};
 		}
 	}
 }
 
-#include "xcairo_brushes_impl.h"
-#include "xcairo_command_list_impl.h"
-#include "xcairo_paths_impl.h"
-#include "xcairo_surface_state_props_impl.h"
-#include "xcairo_surfaces_image_impl.h"
-#include "xcairo_surfaces_impl.h"
-#include "xcairo_text_impl.h"
+#include "xqt_brushes_impl.h"
+#include "xqt_command_list_impl.h"
+#include "xqt_paths_impl.h"
+#include "xqt_surface_state_props_impl.h"
+#include "xqt_surfaces_image_impl.h"
+#include "xqt_surfaces_impl.h"
+#include "xqt_text_impl.h"
 
 #endif

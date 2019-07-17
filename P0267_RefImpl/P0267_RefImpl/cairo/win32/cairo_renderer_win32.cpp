@@ -121,7 +121,9 @@ namespace std::experimental::io2d {
 							outputSfc->display_dimensions(displayDimensions);
 							break;
 						}
-
+						if (data.data.auto_clear) {
+							outputSfc->clear();
+						}
 						data.draw_callback(*outputSfc);
 						_Cairo_graphics_surfaces<_Graphics_math_float_impl>::surfaces::_Render_to_native_surface(outputSfc->data(), *outputSfc);
 
