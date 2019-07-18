@@ -96,8 +96,12 @@ namespace std::experimental::io2d {
 			}
 
 			template <class GraphicsSurfaces>
-			inline void _Set_mask_props(const basic_mask_props<GraphicsSurfaces>& mp, const basic_brush<GraphicsSurfaces>& b) {
+			inline void _Set_mask_props(const basic_mask_props<GraphicsSurfaces>& mp, const basic_brush<GraphicsSurfaces>& mb) {
 				// TODO: Qt doesn't have a direct mask function so it'll need to be implemented using an additional "working space" image_surface that we can use to draw the mask image/brush (alpha only, all other channels zeroed out) then draw the image to that using probably the dest_over or dest_atop compositing_op, then draw the result to the original surface using over. Need to fiddle around with it to get the right operators.
+				basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type> maskMatrix = mp.mask_matrix();
+				QMatrix m(maskMatrix.m00(), maskMatrix.m01(), maskMatrix.m10(), maskMatrix.m11(), maskMatrix.m20(), maskMatrix.m21());
+				mb.data().brush->setMatrix(m);
+				// TODO: For now, wrap_mode and filter are both ignored; need to fix this. Our filter converter in xqt_helpers.h only works when we know in advance the size the QBrush's underlying QImage will be scaled to such that we can pull the QImage out, scale it with the appropriate filter, then use brush.setTextureImage to replace the original. Maybe this can be done by checking the matrix to see if it does scaling and if so we'll scale it ourselves and then zero out the matrix's scaling? wrap_mode will probably have to be done manually along the lines of how it's done in the coregraphics
 
 				//const auto& props = mp;
 				//auto p = b.data().brush.get();

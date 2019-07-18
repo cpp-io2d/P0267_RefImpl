@@ -223,6 +223,72 @@ namespace std::experimental::io2d {
 				}
 			}
 
+			//inline format _QImage_format_to_format(QImage::Format f) {
+			//	switch (f)
+			//	{
+			//	case QImage::Format_Invalid:
+			//		return format::invalid;
+			//	case QImage::Format_Mono:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_MonoLSB:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_Indexed8:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGB32:
+			//		return format::xrgb32;
+			//	case QImage::Format_ARGB32:
+			//		return format::argb32; // This is probably correct?
+			//	case QImage::Format_ARGB32_Premultiplied:
+			//		return format::argb32;
+			//	case QImage::Format_RGB16:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_ARGB8565_Premultiplied:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGB666:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_ARGB6666_Premultiplied:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGB555:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_ARGB8555_Premultiplied:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGB888:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGB444:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_ARGB4444_Premultiplied:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGBX8888:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGBA8888:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGBA8888_Premultiplied:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_BGR30:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_A2BGR30_Premultiplied:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGB30:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_A2RGB30_Premultiplied:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_Alpha8:
+			//		return format::a8;
+			//	case QImage::Format_Grayscale8:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGBX64:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGBA64:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::Format_RGBA64_Premultiplied:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	case QImage::NImageFormats:
+			//		throw ::std::runtime_error("Unexpected format value.");
+			//	default:
+			//		throw ::std::runtime_error("Unknown format value.");
+			//	}
+			//}
+
 			// Qt doesn't support anything like extend so it'll need to be done manually.
 			//inline cairo_extend_t _Extend_to_cairo_extend_t(::std::experimental::io2d::wrap_mode e) {
 			//	switch (e) {

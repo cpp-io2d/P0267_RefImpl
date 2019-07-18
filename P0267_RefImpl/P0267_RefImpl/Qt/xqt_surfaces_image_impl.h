@@ -48,7 +48,7 @@ namespace std::experimental::io2d {
 					data.surface = QImage(QString(p.string().c_str()));
 					break;
 				default:
-					ec = ::std::make_error_code(errc::not_supported);
+					ec = ::std::make_error_code(errc::invalid_argument);
 					return image_surface_data_type{};
 				}
 				if (data.surface.isNull()) {
@@ -60,90 +60,6 @@ namespace std::experimental::io2d {
 				data.format = fmt;
 				ec.clear();
 				return data;
-				//_Init_graphics_magic();
-				//if (iff == image_file_format::unknown) {
-				//	ec = ::std::make_error_code(errc::not_supported);
-				//	return image_surface_data_type{};
-				//}
-				//ExceptionInfo exInfo;
-				//GetExceptionInfo(&exInfo);
-
-				//image_surface_data_type data;
-
-				//unique_ptr<ImageInfo, decltype(&DestroyImageInfo)> imageInfo(CloneImageInfo(nullptr), &DestroyImageInfo);
-				//imageInfo->depth = 8;
-				//imageInfo->colorspace = TransparentColorspace;
-				//auto pathStr = p.string();
-				//if (pathStr.length() > MaxTextExtent - 1) {
-				//	ec = make_error_code(errc::filename_too_long);
-				//	DestroyExceptionInfo(&exInfo);
-				//	return image_surface_data_type{};
-				//}
-				//strncpy(imageInfo->filename, pathStr.c_str(), pathStr.length());
-				//PixelPacket mattePixel{};
-				//imageInfo->matte_color = mattePixel;
-				//unique_ptr<Image, decltype(&DestroyImage)> image(ReadImage(imageInfo.get(), &exInfo), &DestroyImage);
-				//if (image == nullptr) {
-				//	ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
-				//	DestroyExceptionInfo(&exInfo);
-				//	return image_surface_data_type{};
-				//}
-				//auto width = image->columns;
-				//auto height = image->rows;
-				////auto gamma = image->gamma;
-
-				//data.surface = ::std::move(unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)>(cairo_image_surface_create(_Format_to_cairo_format_t(fmt), static_cast<int>(width), static_cast<int>(height)), &cairo_surface_destroy));
-				//data.context = ::std::move(unique_ptr<cairo_t, decltype(&cairo_destroy)>(cairo_create(data.surface.get()), &cairo_destroy));
-				//data.dimensions.x(static_cast<int>(width));
-				//data.dimensions.y(static_cast<int>(height));
-				//data.format = fmt;
-
-				//// Note: We don't own the pixels pointer.
-				//PixelPacket* pixels = GetImagePixelsEx(image.get(), 0, 0, width, height, &exInfo);
-				//if (pixels == nullptr) {
-				//	ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
-				//	DestroyExceptionInfo(&exInfo);
-				//	return image_surface_data_type{};
-				//}
-
-				//DestroyExceptionInfo(&exInfo);
-
-				//auto map = cairo_surface_map_to_image(data.surface.get(), nullptr);
-				//auto mapStride = cairo_image_surface_get_stride(map);
-				//auto mapData = cairo_image_surface_get_data(map);
-				//const auto channelMaxValue = static_cast<float>(numeric_limits<decltype(mattePixel.red)>::max());
-				//if (image->matte != 0) {
-				//	for (unsigned long y = 0; y < height; y++) {
-				//		for (unsigned long x = 0; x < width; x++) {
-				//			const PixelPacket& currPixel = pixels[y * width + x];
-				//			auto red = static_cast<unsigned char>(currPixel.red * currPixel.opacity / channelMaxValue * 255);
-				//			auto green = static_cast<unsigned char>(currPixel.green * currPixel.opacity / channelMaxValue * 255);
-				//			auto blue = static_cast<unsigned char>(currPixel.blue * currPixel.opacity / channelMaxValue * 255);
-				//			auto alpha = static_cast<unsigned char>(currPixel.opacity / channelMaxValue * 255);
-				//			_Convert_and_set_pixel_to_io2d_format(fmt, mapData, static_cast<int>(y), static_cast<int>(x), mapStride, red, green, blue, alpha);
-				//		}
-				//	}
-				//}
-				//else {
-				//	for (unsigned long y = 0; y < height; y++) {
-				//		for (unsigned long x = 0; x < width; x++) {
-				//			const PixelPacket& currPixel = pixels[y * width + x];
-				//			auto red = static_cast<unsigned char>(currPixel.red / channelMaxValue * 255);
-				//			auto green = static_cast<unsigned char>(currPixel.green / channelMaxValue * 255);
-				//			auto blue = static_cast<unsigned char>(currPixel.blue / channelMaxValue * 255);
-				//			auto alpha = static_cast<unsigned char>(255);
-				//			_Convert_and_set_pixel_to_io2d_format(fmt, mapData, static_cast<int>(y), static_cast<int>(x), mapStride, red, green, blue, alpha);
-				//		}
-				//	}
-				//}
-				//cairo_surface_unmap_image(data.surface.get(), map);
-				//cairo_surface_mark_dirty(data.surface.get());
-				//if (cairo_surface_status(data.surface.get()) != CAIRO_STATUS_SUCCESS) {
-				//	ec = ::std::make_error_code(errc::operation_canceled);
-				//	return image_surface_data_type{};
-				//}
-				//ec.clear();
-				//return data;
 			}
 			template<class GraphicsMath>
 			inline typename _Qt_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type _Qt_graphics_surfaces<GraphicsMath>::surfaces::move_image_surface(image_surface_data_type&& data) noexcept {
@@ -154,197 +70,39 @@ namespace std::experimental::io2d {
 				// Do nothing.
 			}
 			template<class GraphicsMath>
-			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::save(image_surface_data_type& /*data*/, filesystem::path /*p*/, image_file_format /*iff*/) {
-				//_Init_graphics_magic();
+			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::save(image_surface_data_type& data, filesystem::path p, image_file_format iff) {
 				::std::error_code ec;
-				//save(data, p, iff, ec);
+				save(data, p, iff, ec);
 				if (ec) {
 					throw ::std::system_error(ec);
 				}
 			}
 			template<class GraphicsMath>
-			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::save(image_surface_data_type& /*data*/, filesystem::path /*p*/, image_file_format /*iff*/, error_code& /*ec*/) noexcept {
-				//				_Init_graphics_magic();
-				//				if (iff == image_file_format::unknown) {
-				//					ec = make_error_code(errc::not_supported);
-				//					return;
-				//				}
-				//				ExceptionInfo exInfo;
-				//				GetExceptionInfo(&exInfo);
-				//
-				//				auto map = cairo_surface_map_to_image(data.surface.get(), nullptr);
-				//				auto mapStride = cairo_image_surface_get_stride(map);
-				//				auto mapData = cairo_image_surface_get_data(map);
-				//				auto width = data.dimensions.x();
-				//				auto height = data.dimensions.y();
-				//				auto pixelDataUP = _Convert_and_create_pixel_array_from_map_pixels<unsigned char>(data.format, mapData, width, height, mapStride);
-				//				::std::unique_ptr<Image, decltype(&DestroyImage)> image(ConstituteImage(static_cast<unsigned long>(width), static_cast<unsigned long>(height), "BGRA", CharPixel, pixelDataUP.get(), &exInfo), &DestroyImage);
-				//				if (image == nullptr) {
-				//					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
-				//					DestroyExceptionInfo(&exInfo);
-				//					return;
-				//				}
-				//				unique_ptr<ImageInfo, decltype(&DestroyImageInfo)> imageInfo(CloneImageInfo(nullptr), &DestroyImageInfo);
-				//				auto pathStr = p.string();
-				//				if (pathStr.length() > MaxTextExtent - 1) {
-				//					ec = make_error_code(errc::filename_too_long);
-				//					DestroyExceptionInfo(&exInfo);
-				//					return;
-				//				}
-				//				strncpy(imageInfo->filename, pathStr.c_str(), pathStr.length());
-				//				strncpy(image->filename, pathStr.c_str(), pathStr.length());
-				//				switch (iff)
-				//				{
-				//#ifdef __clang__
-				//#pragma clang diagnostic push
-				//#pragma clang diagnostic ignored "-Wunreachable-code-break"
-				//#endif
-				//				case std::experimental::io2d::v1::image_file_format::unknown:
-				//				{
-				//					//if (p.has_extension()) {
-				//
-				//					//}
-				//					//else {
-				//					ec = make_error_code(errc::not_supported);
-				//					DestroyExceptionInfo(&exInfo);
-				//					//}
-				//					return;
-				//				} break;
-				//#ifdef __clang__
-				//#pragma clang diagnostic pop
-				//#endif
-				//				case std::experimental::io2d::v1::image_file_format::png:
-				//				{
-				//					const char format[] = "PNG";
-				//					const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//					strncpy(imageInfo->magick, format, formatElemCount);
-				//					strncpy(image->magick, format, formatElemCount);
-				//				} break;
-				//				case std::experimental::io2d::v1::image_file_format::jpeg:
-				//				{
-				//					const char format[] = "JPEG";
-				//					const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//					strncpy(imageInfo->magick, format, formatElemCount);
-				//					strncpy(image->magick, format, formatElemCount);
-				//				} break;
-				//				case std::experimental::io2d::v1::image_file_format::tiff:
-				//				{
-				//					const char format[] = "TIFF";
-				//					const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//					strncpy(imageInfo->magick, format, formatElemCount);
-				//					strncpy(image->magick, format, formatElemCount);
-				//				} break;
-				//				default:
-				//				{
-				//					if (iff == additional_image_file_formats::bmp) {
-				//						const char format[] = "BMP";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::tga) {
-				//						const char format[] = "TGA";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::dib) {
-				//						const char format[] = "DIB";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::gif) {
-				//						const char format[] = "GIF";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::pcx) {
-				//						const char format[] = "PCX";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::pbm) {
-				//						const char format[] = "PBM";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::pgm) {
-				//						const char format[] = "PGM";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::ppm) {
-				//						const char format[] = "PPM";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::psd) {
-				//						const char format[] = "PSD";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::xbm) {
-				//						const char format[] = "XBM";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					if (iff == additional_image_file_formats::xpm) {
-				//						const char format[] = "XPM";
-				//						const auto formatElemCount = ::std::extent_v<decltype(format)>;
-				//						strncpy(imageInfo->magick, format, formatElemCount);
-				//						strncpy(image->magick, format, formatElemCount);
-				//						break;
-				//					}
-				//					ec = make_error_code(errc::invalid_argument);
-				//					DestroyExceptionInfo(&exInfo);
-				//					return;
-				//				} break;
-				//				}
-				//				image->background_color = PixelPacket{};
-				//				imageInfo->background_color = PixelPacket{};
-				//				image->colorspace = TransparentColorspace;
-				//				imageInfo->colorspace = TransparentColorspace;
-				//				image->depth = 8;
-				//				imageInfo->depth = 8;
-				//				image->matte = 1;
-				//
-				//				image->matte_color = PixelPacket{};
-				//				imageInfo->matte_color = PixelPacket{};
-				//				image->orientation = TopLeftOrientation;
-				//
-				//
-				//				imageInfo->quality = 90;
-				//				image->units = PixelsPerInchResolution;
-				//				imageInfo->units = PixelsPerInchResolution;
-				//				image->x_resolution = 96.0;
-				//
-				//				image->y_resolution = 96.0;
-				//
-				//				if (WriteImage(imageInfo.get(), image.get()) == MagickFail) {
-				//					ec = _Graphics_magic_exception_type_to_error_code(&exInfo);
-				//					DestroyExceptionInfo(&exInfo);
-				//					return;
-				//				}
-				//				DestroyExceptionInfo(&exInfo);
-								//ec.clear();
+			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::save(image_surface_data_type& data, filesystem::path p, image_file_format iff, error_code& ec) noexcept {
+				bool success;
+				switch (iff)
+				{
+				case std::experimental::io2d::v1::image_file_format::unknown:
+					success = data.surface.save(QString(p.string().c_str()));
+					break;
+				case std::experimental::io2d::v1::image_file_format::png:
+					success = data.surface.save(QString(p.string().c_str()), "PNG");
+					break;
+				case std::experimental::io2d::v1::image_file_format::jpeg:
+					success = data.surface.save(QString(p.string().c_str()), "JPG");
+					break;
+				case std::experimental::io2d::v1::image_file_format::tiff:
+					success = data.surface.save(QString(p.string().c_str()));
+					break;
+				default:
+					ec = ::std::make_error_code(errc::invalid_argument);
+					return;
+				}
+				if (!success) {
+					ec = ::std::make_error_code(errc::not_supported);
+					return;
+				}
+				ec.clear();
 				return;
 			}
 			template<class GraphicsMath>
@@ -399,8 +157,25 @@ namespace std::experimental::io2d {
 				painter.fillPath(*(ip.data().path), brush);
 			}
 			template<class GraphicsMath>
-			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::mask(image_surface_data_type& /*data*/, const basic_brush<_Graphics_surfaces_type>& /*b*/, const basic_brush<_Graphics_surfaces_type>& /*mb*/, const basic_brush_props<_Graphics_surfaces_type>& /*bp*/, const basic_mask_props<_Graphics_surfaces_type>& /*mp*/, const basic_render_props<_Graphics_surfaces_type>& /*rp*/, const basic_clip_props<_Graphics_surfaces_type>& /*cl*/) {
-				throw system_error(make_error_code(errc::operation_not_supported), "Not yet implemented.");
+			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::mask(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
+				// Seems like QPainter::CompositionMode_SourceIn is the right compositing op for creating the result of the mask, which would then be composed using paint. Question: How to do this correctly where the source is a non-surface brush? A: Create an image of the same dimensions, paint the mask to it using Source then paint the source using SourceIn then paint the source to the surface as-if it was a normal paint operation.
+				_Set_mask_props(mp, mb);
+				int width = data.surface.width();
+				int height = data.surface.height();
+				basic_image_surface<_Qt_graphics_surfaces<GraphicsMath>> img(data.format, width, height);
+				QPainter painter(&img.data().surface);
+				painter.setCompositionMode(QPainter::CompositionMode_Source);
+				//painter.setBrush(*(mb.data().brush));
+				painter.fillRect(0, 0, width, height, *(mb.data().brush));
+
+				painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+				//painter.setBrush(b.data.brush);
+				painter.fillRect(0, 0, width, height, *(b.data().brush));
+				if (!painter.end()) {
+					throw runtime_error("Unable to finish painting with QPainter in mask.");
+				}
+				basic_brush<_Qt_graphics_surfaces<GraphicsMath>> maskedBrush(::std::move(img));
+				paint(data, maskedBrush, bp, rp, cl);
 				//auto context = data.context.get();
 				//_Set_render_props(context, rp);
 				//_Set_clip_props(context, cl);

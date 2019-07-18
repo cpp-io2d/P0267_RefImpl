@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.0)
 set(CMAKE_CXX_STANDARD 17)
 
 # Use the CMakeLists.txt's parent-directory-name for the project's id/name
@@ -16,6 +16,12 @@ add_custom_command( TARGET ${PROJECT_ID} POST_BUILD
 if(MSVC)
 	set_target_properties(${PROJECT_ID} PROPERTIES  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)")
 endif()
+
+if(MSVC)
+	target_compile_definitions(${PROJECT_ID} PUBLIC -DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS)
+	target_link_options(${PROJECT_ID} PUBLIC -SUBSYSTEM:WINDOWS -ENTRY:mainCRTStartup)
+endif()
+
 
 if( DEFINED IOS_PLATFORM )
     # iOS requires special packaging, so we have to treat this target separately
