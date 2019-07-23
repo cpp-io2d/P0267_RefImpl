@@ -45,7 +45,7 @@ namespace std::experimental::io2d {
 			data_type _Data;
 
 		public:
-			basic_brush_props(io2d::wrap_mode w = io2d::wrap_mode::none, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
+			basic_brush_props(io2d::wrap_mode w = io2d::wrap_mode::pad, io2d::filter fi = io2d::filter::good, io2d::fill_rule fr = io2d::fill_rule::winding, const basic_matrix_2d<graphics_math_type>& m = basic_matrix_2d<graphics_math_type>{}) noexcept;
 			basic_brush_props(const basic_brush_props& other);
 			basic_brush_props& operator=(const basic_brush_props& other);
 			basic_brush_props(basic_brush_props&& other) noexcept;

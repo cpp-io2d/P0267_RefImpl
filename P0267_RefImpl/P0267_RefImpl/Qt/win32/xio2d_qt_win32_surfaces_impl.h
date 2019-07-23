@@ -143,7 +143,7 @@ namespace std::experimental::io2d {
 							painter.fillRect(0, 0, displayWidth, displayHeight, Qt::black);
 						}
 						else {
-							auto& pttn = *(data._Letterbox_brush.value().data().brush.get());
+							auto& pttn = data._Letterbox_brush.value().data().brush;
 							if (data._Letterbox_brush_props == nullopt) {
 								painter.fillRect(0, 0, displayWidth, displayHeight, pttn);
 							}
@@ -205,7 +205,7 @@ namespace std::experimental::io2d {
 							//cairo_paint(displayContext);
 						}
 						else {
-							auto& pttn = *(data._Letterbox_brush.value().data().brush.get());
+							auto& pttn = data._Letterbox_brush.value().data().brush;
 							if (data._Letterbox_brush_props == nullopt) {
 								painter.fillRect(0, 0, displayWidth, displayHeight, pttn);
 								//cairo_pattern_set_extend(pttn, CAIRO_EXTEND_NONE);

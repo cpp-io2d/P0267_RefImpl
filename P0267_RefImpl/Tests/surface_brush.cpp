@@ -282,7 +282,7 @@ TEST_CASE("IO2D extends a non-papped surface brush with transparent_black")
     img.paint(brush{rgba_color::red});
     
     auto bp = brush_props{};
-    bp.wrap_mode(wrap_mode::none);
+    bp.wrap_mode(wrap_mode::pad);
     bp.filter(filter::nearest);
     bp.brush_matrix(matrix_2d::create_translate({3, 3}).inverse());
     

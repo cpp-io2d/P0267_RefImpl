@@ -33,7 +33,7 @@ TEST_CASE("IO2D properly draws a linear gradient")
                         {gradient_stop{0.0f, rgba_color::aquamarine},
                          gradient_stop{0.5f, rgba_color::dark_magenta},
                          gradient_stop{1.0f, rgba_color::lime}}};
-        auto bp = brush_props{wrap_mode::none, filter::good, fill_rule::winding, matrix_2d::create_translate({100.f, 150.f})};
+        auto bp = brush_props{wrap_mode::pad, filter::good, fill_rule::winding, matrix_2d::create_translate({100.f, 150.f})};
         auto pb = path_builder{};
         pb.new_figure({0.f, 0.f});
         pb.rel_line({300.f, 0.f});
@@ -51,7 +51,7 @@ TEST_CASE("IO2D properly draws a linear gradient")
                          gradient_stop{0.5f, rgba_color::dark_magenta},
                          gradient_stop{1.0f, rgba_color::lime}}};
         auto m = matrix_2d::create_translate({-150.f, 0.}) * matrix_2d::create_scale({-1.f, 1.f}) * matrix_2d::create_translate({150.f, 0.});
-        auto bp = brush_props{wrap_mode::none, filter::good, fill_rule::winding, m};
+        auto bp = brush_props{wrap_mode::reflect, filter::good, fill_rule::winding, m};
         auto pb = path_builder{};
         pb.new_figure({0.f, 0.f});
         pb.rel_line({300.f, 0.f});
@@ -97,7 +97,6 @@ TEST_CASE("IO2D properly handles wrapping modes for linear gradients")
                      gradient_stop{0.6f, rgba_color::gainsboro},
                      gradient_stop{1.0f, rgba_color::lime}}};
     
-    //image.fill(b, sector({0.f, 0.f,   300.f, 50.f}), brush_props{wrap_mode::none});
     image.fill(b, sector({0.f, 50.f,  300.f, 50.f}), brush_props{wrap_mode::repeat});
     image.fill(b, sector({0.f, 100.f, 300.f, 50.f}), brush_props{wrap_mode::reflect});
     image.fill(b, sector({0.f, 150.f, 300.f, 50.f}), brush_props{wrap_mode::pad});

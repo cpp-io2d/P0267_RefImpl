@@ -134,21 +134,6 @@ static inline void InterpolateStopsColor(const vector<gradient_stop> &stops, con
     }
 }
 
-static void ShadingWithWrappingNone(void* info, const double* in, double* out)
-{
-    const auto param_in = *in;
-    if( param_in < 0. || param_in > 1. ) {
-        out[0] = 0.;
-        out[1] = 0.;
-        out[2] = 0.;
-        out[3] = 0.;
-    }
-    else {
-        auto &stops = *static_cast<const vector<gradient_stop>*>(info);
-        InterpolateStopsColor(stops, param_in, out);
-    }
-}
-
 static void ShadingWithWrappingRepeat(void* info, const double* in, double* out)
 {
     const auto param_in = *in;
@@ -191,7 +176,6 @@ static void ShadingWithWrappingPad(void* info, const double* in, double* out)
 static auto FunctionByMode( wrap_mode wm )
 {
     switch( wm ) {
-        case wrap_mode::none:       return ShadingWithWrappingNone;
         case wrap_mode::pad:        return ShadingWithWrappingPad;
         case wrap_mode::repeat:     return ShadingWithWrappingRepeat;
         case wrap_mode::reflect:    return ShadingWithWrappingReflect;

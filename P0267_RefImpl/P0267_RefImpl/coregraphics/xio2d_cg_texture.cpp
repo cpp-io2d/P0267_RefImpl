@@ -11,7 +11,6 @@ struct PatternContext {
 
 }
     
-static void DrawSingleTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m);
 static void DrawRepeatedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m);
 static void DrawReflectedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m);
 static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m);
@@ -19,9 +18,6 @@ static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &su
 void _DrawTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, wrap_mode wm, const matrix_2d &m)    
 {
     switch( wm ) {
-        case wrap_mode::none:
-            DrawSingleTexture(ctx, surface, fi, m);
-            break;
         case wrap_mode::repeat:
             DrawRepeatedTexture(ctx, surface, fi, m);
             break;
@@ -34,18 +30,6 @@ void _DrawTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filte
         default:
             break;
     }
-}
-
-static void DrawSingleTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, filter fi, const matrix_2d &m)
-{
-    {
-        _GStateGuard state_guard{ctx};            
-        CGContextConcatCTM(ctx, _ToCG(m.inverse()) );
-        CGContextConcatCTM(ctx, CGAffineTransform{ 1., 0., 0., -1., 0., double(surface.height) } );
-        CGContextSetInterpolationQuality(ctx, _ToCG(fi));
-        CGContextDrawImage(ctx, CGRectMake(0, 0, surface.width, surface.height), surface.image.get());
-    }    
-    _DrawTransparencyOutsideTexture(ctx, surface, m);    
 }
 
 static void DrawRepeatedPattern(void * info, CGContextRef ctx)
@@ -212,17 +196,6 @@ static void DrawPaddedTexture(CGContextRef ctx, const _GS::brushes::_Surface &su
 
     CGContextSetFillColorWithColor(ctx, surface.pad->bottom_right.get());
     CGContextFillRect(ctx, CGRectMake(surface.width - eps, surface.height - eps, distant_far, distant_far));
-}
-
-void _DrawTransparencyOutsideTexture(CGContextRef ctx, const _GS::brushes::_Surface &surface, const matrix_2d &m)
-{    
-    CGContextConcatCTM(ctx, _ToCG(m.inverse()));
-    CGContextAddRect(ctx, CGContextGetClipBoundingBox(ctx));    
-    CGContextAddRect(ctx, CGRectMake(0., 0., surface.width, surface.height));
-    CGContextEOClip(ctx);
-        
-    CGContextSetFillColorWithColor(ctx, _TransparentColor());
-    CGContextFillRect(ctx, CGContextGetClipBoundingBox(ctx));
 }
     
 } // namespace _CoreGraphics

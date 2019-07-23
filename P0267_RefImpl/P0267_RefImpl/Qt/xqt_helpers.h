@@ -292,8 +292,6 @@ namespace std::experimental::io2d {
 			inline QGradient::Spread _Wrap_mode_to_qgradient_spread(::std::experimental::io2d::wrap_mode wm) {
 				switch (wm)
 				{
-				case std::experimental::io2d::v1::wrap_mode::none:
-					return QGradient::PadSpread;
 				case std::experimental::io2d::v1::wrap_mode::repeat:
 					return QGradient::RepeatSpread;
 				case std::experimental::io2d::v1::wrap_mode::reflect:
@@ -304,21 +302,6 @@ namespace std::experimental::io2d {
 					throw ::std::runtime_error("Unknown wrap_mode value");
 				}
 			}
-			// Qt doesn't support anything like extend so it'll need to be done manually.
-			//inline cairo_extend_t _Extend_to_cairo_extend_t(::std::experimental::io2d::wrap_mode e) {
-			//	switch (e) {
-			//	case ::std::experimental::io2d::wrap_mode::none:
-			//		return CAIRO_EXTEND_NONE;
-			//	case ::std::experimental::io2d::wrap_mode::repeat:
-			//		return CAIRO_EXTEND_REPEAT;
-			//	case ::std::experimental::io2d::wrap_mode::reflect:
-			//		return CAIRO_EXTEND_REFLECT;
-			//	case ::std::experimental::io2d::wrap_mode::pad:
-			//		return CAIRO_EXTEND_PAD;
-			//	default:
-			//		throw ::std::runtime_error("Unknown wrap_mode value.");
-			//	}
-			//}
 
 			inline Qt::TransformationMode _Filter_to_qt_transformationmode(::std::experimental::io2d::filter f) {
 				switch (f) {

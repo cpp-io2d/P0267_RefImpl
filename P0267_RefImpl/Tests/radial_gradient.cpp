@@ -24,7 +24,7 @@ TEST_CASE("IO2D properly draws a radial gradient")
         pb.rel_line({-300.f, 0.f});
         pb.rel_line({0.f, -200.f});
         pb.close_figure();
-        image.fill(b, pb, brush_props{wrap_mode::none});
+        image.fill(b, pb, brush_props{wrap_mode::pad});
     }
     SECTION("Draw with a translation brush matrix") {
         auto b = brush{ circle{{50.f, 0.f}, 90},
@@ -40,7 +40,7 @@ TEST_CASE("IO2D properly draws a radial gradient")
         pb.rel_line({-300.f, 0.f});
         pb.rel_line({0.f, -200.f});
         pb.close_figure();
-        image.fill(b, pb, brush_props{wrap_mode::none, filter::good, fill_rule::winding, m});
+        image.fill(b, pb, brush_props{wrap_mode::pad, filter::good, fill_rule::winding, m});
     }
     SECTION("Draw via paint") {
         auto b = brush{ circle{{100.f, 100.f}, 90},
@@ -48,7 +48,7 @@ TEST_CASE("IO2D properly draws a radial gradient")
                         {gradient_stop{0.0f, rgba_color::aquamarine},
                          gradient_stop{0.5f, rgba_color::dark_magenta},
                          gradient_stop{1.0f, rgba_color::lime}}};
-        image.paint(b, brush_props{wrap_mode::none});
+        image.paint(b, brush_props{wrap_mode::pad});
     }
     
     CHECK( CompareWithPNGImage(image, reference, 0.02f, 2) == true );
@@ -103,7 +103,6 @@ TEST_CASE("IO2D properly handles wrap modes for radial gradients")
                     {gradient_stop{0.0f, rgba_color::aquamarine},
                      gradient_stop{0.5f, rgba_color::dark_magenta},
                      gradient_stop{1.0f, rgba_color::lime}}};
-    image.fill(b, sector({0.f, 0.f,   300.f, 50.f}), brush_props{wrap_mode::none});
     image.fill(b, sector({0.f, 50.f,  300.f, 50.f}), brush_props{wrap_mode::repeat});
     image.fill(b, sector({0.f, 100.f, 300.f, 50.f}), brush_props{wrap_mode::reflect});
     image.fill(b, sector({0.f, 150.f, 300.f, 50.f}), brush_props{wrap_mode::pad});

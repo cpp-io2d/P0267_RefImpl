@@ -132,11 +132,11 @@ namespace std::experimental::io2d {
 				QPainter painter(&data.surface);
 				_Set_render_props(painter, rp);
 				_Set_clip_props(painter, cl);
-				QBrush& brush = *(b.data().brush);
+				//QBrush& brush = b.data().brush;
 				//_Set_brush_props(painter, b, bp);
 				painter.setPen(Qt::NoPen);
 				_Set_brush_props(painter, b, bp);
-				painter.setBrush(*(b.data().brush));
+				painter.setBrush(b.data().brush);
 				QPainterPath qpp;
 				qpp.moveTo(0.0f, 0.0f);
 				qpp.lineTo(data.dimensions.x(), 0.0f);
@@ -151,9 +151,9 @@ namespace std::experimental::io2d {
 				QPainter painter(&data.surface);
 				_Set_render_props(painter, rp);
 				_Set_clip_props(painter, cl);
-				_Set_brush_props(painter, b, bp);
 				auto path = _Set_stroke_props(painter, *(ip.data().path), b, sp, sp.max_miter_limit(), d);
-				painter.setBrush(*(b.data().brush));
+				_Set_brush_props(painter, b, bp);
+				painter.setBrush(b.data().brush);
 				painter.drawPath(path);
 			}
 			template<class GraphicsMath>
@@ -161,7 +161,7 @@ namespace std::experimental::io2d {
 				QPainter painter(&data.surface);
 				_Set_render_props(painter, rp);
 				_Set_clip_props(painter, cl);
-				QBrush& brush = *(b.data().brush);
+				//QBrush& brush = b.data().brush;
 				painter.setPen(Qt::NoPen);
 				_Set_brush_props(painter, b, bp);
 				ip.data().path->setFillRule(_Fill_rule_to_qt_fillrule(bp.fill_rule()));
@@ -170,7 +170,7 @@ namespace std::experimental::io2d {
 					painter.drawPath(*(ip.data().path));
 				}
 				else {
-					painter.fillPath(*(ip.data().path), brush);
+					painter.fillPath(*(ip.data().path), b.data().brush);
 				}
 			}
 			template<class GraphicsMath>
@@ -183,11 +183,11 @@ namespace std::experimental::io2d {
 				QPainter painter(&img.data().surface);
 				painter.setCompositionMode(QPainter::CompositionMode_Source);
 				//painter.setBrush(*(mb.data().brush));
-				painter.fillRect(0, 0, width, height, *(mb.data().brush));
+				painter.fillRect(0, 0, width, height, mb.data().brush);
 
 				painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
 				//painter.setBrush(b.data.brush);
-				painter.fillRect(0, 0, width, height, *(b.data().brush));
+				painter.fillRect(0, 0, width, height, b.data().brush);
 				if (!painter.end()) {
 					throw runtime_error("Unable to finish painting with QPainter in mask.");
 				}
@@ -210,21 +210,12 @@ namespace std::experimental::io2d {
 			template<class GraphicsMath>
 			inline _Interchange_buffer _Qt_graphics_surfaces<GraphicsMath>::surfaces::_Copy_to_interchange_buffer(image_surface_data_type& data, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha) {
 				auto fmt = data.format;
-				auto depth = data.surface.depth();
-				QImage::Format qImgFmt = data.surface.format();
 				const auto pixels = data.surface.constBits();
 				auto stride = data.surface.bytesPerLine();
 				auto width = data.dimensions.x();
 				auto height = data.dimensions.y();
 				auto src_layout = _Interchange_buffer::pixel_layout::b8g8r8a8;
 				auto src_alpha = _Interchange_buffer::alpha_mode::premultiplied;
-				//switch (fmt) {
-				//case QImage::Format_Invalid:
-				//	throw make_error_code(errc::not_supported);
-				//default:
-				//	break;
-				//}
-				(void)qImgFmt;
 				switch (fmt) {
 				case format::argb32:
 					src_layout = _Interchange_buffer::pixel_layout::b8g8r8a8;

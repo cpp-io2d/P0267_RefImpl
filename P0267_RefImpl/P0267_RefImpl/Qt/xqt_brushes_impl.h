@@ -17,7 +17,7 @@ namespace std::experimental::io2d {
 			inline typename _Qt_graphics_surfaces<GraphicsMath>::brushes::brush_data_type _Qt_graphics_surfaces<GraphicsMath>::brushes::create_brush(const rgba_color& c) {
 				brush_data_type data;
 				data.brushType = brush_type::solid_color;
-				data.brush = make_shared<QBrush>(QColor::fromRgbF(c.r(), c.g(), c.b(), c.a()));
+				data.brush = QBrush(QColor::fromRgbF(c.r(), c.g(), c.b(), c.a()));
 				return data;
 			}
 			template<class GraphicsMath>
@@ -30,8 +30,8 @@ namespace std::experimental::io2d {
 					auto stop = *it;
 					lg.setColorAt(stop.offset(), QColor::fromRgbF(stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a()));
 				}
-				lg.setSpread(QGradient::ReflectSpread);
-				data.brush = make_shared<QBrush>(lg);
+				//lg.setSpread(QGradient::ReflectSpread);
+				data.brush = QBrush(lg);//make_shared<QBrush>(lg);
 				data.linearGradient = lg;
 				return data;
 			}
@@ -50,7 +50,7 @@ namespace std::experimental::io2d {
 					auto stop = *it;
 					rg.setColorAt(1.0f - stop.offset(), QColor::fromRgbF(stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a()));
 				}
-				data.brush = make_shared<QBrush>(rg);
+				data.brush = QBrush(rg);//make_shared<QBrush>(rg);
 				data.radialGradient = rg;
 				return data;
 			}
@@ -65,7 +65,7 @@ namespace std::experimental::io2d {
 				// The surface is dying and I want to steal some of its data, ergo const_cast.
 				img_sfc_data_type& imgData = const_cast<img_sfc_data_type&>(img.data());
 				//data.imageSurface = shared_ptr<cairo_surface_t>(imgData.surface.release(), &cairo_surface_destroy);
-				data.brush = make_shared<QBrush>(imgData.surface);
+				data.brush = QBrush(imgData.surface);// make_shared<QBrush>(imgData.surface);
 				data.brushType = brush_type::surface;
 				return data;
 			}

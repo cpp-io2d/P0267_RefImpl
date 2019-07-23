@@ -142,7 +142,7 @@ TEST_CASE("Properly intersects a radial brush with a radial gradient mask")
     auto b = brush{ circle(point_2d{20, 25}, 18), circle(point_2d{20, 25}, 0), {{0., rgba_color{1., 0., 0., 1.}}, {1., rgba_color{1., 0., 0., 1.}}}};
     auto mb = brush{ circle(point_2d{32, 25}, 18), circle(point_2d{32, 25}, 0), {{0., rgba_color{1., 1., 1., 1.}}, {1., rgba_color{1., 1., 1., 1.}}}};
     auto mbp = mask_props{};
-    mbp.wrap_mode(wrap_mode::none);
+    mbp.wrap_mode(wrap_mode::pad);
     img.mask(b, mb, nullopt, mbp);
     CHECK( CompareWithPNGImage(img, reference, 0.02f, 1) == true );    
 }
@@ -155,7 +155,7 @@ TEST_CASE("Properly intersects a radial brush with a radial gradient mask, clipp
     auto b = brush{ circle(point_2d{20, 25}, 18), circle(point_2d{20, 25}, 0), {{0., rgba_color{1., 0., 0., 1.}}, {1., rgba_color{1., 0., 0., 1.}}}};
     auto mb = brush{ circle(point_2d{32, 25}, 18), circle(point_2d{32, 25}, 0), {{0., rgba_color{1., 1., 1., 1.}}, {1., rgba_color{1., 1., 1., 1.}}}};
     auto mbp = mask_props{};
-    mbp.wrap_mode(wrap_mode::none);
+    mbp.wrap_mode(wrap_mode::pad);
     auto cl = clip_props{ bounding_box(10., 10., 30., 20.) };    
     img.mask(b, mb, nullopt, mbp, nullopt, cl);
     CHECK( CompareWithPNGImage(img, reference, 0.02f, 1) == true );    
@@ -169,7 +169,7 @@ TEST_CASE("Properly intersects a radial brush with a radial gradient mask, clipp
     auto b = brush{ circle(point_2d{20, 25}, 18), circle(point_2d{20, 25}, 0), {{0., rgba_color{1., 0., 0., 1.}}, {1., rgba_color{1., 0., 0., 1.}}}};
     auto mb = brush{ circle(point_2d{32, 25}, 18), circle(point_2d{32, 25}, 0), {{0., rgba_color{1., 1., 1., 1.}}, {1., rgba_color{1., 1., 1., 1.}}}};
     auto mbp = mask_props{};
-    mbp.wrap_mode(wrap_mode::none);
+    mbp.wrap_mode(wrap_mode::pad);
     
     auto pb = path_builder{};
     pb.new_figure({10., 12.});
@@ -278,7 +278,7 @@ TEST_CASE("Properly intersects a solid brush with a non-wrapped surface mask", "
     image_surface img{format::argb32, 50, 50};
     img.paint(brush{rgba_color::green});    
     auto mp = mask_props{};
-    mp.wrap_mode(wrap_mode::none);
+    mp.wrap_mode(wrap_mode::pad);
     auto b = brush{rgba_color{}};
     SECTION("ARGB32 mask") {
         b = brush{MakeCheckerboardMask(10, 10)};

@@ -274,7 +274,7 @@ struct surface_state_props {
         compositing_op compositing = compositing_op::over;
     };
     using render_props_data_type = _Render;
-    static render_props_data_type create_render_props(antialias aa = antialias::good, basic_matrix_2d<GraphicsMath> m = basic_matrix_2d<GraphicsMath>{}, compositing_op co = compositing_op::over) noexcept;
+    static render_props_data_type create_render_props(antialias aa, basic_matrix_2d<GraphicsMath> m, compositing_op co) noexcept;
     static render_props_data_type copy_render_props(const render_props_data_type& data) noexcept;
     static render_props_data_type move_render_props(render_props_data_type&& data) noexcept;
     static void destroy(render_props_data_type& data) noexcept;
@@ -286,13 +286,13 @@ struct surface_state_props {
     static compositing_op compositing(const render_props_data_type& data) noexcept;
     
     struct _Brush {
-        wrap_mode wrap_mode = wrap_mode::none;
+        wrap_mode wrap_mode = wrap_mode::pad;
         filter filter = filter::good;
         fill_rule fill_rule = fill_rule::winding;
         basic_matrix_2d<GraphicsMath> matrix;
     };
     using brush_props_data_type = _Brush;
-    static brush_props_data_type create_brush_props(io2d::wrap_mode wm = io2d::wrap_mode::none, io2d::filter f = io2d::filter::good, io2d::fill_rule = io2d::fill_rule::winding, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
+    static brush_props_data_type create_brush_props(io2d::wrap_mode wm, io2d::filter f, io2d::fill_rule fr, const basic_matrix_2d<GraphicsMath>& m) noexcept;
     static brush_props_data_type copy_brush_props(const brush_props_data_type& data) noexcept;
     static brush_props_data_type move_brush_props(brush_props_data_type&& data) noexcept;
     static void destroy(brush_props_data_type& data) noexcept;
@@ -332,7 +332,7 @@ struct surface_state_props {
         line_join line_join = line_join::miter;
     };
     using stroke_props_data_type = _Stroke;
-    static stroke_props_data_type create_stroke_props(float lw = 2.0f, io2d::line_cap lc = io2d::line_cap::none, io2d::line_join lj = io2d::line_join::miter, float ml = 10.0f) noexcept;
+    static stroke_props_data_type create_stroke_props(float lw, io2d::line_cap lc, io2d::line_join lj, float ml) noexcept;
     static stroke_props_data_type copy_stroke_props(const stroke_props_data_type& data) noexcept;
     static stroke_props_data_type move_stroke_props(stroke_props_data_type&& data) noexcept;
     static void destroy(stroke_props_data_type& data) noexcept;
@@ -352,7 +352,7 @@ struct surface_state_props {
         basic_matrix_2d<GraphicsMath> matrix;
     };
     using mask_props_data_type = _Mask;
-    static mask_props_data_type create_mask_props(io2d::wrap_mode wm = io2d::wrap_mode::none, io2d::filter f = io2d::filter::good, const basic_matrix_2d<GraphicsMath>& m = basic_matrix_2d<GraphicsMath>{}) noexcept;
+    static mask_props_data_type create_mask_props(io2d::wrap_mode wm, io2d::filter f, const basic_matrix_2d<GraphicsMath>& m) noexcept;
     static mask_props_data_type copy_mask_props(const mask_props_data_type& data) noexcept;
     static mask_props_data_type move_mask_props(mask_props_data_type&& data) noexcept;
     static void destroy(mask_props_data_type& data) noexcept;

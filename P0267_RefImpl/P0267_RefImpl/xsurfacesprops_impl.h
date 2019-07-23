@@ -33,7 +33,7 @@ namespace std {
 
 				template <class GraphicsSurfaces>
 				inline basic_render_props<GraphicsSurfaces>::basic_render_props() noexcept
-					: _Data(GraphicsSurfaces::surface_state_props::create_render_props()) {
+					: _Data(GraphicsSurfaces::surface_state_props::create_render_props(antialias::good, basic_matrix_2d<graphics_math_type>(), compositing_op::over)) {
 				}
 
 				template <class GraphicsSurfaces>
@@ -281,7 +281,7 @@ namespace std {
 				}
 				template <class GraphicsSurfaces>
 				inline basic_stroke_props<GraphicsSurfaces>::basic_stroke_props() noexcept
-					: _Data(GraphicsSurfaces::surface_state_props::create_stroke_props()) {
+					: _Data(GraphicsSurfaces::surface_state_props::create_stroke_props(2.0f, line_cap::none, line_join::miter, 10.0f)) {
 				}
 				template <class GraphicsSurfaces>
 				inline basic_stroke_props<GraphicsSurfaces>::basic_stroke_props(float w,

@@ -11,10 +11,10 @@ namespace std {
 				class basic_image_surface;
 
 				enum class wrap_mode {
-					none,
+					//none,
+					pad,
 					repeat,
-					reflect,
-					pad
+					reflect
 				};
 
 				enum class filter {
