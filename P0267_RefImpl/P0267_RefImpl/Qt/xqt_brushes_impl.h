@@ -32,6 +32,7 @@ namespace std::experimental::io2d {
 				}
 				lg.setSpread(QGradient::ReflectSpread);
 				data.brush = make_shared<QBrush>(lg);
+				data.linearGradient = lg;
 				return data;
 			}
 			template<class GraphicsMath>
@@ -44,11 +45,13 @@ namespace std::experimental::io2d {
 				brush_data_type data;
 				data.brushType = brush_type::radial;
 				QRadialGradient rg = QRadialGradient(start.center().x(), start.center().y(), start.radius(), end.center().x(), end.center().y(), end.radius());
+				//QRadialGradient rg = QRadialGradient(end.center().x(), end.center().y(), end.radius(), start.center().x(), start.center().y(), start.radius());
 				for (auto it = first; it != last; ++it) {
 					auto stop = *it;
-					rg.setColorAt(stop.offset(), QColor::fromRgbF(stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a()));
+					rg.setColorAt(1.0f - stop.offset(), QColor::fromRgbF(stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a()));
 				}
 				data.brush = make_shared<QBrush>(rg);
+				data.radialGradient = rg;
 				return data;
 			}
 			template<class GraphicsMath>

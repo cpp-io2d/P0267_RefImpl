@@ -3,6 +3,7 @@
 #ifndef _XQT_SURFACES_IMAGE_IMPL_H_
 #define _XQT_SURFACES_IMAGE_IMPL_H_
 #include "xqt_surfaces_impl.h"
+#include "xqt_headers.h"
 #include "xqt_helpers.h"
 #include "xqt.h"
 
@@ -15,6 +16,7 @@ namespace std::experimental::io2d {
 			inline typename _Qt_graphics_surfaces<GraphicsMath>::surfaces::image_surface_data_type _Qt_graphics_surfaces<GraphicsMath>::surfaces::create_image_surface(io2d::format fmt, int width, int height) {
 				image_surface_data_type data;
 				data.surface = QImage(width, height, _Format_to_qimage_format(fmt));
+				data.surface.fill(Qt::transparent);
 				data.dimensions.x(width);
 				data.dimensions.y(height);
 				data.format = fmt;
@@ -131,20 +133,28 @@ namespace std::experimental::io2d {
 				_Set_render_props(painter, rp);
 				_Set_clip_props(painter, cl);
 				QBrush& brush = *(b.data().brush);
-				_Set_brush_props(brush, bp);
-				painter.fillRect(0, 0, data.dimensions.x(), data.dimensions.y(), brush);
+				//_Set_brush_props(painter, b, bp);
+				painter.setPen(Qt::NoPen);
+				_Set_brush_props(painter, b, bp);
+				painter.setBrush(*(b.data().brush));
+				QPainterPath qpp;
+				qpp.moveTo(0.0f, 0.0f);
+				qpp.lineTo(data.dimensions.x(), 0.0f);
+				qpp.lineTo(data.dimensions.x(), data.dimensions.y());
+				qpp.lineTo(0.0f, data.dimensions.y());
+				qpp.closeSubpath();
+				painter.drawPath(qpp);
+				//painter.drawRect(0, 0, data.dimensions.x(), data.dimensions.y());
 			}
 			template<class GraphicsMath>
 			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::stroke(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_stroke_props<_Graphics_surfaces_type>& sp, const basic_dashes<_Graphics_surfaces_type>& d, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
 				QPainter painter(&data.surface);
 				_Set_render_props(painter, rp);
 				_Set_clip_props(painter, cl);
-				QBrush& brush = *(b.data().brush);
-				_Set_brush_props(brush, bp);
-				_Set_stroke_props(painter, b, sp, sp.max_miter_limit(), d);
-				ip.data().path->setFillRule(_Fill_rule_to_qt_fillrule(bp.fill_rule()));
-				painter.setBrush(brush);
-				painter.drawPath(*(ip.data().path));
+				_Set_brush_props(painter, b, bp);
+				auto path = _Set_stroke_props(painter, *(ip.data().path), b, sp, sp.max_miter_limit(), d);
+				painter.setBrush(*(b.data().brush));
+				painter.drawPath(path);
 			}
 			template<class GraphicsMath>
 			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::fill(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_interpreted_path<_Graphics_surfaces_type>& ip, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
@@ -152,9 +162,16 @@ namespace std::experimental::io2d {
 				_Set_render_props(painter, rp);
 				_Set_clip_props(painter, cl);
 				QBrush& brush = *(b.data().brush);
-				_Set_brush_props(brush, bp);
+				painter.setPen(Qt::NoPen);
+				_Set_brush_props(painter, b, bp);
 				ip.data().path->setFillRule(_Fill_rule_to_qt_fillrule(bp.fill_rule()));
-				painter.fillPath(*(ip.data().path), brush);
+				if (b.type() == brush_type::radial) {
+					//painter.setBrush(*(b.data().brush));
+					painter.drawPath(*(ip.data().path));
+				}
+				else {
+					painter.fillPath(*(ip.data().path), brush);
+				}
 			}
 			template<class GraphicsMath>
 			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::mask(image_surface_data_type& data, const basic_brush<_Graphics_surfaces_type>& b, const basic_brush<_Graphics_surfaces_type>& mb, const basic_brush_props<_Graphics_surfaces_type>& bp, const basic_mask_props<_Graphics_surfaces_type>& mp, const basic_render_props<_Graphics_surfaces_type>& rp, const basic_clip_props<_Graphics_surfaces_type>& cl) {
@@ -189,6 +206,46 @@ namespace std::experimental::io2d {
 			template<class InputIterator>
 			inline ::std::future<void> _Qt_graphics_surfaces<GraphicsMath>::surfaces::command_list(image_surface_data_type& /*data*/, basic_image_surface<graphics_surfaces_type>& sfc, InputIterator first, InputIterator last) {
 				return _Process_command_list_image_surface(sfc, first, last);
+			}
+			template<class GraphicsMath>
+			inline _Interchange_buffer _Qt_graphics_surfaces<GraphicsMath>::surfaces::_Copy_to_interchange_buffer(image_surface_data_type& data, _Interchange_buffer::pixel_layout layout, _Interchange_buffer::alpha_mode alpha) {
+				auto fmt = data.format;
+				auto depth = data.surface.depth();
+				QImage::Format qImgFmt = data.surface.format();
+				const auto pixels = data.surface.constBits();
+				auto stride = data.surface.bytesPerLine();
+				auto width = data.dimensions.x();
+				auto height = data.dimensions.y();
+				auto src_layout = _Interchange_buffer::pixel_layout::b8g8r8a8;
+				auto src_alpha = _Interchange_buffer::alpha_mode::premultiplied;
+				//switch (fmt) {
+				//case QImage::Format_Invalid:
+				//	throw make_error_code(errc::not_supported);
+				//default:
+				//	break;
+				//}
+				(void)qImgFmt;
+				switch (fmt) {
+				case format::argb32:
+					src_layout = _Interchange_buffer::pixel_layout::b8g8r8a8;
+					//src_layout = _Interchange_buffer::pixel_layout::a8b8g8r8;
+					//src_layout = _Interchange_buffer::pixel_layout::a8r8g8b8;
+					src_alpha = _Interchange_buffer::alpha_mode::premultiplied;
+					break;
+				case format::xrgb32:
+					src_layout = _Interchange_buffer::pixel_layout::b8g8r8a8;
+					//src_layout = _Interchange_buffer::pixel_layout::a8b8g8r8;
+					//src_layout = _Interchange_buffer::pixel_layout::a8r8g8b8;
+					src_alpha = _Interchange_buffer::alpha_mode::ignore;
+					break;
+				case format::a8:
+					src_layout = _Interchange_buffer::pixel_layout::a8;
+					src_alpha = _Interchange_buffer::alpha_mode::straight;
+					break;
+				default:
+					throw make_error_code(errc::not_supported);
+				};
+				return _Interchange_buffer{ layout, alpha, (const byte*)pixels, src_layout, src_alpha, int(width), int(height), int(stride) };
 			}
 		}
 	}

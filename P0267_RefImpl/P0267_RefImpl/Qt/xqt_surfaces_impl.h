@@ -62,7 +62,7 @@ namespace std::experimental::io2d {
 			}
 
 			template <class GraphicsMath>
-			inline void _Set_stroke_props(QPainter& painter, const basic_brush<_Qt_graphics_surfaces<GraphicsMath>>& b, const basic_stroke_props<_Qt_graphics_surfaces<GraphicsMath>>& s, float miterMax, const basic_dashes<_Qt_graphics_surfaces<GraphicsMath>>& ds) {
+			inline QPainterPath _Set_stroke_props(QPainter& painter, QPainterPath& path, const basic_brush<_Qt_graphics_surfaces<GraphicsMath>>& b, const basic_stroke_props<_Qt_graphics_surfaces<GraphicsMath>>& s, float miterMax, const basic_dashes<_Qt_graphics_surfaces<GraphicsMath>>& ds) {
 				const auto& props = s.data();
 				QPen pen = QPen(*(b.data().brush), props._Line_width, (ds.data().pattern.empty() ? Qt::SolidLine : Qt::CustomDashLine), _Line_cap_to_qt_pencapstyle(props._Line_cap), _Line_join_to_qt_penjoinstyle(props._Line_join));
 				if (props._Line_join == line_join::miter) {
@@ -73,26 +73,56 @@ namespace std::experimental::io2d {
 					//const auto& dPattern = d.pattern;
 					pen.setDashOffset(d.offset);
 					QVector<qreal> dashPattern;
+					auto lw = props._Line_width;
 					for (const auto& val : d.pattern) {
-						dashPattern.push_back(val);
+						dashPattern.push_back(val / lw);
 					}
 					pen.setDashPattern(dashPattern);
 				}
 				pen.setBrush(*(b.data().brush));
+				QPainterPathStroker stroker(pen);
+				//stroker.setCapStyle(pen.capStyle());
+				//stroker.setJoinStyle(pen.joinStyle());
+				//stroker.setMiterLimit(pen.miterLimit());
+				//stroker.setStyle(pen.style());
+				//if (stroker.style == Qt::CustomDashLine) {
+				//	stroker.setDashOffset(pen.dashOffset());
+				//	stroker.setDashPattern(pen.dashPattern());
+				//}
+				//stroker.setWidth(pen.widthF());
+				auto result = stroker.createStroke(path);
+				result.setFillRule(Qt::WindingFill);
+				pen.setWidth(0);
+				pen.setStyle(Qt::NoPen);
 				painter.setPen(pen);
+				return result;
 			}
 
 			template <class GraphicsMath>
-			inline void _Set_brush_props(QBrush& brush, const basic_brush_props<_Qt_graphics_surfaces<GraphicsMath>>& bp) {
+			inline void _Set_brush_props(QPainter& painter, const basic_brush<_Qt_graphics_surfaces<GraphicsMath>>& brush, const basic_brush_props<_Qt_graphics_surfaces<GraphicsMath>>& bp) {
 				const auto& props = bp;
 				// TODO: For now, wrap_mode and filter are both ignored; need to fix this. Our filter converter in xqt_helpers.h only works when we know in advance the size the QBrush's underlying QImage will be scaled to such that we can pull the QImage out, scale it with the appropriate filter, then use brush.setTextureImage to replace the original. Maybe this can be done by checking the matrix to see if it does scaling and if so we'll scale it ourselves and then zero out the matrix's scaling? wrap_mode will probably have to be done manually along the lines of how it's done in the coregraphics backend.
+				// We now support wrap modes for gradient brushes. They don't matter for solid color brushes. All that's left is surface brushes.
+				auto nonConstBrush = const_cast<basic_brush<_Qt_graphics_surfaces<GraphicsMath>>&>(brush);
+				if (nonConstBrush.type() == brush_type::linear) {
+					QLinearGradient gradient = nonConstBrush.data().linearGradient.value();
+					gradient.setSpread(_Wrap_mode_to_qgradient_spread(bp.wrap_mode()));
+					auto& brushPtr = nonConstBrush.data().brush;
+					auto updatedBrush = make_shared<QBrush>(gradient);
+					brushPtr.swap(updatedBrush);
+				}
+				if (nonConstBrush.type() == brush_type::radial) {
+					QRadialGradient gradient = nonConstBrush.data().radialGradient.value();
+					gradient.setSpread(_Wrap_mode_to_qgradient_spread(bp.wrap_mode()));
+					auto& brushPtr = nonConstBrush.data().brush;
+					auto updatedBrush = make_shared<QBrush>(gradient);
+					brushPtr.swap(updatedBrush);
+				}
 				const auto& m = props.brush_matrix();
 				QMatrix matrix{ m.m00(), m.m01(), m.m10(), m.m11(), m.m20(), m.m21() };
-				brush.setMatrix(matrix);
-				//if (brush.style() == Qt::TexturePattern) {
-				//	auto brushImage = brush.textureImage();
-				//	brushImage.
-				//}
+				nonConstBrush.data().brush->setMatrix(matrix);
+				painter.setBrush(*(nonConstBrush.data().brush));
+				painter.setBrushOrigin(QPointF(-m.m20(), -m.m21()));
 			}
 
 			template <class GraphicsSurfaces>

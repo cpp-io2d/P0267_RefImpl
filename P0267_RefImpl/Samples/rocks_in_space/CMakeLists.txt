@@ -30,7 +30,8 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 	list(APPEND ROCKS_IN_SPACE_SRC
 		WinMain.cpp
-		Win32Win.cpp
+		ImplWin.cpp
+		#Win32Win.cpp
 	)
 	set(EXECUTABLE_FLAGS WIN32)
 elseif( ${IO2D_DEFAULT} MATCHES "CAIRO_SDL2" )

@@ -73,10 +73,12 @@ TEST_CASE("IO2D properly draws a radial gradient with a reflected pattern")
         pb.rel_line({0.f, -200.f});
         pb.close_figure();
         image.fill(b, pb, brush_props{wrap_mode::reflect});
-    }
+		image.save("radial_gradient_aquamarine_fill_etc.png", image_file_format::png);
+	}
     SECTION("Draw via paint") {
         image.paint(b, brush_props{wrap_mode::reflect});
-    }
+		image.save("radial_gradient_aquamarine_paint_etc.png", image_file_format::png);
+	}
     
     CHECK( CompareWithPNGImage(image, reference, 0.02f, 2) == true );
 }
@@ -139,6 +141,7 @@ TEST_CASE("Radial gradient fills an entire non-convex figure")
     pb.close_figure();
     
     image.fill(b, pb, brush_props{wrap_mode::reflect}, rp);
+	image.save("radial_gradient_non_convex_etc.png", image_file_format::png);
 
     CHECK( CompareWithPNGImage(image, reference, 0.05f, 1) == true );
 }
@@ -167,6 +170,7 @@ TEST_CASE("Radial gradient properly strokes an open figure")
     
     auto sp = stroke_props{10., line_cap::square, line_join::round};
     image.stroke(b, build({20.f, 100.f}), bp, sp, nullopt, rp);
-        
+	image.save("radial_gradient_curve_stroke_etc.png", image_file_format::png);
+
     CHECK( CompareWithPNGImage(image, reference, 0.05f, 2) == true );
 }

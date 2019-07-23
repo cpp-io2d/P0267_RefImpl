@@ -1,3 +1,6 @@
+#include <stdexcept>
+#if __has_unmanaged_output_surface
+
 #include <iostream>
 #include <fstream>
 #include <io2d.h>

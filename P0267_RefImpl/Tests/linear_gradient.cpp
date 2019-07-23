@@ -25,7 +25,8 @@ TEST_CASE("IO2D properly draws a linear gradient")
         pb.rel_line({0.f, -200.f});
         pb.close_figure();
         image.fill(b, pb);
-    }
+		image.save("linear_aquamarine_abs_etc.png", image_file_format::png);
+	}
     SECTION("Draw with a brush transformation - translate") {
         auto b = brush{ {100.f, 250.f},
                         {400.f, 250.f},
@@ -41,7 +42,8 @@ TEST_CASE("IO2D properly draws a linear gradient")
         pb.rel_line({0.f, -200.f});
         pb.close_figure();
         image.fill(b, pb, bp);
-    }
+		image.save("linear_gradient_aquamarine_translate_etc.png", image_file_format::png);
+	}
     SECTION("Draw with a brush transformation - horizontal mirror") {
         auto b = brush{ {300.f, 100.f},
                         {0.f, 100.f},
@@ -58,7 +60,8 @@ TEST_CASE("IO2D properly draws a linear gradient")
         pb.rel_line({0.f, -200.f});
         pb.close_figure();
         image.fill(b, pb, bp);
-    }
+		image.save("linear_gradient_aquamarine_horizontal_mirror_etc.png", image_file_format::png);
+	}
     SECTION("Draw with via paint") {
         auto b = brush{ {0.f, 100.f},
             {300.f, 100.f},
@@ -66,7 +69,8 @@ TEST_CASE("IO2D properly draws a linear gradient")
                 gradient_stop{0.5f, rgba_color::dark_magenta},
                 gradient_stop{1.0f, rgba_color::lime}}};
         image.paint(b);
-    }
+		image.save("linear_gradient_aquamarine_curve_etc.png", image_file_format::png);
+	}
     
     CHECK( CompareWithPNGImage(image, reference, 0.01f) == true );
 }
@@ -93,10 +97,11 @@ TEST_CASE("IO2D properly handles wrapping modes for linear gradients")
                      gradient_stop{0.6f, rgba_color::gainsboro},
                      gradient_stop{1.0f, rgba_color::lime}}};
     
-    image.fill(b, sector({0.f, 0.f,   300.f, 50.f}), brush_props{wrap_mode::none});
+    //image.fill(b, sector({0.f, 0.f,   300.f, 50.f}), brush_props{wrap_mode::none});
     image.fill(b, sector({0.f, 50.f,  300.f, 50.f}), brush_props{wrap_mode::repeat});
     image.fill(b, sector({0.f, 100.f, 300.f, 50.f}), brush_props{wrap_mode::reflect});
     image.fill(b, sector({0.f, 150.f, 300.f, 50.f}), brush_props{wrap_mode::pad});
+	image.save("linear_gradient_wrapping_etc.png", image_file_format::png);
 
     // there's a significat difference in color interpolation between Cairo backend and CoreGraphics backend.
     // need to invesitage it.
@@ -132,7 +137,8 @@ TEST_CASE("IO2D linear gradient fills an entire non-convex figure")
     pb.close_figure();
     
     image.fill(b, pb, brush_props{wrap_mode::reflect}, rp);
-    
+	image.save("linear_gradient_non_convex_etc.png", image_file_format::png);
+
     CHECK( CompareWithPNGImage(image, reference, 0.05f, 1) == true );
 }
 
@@ -158,6 +164,7 @@ TEST_CASE("IO2D linear gradient properly strokes an open figure")
     
     auto sp = stroke_props{10., line_cap::square, line_join::round};
     image.stroke(b, build({20.f, 100.f}), bp, sp, nullopt, rp);
-    
+	image.save("linear_gradient_curve_etc.png", image_file_format::png);
+
     CHECK( CompareWithPNGImage(image, reference, 0.05f, 2) == true );
 }

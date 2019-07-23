@@ -16,22 +16,16 @@
 namespace std::experimental::io2d {
 	inline namespace v1 {
 		namespace _Qt_io2d {
-			//template <class GraphicsMath>
-			//inline void _Set_text_props(QPainter& painter, basic_font<_Qt_graphics_surfaces<GraphicsMath>>& font, const basic_text_props<_Qt_graphics_surfaces<GraphicsMath>>& tp) {
-			//	//if (tp.scale() > 0) {
-
-			//	//}
-			//}
-
 			template<class GraphicsMath>
 			inline void _Qt_graphics_surfaces<GraphicsMath>::surfaces::draw_text(image_surface_data_type& data, const basic_point_2d<GraphicsMath>& pt, const basic_brush<graphics_surfaces_type>& b, const basic_font<graphics_surfaces_type>& font, const string& text, const basic_text_props<graphics_surfaces_type>& tp, const basic_brush_props<graphics_surfaces_type>& bp, const basic_stroke_props<graphics_surfaces_type>& sp, const basic_dashes<graphics_surfaces_type>& d, const basic_render_props<graphics_surfaces_type>& rp, const basic_clip_props<graphics_surfaces_type>& cl) {
 				QPainter painter(&data.surface);
 				_Set_render_props(painter, rp);
 				_Set_clip_props(painter, cl);
-				QBrush& brush = *(b.data().brush);
-				_Set_brush_props(brush, bp);
+				//QBrush& brush = *(b.data().brush);
+				//_Set_brush_props(brush, bp);
+				_Set_brush_props(painter, b, bp);
 				_Set_stroke_props(painter, b, sp, sp.max_miter_limit(), d);
-				painter.setBrush(brush);
+				painter.setBrush(*(b.data().brush));
 				//_Set_text_props(painter, font, tp);
 				QFont qtFont = font.data().font;
 				auto oldStyleStrategy = qtFont.styleStrategy();
@@ -99,10 +93,11 @@ namespace std::experimental::io2d {
 				QPainter painter(&data.surface);
 				_Set_render_props(painter, rp);
 				_Set_clip_props(painter, cl);
-				QBrush& brush = *(b.data().brush);
-				_Set_brush_props(brush, bp);
+				//QBrush& brush = *(b.data().brush);
+				//_Set_brush_props(brush, bp);
+				_Set_brush_props(painter, b, bp);
 				_Set_stroke_props(painter, b, sp, sp.max_miter_limit(), d);
-				painter.setBrush(brush);
+				painter.setBrush(*(b.data().brush));
 				//_Set_text_props(painter, font, tp);
 				QFont qtFont = font.data().font;
 				auto oldStyleStrategy = qtFont.styleStrategy();

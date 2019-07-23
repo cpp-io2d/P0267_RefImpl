@@ -17,7 +17,7 @@ void rocks_in_space::get_key_states()
 
 //#define USER_WINDOW
 
-#if defined(USER_WINDOW)
+#if defined(__has_unmanaged_output_surface)
 
 int CALLBACK WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 {

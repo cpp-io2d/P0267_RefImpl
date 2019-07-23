@@ -244,6 +244,8 @@ namespace std::experimental::io2d {
 				struct brushes {
 					struct _Brush_data {
 						::std::shared_ptr<QBrush> brush;
+						::std::optional<QLinearGradient> linearGradient;
+						::std::optional<QRadialGradient> radialGradient;
 						brush_type brushType;
 					};
 					using brush_data_type = _Brush_data;

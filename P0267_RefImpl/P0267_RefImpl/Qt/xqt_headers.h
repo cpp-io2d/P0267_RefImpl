@@ -17,6 +17,7 @@
 #include <QPaintDevice>
 #include <QPainter>
 #include <QPainterPath>
+#include <QPainterPathStroker>
 #include <QBrush>
 #include <QGradient>
 #include <QLinearGradient>
