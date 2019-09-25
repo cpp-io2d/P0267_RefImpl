@@ -26,6 +26,8 @@ namespace std::experimental::io2d {
 				_Set_brush_props(painter, b, bp);
 				_Set_draw_text_stroke_props(painter, b, sp, sp.max_miter_limit(), d);
 				painter.setBrush(b.data().brush);
+				QPen pen(b.data().brush, static_cast<qreal>(sp.line_width()));
+				painter.setPen(pen);
 				//_Set_text_props(painter, font, tp);
 				QFont qtFont = font.data().font;
 				auto oldStyleStrategy = qtFont.styleStrategy();
@@ -98,6 +100,8 @@ namespace std::experimental::io2d {
 				_Set_brush_props(painter, b, bp);
 				_Set_draw_text_stroke_props(painter, b, sp, sp.max_miter_limit(), d);
 				painter.setBrush(b.data().brush);
+				QPen pen(b.data().brush, static_cast<qreal>(sp.line_width()));
+				painter.setPen(pen);
 				//_Set_text_props(painter, font, tp);
 				QFont qtFont = font.data().font;
 				auto oldStyleStrategy = qtFont.styleStrategy();

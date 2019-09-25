@@ -28,7 +28,7 @@ namespace std::experimental::io2d {
 				QLinearGradient lg = QLinearGradient(begin.x(), begin.y(), end.x(), end.y());
 				for (auto it = first; it != last; ++it) {
 					auto stop = *it;
-					lg.setColorAt(stop.offset(), QColor::fromRgbF(stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a()));
+					lg.setColorAt(static_cast<qreal>(stop.offset()), QColor::fromRgbF(stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a()));
 				}
 				//lg.setSpread(QGradient::ReflectSpread);
 				data.brush = QBrush(lg);//make_shared<QBrush>(lg);
@@ -48,9 +48,9 @@ namespace std::experimental::io2d {
 				//QRadialGradient rg = QRadialGradient(end.center().x(), end.center().y(), end.radius(), start.center().x(), start.center().y(), start.radius());
 				for (auto it = first; it != last; ++it) {
 					auto stop = *it;
-					rg.setColorAt(1.0f - stop.offset(), QColor::fromRgbF(stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a()));
+					rg.setColorAt(static_cast<qreal>(1.0 - stop.offset()), QColor::fromRgbF(stop.color().r(), stop.color().g(), stop.color().b(), stop.color().a()));
 				}
-				data.brush = QBrush(rg);//make_shared<QBrush>(rg);
+				data.brush = QBrush(rg);
 				data.radialGradient = rg;
 				return data;
 			}
@@ -65,6 +65,7 @@ namespace std::experimental::io2d {
 				// The surface is dying and I want to steal some of its data, ergo const_cast.
 				img_sfc_data_type& imgData = const_cast<img_sfc_data_type&>(img.data());
 				//data.imageSurface = shared_ptr<cairo_surface_t>(imgData.surface.release(), &cairo_surface_destroy);
+				data.imageData = imgData;
 				data.brush = QBrush(imgData.surface);// make_shared<QBrush>(imgData.surface);
 				data.brushType = brush_type::surface;
 				return data;

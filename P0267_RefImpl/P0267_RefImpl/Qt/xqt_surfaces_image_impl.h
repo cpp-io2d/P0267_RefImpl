@@ -153,7 +153,12 @@ namespace std::experimental::io2d {
 				_Set_clip_props(painter, cl);
 				auto path = _Set_stroke_props(painter, *(ip.data().path), b, sp, sp.max_miter_limit(), d);
 				_Set_brush_props(painter, b, bp);
-				painter.setBrush(b.data().brush);
+				if (b.data().brushType == brush_type::surface) {
+					// We need to create an image that will serve to cover the entirety of the space that a pattern could be drawn from.
+				}
+				else {
+					painter.setBrush(b.data().brush);
+				}
 				painter.drawPath(path);
 			}
 			template<class GraphicsMath>
@@ -170,7 +175,12 @@ namespace std::experimental::io2d {
 					painter.drawPath(*(ip.data().path));
 				}
 				else {
-					painter.fillPath(*(ip.data().path), b.data().brush);
+					if (b.data().brushType == brush_type::surface) {
+						// We need to create an image that will serve to cover the entirety of the space that a pattern could be drawn from.
+					}
+					else {
+						painter.fillPath(*(ip.data().path), b.data().brush);
+					}
 				}
 			}
 			template<class GraphicsMath>

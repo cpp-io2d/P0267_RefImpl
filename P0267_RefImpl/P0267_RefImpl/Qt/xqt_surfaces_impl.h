@@ -165,6 +165,11 @@ namespace std::experimental::io2d {
 			}
 
 			template <class GraphicsSurfaces>
+			inline QImage _Create_and_set_image_surface_brush(QPainter& painter, const basic_brush<GraphicsSurfaces>& brush, const basic_brush_props<GraphicsSurfaces>& bp, const basic_render_props<GraphicsSurfaces>& rp, const optional< basic_interpreted_path<GraphicsSurfaces>>& optIp, const basic_clip_props<GraphicsSurfaces>& cl) {
+
+			}
+
+			template <class GraphicsSurfaces>
 			inline void _Set_mask_props(const basic_mask_props<GraphicsSurfaces>& mp, const basic_brush<GraphicsSurfaces>& mb) {
 				// TODO: Qt doesn't have a direct mask function so it'll need to be implemented using an additional "working space" image_surface that we can use to draw the mask image/brush (alpha only, all other channels zeroed out) then draw the image to that using probably the dest_over or dest_atop compositing_op, then draw the result to the original surface using over. Need to fiddle around with it to get the right operators.
 				basic_matrix_2d<typename GraphicsSurfaces::graphics_math_type> maskMatrix = mp.mask_matrix();

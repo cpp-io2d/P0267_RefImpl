@@ -11,7 +11,7 @@ namespace std::experimental::io2d {
 		namespace _Qt_io2d {
 			//_IO2D_API void _Init_graphics_magic();
 
-			constexpr const wchar_t* _Refimpl_window_class_name = L"_P0267RefImplQtRenderer_FF2B4C8D-0AB8-4343-AA02-6D0857E9FA21";
+			//constexpr const wchar_t* _Refimpl_window_class_name = L"_P0267RefImplQtRenderer_FF2B4C8D-0AB8-4343-AA02-6D0857E9FA21";
 
 			template <class GraphicsMath>
 			struct _Qt_graphics_surfaces {
@@ -247,6 +247,7 @@ namespace std::experimental::io2d {
 						QBrush brush;
 						::std::optional<QLinearGradient> linearGradient;
 						::std::optional<QRadialGradient> radialGradient;
+						::std::optional<typename _Qt_graphics_surfaces<graphics_math_type>::surfaces::image_surface_data_type> imageData;
 						brush_type brushType;
 					};
 					using brush_data_type = _Brush_data;
@@ -404,8 +405,6 @@ namespace std::experimental::io2d {
 					static basic_display_point<GraphicsMath> max_dimensions() noexcept;
 
 					struct _Image_surface_data {
-						//::std::unique_ptr<cairo_surface_t, decltype(&cairo_surface_destroy)> surface{ nullptr, &cairo_surface_destroy };
-						//::std::unique_ptr<cairo_t, decltype(&cairo_destroy)> context{ nullptr, &cairo_destroy };
 						QImage surface;
 						basic_display_point<GraphicsMath> dimensions;
 						io2d::format format;
