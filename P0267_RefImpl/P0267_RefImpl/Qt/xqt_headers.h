@@ -25,5 +25,9 @@
 #include <QColor>
 #include <QPointF>
 #include <QFlags>
+#include <QFont>
+#include <QFontDatabase>
+#include <QString>
+#include <QStringList>
 
 #endif // !_XQT_HEADERS_H_

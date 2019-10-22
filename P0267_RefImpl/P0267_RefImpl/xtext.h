@@ -71,9 +71,11 @@ namespace std::experimental::io2d {
 		private:
 			data_type _Data;
 		public:
-			basic_font_database();
+			const data_type& data() const noexcept;
+			data_type& data() noexcept;
 
-			vector<string> get_families();
+			basic_font_database() noexcept;
+			vector<string> get_families() const noexcept;
 		};
 	}
 }

@@ -350,6 +350,23 @@ namespace std::experimental::io2d {
 			inline font_line _Qt_graphics_surfaces<GraphicsMath>::text::line(const text_props_data_type& data) noexcept {
 				return data.fl;
 			}
+
+			template<class GraphicsMath>
+			inline typename _Qt_graphics_surfaces<GraphicsMath>::text::font_database_data_type _Qt_graphics_surfaces<GraphicsMath>::text::create_font_database() noexcept {
+				font_database_data_type result;
+				result.db = QFontDatabase();
+				return result;
+			}
+			template<class GraphicsMath>
+			inline vector<string> _Qt_graphics_surfaces<GraphicsMath>::text::get_families(const font_database_data_type& data) noexcept {
+				QStringList qtList = data.db.families();
+				int size = static_cast<int>(qtList.size());
+				vector<string> result(size);
+				for (int i = 0; i < size; i++) {
+					result.push_back((qtList.at(i)).toStdString());
+				}
+				return result;
+			}
 		}
 	}
 }

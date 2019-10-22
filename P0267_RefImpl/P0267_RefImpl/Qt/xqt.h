@@ -814,6 +814,17 @@ namespace std::experimental::io2d {
 					static font_stretching stretching(const text_props_data_type& data) noexcept;
 					static bool strike_through(const text_props_data_type& data) noexcept;
 					static font_line line(const text_props_data_type& data) noexcept;
+
+					// font database
+
+					struct _Font_database_data {
+						QFontDatabase db;
+					};
+
+					using font_database_data_type = _Font_database_data;
+
+					static font_database_data_type create_font_database() noexcept;
+					static vector<string> get_families(const font_database_data_type& data) noexcept;
 				};
 
 				class _Qt_io2d_raster_window : public QWindow {

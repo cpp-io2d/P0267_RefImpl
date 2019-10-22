@@ -158,6 +158,27 @@ namespace std {
 				inline bool basic_font<GraphicsSurfaces>::merging() const noexcept {
 					return GraphicsSurfaces::text::merging(_Data);
 				}
+
+				//
+				// basic_font_database
+				//
+
+				template<class GraphicsSurfaces>
+				inline const typename basic_font_database<GraphicsSurfaces>::data_type& basic_font_database<GraphicsSurfaces>::data() const noexcept {
+					return _Data;
+				}
+				template<class GraphicsSurfaces>
+				inline typename basic_font_database<GraphicsSurfaces>::data_type& basic_font_database<GraphicsSurfaces>::data() noexcept {
+					return _Data;
+				}
+				template<class GraphicsSurfaces>
+				inline basic_font_database<GraphicsSurfaces>::basic_font_database() noexcept
+					: _Data(GraphicsSurfaces::text::create_font_database()) {
+				}
+				template<class GraphicsSurfaces>
+				inline vector<string> basic_font_database<GraphicsSurfaces>::get_families() const noexcept {
+					return GraphicsSurfaces::text::get_families(_Data);
+				}
 			}
 		}
 	}
