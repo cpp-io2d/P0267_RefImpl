@@ -83,6 +83,15 @@ Installation steps:
 5. Install graphicsmagick: `sudo apt install libgraphicsmagick1-dev`
 6. Install libpng: `sudo apt install libpng-dev`
 
+On Fedora Linux:
+1. Refresh RPM package manager: `sudo dnf update`
+2. Install GCC: `sudo dnf groupinstall "Development Tools" && sudo dnf groupinstall "C Development Tools and Libraries"`
+3. Install CMake: `sudo dnf install cmake`
+4. Install Cairo: `sudo dnf install cairo-devel `
+5. Install graphicsmagick: `sudo dnf install GraphicsMagick-devel`
+6. Install libpng: `sudo apt install libpng-devel`. If `usr/include/libpng/png.h` doesn't exist do `sudo mkdir /usr/include/libpng && sudo ln -s /usr/include/libpng16/png.h /usr/include/libpng/png.h`
+7. Install liblzma and libtiff: `sudo dnf install xz-devel libtiff-devel`
+
 Example of CMake execution:
 ```
 git clone --recurse-submodules https://github.com/cpp-io2d/P0267_RefImpl
