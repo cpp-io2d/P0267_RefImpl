@@ -91,6 +91,7 @@ mkdir Debug
 cd Debug
 cmake --config Debug "-DCMAKE_BUILD_TYPE=Debug" ..
 cmake --build .
+sudo make install
 ```
 
 ### Cairo/Xlib on macOS
