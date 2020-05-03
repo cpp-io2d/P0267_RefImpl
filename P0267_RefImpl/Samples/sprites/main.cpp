@@ -2,6 +2,16 @@
 #include <random>
 #include <iostream>
 
+#if __has_include(<filesystem>)
+    #include <filesystem>
+    namespace fs = std::filesystem;
+#elif __has_include(<boost/filesystem.hpp>)
+    #include <boost/filesystem.hpp>
+    namespace fs = boost::filesystem;
+#else
+    #error "Cannot find either std::filesystem or boost::filesystem"
+#endif
+
 using namespace std;
 using namespace std::chrono;
 using namespace std::experimental::io2d;
@@ -150,18 +160,15 @@ Cat SpawnCat( display_point output_size )
     return cat;
 }
 
-int main(int /*argc*/, char *argv[]) {    
-    auto image = [&]{
-        try {
-            return image_surface{"cat.jpg", image_file_format::jpeg, format::argb32};            
-        }
-        catch(...) {
-            // We're on some weird system like iOS. To avoid bringing Cocoa stuff here, lets instead use a small hack:              
-            auto path = string{argv[0]};
-            path = path.substr(0, path.length() - "sprites"s.length()) + "cat.jpg"; 
-            return image_surface{path, image_file_format::jpeg, format::argb32};
-        }
-    }();
+int main(int argc, char *argv[]) {
+    if (argc >= 1) {
+        // Set the running app's Current Working Directory to that which
+        // contains the executable.  This is rather than, for example, the
+        // directory from which the app was launched from.
+        fs::current_path(fs::path(argv[0]).remove_filename());
+    }
+
+    auto image = image_surface{"cat.jpg", image_file_format::jpeg, format::argb32};
     const auto image_size = image.dimensions();
     const auto cat_brush = brush{move(image)};
     auto display = output_surface{500, 500, format::argb32, scaling::none};    
