@@ -71,6 +71,21 @@ cd Debug
 cmake -G "Visual Studio 15 2017 Win64" --config Debug "-DCMAKE_BUILD_TYPE=Debug" "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows" ../.
 io2d.sln
 ```
+Please keep in mind that the project is being build with Visual Studio 2017 in this example. If you want to build it with Visual Studio 2019 use the following line:
+```
+cmake -G "Visual Studio 16 2019" --config Debug "-DCMAKE_BUILD_TYPE=Debug" "-DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows" ../.
+msbuild io2d.sln
+```
+In that case the path for your installation will differ too:
+```
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+```
+or
+```
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+```
+
+Remark: You don't need to have a full installation of Visual Studio 2017 or 2019 (Enterprise, Professional or Community). It's enough to download the [build tools](https://www.visualstudio.com/downloads/#build-tools-for-visual-studio-2019).
 
 ### Cairo/Xlib on Linux
 CMake script expects cairo and graphicsmagick to be installed. libpng is required in order to run tests.
