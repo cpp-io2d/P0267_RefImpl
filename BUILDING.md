@@ -76,12 +76,30 @@ io2d.sln
 CMake script expects cairo and graphicsmagick to be installed. libpng is required in order to run tests.
 These installation steps assume APT package manager on Ubuntu Linux.
 Installation steps:
-1. Refresh apt: `sudo apt update`
-2. Install GCC: `sudo apt install build-essential`
-3. Install CMake: `sudo apt install cmake`
-4. Install Cairo: `sudo apt install libcairo2-dev`
-5. Install graphicsmagick: `sudo apt install libgraphicsmagick1-dev`
-6. Install libpng: `sudo apt install libpng-dev`
+1. Refresh apt: 
+```
+sudo apt update
+```
+2. Install GCC: 
+```
+sudo apt install build-essential
+```
+3. Install CMake: 
+```
+sudo apt install cmake
+```
+4. Install Cairo: 
+```
+sudo apt install libcairo2-dev
+```
+5. Install graphicsmagick: 
+```
+sudo apt install libgraphicsmagick1-dev
+```
+6. Install libpng: 
+```
+sudo apt install libpng-dev
+```
 
 Example of CMake execution:
 ```
@@ -97,13 +115,28 @@ cmake --build .
 CMake script expects cairo and graphicsmagick to be installed. libpng is required in order to run tests.
 Since cairo in brew doesn't support X11, MacPorts can be used instead.
 Installation steps:
-1. Setup a modern libc++ version as described above.
-2. Install Brew: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-3. Install libpng: brew install libpng
-4. Install graphicsmagick: brew install graphicsmagick
-5. Install cmake: brew install cmake
-6. Install MacPorts: https://www.macports.org/install.php.
-7. Install Cairo: sudo /opt/local/bin/port -N -k install cairo +x11
+1. Setup a [modern libc++](https://github.com/cpp-io2d/P0267_RefImpl/edit/master/BUILDING.md#xcode-and-libc) version as described above.
+2. Install Brew: 
+```
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+3. Install libpng: 
+```
+$ brew install libpng
+```
+7. Install graphicsmagick: 
+```
+brew install graphicsmagick
+```
+8. Install cmake: 
+```
+brew install cmake
+```
+9. Install MacPorts: https://www.macports.org/install.php.
+10. Install Cairo: 
+```
+sudo /opt/local/bin/port -N -k install cairo +x11
+```
 
 ```
 export CXXFLAGS="$CXXFLAGS -isystem/opt/X11/include -isystem/opt/local/include -isystem/usr/local/include"
@@ -119,7 +152,7 @@ open io2d.xcodeproj
 ### CoreGraphics/Mac on macOS
 CMake script expects libpng to be installed if tests are required.
 Installation steps:
-1. Setup a modern libc++ version as described above.
+1. Setup a [modern libc++](https://github.com/cpp-io2d/P0267_RefImpl/edit/master/BUILDING.md#xcode-and-libc) version as described above.
 2. Install Brew: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 3. Install libpng: brew install libpng
 4. Install cmake: brew install cmake
@@ -138,7 +171,7 @@ open io2d.xcodeproj
 Since CMake doesn't support iOS out of the box, some additional configuration is required. To simplify the configuration process, an external toolchain can be specified. This one was used during the delopment: https://github.com/leetal/ios-cmake, but nothing stops from getting another one or configuring the build environment manually. The only requirement for the iOS toolchain is to set the IOS_PLATFORM variable during configuration. In the sample script below, you need to change PathToModernLibCXX to a valid path to libc++ installation (see above). To deploy on a physical device, the IOS_PLATFORM variable must be changed from SIMULATOR64 to OS.
 
 Installation steps:
-1. Setup a modern libc++ version as described above.
+1. Setup a [modern libc++](https://github.com/cpp-io2d/P0267_RefImpl/edit/master/BUILDING.md#xcode-and-libc) version as described above.
 2. Install Brew: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 3. Install cmake: brew install cmake
 
