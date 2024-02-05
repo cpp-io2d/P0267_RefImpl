@@ -40,7 +40,7 @@ Pass any value, like "1" to skip this part.
 
 ### Xcode and libc++
 Xcode currently comes with an old version of libc++ which lacks many of C++17 features required by IO2D.
-The easiest solution is to download a fresh build of libc++ from [here](http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz).
+The easiest solution is to download a fresh build of libc++ from [here](https://releases.llvm.org/6.0.0/clang%2Bllvm-6.0.0-x86_64-apple-darwin.tar.xz).
 Export appropriate CXX and LD flags to make clang use this version of the standard library (replace NEWPATH with a path of extracted archive contents):
 ```
 export CXXFLAGS="-nostdinc++ -isystemNEWPATH/include/c++/v1"
