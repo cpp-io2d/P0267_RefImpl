@@ -43,8 +43,8 @@ Xcode currently comes with an old version of libc++ which lacks many of C++17 fe
 The easiest solution is to download a fresh build of libc++ from [here](http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-apple-darwin.tar.xz).
 Export appropriate CXX and LD flags to make clang use this version of the standard library (replace NEWPATH with a path of extracted archive contents):
 ```
-export CXXFLAGS="-nostdinc++ -isystemNEWPATH/include/c++/v1"
-export LDFLAGS="-LNEWPATH/lib -Wl,-rpath,NEWPATH/lib"
+export CXXFLAGS="-nostdinc++ -isystem NEWPATH/include/c++/v1"
+export LDFLAGS="-L NEWPATH/lib -Wl,-rpath,NEWPATH/lib"
 ```
 ## Building Steps
 
